@@ -18,7 +18,7 @@ if (!defined('BASEPATH'))
   |
  */
 if ($_SERVER['SERVER_ADDR'] == '192.168.0.201' || $_SERVER['HTTP_HOST'] == 'h2vm.h2-hosting.net') {
-    $config['base_url'] = "http://".$_SERVER['HTTP_HOST']."/dev/mastercrm/";
+    $config['base_url'] = "http://".$_SERVER['HTTP_HOST']."/dev/" . pathinfo(FCPATH, PATHINFO_BASENAME);
 } else {
     $config['base_url'] = "http://".$_SERVER['HTTP_HOST'];
 }
@@ -231,7 +231,7 @@ $config['cache_path'] = '';
   | MUST set an encryption key.  See the user guide for info.
   |
  */
-$config['encryption_key'] = 'e208uruna0u8eoa8abo28y3346666';
+$config['encryption_key'] = md5(__DIR__).'e208uruna0u8efrfesfoa8abo28y3346666';
 
 /*
   |--------------------------------------------------------------------------

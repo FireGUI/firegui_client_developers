@@ -51,7 +51,8 @@
                     notifier.number = json.count;
                     notifier.showUnread(json.view);
                     if (notifier.number > 0) {
-                        notifier.playNotificationSound();
+                        var baseSoundFolder = base_url_template + 'script/js/';
+                        notifier.playNotificationSound(baseSoundFolder + (json.errors > 0? 'error-sound': 'notify-sound') + '.mp3');
                     }
                 }
             });
@@ -68,22 +69,43 @@
             
         },
         
-        playNotificationSound: function() {
-            if (!this.played) {
-                var notificationSound = base_url_template + 'script/js/notify-sound.mp3';
+        playNotificationSound: function(notificationSound) {
+            
+            if (!notificationSound) {
+                alert('Ci sono nuove notifiche');
+                return;
+            }
+            
+            if (this.isPlayable()) {
                 if (!this.audio) {
-                    this.audio = $('<audio/>').hide().append($('<source/>').attr('src', notificationSound)).appendTo('body');
+                    this.audio = $('<audio/>').hide().append($('<source/>')).appendTo('body');
                 }
+                
+                $('source', this.audio).attr('src', notificationSound);
 
                 this.audio[0].play();
-                this.played = true;
-                
-                // Suona una volta ogni ora e mezza se la pagina non è
-                // refreshata
-                var context = this;
-                setTimeout(function () { context.played = false; }, 5400000);
+                localStorage.setItem('played', new Date());
             }
         },
+        
+        isPlayable: function() {
+            
+            var time = localStorage.getItem('played');
+            if (!time) {
+                return true;
+            }
+            
+            var diff = new Date() - new Date(time);
+            if (isNaN(diff)) {
+                return true;
+            }
+            
+            // Diff è la differenza tra le due date in millisecondi
+            // Se è maggiore di 1500 (25 min) allora è suonabile
+            return diff/1000 > 1500;
+        },
+        
+        
         
         setRead: function(notificationId) {
             if(this.number < 1 && !notificationId) {

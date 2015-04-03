@@ -326,6 +326,10 @@ ul.js_notification_dropdown_list li.unread a {
 
 
 /*** FIX lists */
+.list-grid ul:empty {
+    display: none;
+}
+
 .list-grid ul li {
     border-bottom: 1px solid #f4f4f4;
 }

@@ -1,50 +1,61 @@
-<?php $itemId = "chats{$grid['grids']['grids_id']}"; ?>
+<?php
+$itemId = "chats{$grid['grids']['grids_id']}";
+$userField = empty($grid['replaces']['user']['fields_name'])? null: $grid['replaces']['user']['fields_name'];
+$lastUser = -1;
+$items = array();
+
+if (isset($grid_data['data'])) {
+    $item = array();
+    foreach ($grid_data['data'] as $x => $dato) {
+        
+        $thisUser = $userField? $dato[$userField]: null;
+        
+        if (empty($item) OR $item['user'] != $thisUser) {
+            if ($item) {
+                $items[] = $item;
+            }
+            
+            $item = array(
+                'thumb' => empty($grid['replaces']['thumbnail'])? 'assets/img/avatar1.jpg': base_url_template('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
+                'username' => isset($grid['replaces']['username'])?
+                    (
+                        ($dato[$grid['replaces']['username']['fields_name']] != null)?
+                            $this->datab->build_grid_cell($grid['replaces']['username'], $dato):
+                            '<strong>Cliente</strong>'
+                    ):
+                    null,
+                'date' => isset($grid['replaces']['date'])? dateFormat($dato[$grid['replaces']['date']['fields_name']]): null,
+                'body' => '',
+                'user' => $thisUser,
+                'class' => $userField? (($dato[$userField] == $this->auth->get('id'))? 'out': 'in'): (($x%2 == 0) ? 'in' : 'out')
+            );
+        }
+        
+        $item['body'] .= (isset($grid['replaces']['text'])? $this->datab->build_grid_cell($grid['replaces']['text'], $dato): '') .
+                    ((!empty($grid['replaces']['file']) && !empty($dato[$grid['replaces']['file']['fields_name']]))? $this->datab->build_grid_cell($grid['replaces']['file'], $dato): '') . '<br/>';
+        
+    }
+    
+    if ($item) {
+        $items[] = $item;
+    }
+}
+?>
 <div class="portlet-body" <?php echo "id='{$itemId}'"; ?>>
     <div class="scroller" style="min-height:100px;max-height: 435px;overflow-y:auto" data-always-visible="1" data-rail-visible1="1">
         <ul class="chats">
-            <?php if (isset($grid_data['data'])): ?>
-            <?php $x=0;?>
-                <?php foreach ($grid_data['data'] as $dato): ?>
-                    <li class="<?php echo ($x%2 == 0) ? 'in' : 'out'; ?>">
-                        <?php if(isset($grid['replaces']['thumbnail'])): ?>
-                            <img class="avatar img-responsive" alt="" src="<?php echo base_url("uploads/{$dato[$grid['replaces']['thumbnail']['fields_name']]}"); ?>" />
-                        <?php else: ?>
-                            <img class="avatar img-responsive" alt="" src="assets/img/avatar1.jpg" />
-                        <?php endif; ?>
-                            
-                        <div class="message">
-                            <span class="arrow"></span>
-                            <a href="#" class="name">
-                                <?php 
-                                if(isset($grid['replaces']['username'])) {
-                                    echo ($dato[$grid['replaces']['username']['fields_name']] != null)? $this->datab->build_grid_cell($grid['replaces']['username'], $dato): '<strong>Cliente</strong>';
-                                }
-                                ?>
-                                <?php /*if(isset($grid['replaces']['username'])): ?>
-                                    <?php if ($dato[$grid['replaces']['username']['fields_name']] != null): ?>
-                                        <?php $this->load->view('box/grid/td', array('field'=>$grid['replaces']['username'], 'dato'=>$dato)); ?>
-                                    <?php else: ?>
-                                        <strong>Cliente</strong>
-                                    <?php endif; ?>
-                                <?php endif;*/ ?>
-                            </a>
-                            <span class="datetime"><?php echo isset($grid['replaces']['date'])? dateFormat($dato[$grid['replaces']['date']['fields_name']]): null ?></span>
-                            <span class="body">
-                                <?php
-                                if(isset($grid['replaces']['text'])) {
-                                    //$this->load->view('box/grid/td', array('field'=>$grid['replaces']['text'], 'dato'=>$dato));
-                                    echo $this->datab->build_grid_cell($grid['replaces']['text'], $dato);
-                                }
-                                if(!empty($grid['replaces']['file'])) {
-                                    echo 'File allegato: <a href="http://sfera.h2-web.com/dev/mastercrm_h2/uploads/'.$dato[$grid['replaces']['file']['fields_name']].'" target="_blank">'.$dato[$grid['replaces']['file']['fields_name']].'</a>';
-                                }
-                                ?>
-                            </span>
-                        </div>
-                    </li>
-                    <?php $x++; ?>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?php foreach ($items as $item): ?>
+                <li class="<?php echo $item['class']; ?>">
+                    <img class="avatar img-responsive" alt="" src="<?php echo $item['thumb']; ?>" />
+                    <div class="message">
+                        <span class="arrow"></span>
+                        <a href="#" class="name"><?php echo $item['username']; ?></a>
+
+                        <span class="datetime"><?php echo $item['date']; ?></span>
+                        <span class="body"><?php echo $item['body']; ?></span>
+                    </div>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </div>
     <form class="chat-form" action="<?php echo base_url("db_ajax/new_chat_message/{$grid['grids']['grids_id']}"); ?>">

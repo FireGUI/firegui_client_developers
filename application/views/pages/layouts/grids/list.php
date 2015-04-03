@@ -1,4 +1,4 @@
-<div class="scroller list-grid" style="height: 300px;" data-always-visible="1" data-rail-visible="0">
+<div class="scroller list-grid" style="height: 300px;" data-always-visible="0" data-rail-visible="0">
     <ul class="feeds">
         <?php foreach ($grid_data['data'] as $dato): ?>
             <li>

@@ -3,17 +3,10 @@
     <head>
         <title>HELP API MasterCRM</title>
         <style>
-            table > thead > tr > th:first-child, table > tbody > tr > td:first-child {
-                text-align: center;
-            }
-            
-            table > thead > tr > th:nth-child(2) {
-                text-align: left;
-            }
-            
-            table th, table td {
-                padding: 5px;
-            }
+            table > thead > tr > th:first-child, table > tbody > tr > td:first-child { text-align: center; }
+            table > thead > tr > th:nth-child(2) { text-align: left; }
+            table th, table td { padding: 5px; }
+            ul li { margin-bottom: 20px }
         </style>
     </head>
     <body>
@@ -22,8 +15,9 @@
 
         <h2>Chiamate valide</h2>
         <ul>
+            <li>Ottenere informazioni sulle entit&agrave; <pre>(GET)   /api/entities</pre></li>
+            <li>Ottenere informazioni sulle tabelle di supporto <pre>(GET)   /api/support</pre></li>
             <li>Ottenere informazioni sulla struttura di un'entit&agrave; <pre>(GET)   /api/describe/{entity}</pre></li>
-            <li>Ottenere informazioni sulle tabelle di supporto <pre>(GET)   /api/support_list</pre></li>
             <li>Finestra di aiuto <pre>(GET)   /api/help</pre></li>
             <li>Ottenere tutti i record di un'entit&agrave; <pre>(GET)   /api/index/:entity</pre></li>
             <li>Ottenere un record per id <pre>(GET)   /api/view/:entity/:id</pre></li>
@@ -33,6 +27,7 @@
                 &Egrave; possibile avere più di un campo in order by, basta separare con due punti ':' i campi in order_by e order_dir nel seguente modo: campo_1:campo_2/dir_1:dir_2
                 <pre>(ANY)  /api/search/:entity/:limit/:offset/:order_by/:order_dir</pre>
             </li>
+            <li>Login (fake): ritorna un unico oggetto con i dati dell'utente <pre>(ANY)  /api/login/:entity</pre></li>
             <li>Inserire nuovo record <pre>(POST)  /api/create/:entity</pre></li>
             <li>Update di un record <pre>(POST)  /api/edit/:entity/:id</pre></li>
             <li>Delete di un record <pre>(GET)   /api/delete/:entity/:id</pre></li>

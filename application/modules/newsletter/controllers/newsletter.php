@@ -82,9 +82,9 @@ class Newsletter extends MX_Controller {
         }
         
         // Prendo le entità ignorando quelle già considerate nelle liste
-        if(!empty($tables)) {
+        /*if(!empty($tables)) {
             $this->db->where_not_in('entity_name', $tables);
-        }
+        }*/
         
         $dati['entities'] = $this->db->where("entity_id IN (SELECT fields_entity_id FROM fields WHERE fields_type = 'VARCHAR')")->get_where('entity', array('entity_type' => ENTITY_TYPE_DEFAULT, 'entity_visible' => 't'))->result_array();
         
@@ -184,13 +184,14 @@ class Newsletter extends MX_Controller {
                 die();
             }
             
+            $headers = trim($data['headers']);
             
             $this->db->insert('newsletters', array(
                 'newsletter_block_size' => empty($data['block_size'])? null: $data['block_size'],
                 'newsletter_block_time' => empty($data['block_time'])? null: $data['block_time'],
                 'newsletter_subject' => $data['subject'],
                 'newsletter_content' => $data['mail'],
-                'newsletter_headers' => rtrim($data['headers'])."\r\n".implode("\r\n", $this->headers)
+                'newsletter_headers' => ($headers? $headers.PHP_EOL: '') . implode(PHP_EOL, $this->headers)
             ));
             
             $newsletter_id = $this->db->insert_id();
