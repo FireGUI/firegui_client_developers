@@ -139,6 +139,11 @@ if (!function_exists('normalize_date')) {
                 return $dateObject->format('Y-m-d H:i:s');
             }
         }
+        
+        // Ultimo controllo disperato sulla data - strtotime
+        if (($timestamp=strtotime($date)) >= 0) {
+            date('Y-m-d H:i:s', $timestamp);
+        }
 
         return null;
     }
@@ -147,7 +152,7 @@ if (!function_exists('normalize_date')) {
 if (!function_exists('array_key_map')) {
     function array_key_map(array $array, $key, $default = null) {
         return array_map(function ($item) use($key, $default) {
-            return (array_key_exists($key, $item) ? $item[$key] : $default);
+            return ((is_array($item) && array_key_exists($key, $item))? $item[$key] : $default);
         }, $array);
     }
 }

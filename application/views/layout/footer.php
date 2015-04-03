@@ -317,13 +317,18 @@
     /*
      * Modal
      */
+    var mAjaxCall = null;
     function loadModal(url, data, callbackSuccess) {
         var modalContainer = $('#js_modal_container');
         if(typeof data === 'undefined') {
             data = {};
         }
         
-        $.ajax({
+        if (mAjaxCall !== null) {
+            mAjaxCall.abort();
+        }
+        
+        mAjaxCall = $.ajax({
             url: url,
             type: 'POST',
             data: data,
@@ -359,6 +364,10 @@
                         callbackSuccess();
                     }
                 });
+                mAjaxCall = null;
+            },
+            error: function() {
+                mAjaxCall = null;
             }
         });
     }

@@ -944,9 +944,16 @@ class Datab extends CI_Model {
         $result = array();
         foreach ($records as $record) {
             $preview = "";
+
+            // 06/03/2015
+            // ho dovuto aggiungere un array_unique() perché quando faccio la
+            // preview di campi che si referenziano ricorsivamente rischio di
+            // trovarmi campi duplicati
+            $used = array();
             foreach ($entity_preview as $field) {
-                if (isset($record[$field['fields_name']])) {
+                if (!in_array($field['fields_name'], $used) && isset($record[$field['fields_name']])) {
                     $preview .= $record[$field['fields_name']] . " ";
+                    $used[] = $field['fields_name'];
                 }
             }
 
@@ -1241,7 +1248,7 @@ class Datab extends CI_Model {
                         $data = $this->session->userdata($exp[0]);
                 }
 
-                if (isset($exp[1]) && isset($data[$exp[1]])) {
+                if (isset($exp[1]) && array_key_exists($exp[1], $data)) {
                     $value = $data[$exp[1]];
                 } else {
                     $value = $data;
@@ -1306,7 +1313,7 @@ class Datab extends CI_Model {
         $post_process = $this->db->get_where('post_process', array(
             'post_process_entity_id' => $entity_id,
             'post_process_when' => $when,
-            'post_process_api' => 't'
+            'post_process_crm' => 't'
         ));
         
         if ($post_process->num_rows() > 0) {
@@ -1506,6 +1513,59 @@ class Datab extends CI_Model {
                     ->count_all_results('layouts') > 0;
         }
     }
+    
+    
+    public function addUserGroup($userId, $groupName) {
+        
+        if (!is_numeric($userId) OR !is_string($groupName) OR $userId < 1 OR !$groupName) {
+            throw new InvalidArgumentException('Impossibile aggiungere lo user al gruppo: $userId deve contenere un id valido e il nome deve essere una stringa');
+        }
+        
+        if (!$this->db->where(LOGIN_ENTITY . '_id', $userId)->count_all_results(LOGIN_ENTITY)) {
+            throw new Exception("L'utente '{$userId}' non esiste");
+        }
+        
+        // Recupera permessi del gruppo
+        $permissions = $this->db->get_where('permissions', array('permissions_group' => $groupName))->row_array();
+        if (empty($permissions['permissions_id'])) {
+            throw new Exception("Il gruppo '{$groupName}' non esiste");
+        }
+        
+        $permissionsEntities = $this->db->get_where('permissions_entities', array('permissions_entities_permissions_id' => $permissions['permissions_id']))->result_array();
+        $permissionsModules = $this->db->get_where('permissions_modules', array('permissions_modules_permissions_id' => $permissions['permissions_id']))->result_array();
+        
+        $this->db->trans_start();
+        
+        // Cancella i permessi vecchi
+        $this->db->delete('permissions', array('permissions_user_id' => $userId));
+        $this->db->where('permissions_user_id NOT IN (SELECT '.LOGIN_ENTITY.'_id FROM '.LOGIN_ENTITY.')')->delete('permissions');
+        $this->db->where('permissions_entities_permissions_id NOT IN (SELECT permissions_id FROM permissions)')->delete('permissions_entities');
+        $this->db->where('permissions_modules_permissions_id NOT IN (SELECT permissions_id FROM permissions)')->delete('permissions_modules');
+        
+        unset($permissions['permissions_id']);
+        $permissions['permissions_user_id'] = $userId;
+        $this->db->insert('permissions', $permissions);
+        $permissionId = $this->db->insert_id();
+        
+        if ($permissionsEntities) {
+            $this->db->insert_batch('permissions_entities', array_map(function($item) use ($permissionId) {
+                $item['permissions_entities_permissions_id'] = $permissionId;
+                return $item;
+            }, $permissionsEntities));
+        }
+        
+        if ($permissionsModules) {
+            $this->db->insert_batch('permissions_modules', array_map(function($item) use ($permissionId) {
+                $item['permissions_modules_permissions_id'] = $permissionId;
+                return $item;
+            }, $permissionsModules));
+        }
+        
+        $this->db->trans_complete();
+        return $permissionId;
+    }
+    
+    
 
     public function get_modules() {
         $user_id = $this->auth->get(LOGIN_ENTITY . "_id");
@@ -1600,12 +1660,27 @@ class Datab extends CI_Model {
             $fields = $_fields;
 
 
-
+            /*
+             * Facendo così penalizzo i risultati contenenti la stringa intera
+             * cercata
+             * 
             // Spezzo la stringa da cercare sugli spazi
             $search_chunks = explode(' ', $search);
+             * 
+             * Quindi faccio una cosa più intelligente:
+             *  - cerco la stringa così com'è
+             *  - la spezzo in parole e mantengo solo quelle di almeno 3
+             *    caratteri
+             */
+            $search_chunks = array_unique(array_filter(explode(' ', $search), function($chunk) {
+                return $chunk && strlen($chunk) > 2;
+            }));
+            
+            
 
             // Sono interessato ai record che contengono TUTTI i chunk in uno o più campi
-            foreach ($search_chunks as $chunk) {
+            foreach ($search_chunks as $_chunk) {
+                $chunk = str_replace("'", "''", $_chunk);
                 $inner_where = array();
                 foreach ($fields as $field) {
                     switch (strtoupper($field['fields_type'])) {
@@ -1615,11 +1690,14 @@ class Datab extends CI_Model {
                         case 'INT': case 'FLOAT':
                             //Uguaglianza semplice
                             if (is_numeric($chunk)) {
-                                $inner_where[] = "({$field['fields_name']} = '{$search}')";
+                                $inner_where[] = "({$field['fields_name']} = '{$chunk}')";
                             }
                     }
                 }
-                $outer_where[] = '(' . implode(' OR ', $inner_where) . ')';
+                
+                if ($inner_where) {
+                    $outer_where[] = '(' . implode(' OR ', $inner_where) . ')';
+                }
             }
         }
 
@@ -1662,8 +1740,8 @@ class Datab extends CI_Model {
 
         
         $layouts = $this->db->query("SELECT * FROM layouts_boxes LEFT JOIN layouts ON layouts.layouts_id = layouts_boxes.layouts_boxes_layout WHERE layouts_id = '$layout_id' ORDER BY layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols")->result_array();
-        $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id);
-        $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id);
+        $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id);
+        $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id);
         $dati['layout'] = array();
         
         
@@ -1914,9 +1992,9 @@ class Datab extends CI_Model {
             
             if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
                 $layout['content'] =
-                        $this->getHookContent('pre-'.$hookSuffix, $hookRef) .
+                        $this->getHookContent('pre-'.$hookSuffix, $hookRef, $value_id) .
                         $layout['content'] .
-                        $this->getHookContent('post-'.$hookSuffix, $hookRef);
+                        $this->getHookContent('post-'.$hookSuffix, $hookRef, $value_id);
             }
             
             $dati['layout'][$layout['layouts_boxes_row']][] = $layout;
@@ -1948,9 +2026,21 @@ class Datab extends CI_Model {
         return $entity;
     }
     
-    public function getHookContent($hookType, $hookRef) {
-        $hooks = $this->db->order_by('hooks_order')->get_where('hooks', array('hooks_type' => $hookType, 'hooks_ref' => $hookRef))->result_array();
-        return implode(PHP_EOL, array_key_map($hooks, 'hooks_content', ''));
+    public function getHookContent($hookType, $hookRef, $valueId = null) {
+        $hooks = $this->db
+                ->order_by('hooks_order')->where("(hooks_ref IS NULL OR hooks_ref = {$hookRef})")
+                ->get_where('hooks', array('hooks_type' => $hookType))->result_array();
+        
+        $plainHookContent = trim(implode(PHP_EOL, array_key_map($hooks, 'hooks_content', '')));
+        
+        if (!$plainHookContent) {
+            return '';
+        }
+        
+        ob_start();
+        $value_id = $valueId;   // per comodità e uniformità...
+        eval(' ?> ' . $plainHookContent . ' <?php ');
+        return ob_get_clean();
     }
     
     

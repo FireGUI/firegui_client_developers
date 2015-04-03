@@ -167,7 +167,7 @@ class Apilib {
      * Mostra una lista di record dell'entità richiesta
      * @param string $entity    Il nome dell'entità
      */
-    public function index($entity=null) {
+    public function index($entity=null, $depth = 2) {
         
         if( ! $entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -176,7 +176,7 @@ class Apilib {
         $cache_key = "api.list.{$entity}";
         if( ! ($out=$this->cache->get($cache_key))) {
             $crmentity = new Crmentity($entity);
-            $out = $crmentity->get_data_full_list();
+            $out = $crmentity->get_data_full_list(null, null, array(), NULL, 0, NULL, FALSE, $depth);
             $this->cache->save($cache_key, $out, self::CACHE_TIME);
         }
 
@@ -316,7 +316,7 @@ class Apilib {
             $this->db->update($entity, $data, array($entity.'_id' => $id));
             $new_data = $this->db->get_where($entity, array($entity.'_id' => $id))->row_array();
 
-            $this->runDataProcessing($entity, 'update', array('new' => $new_data, 'old' => $old_data, 'diff' => array_diff_assoc($new_data, $old_data)));
+            $this->runDataProcessing($entity, 'update', array('new' => $new_data, 'old' => $old_data, 'diff' => array_diff_assoc($new_data, $old_data), 'value_id' => $id));
 
             $this->cache->clean();
             
@@ -367,7 +367,7 @@ class Apilib {
     }
     
     
-    public function entity_list() {
+    public function entityList() {
         
         $entity_type_default = defined('ENTITY_TYPE_DEFAULT')? ENTITY_TYPE_DEFAULT: 1;
         $entities = $this->db->order_by('entity_name')->get_where('entity', array('entity_type' => $entity_type_default))->result_array();
@@ -389,7 +389,7 @@ class Apilib {
     
     
     
-    public function support_list() {
+    public function supportList() {
         
             
         $entity_type_support = defined('ENTITY_TYPE_SUPPORT_TABLE')? ENTITY_TYPE_SUPPORT_TABLE: 2;
@@ -505,6 +505,12 @@ class Apilib {
         }
         
         return $this->runDataProcessing($entity, 'search', $this->sanitizeList($out));
+    }
+    
+    
+    public function searchFirst($entity=null, $input = array()) {
+        $out = $this->search($entity, $input, 1);
+        return array_shift($out)?:array();
     }
     
     
@@ -1051,7 +1057,11 @@ class Apilib {
         
         if (!empty($this->_loadedDataProcessors[$entity_id][$when])) {
             foreach ($this->_loadedDataProcessors[$entity_id][$when] as $function) {
-                eval($function['post_process_what']);
+                try {
+                    eval($function['post_process_what']);
+                } catch (Exception $ex) {
+                    throw new ApiException($ex->getMessage(), $ex->getCode()?:self::ERR_GENERIC, $ex);
+                }
             }
         }
 

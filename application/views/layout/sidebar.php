@@ -32,7 +32,7 @@
         $label = ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label']));
         ?>
         <?php if($isLinkOrContainer): ?>
-            <li class="<?php if ($isCurrent) echo "active"; ?>">
+            <li class="<?php if ($isCurrent) echo "active"; ?> menu-<?php echo $menu['menu_id'] ?>">
                 <a href="<?php echo $link; ?>">
                     <i class="<?php echo ($menu['menu_icon_class']?:'icon-list') ?>"></i>
                     <?php echo "<span class='title'>{$label}</span>" . ($isCurrent? '<span class="selected"></span>': '') . ($hasSubmenu? '<span class="arrow "></span>': ''); ?>
@@ -41,7 +41,7 @@
                 <?php if ($hasSubmenu): ?>
                     <ul class="sub-menu">
                         <?php foreach ($menu['submenu'] as $sub_menu): ?>
-                            <li class="<?php if (in_array($current_page, $sub_menu['pages_names'])) echo "active"; ?>">
+                            <li class="<?php if (in_array($current_page, $sub_menu['pages_names'])) echo "active"; ?> menu-<?php echo $sub_menu['menu_id'] ?>">
                                 <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>">
                                     <i class="<?php echo ($sub_menu['menu_icon_class']?:'icon-empty'); ?>"></i>
                                     <?php echo ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])); ?>
@@ -52,7 +52,7 @@
                 <?php endif; ?>
             </li>
         <?php else: ?>
-            <li class="heading"><span><?php echo $label; ?></span></li>
+            <li class="heading menu-<?php echo $menu['menu_id'] ?>"><span><?php echo $label; ?></span></li>
         <?php endif; ?>
     <?php endforeach; ?>
 

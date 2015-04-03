@@ -62,7 +62,7 @@ class Crmentity extends CI_Model {
             $result = $this->db->limit($limit)->get($this->table)->result_array();
             $this->saveCache($key, $result);
         }
-//        $this->cache
+        
         return $result;
     }
 
@@ -82,22 +82,17 @@ class Crmentity extends CI_Model {
     }
 
     public function get_data_full($id, $maxDepthLevel = 2) {
-        //TODO: la cache qui non funziona, capire perchè!!!
         
         $key = md5(__METHOD__ . serialize(func_get_args()).serialize($this->_entities_processed) . $this->entity_name . '_' . $this->entity_id . '_' . $id . $maxDepthLevel);
         $arr = $this->getCache($key);
-        //debug($arr);
+        
         if ($arr === false) {
             $this->_entities_processed = array();
             $arr = $this->get_data_full_list($this->entity_id, $this->entity_name, "{$this->entity_name}.{$this->entity_name}_id = '$id'", 1, 0, null, false, $maxDepthLevel);
             $this->saveCache($key, $arr);
         }
 
-        if (isset($arr['data'][0])) {
-            return $arr['data'][0];
-        } else {
-            return false;
-        }
+        return isset($arr['data'][0])? $arr['data'][0]: array();
     }
 
     public function get_data_full_list($entity_id = null, $entity_name = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2) {
@@ -291,7 +286,7 @@ class Crmentity extends CI_Model {
                                                     $data['data'][$key][$field_name_for_relation_values] = array();
                                                 }
 
-                                                $data['data'][$key][$field_name_for_relation_values][] = $related_data_preview[$related_value];
+                                                $data['data'][$key][$field_name_for_relation_values][$related_value] = $related_data_preview[$related_value];
                                             }
                                         }
                                     }
@@ -330,7 +325,6 @@ class Crmentity extends CI_Model {
                     $fullData = array();
                     if (!empty($fake_relation_ids)) {
                         $imploded_fake_relation_ids = implode(',', $fake_relation_ids);
-//                    $fullData = $this->get_entity_preview_by_name($related, "{$related}_id IN ({$imploded_fake_relation_ids})");
                         $frEntity = $this->get_entity_by_name($related);
                         $qFullData = $this->get_data_simple_list($frEntity['entity_id'], "{$related}_id IN ({$imploded_fake_relation_ids})", null, 0, null, false, false, $depth - 1);
                         $fullData = array_combine(array_map(function ($dato) use ($related) {
@@ -404,14 +398,14 @@ class Crmentity extends CI_Model {
             // Attenzione!! Se il primo e l'ultimo carattere sono parentesi tonde,
             // allora non serve wrappeggiare il where stringhiforme perché è già
             // wrappeggiato in codesta maniera
-            $this->db->where(($where[0] === '(' && $where[strlen($where) - 1] === ')') ? "({$where})" : $where);
+            $this->db->where(($where[0] === '(' && $where[strlen($where) - 1] === ')') ? "({$where})" : $where, null, false);   // null: il valore, false: NON FARE ESCAPE
         } elseif (is_array($where) && count($where) > 0) {
             // Attenzione!! Devo distinguere da where con chiave numerica a
             // quelli con chiave a stringa: dei primi ignoro la chiave, mentre
             // dei secondi faccio un where(key, value);
             array_walk($where, function($value, $key) {
                 if (is_numeric($key)) {
-                    $this->db->where($value);
+                    $this->db->where($value, null, false); // non escapare nemmeno qui
                 } elseif (is_string($key)) {
                     $this->db->where($key, $value);
                 }

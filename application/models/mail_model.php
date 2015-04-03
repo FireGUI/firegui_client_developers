@@ -18,8 +18,11 @@ class Mail_model extends CI_Model {
             array_filter($additional_headers)
         );
         
-        $replace_from = empty($data)? array(): array_map(function($key) { return '{'.$key.'}'; }, array_keys($data));
-        $replace_to = empty($data)? array(): array_values($data);
+        // Usa come replacement i parametri che non sono array, object e risorse
+        $filteredData = array_filter($data, function($item) { return is_scalar($item); });
+        
+        $replace_from = empty($filteredData)? array(): array_map(function($key) { return '{'.$key.'}'; }, array_keys($filteredData));
+        $replace_to = empty($filteredData)? array(): array_values($filteredData);
         $subject = str_replace($replace_from, $replace_to, $email['emails_subject']);
         $message = str_replace($replace_from, $replace_to, $email['emails_template']);
         return $this->sendEmail($to, $headers, $subject, $message);

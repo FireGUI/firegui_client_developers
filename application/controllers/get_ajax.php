@@ -357,6 +357,11 @@ class Get_ajax extends CI_Controller {
     
     public function get_datatable_ajax($grid_id, $valueID=null) {
         //header("Cache-Control: no-cache, must-revalidate");
+        
+        if ($this->auth->guest()) {
+            echo json_encode(array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => []));
+            return;
+        }
 
         $post_data = $this->input->post();
 
@@ -666,9 +671,9 @@ class Get_ajax extends CI_Controller {
             'data' => $this->input->post()
         );
         
-        echo $this->datab->getHookContent('pre-form', $form_id);
+        echo $this->datab->getHookContent('pre-form', $form_id, $value_id?:null);
         $this->load->view('pages/layouts/forms/form_modal', $viewData);
-        echo $this->datab->getHookContent('post-form', $form_id);
+        echo $this->datab->getHookContent('post-form', $form_id, $value_id?:null);
     }
     
     
@@ -677,9 +682,11 @@ class Get_ajax extends CI_Controller {
     
     public function dropdown_notification_list() {
         $notifications = $this->datab->get_notifications(30, 0);
+        
         echo json_encode(array(
             'view' => $this->load->view('box/notification_dropdown_item', array('notifications'=>$notifications), true),
-            'count' => count(array_filter($notifications, function($n) { return $n['notifications_read'] === 'f'; }))
+            'count' => count($unread = array_filter($notifications, function($n) { return $n['notifications_read'] === 'f'; })),
+            'errors' => count(array_filter($unread, function($n) { return $n['notifications_type']==0; }))
         ));
     }
     
