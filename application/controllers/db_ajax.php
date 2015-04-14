@@ -267,12 +267,34 @@ class Db_ajax extends CI_Controller {
                     }
                     break;
                 case 'map':
-                    $exp = explode(";", $dati[$field['fields_name']]);
-                    if (isset($exp[0]) && isset($exp[1])) {
-                        $dati[$field['fields_name']] = $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
+                    
+                    $fieldData = $dati[$field['fields_name']];
+                    $exp = array();
+                    
+                    if (is_array($fieldData)) {
+                        if (isset($fieldData['geo'])) {
+                            $dati[$field['fields_name']] = $fieldData['geo'];
+                            break;
+                        } elseif (isset($fieldData['lat']) && isset($fieldData['lng'])) {
+                            $exp = array($fieldData['lat'], $fieldData['lng']);
+                        } elseif (count($fieldData) > 1) {
+                            $exp = array_values($fieldData);
+                        }
                     } else {
-                        unset($dati[$field['fields_name']]);
+                        $exp1 = (strpos($fieldData, ';') != false)? explode(';', $fieldData): array();
+                        $exp2 = (strpos($fieldData, ',') != false)? explode(',', $fieldData): array();
+                        
+                        if (count($exp1) === 2) {
+                            $exp = $exp1;
+                        } elseif (count($exp2) === 2) {
+                            $exp = $exp2;
+                        } else {
+                            unset($dati[$field['fields_name']]);
+                            break;
+                        }
                     }
+                    
+                    $dati[$field['fields_name']] = $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
                     break;
 
                 case 'date_range':

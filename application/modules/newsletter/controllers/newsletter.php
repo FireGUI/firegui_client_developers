@@ -332,7 +332,7 @@ class Newsletter extends MX_Controller {
         $return = array();
         foreach($data as $row) {
             $mail = $row[$field->fields_name];
-            if($mail && filter_var($mail, FILTER_VALIDATE_EMAIL) !== false) {
+            if ($mail && filter_var($mail, FILTER_VALIDATE_EMAIL) !== false && !in_array($mail, $return)) {
                 $return[] = $mail;
             }
         }

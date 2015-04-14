@@ -68,15 +68,10 @@ class Db_ajax extends MX_Controller {
             }
             fclose($handle);
             
-            
             $csv_fields = array_filter($data['csv_fields']);
             $count = 0;
             
-            if($test) {
-                $this->db->trans_start();
-            }
-            
-            
+            $this->db->trans_start();
             $entity = $this->db->get_where('entity', array('entity_id'=>$import_data['entity_id']))->row_array();
             foreach ($body as $row) {
                 $insert = array();
@@ -99,6 +94,7 @@ class Db_ajax extends MX_Controller {
                 }
                 $this->db->trans_rollback();
             } else {
+                $this->db->trans_complete();
                 $this->session->set_flashdata(SESS_IMPORT_COUNT, $count);
                 echo json_encode(array('status'=>1, 'txt'=>base_url('importer/import_return')));
             }

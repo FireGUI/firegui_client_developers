@@ -25,10 +25,10 @@ ob_end_clean();
 // Do not modify from the auto-detect default value unless you are having problems.
 //$PHPTHUMB_CONFIG['document_root'] = '/home/httpd/httpdocs';
 //$PHPTHUMB_CONFIG['document_root'] = 'c:\\webroot\\example.com\\www';
-if ('192.168.0.201' == $_SERVER['SERVER_ADDR'] || 'h2vm.h2-hosting.net' == $_SERVER['HTTP_HOST']) { 
+if (gethostname() === 'sfera' OR $_SERVER['HTTP_HOST'] === 'h2vm.h2-hosting.net') { 
     $PHPTHUMB_CONFIG['document_root'] = dirname(dirname(__DIR__));
 } else {
-    $PHPTHUMB_CONFIG['document_root'] = $_SERVER["DOCUMENT_ROOT"]; //Da cambiare in linea
+    $PHPTHUMB_CONFIG['document_root'] = $_SERVER["DOCUMENT_ROOT"];
 }
 
 

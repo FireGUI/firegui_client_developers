@@ -18,7 +18,7 @@ $_fields_type_to_skip = array(
 );
 ?>
 <a data-toggle="collapse" href="#<?php echo $_collapser_id; ?>">Filtra dati</a>
-<div id="<?php echo $_collapser_id; ?>" class="<?php echo (empty($_filter_data[$grid['grids']['grids_id']])? 'collapse': 'in'); ?>">
+<div <?php echo "id='{$_collapser_id}'"; ?> class="<?php echo (empty($_filter_data[$grid['grids']['grids_id']])? 'collapse': 'in'); ?>">
     <form action="<?php echo base_url(uri_string()); ?>" method="POST" class="filter_form">
         <div class="row">
             <?php $i = 0; ?>
@@ -48,12 +48,7 @@ $_fields_type_to_skip = array(
 <br/>
 
 
-<?php 
-/*
- * Table
- */
-?>
-<table class="table table-striped table-bordered table-hover js_ajax_datatable" id="grid_<?php echo $grid['grids']['grids_id'] ?>">
+<table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover js_ajax_datatable">
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field): ?>

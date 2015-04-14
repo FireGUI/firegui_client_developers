@@ -238,7 +238,10 @@ class Apilib {
         
         
         if($this->processData($entity, $data, false)) {
-            $this->db->insert($entity, $data);
+            $insert = $this->db->insert($entity, $data);
+            if (!$insert) {
+                die();
+            }
             $id = $this->db->insert_id();
 
             $dati = $this->db->get_where($entity, array($entity.'_id' => $id))->row_array();
