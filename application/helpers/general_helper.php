@@ -5,7 +5,7 @@ if (!function_exists('debug')) {
 
     function debug($var, $die = false, $backtrace = false) {
 
-        if (filter_input(INPUT_SERVER, 'REMOTE_ADDR') !== '188.10.34.117' && filter_input(INPUT_SERVER, 'SERVER_ADDR') !== '192.168.0.201') {
+        if (filter_input(INPUT_SERVER, 'REMOTE_ADDR') !== '88.86.183.74' && gethostname() !== 'sfera') {
             return;
         }
 
@@ -28,9 +28,7 @@ if (!function_exists('debug')) {
         echo "<BR />";
         switch (DEBUG_LEVEL) {
             case "DEVELOP":
-                echo(PHP_EOL);
-                echo(PHP_EOL);
-
+                echo(PHP_EOL . PHP_EOL);
                 echo('************ DEBUG *************');
                 echo('<pre style="background-color:#CCCCCC">');
                 echo(PHP_EOL);
@@ -142,7 +140,7 @@ if (!function_exists('normalize_date')) {
         
         // Ultimo controllo disperato sulla data - strtotime
         if (($timestamp=strtotime($date)) >= 0) {
-            date('Y-m-d H:i:s', $timestamp);
+            return date('Y-m-d H:i:s', $timestamp);
         }
 
         return null;

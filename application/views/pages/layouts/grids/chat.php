@@ -90,13 +90,24 @@ if (isset($grid_data['data'])) {
                 var widget = event.data;
                 
                 var form = $(this);
-                $.post(form.attr('action'), form.serialize(), function(json) { widget.appendMessage(json); $('[name=text]', form).val(''); }, 'json');
+                $.post(form.attr('action'), form.serialize(), function(json) {
+                    widget.appendMessage(json); $('[name=text]', form).val('');
+                    
+                    // Se siamo in una modale comunichiamo che i dati sono stati
+                    // salvati
+                    $('.modal').each(function() {
+                        try {
+                            $(this).data('bs.modal').askConfirmationOnClose = false;
+                        } catch (e) {}
+                    });
+                }, 'json');
                 
             },
-                    
+            
             appendMessage: function(message) {
                 var chatContainer = $('.chats', this.element);
-                var thisClass = ($('li:last-child', chatContainer).hasClass('in')? 'out': 'in');
+                //var thisClass = ($('li:last-child', chatContainer).hasClass('in')? 'out': 'in');
+                var thisClass = 'out';  // I miei messaggi sono sempre a dx...
                 var listItem = $('<li/>').addClass(thisClass);
                 listItem.append(
                     $('<img/>').attr('src', message.thumbnail).addClass('avatar img-responsive'),
