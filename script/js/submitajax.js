@@ -1,4 +1,7 @@
 var nome_form = null;
+var formMessage = null;
+
+
 var handleSuccess = function(msg) {
 
     switch (parseInt(msg.status)) {
@@ -72,13 +75,24 @@ $(document).ready(function() {
         e.preventDefault();
         var action = $(this).attr('action');
         nome_form = $(this).attr('id');
-        invio_form(action, $(this));
+        
+        var form = $(this);
+        if (formMessage === null) {
+            invio_form(action, form);
+        } else {
+            formMessage.fadeOut('fast', function() {
+                formMessage.removeClass('alert-success alert-danger').addClass('hide').css({'display':'', 'opacity': ''});
+                formMessage = null;
+                invio_form(action, form);
+            });
+        }
         return false;
     });
         
         
     $('body').on('click', '.js_link_ajax', function(e) {
         e.preventDefault();
+
         if($(this).hasClass('js_confirm_button')) {
             // Ask confirm first
             var text = $(this).attr('data-confirm-text');
@@ -86,6 +100,7 @@ $(document).ready(function() {
                 return;
             }
         }
+
 
         var url = $(this).attr('href');
         loading(true);
@@ -99,10 +114,10 @@ $(document).ready(function() {
                 handleSuccess(msg);
             },
             error: function(xhr, ajaxOptions, thrownError) {
-                
+
                 var errorContainerID = 'ajax-error-container';
                 var errorContainer = $('#' + errorContainerID);
-                
+
                 if(errorContainer.size() === 0) {
                     errorContainer = $('<div/>').attr('id', errorContainerID).css({
                         "z-index": 99999999,
@@ -110,7 +125,7 @@ $(document).ready(function() {
                     });
                     $('body').prepend(errorContainer);
                 }
-                
+
                 errorContainer.html("Errore ajax:" + xhr.responseText);
             }
         });
@@ -167,6 +182,7 @@ function error(txt) {
 
     var console = $('#msg_' + nome_form);
     console.html(txt);
+    formMessage = console;
 
     if (txt) {
         console.removeClass('hide alert-success').addClass('alert-danger');
@@ -181,12 +197,16 @@ function success(txt) {
 
     var console = $('#msg_' + nome_form);
     console.html(txt);
+    formMessage = console;
 
     if (txt) {
         console.removeClass('hide alert-danger').addClass('alert-success');
         setTimeout(function() {
             console.fadeOut(function() {
                 console.addClass('hide').html('').css('display', '');
+                if (formMessage === console) {
+                    formMessage = null;
+                }
             });
         }, 8000);
     } else {

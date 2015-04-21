@@ -2,7 +2,7 @@
 <?php echo $dati['pre-layout']; ?>
 
 <?php if($dati['show_title']): ?>
-    <?php if($this->session->userdata('login_h2') OR filter_input(INPUT_SERVER, 'SERVER_ADDR') === '192.168.0.201'): ?><a class="pull-right" target="_blank" style="opacity:0.5" href="<?php echo "http://sfera.h2-web.com/dev/masterTool/main/layouts/{$dati['layout_container']['layouts_id']}"; ?>">modifica layout</a><?php endif; ?>
+    <?php if($this->session->userdata('login_h2') OR gethostname() === 'sfera'): ?><a class="pull-right" target="_blank" style="opacity:0.5" href="<?php echo "http://sfera.h2-web.com/dev/masterTool/main/layouts/{$dati['layout_container']['layouts_id']}"; ?>">modifica layout</a><?php endif; ?>
     <h3 class="page-title">
         <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?>
         <small><?php echo $dati['layout_container']['layouts_subtitle']; ?></small>

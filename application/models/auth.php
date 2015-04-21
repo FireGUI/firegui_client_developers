@@ -68,7 +68,7 @@ class Auth extends CI_Model {
                 $this->remember_user($id);
             }
             
-            $this->session->set_userdata('login_h2', (filter_input(INPUT_SERVER, 'REMOTE_ADDR') === '188.10.34.117'));
+            $this->session->set_userdata('login_h2', (filter_input(INPUT_SERVER, 'REMOTE_ADDR') === '88.86.183.74'));
             return TRUE;
         } else {
             return FALSE;

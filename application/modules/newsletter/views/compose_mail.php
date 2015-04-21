@@ -132,28 +132,34 @@
             
             if(entityID) {
                 $.ajax(base_url+'newsletter/get_mailable_fields/'+entityID, {dataType:'json'}).success(function(jsonArray) {
-                    $('<option></option>').appendTo(fields);
+                    
+                    var select = fields.not(filterFields);
+                    
+                    $('<option></option>').appendTo(select);
                     $.each(jsonArray, function(k, jsonObject) {
-                        $('<option></option>').val(jsonObject.id).text(jsonObject.name).appendTo(fields);
+                        $('<option></option>').val(jsonObject.id).text(jsonObject.name).appendTo(select);
                     });
 
-                    if($('option', fields).size() > 0) {
-                        fields.show();
+                    if($('option', select).size() > 0) {
+                        select.show();
                     } else {
-                        fields.hide();
+                        select.hide();
                     }
                 });
                 
                 $.ajax(base_url+'newsletter/get_fields/'+entityID, {dataType:'json'}).success(function(jsonArray) {
-                    $('<option></option>').appendTo(fields);
+                    
+                    var select = filterFields;
+                    
+                    $('<option></option>').appendTo(select);
                     $.each(jsonArray, function(k, jsonObject) {
-                        $('<option></option>').val(jsonObject.id).text(jsonObject.name).appendTo(fields);
+                        $('<option></option>').val(jsonObject.id).text(jsonObject.name).appendTo(select);
                     });
 
-                    if($('option', fields).size() > 0) {
-                        fields.show();
+                    if($('option', select).size() > 0) {
+                        select.show();
                     } else {
-                        fields.hide();
+                        select.hide();
                     }
                 });
             }
