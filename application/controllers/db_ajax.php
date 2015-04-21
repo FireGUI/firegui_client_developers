@@ -279,6 +279,9 @@ class Db_ajax extends CI_Controller {
                             $exp = array($fieldData['lat'], $fieldData['lng']);
                         } elseif (count($fieldData) > 1) {
                             $exp = array_values($fieldData);
+                        } else {
+                            unset($dati[$field['fields_name']]);
+                            break;
                         }
                     } else {
                         $exp1 = (strpos($fieldData, ';') != false)? explode(';', $fieldData): array();
@@ -294,7 +297,7 @@ class Db_ajax extends CI_Controller {
                         }
                     }
                     
-                    $dati[$field['fields_name']] = $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
+                    $dati[$field['fields_name']] = empty($exp)? null: $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
                     break;
 
                 case 'date_range':
