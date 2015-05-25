@@ -13,9 +13,16 @@ class Api extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->library('apilib');
-        $this->apilib->setDebug(false);
         $this->apilib->setProcessingMode(Apilib::MODE_API_CALL);
         header('Access-Control-Allow-Origin: *');
+        
+        // Fixes
+        if (gethostname() === 'sfera') {
+            ini_set("display_errors", "1");
+            error_reporting(E_ALL);
+        } else {
+            $this->apilib->setDebug(false);
+        }
     }
 
     /*     * *********************************

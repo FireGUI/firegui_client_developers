@@ -176,7 +176,7 @@ if (!function_exists('t')) {
             }
 
             $add = '$lang[\'' . addslashes($string) . '\'] = \'' . addslashes($string) . '\';' . PHP_EOL;
-            file_put_contents('./application/language/' . $language . '/' . $language . '_lang.php', $add, FILE_APPEND | LOCK_EX);
+            file_put_contents(APPPATH . 'language/' . $language . '/' . $language . '_lang.php', $add, FILE_APPEND | LOCK_EX);
 
             // Ricarica file di lingue
             $CI->lang->is_loaded = array();

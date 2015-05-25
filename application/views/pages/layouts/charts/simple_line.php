@@ -13,7 +13,7 @@
                 x: -20
             },
             xAxis: {
-                categories: [<?php echo "'".implode("', '", $chart_data[0]['x'])."'"; ?>]
+                categories: [<?php echo "'".implode("', '", array_map(function($item) { return addslashes($item);}, $chart_data[0]['x']))."'"; ?>]
             },
             yAxis: {
                 title: { text: '<?php echo $chart_data[0]['element']['charts_elements_label2']; ?>' },
@@ -34,7 +34,7 @@
             },
             series: [
                 <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    { name: '<?php echo $name; ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
+                    { name: '<?php echo addslashes($name); ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
                 <?php endforeach; ?>
             ]
         });

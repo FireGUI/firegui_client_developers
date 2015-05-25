@@ -6,9 +6,9 @@
         <i class="icon-comment"></i>
         <span class="js_notification_number_label badge"></span>
     </a>
-    <ul class="dropdown-menu extended notification">
+    <ul class="dropdown-menu extended notification" style="width:400px!important;max-width:none!important">
         <li><p>Hai <span class="js_notification_number"></span> nuove notifiche</p></li>
-        <li><ul class="js_notification_dropdown_list dropdown-menu-list scroller" style="height: 250px;"></ul></li>
+        <li><ul class="js_notification_dropdown_list dropdown-menu-list scroller" style="height: 450px"></ul></li>
         <?php /*
         <li class="external">   
             <a href="#">See all notifications <i class="m-icon-swapright"></i></a>

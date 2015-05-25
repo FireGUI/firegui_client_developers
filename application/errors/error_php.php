@@ -14,7 +14,7 @@ $html = ob_get_contents();
 ob_end_clean();
 echo $html;
 
-if($_SERVER['REMOTE_ADDR'] !== '188.10.34.117' && $_SERVER['SERVER_ADDR'] !== '192.168.0.201') {
+if($_SERVER['REMOTE_ADDR'] !== '88.86.183.74' && gethostname() !== 'sfera') {
     $header = 'From: '.DEFAULT_EMAIL_SENDER.' <'.DEFAULT_EMAIL_SYSTEM.'>'.PHP_EOL;
     $header .= "MIME-Version: 1.0".PHP_EOL;
     $header .= "Content-Type: text/html; charset=\"iso-8859-1\"".PHP_EOL;

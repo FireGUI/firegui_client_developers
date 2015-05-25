@@ -6,7 +6,7 @@
             chart: { type: 'column' },
             title: { text: '<?php echo $chart['charts_title']; ?>' },
             subtitle: { text: '<?php echo $chart['charts_subtitle']; ?>' },
-            xAxis: { categories: [<?php echo "'".implode("', '", $chart_data[0]['x'])."'"; ?>] },
+            xAxis: { categories: [<?php echo "'".implode("', '", array_map(function($item) { return addslashes($item);}, $chart_data[0]['x']))."'"; ?>] },
             yAxis: {
                 min: 0,
                 title: { text: '<?php echo $chart_data[0]['element']['charts_elements_label2']; ?>' },
@@ -27,7 +27,7 @@
             },
             series: [
                 <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    { name: '<?php echo $name; ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
+                    { name: '<?php echo addslashes($name); ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
                 <?php endforeach; ?>
             ]
         });

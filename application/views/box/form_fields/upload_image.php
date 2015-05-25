@@ -18,12 +18,15 @@
             </div>
         <?php endif; ?>
         <div>
-            <span class="btn default btn-file">
+            <span class="btn default btn-file btn-sm">
                 <span class="fileupload-new"><i class="icon-paper-clip"></i> Select image</span>
                 <span class="fileupload-exists"><i class="icon-undo"></i> Change</span>
                 <input type="file" class="default" name="<?php echo $field['fields_name']; ?>" />
             </span>
-            <a href="#" class="btn red fileupload-exists" data-dismiss="fileupload"><i class="icon-trash"></i> Remove</a>
+            <a href="#" class="btn btn-sm red fileupload-exists" data-dismiss="fileupload"><i class="icon-trash"></i> Remove</a>
+            <?php if($value): ?>
+                <a href="#" class="btn btn-sm red" onclick="var c = $(this).parent().parent();$('input[type=hidden][name=<?php echo $field['fields_name']; ?>][value]', c).remove();$('img', c).attr('src', 'http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image')"><i class="icon-remove"></i></a>
+            <?php endif; ?>
         </div>
     </div>
 

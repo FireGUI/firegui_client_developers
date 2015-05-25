@@ -12,86 +12,65 @@
 
 <div id="js_modal_container"></div>
 
-<!-- END FOOTER -->
-<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-<!-- BEGIN CORE PLUGINS -->   
 <!--[if lt IE 9]>
-<script src="<?php echo base_url_template("template/crm/plugins/respond.min.js?v=".$this->config->item('version')); ?>"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/excanvas.min.js?v=".$this->config->item('version')); ?>"></script> 
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/respond.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/excanvas.min.js?v=".$this->config->item('version')); ?>"></script> 
 <![endif]-->   
 
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap/js/bootstrap.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-hover-dropdown/twitter-bootstrap-hover-dropdown.min.js?v=".$this->config->item('version')); ?>" ></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/jquery-slimscroll/jquery.slimscroll.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/jquery.blockui.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/jquery.cookie.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/uniform/jquery.uniform.min.js?v=".$this->config->item('version')); ?>" ></script>
 
-
-<!-- IMPORTANT! Load jquery-ui-1.10.3.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
-<script src="<?php echo base_url_template("template/crm/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/bootstrap/js/bootstrap.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/bootstrap-hover-dropdown/twitter-bootstrap-hover-dropdown.min.js?v=".$this->config->item('version')); ?>" type="text/javascript" ></script>
-<script src="<?php echo base_url_template("template/crm/plugins/jquery-slimscroll/jquery.slimscroll.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/jquery.blockui.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>  
-<script src="<?php echo base_url_template("template/crm/plugins/jquery.cookie.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/uniform/jquery.uniform.min.js?v=".$this->config->item('version')); ?>" type="text/javascript" ></script>
-<!-- END CORE PLUGINS -->
-
-<!-- BEGIN PAGE LEVEL PLUGINS -->
+<?php /*
 <script src="<?php echo base_url_template("template/crm/plugins/flot/jquery.flot.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url_template("template/crm/plugins/flot/jquery.flot.resize.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url_template("template/crm/plugins/jquery.pulsate.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/bootstrap-daterangepicker/moment.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/bootstrap-daterangepicker/daterangepicker.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>     
 <script src="<?php echo base_url_template("template/crm/plugins/gritter/js/jquery.gritter.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
+ */ ?>
 
-<!-- IMPORTANT! fullcalendar depends on jquery-ui-1.10.3.custom.min.js for drag & drop support -->
-<script src="<?php echo base_url_template("template/crm/plugins/fullcalendar/fullcalendar/fullcalendar.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/jquery-easy-pie-chart/jquery.easy-pie-chart.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/plugins/jquery.sparkline.min.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>  
-<!-- END PAGE LEVEL PLUGINS -->
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/fullcalendar/fullcalendar/fullcalendar.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/jquery-easy-pie-chart/jquery.easy-pie-chart.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/jquery.sparkline.min.js?v=".$this->config->item('version')); ?>"></script>  
 
-<!-- BEGIN PAGE LEVEL SCRIPTS -->
-<script src="<?php echo base_url_template("template/crm/scripts/app.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/scripts/index.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("template/crm/scripts/tasks.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>        
-<!-- END PAGE LEVEL SCRIPTS -->  
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/scripts/app.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/scripts/index.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/scripts/tasks.js?v=".$this->config->item('version')); ?>"></script>        
 
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/select2/select2.min.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/data-tables/jquery.dataTables.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/data-tables/DT_bootstrap.js?v=".$this->config->item('version')); ?>"></script>
-<script src="<?php echo base_url_template("template/crm/scripts/table-managed.js?v=".$this->config->item('version')); ?>"></script> 
-<script src="<?php echo base_url_template("template/crm/plugins/bootstrap-fileupload/bootstrap-fileupload.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>     
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/scripts/table-managed.js?v=".$this->config->item('version')); ?>"></script> 
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-fileupload/bootstrap-fileupload.js?v=".$this->config->item('version')); ?>"></script>     
 
-
-<!-- Datepicker -->
+<!-- Date&Time -->
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.it.js?v=".$this->config->item('version')); ?>"></script>
-
-<!-- Datetime picker -->
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.it.js?v=".$this->config->item('version')); ?>"></script>
-
-<!-- Colorpicker / Timepicker -->
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-daterangepicker/moment.min.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-daterangepicker/daterangepicker.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-timepicker/js/bootstrap-timepicker.js?v=".$this->config->item('version')); ?>"></script>
+
+<!-- Various -->
+<script type="text/javascript" src="<?php echo base_url_template("script/lib/ckeditor/ckeditor.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("script/lib/fancybox-2.1.5/jquery.fancybox.pack.js?v=".$this->config->item('version')); ?>"></script>
 
+<!-- Mappe leafletjs -->
+<script type="text/javascript" src="<?php echo base_url_template("script/lib/leaflet-0.7.2/leaflet.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("script/js/leaflet.geocoding.js?v=".$this->config->item('version')); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("script/lib/marker-cluster/leaflet.markercluster-src.js?v=".$this->config->item('version')); ?>"></script>
 
-<!-- Daterange picker -->
-<script type="text/javascript" src="<?php echo base_url_template("template/crm/plugins/bootstrap-daterangepicker/daterangepicker.js?v=".$this->config->item('version')); ?>"></script> 
+<!-- AJAX Form -->
+<script type="text/javascript" src="<?php echo base_url_template("script/js/submitajax.js?v=".$this->config->item('version')); ?>"></script> 
 
-
-<script src="<?php echo base_url_template("script/js/submitajax.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script> 
-<script src="<?php echo base_url_template("script/lib/leaflet-0.7.2/leaflet.js?v=".$this->config->item('version')); ?>"></script>
-<script src="<?php echo base_url_template("script/js/leaflet.geocoding.js?v=".$this->config->item('version')); ?>"></script>
-<script src="<?php echo base_url_template("script/lib/marker-cluster/leaflet.markercluster-src.js?v=".$this->config->item('version')); ?>"></script>
+<!-- Gestione tabelle -->
 <script type="text/javascript" src="<?php echo base_url_template("script/js/ajax-tables.js?v=".$this->config->item('version')); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_template("script/js/data-tables.js?v=".$this->config->item('version')); ?>"></script>
-<script src="<?php echo base_url_template("script/lib/fancybox-2.1.5/jquery.fancybox.pack.js?v=".$this->config->item('version')); ?>" type="text/javascript"></script>
-<script src="<?php echo base_url_template("script/lib/ckeditor/ckeditor.js?v=".$this->config->item('version')); ?>"></script>
-<!-- END JAVASCRIPTS -->
-
-
-
-
-
-
-
 
 
 <script>
@@ -240,7 +219,7 @@
                     url: base_url+'get_ajax/select_ajax_search',
                     dataType: 'json',
                     type: 'POST',
-                    data: function (term, page) { return {q: term, limit: 100, table: $(this).attr('data-ref')}; },
+                    data: function (term, page) { return {q: term, limit: 100, table: $(this).attr('data-ref'), referer: $(this).attr('name')}; },
                     results: function (data, page) { return {results: data}; }
                 },
                 initSelection: function (element, callback) {
@@ -255,7 +234,11 @@
                         });
                     }
                 },
-                formatResult: function(rowData) { return rowData.name; },
+                formatResult: function(rowData, container, query, escapeMarkup) {
+                    var markup=[];
+                    window.Select2.util.markMatch(rowData.name, query.term, markup, escapeMarkup);
+                    return markup.join('');
+                },
                 formatSelection: function(rowData) { return rowData.name; }
             });
          });

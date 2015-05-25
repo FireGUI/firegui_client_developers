@@ -1,4 +1,4 @@
-<table class="table table-striped table-bordered table-hover table-responsive-scrollable js_ajax_datatable" <?php if($grid['grids']['grids_order_by']) echo 'data-prevent-order' ?> data-value-id="<?php echo $value_id; ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" id="grid_<?php echo $grid['grids']['grids_id'] ?>">
+<table class="table table-striped table-bordered table-hover table-responsive-scrollable table-middle js_ajax_datatable" <?php if($grid['grids']['grids_order_by']) echo 'data-prevent-order' ?> data-value-id="<?php echo $value_id; ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" id="grid_<?php echo $grid['grids']['grids_id'] ?>">
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field): ?>

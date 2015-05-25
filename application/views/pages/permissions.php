@@ -72,7 +72,7 @@
                             <thead>
                                 <tr>
                                     <th>VISTE</th>
-                                    <?php foreach($dati['users'] as $userID => $username): ?>
+                                    <?php foreach($dati['users_layout'] as $userID => $username): ?>
                                         <th>
                                             <label>
                                                 <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
@@ -92,7 +92,7 @@
                                                 <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
                                             </label>
                                         </th>
-                                        <?php foreach($dati['users'] as $userID => $username): ?>
+                                        <?php foreach($dati['users_layout'] as $userID => $username): ?>
                                         <td>
                                             <label>
                                                 <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layoutID; ?>][]" <?php if(!isset($dati['unallowed'][$userID]) || !in_array($layoutID, $dati['unallowed'][$userID])) echo 'checked' ?> />
@@ -235,7 +235,6 @@
                     event.data.widget.touchCheckAll(checkbox.attr('data-user'), checkbox.is(':checked'));
                 });
                 
-                console.log(this.checkAllHorizontal);
                 this.checkAllHorizontal.on('change', {widget:this}, function(event) {
                     var checkbox = $(this);
                     event.data.widget.touchCheckAllHorizontal(checkbox.attr('data-layout'), checkbox.is(':checked'));

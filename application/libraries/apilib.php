@@ -847,7 +847,7 @@ class Apilib {
             }
             
             // Colgo l'occasione per vedere se ci sono field che si riferiscono a relazioni - questo è un passaggio che devo fare ora perché i vari controlli sui campi fallirebbero dato che ho un array
-            if ($field['fields_ref'] AND isset($dati[$field['fields_name']])) {
+            if ($field['fields_ref']) {
                 /**
                  * in realtà il field ref dovrebbe puntare alla tabella pivot non alla tabella con cui è relazionata
                  * ad esempio ho aziende <-> tags
@@ -855,17 +855,22 @@ class Apilib {
                  * ---
                  * Per mantenere la retrocompatibilità vengono cercate entrambe le varianti
                  */
-                $relations = $this->db->where_in('relations_name', array($entity.'_'.$field['fields_ref'], $field['fields_ref']))->get('relations');
-                if ($relations->num_rows() > 0) {
-                    $relation = $relations->row();
-                    $post_process_relations[] = array(
-                        'entity' => $relation->relations_name,
-                        'relations_field_1' => $relation->relations_field_1,
-                        'relations_field_2' => $relation->relations_field_2,
-                        'value' => $dati[$field['fields_name']]
-                    );
-                    unset($dati[$field['fields_name']]);
-                    continue;
+                $dataToInsert = isset($dati[$field['fields_name']]) ? $dati[$field['fields_name']] : array();
+                if (is_array($dataToInsert)) {
+                    $relations = $this->db->where_in('relations_name', array($entity.'_'.$field['fields_ref'], $field['fields_ref']))->get('relations');
+                    if ($relations->num_rows() > 0) {
+                        $relation = $relations->row();
+                        $post_process_relations[] = array(
+                            'entity' => $relation->relations_name,
+                            'relations_field_1' => $relation->relations_field_1,
+                            'relations_field_2' => $relation->relations_field_2,
+                            'value' => $dati[$field['fields_name']]
+                        );
+                        unset($dati[$field['fields_name']]);
+                        continue;
+                    } elseif ($dataToInsert && in_array($sql_type, array('VARCHAR', 'TEXT'))) {
+                        $dati[$field['fields_name']] = implode(',', $dataToInsert);
+                    }
                 }
             }
             

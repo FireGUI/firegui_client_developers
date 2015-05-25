@@ -44,7 +44,7 @@
             },
             series: [
                 <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    { name: '<?php echo $name; ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
+                    { name: '<?php echo addslashes($name); ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
                 <?php endforeach; ?>
             ]
         });

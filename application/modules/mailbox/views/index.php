@@ -15,3 +15,10 @@
         <?php echo $this->load->view('partials/connect'); ?>
     </div>
 </div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <?php echo $this->load->view('partials/widget'); ?>
+    </div>
+</div>
