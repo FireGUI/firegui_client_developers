@@ -48,7 +48,7 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '192.168.0.206';
+$db['default']['hostname'] = '192.168.100.166';
 $db['default']['database'] = 'mastercrm';
 $db['default']['username'] = 'mastercrm';
 $db['default']['password'] = 'mastercrm';

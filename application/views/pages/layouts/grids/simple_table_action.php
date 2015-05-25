@@ -1,4 +1,4 @@
-<table class="table table-striped table-condensed" id="grid_<?php echo $grid['grids']['grids_id'] ?>">
+<table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> class="table table-striped table-condensed table-responsive-scrollable">
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field): ?>
@@ -12,10 +12,9 @@
             <?php foreach ($grid_data['data'] as $dato): ?>
                 <tr class="odd gradeX">
                     <?php foreach ($grid['grids_fields'] as $field): ?>
-                        <?php /*<td><?php $this->load->view('box/grid/td', array('field'=>$field, 'dato'=>$dato)); ?></td>*/ ?>
                         <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                     <?php endforeach; ?>
-                        <td><?php $this->load->view('box/grid/actions', array( 'links'=> $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name']."_id"], 'row_data' => $dato )); ?></td>
+                    <td><?php $this->load->view('box/grid/actions', array( 'links'=> $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name']."_id"], 'row_data' => $dato )); ?></td>
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>

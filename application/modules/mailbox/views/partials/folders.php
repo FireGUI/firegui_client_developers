@@ -1,4 +1,4 @@
-<form id="folders-form" class="form-horizontal formAjax" method="POST" action="<?php echo base_url("mailbox/save_folders"); ?>">
+<form id="folders-form" class="formAjax form-horizontal" method="POST" action="<?php echo base_url("mailbox/save_folders"); ?>">
     <input type="hidden" name="configs" value="<?php echo $data['config_id']; ?>" />
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -10,40 +10,42 @@
                 </div>
                 <div class="modal-body">
                     <?php foreach ($data['folders'] as $k => $folder): ?>
-                        <div class="panel panel-default">
-                            <input type="hidden" name="folders[<?php echo $folder; ?>][mailbox_configs_folders_config]" value="<?php echo $data['config_id']; ?>" />
-                            <div class="panel-heading">
-                                <label style="cursor:pointer">
-                                    <input class="js-folder-toggle" type="checkbox" data-folder-id="<?php echo $k; ?>" name="folders[<?php echo $folder; ?>][mailbox_configs_folders_attiva]" value="t" />
-                                    &nbsp;
-                                    Nome cartella: <strong><?php echo $folder; ?></strong>
+                        <?php $real = isset($data['registered'][$folder])? $data['registered'][$folder]: []; ?>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input type="hidden" name="folders[<?php echo $k; ?>][mailbox_configs_folders_name]" value="<?php echo $folder; ?>" />
+                                <label class="checkbox">
+                                    <input type="hidden" name="folders[<?php echo $k; ?>][mailbox_configs_folders_attiva]" value="f" />
+                                    <input class="js-folder-toggle" type="checkbox" data-folder-id="<?php echo $k; ?>" name="folders[<?php echo $k; ?>][mailbox_configs_folders_attiva]" value="t" <?php echo (isset($real['mailbox_configs_folders_attiva']) && $real['mailbox_configs_folders_attiva']==='t')? 'checked': ''; ?> />
+                                    <?php echo $folder; ?>
                                 </label>
                             </div>
-                            <div class="panel-body js-folder-<?php echo $k ?>">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 <?php echo 'js-folder-'.$k ?>">
                                 <div class="form-group">
-                                    <label class="control-label col-xs-4">Alias</label>
+                                    <label class="control-label col-xs-2">Alias</label>
                                     <div class="col-xs-8">
-                                        <input type="text" class="form-control" name="folders[<?php echo $folder; ?>][mailbox_configs_folders_alias]" />
+                                        <input type="text" class="form-control input-sm" name="folders[<?php echo $k; ?>][mailbox_configs_folders_alias]" value="<?php echo (isset($real['mailbox_configs_folders_alias']) && $real['mailbox_configs_folders_alias']!==$folder)? $real['mailbox_configs_folders_alias']: null; ?>" />
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group">
-                                    <label class="control-label col-xs-4">Tipo cartella</label>
-                                    <div class="col-xs-8">
-                                        <label class="radio">
-                                            <input type="radio" name="folders[<?php echo $folder; ?>][mailbox_configs_folders_uscita]" value="f" />
+                                    <label class="control-label col-xs-2">Tipo cartella</label>
+                                    <div class="col-xs-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="folders[<?php echo $k; ?>][mailbox_configs_folders_uscita]" value="f" <?php if(empty($real['mailbox_configs_folders_uscita']) OR $real['mailbox_configs_folders_uscita']==='f') echo 'checked' ?> />
                                             Posta in entrata
                                         </label>
-                                        <label class="radio">
-                                            <input type="radio" name="folders[<?php echo $folder; ?>][mailbox_configs_folders_uscita]" value="t" />
+                                        <label class="radio-inline">
+                                            <input type="radio" name="folders[<?php echo $k; ?>][mailbox_configs_folders_uscita]" value="t" <?php if(isset($real['mailbox_configs_folders_uscita']) && $real['mailbox_configs_folders_uscita']==='t') echo 'checked' ?> />
                                             Posta in uscita
                                         </label>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
-
                     <?php endforeach; ?>
                 </div>
                 <div class="modal-footer">
@@ -68,7 +70,7 @@
                     container.slideUp();
                 }
                 
-                $('input[name]', container).attr('disabled', !active);
+                //$('input[name]', container).attr('disabled', !active);
                 
             }).trigger('change');
         });

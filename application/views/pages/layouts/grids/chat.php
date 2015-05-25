@@ -42,21 +42,23 @@ if (isset($grid_data['data'])) {
 }
 ?>
 <div class="portlet-body" <?php echo "id='{$itemId}'"; ?>>
-    <div class="scroller" style="min-height:100px;max-height: 435px;overflow-y:auto" data-always-visible="1" data-rail-visible1="1">
-        <ul class="chats">
-            <?php foreach ($items as $item): ?>
-                <li class="<?php echo $item['class']; ?>">
-                    <img class="avatar img-responsive" alt="" src="<?php echo $item['thumb']; ?>" />
-                    <div class="message">
-                        <span class="arrow"></span>
-                        <a href="#" class="name"><?php echo $item['username']; ?></a>
+    <div style="min-height:300px">
+        <div class="scroller" style="min-height:100px;max-height: 435px;overflow-y:auto" data-always-visible="1" data-rail-visible1="1">
+            <ul class="chats">
+                <?php foreach ($items as $item): ?>
+                    <li class="<?php echo $item['class']; ?>">
+                        <img class="avatar img-responsive" alt="" src="<?php echo $item['thumb']; ?>" />
+                        <div class="message">
+                            <span class="arrow"></span>
+                            <a href="#" class="name"><?php echo $item['username']; ?></a>
 
-                        <span class="datetime"><?php echo $item['date']; ?></span>
-                        <span class="body"><?php echo $item['body']; ?></span>
-                    </div>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+                            <span class="datetime"><?php echo $item['date']; ?></span>
+                            <span class="body"><?php echo $item['body']; ?></span>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     </div>
     <form class="chat-form" action="<?php echo base_url("db_ajax/new_chat_message/{$grid['grids']['grids_id']}"); ?>">
         <input type="hidden" name="user" value="<?php echo $this->auth->get('id'); ?>" />

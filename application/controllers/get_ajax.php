@@ -45,11 +45,11 @@ class Get_ajax extends CI_Controller {
         $search = str_replace("'", "''", $this->input->post('q'));
         $limit = $this->input->post('limit');
         $table = $this->input->post('table');
-        $id = ($this->input->post('id')? $this->input->post('id'): NULL);
+        $id = ($this->input->post('id')?: null);
+        $referer = ($this->input->post('referer')?: null);
         
         /* Devo distinguere i due casi: support table e relazione */
         $entity = $this->datab->get_entity_by_name($table);
-        
         
         // Non ho l'entity id quindi l'entità non esiste
         if(empty($entity['entity_id'])) {
@@ -64,34 +64,45 @@ class Get_ajax extends CI_Controller {
          * Applico limiti permessi
          */
         $user_id = $this->auth->get(LOGIN_ENTITY.'_id');
-        $operators = unserialize(OPERATORS);
-        $field_limit = $this->db->query("SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = {$user_id} AND fields_entity_id = {$entity['entity_id']}")->row_array();
         $where_limit = '';
-        if( ! empty($field_limit)) {
-            $field = $field_limit['fields_name'];
-            $op = $field_limit['limits_operator'];
-            $value = $field_limit['limits_value'];
+        
+        if ($user_id) {
+            $operators = unserialize(OPERATORS);
+            $field_limit = $this->db->query("SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = ? AND fields_entity_id = ?", [$user_id, $entity['entity_id']])->row_array();
+            if( ! empty($field_limit)) {
+                $field = $field_limit['fields_name'];
+                $op = $field_limit['limits_operator'];
+                $value = $field_limit['limits_value'];
 
-            if(array_key_exists($op, $operators)) {
-                $sql_op = $operators[$op]['sql'];
+                if(array_key_exists($op, $operators)) {
+                    $sql_op = $operators[$op]['sql'];
 
-                switch ($op) {
-                    case 'in':
-                        $value = "('".implode("','", explode(',', $value))."')";
-                        break;
+                    switch ($op) {
+                        case 'in':
+                            $value = "('".implode("','", explode(',', $value))."')";
+                            break;
 
-                    case 'like':
-                        $value = "'%{$value}%'";
-                        break;
+                        case 'like':
+                            $value = "'%{$value}%'";
+                            break;
+                    }
+
+                    $where_limit = "{$field} {$sql_op} {$value}";
                 }
-
-                $where_limit = "{$field} {$sql_op} {$value}";
             }
         }
         
 
         // Inizializza l'array dei risultati
         $result_json = array();
+        
+        $where_referer = '';
+        if ($referer) {
+            $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
+            if (!empty($fReferer->fields_select_where)) {
+                $where_referer = trim($fReferer->fields_select_where);
+            }
+        }
         
         
         if($entity['entity_type'] == ENTITY_TYPE_SUPPORT_TABLE) {
@@ -100,10 +111,11 @@ class Get_ajax extends CI_Controller {
                 $result_json = array('id' => $row[$table.'_id'], 'name'  => $row[$table.'_value']);
             } else {
                 // Il value di una support table è sempre una stringa quindi posso fare tranquillamente l'ilike
-                $where = "{$table}_value ILIKE '%{$search}%'";
-                if($where_limit) {
-                    $where .= " AND {$where_limit}";
-                }
+                $where = implode(' AND ', array_filter([
+                    "{$table}_value ILIKE '%{$search}%'",
+                    $where_limit,
+                    $where_referer
+                ]));
                 
                 $result_array = $this->db->query("SELECT * FROM {$table} WHERE {$where} ORDER BY {$table}_value ILIKE '{$search}' DESC, {$table}_value LIMIT {$limit}")->result_array();
                 $result_json = array();
@@ -131,6 +143,10 @@ class Get_ajax extends CI_Controller {
                     $where .= " AND ({$where_limit})";
                 } elseif($where_limit) {
                     $where = $where_limit;
+                }
+                
+                if ($where_referer) {
+                    $where = ($where? "{$where} AND ({$where_referer})": $where_referer);
                 }
                 
                 $result_array = $this->datab->get_entity_preview_by_name($table, $where, $limit);

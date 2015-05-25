@@ -43,7 +43,7 @@
                 type: 'pie',
                 innerSize: '50%',
                 <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    name: '<?php echo $name; ?>',
+                    name: '<?php echo addslashes($name); ?>',
                     data: [<?php foreach($data as $x => $y) {echo "['{$x}', {$y}],";} ?>]
                 <?php endforeach; ?>
             }]

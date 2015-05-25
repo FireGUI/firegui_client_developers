@@ -55,7 +55,6 @@
                 } ?>
             <span class="label label-sm label-icon <?php echo $class; ?>"><i class="<?php echo $icon; ?>"></i></span>
             <?php
-            echo $notification['notifications_message'];
             $nDate = new DateTime($notification['notifications_date_creation']);
             $diff = $nDate->diff(new DateTime);
             
@@ -68,6 +67,7 @@
             }
             ?>
             <span class="time pull-right"><?php echo $date; ?></span>
+            <?php echo $notification['notifications_message']; ?>
             <div class="clearfix"></div>
         </a>
     </li>

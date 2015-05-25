@@ -173,8 +173,29 @@ class Main extends CI_Controller {
                 $where[LOGIN_ACTIVE_FIELD] = 't';
             }
             $dati['users'] = $this->datab->get_entity_preview_by_name(LOGIN_ENTITY, $where);
-            
             asort($dati['users']);
+            
+            
+            if (LOGIN_NAME_FIELD) {
+                $this->db->order_by(LOGIN_NAME_FIELD);
+            }
+            
+            if (LOGIN_SURNAME_FIELD) {
+                $this->db->order_by(LOGIN_SURNAME_FIELD);
+            }
+            
+            
+            if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
+                $users = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_ACTIVE_FIELD => 't'))->result_array();
+            } else {
+                $users = $this->db->get(LOGIN_ENTITY)->result_array();
+            }
+            
+            $dati['users_layout'] = array_combine(array_key_map($users, LOGIN_ENTITY . '_id'), array_map(function($user) {
+                $n = isset($user[LOGIN_NAME_FIELD])? $user[LOGIN_NAME_FIELD]: '';
+                $s = isset($user[LOGIN_SURNAME_FIELD])? $user[LOGIN_SURNAME_FIELD]: '';
+                return ($n && $s)? ucwords($n[0] . '. ' . $s): $n . ' ' . $s;
+            }, $users));
             
             $layouts = $this->db->/*where('layouts_id IN (SELECT menu_layout FROM menu)')->*/order_by('layouts_title')->get('layouts')->result_array();
             $dati['layouts'] = array_combine(array_map(function($layout) { return $layout['layouts_id']; }, $layouts), array_map(function($layout) { return ucfirst(str_replace('_', ' ', $layout['layouts_title'])); }, $layouts));

@@ -68,7 +68,7 @@ class ImapMailbox {
 		return $imapStream;
 	}
 
-	protected function disconnect() {
+	public function disconnect() {
 		$imapStream = $this->getImapStream(false);
 		if($imapStream && is_resource($imapStream)) {
 			imap_close($imapStream, CL_EXPUNGE);
@@ -511,8 +511,21 @@ class ImapMailbox {
 					'/_+/' => '_',
 					'/(^_)|(_$)/' => '',
 				);
-				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . preg_replace(array_keys($replace), $replace, $fileName));
-				$attachment->filePath = $this->attachmentsDir . DIRECTORY_SEPARATOR . $fileSysName;
+                                
+                                // Fix multilivello Alberto
+                                $filteredName = preg_replace(array_keys($replace), $replace, $fileName);
+                                $dirSuffix = implode(DIRECTORY_SEPARATOR, [
+                                    isset($filteredName[0])? $filteredName[0]: 'a',
+                                    isset($filteredName[1])? $filteredName[1]: 'b',
+                                    isset($filteredName[2])? $filteredName[2]: 'c',
+                                ]);
+                                $fullDirAttach = $this->attachmentsDir . DIRECTORY_SEPARATOR . $dirSuffix;
+                                if (!is_dir($fullDirAttach)) {
+                                    mkdir($fullDirAttach, 0777, true);
+                                }
+                                
+				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $filteredName);
+				$attachment->filePath = $fullDirAttach . DIRECTORY_SEPARATOR . $fileSysName;
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);

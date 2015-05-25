@@ -8,8 +8,8 @@
             <strong>Your Company</strong>
         </a>
     <?php elseif($this->settings['settings_company_logo']): ?>
-        <a class="navbar-brand" href="<?php echo base_url(); ?>">
-            <img src="<?php echo base_url_template("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" class="img-responsive" style="height: 41px; margin: -13px auto auto 0;" />
+        <a class="navbar-brand text-center" href="<?php echo base_url(); ?>">
+            <img src="<?php echo base_url_template("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="height:30px;margin:-10px 0 0;" />
         </a>
     <?php else: ?>
         <a class="navbar-brand" href="<?php echo base_url(); ?>" style="padding-left: 5px; font-size: 19px; line-height: 12px;">
@@ -63,14 +63,13 @@
                     
                 <?php if($this->datab->is_admin()): ?>
                     <li><a href="<?php echo base_url('main/permissions'); ?>"><i class="icon-lock"></i> Permessi</a></li>
+                    <?php if ($this->apilib->isCacheEnabled()): ?>
+                        <li><a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="icon-cogs"></i> Disabilita cache</a></li>
+                    <?php else: ?>
+                        <li><a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="icon-cogs"></i> Ri-abilita cache</a></li>
+                    <?php endif; ?>
+                    <li><a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="icon-trash"></i> Pulisci cache</a></li>
                 <?php endif; ?>
-                
-                <?php if ($this->apilib->isCacheEnabled()): ?>
-                    <li><a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="icon-cogs"></i> Disabilita cache</a></li>
-                <?php else: ?>
-                    <li><a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="icon-cogs"></i> Ri-abilita cache</a></li>
-                <?php endif; ?>
-                <li><a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="icon-trash"></i> Pulisci cache</a></li>
                     
                 <li><a href="<?php echo base_url("access/logout"); ?>"><i class="icon-key"></i> Log Out</a></li>
             </ul>

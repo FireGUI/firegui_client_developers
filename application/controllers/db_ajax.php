@@ -800,27 +800,28 @@ class Db_ajax extends CI_Controller {
     public function save_views_permissions() {
 
         $viewsAccess = $this->input->post('view');
-
-        $this->db->truncate('unallowed_layouts');
-
-
+        
         $layouts = $this->db->get('layouts')->result_array();
         $users = $this->db->get(LOGIN_ENTITY)->result_array();
-
+        
+        $batchData = [];
         foreach ($layouts as $layout) {
             $layoutID = $layout['layouts_id'];
             foreach ($users as $user) {
                 $userID = $user[LOGIN_ENTITY . '_id'];
 
-                if (!isset($viewsAccess[$layoutID]) || !in_array($userID, $viewsAccess[$layoutID])) {
-                    $this->db->insert('unallowed_layouts', array(
-                        'unallowed_layouts_layout' => $layoutID,
-                        'unallowed_layouts_user' => $userID,
-                    ));
+                if (empty($viewsAccess[$layoutID]) OR !in_array($userID, $viewsAccess[$layoutID])) {
+                    $batchData[] = ['unallowed_layouts_layout' => $layoutID, 'unallowed_layouts_user' => $userID];
                 }
             }
         }
-
+        
+        $this->db->trans_start();
+        $this->db->query('DELETE FROM unallowed_layouts');
+        if ($batchData) {
+            $this->db->insert_batch('unallowed_layouts', $batchData);
+        }
+        $this->db->trans_complete();
         echo json_encode(array('status' => 5, 'txt' => 'Impostazioni visibilità layout impostate'));
     }
 

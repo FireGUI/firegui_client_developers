@@ -706,89 +706,71 @@ class Datab extends CI_Model {
         return $this->db->where('fields_entity_id', $entity_id)->get('fields')->result_array();
     }
 
-    public function get_chart_data($chart) {
+    public function get_chart_data($chart, $value_id = null) {
 
         $all_data = array();
         $data = array();
 
         // Ciclo gli elementi qualora ne abbia + di uno
         foreach ($chart['elements'] as $element) {
-            //debug($element);
-            $entity = $this->get_entity($element['charts_elements_entity_id']);
+            
+            if (empty($element['charts_elements_mode']) OR $element['charts_elements_mode'] == 1) {
+                $entity = $this->get_entity($element['charts_elements_entity_id']);
+                $group_by = $element['charts_elements_groupby'];
 
-            $group_by = $element['charts_elements_groupby'];
+                // Gli costruisco il Where con il mega-metodo generico
+                //$where = trim($element['charts_elements_where']);
+                $where = $this->generate_where("charts_elements", $element['charts_elements_id'], $value_id);
 
-
-            // Gli costruisco il Where con il mega-metodo generico
-            //$where = trim($element['charts_elements_where']);
-            $where = $this->generate_where("charts_elements", $element['charts_elements_id']);
-
-            if ($where) {
-                $where = "WHERE {$where}";
-            }
-
-            // Mi costruisco eventuali join
-            $join = ""; $alreadyJoined = array($entity['entity_name']);
-            foreach ($this->get_entity_fields($element['charts_elements_entity_id']) as $_field) {
-                if ($_field['fields_ref'] && !in_array($_field['fields_ref'], $alreadyJoined)) {
-                    $entity_ref = $this->get_entity_by_name($_field['fields_ref']);
-                    $join .= "LEFT JOIN {$_field['fields_ref']} ON ({$_field['fields_ref']}.{$_field['fields_ref']}_id = {$entity['entity_name']}.{$_field['fields_name']}) ";
-                    $alreadyJoined[] = $_field['fields_ref'];
+                if ($where) {
+                    $where = "WHERE {$where}";
                 }
-            }
+
+                // Mi costruisco eventuali join
+                $join = ""; $alreadyJoined = array($entity['entity_name']);
+                foreach ($this->get_entity_fields($element['charts_elements_entity_id']) as $_field) {
+                    if ($_field['fields_ref'] && !in_array($_field['fields_ref'], $alreadyJoined)) {
+                        $entity_ref = $this->get_entity_by_name($_field['fields_ref']);
+                        $join .= "LEFT JOIN {$_field['fields_ref']} ON ({$_field['fields_ref']}.{$_field['fields_ref']}_id = {$entity['entity_name']}.{$_field['fields_name']}) ";
+                        $alreadyJoined[] = $_field['fields_ref'];
+                    }
+                }
 
 
-            $field = $this->get_field($element['charts_elements_fields_id']);
-            // Se ha un ref joino
+                $field = $this->get_field($element['charts_elements_fields_id']);
+                if ($group_by) {
+                    $query_group_by = str_replace('#', ',', $group_by);
+                    $gr_by = "GROUP BY " . $query_group_by;
+                } else {
+                    $query_group_by = "";
+                    $gr_by = "";
+                }
 
-            /* if ($field['fields_ref']) {
-              //$entity_ref = $this->get_entity_by_name($field['fields_ref']);
-              //$join .= "LEFT JOIN {$field['fields_ref']} ON ({$field['fields_ref']}.{$field['fields_ref']}_id = {$entity['entity_name']}.{$field['fields_name']}) ";
-              $as_x = "{$field['fields_ref']}.{$field['fields_ref']}_id AS x";
-              //$group_by = $field['fields_ref'].".".$field['fields_ref']."_id,".$group_by;
-              } else {
-              //$join = '';
-              $as_x = "{$entity['entity_name']}.{$field['fields_name']} AS x";
-              //$group_by = "{$entity['entity_name']}.{$field['fields_name']},".$group_by;
-              } */
+                $order = ($element['charts_elements_order']) ? "ORDER BY " . $element['charts_elements_order'] : '';
+                $data = array();
 
-            if ($group_by) {
-                $query_group_by = str_replace('#', ',', $group_by);
-                $gr_by = "GROUP BY " . $query_group_by;
+                $field_function_parameter = ($element['charts_elements_function_parameter']) ? $element['charts_elements_function_parameter'] : $field['fields_name'];
+
+                switch ($element['charts_elements_function']) {
+                    case 'COUNT':
+                        $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}(*) AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $gr_by $order")->result_array();
+                        break;
+                    case null:
+                        $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}{$field_function_parameter} AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $order")->result_array();
+                        break;
+                    default:
+                        $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}({$field_function_parameter}) AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $gr_by $order")->result_array();
+                        break;
+                }
             } else {
-                $query_group_by = "";
-                $gr_by = "";
+                $data['data'] = $this->db->query($this->replace_superglobal_data(str_replace('{value_id}', $value_id, $element['charts_elements_full_query'])))->result_array();
             }
-
-            $order = ($element['charts_elements_order']) ? "ORDER BY " . $element['charts_elements_order'] : '';
-            $data = array();
-
-            $field_function_parameter = ($element['charts_elements_function_parameter']) ? $element['charts_elements_function_parameter'] : $field['fields_name'];
-
-            switch ($element['charts_elements_function']):
-                case 'COUNT':
-                    $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}(*) AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $gr_by $order")->result_array();
-                    break;
-                case null:
-                    $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}{$field_function_parameter} AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $order")->result_array();
-                    break;
-                default:
-                    $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}({$field_function_parameter}) AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $gr_by $order")->result_array();
-                    break;
-            endswitch;
-//            if ($element['charts_elements_function']) {
-//                if ($element['charts_elements_function'] == "COUNT") {
-//                    $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}(*) AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $query_group_by $order")->result_array();
-//                } else {
-//                    $data['data'] = $this->db->query("SELECT {$element['charts_elements_function']}({$field['fields_name']}) AS y, $query_group_by AS x FROM {$entity['entity_name']} $join $where $query_group_by $order")->result_array();
-//                }
-//            
-//                }
+            
             // Precalcolo tutte le x, perché ogni serie deve avere lo stesso numero di valori
             // e questo deve coincidere col numero di x
             $data['x'] = array_unique(array_map(function($row) {return $row['x'];}, $data['data']));
             
-            if (!empty($data['x'])) {
+            if (!empty($data['x']) && isset($group_by)) {
                 // Trova chi è il campo messo come x (il campo x è l'ultimo dopo la virgola-cancelletto nella stringa group by)
                 //$group_by ="asdds.test, asds.ket, agente, asd.tk"
                 $arr_group_by = explode('#', $group_by);
@@ -1640,6 +1622,9 @@ class Datab extends CI_Model {
         $outer_where = array();
 
         if ($search) {
+            
+            // Cerco il massimo per gli int4
+            $maxint4 = $this->db->query("SELECT (power(2, 32)/2-1)::int4 AS max")->row()->max;
 
             /** FIX: Cerco gli eventuali support fields di un singolo field e li metto in un array al più bidimensionale * */
             $_fields = array();
@@ -1675,21 +1660,19 @@ class Datab extends CI_Model {
             $search_chunks = array_unique(array_filter(explode(' ', $search), function($chunk) {
                 return $chunk && strlen($chunk) > 2;
             }));
-            
-            
 
             // Sono interessato ai record che contengono TUTTI i chunk in uno o più campi
             foreach ($search_chunks as $_chunk) {
                 $chunk = str_replace("'", "''", $_chunk);
                 $inner_where = array();
                 foreach ($fields as $field) {
-                    switch (strtoupper($field['fields_type'])) {
+                    switch (($type=strtoupper($field['fields_type']))) {
                         case 'VARCHAR': case 'TEXT':
                             $inner_where[] = "({$field['fields_name']} ILIKE '%{$chunk}%')";
                             break;
                         case 'INT': case 'FLOAT':
                             //Uguaglianza semplice
-                            if (is_numeric($chunk)) {
+                            if (is_numeric($chunk) && ($type !== 'INT' OR $chunk <= $maxint4)) {
                                 $inner_where[] = "({$field['fields_name']} = '{$chunk}')";
                             }
                     }
@@ -1774,7 +1757,7 @@ class Datab extends CI_Model {
                       } */
 
                     // prendo i dati
-                    $chart_data = $this->get_chart_data($chart);
+                    $chart_data = $this->get_chart_data($chart, $value_id);
                     
                     if(empty($chart_data[0]['series']) || !is_array($chart_data[0]['series'])) {
                         // Ci ficco un content vuoto
