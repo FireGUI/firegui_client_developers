@@ -28,6 +28,7 @@ class Datab extends CI_Model {
         if (is_numeric($entity_id) && $entity_id > 0) {
             if (empty($this->_entities[$entity_id])) {
                 $entity = $this->db->query("SELECT * FROM entity WHERE entity_id = '$entity_id'")->row_array();
+                $entity['fields'] = $this->db->query("SELECT * FROM fields WHERE fields_entity_id = ?", [$entity_id])->result_array();
                 $this->_entities[$entity_id] = $entity;
             }
 
@@ -49,10 +50,11 @@ class Datab extends CI_Model {
             }
         }
 
-        $entity = $this->db->query("SELECT * FROM entity WHERE entity_name = '$entity_name'")->row_array();
+        $entity = $this->db->query("SELECT * FROM entity WHERE entity_name = ?", [$entity_name])->row_array();
         if (empty($entity)) {
             debug("L'entità {$entity_name} non esiste");
         } else {
+            $entity['fields'] = $this->db->query("SELECT * FROM fields WHERE fields_entity_id = ?", [$entity['entity_id']])->result_array();
             $this->_entities[$entity['entity_id']] = $entity;
         }
         return $entity;
@@ -215,7 +217,7 @@ class Datab extends CI_Model {
             $this->db->offset($offset);
         }
         if ($order_by !== NULL && !$count) {
-            $this->db->order_by($order_by);
+            $this->db->order_by($order_by . ',' . $dati['entity']['entity_name'] . '_id');
         }
 
         if ($count) {
@@ -1230,7 +1232,7 @@ class Datab extends CI_Model {
                         $data = $this->session->userdata($exp[0]);
                 }
 
-                if (isset($exp[1]) && array_key_exists($exp[1], $data)) {
+                if (isset($exp[1]) && array_key_exists($exp[1], (array) $data)) {
                     $value = $data[$exp[1]];
                 } else {
                     $value = $data;
@@ -1469,7 +1471,6 @@ class Datab extends CI_Model {
             // Se l'utente è amministratore il layout è accessibile SSE
             // non è contenuto nella tabella dei layout non permessi
             $this->db->where('unallowed_layouts_user', $user_id)->where('unallowed_layouts_layout', $layout_id);
-//            debug($this->db->get('unallowed_layouts')->result(),1);
             return $this->db->count_all_results('unallowed_layouts') == 0;
         } else {
             // Se eseguo questa query son sicuro chel'utente non è un
@@ -1497,6 +1498,102 @@ class Datab extends CI_Model {
     }
     
     
+    public function setPermissions($userOrGroup, $isAdmin, array $entitiesPermissions, array $modulesPermissions) {
+        
+        if (!$userOrGroup) {
+            throw new Exception("Il nome gruppo o utente non può essere vuoto");
+        }
+        
+        if ($isAdmin !== 't' && $isAdmin !== 'f') {
+            $isAdmin = (is_bool($isAdmin)? ($isAdmin? 't': 'f'): 'f');
+        }
+        
+        try {
+            $perm = $this->getPermission($userOrGroup);
+            $permId = $perm['permissions_id'];
+            
+            $update = [];
+            if (is_numeric($userOrGroup)) {
+                // Se faccio setPermissions(idUtente, ... ) automaticamente tolgo
+                // l'utente dal gruppo
+                $update['permissions_group'] = null;
+            }
+            
+            if ($isAdmin !== $perm['permissions_admin']) {
+                // Se è cambiato lo stato di amministratore per il vecchio
+                // permesso, devo notificare la modifica
+                $update['permissions_admin'] = $isAdmin;
+            }
+            
+            if (count($update) > 0) {
+                $this->db->update('permissions', $update, ['permissions_id' => $permId]);
+            }
+            
+        } catch (Exception $ex) {
+            $this->db->insert('permissions', [
+                'permissions_user_id' => is_numeric($userOrGroup)? $userOrGroup: null,
+                'permissions_group' => is_numeric($userOrGroup)? null: $userOrGroup,
+                'permissions_admin' => $isAdmin,
+            ]);
+            $permId = $this->db->insert_id();
+        }
+        
+        // $entitiesPermissions e $modulesPermissions devono essere array nella
+        // forma $entityId => $permissionValue e $moduleName => $permissionValue
+        $this->insertEntitiesPermissions($permId, $entitiesPermissions);
+        $this->insertModulesPermissions($permId, $modulesPermissions);
+        $this->fixPermissions();
+    }
+    
+    public function getPermission($userOrGroup) {
+        if (is_numeric($userOrGroup)) {
+            // Is User
+            $perm = $this->db->get_where('permissions', array('permissions_user_id' => $userOrGroup))->row_array();
+        } else {
+            // Is Group
+            $perm = $this->db->where('permissions_user_id IS NULL')
+                    ->get_where('permissions', array('permissions_group' => $userOrGroup))->row_array();
+        }
+        
+        if (empty($perm)) {
+            throw new Exception(sprintf('Nessun utente o gruppo trovato per %s', $userOrGroup));
+        }
+        
+        return $perm;
+    }
+    
+    public function removePermissionById($id) {
+        $this->db->delete('permissions', ['permissions_id' => $id]);
+        $this->fixPermissions();
+    }
+    
+    
+    public function fixPermissions() {
+        // Cancella i permessi che non hanno più senso di esistere
+        $this->db->where('permissions_user_id IS NOT NULL AND permissions_user_id NOT IN (SELECT '.LOGIN_ENTITY.'_id FROM '.LOGIN_ENTITY.')')->delete('permissions');
+        $this->db->where('permissions_entities_permissions_id NOT IN (SELECT permissions_id FROM permissions)')->delete('permissions_entities');
+        $this->db->where('permissions_modules_permissions_id NOT IN (SELECT permissions_id FROM permissions)')->delete('permissions_modules');
+        
+        // Togli l'eventuale gruppo agli utenti se non esiste
+        $this->db->query("
+                UPDATE permissions AS p1
+                SET permissions_group = NULL
+                WHERE (
+                    p1.permissions_user_id IS NOT NULL AND
+                    p1.permissions_group IS NOT NULL AND
+                    NOT EXISTS (
+                        SELECT *
+                        FROM permissions AS p2
+                        WHERE (
+                            p2.permissions_user_id IS NULL AND
+                            p1.permissions_group = p2.permissions_group
+                        )
+                    )
+                )
+            ");
+    }
+    
+    
     public function addUserGroup($userId, $groupName) {
         
         if (!is_numeric($userId) OR !is_string($groupName) OR $userId < 1 OR !$groupName) {
@@ -1508,43 +1605,116 @@ class Datab extends CI_Model {
         }
         
         // Recupera permessi del gruppo
-        $permissions = $this->db->get_where('permissions', array('permissions_group' => $groupName))->row_array();
-        if (empty($permissions['permissions_id'])) {
-            throw new Exception("Il gruppo '{$groupName}' non esiste");
-        }
-        
+        $permissions = $this->getPermission($groupName);
         $permissionsEntities = $this->db->get_where('permissions_entities', array('permissions_entities_permissions_id' => $permissions['permissions_id']))->result_array();
         $permissionsModules = $this->db->get_where('permissions_modules', array('permissions_modules_permissions_id' => $permissions['permissions_id']))->result_array();
         
         $this->db->trans_start();
         
-        // Cancella i permessi vecchi
+        // Cancella i permessi vecchi dell'utente
         $this->db->delete('permissions', array('permissions_user_id' => $userId));
-        $this->db->where('permissions_user_id NOT IN (SELECT '.LOGIN_ENTITY.'_id FROM '.LOGIN_ENTITY.')')->delete('permissions');
-        $this->db->where('permissions_entities_permissions_id NOT IN (SELECT permissions_id FROM permissions)')->delete('permissions_entities');
-        $this->db->where('permissions_modules_permissions_id NOT IN (SELECT permissions_id FROM permissions)')->delete('permissions_modules');
+        $this->fixPermissions();
         
+        // Rimuovi il campo id dai permessi del gruppo ottenuto, in modo da
+        // poterlo clonare e aggiungi l'id dell'utente
         unset($permissions['permissions_id']);
         $permissions['permissions_user_id'] = $userId;
         $this->db->insert('permissions', $permissions);
         $permissionId = $this->db->insert_id();
         
-        if ($permissionsEntities) {
-            $this->db->insert_batch('permissions_entities', array_map(function($item) use ($permissionId) {
-                $item['permissions_entities_permissions_id'] = $permissionId;
-                return $item;
-            }, $permissionsEntities));
-        }
+        // Rimappa i permessi entità/moduli in idEntità => permesso e
+        // nomeModulo => permesso
+        $this->insertEntitiesPermissions($permissionId, array_combine(array_key_map($permissionsEntities, 'permissions_entities_entity_id'), array_key_map($permissionsEntities, 'permissions_entities_value')));
+        $this->insertModulesPermissions($permissionId, array_combine(array_key_map($permissionsModules, 'permissions_modules_module_name'), array_key_map($permissionsModules, 'permissions_modules_value')));
         
-        if ($permissionsModules) {
-            $this->db->insert_batch('permissions_modules', array_map(function($item) use ($permissionId) {
-                $item['permissions_modules_permissions_id'] = $permissionId;
-                return $item;
-            }, $permissionsModules));
-        }
+        // Assegnando un utente ad un gruppo devo anche assegnargli i layout che
+        // può o non può vedere
+        $this->assignUnallowedLayoutAsGroup($userId, $groupName);
         
         $this->db->trans_complete();
         return $permissionId;
+    }
+    
+    
+    public function insertEntitiesPermissions($permId, array $entitiesPermissions) {
+        $this->db->delete('permissions_entities', ['permissions_entities_permissions_id' => $permId]);
+        $entitiesPermissionsData = [];
+        foreach ($entitiesPermissions as $entityId => $permissionValue) {
+            $entitiesPermissionsData[] = ['permissions_entities_permissions_id' => $permId, 'permissions_entities_entity_id' => $entityId,   'permissions_entities_value' => $permissionValue];
+        }
+        
+        if ($entitiesPermissionsData) {
+            $this->db->insert_batch('permissions_entities', $entitiesPermissionsData);
+        }
+        
+    }
+    
+    public function insertModulesPermissions($permId, array $modulesPermissions) {
+        $this->db->delete('permissions_modules', ['permissions_modules_permissions_id' => $permId]);
+        $modulesPermissionsData = [];
+        foreach ($modulesPermissions as $moduleName => $permissionValue) {
+            $modulesPermissionsData[] = ['permissions_modules_permissions_id'  => $permId, 'permissions_modules_module_name' => $moduleName, 'permissions_modules_value'  => $permissionValue];
+        }
+        
+        if ($modulesPermissionsData) {
+            $this->db->insert_batch('permissions_modules', $modulesPermissionsData);
+        }
+        
+    }
+    
+    
+    public function assignUnallowedLayoutAsGroup($userId, $groupName) {
+        
+        if (is_numeric($groupName)) {
+            throw new Exception("Il nome gruppo non può essere numerico");
+        }
+        
+        // Elimino impostazioni accessi layout correnti per l'utente passato
+        $this->db->delete('unallowed_layouts', ['unallowed_layouts_user' => $userId]);
+        
+        // Recupero viste permessi per l'utente corrente
+        // Se non ne trovo ho finito, in quanto ho già eliminato le vecchie
+        // impostazioni e non ci sono altri utenti da cui copiare i layout non
+        // accessibili
+        $permissionWithGroup = $this->db->where('permissions_user_id IS NOT NULL')->get_where('permissions', ['permissions_group' => $groupName, 'permissions_user_id <>' => $userId]);
+        if (!$permissionWithGroup->num_rows()) {
+            return;
+        }
+        
+        // Anche qua recupero l'utente e i suoi accessi al layout, se non trovo
+        // nulla significa che l'utente, e quindi il gruppo, può accedere a
+        // qualunque layout
+        $anotherUser = $permissionWithGroup->row()->permissions_user_id;
+        $unallowedLayouts = $this->db->get_where('unallowed_layouts', ['unallowed_layouts_user' => $anotherUser]);
+        if (!$unallowedLayouts->num_rows()) {
+            return;
+        }
+        
+        // Rimappo ogni record in modo da cambiare lo user id e inserisco in
+        // batch il tutto
+        $newData = array_map(function($row) use($userId) {
+            $row['unallowed_layouts_user'] = $userId;
+            return $row;
+        }, $unallowedLayouts->result_array());
+        
+        $this->db->insert_batch('unallowed_layouts', $newData);
+    }
+    
+    
+    
+    public function getUserGroups() {
+        
+        $idField = LOGIN_ENTITY . '_id';
+        
+        $users = $this->db
+                ->join('permissions', "{$idField} = permissions_user_id", 'left')
+                ->where('permissions_user_id IS NOT NULL')->get(LOGIN_ENTITY)->result_array();
+        $out = [];
+        foreach ($users as $user) {
+            $out[$user[LOGIN_ENTITY.'_id']] = $user['permissions_group']?:null;
+        }
+        
+        return $out;
     }
     
     

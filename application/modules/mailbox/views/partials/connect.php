@@ -28,6 +28,7 @@
                         <td>
                             <a href="<?php echo base_url("mailbox/folders/{$config['mailbox_configs_id']}"); ?>" class="js_open_modal btn btn-xs purple"><i class="icon-folder-open"></i></a>
                             <a href="<?php echo base_url("mailbox/form/{$config['mailbox_configs_id']}"); ?>" class="js_open_modal btn btn-xs blue"><i class="icon-edit"></i></a>
+                            <a href="<?php echo base_url("mailbox/remove_email_account/{$config['mailbox_configs_id']}"); ?>" class="btn btn-xs red js_confirm_button" data-confirm-text="Eliminare tutte le e-mail associate a questo account?" ><i class="icon-remove"></i></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -35,3 +36,14 @@
         </table>
     </div>
 </div>
+
+
+<script>
+    $(function() {
+        $('.js_confirm_button').on('click', function(e) {
+            if (!confirm($(this).data('confirm-text'))) {
+                e.preventDefault();
+            }
+        });
+    })
+</script>

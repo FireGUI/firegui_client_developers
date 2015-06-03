@@ -410,7 +410,7 @@ class ImapMailbox {
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime($head->date) : time());
 		$mail->subject = isset($head->subject) ? $this->decodeMimeStr($head->subject, $this->serverEncoding) : null;
 		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
-		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
+		$mail->fromAddress = isset($head->from[0])? strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host): null;
 
 		if(isset($head->to)) {
 			$toStrings = array();
@@ -427,13 +427,17 @@ class ImapMailbox {
 
 		if(isset($head->cc)) {
 			foreach($head->cc as $cc) {
+                            if (isset($cc->mailbox) && isset($cc->host)) {
 				$mail->cc[strtolower($cc->mailbox . '@' . $cc->host)] = isset($cc->personal) ? $this->decodeMimeStr($cc->personal, $this->serverEncoding) : null;
+                            }
 			}
 		}
 
 		if(isset($head->reply_to)) {
 			foreach($head->reply_to as $replyTo) {
+                            if (isset($replyTo->mailbox) && isset($replyTo->host)) {
 				$mail->replyTo[strtolower($replyTo->mailbox . '@' . $replyTo->host)] = isset($replyTo->personal) ? $this->decodeMimeStr($replyTo->personal, $this->serverEncoding) : null;
+                            }
 			}
 		}
 
@@ -452,7 +456,7 @@ class ImapMailbox {
 	}
 
 	protected function initMailPart(IncomingMail $mail, $partStructure, $partNum) {
-		$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, FT_UID) : imap_body($this->getImapStream(), $mail->id, FT_UID);
+		$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, FT_UID|FT_PEEK) : imap_body($this->getImapStream(), $mail->id, FT_UID|FT_PEEK);
 
 		if($partStructure->encoding == 1) {
 			$data = imap_utf8($data);
@@ -594,7 +598,7 @@ class ImapMailbox {
 		$convertedString = false;
 		if ($string && $fromEncoding !== $toEncoding) {
 			if (extension_loaded('mbstring')) {
-				$convertedString = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+				$convertedString = @mb_convert_encoding($string, $toEncoding, $fromEncoding);
 			}
 			else {
 				$convertedString = @iconv($fromEncoding, $toEncoding . '//IGNORE', $string);
@@ -644,14 +648,16 @@ class IncomingMail {
 	 * @return array attachmentId => link placeholder
 	 */
 	public function getInternalLinksPlaceholders() {
-		return preg_match_all('/=["\'](ci?d:(\w+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : array();
+                return preg_match_all('/=["\'](ci?d:([\w\.%*@-]+))["\']/i', $this->textHtml, $matches) ? array_combine($matches[2], $matches[1]) : array();
 	}
 
 	public function replaceInternalLinks($baseUri) {
 		$baseUri = rtrim($baseUri, '\\/') . '/';
 		$fetchedHtml = $this->textHtml;
 		foreach($this->getInternalLinksPlaceholders() as $attachmentId => $placeholder) {
-			$fetchedHtml = str_replace($placeholder, $baseUri . basename($this->attachments[$attachmentId]->filePath), $fetchedHtml);
+                    if(isset($this->attachments[$attachmentId])) {
+                            $fetchedHtml = str_replace($placeholder, $baseUri . basename($this->attachments[$attachmentId]->filePath), $fetchedHtml);
+                    }
 		}
 		return $fetchedHtml;
 	}

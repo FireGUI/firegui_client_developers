@@ -9,7 +9,7 @@
         <div class="col-md-7">
             <!--<img src="assets/img/avatar1_small.jpg" />--> 
             <span class="bold"><?php echo $data['mailbox_emails_addresses']['From']['name']; ?></span>
-            <span>&#60;<?php echo $data['mailbox_emails_addresses']['From']['mail']; ?>&#62;</span> to <span class="bold">me</span> on <?php echo dateTimeFormat($data['mailbox_emails_date']); ?>
+            <span>&#60;<?php echo $data['mailbox_emails_addresses']['From']['mail']; ?>&#62;</span> to <span class="bold"><?php echo $data['configs']['mailbox_configs_email']; ?></span> on <?php echo dateTimeFormat($data['mailbox_emails_date']); ?>
         </div>
         <div class="col-md-5 inbox-info-btn">
             <div class="btn-group">
@@ -39,7 +39,7 @@
 <?php if ($data['mailbox_emails_attachments']): ?>
     <div class="inbox-attached">
         <div class="margin-bottom-15">
-            <span><?php echo $data['mailbox_emails_attachments']; ?> attachments</span> 
+            <span><?php echo count($data['mailbox_emails_attachments']); ?> attachments</span> 
             <?php /*
             <a href="#">Download all attachments</a>   
             <a href="#">View all images</a>   

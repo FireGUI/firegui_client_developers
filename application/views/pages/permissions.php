@@ -25,7 +25,7 @@
                                     </optgroup>
                                     <optgroup label="Utenti">
                                         <?php foreach ($dati['users'] as $id=>$name): ?>
-                                            <option value="<?php echo $id; ?>"><?php echo $name; ?></option>
+                                            <option value="<?php echo $id; ?>"><?php echo $name . (empty($dati['userGroupsStatus'][$id])? '': ' - ' . $dati['userGroupsStatus'][$id]) ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                 </select>
@@ -43,6 +43,7 @@
                     <div class="form-actions fluid">
                         <div class="col-md-12">
                             <div class='pull-right'>
+                                <button id="js-remove-group" type="button" class="btn red" style="display:none">Elimina gruppo</button>
                                 <button id="js_form_toggler" type="submit" class="btn blue" disabled>Salva permessi</button>
                             </div>
                         </div>
@@ -76,7 +77,7 @@
                                         <th>
                                             <label>
                                                 <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
-                                                <strong><?php echo $username; ?></strong>
+                                                <strong><?php echo (is_numeric($userID)? '': '<small class="text-muted" style="font-weight:normal">Gruppo</small> ') . $username; ?></strong>
                                             </label>
                                         </th>
                                     <?php endforeach; ?>
@@ -135,12 +136,25 @@
         formButton.attr('disabled', true);
         
         // Nascondi vista precedente
+        $('#js-remove-group').hide().off('click');
         jqTableContainer.fadeTo('fast', 0, function() {
             $.ajax({
                 url: base_url+'get_ajax/permission_table/',
                 type: 'post',
                 data: {identifier:userId},
                 success: function(view) {
+                    
+                    if (isNaN(parseInt(userId))) {
+                        // Ho cliccato un gruppo e posso eliminarlo
+                        $('#js-remove-group').show().on('click', function() {
+                            if (confirm('Vuoi davvero eliminare il gruppo ' + userId + '? Tutti gli utenti ad esso associati dovranno essere riassegnati manualmente ad un altro gruppo')) {
+                                $.post(base_url + 'db_ajax/delete_permission_group', {group:userId}, function() {
+                                    window.location.reload();
+                                });
+                            }
+                        });
+                    }
+                    
                     jqTableContainer.html(view);
                     jqTableContainer.fadeTo('fast', 1);
                     formButton.attr('disabled', view? false: true);
