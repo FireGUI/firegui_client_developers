@@ -79,6 +79,7 @@ class Db_ajax extends MX_Controller {
             $entity = $this->datab->get_entity($import_data['entity_id']);
             
             if ($import_data['action_on_data_present'] == 1) {//Metodo di importazione: DELETE INSERT
+                die('test');
                 $this->db->empty_table($entity['entity_name']);
             }
             
@@ -96,7 +97,7 @@ class Db_ajax extends MX_Controller {
 
             //debug($entity,true);
             $errors = $warnings = array();
-            foreach ($body as $row) {
+            foreach ($body as $riga_id => $row) {
                 $insert = array();
                 foreach ($csv_fields as $k => $field) {
                     if (array_key_exists('ref_fields', $data) && array_key_exists($k, $data['ref_fields'])) {
@@ -105,12 +106,13 @@ class Db_ajax extends MX_Controller {
                             //Cerco il record con quella chiave
                             $ref_record = $this->db->get_where($field_data_map[$field]['fields_ref'], array($data['ref_fields'][$k] => $row[$k]));
                             //debug($ref_record,true);
-                            if ($ref_record->num_rows() >= 1) {
+                            if ($ref_record->num_rows() >= 1 && $row[$k]) { //Fix
                                 //Giusto per avvisare l'utente, segnalo come warning il fatto che ho trovato più corrispondenze
                                 if ($ref_record->num_rows() > 1) {
                                     $warn = "{$ref_record->num_rows()} records found with {$data['ref_fields'][$k]}='{$row[$k]}', first one used.";
                                     $warnings[$warn] = $warn;
                                 }
+                                
                                 $insert[$field] = $ref_record->row_array()[$field_data_map[$field]['fields_ref'].'_id'];
                             } else {
                                 //Se il campo può essere null e non ho trovato corrispondenza, lo setto a null
@@ -122,13 +124,14 @@ class Db_ajax extends MX_Controller {
                                     $err = "I cannot find record in {$field_data_map[$field]['fields_ref']} with {$data['ref_fields'][$k]}='{$row[$k]}'.";
                                     $errors[$err] = $err;
                                 }
-                            }                            
+                            }                          
                             continue;
                         } else {//Se è stato lasciato vuoto va bene andare avanti e prendere l'id
                             
                         }
                         
                     }
+                    
                     switch ($field_data_map[$field]['fields_type']) {
                         case 'FLOAT':
                             $insert[$field] = str_replace(',', '.', $row[$k]);
@@ -137,8 +140,12 @@ class Db_ajax extends MX_Controller {
                             $insert[$field] = (int)($row[$k]);
                             break;
                         case 'TIMESTAMP WITHOUT TIME ZONE':
-                            $time = strtotime($row[$k]);
-                            $insert[$field] = date('Y-m-d h:m:s', $time);
+                            if ($row[$k]) {
+                                $time = strtotime($row[$k]);
+                                $insert[$field] = date('Y-m-d h:m:s', $time);
+                            } else {
+                                $insert[$field] = null;
+                            }
                             break;
                         case 'BOOL':
                             if (is_numeric($row[$k])) {
@@ -151,11 +158,30 @@ class Db_ajax extends MX_Controller {
                             $insert[$field] = $row[$k];
                             break;
                     }
-                    
+                    //Se il campo può essere null e non ho trovato corrispondenza, lo setto a null
+                    //debug($field_data_map[$field]['fields_required']);
+                    //debug($insert[$field] == '');
+                    if ($field_data_map[$field]['fields_required'] == 't' && $insert[$field] == '') {
+                        if ($field_data_map[$field]['fields_default']) {
+                            unset($insert[$field]);
+                        } else {
+                            $warn = "I cannot insert row with $field empty (row id: $riga_id)";
+                            $warnings[$warn] = $warn;
+                            $insert = array();
+                            continue 2;
+                        }
+                        
+                    }
                 }
+                
+                
+                
                 //Se ho qualcosa da inserire e non ho riscontrato errori
                 if(!empty($insert) && empty($errors)) {
-                    if ($import_data['action_on_data_present'] == 2) { //Metodo di importazione: UPDATE
+//                    if ($insert['progetti_referente_account'] == 7) {
+//                        mail('matteopuppis@gmail.com', 'DEBUG IMPORT', print_r($row,true).print_r($insert,true).print_r($_POST,true));
+//                    }
+                    if ($import_data['action_on_data_present'] == 2 || $import_data['action_on_data_present'] == 4) { //Metodo di importazione: UPDATE
                         $campo_chiave = $data['csv_fields'][$data['unique_key']];
                         $this->db->where($campo_chiave, $insert[$campo_chiave])->update($entity['entity_name'], $insert);
                         $updated = $this->db->affected_rows();
@@ -163,11 +189,15 @@ class Db_ajax extends MX_Controller {
                         if ($updated == 0) {
                             $warn = "I cannot find record in {$entity['entity_name']} with $campo_chiave='{$insert[$campo_chiave]}'.";
                             $warnings[$warn] = $warn;
+                            if ($import_data['action_on_data_present'] == 4) {
+                                $this->apilib->create($entity['entity_name'], $insert);
+                            }
                         } elseif ($updated > 1) {
                             $warn = "I've found $updated records in {$entity['entity_name']} with $campo_chiave='{$insert[$campo_chiave]}'.";
                             $warnings[$warn] = $warn;
                         }
                     } else { //Metodo di importazione: INSERT
+                        //debug($insert);
                         if($this->apilib->create($entity['entity_name'], $insert)) {
                             $count++;
                         } 
