@@ -43,6 +43,17 @@ class Importer extends MX_Controller {
 
         $dati['entity'] = $this->db->get_where('entity', array('entity_id' => $dati['import_data']['entity_id']))->result_array();
         $dati['fields'] = $this->db->get_where('fields', array('fields_entity_id' => $dati['import_data']['entity_id']))->result_array();
+        
+        //Per ogni field_ref, estraggo la mappatura della relativa entità
+        foreach ($dati['fields'] as $key => $field) {
+            //Se questo campo ha una relazione esterna con l'entità field_ref
+            //debug($field,true);
+            if ($field['fields_ref']) {
+                $dati['fields'][$key][$field['fields_ref']] = $this->datab->get_entity_by_name($field['fields_ref']);
+            }
+        }
+        
+        //debug($dati,true);
 
         //Read csv first line
         if (($handle = fopen($dati['import_data']['csv_file']['full_path'], "r")) !== FALSE) {
@@ -63,6 +74,7 @@ class Importer extends MX_Controller {
     public function import_return() {
         $dati['current_page'] = 'module_' . MODULE_NAME;
         $dati['count'] = $this->session->flashdata(SESS_IMPORT_COUNT);
+        $dati['warnings'] = $this->session->flashdata(SESS_IMPORT_WARNINGS);
         
         $this->stampa('import_3', $dati);
     }

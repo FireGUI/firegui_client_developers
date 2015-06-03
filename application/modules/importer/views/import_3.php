@@ -15,8 +15,13 @@
                 <?php else: ?>
                     <?php echo (int) $dati['count']; ?> records imported.
                 <?php endif; ?>
-                    
-                    
+                <?php if ($dati['warnings']) : ?>    
+                    <br />
+                    <br />
+                    <?php foreach ($dati['warnings'] as $warning) : ?>
+                    <span style="color: #E1CD5C;"><?php echo $warning; ?></span><br />
+                    <?php endforeach; ?>
+                <?php endif; ?>
                 <br/>
                 <br/>
                 <a href="<?php echo base_url('importer'); ?>">Back</a>

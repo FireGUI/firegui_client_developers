@@ -3,7 +3,7 @@
 
 <form class="formAjax" id="import_form" action="<?php echo base_url('importer/db_ajax/import_1'); ?>">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="portlet box blue">
                 <div class="portlet-title">
                     <div class="caption">
@@ -61,8 +61,6 @@
                             <div class="clearfix"></div>
                         </div>
                         
-                        
-                        
                         <div class="form-group">
                             <label class="control-label col-md-3">Multiple values separator</label>
                             <div class="col-md-5">
@@ -71,30 +69,28 @@
                             <div class="clearfix"></div>
                         </div>
                         
-                        
-                        
                         <div class="form-group">
-                            <label class="control-label col-md-3">Delete previous data?</label>
-                            <div class="col-md-5">
+                            <label class="control-label col-md-3">Action on data present?</label>
+                            <div class="col-md-9">
                                 <label class="radio-inline">
-                                    <input type="radio" name="delete_data" value="1" /> Yes
+                                    <input type="radio" name="action_on_data_present" value="1" /> Delete data before import
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="delete_data" value="0" checked /> No
+                                    <input type="radio" name="action_on_data_present" value="2" /> Update data (will ask for unique key)
                                 </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="action_on_data_present" value="3" checked /> Insert
+                                </label>
+                                
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        
                         
                         <div class="form-group">
                             <div id="msg_import_form" class="alert alert-danger hide"></div>
                         </div>
                         
-                        
                     </div>
-                        
-                        
 
                     <div class="form-actions fluid">
                         <div class="col-md-offset-8 col-md-4">

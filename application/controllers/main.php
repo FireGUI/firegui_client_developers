@@ -162,63 +162,76 @@ class Main extends CI_Controller {
         
         if( ! $this->datab->is_admin()) {
             $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
-        } else {
-            $dati['current_page'] = 'permissions';
-            $dati['groups'] = array_key_map($this->db->where('permissions_group IS NOT NULL AND permissions_user_id IS NULL')->get('permissions')->result_array(), 'permissions_group');
-            
-            $where = array();
-            if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
-                // Se c'è un login field mi aspetto che sia un booleano e
-                // dev'essere true
-                $where[LOGIN_ACTIVE_FIELD] = 't';
-            }
-            $dati['users'] = $this->datab->get_entity_preview_by_name(LOGIN_ENTITY, $where);
-            asort($dati['users']);
-            
-            
-            if (LOGIN_NAME_FIELD) {
-                $this->db->order_by(LOGIN_NAME_FIELD);
-            }
-            
-            if (LOGIN_SURNAME_FIELD) {
-                $this->db->order_by(LOGIN_SURNAME_FIELD);
-            }
-            
-            
-            if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
-                $users = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_ACTIVE_FIELD => 't'))->result_array();
-            } else {
-                $users = $this->db->get(LOGIN_ENTITY)->result_array();
-            }
-            
-            $dati['users_layout'] = array_combine(array_key_map($users, LOGIN_ENTITY . '_id'), array_map(function($user) {
-                $n = isset($user[LOGIN_NAME_FIELD])? $user[LOGIN_NAME_FIELD]: '';
-                $s = isset($user[LOGIN_SURNAME_FIELD])? $user[LOGIN_SURNAME_FIELD]: '';
-                return ($n && $s)? ucwords($n[0] . '. ' . $s): $n . ' ' . $s;
-            }, $users));
-            
-            $layouts = $this->db->/*where('layouts_id IN (SELECT menu_layout FROM menu)')->*/order_by('layouts_title')->get('layouts')->result_array();
-            $dati['layouts'] = array_combine(array_map(function($layout) { return $layout['layouts_id']; }, $layouts), array_map(function($layout) { return ucfirst(str_replace('_', ' ', $layout['layouts_title'])); }, $layouts));
-            
-            $unalloweds = $this->db->get('unallowed_layouts')->result_array();
-            $dati['unallowed'] = array();
-            
-            
-            foreach($unalloweds as $unallowedLayout) {
-                
-                $layout = $unallowedLayout['unallowed_layouts_layout'];
-                $user = $unallowedLayout['unallowed_layouts_user'];
-                
-                if(!isset($dati['unallowed'][$user])) {
-                    $dati['unallowed'][$user] = array();
-                }
-                
-                $dati['unallowed'][$user][] = $layout;
-            }
-            
-            $pagina = $this->load->view("pages/permissions", array('dati' => $dati), true);
+            $this->stampa($pagina);
+            return;
         }
         
+        $dati['current_page'] = 'permissions';
+
+        // ===========
+        // Sezione permessi
+        $dati['groups'] = array_key_map($this->db->where('permissions_group IS NOT NULL AND permissions_user_id IS NULL')->get('permissions')->result_array(), 'permissions_group');
+
+        $where = array();
+        if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
+            // Se c'è un login field mi aspetto che sia un booleano e
+            // dev'essere true
+            $where[LOGIN_ACTIVE_FIELD] = 't';
+        }
+        $dati['users'] = $this->datab->get_entity_preview_by_name(LOGIN_ENTITY, $where);
+        asort($dati['users']);
+
+
+        if (LOGIN_NAME_FIELD) {
+            $this->db->order_by(LOGIN_NAME_FIELD);
+        }
+
+        if (LOGIN_SURNAME_FIELD) {
+            $this->db->order_by(LOGIN_SURNAME_FIELD);
+        }
+
+        // ===========
+        // Sezione layouts
+        if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
+            $users = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_ACTIVE_FIELD => 't'))->result_array();
+        } else {
+            $users = $this->db->get(LOGIN_ENTITY)->result_array();
+        }
+
+        $usersLayouts = array_combine(array_key_map($users, LOGIN_ENTITY . '_id'), array_map(function($user) {
+            $n = isset($user[LOGIN_NAME_FIELD])? $user[LOGIN_NAME_FIELD]: '';
+            $s = isset($user[LOGIN_SURNAME_FIELD])? $user[LOGIN_SURNAME_FIELD]: '';
+            return ($n && $s)? ucwords($n[0] . '. ' . $s): $n . ' ' . $s;
+        }, $users));
+
+        $layouts = $this->db->order_by('layouts_title')->get('layouts')->result_array();
+        $dati['layouts'] = array_combine(array_map(function($layout) { return $layout['layouts_id']; }, $layouts), array_map(function($layout) { return ucfirst(str_replace('_', ' ', $layout['layouts_title'])); }, $layouts));
+
+        $unalloweds = $this->db->get('unallowed_layouts')->result_array();
+        $dati['unallowed'] = array();
+
+        $dati['userGroupsStatus'] = $userGroupsStatus = $this->datab->getUserGroups();  // Un array dove per ogni utente ho il gruppo corrispondente
+        $dati['users_layout'] = [];
+        foreach ($usersLayouts as $userId => $userPreview) {
+            if (isset($userGroupsStatus[$userId])) {
+                $dati['users_layout'][$userGroupsStatus[$userId]] = ucwords($userGroupsStatus[$userId]);
+            } else {
+                $dati['users_layout'][$userId] = $userPreview;
+            }
+        }
+
+        foreach($unalloweds as $unallowedLayout) {
+            $layout = $unallowedLayout['unallowed_layouts_layout'];
+            $user = $unallowedLayout['unallowed_layouts_user'];
+
+            if (isset($userGroupsStatus[$user]) && $userGroupsStatus[$user]) {
+                $dati['unallowed'][$userGroupsStatus[$user]][] = $layout;
+            } else {
+                $dati['unallowed'][$user][] = $layout;
+            }
+        }
+
+        $pagina = $this->load->view("pages/permissions", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
     

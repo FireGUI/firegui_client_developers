@@ -70,7 +70,7 @@
         },
         
         playNotificationSound: function(notificationSound) {
-            
+            return;
             if (!notificationSound) {
                 alert('Ci sono nuove notifiche');
                 return;

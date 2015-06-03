@@ -9,6 +9,12 @@ class Get_ajax extends CI_Controller {
 
     function __construct() {
         parent :: __construct();
+        
+        // Fixes
+        if (gethostname() === 'sfera') {
+            ini_set("display_errors", "1");
+            error_reporting(E_ALL);
+        }
     }
 
     public function index() {
@@ -42,7 +48,7 @@ class Get_ajax extends CI_Controller {
     
     public function select_ajax_search() {
         
-        $search = str_replace("'", "''", $this->input->post('q'));
+        $search = str_replace("'", "''", trim($this->input->post('q')));
         $limit = $this->input->post('limit');
         $table = $this->input->post('table');
         $id = ($this->input->post('id')?: null);
@@ -159,9 +165,11 @@ class Get_ajax extends CI_Controller {
             }
         }
         
-        // Riordina per importanza i risultati - solo se ho una lista di
-        // risultati e non uno singolo
-        if(is_array($result_json) && !array_key_exists('id', $result_json)) {
+        // Riordina per rilevanza i risultati [se ho ricerca > 2] oppure per
+        // nome [se ricerca < 3] - solo se ho una lista di risultati e non uno
+        // singolo
+        $isOrderableResult = is_array($result_json) && !array_key_exists('id', $result_json);
+        if ($isOrderableResult && $search && strlen($search)>2) {
             usort($result_json, function($val1, $val2) use($search) {
 
                 // Ordine importanza:
@@ -190,6 +198,12 @@ class Get_ajax extends CI_Controller {
                         return 0;                   // $val1 === $val2
                     }
                 }
+            });
+        } elseif ($isOrderableResult) {
+            usort($result_json, function($val1, $val2) {
+                $name1 = $val1['name'];
+                $name2 = $val2['name'];
+                return ($name1<$name2)? -1: 1;
             });
         }
         

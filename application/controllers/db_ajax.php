@@ -9,6 +9,12 @@ class Db_ajax extends CI_Controller {
 
     function __construct() {
         parent :: __construct();
+        
+        // Fixes
+        if (gethostname() === 'sfera') {
+            ini_set("display_errors", "1");
+            error_reporting(E_ALL);
+        }
     }
 
     public function index() {
@@ -392,30 +398,33 @@ class Db_ajax extends CI_Controller {
             // Metto i dati processati nell'array da inserire su db
             $dati = $processed_data['post'];
         }
-
+        
+        /*
+         * Filtro i campi su cui sto per fare la query.
+         * Unsetto quelli in più - prima recupero un array con i nomi dei campi
+         * reali, poi dalle chiavi che sto inseredo tolgo quelle valide - ciò
+         * che resta sono quelle in più - le unsetto
+         */
+        $entityFields = array_key_map($this->db->get_where('fields', ['fields_entity_id' => $form['entity_id']])->result_array(), 'fields_name');
+        foreach (array_diff(array_keys($dati), $entityFields) as $key) {
+            unset($dati[$key]);
+        }
 
         // Inserisco i dati
-        $old_data = array();
+        $old_data = [];
         if ($form['forms_one_record'] == 'f') {
-            if ($edit == TRUE) {
-
-                // Preserve old data
-                $old_data = $this->db->get_where($form['entity_name'], array($form['entity_name'] . "_id" => $value_id))->row_array();
-
-                // Insert new data
+            if ($edit) {
+                $where = [$form['entity_name'] . "_id" => $value_id];
+                $old_data = $this->db->get_where($form['entity_name'], $where)->row_array();
+                $x = $dati? $this->db->update($form['entity_name'], $dati, $where): true;
                 $insert_id = $value_id;
-                if (!empty($dati)) {
-                    $x = $this->db->update($form['entity_name'], $dati, array($form['entity_name'] . "_id" => $value_id));
-                } else {
-                    $x = TRUE;
-                }
             } else {
                 $this->db->prepare_data($dati);
                 $x = $this->db->insert($form['entity_name'], $dati);
                 $insert_id = $this->db->insert_id();
             }
         } else {
-            if ($edit == TRUE) {
+            if ($edit) {
                 $old_data = $this->db->get($form['entity_name'])->row_array();
             }
             $this->db->truncate($form['entity_name']);
@@ -619,7 +628,8 @@ class Db_ajax extends CI_Controller {
         }
     }
 
-    public function save_permissions() {
+    
+    public function old_save_permissions() {
 
         $this->db->trans_start();
         $user = $this->input->post('permissions_user_id');
@@ -796,10 +806,114 @@ class Db_ajax extends CI_Controller {
 
         echo json_encode(array('status' => 5, 'txt' => 'Permessi salvati correttamente'));
     }
+    
+    /**
+     * Salva i permessi
+     * accetta da post:
+     * - Crea gruppo:
+     *      permissions_user_id = -1
+     *      permissions_group   = 'nome gruppo'
+     *      
+     * - Salva gruppo:
+     *      permissions_user_id = 'nome gruppo'
+     *      permissions_group   = null
+     *      
+     * - Salva utente con gruppo
+     *      permissions_user_id = id_utente
+     *      permissions_group   = 'nome gruppo'
+     * 
+     * - Salva utente no gruppo
+     *      permissions_user_id = id_utente
+     *      permissions_group   = null
+     */
+    public function save_permissions() {
+        
+        $user = $this->input->post('permissions_user_id');
+        $isAdmin = ($this->input->post('permissions_admin')==='t');
+        $groupName = $this->input->post('permissions_group');
+        $permEntities = $this->input->post('entities');
+        $permModules  = $this->input->post('modules');
+        
+        $this->db->trans_start();
+        try {
+            if (!is_numeric($user)) {
+                
+                // Salvataggio di un gruppo già creato
+                $this->datab->setPermissions($user, $isAdmin, $permEntities, $permModules);
+                $userGroupStatus = $this->datab->getUserGroups();
+                foreach ($userGroupStatus as $userId => $groupName) {
+                    if ($groupName === $user) {
+                        $this->datab->addUserGroup($userId, $groupName);
+                    }
+                }
+                echo json_encode(['status' => 5, 'txt' => 'Gruppo salvato correttamente']);
+                
+            } elseif ($user < 0) {
+                
+                // Creazione nuovo gruppo
+                $this->datab->setPermissions($groupName, $isAdmin, $permEntities, $permModules);
+                echo json_encode(['status' => 5, 'txt' => 'Gruppo creato correttamente']);
+                
+            } elseif ($groupName) {
+                
+                // Assegno utente a gruppo
+                $this->datab->addUserGroup($user, $groupName);
+                echo json_encode(['status' => 5, 'txt' => 'Permessi utente salvati']);
+                
+            } else {
+                
+                // Salvo permessi utente senza gruppo
+                $this->datab->setPermissions($user, $isAdmin, $permEntities, $permModules);
+                echo json_encode(['status' => 5, 'txt' => 'Permessi utente salvati']);
+                
+            }
+            
+        } catch (Exception $ex) {
+            die(json_encode(['status' => 3, 'txt' => $ex->getMessage()]));
+        }
+        $this->db->trans_complete();
+    }  
+    
+    
 
     public function save_views_permissions() {
-
-        $viewsAccess = $this->input->post('view');
+        
+        /*
+         * Ottieni per ogni gruppo la lista di utenti corrispondente, quindi
+         * ad es:
+         *      group1 => 1,2,3,4,5
+         *      group2 => 10,12,15,20
+         *      ...
+         */
+        $userGroupsStatus = $this->datab->getUserGroups();
+        $groupUsers = [];
+        foreach ($userGroupsStatus as $user => $group) {
+            if ($group) {
+                $groupUsers[$group][] = $user;
+            }
+        }
+        
+        /*
+         * In input ho un array dove nelle chiavi ho l'id layout e ogni elemento
+         * è un array contenente diversi valori:
+         *  - se il valore è numerico, allora significa che quell'utente può
+         *    accedere a quel layout
+         *  - se il valore è una stringa non numerica, allora lo interpreto come
+         *    nome gruppo e quindi tutti gli utenti appartenenti a quel gruppo
+         *    potranno accedere al layout
+         */
+        $viewsAccessWithGroups = $this->input->post('view');
+        $viewsAccess = [];
+        foreach ($viewsAccessWithGroups as $layout => $users) {
+            $viewsAccess[$layout] = [];
+            foreach ($users as $user) {
+                if (is_numeric($user)) {
+                    $viewsAccess[$layout][] = $user;
+                } elseif (isset($groupUsers[$user]) && is_array($groupUsers[$user])) {
+                    $viewsAccess[$layout] = array_merge($viewsAccess[$layout], $groupUsers[$user]);
+                }
+            }
+        }
         
         $layouts = $this->db->get('layouts')->result_array();
         $users = $this->db->get(LOGIN_ENTITY)->result_array();
@@ -824,6 +938,19 @@ class Db_ajax extends CI_Controller {
         $this->db->trans_complete();
         echo json_encode(array('status' => 5, 'txt' => 'Impostazioni visibilità layout impostate'));
     }
+    
+    public function delete_permission_group() {
+        $groupName = $this->input->post('group');
+        if (is_numeric($groupName)) {
+            return;
+        }
+        
+        $groupPermission = $this->datab->getPermission($groupName);
+        
+        // Rimuovi record da tabella permessi
+        $this->datab->removePermissionById($groupPermission['permissions_id']);
+    }
+    
 
     /**
      * Metodo per edit delle datatable inline

@@ -69,7 +69,8 @@ class Widget extends MX_Controller {
             echo 'Il messaggio non esiste';
             return;
         }
-
+        
+        $data['configs'] = $this->db->get_where('mailbox_configs', ['mailbox_configs_id' => $data['mailbox_configs_folders_config']])->row_array();
         $this->load->view('partials/widget/view', compact('data'));
     }
 

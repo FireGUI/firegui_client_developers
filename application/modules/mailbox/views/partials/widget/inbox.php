@@ -4,7 +4,7 @@
             <th colspan="2">
                 <input type="checkbox" class="mail-checkbox mail-group-checkbox">
                 <?php if ($data['search']): ?>
-                    Ricerca: <span class="label blue"><?php echo $data['search']; ?></span>
+                Ricerca: <a href="javascript:;" class="js-remove-search"><span class="label label-danger"><?php echo $data['search']; ?> <i class="icon-remove-circle"></i></span></a>
                 <?php endif; ?>
                 <div class="btn-group">
                     <?php /*

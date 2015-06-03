@@ -14,7 +14,6 @@ class Imap_mailbox extends CI_Model {
     private $baseUpload;
 
 
-    private $connections = array();
     private $notices = array();
     
     
@@ -63,18 +62,43 @@ class Imap_mailbox extends CI_Model {
     }
     
     
+    public function removeAccount($configId) {
+        
+        if (!$configId) {
+            return;
+        }
+        
+        $this->db->trans_start();
+        $this->db->delete('mailbox_configs', ['mailbox_configs_id' => $configId]);
+        $this->db->where('mailbox_configs_folders_config NOT IN (SELECT mailbox_configs_id FROM mailbox_configs)')->delete('mailbox_configs_folders');
+        $this->wipeOrphanEmails();
+        $this->db->trans_complete();
+    }
     
+    public function wipeAccountEmails($configId) {
+        $this->db->trans_start();
+        $this->db->where("mailbox_emails_folder IN (SELECT mailbox_configs_folders_id FROM mailbox_configs_folders WHERE mailbox_configs_folders_config = '{$configId}')")->delete('mailbox_emails');
+        $this->wipeOrphanEmails();
+        $this->db->trans_complete();
+    }
+    
+    public function wipeOrphanEmails() {
+        $this->db->where('mailbox_emails_folder NOT IN (SELECT mailbox_configs_folders_id FROM mailbox_configs_folders)')->delete('mailbox_emails');
+        $this->db->where('mailbox_emails_addresses_email NOT IN (SELECT mailbox_emails_id FROM mailbox_emails)')->delete('mailbox_emails_addresses');
+        $this->db->where('mailbox_emails_attachments_email NOT IN (SELECT mailbox_emails_id FROM mailbox_emails)')->delete('mailbox_emails_attachments');
+    }
+
+
+
+
+
+
     /**
      * @param int $configsId
      * @param string $folder
      * @return ImapMailbox
      */
     public function connect($configsId, $folder = null) {
-        
-        $key = md5($configsId.$folder);
-        if (!empty($this->connections[$key])) {
-            return $this->connections[$key];
-        }
         
         $configs = $this->apilib->view('mailbox_configs', $configsId);
 
@@ -110,8 +134,11 @@ class Imap_mailbox extends CI_Model {
             mkdir($attachDir, 0777, true);
         }
 
-        $this->connections[$key] = new ImapMailbox($connStr, $configs['mailbox_configs_email'], $configs['mailbox_configs_password'], $attachDir, 'utf-8');
-        return $this->connections[$key];
+        $mailbox = new ImapMailbox($connStr, $configs['mailbox_configs_email'], $configs['mailbox_configs_password'], $attachDir, 'utf-8');
+        $mailbox->setConnectionArgs(0, 0, [
+            'DISABLE_AUTHENTICATOR' => 'GSSAPI'
+        ]);
+        return $mailbox;
     }
     
     
@@ -135,7 +162,7 @@ class Imap_mailbox extends CI_Model {
     }
     
     
-    public function fetchEmailsFromConfigs() {
+    public function fetchEmailsFromConfigs($limit) {
         
         $folders = $this->db->query("
                 SELECT mailbox_configs_folders.*, COALESCE (maxes.date, NOW() - INTERVAL '5 years') AS last_mail_date
@@ -158,26 +185,10 @@ class Imap_mailbox extends CI_Model {
                 continue;
             }
             
-            $lastMailDate = new DateTime($folder['last_mail_date']);
+            /*$lastMailDate = new DateTime($folder['last_mail_date']);
             $from = $lastMailDate->format('Y-m-d');
-            /*$to = $lastMailDate->add(new DateInterval('P7D'))->format('Y-m-d');
-            
-            $emails = $mbox->searchMailBox('UNDELETED SINCE "' . $from . '" BEFORE "' . $to . '"');
-            if (empty($emails)) {
-                // Cerca la prima mail più vecchia se la precedente ricerca non ha dato risultati
-                $emails = array_splice(array_filter((array) $mbox->sortMails(SORTDATE, false)), 0, 1);
-            }
-            
-            /*
-            // Cerca consecutivamente le mail di mese in mese fino a quando non ne trovi almeno una da inserire
-            while (!($emails = $mbox->searchMailBox('UNDELETED SINCE "' . $from . '" BEFORE "' . $to . '"'))) {
-                $from = (new DateTime($from))->add(new DateInterval('P5M'))->format('Y-m-d');
-                $to = (new DateTime($to))->add(new DateInterval('P5M'))->format('Y-m-d');
-                sleep(1);
-            }
-             */
-            
-            $emails = array_splice($mbox->searchMailBox('UNDELETED SINCE "' . $from . '"'), 0, 50);
+            $emails = $mbox->searchMailBox('UNDELETED SINCE "' . $from . '"');*/
+            $emails = $mbox->sortMails(SORTDATE, false);
             
             // Tiro via le email già inserite nel database
             if ($emails) {
@@ -187,9 +198,13 @@ class Imap_mailbox extends CI_Model {
                 $emails = array_diff($emails, $registered);
             }
             
+            if (!$emails) {
+                continue;
+            }
+            
             $i = 0;
             $this->db->trans_start();
-            foreach ($emails as $emailId) {
+            foreach (array_splice($emails, 0, $limit) as $emailId) {
                 $created = $this->createMail($folder['mailbox_configs_folders_id'], $mbox->getMail($emailId));
                 $created? $i++: null;
             }
@@ -197,6 +212,7 @@ class Imap_mailbox extends CI_Model {
             
             // Disconnessione manuale dalla mailbox
             $mbox->disconnect();
+            unset($mbox);
             
             $folderUpdations[$folder['mailbox_configs_folders_id']] = $i;
         }        

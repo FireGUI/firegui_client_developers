@@ -669,19 +669,18 @@ class Apilib {
      */
     private function processData($entity, array &$dati, $editMode=false, $value_id = null) {
         $entity_data = $this->getEntityByName($entity);
-        
+        if (empty($entity_data)) {
+            $this->error = self::ERR_VALIDATION_FAILED;
+            $this->errorMessage = sprintf("Entity non trovata: '%s'", $entity);
+            return false;
+        }
         
         $originalData = $dati;
-        
-        
         if($editMode) {
             // Pre-fetch dei dati sennò fallisce la validazione
             $dataDb = $this->db->get_where($entity, array($entity.'_id' => $value_id))->row_array();
             $_POST = $dati = array_merge($dataDb, $dati);
         }
-        
-        
-        
         
         $fields = $this->db->from('fields')->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->where('fields_entity_id', $entity_data['entity_id'])->get()->result_array();
         
@@ -744,7 +743,6 @@ class Apilib {
             }
         }
         
-        
         /**
          * Eseguo il process di pre-validation
          */
@@ -755,9 +753,6 @@ class Apilib {
             $_POST = $dati = $processed_predata['post'];
         }
         
-        
-        
-
         if (!empty($rules)) {
             
             // ************************ ACCROCCHIO *****************************
@@ -831,7 +826,6 @@ class Apilib {
             }
         }
         
-
         /**
          * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
          * es: password => md5($data['password'])
@@ -1012,7 +1006,6 @@ class Apilib {
             
         }
         
-        
         // Controllo delle regole custom di validazione
         foreach($rules_date_before as $rule) {
             $before = $rule['before'];
@@ -1030,7 +1023,6 @@ class Apilib {
             }
         }
         
-        
         /**
          * Eseguo il process di pre-action
          */
@@ -1040,9 +1032,22 @@ class Apilib {
             $dati = $processed_data['post'];
         }
         
-        
         // Unsetta l'id entità - per sicurezza, non si sa mai cosa viene mandato tramite api
         unset($dati[$entity.'_id']);
+        
+        /*
+         * Filtro i campi su cui sto per fare la query.
+         * Unsetto quelli in più - prima recupero un array con i nomi dei campi
+         * reali, poi dalle chiavi che sto inseredo tolgo quelle valide - ciò
+         * che resta sono quelle in più - le unsetto
+         */
+        $entityFields = array_key_map($this->db->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array(), 'fields_name');
+        $invalidFields = array_diff(array_keys($dati), $entityFields);
+        if ($invalidFields) {
+            $this->error = self::ERR_VALIDATION_FAILED;
+            $this->errorMessage = "I seguenti campi non sono accettati: " . implode(', ', $invalidFields);
+            return false;
+        }
         
         return true;
     }
