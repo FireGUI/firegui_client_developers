@@ -79,7 +79,10 @@
                                     <input type="radio" name="action_on_data_present" value="2" /> Update data (will ask for unique key)
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="action_on_data_present" value="3" checked /> Insert
+                                    <input type="radio" name="action_on_data_present" value="4" checked /> Update data (will ask for unique key), insert if key not present
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="action_on_data_present" value="3" /> Insert
                                 </label>
                                 
                             </div>
