@@ -1,0 +1,16 @@
+.DS_Store
+
+application/cache/*
+!application/cache/index.html
+!application/cache/.htaccess
+
+application/logs/*
+!application/logs/index.html
+!application/logs/.htaccess
+
+template/
+._*
+nbproject
+user_guide
+csv
+docs
