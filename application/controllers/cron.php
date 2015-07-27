@@ -27,6 +27,22 @@ class Cron extends CI_Controller {
         $this->emails->run_queue();
     }
     
+    public function test_now($id, $fake = 1) {
+        
+        $this->db->trans_start();
+        $cron = $this->db->get_where('crons', ['crons_id' => $id])->row_array();
+        if (!$cron) {
+            show_404();
+        }
+        
+        $this->run($cron);
+        
+        if (!$fake) {
+            $this->db->trans_complete();
+        }
+    }
+    
+    
     /*
      * 
      * CRONS 
@@ -63,24 +79,7 @@ class Cron extends CI_Controller {
             // ricordandolo come in esecuzione in cache
             $this->db->update('crons', array('crons_last_execution' => 'NOW()'), ['crons_id' => $cron['crons_id']]);
             $this->saveInExecution($cron['crons_id']);
-            
-            switch ($cron['crons_type']) {
-                case 'mail':
-                    $this->cron_email($cron);
-                break;
-                case 'curl':
-                    $this->cron_curl($cron);
-                break;
-                case 'php_file':
-                    $this->cron_php_file($cron);
-                break;
-                case 'php_code':
-                    $this->cron_php_code($cron);
-                break;
-                default:
-                   echo "Type: ".$cron['crons_type']." Non gestito";
-                break;
-            }
+            $this->run($cron);
 
             // Marco la fine del cron
             $executed[] = $cron['crons_id'];
@@ -112,6 +111,27 @@ class Cron extends CI_Controller {
         // Report via mail
         if (self::ENABLE_TRACKING) {
             mail('alberto@h2-web.it', "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
+        }
+    }
+    
+    
+    private function run(array $cron) {
+        switch ($cron['crons_type']) {
+            case 'mail':
+                $this->cron_email($cron);
+            break;
+            case 'curl':
+                $this->cron_curl($cron);
+            break;
+            case 'php_file':
+                $this->cron_php_file($cron);
+            break;
+            case 'php_code':
+                $this->cron_php_code($cron);
+            break;
+            default:
+               echo "Type: ".$cron['crons_type']." Non gestito";
+            break;
         }
     }
     

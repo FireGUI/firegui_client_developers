@@ -1,4 +1,4 @@
-<ul class="list-inline list-actions" style="min-width:30px">
+<ul class="list-inline list-actions" style="min-width:30px;margin: 0 -8px;">
     
     <?php if(isset($links['custom']) && $links['custom']): ?>
         <?php 
@@ -11,7 +11,15 @@
         $replace_to[] = $id;
         ?>
         <?php foreach($links['custom'] as $custom_action): ?>
-            <li <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": NULL; ?>><?php eval(' ?> '.str_replace($replace_from, $replace_to, $custom_action['grids_actions_html']).' <?php '); ?></li>
+            <?php 
+            ob_start();
+            eval(' ?> '.str_replace($replace_from, $replace_to, $custom_action['grids_actions_html']).' <?php ');
+            $action = trim(ob_get_clean());
+            if (!$action) {
+                continue;
+            }
+            ?>
+            <li <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": null; ?>><?php echo $action; ?></li>
         <?php endforeach; ?>
     <?php endif; ?>
     

@@ -79,6 +79,11 @@ class Db_ajax extends MX_Controller {
             die("{$media_field_id} e {$media_field_file} fields required for the entity {$media_entity_name}.");
         }
         
-        $this->db->insert($media_entity_name, array( $media_field_id => $id, $media_field_file => $file_name ));
+        try {
+            $this->apilib->create($media_entity_name, [$media_field_id => $id, $media_field_file => $file_name]);
+            //$this->db->insert($media_entity_name, array( $media_field_id => $id, $media_field_file => $file_name ));
+        } catch (Exception $ex) {
+            die($ex->getMessage());
+        }
     }
 }

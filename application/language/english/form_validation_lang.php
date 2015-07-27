@@ -21,7 +21,7 @@ $lang['is_numeric']		= "Il campo %s deve contenere un numero.";
 $lang['integer']		= "Il campo %s deve contenere un intero.";
 $lang['matches']		= "Il campo %s non &egrave; uguale al campo %s.";
 $lang['is_natural']		= "Il campo %s deve contenenre un numero.";
-$lang['is_unique']		= "Il campo %s deve essere univoco";
+$lang['is_unique']		= "Il valore inserito nel campo %s è già presente.";
 $lang['is_natural_no_zero']	= "Il campo %s deve contenere un numero più grande di zero.";
 
 

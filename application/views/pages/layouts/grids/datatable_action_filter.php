@@ -48,58 +48,32 @@ $_fields_type_to_skip = array(
 <br/>
 
 
-<table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover js_ajax_datatable">
-    <thead>
-        <tr>
-            <?php foreach ($grid['grids_fields'] as $field): ?>
-                <th <?php if($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['fields_draw_label'];  ?></th>
-            <?php endforeach; ?>
-                
-            <?php if(grid_has_action($grid['grids'])): ?>
-                <th>Action</th>
-            <?php endif; ?>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if (isset($grid_data['data'])): ?>
+<?php if (empty($grid_data['data'])): ?>
+    <p>Nessun dato disponibile</p>
+<?php else: ?>
+    <table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover js_ajax_datatable">
+        <thead>
+            <tr>
+                <?php foreach ($grid['grids_fields'] as $field): ?>
+                    <th <?php if($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['fields_draw_label'];  ?></th>
+                <?php endforeach; ?>
+
+                <?php if(grid_has_action($grid['grids'])): ?>
+                    <th>Action</th>
+                <?php endif; ?>
+            </tr>
+        </thead>
+        <tbody>
             <?php foreach ($grid_data['data'] as $dato): ?>
-                <tr class="odd gradeX">
+                <tr class="odd gradeX" data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>">
                     <?php foreach ($grid['grids_fields'] as $field): ?>
-                        <?php /*<td><?php $this->load->view('box/grid/td', array('field' => $field, 'dato' => $dato)); ?></td>*/ ?>
                         <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                     <?php endforeach; ?>
-                    <?php 
-                    $links = array(
-                        'view' => ($grid['grids']['grids_view_layout'])? base_url("main/layout/{$grid['grids']['grids_view_layout']}/{$dato[$grid_data['entity']['entity_name']."_id"]}"): $grid['grids']['grids_view_link'],
-                        'edit' => ($grid['grids']['grids_edit_layout'])? base_url("main/layout/{$grid['grids']['grids_edit_layout']}/{$dato[$grid_data['entity']['entity_name']."_id"]}"): $grid['grids']['grids_edit_link'],
-                        'delete' => '#'
-                    );
-                    ?>
                     <?php if(grid_has_action($grid['grids'])): ?>
-                    <td>
-                        <ul class="list-inline">
-                            <li>
-                                <a href="<?php echo $links['view']; ?>" class="btn blue btn-xs">
-                                    <span class="icon-zoom-in"></span>
-                                </a>
-                            </li>
-                            
-                            <li>
-                                <a href="<?php echo $links['edit']; ?>" class="btn purple btn-xs">
-                                    <span class="icon-pencil"></span>
-                                </a>
-                            </li>
-                            
-                            <li>
-                                <a href="<?php echo $links['delete']; ?>" class="btn btn-danger btn-xs">
-                                    <span class="icon-remove"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </td>
+                        <td><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name'] . "_id"], 'row_data' => $dato)); ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
-        <?php endif; ?>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+<?php endif; ?>

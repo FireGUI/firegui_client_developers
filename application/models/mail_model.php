@@ -52,7 +52,12 @@ class Mail_model extends CI_Model {
         $this->email->set_mailtype('html');
         $this->email->to($to);
         $this->email->subject($subject);
-        $this->email->message('<html>'.$message.'</html>');
+        
+        if (function_exists('mb_convert_encoding')) {
+            $message = mb_convert_encoding(str_replace('&nbsp;', ' ', $message), 'HTML-ENTITIES', 'UTF-8');
+        }
+        
+        $this->email->message('<html><body>' . $message . '</body></html>');
         
         // Prepend the default headers
         $defaultHeaders = $this->config->item('email_headers');

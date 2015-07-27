@@ -278,6 +278,7 @@ class Api extends CI_Controller {
      * Mostra schermata di aiuto
      */
     public function help() {
+        header('Content-Type: text/html');
         $this->load->view('api-help', array('errors' => $this->apilib->getApiMessages()));
     }
 

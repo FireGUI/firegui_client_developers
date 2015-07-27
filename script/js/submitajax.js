@@ -151,6 +151,9 @@ function sleep(milliseconds) {
 
 
 function invio_form(action, form) {
+    
+    var formEvents = $._data(form[0], 'events');
+    
     try {
         $('.formAjax #description').val(CKEDITOR.instances.description.getData());
     } catch (e) {}
@@ -167,14 +170,27 @@ function invio_form(action, form) {
 
         dataType: "json",
         complete: function() {
+            form.trigger('form-ajax-complete');
             loading(false);
         },
         success: function(msg) {
-            handleSuccess(msg);
+            if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
+                // Custom call
+                form.trigger('form-ajax-success', msg);
+            } else {
+                // Default
+                handleSuccess(msg);
+            }
         },
         error: function(xhr, ajaxOptions, thrownError) {
-            $('body').prepend("Errore ajax:" + xhr.responseText);
-        },
+            if (formEvents && formEvents.hasOwnProperty('form-ajax-error')) {
+                // Custom call
+                form.trigger('form-ajax-error', [xhr, ajaxOptions, thrownError]);
+            } else {
+                // Default
+                $('body').prepend("Errore ajax:" + xhr.responseText);
+            }
+        }
     });
 }
 
