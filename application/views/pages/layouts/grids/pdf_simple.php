@@ -9,9 +9,8 @@
     <tbody>
         <?php if (isset($grid_data['data'])): ?>
             <?php foreach ($grid_data['data'] as $dato): ?>
-                <tr class="odd gradeX">
+                <tr class="odd gradeX" data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>">
                     <?php foreach ($grid['grids_fields'] as $field): ?>
-                        <?php /*<td><?php $this->load->view('box/grid/td', array('field'=>$field, 'dato'=>$dato)); ?></td>*/ ?>
                         <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                     <?php endforeach; ?>
                 </tr>

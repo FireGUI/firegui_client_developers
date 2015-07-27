@@ -1,6 +1,12 @@
 <?php
 
 /*
+ * Impostazione di default. In caso di modifiche, aggiungere in
+ * crm_configurations
+ */
+date_default_timezone_set('Europe/Rome');
+
+/*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
  *---------------------------------------------------------------

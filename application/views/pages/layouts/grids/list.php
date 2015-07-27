@@ -26,12 +26,6 @@
                     </div>
                 </div>
                 <div class="col2">
-                    <?php /*if(isset($grid['replaces']['date'])): ?>
-                        <div class="date">
-                            <?php echo $this->datab->build_grid_cell($grid['replaces']['date'], $dato); ?>
-                        </div>
-                    <?php endif;*/ ?>
-                        
                     <?php if(grid_has_action($grid['grids'])): ?>
                         <?php $this->load->view('box/grid/actions', array( 'links'=> $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name']."_id"], 'row_data' => $dato )); ?>
                     <?php endif; ?>

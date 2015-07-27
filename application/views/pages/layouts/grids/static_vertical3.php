@@ -2,7 +2,7 @@
 <?php if (isset($grid_data['data'])): ?>
     <?php foreach ($grid_data['data'] as $dato): ?>
         <div class="row">
-            <dl <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> class="dl-horizontal dl-horizontal-compact static-vertical-grid" >
+            <dl <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>" class="dl-horizontal dl-horizontal-compact static-vertical-grid" >
                 <?php foreach ($grid['grids_fields'] as $field): ?>
                     <?php 
                     $_field = $this->datab->build_grid_cell($field, $dato);

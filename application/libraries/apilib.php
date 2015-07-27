@@ -9,6 +9,7 @@ class Apilib {
     
     const MODE_DIRECT = 1;
     const MODE_API_CALL = 2;
+    const MODE_CRM_FORM = 3;
     
     const CACHE_TIME = 30;
     
@@ -82,8 +83,8 @@ class Apilib {
     
     public function setProcessingMode($mode) {
         
-        if (!in_array($mode, array(self::MODE_API_CALL, self::MODE_DIRECT))) {
-            die('Modalità post-process non valida. Chiamare setProcessingMode con parametri Apilib::MODE_API_CALL e Apilib::MODE_DIRECT');
+        if (!in_array($mode, array(self::MODE_API_CALL, self::MODE_DIRECT, self::MODE_CRM_FORM))) {
+            die('Modalità post-process non valida. Chiamare setProcessingMode con parametri Apilib::MODE_API_CALL, Apilib::MODE_DIRECT o Apilib::MODE_CRM_FORM');
         }
         
         $this->processMode = $mode;
@@ -240,7 +241,7 @@ class Apilib {
         if($this->processData($entity, $data, false)) {
             $insert = $this->db->insert($entity, $data);
             if (!$insert) {
-                die();
+                $this->showError(self::ERR_GENERIC);
             }
             $id = $this->db->insert_id();
 
@@ -682,7 +683,7 @@ class Apilib {
             $_POST = $dati = array_merge($dataDb, $dati);
         }
         
-        $fields = $this->db->from('fields')->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->where('fields_entity_id', $entity_data['entity_id'])->get()->result_array();
+        $fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
         
         // Recupera dati di validazione
         foreach ($fields as $k => $field) {
@@ -855,6 +856,7 @@ class Apilib {
             }
         }
         
+        
         /**
          * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
          * es: password => md5($data['password'])
@@ -864,40 +866,15 @@ class Apilib {
             
             // Se non esiste il campo allora vuol dire che non era un required,
             // ma comunque stava nel form. Vuol dire che deve essere inserito vuoto
-            if( !array_key_exists($field['fields_name'], $dati)) {
-                continue;
-                //$dati[$field['fields_name']] = NULL;  Tolto perché dava problemi nell'update
-            }
-            
-            // Colgo l'occasione per vedere se ci sono field che si riferiscono a relazioni - questo è un passaggio che devo fare ora perché i vari controlli sui campi fallirebbero dato che ho un array
-            if ($field['fields_ref']) {
-                /**
-                 * in realtà il field ref dovrebbe puntare alla tabella pivot non alla tabella con cui è relazionata
-                 * ad esempio ho aziende <-> tags
-                 * il field ref di aziende non dovrebbe puntare a tags, ma ad aziende_tags (il nome della relazione).
-                 * ---
-                 * Per mantenere la retrocompatibilità vengono cercate entrambe le varianti
-                 */
-                $dataToInsert = isset($dati[$field['fields_name']]) ? $dati[$field['fields_name']] : array();
-                if (is_array($dataToInsert)) {
-                    $relations = $this->db->where_in('relations_name', array($entity.'_'.$field['fields_ref'], $field['fields_ref']))->get('relations');
-                    if ($relations->num_rows() > 0) {
-                        $relation = $relations->row();
-                        $post_process_relations[] = array(
-                            'entity' => $relation->relations_name,
-                            'relations_field_1' => $relation->relations_field_1,
-                            'relations_field_2' => $relation->relations_field_2,
-                            'value' => $dati[$field['fields_name']]
-                        );
-                        unset($dati[$field['fields_name']]);
-                        continue;
-                    } elseif ($dataToInsert && in_array($sql_type, array('VARCHAR', 'TEXT'))) {
-                        $dati[$field['fields_name']] = implode(',', $dataToInsert);
-                    }
+            if( ! array_key_exists($field['fields_name'], $dati)) {
+                // In modifica vuol dire che non ho questo campo
+                if ($editMode) {
+                    continue;
                 }
+                
+                // In creazione lo metto a null
+                $dati[$field['fields_name']] = null;
             }
-            
-            
             
             $sql_type = strtoupper($field['fields_type']);
             $html_type = $field['fields_draw_html_type'];
@@ -1032,6 +1009,14 @@ class Apilib {
                     }
                     break;
             }
+
+
+            // Se alla fine di tutto sto processo il dato è a null, ma ha un
+            // valore di default settato allora, tocca unsettare il
+            // valore null in quanto prenderò quello di default (via DB)
+            if (array_key_exists($field['fields_name'], $dati) && is_null($dati[$field['fields_name']]) && trim($field['fields_default'])) {
+                unset($dati[$field['fields_name']]);
+            }
             
         }
         
@@ -1066,16 +1051,25 @@ class Apilib {
         
         /*
          * Filtro i campi su cui sto per fare la query.
-         * Unsetto quelli in più - prima recupero un array con i nomi dei campi
-         * reali, poi dalle chiavi che sto inseredo tolgo quelle valide - ciò
-         * che resta sono quelle in più - le unsetto
+         * ---
+         * Mando errore di validazione nel qual caso stia inserendo dei campi
+         * non permessi che mi farebbero fallire la query
+         * ---
+         * Ovviamente se sono in modalità form crm non mando l'errore, ma
+         * rimuovo semplicemente i campi in più
          */
-        $entityFields = array_key_map($this->db->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array(), 'fields_name');
-        $invalidFields = array_diff(array_keys($dati), $entityFields);
+        $invalidFields = array_diff(array_keys($dati), array_key_map($fields, 'fields_name'));
         if ($invalidFields) {
-            $this->error = self::ERR_VALIDATION_FAILED;
-            $this->errorMessage = "I seguenti campi non sono accettati: " . implode(', ', $invalidFields);
-            return false;
+            if ($this->processMode === self::MODE_CRM_FORM) {
+                $dati = array_diff_key($dati, array_flip($invalidFields));
+                /*foreach ($invalidFields as $key) {
+                    unset($dati[$key]);
+                }*/
+            } else {
+                $this->error = self::ERR_VALIDATION_FAILED;
+                $this->errorMessage = sprintf("I campi %s non sono accettati", implode(', ', $invalidFields));
+                return false;
+            }
         }
         
         return true;
@@ -1101,6 +1095,10 @@ class Apilib {
         if (!isset($this->_loadedDataProcessors[$entity_id][$when])) {
             
             switch ($this->processMode) {
+                case self::MODE_CRM_FORM:
+                    $modeField = 'post_process_crm';
+                    break;
+                
                 case self::MODE_API_CALL:
                     $modeField = 'post_process_api';
                     break;

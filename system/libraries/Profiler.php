@@ -312,7 +312,7 @@ class CI_Profiler {
 		{
 			$output .= "\n\n<table style='width:100%'>\n";
 
-			foreach ($_POST as $key => $val)
+			foreach ((array)$_POST as $key => $val)
 			{
 				if ( ! is_numeric($key))
 				{

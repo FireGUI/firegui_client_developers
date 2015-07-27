@@ -10,7 +10,7 @@
 
     <ul class="list-inline">
         <?php foreach ($grid_data['data'] as $k => $dato): ?>
-            <li>
+            <li data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>">
                 <?php foreach ($grid['grids_fields'] as $field): ?>
                     <?php if (in_array($field['fields_draw_html_type'], array('upload_image', 'upload'))): ?>
 

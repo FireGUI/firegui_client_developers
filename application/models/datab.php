@@ -474,7 +474,7 @@ class Datab extends CI_Model {
             $select = $field_support_id . ($support_fields? ',' . $support_fields: '');
 
             // Applico limiti permessi
-            $user_id = (int) $this->auth->get(LOGIN_ENTITY . '_id');
+            $user_id = (int) $this->auth->get('id');
             $data_entity = $this->get_entity_by_name($support_relation_table);
             $field_limit = $this->db->query("SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = '{$user_id}' AND fields_entity_id = {$data_entity['entity_id']}")->row_array();
             $wheres = array();
@@ -513,7 +513,8 @@ class Datab extends CI_Model {
             // Fix x dichiarare quale sarà il campo id da utilizzare nel form
             $dati['forms_fields'][$key]['field_support_id'] = $field_support_id;
         }
-        // Se il campo One record è impostato a TRUE mi prendo già i dati di quel form per popolarlo e renderlo quindi editable
+        // Se il campo One record è impostato a TRUE mi prendo già i dati di
+        // quel form per popolarlo e renderlo quindi editable
         if ($dati['forms']['forms_one_record'] == 't') {
             $dati['forms']['edit_data'] = $this->get_data_entity($dati['forms']['forms_entity_id']);
         }
@@ -1289,6 +1290,10 @@ class Datab extends CI_Model {
                 }
 
                 $value = $data;
+                if (is_array($value)) {
+                    //debug($value);
+                    continue;
+                }
                 $string = str_replace($pattern, $value, $string);
             }
         }
@@ -1486,6 +1491,9 @@ class Datab extends CI_Model {
         if ($this->is_admin()) {
             return TRUE;
         } else {
+            // Resolve the entity id
+            $entity_id = is_numeric($entity_id)? $entity_id: $this->get_entity_by_name($entity_id)['entity_id'];
+            
             $user_id = (int) $this->auth->get('id');
             $permissions = $this->db->from('permissions')
                             ->join('permissions_entities', 'permissions_entities_permissions_id = permissions_id', 'left')

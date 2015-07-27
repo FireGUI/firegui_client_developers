@@ -1,5 +1,5 @@
 <?php if (empty($grid_data['data'])): ?>
-    <p>Al momento non sono ancora stati inseriti dati!</p>
+    <p>Nessun dato disponibile</p>
 <?php else: ?>
     <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> class="table table-striped table-bordered table-hover table-responsive-scrollable js_datatable" <?php if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' ?>>
         <thead>
@@ -10,16 +10,13 @@
             </tr>
         </thead>
         <tbody>
-            <?php if (isset($grid_data['data'])): ?>
-                <?php foreach ($grid_data['data'] as $dato): ?>
-                    <tr class="odd gradeX">
-                        <?php foreach ($grid['grids_fields'] as $field): ?>
-                            <?php /* <td><?php $this->load->view('box/grid/td', array('field'=>$field, 'dato'=>$dato)); ?></td> */ ?>
-                            <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?php foreach ($grid_data['data'] as $dato): ?>
+                <tr class="odd gradeX" data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>">
+                    <?php foreach ($grid['grids_fields'] as $field): ?>
+                        <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
 <?php endif; ?>

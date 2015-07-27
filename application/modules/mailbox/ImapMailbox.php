@@ -528,7 +528,7 @@ class ImapMailbox {
                                     mkdir($fullDirAttach, 0777, true);
                                 }
                                 
-				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . $filteredName);
+				$fileSysName = preg_replace('~[\\\\/]~', '', $mail->id . '_' . $attachmentId . '_' . substr($filteredName, 0, 50));
 				$attachment->filePath = $fullDirAttach . DIRECTORY_SEPARATOR . $fileSysName;
 				file_put_contents($attachment->filePath, $data);
 			}

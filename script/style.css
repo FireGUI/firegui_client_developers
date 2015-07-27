@@ -3,11 +3,36 @@
 .leaflet-map-pane { color: #333333; }
 .portlet-title.js_title_collapse { cursor: pointer; }
 .js_result_list.media-list { padding:0 }
-.list-actions { padding: 0!important; margin-bottom: 0px }
-.list-actions li { padding: 0 2px!important; }
+
+/* Actions lists */
+.list-actions {
+    padding: 0!important; margin-bottom: 0px;
+    float: right;
+}
+
+.dl-actions .list-actions {
+    float: left;
+}
+
+.list-actions li {
+    margin: 0 2px;
+    padding: 0!important;
+}
+
+.list-actions li:empty {
+    display:none!important;
+}
+
+.list-actions li a.btn.btn-xs {
+  padding: 1px 3px;
+}
+
+.list-actions li a.btn.btn-xs * {
+  font-size: 13px;
+}
 
 
-
+/* Loader */
 .js_loading {
     position: absolute;
     top: 0;
