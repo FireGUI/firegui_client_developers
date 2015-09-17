@@ -3,22 +3,9 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Cron extends CI_Controller {
+class Cron extends MY_Controller {
 
     const ENABLE_TRACKING = false;
-    
-    
-    var $template = array();
-    var $settings = NULL;
-    
-
-    function __construct() {
-        parent :: __construct();
-       
-    }
-
-    public function index() {
-    }
     
     /*
      *  IL NOME E AMBIGUO MA CRONS SONO QUELLI GESTITI DINAMICAMENTE MENTRE I METODI run_ VENGONO CHIAMATI ESCLUSIVAMENTE DA CONSOLE

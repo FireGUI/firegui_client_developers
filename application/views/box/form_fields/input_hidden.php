@@ -1,1 +1,1 @@
-<input type="hidden" name="<?php echo $field['fields_name']; ?>" class="form-control <?php echo $field['fields_draw_css_extra']; ?> field_<?php echo $field['fields_id']; ?>" placeholder="<?php echo $field['fields_draw_placeholder'] ?>" value="<?php echo $value; ?>" />
+<input type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" />

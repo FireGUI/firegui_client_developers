@@ -4,20 +4,32 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 
-
+/**
+ * @property-read Crmentity $crmentity
+ */
 class Datab extends CI_Model {
+    
+    const LANG_SESSION_KEY = 'master_crm_language';
 
     var $template = array();
     private $_entities = [];
     private $_accessibleLayouts = [];
     private $_forwardedLayouts = [];
     private $_accessibleEntityLayouts = [];
+    
+    /* Multilingual system */
+    private $_currentLanguage;
+    private $_defaultLanguage;
+    private $_languages = [];
 
     function __construct() {
         parent :: __construct();
+        $this->load->model('crmentity');
+        $this->preloadLanguages();
         $this->prefetchMyAccessibleLayouts();
     }
-    
+
+
     protected function prefetchMyAccessibleLayouts() {
         $userId = (int) $this->auth->get('id');
         
@@ -116,7 +128,7 @@ class Datab extends CI_Model {
             FROM fields
                 LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
                 LEFT JOIN entity ON entity.entity_id = fields.fields_entity_id
-            WHERE fields_entity_id = '{$entity_id}' AND fields_draw_display_none = 'f'")->result_array();
+            WHERE fields_entity_id = ? AND NOT fields_draw_display_none", [$entity_id])->result_array();
 
         if (count($dati['visible_fields']) < 1) {
             debug("Entità {$dati['entity']['entity_name']} (id = {$entity_id}) senza campi");
@@ -944,61 +956,63 @@ class Datab extends CI_Model {
      * Utility methods
      */
     public function get_entity_preview_by_name($entity_name, $where = NULL, $limit = NULL, $offset = 0) {
-        $entity = $this->datab->get_entity_by_name($entity_name);
-        if (empty($entity)) {
-            debug("Entity {$entity_name} does not exists.", 1);
-        }
-
-        /* Get the fields */
-        $entity_id = $entity['entity_id'];
-        $entity_data = $this->datab->get_data_entity($entity_id, 0, $where, $limit, $offset);
-        $all_fields = $entity_data['visible_fields'];
-
-        $entity_preview = array_filter($all_fields, function($field) use($entity_id, $all_fields) {
-            if (!$field['fields_ref'] && $field['fields_entity_id'] == $entity_id) {
-                // Sto guardando un campo semplice dell'entità, tipo il nome
-                return $field['fields_preview'] == 't';
-            } elseif (!$field['fields_ref'] && $field['fields_entity_id'] != $entity_id) {
-                // Sto prendendo un campo semplice (non chiave) di un'entità joinata - lo voglio solo se il campo che punta a questa entità è preview e lui è preview
-                foreach ($all_fields as $field1) {
-                    if ($field1['fields_ref'] == $field['entity_name'] && $field['fields_preview'] == 't' && $field1['fields_preview'] == 't') {
-                        return TRUE;
-                    }
-                }
-                return FALSE;
-            } else {
-                // Negli altri casi non voglio prendere il campo
-                return FALSE;
-            }
-        });
-        $records = $entity_data['data'];
-
-        /* Build preview */
-        $result = array();
-        foreach ($records as $record) {
-            $preview = "";
-
-            // 06/03/2015
-            // ho dovuto aggiungere un array_unique() perché quando faccio la
-            // preview di campi che si referenziano ricorsivamente rischio di
-            // trovarmi campi duplicati
-            $used = array();
-            foreach ($entity_preview as $field) {
-                if (!in_array($field['fields_name'], $used) && isset($record[$field['fields_name']])) {
-                    $preview .= $record[$field['fields_name']] . " ";
-                    $used[] = $field['fields_name'];
-                }
-            }
-
-            $preview = trim($preview);
-            if (!$preview) {
-                $preview = "ID #{$record[$entity_name . '_id']}";
-            }
-
-            $result[$record[$entity_name . '_id']] = $preview;
-        }
-
-        return $result;
+//        $entity = $this->datab->get_entity_by_name($entity_name);
+//        if (empty($entity)) {
+//            debug("Entity {$entity_name} does not exists.", 1);
+//        }
+//
+//        /* Get the fields */
+//        $entity_id = $entity['entity_id'];
+//        $entity_data = $this->datab->get_data_entity($entity_id, 0, $where, $limit, $offset);
+//        $all_fields = $entity_data['visible_fields'];
+//
+//        $entity_preview = array_filter($all_fields, function($field) use($entity_id, $all_fields) {
+//            if (!$field['fields_ref'] && $field['fields_entity_id'] == $entity_id) {
+//                // Sto guardando un campo semplice dell'entità, tipo il nome
+//                return $field['fields_preview'] == 't';
+//            } elseif (!$field['fields_ref'] && $field['fields_entity_id'] != $entity_id) {
+//                // Sto prendendo un campo semplice (non chiave) di un'entità joinata - lo voglio solo se il campo che punta a questa entità è preview e lui è preview
+//                foreach ($all_fields as $field1) {
+//                    if ($field1['fields_ref'] == $field['entity_name'] && $field['fields_preview'] == 't' && $field1['fields_preview'] == 't') {
+//                        return TRUE;
+//                    }
+//                }
+//                return FALSE;
+//            } else {
+//                // Negli altri casi non voglio prendere il campo
+//                return FALSE;
+//            }
+//        });
+//        $records = $entity_data['data'];
+//
+//        /* Build preview */
+//        $result = array();
+//        foreach ($records as $record) {
+//            $preview = "";
+//
+//            // 06/03/2015
+//            // ho dovuto aggiungere un array_unique() perché quando faccio la
+//            // preview di campi che si referenziano ricorsivamente rischio di
+//            // trovarmi campi duplicati
+//            $used = array();
+//            foreach ($entity_preview as $field) {
+//                if (!in_array($field['fields_name'], $used) && isset($record[$field['fields_name']])) {
+//                    $preview .= $record[$field['fields_name']] . " ";
+//                    $used[] = $field['fields_name'];
+//                }
+//            }
+//
+//            $preview = trim($preview);
+//            if (!$preview) {
+//                $preview = "ID #{$record[$entity_name . '_id']}";
+//            }
+//
+//            $result[$record[$entity_name . '_id']] = $preview;
+//        }
+//
+//        return $result;
+        
+        return $this->crmentity->getEntityPreview($entity_name, $where, $limit, $offset);
     }
 
     public function get_support_data($fields_ref = NULL) {
@@ -1863,11 +1877,11 @@ class Datab extends CI_Model {
             // Sono interessato ai record che contengono TUTTI i chunk in uno o più campi
             foreach ($search_chunks as $_chunk) {
                 $chunk = str_replace("'", "''", $_chunk);
-                $inner_where = array();
+                $inner_where = [];
                 foreach ($fields as $field) {
                     switch (($type=strtoupper($field['fields_type']))) {
                         case 'VARCHAR': case 'TEXT':
-                            $inner_where[] = "({$field['fields_name']} ILIKE '%{$chunk}%')";
+                            $inner_where[] = "({$field['fields_name']}::TEXT ILIKE '%{$chunk}%')";
                             break;
                         case 'INT': case 'FLOAT':
                             //Uguaglianza semplice
@@ -1999,7 +2013,7 @@ class Datab extends CI_Model {
     public function getHookContent($hookType, $hookRef, $valueId = null) {
         $hooks = $this->db
                 ->order_by('hooks_order')->where("(hooks_ref IS NULL OR hooks_ref = {$hookRef})")
-                ->get_where('hooks', array('hooks_type' => $hookType))->result_array();
+                ->get_where('hooks', ['hooks_type' => $hookType])->result_array();
         
         $plainHookContent = trim(implode(PHP_EOL, array_key_map($hooks, 'hooks_content', '')));
         
@@ -2015,14 +2029,30 @@ class Datab extends CI_Model {
     
     
     /**
-     * Print a grid cell
+     * Build della cella
      */
-    public function build_grid_cell($field, $dato) {
+    public function build_grid_cell($field, $dato, $processMultilingual = true, $multilingualLang = null) {
         
-        /**
-         * Fetch the value
-         */
+        $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == 't';
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
+        
+        if ($processMultilingual && $multilingual) {
+            if (!$value) {
+                return '';
+            }
+            
+            $out = [];
+            $contents = json_decode($value, true);
+            if (is_array($contents)) {
+                foreach ($contents as $idLang => $valueLang) {
+                    $dato[$field['fields_name']] = $valueLang;
+                    $style = ($idLang!=$this->_currentLanguage)? 'style="display:none"': '';
+                    $out[] = "<div data-lang='{$idLang}' {$style}>" . $this->build_grid_cell($field, $dato, false, $idLang) . '</div>';
+                }
+            }
+            
+            return implode(PHP_EOL, $out);
+        }
 
         if ($value !== '' && (!$field['fields_ref'] OR $value)) {
             if ($field['fields_ref'] && $field['fields_type'] === 'INT') {
@@ -2048,7 +2078,17 @@ class Datab extends CI_Model {
                             if (array_key_exists($prefixedKey, $dato)) {
                                 
                                 // Il caso migliore:    entitàReferenziata_entitàPrincipale_nomeBaseCampo
-                                $_text[] = $dato[$prefixedKey];
+                                $previewSegment = '';
+                                if ($support_field['fields_multilingual'] === 't') {
+                                    $contents = json_decode($dato[$prefixedKey], true);
+                                    foreach ($contents as $idLang => $valueLang) {
+                                        $style = ($idLang!=$this->_currentLanguage)? 'style="display:none"': '';
+                                        $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
+                                    }
+                                } else {
+                                    $previewSegment = $dato[$prefixedKey];
+                                }
+                                $_text[] = $previewSegment;
                                 
                             } elseif (array_key_exists($simpleKey, $dato) && (!array_key_exists($idKey, $dato) OR $dato[$idKey] == $value)) {
                                 // Appendo il nuovo campo preview all'array della preview $_text
@@ -2056,7 +2096,18 @@ class Datab extends CI_Model {
                                 // Attenzione qua però, se l'id è settato ed è
                                 // diverso dal mio value id allora non va bene
                                 // prendere questo
-                                $_text[] = $dato[$simpleKey];
+                                $previewSegment = '';
+                                if ($support_field['fields_multilingual'] === 't') {
+                                    $contents = json_decode($dato[$simpleKey], true);
+                                    foreach ($contents as $idLang => $valueLang) {
+                                        $style = ($idLang!=$this->_currentLanguage)? 'style="display:none"': '';
+                                        $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
+                                    }
+                                } else {
+                                    $previewSegment = $dato[$simpleKey];
+                                }
+                                $_text[] = $previewSegment;
+
                             } else {
                                 // Non posso continuare a stampare la preview perché ci sono campi non presenti
                                 $hasAllFields = false;
@@ -2168,6 +2219,65 @@ class Datab extends CI_Model {
         } elseif ($field['fields_draw_placeholder']) {
             return "<small class='text-muted'>{$field['fields_draw_placeholder']}</small>";
         }
+    }
+    
+    /**
+     * Build del form input
+     */
+    public function build_form_input(array $field, $value = null) {
+        
+        if (!$value && !empty($field['forms_fields_default_value'])) {
+            $value = $this->get_default_fields_value($field);
+        }
+        
+        $isMultilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual']=='t';
+        $display = $field['fields_draw_display_none']==='f';
+        
+        $text = $field['fields_draw_label'];
+        $help = $field['fields_draw_help_text']? '<span class="help-block">' . $field['fields_draw_help_text'] . '</span>': '';
+        $class = $field['fields_draw_css_extra'] . ' field_' . $field['fields_id'];
+        
+        $view = '';
+        $name = $field['fields_name'];
+        
+        if ($isMultilingual) {
+            $value = json_decode($value, true);
+        }
+        
+        // Valori di default
+        $langId = null;
+        $langAttribute = null;
+        $displayLang = $display;
+        $realValue = $value;
+        
+        $languages = $isMultilingual? $this->_languages: [null];
+        foreach ($languages as $id => $lang) {
+            if ($lang && $isMultilingual) {
+                // Override dei valori per multilingua
+                $field['fields_name'] = $name . "[{$id}]";
+                $text = sprintf('<img src="%s" alt="%s" class="lang-flag" /> ', $lang['flag'], $lang['name']) . $field['fields_draw_label'];
+                
+                $langId = $id;
+                $langAttribute = "data-lang='{$id}'";
+                $displayLang = $this->_currentLanguage == $id && $display;
+                $realValue = isset($value[$id])? $value[$id]: null;
+            }
+
+            $style = $displayLang? '': 'style="display:none"';
+            $label = '<label>' . $text . '</label>' . (($field['fields_required'] == 't')? ' <small class="text-danger icon-asterisk" style="font-size: 85%"></small>': '');
+            $data = [
+                'containerAttributes' => implode(' ', array_filter([$style, $langAttribute])),
+                'lang' => $langId,
+                'field' => $field,
+                'value' => $realValue,
+                'label' => $label,
+                'help'  => $help,
+                'class' => $class
+            ];
+            $view .= $this->load->view("box/form_fields/{$field['fields_draw_html_type']}", $data, true);
+        }
+        
+        return $view;
     }
     
     
@@ -2388,5 +2498,132 @@ class Datab extends CI_Model {
     
     
     
+    
+    /* =========================
+     * Multilingua
+     * ========================= */
+    protected function preloadLanguages() {
+        
+        if (!defined('LANG_ENTITY') OR !LANG_ENTITY) {
+            return;
+        }
+        
+        $this->_currentLanguage = $this->session->userdata(self::LANG_SESSION_KEY);
+        $this->_languages = [];
+        
+        $languages = $this->db->get(LANG_ENTITY)->result_array();
+        foreach ($languages as $language) {
+            $nlang = $this->normalizeLanguageArray($language);
+            $this->_languages[$nlang['id']] = $nlang;
+            
+            if ($nlang['default'] OR is_null($this->_defaultLanguage)) {
+                $this->_defaultLanguage = $nlang['id'];
+            }
+        }
+        
+        if (!$this->_currentLanguage OR empty($this->_languages[$this->_currentLanguage])) {
+            $this->_currentLanguage = $this->_defaultLanguage;
+        }
+        
+        $this->crmentity->setLanguages([$this->_currentLanguage, $this->_defaultLanguage]);
+    }
+    
+    protected function normalizeLanguageArray(array $language) {
+        
+        $code = $language[LANG_CODE_FIELD];
+        if (preg_match('/^[a-z]{2}(-|_)[a-z]{2}$/i', $code)) {
+            $img = $code[3] . $code[4];
+        } elseif (strlen($code) > 1) {
+            $img = substr($code, 0, 2);
+        } else {
+            $img = null;
+        }
+        
+        if ($img) {
+            $flag = base_url_template('template/crm/img/flags/' . strtolower($img) . '.png');
+        }
+        
+        return [
+            'id' => $language[LANG_ENTITY.'_id'],
+            'name' => $language[LANG_NAME_FIELD],
+            'code' => $code,
+            'flag' => $flag,
+            'default' => ($language[LANG_DEFAULT_FIELD]==='t'),
+        ];
+    }
+
+    /**
+     * Prendi la lingua selezionata
+     * 
+     * @return array|null
+     */
+    public function getLanguage() {
+        return $this->findLanguage($this->_currentLanguage);
+    }
+
+    /**
+     * Prendi la lingua di default
+     * 
+     * @return array|null
+     */
+    public function getDefaultLanguage() {
+        foreach ($this->_languages as $lang) {
+            if ($lang['default']) {
+                return $lang;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Cerca un array di lingua per id o per codice
+     * 
+     * @param int|string $key
+     * @return array|null
+     */
+    public function findLanguage($key) {
+        
+        if (is_numeric($key)) {
+            return isset($this->_languages[$key])? $this->_languages[$key]: null;
+        }
+        
+        $iCode = strtolower(str_replace(['-', '_', ' '], '', $key));
+        $out = array_filter($this->_languages, function($lang) use ($iCode) {
+            return strtolower(str_replace(['-', '_', ' '], '', $lang['code'])) === $iCode;
+        });
+        
+        // Ritorna il primo o null
+        return array_shift($out);
+    }
+    
+    
+    public function getAllLanguages() {
+        return $this->_languages;
+    }
+    
+    public function changeLanguage($key) {
+        
+        if (!is_numeric($key)) {
+            $compatible = array_filter($this->_languages, function($lang) use($key) {
+                return $lang['code'] == $key;
+            });
+            
+            if (!($lang = array_shift($compatible))) {
+                return false;
+            }
+            
+            $key = $lang['id'];
+        }
+        
+        // Language ID
+        if (empty($this->_languages[$key])) {
+            return false;
+        }
+        
+        $this->_currentLanguage = $key;
+        $this->session->set_userdata(self::LANG_SESSION_KEY, $this->_currentLanguage);
+        return true;
+    }
 
 }

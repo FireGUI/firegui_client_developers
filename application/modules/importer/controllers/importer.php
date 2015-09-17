@@ -1,9 +1,6 @@
 <?php
 
-class Importer extends MX_Controller {
-
-    var $template = array();
-    var $settings = NULL;
+class Importer extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -18,8 +15,6 @@ class Importer extends MX_Controller {
         if (!$this->datab->module_access(MODULE_NAME)) {
             die('Access forbidden');
         }
-
-        $this->settings = $this->db->get(ENTITY_SETTINGS)->row_array();
     }
 
     public function index() {

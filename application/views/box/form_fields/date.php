@@ -9,22 +9,17 @@ if(!empty($value) && ($timestamp=strtotime(normalize_date($value)))) {
 }
 ?>
 
-<div class="form-group" style="<?php if($field['fields_draw_display_none']==='t') echo 'display: none;' ?>">
-    <label>
-        <?php echo $field['fields_draw_label']; ?>
-        <?php if($field['fields_required']=='t'): ?><span class="text-danger icon-asterisk"></span><?php endif; ?>
-    </label>
+<div class="form-group" <?php echo $containerAttributes; ?>>
+    <?php echo $label; ?>
     <div class="row">
         <div class="col-md-12">
-            <div class="input-group js_form_datepicker date field_<?php echo $field['fields_id']; ?>">
+            <div class="input-group js_form_datepicker date <?php echo $class ?>">
                 <input name="<?php echo $field['fields_name']; ?>" type="text" class="form-control" <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?> value="<?php echo $value; ?>" />
                 <span class="input-group-btn">
                     <button class="btn default" type="button"><i class="icon-calendar"></i></button>
                 </span>
             </div>
-            <?php if($field['fields_draw_help_text']): ?>
-                <span class="help-block"><?php echo $field['fields_draw_help_text']; ?></span>
-            <?php endif; ?>
+            <?php echo $help; ?>
         </div>
     </div>
 

@@ -3,24 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Get_ajax extends CI_Controller {
-    
-    var $template = array();
-
-    function __construct() {
-        parent :: __construct();
-        
-        // Fixes
-        if (gethostname() === 'sfera' OR $this->auth->is_admin()) {
-            ini_set("display_errors", "1");
-            error_reporting(E_ALL);
-        }
-    }
-
-    public function index() {
-        exit();
-    }
-    
+class Get_ajax extends MY_Controller {
     
     public function layout_modal($layout_id, $value_id=null) {
         if( ! $layout_id || ! $this->datab->can_access_layout($layout_id)) {
@@ -789,12 +772,11 @@ class Get_ajax extends CI_Controller {
                 $return[] = array('id' => 'f', 'name' => 'No');
             }
         } else {
-            // Se ho un id lo devo preparare ad utilizzarlo nell'in
+            // Se ho un id lo devo preparare per utilizzarlo nel
+            // WHERE ... IN ...
             if($id) {
                 $id = "'".implode("', '", explode(',', trim($id)))."'";
             }
-
-
 
             /**
              * 3 casi:
@@ -813,7 +795,8 @@ class Get_ajax extends CI_Controller {
                 }
                 foreach($results as $row) {
                     if(!empty($row[$field['fields_name']])) {
-                        $return[] = array( 'id' => $row[$field['fields_name']], 'name'  => $row[$field['fields_name']] );
+                        $item = ['id' => $row[$field['fields_name']], 'name'  => $row[$field['fields_name']]];
+                        $return[$item['id']] = $item;
                     }
                 }
             } else {
@@ -832,12 +815,14 @@ class Get_ajax extends CI_Controller {
 
                         foreach($results as $row) {
                             if(!empty($row[$field['fields_name']])) {
-                                $return[] = array( 'id' => $row[$ref_entity['entity_name'].'_id'], 'name'  => $row[$ref_entity['entity_name'].'_value'] );
+                                $item = ['id' => $row[$ref_entity['entity_name'].'_id'], 'name'  => $row[$ref_entity['entity_name'].'_value']];
+                                $return[$item['id']] = $item;
                             }
                         }
                         break;
 
                     case ENTITY_TYPE_RELATION:
+                        // ???
                         break;
                     
                     default:
@@ -852,14 +837,14 @@ class Get_ajax extends CI_Controller {
 
                         $previewResult = $this->datab->get_entity_preview_by_name($ref_entity['entity_name'], $where);
                         foreach($previewResult as $id => $preview) {
-                            $return[] = array( 'id' => $id, 'name'  => $preview );
+                            $return[$id] = ['id' => $id, 'name'  => $preview];
                         }
                 }
             }
         }
         
         
-        echo json_encode($return);
+        echo json_encode(array_values($return));
     }
     
     
@@ -899,6 +884,18 @@ class Get_ajax extends CI_Controller {
         
         $preview = $this->datab->get_entity_preview_by_name($entity_name, "{$field_name_filter} = '{$from_val}'");
         echo json_encode($preview);
+    }
+    
+    
+    
+    public function langInfo() {
+        $cur = $this->datab->getLanguage();
+        $all = $this->datab->getAllLanguages();
+        
+        echo json_encode([
+            'current' => $cur,
+            'languages' => $all
+        ]);
     }
     
 }

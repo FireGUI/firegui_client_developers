@@ -6,14 +6,9 @@ if (!defined('BASEPATH'))
 
 class Install extends CI_Controller {
 
-    var $template = array();
-
     function __construct() {
         parent :: __construct();
-    }
-
-    public function index() {
-        
+        show_error("Controller dismesso");
     }
     
     public function import_query($filename) {

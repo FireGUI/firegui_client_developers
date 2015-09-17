@@ -2,7 +2,6 @@
 <?php echo $dati['pre-layout']; ?>
 
 <?php if($dati['show_title']): ?>
-    <?php if(gethostname() === 'sfera'): ?><a class="pull-right" target="_blank" style="opacity:0.5" href="<?php echo "http://sfera.h2-web.com/dev/masterTool/main/layouts/{$dati['layout_container']['layouts_id']}"; ?>">modifica layout</a><?php endif; ?>
     <h3 class="page-title">
         <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?>
         <small><?php echo $dati['layout_container']['layouts_subtitle']; ?></small>

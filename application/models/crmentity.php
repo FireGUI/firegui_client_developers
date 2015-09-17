@@ -28,12 +28,15 @@ class Crmentity extends CI_Model {
     private $entity_name = '';
     private $entity_id = null;
     private $table = '';
+    private $languages;
 
-    function __construct($entity_name = '') {
-
+    
+    function __construct($entity_name = '', $languageId = []) {
         parent :: __construct();
         
         $this->load->driver('cache');
+        $this->setLanguages($languageId);
+        
         if ($entity_name) {
             $this->entity_name = $entity_name;
             $this->table = $entity_name;
@@ -46,6 +49,13 @@ class Crmentity extends CI_Model {
             $this->entity_id = $entity['entity_id'];
         }
     }
+    
+    public function setLanguages(array $languagesId) {
+        $this->languages = array_filter($languagesId, function($item) {
+            return $item && is_numeric($item);
+        });
+    }
+    
 
     private function saveCache($key, $val) {
         $this->cache->save($key, $val, self::CACHE_TIME);
@@ -103,7 +113,7 @@ class Crmentity extends CI_Model {
             $entity_name = is_null($entity_name) ? $this->entity_name : $entity_name;
 
             if ($depth <= 0) {
-                return array();
+                return [];
             } else {
                 $depth--;
             }
@@ -133,75 +143,134 @@ class Crmentity extends CI_Model {
 
 
             // Un array contenente tutti gli id dei risultati della query
-            $result_ids = array_map(function($row) use ($entity_name) {
-                return $row[$entity_name . '_id'];
-            }, $data['data']);
+            $result_ids = array_key_map($data['data'], $entity_name . '_id');
 
             if (!empty($result_ids)) {
-                
-                // Estraggo e ciclo tutti i geography per ricavarne latitudine e
-                // longitudine
-                $fields_geography = array_filter($data['visible_fields'], function($field) use($entity_name) {
-                    return $field['fields_type'] === 'GEOGRAPHY' && $field['entity_name'] === $entity_name;
-                });
-                foreach ($fields_geography as $field) {
-                    $geography = array();
-                    $geography_field = $field['fields_name'];
+                $fieldsGeography = $fieldsWysiwyg = $fieldsMultilingual = [];
+                    
+                foreach ($data['visible_fields'] as $field) {
+                    
+                    $fieldOfMainEntity = $field['entity_name'] === $entity_name;
+                    
+                    // Detect GEOGRAPHY
+                    // -----
+                    // Estraggo i geography per ricavarne latitudine e 
+                    // longitudine - prendo solo quelli della mia stessa entità
+                    // altrimenti ho un db error
+                    if ($field['fields_type'] === 'GEOGRAPHY' && $fieldOfMainEntity) {
 
-                    $this->db->select("{$entity_name}_id as id, ST_Y({$geography_field}::geometry) AS lat, ST_X({$geography_field}::geometry) AS lng")->where_in($entity_name . '_id', $result_ids);
-
-                    // Indicizzo i risultati per id
-                    foreach ($this->db->get($entity_name)->result_array() as $result) {
-                        $geography[$result['id']] = array('lat' => $result['lat'], 'lng' => $result['lng']);
-                    }
-
-                    /**
-                     * $geography è un array fatto così
-                     * record id => ( [lat] => 46.010085296546, [lng] => 13.1390368938446)
-                     */
-                    // E li inserisco al posto della geometry
-                    foreach ($data['data'] as $key => $_data) {
-
-                        $id = $_data[$entity_name . '_id'];
-                        $latlng_array = (isset($geography[$id]) ? $geography[$id] : array('lat' => NULL, 'lon' => NULL));
-
-                        $data['data'][$key][$geography_field] = array_merge(array('geo' => $_data[$geography_field]), $latlng_array);
-                    }
-                }
-                
-                // Estraggo e ciclo tutti i campi html (fields_draw_html_type === wysiwyg)
-                // e sostituisco la stringa {base_url} con base_url()
-                $fields_html = array_filter($data['visible_fields'], function($field) use($entity_name) {
-                    return $field['fields_draw_html_type'] === 'wysiwyg' && $field['entity_name'] === $entity_name;
-                });
-                
-                foreach ($fields_html as $field) {
-                    $name = $field['fields_name'];
-                    foreach ($data['data'] as $key => $_data) {
+                        $geographyValues = [];
+                        $geographyField = $field['fields_name'];
                         
-                        if (empty($_data[$name])) {
-                            continue;
+                        // Indicizzo i risultati per id
+                        $this->db->select("{$entity_name}_id as id, ST_Y({$geographyField}::geometry) AS lat, ST_X({$geographyField}::geometry) AS lng")->where_in($entity_name . '_id', $result_ids);
+                        foreach ($this->db->get($entity_name)->result_array() as $result) {
+                            $geographyValues[$result['id']] = ['lat' => $result['lat'], 'lng' => $result['lng']];
                         }
                         
-                        $data['data'][$key][$name] = str_replace('{base_url}', function_exists('base_url_template')? base_url_template(): base_url(), $_data[$name]);
+                        $fieldsGeography[$geographyField] = $geographyValues;
+                    }
+                    
+                    // Detect WYSIWYG
+                    // -----
+                    // Estraggo i campi html (fields_draw_html_type === wysiwyg)
+                    if ($field['fields_draw_html_type'] === 'wysiwyg') {
+                        $fieldsWysiwyg[] = $field;
+                    }
+                    
+                    // Detect MULTILINGUAL
+                    // -----
+                    // Estraggo i campi multilingua sse ho una lista di priorità
+                    // lingue. Nel caso self::languages sia pieno, prendo per
+                    // ogni valore, il primo non vuoto ('' or null - 0 è ok).
+                    // Se non ho nessuna lingua, allora il valore è un array
+                    // contenente tutti i valori disponibili
+                    if ($this->languages && $field['fields_multilingual'] === 't') {
+                        $fieldsMultilingual[$field['fields_id']] = $field;
                     }
                 }
                 
                 
-            }
-            
+                $baseUrl = function_exists('base_url_template')? base_url_template(): base_url();
+                foreach ($data['data'] as $key => $_data) {
+                    
+                    $id = $_data[$entity_name . '_id'];
+                    
+                    // Sostituisco ogni 
+                    foreach ($fieldsGeography as $fieldName => $values) {
+                        $geodata = (isset($values[$id]) ? $values[$id] : ['lat' => NULL, 'lon' => NULL]);
+                        $geodata['geo'] = $_data[$geographyField];
+                        $_data[$fieldName] = $geodata;
+                        
+                    }
+                    
+                    // Rimpiazzo il placeholder {base_url} dentro ai campi
+                    // contenenti un HTML
+                    foreach ($fieldsWysiwyg as $field) {
+                        $name = $field['fields_name'];
+                        if (!empty($_data[$name])) {
+                            $_data[$name] = str_replace('{base_url}', $baseUrl, $_data[$name]);
+                        }
+                    }
+                    
+                    // Decodifica json del campo
+                    foreach ($fieldsMultilingual as $field) {
+                        $_data[$field['fields_name']] = $this->translateValue($_data[$field['fields_name']]);
+                    }
 
+                    // Sovrascrivo il vecchio valore di data
+                    $data['data'][$key] = $_data;
+                }
+                
+                
+                // Cerco i campi che puntano a questa entità e ne ottengo i dati
+                // sono sicuro che $result_ids non è vuoto
+                $referersKeys = [];
+                $referersRecords = array_fill_keys($result_ids, []);
+                foreach ($data['fields_ref_by']?:[] as $entity) {
+                    $refererEntity = $entity['entity_name'];
+                    $refererField = $entity['fields_name'];
+                    
+                    // Se il campo che fa riferimento alla mia entità, ha lo
+                    // stesso nome dell'id di questa entità allora lo skippo,
+                    // perché vorrebbe dire che questa è una relazione
+                    if ($refererField == $entity_name . '_id') {
+                        continue;
+                    }
+                    
+                    $refererWhere = sprintf('%s.%s IN (%s)', $refererEntity, $refererField, implode(',', $result_ids));
+                    $referersKeys[$refererEntity] = [];
+                    
+                    
+                    $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
+                    if (!empty($referingData['data'])) {
+                        foreach ($referingData['data']  as $record) {
+                            // Se il campo è NON VISIBILE la query NON FALLISCE,
+                            // ma non viene incluso nel risultato... quindi si
+                            // rende necessario controllare se nel risultato è
+                            // settata la chiave
+                            if (array_key_exists($refererField, $record) && !is_array($record[$refererField]) && !is_object($record[$refererField])) {
+                                $referersRecords[$record[$refererField]][$refererEntity][] = $record;
+                            }
+                        }
+                    }
+                }
+                
+                foreach ($data['data'] as &$_data) {
+                    $_data = array_merge($_data, $referersKeys, $referersRecords[$_data[$entity_name . '_id']]);
+                }
+            }
 
             // Cerco i campi che puntano a questa entità e ne ottengo i dati
-            if (!empty($data['fields_ref_by']) && !empty($data['data'])) {
-                foreach ($data['data'] as $key => $_data) {
-
-                    foreach ($data['fields_ref_by'] as $entity) {
-                        $entita = $this->get_data_full_list($entity['entity_id'], $entity['entity_name'], array("{$entity['entity_name']}.{$entity['fields_name']} = '{$_data[$entity_name . '_id']}'"), null, 0, null, false, $depth);
-                        $data['data'][$key][$entity['entity_name']] = $entita;
-                    }
-                }
-            }
+//            if (!empty($data['fields_ref_by']) && !empty($data['data'])) {
+//                foreach ($data['data'] as $key => $_data) {
+//
+//                    foreach ($data['fields_ref_by'] as $entity) {
+//                        $entita = $this->get_data_full_list($entity['entity_id'], $entity['entity_name'], ["{$entity['entity_name']}.{$entity['fields_name']} = '{$_data[$entity_name . '_id']}'"], null, 0, null, false, $depth);
+//                        $data['data'][$key][$entity['entity_name']] = $entita;
+//                    }
+//                }
+//            }
 
 
             // Estraggo le eventuali relazioni
@@ -231,7 +300,7 @@ class Crmentity extends CI_Model {
                          * Ad esempio se una camera può avere più servizi voglio che tutti i servizi finiscano sul campo camere_servizi
                          * $field_name_for_relation_values avrà in questo caso il valore di camere_servizi
                          */
-                        $field_name_for_relation_values = NULL;
+                        $field_name_for_relation_values = null;
                         foreach ($data['visible_fields'] as $visible_field) {
 
                             if ($visible_field['fields_ref'] == $relation['relations_name']) {
@@ -250,20 +319,18 @@ class Crmentity extends CI_Model {
                         if (!is_null($field_name_for_relation_values)) {
 
                             // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
-                            $ids = array_map(function($dato) use($field) {
-                                return $dato[$field];
-                            }, $data['data']);
+                            $ids = array_key_map($data['data'], $field);
 
                             // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
                             $relation_data = $this->db->where_in($field, $ids)->get($relation['relations_name'])->result_array();
 
                             // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
                             // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
-                            $relation_data_by_ids = array();
-                            $related_data = array();
+                            $relation_data_by_ids = [];
+                            $related_data = [];
                             foreach ($relation_data as $relation_dato) {
                                 if (empty($relation_data_by_ids[$relation_dato[$field]])) {
-                                    $relation_data_by_ids[$relation_dato[$field]] = array();
+                                    $relation_data_by_ids[$relation_dato[$field]] = [];
                                 }
 
                                 $related_data[] = $relation_dato[$other];
@@ -272,7 +339,7 @@ class Crmentity extends CI_Model {
 
                             // Prendo le preview dei record relazionati
                             if (!empty($related_data)) {
-                                $related_data_preview = $this->get_entity_preview_by_name($other_table, "{$other_table}.{$other} IN (" . implode(',', $related_data) . ")");
+                                $related_data_preview = $this->getEntityPreview($other_table, "{$other_table}.{$other} IN (" . implode(',', $related_data) . ")");
 
                                 foreach ($data['data'] as $key => $dato) {
                                     if (isset($relation_data_by_ids[$dato[$field]])) {
@@ -618,7 +685,16 @@ class Crmentity extends CI_Model {
         }
 
         if (!array_key_exists($entity, $this->_visible_fields)) {
-            $this->_visible_fields[$entity] = $this->db->join('entity', 'entity.entity_id = fields.fields_entity_id')->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id')->order_by('fields_name')->get_where('fields', array('fields_entity_id' => $entity, 'fields_draw_display_none' => 'f'))->result_array();
+            
+            $this->_visible_fields[$entity] = $this->db->query("
+                    SELECT *
+                    FROM fields
+                        JOIN entity ON entity.entity_id = fields.fields_entity_id
+                        JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
+                    WHERE fields_entity_id = ? AND NOT fields_draw_display_none
+                    ORDER BY fields_name
+                ", [$entity])->result_array();
+            
         }
 
         return $this->_visible_fields[$entity];
@@ -667,17 +743,17 @@ class Crmentity extends CI_Model {
 
     /*     * ********** Utility methods ****************** */
 
-    public function get_entity_preview_by_name($entity_name, $where = NULL, $limit = NULL, $offset = 0) {
-        $entity = $this->get_entity_by_name($entity_name);
-        if (empty($entity)) {
-            debug("Entity {$entity_name} does not exists.", 1);
+    public function getEntityPreview($entityIdentifier, $where = NULL, $limit = NULL, $offset = 0) {
+        $entity = is_numeric($entityIdentifier)? $this->get_entity($entityIdentifier): $this->get_entity_by_name($entityIdentifier);
+        if (!$entity) {
+            throw new Exception(sprintf('Entità %s inesistente', $entityIdentifier));
         }
 
         /* Get the fields */
         $entity_id = $entity['entity_id'];
+        $entity_name = $entity['entity_name'];
 
         $entity_data = $this->get_data_simple_list($entity_id, $where, $limit, $offset, null, false, true);
-
         $all_fields = $entity_data['visible_fields'];
 
         $entity_preview = array_filter($all_fields, function($field) use($entity_id, $all_fields) {
@@ -691,21 +767,29 @@ class Crmentity extends CI_Model {
                         return TRUE;
                     }
                 }
-                return FALSE;
+                return false;
             } else {
                 // Negli altri casi non voglio prendere il campo
-                return FALSE;
+                return false;
             }
         });
         $records = $entity_data['data'];
 
         /* Build preview */
-        $result = array();
+        $result = [];
         foreach ($records as $record) {
             $preview = "";
             foreach ($entity_preview as $field) {
                 if (isset($record[$field['fields_name']])) {
-                    $preview .= $record[$field['fields_name']] . " ";
+                    $val = ($field['fields_multilingual']==='t')? $this->translateValue($record[$field['fields_name']]): $record[$field['fields_name']];
+                    // Se non abbiamo nessuna lingua impostata, translateValue
+                    // mi ritorna un array, generando un warning array-to-string
+                    // nell'append successivo - quindi per ora implode sulla
+                    // virgola
+                    if (is_array($val)) {
+                        $val = implode(',', $val);
+                    }
+                    $preview .= $val . " ";
                 }
             }
 
@@ -719,5 +803,37 @@ class Crmentity extends CI_Model {
 
         return $result;
     }
+    
+    
+    /**
+     * Traduci un valore secondo l'array delle lingue corrente
+     * 
+     * @param string $jsonEncodedValue rappresentazione json del valore
+     * @return mixed
+     */
+    public function translateValue($jsonEncodedValue) {
+        
+        $transVal = json_decode($jsonEncodedValue, true);
+        
+        // Se non ci sono lingue in lista, allora lascia il valore json decoded
+        // cioè l'array con tutte le lingue (o eventualmente un null)
+        if (!$this->languages) {
+            return $transVal;
+        }
+
+        // Cicla tutte le lingue, quelle prima sono quelle che hanno maggiore
+        // priorità, al primo valore trovato (non nullo e non stringa vuota - 0
+        // va bene) ritornalo. Se nessun valore viene trovato allora torna null
+        foreach ($this->languages as $langId) {
+            if (isset($transVal[$langId]) && $transVal[$langId] !== '') {
+                return $transVal[$langId];
+            }
+        }
+        
+        return null;
+        
+    }
+    
+    
 
 }

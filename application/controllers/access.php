@@ -1,7 +1,7 @@
 <?php
 
 
-class Access extends CI_Controller {
+class Access extends MY_Controller {
     
     const SALT = 'ofuh249fh97H98UG876GHOICUYEGRF98ygdfds';
     

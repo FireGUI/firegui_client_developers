@@ -2,516 +2,15 @@
 
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Db_ajax extends CI_Controller {
-
-    var $template = array();
+class Db_ajax extends MY_Controller {
 
     function __construct() {
         parent :: __construct();
-        
-        // Fixes
-        if (gethostname() === 'sfera' OR $this->auth->is_admin()) {
-            ini_set("display_errors", "1");
-            error_reporting(E_ALL);
-        }
         
         // Qualunque chiamata alle apilib da qua dentro è considerata una
         // chiamata in modalità CRM_FORM
         $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
     }
-
-    public function index() {
-        exit();
-    }
-
-//    public function save_form($form_id, $edit = false, $value_id = null) {
-//        if (!$form_id) {
-//            redirect();
-//        }
-//
-//        // Cast di edit a booleano
-//        $edit = (bool) $edit;
-//
-//
-//
-//        /*
-//         * Carica form, entità e relativi campi da db
-//         */
-//        $this->db->trans_start();
-//        $form = $this->db->join('entity', 'forms_entity_id=entity_id', 'left')->get_where('forms', array('forms_id' => $form_id))->row_array();
-//        $form['fields'] = $this->db
-//                ->join('fields', 'forms_fields_fields_id=fields_id', 'left')
-//                ->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')
-//                ->where('forms_fields_forms_id', $form_id)->get('forms_fields')
-//                ->result_array();
-//
-//        foreach ($form['fields'] as $k => $field) {
-//            $form['fields'][$k]['validations'] = $this->db->get_where('fields_validation', array('fields_validation_fields_id' => $field['fields_id']))->result_array();
-//        }
-//
-//        /**
-//         * Controlla permessi di scrittura per utente loggato
-//         */
-//        $can_write = $this->datab->can_write_entity($form['entity_id']);
-//        if (!$can_write) {
-//            $txt = 'Insufficient permissions to write';
-//            echo ($this->input->is_ajax_request() ? json_encode(array('status' => 0, 'txt' => $txt)) : $txt);
-//            die();
-//        }
-//
-//
-//        /**
-//         * Upload di eventuali file
-//         * lo metto qui per prevenire eventuali errori in cui il file è richiesto
-//         * ed è messo in upload... quindi upload prima di validation
-//         */
-//        $files_fields = array_keys($_FILES);
-//        if (!empty($files_fields)) {
-//            $this->load->library('upload', array(
-//                'upload_path' => './uploads/',
-//                'allowed_types' => '*', //non possiamo fare assunzioni sulla natura del file
-//                'max_size' => 50000,
-//                'encrypt_name' => TRUE,
-//            ));
-//
-//            foreach ($files_fields as $field_name) {
-//                $file_array = $_FILES[$field_name];
-//                if (empty($file_array) || !$file_array['name']) {
-//                    continue;
-//                }
-//                if (!$this->upload->do_upload($field_name)) {
-//                    /* Errore upload */
-//                    die(json_encode(array('status' => 0, 'txt' => $this->upload->display_errors())));
-//                } else {
-//                    /* Upload ok */
-//                    $up_data = $this->upload->data();
-//                    $_POST[$field_name] = $up_data['file_name'];
-//                    
-//                    // Unset della chiave del $_FILES per prevenire errori di
-//                    // validazione in eventuali post process successivi
-//                    unset($_FILES[$field_name]);
-//                }
-//            }
-//        }
-//
-//
-//
-//        /**
-//         * Validazione
-//         */
-//        $rules = array();
-//        $rules_date_before = array();
-//        foreach ($form['fields'] as $field) {
-//            $rule = array();
-//            if ($field['fields_required'] === 't' && !$field['fields_default'] && ($field['fields_draw_html_type'] !== 'input_password' || !$edit)) {
-//                // Una password è required sse sto creando un nuovo record
-//                // e inoltre non è necessario controllare il required se ho un default value
-//                $rule[] = 'required';
-//            }
-//
-//            foreach ($field['validations'] as $validation) {
-//                switch ($validation['fields_validation_type']) {
-//                    case 'valid_email':         case 'valid_emails':
-//                    case 'integer':             case 'numeric':
-//                    case 'is_natural':          case 'is_natural_no_zero':
-//                    case 'alpha':               case 'alpha_numeric':
-//                    case 'alpha_dash':
-//                        //Le validazioni che non richiedono parametri particolari
-//                        $rule[] = $validation['fields_validation_type'];
-//                        break;
-//
-//                    case 'decimal':         case 'is_unique':
-//                    case 'min_length':      case 'max_length':
-//                    case 'exact_length':    case 'greater_than':
-//                    case 'less_than':
-//                        //Le validazioni che hanno parametri semplici
-//                        if ($validation['fields_validation_type'] === 'is_unique' && $edit) {
-//                            $num = $this->db->where($field['fields_name'], $this->input->post($field['fields_name']))
-//                                    ->where("{$form['entity_name']}_id <>", $value_id)
-//                                    ->count_all_results($form['entity_name']);
-//
-//                            if ($num > 0) {
-//                                echo json_encode(array('status' => isset($form['forms_response_error']) ? $form['forms_response_error'] : 0, 'txt' => "Il campo {$field['fields_draw_label']} deve essere univoco"));
-//                                die();
-//                            }
-//                        } else {
-//                            $rule[] = "{$validation['fields_validation_type']}[{$validation['fields_validation_extra']}]";
-//                        }
-//                        break;
-//
-//                    case 'date_before':
-//                        $rules_date_before[] = array('before' => $field['fields_name'], 'after' => $validation['fields_validation_extra'], 'message' => ($validation['fields_validation_message'] ? $validation['fields_validation_message'] : NULL));
-//                        break;
-//
-//                    case 'date_after':
-//                        $rules_date_before[] = array('before' => $validation['fields_validation_extra'], 'after' => $field['fields_name'], 'message' => ($validation['fields_validation_message'] ? $validation['fields_validation_message'] : NULL));
-//                        break;
-//                }
-//            }
-//
-//            if (!empty($rule)) {
-//                $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
-//            }
-//        }
-//
-//
-//        /**
-//         * Eseguo il process di pre-validation
-//         */
-//        $_predata = $_POST;
-//        try {
-//            $processed_predata = $this->datab->run_post_process($form['entity_id'], $edit ? 'pre-validation-update' : 'pre-validation-insert', array('post' => $_predata, 'value_id' => $value_id));
-//        } catch (Exception $ex) {
-//            die(json_encode(array('status' => isset($form['forms_response_error']) ? $form['forms_response_error'] : 0, 'txt' => $ex->getMessage())));
-//        }
-//
-//        if (isset($processed_predata['post'])) {
-//            // Metto i dati processati nel post
-//            $_POST = $processed_predata['post'];
-//        }
-//
-//
-//
-//        if (!empty($rules)) {
-//            $this->load->library('form_validation');
-//            $this->form_validation->set_rules($rules);
-//            if (!$this->form_validation->run()) {
-//                echo json_encode(array('status' => isset($form['forms_response_error']) ? $form['forms_response_error'] : 0, 'txt' => validation_errors()));
-//                die();
-//            }
-//        }
-//
-//        $dati = $_POST;
-//
-//
-//        /**
-//         * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
-//         * es:
-//         *      password => md5($data['password'])
-//         */
-//        $post_process_relations = array();
-//        foreach ($form['fields'] as $field) {
-//
-//            $sql_type = strtoupper($field['fields_type']);
-//            $html_type = $field['fields_draw_html_type'];
-//
-//            // Se non esiste il campo allora vuol dire che non era un required,
-//            // ma comunque stava nel form. Vuol dire che deve essere inserito vuoto
-//            if (!array_key_exists($field['fields_name'], $dati)) {
-//                $dati[$field['fields_name']] = NULL;
-//            }
-//
-//            // Colgo l'occasione per vedere se ci sono field che si riferiscono
-//            // a relazioni - questo è un passaggio che devo fare ora perché i
-//            // vari controlli sui campi fallirebbero dato che ho un array.
-//            // Prima la condizione richiedeva che ci fosse un REF e che fosse
-//            // SETTATO il campo dell'eventuale relazione
-//            // ----
-//            // Ma questo era scorretto perché se io mi sto ciclando tutti i
-//            // campi del form e mi trovo una relazione, allora mi aspetto anche
-//            // che questo form contenga un qualche tipo di multiselect e che se
-//            // questo campo non viene effettivamente passato, allora vuol dire
-//            // che devo eliminare tutte le eventuali relazioni (ciò vale per la
-//            // modifica)
-//            if ($field['fields_ref']) {
-//                /**
-//                 * in realtà il field ref dovrebbe puntare alla tabella pivot non alla tabella con cui è relazionata
-//                 * ad esempio ho aziende <-> tags
-//                 * il field ref di aziende non dovrebbe puntare a tags, ma ad aziende_tags (il nome della relazione).
-//                 * ---
-//                 * Per mantenere la retrocompatibilità vengono cercate entrambe le varianti
-//                 */
-//                $dataToInsert = isset($dati[$field['fields_name']]) ? $dati[$field['fields_name']] : array();
-//                if (is_array($dataToInsert)) {
-//                    $relations = $this->db->where_in('relations_name', array($form['entity_name'] . '_' . $field['fields_ref'], $field['fields_ref']))->get('relations');
-//                    if ($relations->num_rows() > 0) {
-//                        $relation = $relations->row();
-//                        $post_process_relations[] = array(
-//                            'entity' => $relation->relations_name,
-//                            'relations_field_1' => $relation->relations_field_1,
-//                            'relations_field_2' => $relation->relations_field_2,
-//                            'value' => $dataToInsert
-//                        );
-//                        unset($dati[$field['fields_name']]);
-//                        continue;
-//                    } elseif ($dataToInsert && in_array($sql_type, array('VARCHAR', 'TEXT'))) {
-//                        $dati[$field['fields_name']] = implode(',', $dataToInsert);
-//                    }
-//                }
-//            }
-//
-//
-//            switch ($html_type) {
-//                case 'date':
-//                    if (empty($dati[$field['fields_name']])) {
-//                        $dati[$field['fields_name']] = null;
-//                    } else {
-//                        // Il campo non era vuoto, quindi valido la stringa e se
-//                        // è vuota allora vuol dire che il formato era sbagliato
-//                        $dati[$field['fields_name']] = date_toDbFormat($dati[$field['fields_name']]);
-//                        if (!$dati[$field['fields_name']]) {
-//                            echo json_encode(array('status' => 0, 'txt' => $field['fields_draw_label'] . ' non è una data valida'));
-//                            die();
-//                        }
-//                    }
-//                    break;
-//                case 'date_time':
-//                    if (empty($dati[$field['fields_name']])) {
-//                        $dati[$field['fields_name']] = null;
-//                    } else {
-//                        // Vale la stessa nota fatta per il [date]
-//                        $dati[$field['fields_name']] = dateTime_toDbFormat($dati[$field['fields_name']]);
-//                        if (!$dati[$field['fields_name']]) {
-//                            echo json_encode(array('status' => 0, 'txt' => $field['fields_draw_label'] . ' non è una data valida'));
-//                            die();
-//                        }
-//                    }
-//                    break;
-//                case 'wysiwyg':
-//                    if (isset($dati[$field['fields_name']])) {
-//                        $dati[$field['fields_name']] = str_replace(base_url_template(), '{base_url}', $dati[$field['fields_name']]);
-//                    }
-//                    break;
-//                case 'input_password':
-//                    if (empty($dati[$field['fields_name']])) {
-//                        unset($dati[$field['fields_name']]);
-//                    } else {
-//                        $dati[$field['fields_name']] = md5($dati[$field['fields_name']]);
-//                    }
-//                    break;
-//                case 'map':
-//                    
-//                    $fieldData = $dati[$field['fields_name']];
-//                    $exp = array();
-//                    
-//                    if (is_array($fieldData)) {
-//                        if (isset($fieldData['geo'])) {
-//                            $dati[$field['fields_name']] = $fieldData['geo'];
-//                            break;
-//                        } elseif (isset($fieldData['lat']) && isset($fieldData['lng'])) {
-//                            $exp = array($fieldData['lat'], $fieldData['lng']);
-//                        } elseif (count($fieldData) > 1) {
-//                            $exp = array_values($fieldData);
-//                        } else {
-//                            unset($dati[$field['fields_name']]);
-//                            break;
-//                        }
-//                    } else {
-//                        $exp1 = (strpos($fieldData, ';') != false)? explode(';', $fieldData): array();
-//                        $exp2 = (strpos($fieldData, ',') != false)? explode(',', $fieldData): array();
-//                        
-//                        if (count($exp1) === 2) {
-//                            $exp = $exp1;
-//                        } elseif (count($exp2) === 2) {
-//                            $exp = $exp2;
-//                        } else {
-//                            unset($dati[$field['fields_name']]);
-//                            break;
-//                        }
-//                    }
-//                    
-//                    $dati[$field['fields_name']] = empty($exp)? null: $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
-//                    break;
-//
-//                case 'date_range':
-//                    if ($sql_type === 'DATERANGE') {
-//                        $dati[$field['fields_name']] = '[' . implode(',', array_map(function($date) {
-//                                            return date_toDbFormat($date);
-//                                        }, explode(' - ', $dati[$field['fields_name']]))) . ']';
-//                    }
-//                    break;
-//            }
-//
-//
-//            switch ($sql_type) {
-//                case 'INT':
-//                    if ($dati[$field['fields_name']] && !is_numeric($dati[$field['fields_name']])) {
-//                        // FIX: non voglio fare il sanitize dell'input se è già una stringa numerica
-//                        $dati[$field['fields_name']] = filter_var($dati[$field['fields_name']], FILTER_SANITIZE_NUMBER_INT);
-//                    }
-//
-//                    // Se non è stato inserito niente allora cancello il campo 
-//                    // sperando che sia stato inserito un valore di default...
-//                    if ($dati[$field['fields_name']] === ''/* && ($field['fields_required'] === 'f' OR $field['fields_default']) */) {
-//                        unset($dati[$field['fields_name']]);
-//                    }
-//                    break;
-//
-//                case 'FLOAT':
-//                    $dati[$field['fields_name']] = (float) filter_var(str_replace(',', '.', $dati[$field['fields_name']]), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-//                    break;
-//
-//                case 'BOOL':
-//                    if (isset($dati[$field['fields_name']])) {
-//                        if (!in_array($dati[$field['fields_name']], array('t', 'f'))) {
-//                            $dati[$field['fields_name']] = ($dati[$field['fields_name']] ? 't' : 'f');
-//                        }
-//                    } else {
-//                        $dati[$field['fields_name']] = 'f';
-//                    }
-//                    break;
-//
-//                case 'TIMESTAMP WITHOUT TIME ZONE':
-//                    if (isset($dati[$field['fields_name']]) && !$dati[$field['fields_name']]) {
-//                        unset($dati[$field['fields_name']]);
-//                    }
-//                    break;
-//
-//                case 'DATERANGE':
-//                    if (!isValidDateRange($dati[$field['fields_name']])) {
-//                        echo json_encode(array('status' => 0, 'txt' => $field['fields_draw_label'] . ' non è un date-range nel formato corretto'));
-//                        die();
-//                    }
-//                    break;
-//            }
-//
-//
-//            // Se alla fine di tutto sto processo il dato è ancora null E ha un
-//            // valore di default settato allora, ahimé, tocca unsettare il
-//            // valore null in quanto prenderò tal valore di default...
-//            if (array_key_exists($field['fields_name'], $dati) && is_null($dati[$field['fields_name']]) && trim($field['fields_default'])) {
-//                unset($dati[$field['fields_name']]);
-//            }
-//        }
-//
-//
-//        // Controllo delle regole custom di validazione
-//        foreach ($rules_date_before as $rule) {
-//            $before = $rule['before'];
-//            $after = $rule['after'];
-//            $message = $rule['message'];
-//
-//            if (isset($dati[$before]) && isset($dati[$after]) && strtotime($dati[$after]) <= strtotime($dati[$before])) {
-//                if (!$message) {
-//                    $message = "La data di inizio dev'essere antecedente alla data di fine";
-//                }
-//
-//                echo json_encode(array('status' => isset($form['forms_response_error']) ? $form['forms_response_error'] : 0, 'txt' => $message));
-//                die();
-//            }
-//        }
-//
-//
-//        /**
-//         * Eseguo il process di pre-action
-//         */
-//        try {
-//            $processed_data = $this->datab->run_post_process($form['entity_id'], $edit ? 'pre-update' : 'pre-insert', array('post' => $dati, 'value_id' => $value_id));
-//        } catch (Exception $ex) {
-//            die(json_encode(array('status' => isset($form['forms_response_error']) ? $form['forms_response_error'] : 0, 'txt' => $ex->getMessage())));
-//        }
-//
-//        if (isset($processed_data['post'])) {
-//            // Metto i dati processati nell'array da inserire su db
-//            $dati = $processed_data['post'];
-//        }
-//        
-//        /*
-//         * Filtro i campi su cui sto per fare la query.
-//         * Unsetto quelli in più - prima recupero un array con i nomi dei campi
-//         * reali, poi dalle chiavi che sto inseredo tolgo quelle valide - ciò
-//         * che resta sono quelle in più - le unsetto
-//         */
-//        $entityFields = array_key_map($this->db->get_where('fields', ['fields_entity_id' => $form['entity_id']])->result_array(), 'fields_name');
-//        foreach (array_diff(array_keys($dati), $entityFields) as $key) {
-//            unset($dati[$key]);
-//        }
-//
-//        // Inserisco i dati
-//        $old_data = [];
-//        if ($form['forms_one_record'] == 'f') {
-//            if ($edit) {
-//                $where = [$form['entity_name'] . "_id" => $value_id];
-//                $old_data = $this->db->get_where($form['entity_name'], $where)->row_array();
-//                $x = $dati? $this->db->update($form['entity_name'], $dati, $where): true;
-//                $insert_id = $value_id;
-//            } else {
-//                $this->db->prepare_data($dati);
-//                $x = $this->db->insert($form['entity_name'], $dati);
-//                $insert_id = $this->db->insert_id();
-//            }
-//        } else {
-//            if ($edit) {
-//                $old_data = $this->db->get($form['entity_name'])->row_array();
-//            }
-//            $this->db->truncate($form['entity_name']);
-//            $x = $this->db->insert($form['entity_name'], $dati);
-//            $insert_id = $this->db->insert_id();
-//        }
-//
-//        if (!$x) {
-//            // Se non è andata a buon fine faccio rollback ora senza proseguire
-//            $this->db->trans_rollback();
-//            echo json_encode(array('status' => 0, 'txt' => ($edit ? 'Si è verificato un errore imprevisto durante la modifica dei dati' : 'Si è verificato un errore imprevisto durante il salvataggio dei dati')));
-//            return;
-//        }
-//
-//        // Salvo i dati avendo l'id
-//        if (count($post_process_relations) > 0) {
-//            foreach ($post_process_relations as $relation) {
-//                /* ==========================================================
-//                 * Prima di inserire i dati nella relazione faccio un delete 
-//                 * dei record con relations_field_1 uguale al mio insert id
-//                 * che corrispondono ai valori vecchi.
-//                 * --
-//                 * Nel caso di una modifica si eliminano valori vecchi
-//                 * nel caso di un inserimento non si elimina niente.
-//                 * Corretto?
-//                 * ========================================================= */
-//                $this->db->delete($relation['entity'], array($relation['relations_field_1'] => $insert_id));
-//                if (is_array($relation['value'])) {
-//                    foreach ($relation['value'] as $value) {
-//                        $data_rel = array(
-//                            $relation['relations_field_1'] => $insert_id,
-//                            $relation['relations_field_2'] => $value,
-//                        );
-//                        $this->db->insert($relation['entity'], $data_rel);
-//                    }
-//                }
-//            }
-//        }
-//        
-//        // Operazione eseguita con successo ==> esegui i post process
-//        
-//        $new_data = $this->db->get_where($form['entity_name'], array($form['entity_name'] . "_id" => $insert_id))->row_array();
-//        
-//        try {
-//            call_user_func_array(array($this->datab, 'run_post_process'), array(
-//                $form['entity_id'],
-//                $edit? 'update': 'insert',
-//                $edit? array('new' => $new_data, 'old' => $old_data, 'diff' => array_diff_assoc($new_data, $old_data), 'value_id' => $insert_id): $new_data
-//            ));
-//        } catch (Exception $ex) {
-//            $this->db->trans_rollback();
-//            die(json_encode(array('status' => isset($form['forms_response_error']) ? $form['forms_response_error'] : 0, 'txt' => $ex->getMessage())));
-//        }
-//
-//
-//
-//        $status = (isset($form['forms_success_status']) && is_numeric($form['forms_success_status'])) ? $form['forms_success_status'] : 5;
-//        $message = (empty($form['forms_success_message']) ? ($edit ? 'Modifiche salvate correttamente' : 'Salvataggio effettuato con successo') : $form['forms_success_message']);
-//
-//        if ($status == 1 && filter_var($message, FILTER_VALIDATE_URL) === false) {
-//            $message = base_url($message);
-//        }
-//
-//        // Replace variabili dentro al message
-//        $replaceFrom = array_map(function($key) {
-//            return '{' . $key . '}';
-//        }, array_keys($dati));
-//        $replaceFrom[] = '{value_id}';
-//
-//        $replaceTo = array_values($dati);
-//        $replaceTo[] = $insert_id;
-//        $committed = $this->db->trans_complete();
-//
-//        if ($committed) {
-//            echo json_encode(array('status' => $status, 'txt' => str_replace($replaceFrom, $replaceTo, $message), 'close_modals' => 1));
-//        } else {
-//            echo json_encode(array('status' => 0, 'txt' => ($edit ? 'Si è verificato un errore imprevisto durante la modifica dei dati' : 'Si è verificato un errore imprevisto durante il salvataggio dei dati')));
-//        }
-//    }
-    
     
     public function save_form($form_id = null, $edit = false, $value_id = null) {
         
@@ -584,6 +83,15 @@ class Db_ajax extends CI_Controller {
             $relations = $this->db->where_in('relations_name', array($form['entity_name'] . '_' . $field['fields_ref'], $field['fields_ref']))->get('relations');
             if ($relations->num_rows() > 0) {
                 $relation = $relations->row();
+                
+                // Se in un form, metto un campo relazione di un'altra entità,
+                // allora probabilmente voglio andare ad inserirlo con un PP
+                // Quindi ignoro il campo, assumendo che verrà gestito
+                // manualmente
+                if (!in_array($form['entity_name'], [$relation->relations_table_1, $relation->relations_table_2])) {
+                    continue;
+                }
+                
                 $post_process_relations[] = array(
                     'entity' => $relation->relations_name,
                     'relations_field_1' => $relation->relations_field_1,
@@ -1197,25 +705,21 @@ class Db_ajax extends CI_Controller {
         $entity = $this->datab->get_entity_by_name($entity_name);
         $can_write = $this->datab->can_write_entity($entity['entity_id']);
         if (!$can_write) {
-            $txt = 'Insufficient permissions to write';
-            echo ($this->input->is_ajax_request() ? json_encode(array('status' => 0, 'txt' => $txt)) : $txt);
-            die();
+            $txt = 'Non hai i permessi per eliminare il record';
+            die($this->input->is_ajax_request() ? json_encode(['status' => 3, 'txt' => $txt]) : $txt);
         }
-
-        $this->datab->run_post_process($entity['entity_id'], 'pre-delete', array('id' => $id));
-        $this->db->where($entity_name . '_id', $id)->delete($entity_name);
-        $this->datab->run_post_process($entity['entity_id'], 'delete', array('id' => $id));
-
+        
+        try {
+            $this->apilib->delete($entity_name, $id);
+        } catch (Exception $ex) {
+            die($this->input->is_ajax_request() ? json_encode(['status' => 3, 'txt' => $ex->getMessage()]) : $ex->getMessage());
+        }
+        
+        
         if ($this->input->is_ajax_request()) {
-            echo json_encode(array('status' => 2));     //Refresh se richiesta fatta da ajax
+            echo json_encode(['status' => 2]);
         } else {
-            /*
-             * Torno alla home se la richiesta è stata fatta normalmente
-             * non so da quale url viene fatta la richiesta
-             * in ogni caso essendo il controller db_ajax non dovrebbe mai essere
-             * fatta una richiesta non ajax...
-             */
-            redirect(base_url());
+            redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
         }
     }
     
@@ -1317,6 +821,16 @@ class Db_ajax extends CI_Controller {
 
         $funcNum = $_GET['CKEditorFuncNum'];
         echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($funcNum, '$url', '$message');</script>";
+    }
+    
+    
+    public function changeLanguage() {
+        $langKey = $this->input->get_post('language');
+        if ($this->datab->changeLanguage($langKey)) {
+            echo json_encode(['success' => true, 'lang' => $this->datab->getLanguage()]);
+        } else {
+            echo json_encode(['success' => false, 'lang' => null]);
+        }
     }
 
 }

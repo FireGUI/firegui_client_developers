@@ -3,11 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Main extends CI_Controller {
-
-    var $template = array();
-    var $settings = NULL;
-    
+class Main extends MY_Controller {
 
     function __construct() {
         parent :: __construct();
@@ -32,14 +28,6 @@ class Main extends CI_Controller {
             $this->auth->store_intended_url($redirection_url);
             redirect('access');
         }
-        
-        if (gethostname() === 'sfera' OR $this->auth->is_admin()) {
-            ini_set("display_errors", "1");
-            error_reporting(E_ALL);
-        }
-        
-        $this->settings = $this->db->get('settings')->row_array();
-        $this->output->enable_profiler(gethostname() === 'sfera');
     }
 
     public function index() {
@@ -338,26 +326,6 @@ class Main extends CI_Controller {
         
         redirect(base_url());
     }
-    
-    public function test_email() {
-        
-        $email = $this->input->get_post('email');
-        $key = $this->input->get_post('key');
-        $lang = $this->input->get_post('lang')?:'it';
-        
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            die('E-mail non valida. Passa un get/post con chiave `email`');
-        }
-        
-        if (!$key) {
-            die('Key e-mail non valida. Passa un get/post con chiave `key`');
-        }
-        
-        $sent = $this->mail_model->send($email, $key, $lang);
-        echo $sent? 'E-mail inviata correttamente': 'E-mail non inviata';
-    }
-    
-    
     
     
     public function stampa($pagina) {
