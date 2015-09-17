@@ -26,7 +26,7 @@ class Apilib {
     
     private $error = 0;
     private $errorMessage = '';
-    private $errorMessages = array(
+    private $errorMessages = [
         self::ERR_INVALID_API_CALL => 'Chiamata alle API non valida',
         self::ERR_NO_DATA_SENT => 'Nessun dato passato in input',
         self::ERR_REDIRECT_FAILED => 'Per effetturare il redirect alla pagina desiderata è necessario passare $_GET[url] - [dati salvati correttamente]',
@@ -35,14 +35,20 @@ class Apilib {
         self::ERR_UPLOAD_FAILED => 'Upload fallito',
         self::ERR_INTERNAL_DB => 'Si è verificato un errore nel server',
         self::ERR_GENERIC => 'Si è verificato un errore generico',
-    );
+    ];
     
     private $originalPost = null;
     private $previousDebug;
-    private $_loadedDataProcessors = array();
+    private $_loadedDataProcessors = [];
     private $processMode;
     
     
+    private $currentLanguage = null;
+    private $fallbackLanguage = null;
+
+
+
+
     public function __construct() {
         $this->load->model('crmentity');
         $this->load->driver('cache', $this->getCacheAdapter());
@@ -91,6 +97,27 @@ class Apilib {
     }
     
     
+    public function setLanguage($langId = null, $fallbackLangId = null) {
+        $this->currentLanguage = ((int) $langId)?:null;
+        $this->fallbackLanguage = ((int) $fallbackLangId)?:null;
+    }
+    
+    /**
+     * Traduci un valore in json con le impostazioni lingua correnti
+     * 
+     * @param type $jsonEncodedValue
+     * @return mixed
+     */
+    public function translate($jsonEncodedValue) {
+        
+        if (!$this->currentLanguage && !$this->fallbackLanguage) {
+            return false;
+        }
+        
+        return $this->getCrmEntity()->translateValue($jsonEncodedValue);
+    }
+    
+    
 
 
     /**
@@ -124,7 +151,7 @@ class Apilib {
      * @return bool Booleano indicante successo/fallimento dell'operazione
      */
     public function toggleCachingSystem($enable = true) {
-        $adapter = $enable? array('adapter' => 'file', 'backup' => 'dummy'): array('adapter' => 'dummy');
+        $adapter = $enable? ['adapter' => 'file', 'backup' => 'dummy']: ['adapter' => 'dummy'];
         $out = file_put_contents(APPPATH . 'cache/cache-controller', serialize($adapter), LOCK_EX);
         return $out !== false;
     }
@@ -143,7 +170,7 @@ class Apilib {
     public function clearCache($testMode = false) {
         $files = glob(APPPATH . 'cache/*');
         $keep = array('cache-controller', 'index.html');
-        $cleared = array();
+        $cleared = [];
         foreach ($files as $file) {
             if (is_file($file) && !in_array(($name=basename($file)), $keep)) {
                 if (!$testMode) {
@@ -176,8 +203,7 @@ class Apilib {
         
         $cache_key = "api.list.{$entity}";
         if( ! ($out=$this->cache->get($cache_key))) {
-            $crmentity = new Crmentity($entity);
-            $out = $crmentity->get_data_full_list(null, null, array(), NULL, 0, NULL, FALSE, $depth);
+            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, FALSE, $depth);
             $this->cache->save($cache_key, $out, self::CACHE_TIME);
         }
 
@@ -199,12 +225,21 @@ class Apilib {
         
         $cache_key = "api.item.{$entity}.{$id}";
         if( ! ($out=$this->cache->get($cache_key))) {
-            $crmentity = new Crmentity($entity);
-            $out = $crmentity->get_data_full($id, $maxDepthLevel);
+            $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
             $this->cache->save($cache_key, $out, self::CACHE_TIME);
         }
 
         return $this->sanitizeRecord($out);
+    }
+    
+    /**
+     * Esegue una query pulita su database prendendo l'entità per id
+     * 
+     * @param string $entity
+     * @param int $id
+     */
+    public function getById($entity, $id) {
+        return $this->db->get_where($entity, [$entity.'_id' => $id])->row_array();
     }
     
     
@@ -245,7 +280,7 @@ class Apilib {
             }
             $id = $this->db->insert_id();
 
-            $dati = $this->db->get_where($entity, array($entity.'_id' => $id))->row_array();
+            $dati = $this->getById($entity, $id);
             $this->runDataProcessing($entity, 'insert', $dati);
             
             $this->cache->clean();
@@ -272,7 +307,7 @@ class Apilib {
         // uno fallisce falliscono tutti
         $this->db->trans_start();
         
-        $output = array();
+        $output = [];
         foreach ($data as $row) {
             $output[] = $this->create($entity, $row);
         }
@@ -316,11 +351,16 @@ class Apilib {
 
 
         if($this->processData($entity, $data, true, $id)) {
-            $old_data = $this->db->get_where($entity, array($entity.'_id' => $id))->row_array();
-            $this->db->update($entity, $data, array($entity.'_id' => $id));
-            $new_data = $this->db->get_where($entity, array($entity.'_id' => $id))->row_array();
+            $oldData = $this->getById($entity, $id);
+            $this->db->update($entity, $data, [$entity.'_id' => $id]);
+            $newData = $this->getById($entity, $id);
 
-            $this->runDataProcessing($entity, 'update', array('new' => $new_data, 'old' => $old_data, 'diff' => array_diff_assoc($new_data, $old_data), 'value_id' => $id));
+            $this->runDataProcessing($entity, 'update', [
+                'new' => $newData,
+                'old' => $oldData,
+                'diff' => array_diff_assoc($newData, $oldData),
+                'value_id' => $id
+            ]);
 
             $this->cache->clean();
             
@@ -343,9 +383,11 @@ class Apilib {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
         
-        $this->runDataProcessing($entity, 'pre-delete', array('id' => $id));
-        $this->db->delete($entity, array($entity.'_id' => $id));
-        $this->runDataProcessing($entity, 'delete', array('id' => $id));
+        $this->db->trans_start();
+        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id]);
+        $this->db->delete($entity, [$entity.'_id' => $id]);
+        $this->runDataProcessing($entity, 'delete', ['id' => $id]);
+        $this->db->trans_complete();
         
         $this->cache->clean();
     }
@@ -374,12 +416,15 @@ class Apilib {
     public function entityList() {
         
         $entity_type_default = defined('ENTITY_TYPE_DEFAULT')? ENTITY_TYPE_DEFAULT: 1;
-        $entities = $this->db->order_by('entity_name')->get_where('entity', array('entity_type' => $entity_type_default))->result_array();
+        $entities = $this->db->order_by('entity_name')->get_where('entity', ['entity_type' => $entity_type_default])->result_array();
 
-        $tables = array();
+        $tables = [];
         foreach($entities as $entity) {
-            $table = array('name' => $entity['entity_name'], 'fields' => array());
-            $fields = $this->db->order_by('fields_name')->get_where('fields', array('fields_entity_id' => $entity['entity_id']))->result_array();
+            $table = [
+                'name' => $entity['entity_name'],
+                'fields' => []
+            ];
+            $fields = $this->db->order_by('fields_name')->get_where('fields', ['fields_entity_id' => $entity['entity_id']])->result_array();
             foreach($fields as $field) {
                 $table['fields'][] = $field['fields_name'] . ($field['fields_ref']? ' <small>[ref. from: <strong>'.$field['fields_ref'] . '</strong>]</small>': '');
             }
@@ -399,9 +444,9 @@ class Apilib {
         $entity_type_support = defined('ENTITY_TYPE_SUPPORT_TABLE')? ENTITY_TYPE_SUPPORT_TABLE: 2;
         $support_tables = $this->db->order_by('entity_name')->get_where('entity', array('entity_type' => $entity_type_support))->result_array();
 
-        $tables = array();
+        $tables = [];
         foreach($support_tables as $entity) {
-            $tables[$entity['entity_name']] = array('fields' => array(), 'values' => array());
+            $tables[$entity['entity_name']] = array('fields' => [], 'values' => []);
             $fields = $this->db->order_by('fields_name')->get_where('fields', array('fields_entity_id' => $entity['entity_id']))->result_array();
             foreach($fields as $field) {
                 $tables[$entity['entity_name']]['fields'][] = $field['fields_name'];
@@ -423,14 +468,14 @@ class Apilib {
     
     
     
-    public function search($entity=null, $input = array(), $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC') {
+    public function search($entity=null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2) {
         
         if( ! $entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
         
-        if(is_string($input)) {
-            $input = array($input);
+        if(!is_array($input)) {
+            $input = $input? [$input]: [];
         }
         
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
@@ -440,10 +485,8 @@ class Apilib {
         
         
         if( ! ($out=$this->cache->get($cache_key))) {
-            $crmentity = new Crmentity($entity);
-
-            $where = array();
             
+            $where = [];
             if(isset($input['where'])) {
                 $where[] = $input['where'];
                 unset($input['where']);
@@ -468,7 +511,7 @@ class Apilib {
             }
             
             
-            $order_array = array();
+            $order_array = [];
             if ($orderBy) {
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
                 // campo_1:campo_2 ...
@@ -484,7 +527,7 @@ class Apilib {
                     } elseif (isset($order_dirs[$k])) {
                         // Mi assicuro che la direzione sia ASC o DESC
                         $direction = strtoupper($order_dirs[$k]);
-                        $order_array[] = $field . ' ' . (in_array($direction, array('ASC', 'DESC'))? $direction: 'ASC');
+                        $order_array[] = $field . ' ' . (in_array($direction, ['ASC', 'DESC'])? $direction: 'ASC');
                     } else {
                         // Aggiungo con direzione ASC
                         $order_array[] = $field . ' ASC';
@@ -492,16 +535,11 @@ class Apilib {
                 }
             }
             
-            $order = (empty($order_array)? null: implode(', ', $order_array));
+            $order = empty($order_array)? null: implode(', ', $order_array);
             //$order = $orderBy? $orderBy.' '.($orderDir==='ASC'? $orderDir: 'DESC'): null;
             
-            
-            if(!$limit) {
-                $limit = null;
-            }
-            
             try {
-                $out = $crmentity->get_data_full_list(null, null, $where, $limit, $offset, $order);
+                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit?:null, $offset, $order, false, $maxDepth);
                 $this->cache->save($cache_key, $out, self::CACHE_TIME);
             } catch (Exception $ex) {
                 throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
@@ -512,14 +550,14 @@ class Apilib {
     }
     
     
-    public function searchFirst($entity=null, $input = array()) {
+    public function searchFirst($entity=null, $input = []) {
         $out = $this->search($entity, $input, 1);
-        return array_shift($out)?:array();
+        return array_shift($out)?:[];
     }
     
     
     
-    public function count($entity=null, $input = array()) {
+    public function count($entity=null, $input = []) {
         
         if( ! $entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -535,10 +573,7 @@ class Apilib {
         
         
         if( ! ($out=$this->cache->get($cache_key))) {
-            $crmentity = new Crmentity($entity);
-
-            $where = array();
-            
+            $where = [];
             if(isset($input['where'])) {
                 $where[] = $input['where'];
                 unset($input['where']);
@@ -562,8 +597,7 @@ class Apilib {
                 }
             }
             
-            
-            $out = $crmentity->get_data_full_list(null, null, $where, null, 0, null, true);
+            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true);
             $this->cache->save($cache_key, $out, self::CACHE_TIME);
         }
         
@@ -603,7 +637,7 @@ class Apilib {
         
         if( ! $this->errorMessage) {
             // Condizione anomala
-            $this->errorMessage = 'Errore imprevisto';
+            $this->errorMessage = sprintf('Errore imprevisto (%s)', $this->error);
         }
         
         throw new ApiException($this->errorMessage, $this->error);
@@ -631,7 +665,6 @@ class Apilib {
     private function sanitizeList($data) {
         
         $data = isset($data['data'])? $data['data']: $data;
-        
         
         if(is_array($data)) {
             return array_map(function($item) {
@@ -693,10 +726,10 @@ class Apilib {
         /**
          * Validazione
          */
-        $rules = array();
-        $rules_date_before = array();
+        $rules = [];
+        $rules_date_before = [];
         foreach ($fields as $field) {
-            $rule = array();
+            $rule = [];
             
             // Inserisci la regola required per i campi che la richiedono
             // (una password è required solo se sto creando il record per la
@@ -706,6 +739,7 @@ class Apilib {
                 switch ($field['fields_draw_html_type']) {
                     // Questo perchè l'upload viene giustamente fatto dopo il
                     // controllo delle regole di validazione
+                    case 'upload':
                     case 'upload_image':
                         if (!array_key_exists($field['fields_name'], $_FILES)) {
                             $rule[] = 'required';
@@ -755,11 +789,19 @@ class Apilib {
                     
                     // Validazioni complesse
                     case 'date_before':
-                        $rules_date_before[] = array('before' => $field['fields_name'], 'after' => $validation['fields_validation_extra'], 'message' => ($validation['fields_validation_message']? $validation['fields_validation_message']: NULL));
+                        $rules_date_before[] = [
+                            'before' => $field['fields_name'],
+                            'after' => $validation['fields_validation_extra'],
+                            'message' => $validation['fields_validation_message'] ? : null
+                        ];
                         break;
                     
                     case 'date_after':
-                        $rules_date_before[] = array('before' => $validation['fields_validation_extra'], 'after' => $field['fields_name'], 'message' => ($validation['fields_validation_message']? $validation['fields_validation_message']: NULL));
+                        $rules_date_before[] = [
+                            'before' => $validation['fields_validation_extra'],
+                            'after' => $field['fields_name'],
+                            'message' => $validation['fields_validation_message'] ? : null
+                        ];
                         break;
                 }
             }
@@ -773,7 +815,7 @@ class Apilib {
          * Eseguo il process di pre-validation
          */
         $_predata = $dati;
-        $processed_predata = $this->runDataProcessing($entity_data['entity_id'], $editMode? 'pre-validation-update': 'pre-validation-insert', array('post' => $_predata, 'value_id' => $value_id));
+        $processed_predata = $this->runDataProcessing($entity_data['entity_id'], $editMode? 'pre-validation-update': 'pre-validation-insert', ['post' => $_predata, 'value_id' => $value_id]);
         if(isset($processed_predata['post'])) {
             // Metto i dati processati nel post
             $_POST = $dati = $processed_predata['post'];
@@ -824,36 +866,25 @@ class Apilib {
             }
         }
         
-        /**
+        /*
          * Upload di eventuali file
+         * ---
+         * Con il parametro true, man mano che il sistema fa l'upload dei file,
+         * unsetta la relativa chiave nella superglobal $_FILES per prevenire
+         * errori di validazione in eventuali post process successivi
+         * 
+         * $result è il risultato dell'operazione: se è un array, allora posso
+         * unirlo all'array $dati, altrimenti se è avvenuto un qualche errore di
+         * upload, allora questo sarà === false (nota che gli errori sono già
+         * stati notificati dalla funzione uploadAll, quindi mi basta fare un
+         * return false;
          */
-        $files_fields = array_keys($_FILES);
-        if(!empty($files_fields)) {
-            $this->load->library('upload', array(
-                'upload_path' => './uploads/',
-                'allowed_types' => '*', //non possiamo fare assunzioni sulla natura del file
-                'max_size' => 50000,
-                'encrypt_name' => TRUE,
-            ));
-            
-            foreach ($files_fields as $field_name) {
-                $file_array = $_FILES[$field_name];
-                if (empty($file_array) || !$file_array['name']) {continue;}
-                if (!$this->upload->do_upload($field_name)) {
-                    /* Errore upload */
-                    $this->error = self::ERR_UPLOAD_FAILED;
-                    $this->errorMessage = $this->upload->display_errors();
-                    return false;
-                } else {
-                    /* Upload ok */
-                    $up_data = $this->upload->data();
-                    $dati[$field_name] = $up_data['file_name'];
-                    
-                    // Unset della chiave del $_FILES per prevenire errori di
-                    // validazione in eventuali post process successivi
-                    unset($_FILES[$field_name]);
-                }
-            }
+        $result = $this->uploadAll(true);
+        if ($result === false) {
+            return false;
+        } elseif ($result && is_array($result)) {
+            $dati = array_merge($dati, $result);
+            $originalData = array_merge($originalData, $result);
         }
         
         
@@ -861,163 +892,86 @@ class Apilib {
          * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
          * es: password => md5($data['password'])
          */
-        $post_process_relations = array();
+                
         foreach ($fields as $field) {
             
-            // Se non esiste il campo allora vuol dire che non era un required,
-            // ma comunque stava nel form. Vuol dire che deve essere inserito vuoto
-            if( ! array_key_exists($field['fields_name'], $dati)) {
-                // In modifica vuol dire che non ho questo campo
-                if ($editMode) {
-                    continue;
-                }
+            $name = $field['fields_name'];
+            $value = isset($dati[$name]) ? $dati[$name]: null;
+            $multilingual = $field['fields_multilingual'] == 't';
+            
+            // Evito di processare il campo se il campo non è stato passato
+            // nell'input, perché significa che è già stato processato
+            // precedentemente (questo dovrebbe velocizzare l'apilib)
+            // per questa ottimizzazione non devo prendere i campi multilingua, 
+            // perchè altrimenti non avrei il merge
+            if ($editMode && !array_key_exists($name, $originalData) && !$multilingual) {
+                continue;
+            }
+            
+            if ($multilingual) {
+                // Controllo multilingua
+                // ---
+                // Se il campo è multilingua devo passare come dato una stringa
+                // codificata in json - se ho una lingua settata nell'apilib,
+                // allora il value può anche non essere un array
+                $toSaveJSON = [];
                 
-                // In creazione lo metto a null
-                $dati[$field['fields_name']] = null;
-            }
-            
-            $sql_type = strtoupper($field['fields_type']);
-            $html_type = $field['fields_draw_html_type'];
-            
-            switch ($html_type) {
-                case 'date':
-                    if(empty($dati[$field['fields_name']])) {
-                        $dati[$field['fields_name']] = null;
-                    } else {
-                        // Il campo non era vuoto, quindi valido la stringa e se
-                        // è vuota allora vuol dire che il formato era sbagliato
-                        $dati[$field['fields_name']] = date_toDbFormat($dati[$field['fields_name']]);
-                        if (!$dati[$field['fields_name']]) {
-                            $this->error = self::ERR_VALIDATION_FAILED;
-                            $this->errorMessage = "{$field['fields_draw_label']} non è una data valida";
+                if (isset($originalData[$name]) && (is_array($value) OR !is_null($this->currentLanguage))) {
+                    // Se siamo in modifica ed è impostato il vecchio campo (ed
+                    // ovviamente è un json valido nel db), allora mi è
+                    // possibile fare un merge di questi valori con quelli in
+                    // ingresso
+                    if ($editMode && isset($dataDb[$name])) {
+                        $dbMultilingualJSON = json_decode($dataDb[$name], true);
+                        if (is_array($dbMultilingualJSON)) {
+                            $toSaveJSON = $dbMultilingualJSON;
+                        }
+                    }
+                    
+                    // Se entro in questo if significa che ho una lingua
+                    // settata, quindi l'eventuale $value stringa lo metto come
+                    // lingua di default
+                    if (!is_array($value)) {
+                        $value = [$this->currentLanguage => $value];
+                    }
+                    
+                    // Quando inserisco i nuovi parametri, devo ciclarli e
+                    // inserirli manualmente con la chiave corretta, in quanto
+                    // un array_merge cambierebbe le chiavi numeriche (che per 
+                    // noi sono essenziali dato che contengono il language_id)
+                    foreach ($value as $langId => $lValue) {
+                        //(attenzione $lValue è per riferimento)
+                        if (!$this->sanitizeInput($field, $lValue, isset($originalData[$name][$langId])? $originalData[$name][$langId]: null)) {
                             return false;
                         }
+                        $toSaveJSON[$langId] = $lValue;
                     }
-                    break;
-                case 'date_time':
-                    if(empty($dati[$field['fields_name']])) {
-                        $dati[$field['fields_name']] = null;
-                    } else {
-                        // Vale la stessa nota fatta per il [date]
-                        $dati[$field['fields_name']] = dateTime_toDbFormat($dati[$field['fields_name']]);
-                        if (!$dati[$field['fields_name']]) {
-                            $this->error = self::ERR_VALIDATION_FAILED;
-                            $this->errorMessage = "{$field['fields_draw_label']} non è una data valida";
-                            return false;
-                        }
-                    }
-                    break;
-                case 'wysiwyg':
-                    if(isset($dati[$field['fields_name']])) {
-                        $bURL = (function_exists('base_url_template')? base_url_template(): base_url());
-                        $dati[$field['fields_name']] = str_replace($bURL, '{base_url}', $dati[$field['fields_name']]);
-                    }
-                    break;
-                case 'input_password':
-                    
-                    /**
-                     * In modifica se nei dati passati nel post non c'è la password,
-                     * allora non devo calcolare la hash nuovamente
-                     */
-                    if(empty($dati[$field['fields_name']]) || empty($originalData[$field['fields_name']])) {
-                        // La password non è stata passata, quindi non mi serve inserirla o modificarla
-                        unset($dati[$field['fields_name']]);
-                    } else {
-                        // Passata una nuova password - devo hasharla
-                        $dati[$field['fields_name']] = md5($originalData[$field['fields_name']]);
-                    }
-                    
-                    break;
-                case 'map':
-                    
-                    $fieldData = $dati[$field['fields_name']];
-                    $exp = array();
-                    
-                    if (is_array($fieldData)) {
-                        if (isset($fieldData['geo'])) {
-                            $dati[$field['fields_name']] = $fieldData['geo'];
-                            break;
-                        } elseif (isset($fieldData['lat']) && isset($fieldData['lng'])) {
-                            $exp = array($fieldData['lat'], $fieldData['lng']);
-                        } elseif (count($fieldData) > 1) {
-                            $exp = array_values($fieldData);
-                        } else {
-                            unset($dati[$field['fields_name']]);
-                            break;
-                        }
-                    } else {
-                        $exp1 = (strpos($fieldData, ';') != false)? explode(';', $fieldData): array();
-                        $exp2 = (strpos($fieldData, ',') != false)? explode(',', $fieldData): array();
-                        
-                        if (count($exp1) === 2) {
-                            $exp = $exp1;
-                        } elseif (count($exp2) === 2) {
-                            $exp = $exp2;
-                        } else {
-                            unset($dati[$field['fields_name']]);
-                            break;
-                        }
-                    }
-                    
-                    $dati[$field['fields_name']] = empty($exp)? null: $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
-                    break;
-                    
-                case 'date_range':
-                    if($sql_type === 'DATERANGE' && !isValidDateRange($dati[$field['fields_name']])) {
-                        $dati[$field['fields_name']] = '['.implode(',', array_map(function($date) { return date_toDbFormat($date); }, explode(' - ', $dati[$field['fields_name']]))).']';
-                    }
-                    break;
-            }
-            
-            
-            switch ($sql_type) {
-                case 'INT':
-                    if($dati[$field['fields_name']] && !is_numeric($dati[$field['fields_name']])) {
-                        // FIX: non voglio fare il sanitize dell'input se è già una stringa numerica
-                        $dati[$field['fields_name']] = filter_var($dati[$field['fields_name']], FILTER_SANITIZE_NUMBER_INT);
-                    }
-                    
-                    if( $dati[$field['fields_name']] === '' && $field['fields_required'] === 'f' ) {
-                        $dati[$field['fields_name']] = null;
-                    }
-                    break;
-                 
-                case 'FLOAT':
-                    $dati[$field['fields_name']] = (float) filter_var(str_replace(',', '.', $dati[$field['fields_name']]), FILTER_SANITIZE_NUMBER_FLOAT,FILTER_FLAG_ALLOW_FRACTION);
-                    break;
-                 
-                case 'BOOL':
-                    if(isset($dati[$field['fields_name']])) {
-                        if( ! in_array($dati[$field['fields_name']], array('t', 'f'))) {
-                            $dati[$field['fields_name']] = ($dati[$field['fields_name']]? 't': 'f');
-                        }
-                    } else {
-                        $dati[$field['fields_name']] = 'f';
-                    }
-                    break;
-                    
-                case 'TIMESTAMP WITHOUT TIME ZONE':
-                    if( isset($dati[$field['fields_name']]) && !$dati[$field['fields_name']] ) {
-                        unset($dati[$field['fields_name']]);
-                    }
-                    break;
-                case 'DATERANGE':
-                    if(!isValidDateRange($dati[$field['fields_name']])) {
-                        $this->error = self::ERR_VALIDATION_FAILED;
-                        $this->errorMessage = "{$field['fields_draw_label']} non è un date-range nel formato corretto";
-                        return false;
-                    }
-                    break;
+                }
+
+                // A questo punto rifaccio l'encode sulla variabile $value
+                $value = json_encode($toSaveJSON);
+                
+            // Per i campi non multilingua semplicemente processo il valore
+            // normalmente (attenzione $value è per riferimento)
+            } elseif(!$this->sanitizeInput($field, $value, isset($originalData[$name])? $originalData[$name]: null)) {
+                return false;
             }
 
-
-            // Se alla fine di tutto sto processo il dato è a null, ma ha un
+            // Se alla fine di tutto questo processo il dato è a null, ma ha un
             // valore di default settato allora, tocca unsettare il
             // valore null in quanto prenderò quello di default (via DB)
-            if (array_key_exists($field['fields_name'], $dati) && is_null($dati[$field['fields_name']]) && trim($field['fields_default'])) {
-                unset($dati[$field['fields_name']]);
-            }
+            // ===
+            // Inoltre rimuovo il campo anche se è null && required in modalità
+            // di modifica
+            $isNull = is_null($value);
+            $hasDefault = trim($field['fields_default']);
+            $isRequired = $field['fields_required']==='t';
             
+            if ($isNull && ($hasDefault OR ($editMode && $isRequired))) {
+                unset($dati[$name]);
+            } else {
+                $dati[$name] = $value;
+            }
         }
         
         // Controllo delle regole custom di validazione
@@ -1027,12 +981,8 @@ class Apilib {
             $message = $rule['message'];
             
             if(isset($dati[$before]) && isset($dati[$after]) && strtotime($dati[$after]) <= strtotime($dati[$before])) {
-                if( ! $message) {
-                    $message = "La data di inizio dev'essere antecedente alla data di fine";
-                }
-                
                 $this->error = self::ERR_VALIDATION_FAILED;
-                $this->errorMessage = $message;
+                $this->errorMessage = $message?: "La data di inizio dev'essere antecedente alla data di fine";
                 return false;
             }
         }
@@ -1040,7 +990,7 @@ class Apilib {
         /**
          * Eseguo il process di pre-action
          */
-        $processed_data = $this->runDataProcessing($entity_data['entity_id'], $editMode? 'pre-update': 'pre-insert', array('post' => $dati, 'value_id' => $value_id));
+        $processed_data = $this->runDataProcessing($entity_data['entity_id'], $editMode? 'pre-update': 'pre-insert', ['post' => $dati, 'value_id' => $value_id]);
         if(isset($processed_data['post'])) {
             // Metto i dati processati nell'array da inserire su db
             $dati = $processed_data['post'];
@@ -1060,16 +1010,13 @@ class Apilib {
          */
         $invalidFields = array_diff(array_keys($dati), array_key_map($fields, 'fields_name'));
         if ($invalidFields) {
-            if ($this->processMode === self::MODE_CRM_FORM) {
-                $dati = array_diff_key($dati, array_flip($invalidFields));
-                /*foreach ($invalidFields as $key) {
-                    unset($dati[$key]);
-                }*/
-            } else {
+            if ($this->processMode !== self::MODE_CRM_FORM) {
                 $this->error = self::ERR_VALIDATION_FAILED;
                 $this->errorMessage = sprintf("I campi %s non sono accettati", implode(', ', $invalidFields));
                 return false;
             }
+            
+            $dati = array_diff_key($dati, array_flip($invalidFields));
         }
         
         return true;
@@ -1078,14 +1025,189 @@ class Apilib {
     
     
     
+    
+    
+    
+    
+    /**
+     * Lancia il processo di valutazione/validazione di un campo. Questo metodo
+     * ritorna un booleano indicante il successo o meno dell'operazione.
+     * Il valore passato per riferimento, quindi se necessario effettuare
+     * aggiustamenti per renderlo salvabile su database viene manipolato
+     * direttamente da qui
+     * 
+     * @param array $field
+     * @param mixed $value
+     * @param array $originalValue
+     * @return boolean
+     */
+    protected function sanitizeInput(array $field, &$value, $originalValue) {
+        
+        $typeSQL = strtoupper($field['fields_type']);
+        $typeHTML = $field['fields_draw_html_type'];
+        
+        
+        switch ($typeHTML) {
+            case 'date':
+            case 'date_time':
+                if (($value = $this->filterInputDate($value, $typeHTML==='date_time')) === false) {
+                    $this->error = self::ERR_VALIDATION_FAILED;
+                    $this->errorMessage = "{$field['fields_draw_label']} non è una data valida";
+                    return false;
+                }
+                break;
+
+            case 'wysiwyg':
+                if($value) {
+                    $bURL = (function_exists('base_url_template')? base_url_template(): base_url());
+                    $value = str_replace($bURL, '{base_url}', $value);
+                }
+                break;
+
+            case 'input_password':
+                // In modifica se nei dati passati nel post non c'è la
+                // password, allora non devo calcolare la hash nuovamente
+                $value = $originalValue? md5($originalValue): null;
+                break;
+
+
+            case 'map':
+                // Lancia l'utility per filtrare input di tipo geography
+                $value = $this->filterInputGeo($value);
+                break;
+
+            case 'date_range':
+                if($typeSQL === 'DATERANGE' && !isValidDateRange($value)) {
+                    $value = '['.implode(',', array_map(function($date) { return date_toDbFormat($date); }, explode(' - ', $value))).']';
+                }
+                break;
+        }
+
+
+        switch ($typeSQL) {
+            case 'INT':
+                if (!is_numeric($value) && ((int) $value == $value)) {
+                    if($value == '' && ($field['fields_required'] === 'f' OR $field['fields_default'])) {  
+                        // Se il campo è stato lasciato vuoto e non è richiesto
+                        // oppure (se è richiesto), ma ha un default... lo metto
+                        // a null in modo che il sistema lo gestisca
+                        // automaticamente
+                        $value = null;
+                    } else {
+                        throw new Exception(sprintf("Il campo %s dev'essere un intero", $field['fields_name']));
+                    }
+                }
+                //----
+                /*if(isset($value) && !is_numeric($value)) {
+                    $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                }
+
+                if(($value === '' OR $value === false) && $field['fields_required'] === 'f' ) {
+                    $value = null;
+                }*/
+                break;
+
+            case 'FLOAT':
+                $float = str_replace(',', '.', $value);
+                $value = (float) filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT,FILTER_FLAG_ALLOW_FRACTION);
+                break;
+
+            case 'BOOL':
+                if (isset($value)) {
+                    // Se il valore è t/f ok, altrimenti prendi il valore
+                    // booleano
+                    $value = in_array($value, ['t', 'f']) ? $value: ($value ? 't': 'f');
+                } elseif (!trim($field['fields_default'])) {
+                    // Se invece è a null e non ho nessun tipo di default,
+                    // allora lo imposto come false automaticamente (vd.
+                    // checkbox che se le uso in modalità booleana, il false non
+                    // è settato)
+                    $value = 'f';
+                }
+                break;
+
+            case 'TIMESTAMP WITHOUT TIME ZONE':
+                $value = $value? : null;
+                break;
+
+            case 'DATERANGE':
+                if(!isValidDateRange($value)) {
+                    $this->error = self::ERR_VALIDATION_FAILED;
+                    $this->errorMessage = "{$field['fields_draw_label']} non è un date-range nel formato corretto";
+                    return false;
+                }
+                break;
+        }
+        
+        return true;
+    }
+    
+    
+    
+    /**
+     * Formattazione corretta di un input in una stringa date/datetime
+     * 
+     * @param mixed $value
+     * @param boolean $withTime
+     * @return string
+     */
+    protected function filterInputDate($value, $withTime) {
+        if(!$value) {
+            return null;
+        } else {
+            // Il campo non era vuoto, quindi valido la stringa e se
+            // è vuota allora vuol dire che il formato era sbagliato
+            $fn = $withTime ? 'dateTime_toDbFormat' : 'date_toDbFormat';
+            $value = $fn($value);
+
+            if (!$value) {
+                return false;
+            }
+            
+            return $value;
+        }
+    }
+    
+    /**
+     * Formattazione corretta di un tipo geography
+     * 
+     * @param mixed $value
+     * @return string|null
+     */
+    protected function filterInputGeo($value) {
+        
+        if (isset($value['geo'])) {
+            return $value['geo'];
+        }
+        
+        $exp = [];
+        if (isset($value['lat']) && isset($value['lng'])) {
+            $exp = [$value['lat'], $value['lng']];
+        } elseif (is_array($value) && count($value) > 1) {
+            $exp = array_values($value);
+        } elseif (is_string($value)) {
+            $nvalue = str_replace(',', ';', $value);
+            $exp = (strpos($nvalue, ';') !== false)? explode(';', $nvalue): [];
+        }
+        
+        if (isset($exp[0]) && isset($exp[1])) {
+            return $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
+        } else {
+            return null;
+        }
+        
+    }
+    
+    
+    
     /**
      * Cloni del model datab del crm
      */
-    protected function run_post_process($entity_id, $when, $data = array()) {
+    protected function run_post_process($entity_id, $when, $data = []) {
         $this->runDataProcessing($entity_id, $when, $data);
     }
     
-    public function runDataProcessing($entity_id, $when, $data = array()) {
+    public function runDataProcessing($entity_id, $when, $data = []) {
         
         if( ! is_numeric($entity_id) && is_string($entity_id)) {
             $entity = $this->getEntityByName($entity_id);
@@ -1135,13 +1257,125 @@ class Apilib {
     
     private function getEntityByName($entity_name) {
         $entity = $this->db->query("SELECT * FROM entity WHERE entity_name = '{$entity_name}'");
-        return ($entity instanceof CI_DB_result && $entity->num_rows() > 0)? $entity->row_array(): array();
+        return ($entity instanceof CI_DB_result && $entity->num_rows() > 0)? $entity->row_array(): [];
     }
     
     private function getFields($entity_id) {
         $query = $this->db->query("SELECT * FROM fields WHERE fields_entity_id = '{$entity_id}'");
-        return ($query instanceof CI_DB_result && $query->num_rows() > 0)? $query->result_array(): array();
+        return ($query instanceof CI_DB_result && $query->num_rows() > 0)? $query->result_array(): [];
     }
+    
+    
+    /**
+     * Upload di tutti i file dentro all'array $_FILES e opzionalmente rimuovili
+     * dalla superglobal
+     * 
+     * @param type $clearFilesSuperglobal
+     * @return boolean
+     */
+    private function uploadAll($clearFilesSuperglobal = false) {
+        
+        if (!$_FILES) {
+            return [];
+        }
+        
+        $output = [];
+        $this->load->library('upload', [
+            'upload_path' => FCPATH . 'uploads/',
+            'allowed_types' => '*',
+            'max_size' => 50000,
+            'encrypt_name' => true
+        ]);
+
+        foreach ($_FILES as $fieldName => $fileData) {
+            
+            if (empty($fileData['name'])) {
+                continue;
+            }
+            
+            $arrayMode = is_array($fileData['name']);
+            if ($arrayMode) {
+                // Qui chiamo ricorsivamente questo metodo sul sottoarray con
+                // delle chiavi ottenute mediante uniqid(). Mi salvo una copia
+                // di backup dell'array files da ripristinare dopo la chiamata
+                // ricorsiva
+                $_backup = $_FILES;
+                $_FILES = [];
+                
+                // Calcolo la mappatura delle chiavi. Assumo che l'array files
+                // non sia stato manipolato in modi strani e che quindi ci siano
+                // le stesse chiavi dentro ai sottoarray [name], [type],
+                // [tmp_name], [error] e [size]
+                $keyMap = [];
+                foreach (array_keys($fileData['name']) as $key) {
+                    if (!$fileData['name'][$key]) {
+                        continue;
+                    }
+                    
+                    $newKey = uniqid();
+                    $keyMap[$newKey] = $key;
+                    $_FILES[$newKey] = [
+                        'name' =>     $fileData['name'][$key],
+                        'type' =>     $fileData['type'][$key],
+                        'tmp_name' => $fileData['tmp_name'][$key],
+                        'error' =>    $fileData['error'][$key],
+                        'size' =>     $fileData['size'][$key]
+                    ];
+                }
+                
+                
+                // Chiamata ricorsiva... se fallisce (= ritorna false) allora
+                // fallisce anche questa
+                if (($out = $this->uploadAll(true)) === false) {
+                    return false;
+                }
+                
+                // Ripristino il $_FILES e rimappo con le vecchie chiavi i
+                // valori
+                $_FILES = $_backup;
+                foreach ($out as $key => $filename) {
+                    $oldKey = $keyMap[$key];
+                    $output[$fieldName][$oldKey] = $filename;
+                }
+                
+            } else {
+                // In modalità normale procedo senza problemi
+                if (!$this->upload->do_upload($fieldName)) {
+                    // Errore upload
+                    $this->error = self::ERR_UPLOAD_FAILED;
+                    $this->errorMessage = $this->upload->display_errors();
+                    return false;
+                }
+
+                // Upload ok
+                $uploadData = $this->upload->data();
+                $output[$fieldName] = $uploadData['file_name'];
+                
+            }
+                
+
+            if ($clearFilesSuperglobal) {
+                unset($_FILES[$fieldName]);
+            }
+        }
+        
+        return $output;
+    }
+    
+    
+    /**
+     * CrmEntity Factory
+     * 
+     * @param string $entity
+     * @return \Crmentity
+     */
+    private function getCrmEntity($entity = null) {
+        return new Crmentity($entity, [
+            $this->currentLanguage,
+            $this->fallbackLanguage
+        ]);
+    }
+    
 }
 
 

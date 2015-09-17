@@ -62,6 +62,9 @@ class Db_ajax extends MX_Controller {
         $entity = $this->datab->get_entity($post['entity_id']);
         $id = $post['value'];
         
+        // Unsetto il $_FILES['file'] in modo che non dia errore nell'apilib
+        unset($_FILES['file']);
+        
         
         /**
          * Media entity
@@ -81,6 +84,7 @@ class Db_ajax extends MX_Controller {
         
         try {
             $this->apilib->create($media_entity_name, [$media_field_id => $id, $media_field_file => $file_name]);
+            //$this->apilib->create($media_entity_name, [$media_field_id => $id, $media_field_file => $file_name]);
             //$this->db->insert($media_entity_name, array( $media_field_id => $id, $media_field_file => $file_name ));
         } catch (Exception $ex) {
             die($ex->getMessage());

@@ -52,7 +52,8 @@
                     notifier.showUnread(json.view);
                     if (notifier.number > 0) {
                         var baseSoundFolder = base_url_template + 'script/js/';
-                        notifier.playNotificationSound(baseSoundFolder + (json.errors > 0? 'error-sound': 'notify-sound') + '.mp3');
+                        //notifier.playNotificationSound(baseSoundFolder + (json.errors > 0? 'error-sound': 'notify-sound') + '.mp3');
+                        notifier.playNotificationSound(baseSoundFolder + 'notify-sound.mp3');
                     }
                 }
             });
@@ -70,7 +71,7 @@
         },
         
         playNotificationSound: function(notificationSound) {
-            return;
+            
             if (!notificationSound) {
                 alert('Ci sono nuove notifiche');
                 return;

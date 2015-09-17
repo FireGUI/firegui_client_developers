@@ -3,32 +3,59 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Api extends CI_Controller {
-
-    /**
-     * @var Apilib
-     */
-    public $apilib;
-
+class Api extends MY_Controller {
+    
     public function __construct() {
         parent::__construct();
-        $this->load->library('apilib');
+        
+        // Imposto l'apilib:
+        // ---
+        // 1)   L'apilib deve funzionare in modalità API per quanto riguarda i
+        //      post-process
+        // 2)   Annullo tutte le eventuali impostazioni sulla lingua perché qua
+        //      non devo lavorare con le sessioni, ma con quello che gli passo
+        //      nell'url: api/it-it/index/{entity}
         $this->apilib->setProcessingMode(Apilib::MODE_API_CALL);
+        $this->apilib->setLanguage();
+        
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json');
         
-        // Fixes
-        if (gethostname() === 'sfera') {
-            ini_set("display_errors", "1");
-            error_reporting(E_ALL);
-        } else {
-            $this->apilib->setDebug(false);
-        }
+        // Niente profiler in API
+        $this->output->enable_profiler(false);
     }
+    
+    
+    public function _remap($method, $params = []) {
+        
+        // Se il metodo non esiste allora provo ad utilizzare il chunk
+        // corrispondente come segmento lingua
+        if (!method_exists($this, $method)) {
+            $lang = $this->datab->findLanguage($method);
+            if ($lang) {
+                $fallbackLang = $this->datab->getDefaultLanguage();
+                $this->apilib->setLanguage($lang['id'], $fallbackLang['id']);
+                
+                // Ok, primo segmento lingua quindi il successivo è il metodo
+                $method = array_shift($params);
+            }
+        }
+        
+        // Controlla nuovamente se il metodo esiste (potrebbe essere cambiato
+        // nell'if precedente)
+        if (!method_exists($this, $method)) {
+            $this->showError("Risorsa non trovata", 404, 404);
+            die();
+        }
+        
+        // A questo punto posso chiamare
+        call_user_func_array([$this, $method], $params);
+    }
+    
 
-    /*     * *********************************
-     * Rest actions
-     */
+    // ==========================================
+    // Rest actions
+    // ==========================================
 
     /**
      * Mostra una lista di record dell'entità richiesta

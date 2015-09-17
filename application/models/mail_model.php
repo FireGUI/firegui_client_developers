@@ -7,7 +7,17 @@ class Mail_model extends CI_Model {
     private $subject;
 
 
-    public function send($to = '', $key = '', $lang = '', $data = array(), $additional_headers = array()) {
+    /**
+     * Invia e-mail prendendola dai template su database
+     * 
+     * @param string $to
+     * @param string $key
+     * @param string $lang
+     * @param array $data
+     * @param array $additional_headers
+     * @return bool
+     */
+    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = []) {
         $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
         if(empty($email)) {
             return false;
@@ -21,47 +31,104 @@ class Mail_model extends CI_Model {
         // Usa come replacement i parametri che non sono array, object e risorse
         $filteredData = array_filter($data, function($item) { return is_scalar($item); });
         
-        $replace_from = empty($filteredData)? array(): array_map(function($key) { return '{'.$key.'}'; }, array_keys($filteredData));
-        $replace_to = empty($filteredData)? array(): array_values($filteredData);
+        $replace_from = empty($filteredData)? []: array_map(function($key) { return '{'.$key.'}'; }, array_keys($filteredData));
+        $replace_to = empty($filteredData)? []: array_values($filteredData);
         $subject = str_replace($replace_from, $replace_to, $email['emails_subject']);
         $message = str_replace($replace_from, $replace_to, $email['emails_template']);
         return $this->sendEmail($to, $headers, $subject, $message);
     }
     
-    public function sendFromView($to, $path, array $data = array(), $additional_headers = array()) {
-        $message = $this->load->view($path, array('data' => $data), true);
+    /**
+     * Invia una mail prendendo il messaggio dalle view. L'oggetto può essere
+     * impostato in 3 modi:
+     *   1) Passandolo come argomento
+     *   2) Usando $this->mail_model->setSubject('...');
+     *   3) Automaticamente, a partire dal nome della view
+     * 
+     * @param string $to
+     * @param string $path
+     * @param array $data
+     * @param array $additional_headers
+     * @param string $subject
+     * @return bool
+     */
+    public function sendFromView($to, $path, array $data = [], array $additional_headers = [], $subject = null) {
         
-        if (empty($this->subject) OR !is_string($this->subject)) {
-            $subject = str_replace(array('_', '-'), ' ', pathinfo($path, PATHINFO_FILENAME));
-        } else {
-            $subject = $this->subject;
-            $this->subject = null;
+        $message = $this->load->view($path, ['data' => $data], true);
+        
+        if (!$subject) {
+            if (empty($this->subject) OR !is_string($this->subject)) {
+                $subject = str_replace(array('_', '-'), ' ', pathinfo($path, PATHINFO_FILENAME));
+            } else {
+                $subject = $this->subject;
+                $this->subject = null;
+            }
         }
         
         return $this->sendEmail($to, $additional_headers, $subject, $message);
     }
     
+    /**
+     * Imposta l'oggetto della mail per le e-mail da vista. Si può usare anche
+     * da dentro il view file per motivi di traduzione
+     * 
+     * @param type $subject
+     */
     public function setSubject($subject) {
         $this->subject = $subject;
     }
     
+    /**
+     * Metodo per l'invio di messaggi via e-mail
+     * 
+     * @param type $to
+     * @param type $subject
+     * @param type $message
+     * @param type $isHtml
+     * @param array $additionalHeaders
+     * @return bool
+     */
+    public function sendMessage($to, $subject, $message, $isHtml = false, array $additionalHeaders = []) {
+        return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml);
+    }
     
-    private function sendEmail($to, array $headers, $subject, $message) {
-        $this->load->library('email');
-        // -----------
-        $this->email->set_mailtype('html');
-        $this->email->to($to);
-        $this->email->subject($subject);
+    
+    
+    
+    /**
+     * Metodo interno per invio mail
+     * 
+     * @param string $to
+     * @param array $headers
+     * @param string $subject
+     * @param string $message
+     * @param bool $isHtml
+     * @return type
+     */
+    private function sendEmail($to, array $headers, $subject, $message, $isHtml = true) {
         
-        if (function_exists('mb_convert_encoding')) {
-            $message = mb_convert_encoding(str_replace('&nbsp;', ' ', $message), 'HTML-ENTITIES', 'UTF-8');
+        // Ensure the email library is loaded
+        $this->load->library('email');
+        
+        // HTML mail setup
+        if ($isHtml) {
+            
+            $this->email->set_mailtype('html');
+            
+            if (function_exists('mb_convert_encoding')) {
+                $message = mb_convert_encoding(str_replace('&nbsp;', ' ', $message), 'HTML-ENTITIES', 'UTF-8');
+            }
+            $message = '<html><body>' . $message . '</body></html>';
         }
         
-        $this->email->message('<html><body>' . $message . '</body></html>');
+        // Addinfo to the email
+        $this->email->to($to);
+        $this->email->subject($subject);
+        $this->email->message($message);
         
         // Prepend the default headers
         $defaultHeaders = $this->config->item('email_headers');
-        $headers = array_merge($defaultHeaders?:array(), $headers);
+        $headers = array_merge($defaultHeaders?:[], $headers);
 
         // Setup standard headers
         if(isset($headers['From'])) {
@@ -82,10 +149,23 @@ class Mail_model extends CI_Model {
             $this->email->bcc($headers['Bcc']);
         }
         
+        // Send and return the result
         return $this->email->send();
     }
     
     
+    /**
+     * Metodo interno per parsare gli indirizzi nel formato
+     * 
+     *          Nome <email@addr.ess>
+     * 
+     * Viene ritornato un array con chiavi
+     *  - mail
+     *  - name
+     * 
+     * @param string $address
+     * @return array
+     */
     public function prepareAddress($address) {
         
         $name = '';

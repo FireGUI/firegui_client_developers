@@ -1,6 +1,6 @@
 <?php
-$map =  "js_map_container_{$field['fields_id']}_map";
-$input = "js_map_container_{$field['fields_id']}_input";
+$map =  "js_map_container_{$field['fields_id']}_map" . ($lang? "_{$lang}": '');
+$input = "js_map_container_{$field['fields_id']}_input" . ($lang? "_{$lang}": '');
 
 if($value) {
     $value_latlon = $this->db->query("SELECT ST_Y('{$value}'::geometry) AS lat, ST_X('{$value}'::geometry) AS lon")->row();
@@ -11,28 +11,20 @@ if($value) {
     }
 }
 ?>
-<div class="form-group" style="<?php if($field['fields_draw_display_none']==='t') echo 'display: none;' ?>">
-    <label>
-        <?php echo $field['fields_draw_label']; ?>
-        <?php if ($field['fields_required'] == 't'): ?><span class="text-danger icon-asterisk"></span><?php endif; ?>
-    </label>
-    
-    <input id="<?php echo $input; ?>" type="hidden" name="<?php echo $field['fields_name']; ?>" class="field_<?php echo $field['fields_id']; ?> form-control <?php echo $field['fields_draw_css_extra']; ?>" placeholder="<?php echo $field['fields_draw_placeholder'] ?>" value="<?php echo $value; ?>" />
+<div class="form-group" <?php echo $containerAttributes; ?>>
+    <?php echo $label; ?>
+    <input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" />
     <div style="max-width: 400px;">
         <div class="input-group">
             <input type="text" class="form-control js_map_search" placeholder="<?php e('cerca località') ?>" />
             <span class="input-group-btn">
-                <button class="btn btn-default" type="button">
-                    <span class="icon-search"></span>
-                </button>
+                <button class="btn btn-default" type="button"><i class="icon-search"></i></button>
             </span>
         </div>
         <br/>
-        <div style="max-width: 100%; height: 400px;" id="<?php echo $map; ?>" <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?>></div>
+        <div style="max-width: 100%; height: 400px;" <?php echo "id='{$map}'"; ?> <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?>></div>
     </div>
-    <?php if($field['fields_draw_help_text']): ?>
-        <span class="help-block"><?php echo $field['fields_draw_help_text']; ?></span>
-    <?php endif; ?>
+    <?php echo $help; ?>
 </div>
 
 
@@ -68,6 +60,9 @@ if($value) {
                 })
             ],
             minZoom: 5,
+        });
+        $(window).on('resize', function() {
+            map.invalidateSize();
         });
         
         var marker = null;

@@ -1,6 +1,6 @@
 <?php
 
-class Db_ajax extends MX_Controller {
+class Db_ajax extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -15,8 +15,6 @@ class Db_ajax extends MX_Controller {
         if (!$this->datab->module_access(MODULE_NAME)) {
             die('Access forbidden');
         }
-
-        $this->settings = $this->db->get('settings')->row_array();
     }
 
     public function import_1() {
@@ -70,7 +68,7 @@ class Db_ajax extends MX_Controller {
             $entity = $this->datab->get_entity($import_data['entity_id']);
             
             if ($import_data['action_on_data_present'] == 1) {//Metodo di importazione: DELETE INSERT
-                die('test');
+                //die('test');
                 $this->db->empty_table($entity['entity_name']);
             }
             
@@ -156,10 +154,18 @@ class Db_ajax extends MX_Controller {
                             $insert[$field] = $row[$k];
                             break;
                     }
+                    //Fix: se è multilingua mi aspetto un json_encode nella colonna del csv
+                    if ($field_data_map[$field]['fields_multilingual'] == 't') {
+                        $value = @json_decode($insert[$field], true);
+                        if (is_array($value)) {
+                            $insert[$field] = $value;
+                        } else {
+                            //Lascio com'era e importo nella lingua di default
+                        }
+                        
+                    }
                     
                     //Se il campo può essere null e non ho trovato corrispondenza, lo setto a null
-                    //debug($field_data_map[$field]['fields_required']);
-                    //debug($insert[$field] == '');
                     if ($field_data_map[$field]['fields_required'] == 't' && $insert[$field] == '') {
                         if ($field_data_map[$field]['fields_default']) {
                             unset($insert[$field]);
@@ -178,19 +184,25 @@ class Db_ajax extends MX_Controller {
                 if(!empty($insert) && empty($errors)) {
                     if ($import_data['action_on_data_present'] == 2 || $import_data['action_on_data_present'] == 4) { //Metodo di importazione: UPDATE
                         $campo_chiave = $data['csv_fields'][$data['unique_key']];
-                        $this->db->where($campo_chiave, $insert[$campo_chiave])->update($entity['entity_name'], $insert);
-                        $updated = $this->db->affected_rows();
-                        $count += $updated;
-                        if ($updated == 0) {
+                        $riga = $this->db->where($campo_chiave, $insert[$campo_chiave])->get($entity['entity_name']);
+                        if ($riga->num_rows() == 1) {
+                            $this->apilib->edit($entity['entity_name'], $riga->row()->{$entity['entity_name'].'_id'}, $insert);
+                        } elseif($riga->num_rows() > 1) { 
+                            //TODO: foreach e aggiorno tutti? Valutare...
+                            $this->apilib->edit($entity['entity_name'], $riga->row()->{$entity['entity_name'].'_id'}, $insert);
+                            $warn = "I've found $updated records in {$entity['entity_name']} with $campo_chiave='{$insert[$campo_chiave]}'.";
+                            $warnings[$warn] = $warn;
+                        } else {
                             $warn = "I cannot find record in {$entity['entity_name']} with $campo_chiave='{$insert[$campo_chiave]}'.";
                             $warnings[$warn] = $warn;
                             if ($import_data['action_on_data_present'] == 4) {
                                 $this->apilib->create($entity['entity_name'], $insert);
                             }
-                        } elseif ($updated > 1) {
-                            $warn = "I've found $updated records in {$entity['entity_name']} with $campo_chiave='{$insert[$campo_chiave]}'.";
-                            $warnings[$warn] = $warn;
                         }
+                        //$this->apilib->edit($entity['entity_name'], $insert);
+                        //$updated = $this->db->affected_rows();
+                        $count += 1;
+                        
                     } else { //Metodo di importazione: INSERT
                         //debug($insert);
                         if($this->apilib->create($entity['entity_name'], $insert)) {

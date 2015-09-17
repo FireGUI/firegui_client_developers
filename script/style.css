@@ -448,3 +448,18 @@ ul.js_notification_dropdown_list li.unread a:hover {
 .inbox td i.icon-paper-clip {
     color:#777!important;
 }
+
+
+/* Language switch */
+#language-switch li a {
+    opacity: 0.3;
+}
+
+#language-switch li a.current {
+    opacity: 1;
+}
+
+label .lang-flag {
+    margin-bottom: 3px;
+    margin-right: 2px;
+}

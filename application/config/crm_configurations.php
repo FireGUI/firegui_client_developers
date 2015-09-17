@@ -44,6 +44,11 @@ define('DEFAULT_EMAIL_REPLY', 'Reply-To: H2 CRM <no-reply@h2-web.it>');
  * LOGIN_NAME_FIELD         Campo nome dell'entità di login
  * LOGIN_SURNAME_FIELD      Campo cognome entità di login
  * LOGIN_IMG_FIELD          Campo immagine entità di login
+ * 
+ * LANG_ENTITY              Entità lingue [può non essere settata]
+ * LANG_CODE_FIELD          Campo codice lingua
+ * LANG_NAME_FIELD          Campo nome lingua
+ * LANG_DEFAULT_FIELD       Campo lingua di default
  */
 define('LOGIN_ENTITY', 'agenti');
 define('LOGIN_USERNAME_FIELD', 'agenti_email');
@@ -52,6 +57,11 @@ define('LOGIN_ACTIVE_FIELD', '');
 define('LOGIN_NAME_FIELD', 'agenti_nome');
 define('LOGIN_SURNAME_FIELD', 'agenti_cognome');
 define('LOGIN_IMG_FIELD', 'agenti_thumbnail');
+
+define('LANG_ENTITY',       'languages');
+define('LANG_CODE_FIELD',   'languages_code');
+define('LANG_NAME_FIELD',   'languages_name');
+define('LANG_DEFAULT_FIELD','languages_default');
 
 
 /*

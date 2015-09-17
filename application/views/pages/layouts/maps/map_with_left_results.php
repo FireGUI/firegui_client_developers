@@ -110,6 +110,9 @@
         }).addTo(map);
 
         load_marker();
+        $(window).on('resize', function() {
+            map.invalidateSize();
+        });
 
     });
 </script>

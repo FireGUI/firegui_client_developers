@@ -10,7 +10,8 @@
             <?php foreach($data['maps_fields'] as $map_field): ?>
                 <?php if($map_field['maps_fields_type'] !== 'latlng'): ?>
                     <div class="col-md-6">
-                        <?php $this->load->view("box/form_fields/{$map_field['fields_draw_html_type']}", array('field' => $map_field, 'value' => NULL)); ?>
+                        <?php $this->datab->build_form_input($map_field); ?>
+                        <?php // $this->load->view("box/form_fields/{$map_field['fields_draw_html_type']}", array('field' => $map_field, 'value' => NULL)); ?>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -233,6 +234,9 @@
         
         
         map.on('moveend', load_marker);
+        $(window).on('resize', function() {
+            map.invalidateSize();
+        });
 
 
 

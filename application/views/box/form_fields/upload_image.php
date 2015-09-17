@@ -1,10 +1,6 @@
-<div class="form-group" style="<?php if($field['fields_draw_display_none']==='t') echo 'display: none;' ?>">
-    <label>
-        <?php echo $field['fields_draw_label']; ?>
-        <?php if ($field['fields_required'] == 't'): ?><span class="text-danger icon-asterisk"></span><?php endif; ?>
-    </label>
-
-    <div class="fileupload fileupload-new field_<?php echo $field['fields_id']; ?>" data-provides="fileupload" <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?>>
+<div class="form-group" <?php echo $containerAttributes; ?>>
+    <?php echo $label; ?>
+    <div class="fileupload fileupload-new <?php echo $class ?>" data-provides="fileupload" <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?>>
         <input type="hidden">
         <div class="fileupload-preview fileupload-exists thumbnail"></div>
         <?php if($value): ?>
@@ -25,12 +21,9 @@
             </span>
             <a href="#" class="btn btn-sm red fileupload-exists" data-dismiss="fileupload"><i class="icon-trash"></i> Remove</a>
             <?php if($value): ?>
-                <a href="#" class="btn btn-sm red" onclick="var c = $(this).parent().parent();$('input[type=hidden][name=<?php echo $field['fields_name']; ?>][value]', c).remove();$('img', c).attr('src', 'http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image')"><i class="icon-remove"></i></a>
+                <a href="#" class="btn btn-sm red" onclick="var c = $(this).parent().parent();$('input[type=hidden][name=<?php echo $field['fields_name']; ?>][value]', c).val('');$('img', c).attr('src', 'http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image')"><i class="icon-remove"></i></a>
             <?php endif; ?>
         </div>
     </div>
-
-    <?php if($field['fields_draw_help_text']): ?>
-        <span class="help-block"><?php echo $field['fields_draw_help_text']; ?></span>
-    <?php endif; ?>
+    <?php echo $help; ?>
 </div>

@@ -188,7 +188,15 @@ function invio_form(action, form) {
                 form.trigger('form-ajax-error', [xhr, ajaxOptions, thrownError]);
             } else {
                 // Default
-                $('body').prepend("Errore ajax:" + xhr.responseText);
+                var errorBox = $('#submitajax-error');
+                if (!errorBox.size()) {
+                    errorBox = $('<div id="submitajax-error">').prependTo($('body'));
+                    errorBox.css({'background-color':'#fff', 'z-index': 999999, 'padding': 15});
+                }
+                errorBox.html("Errore ajax:<br/>" + xhr.responseText);
+                errorBox.append($('<button>').text('Chiudi').on('click', function() {
+                    errorBox.remove();
+                }));
             }
         }
     });

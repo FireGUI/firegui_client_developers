@@ -4,7 +4,8 @@
             <?php foreach($data['maps_fields'] as $map_field): ?>
                 <?php if($map_field['maps_fields_type'] !== 'latlng'): ?>
                     <div class="col-md-6">
-                        <?php $this->load->view("box/form_fields/{$map_field['fields_draw_html_type']}", array('field' => $map_field, 'value' => NULL)); ?>
+                        <?php $this->datab->build_form_input($map_field); ?>
+                        <?php // $this->load->view("box/form_fields/{$map_field['fields_draw_html_type']}", array('field' => $map_field, 'value' => NULL)); ?>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -46,6 +47,9 @@
             L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
+            $(window).on('resize', function() {
+                map.invalidateSize();
+            });
             
             var jqFilterForm = $('#<?php echo 'clusered_map_form_'.$data['maps']['maps_id']; ?>');
             jqFilterForm.on('submit', function(e) {
