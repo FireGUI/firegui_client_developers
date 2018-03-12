@@ -226,6 +226,12 @@ class Imap_mailbox extends CI_Model {
     
     
     protected function createMail($folderId, IncomingMail $email) {
+        
+        if (strtotime($email->date) > time()) {
+            $this->notices[] = "E-mail con data superiore a quella attuale skippata";
+            return false;
+        }
+        
         try {
             $mailboxEmail = $this->apilib->create('mailbox_emails', array(
                 'mailbox_emails_folder'         => $folderId,

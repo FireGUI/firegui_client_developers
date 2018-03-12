@@ -60,13 +60,14 @@ class Api extends MY_Controller {
     /**
      * Mostra una lista di record dell'entità richiesta
      * @param string $entity    Il nome dell'entità
+     * @param string $depth     Profondità relazioni
      */
-    public function index($entity = null) {
+    public function index($entity = null, $depth = 2) {
 
         $this->logAction(__FUNCTION__, func_get_args());
 
         try {
-            $output = $this->apilib->index($entity);
+            $output = $this->apilib->index($entity, $depth);
             $this->showOutput($output);
         } catch (ApiException $e) {
             $this->showError($e->getMessage(), $e->getCode());
@@ -162,12 +163,12 @@ class Api extends MY_Controller {
         }
     }
 
-    public function search($entity = null, $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC') {
+    public function search($entity = null, $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2) {
         try {
             $postData = array_filter((array) $this->input->post());
             $getData = array_filter((array) $this->input->get());
 
-            $output = $this->apilib->search($entity, array_merge($getData, $postData), $limit, $offset, $orderBy, $orderDir);
+            $output = $this->apilib->search($entity, array_merge($getData, $postData), $limit, $offset, $orderBy, $orderDir, $maxDepth);
             $this->logAction(__FUNCTION__, func_get_args());
             $this->showOutput($output);
         } catch (ApiException $e) {
@@ -191,8 +192,8 @@ class Api extends MY_Controller {
             if ($entity) {
                 $data = $this->apilib->runDataProcessing($entity, 'pre-login', $data);
             }
-
-            $unprocessedOutput = $this->apilib->searchFirst($entity, $data);
+            //Matteo: passo depth 0 sennò al loginmi prende comunque tutte le entità correlate (troppe)
+            $unprocessedOutput = $this->apilib->searchFirst($entity, $data, 0, null, 'ASC', 1);
 
             $this->logAction(__FUNCTION__, func_get_args());
             $output = $this->apilib->runDataProcessing($entity, 'login', $unprocessedOutput);
@@ -287,6 +288,7 @@ class Api extends MY_Controller {
     }
 
     public function clear_cache($realDelete = 0) {
+        header('Content-Type: text/html');
         $testMode = !((bool) $realDelete);
         $cleared = $this->apilib->clearCache($testMode);
 

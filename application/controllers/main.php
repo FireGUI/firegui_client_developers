@@ -108,6 +108,7 @@ class Main extends MY_Controller {
             $name = url_title($dati['layout_container']['layouts_title'], '-', TRUE).'.pdf';
             $html2pdf->Output($name, 'I'); // stampa il pdf nel browser
         } else {
+            $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
             $dati['current_page'] = "layout_{$layout_id}";
             $dati['show_title'] = TRUE;
             $pagina = $this->load->view("pages/layout", array('dati' => $dati,'value_id' => $value_id), true);
@@ -235,7 +236,6 @@ class Main extends MY_Controller {
             } else {
                 return 1;
             }
-            
         });
 
         $pagina = $this->load->view("pages/permissions", array('dati' => $dati), true);
@@ -254,7 +254,7 @@ class Main extends MY_Controller {
      * ============================= */
     public function search() {
         $dati['current_page'] = 'search';
-        $dati['search_string'] = $this->input->post('search');
+        $dati['search_string'] = $this->input->get_post('search');
         
         if(strlen($dati['search_string']) > 2) {
             $dati['count_total'] = 0;
@@ -266,9 +266,13 @@ class Main extends MY_Controller {
             $dati['count_total'] = -1;
         }
         
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($dati);
+            return;
+        }
+        
         
         if($dati['count_total'] === 1) {
-            
             $results = array_values($dati['results']);
             $entity_result = $results[0];
             $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']);
@@ -278,11 +282,9 @@ class Main extends MY_Controller {
                 $data = $data_results[0];
                 redirect($link.'/'.$data[$entity_result['entity']['entity_name'] . '_id']);
             }
-            
         }
         
         
-
         $pagina = $this->load->view("pages/search_results", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
@@ -310,6 +312,16 @@ class Main extends MY_Controller {
         
         $redirection = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_VALIDATE_URL);
         redirect($redirection?:  base_url());
+    }
+    
+    
+    public function phpinfo() {
+        if ($this->auth->is_admin()) {
+            phpinfo();
+        } else {
+            set_status_header(403);
+            die('Nope...not allowed');
+        }
     }
     
     

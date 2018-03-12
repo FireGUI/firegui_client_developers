@@ -42,15 +42,17 @@ class Cron extends MX_Controller {
         $sincronizzazioni = $this->db->get_where('google_calendar LEFT JOIN ' . LOGIN_ENTITY . ' ON (google_calendar.google_calendar_utente = ' . LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id)', "google_calendar_token IS NOT NULL AND google_calendar_token <> ''"
                 )->result_array();
 
-        $fuso = '01:00'; //'02:00';
+        $fuso = date('I') ? '01:00' : '02:00';
 
         foreach ($sincronizzazioni as $sincronizzazione) {
             //Se ho già fatto una sincronizzazione, è inutile che riprendo tutti gli appuntamenti, ma prendo solo l'ultimo mese
-            if ($sincronizzazione['google_calendar_last_sync']) {
+            /*if ($sincronizzazione['google_calendar_last_sync']) {
                 $data_da = date3339(mktime() - 30 * 3600 * 24) . $fuso;
             } else {
                 $data_da = '';
-            }
+            }*/
+            
+            $data_da = date3339(mktime() - 30 * 3600 * 24) . $fuso;
 
             $google_ids = array();
             $aggiornati_crm = 0;
@@ -66,22 +68,28 @@ class Cron extends MX_Controller {
                 debug("Auth code mancante... possibile?", true);
                 continue;
             }
-            $this->client->setAccessToken($sincronizzazione['google_calendar_token']);
-            if ($this->client->isAccessTokenExpired()) {
-                debug('token per ' . $sincronizzazione['google_calendar_utente'] . ' scaduto.');
-                debug($sincronizzazione['google_calendar_token']);
-                if ($this->client->getRefreshToken()) {
-                    $this->client->refreshToken($this->client->getRefreshToken());
-                    if ($this->client->isAccessTokenExpired()) {
-                        debug("Token scaduto ancora!...");
-                        continue;
+            
+            try {
+                $this->client->setAccessToken($sincronizzazione['google_calendar_token']);
+                if ($this->client->isAccessTokenExpired()) {
+                    debug('token per ' . $sincronizzazione['google_calendar_utente'] . ' scaduto.');
+                    debug($sincronizzazione['google_calendar_token']);
+                    if ($this->client->getRefreshToken()) {
+                        $this->client->refreshToken($this->client->getRefreshToken());
+                        if ($this->client->isAccessTokenExpired()) {
+                            debug("Token scaduto ancora!...");
+                            continue;
+                        } else {
+                            //debug("Token refreshato!!!",true);
+                        }
                     } else {
-                        //debug("Token refreshato!!!",true);
+                        debug("Anomalia agente {$sincronizzazione['google_calendar_utente']}: manca il refresh token nel json");
+                        continue;
                     }
-                } else {
-                    debug("Anomalia agente {$sincronizzazione['google_calendar_utente']}: manca il refresh token nel json");
-                    continue;
                 }
+            } catch (Exception $ex) {
+                // Ignore sync exception
+                continue;
             }
 
             $calendarList = $this->service->calendarList->listCalendarList();
@@ -322,11 +330,7 @@ class Cron extends MX_Controller {
             
             $this->db->query("UPDATE google_calendar SET google_calendar_last_sync = now() WHERE google_calendar_id = '{$sincronizzazione['google_calendar_id']}'");
         }
-
-
-
-
-        exit('1');
+        
     }
 
 }

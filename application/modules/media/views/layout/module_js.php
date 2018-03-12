@@ -1,5 +1,5 @@
 <!-- BEGIN Module Related Javascript -->
-<script src="<?php echo base_url_template('template/crm/plugins/dropzone/dropzone.js'); ?>"></script>
+<script src="<?php echo base_url_template('template/crm-v2/assets/global/plugins/dropzone/dropzone.js'); ?>"></script>
 
 <script>
     $(document).ready(function() {

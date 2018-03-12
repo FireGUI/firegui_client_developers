@@ -24,6 +24,10 @@ class Db_ajax extends MY_Controller {
             die();
         }
         
+        if (!is_dir('./uploads/import/')) {
+            mkdir('./uploads/import/', 0777, true);
+        }
+        
         $config['upload_path'] = './uploads/import/';
         $config['allowed_types'] = '*';
         $config['max_size'] = '5000';
@@ -101,16 +105,28 @@ class Db_ajax extends MY_Controller {
                         //TODO: esiste un field_ref impostato (prendo l'id dall'altra entità)
                         if ($data['ref_fields'][$k]) {
                             //Cerco il record con quella chiave
-                            $ref_record = $this->db->get_where($field_data_map[$field]['fields_ref'], array($data['ref_fields'][$k] => $row[$k]));
-                            //debug($ref_record,true);
-                            if ($ref_record->num_rows() >= 1 && $row[$k]) { //Fix
-                                //Giusto per avvisare l'utente, segnalo come warning il fatto che ho trovato più corrispondenze
-                                if ($ref_record->num_rows() > 1) {
-                                    $warn = "{$ref_record->num_rows()} records found with {$data['ref_fields'][$k]}='{$row[$k]}', first one used.";
-                                    $warnings[$warn] = $warn;
-                                }
-                                
-                                $insert[$field] = $ref_record->row_array()[$field_data_map[$field]['fields_ref'].'_id'];
+                            if ($row[$k]) {
+                                $ref_record = $this->db->get_where($field_data_map[$field]['fields_ref'], array($data['ref_fields'][$k] => $row[$k]));
+                                //debug($ref_record,true);
+                                if ($ref_record->num_rows() >= 1 && $row[$k]) { //Fix
+                                    //Giusto per avvisare l'utente, segnalo come warning il fatto che ho trovato più corrispondenze
+                                    if ($ref_record->num_rows() > 1) {
+                                        $warn = "{$ref_record->num_rows()} records found with {$data['ref_fields'][$k]}='{$row[$k]}', first one used.";
+                                        $warnings[$warn] = $warn;
+                                    }
+
+                                    $insert[$field] = $ref_record->row_array()[$field_data_map[$field]['fields_ref'].'_id'];
+                                } else {
+                                    //Se il campo può essere null e non ho trovato corrispondenza, lo setto a null
+                                    if ($field_data_map[$field]['fields_required'] != 't') {
+                                        $insert[$field] = null;
+                                        $warn = "I cannot find record in {$field_data_map[$field]['fields_ref']} with {$data['ref_fields'][$k]}='{$row[$k]}'.";
+                                        $warnings[$warn] = $warn;
+                                    } else { //Altrimenti errore
+                                        $err = "I cannot find record in {$field_data_map[$field]['fields_ref']} with {$data['ref_fields'][$k]}='{$row[$k]}'.";
+                                        $errors[$err] = $err;
+                                    }
+                                }  
                             } else {
                                 //Se il campo può essere null e non ho trovato corrispondenza, lo setto a null
                                 if ($field_data_map[$field]['fields_required'] != 't') {
@@ -121,7 +137,9 @@ class Db_ajax extends MY_Controller {
                                     $err = "I cannot find record in {$field_data_map[$field]['fields_ref']} with {$data['ref_fields'][$k]}='{$row[$k]}'.";
                                     $errors[$err] = $err;
                                 }
-                            }                          
+                            }
+                            
+                                                    
                             continue;
                         } else {
                             //Se è stato lasciato vuoto va bene andare avanti e prendere l'id

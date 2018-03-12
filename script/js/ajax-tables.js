@@ -68,8 +68,19 @@ function initTable(gridID) {
     var oDataTable = $('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
+    var aoColumns = [];
+    $('> thead > tr > th', oDataTable).each(function() {
+        var coldef = null;
+        coldef = {
+            bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined')
+        };
+        
+        aoColumns.push(coldef);
+    });
+    
     var datatable =  oDataTable.dataTable({
         bSort: bEnableOrder,
+        aoColumns: aoColumns,
         bRetrieve: true,
         bProcessing: true,
         sServerMethod: "POST",
@@ -84,9 +95,6 @@ function initTable(gridID) {
     return datatable;
 }
 
-    
-        
-        
         
         
 /** Init ajax datatables **/

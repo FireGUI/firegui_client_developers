@@ -6,7 +6,7 @@
             <div class="portlet box blue">
                 <div class="portlet-title">
                     <div class="caption">
-                        <i class="icon-plus-sign"></i> Create offer
+                        <i class="fa fa-plus-circle"></i> Create offer
                     </div>
                 </div>
 
@@ -41,9 +41,7 @@
                                                         <input name="offer[offers_date]" type="text" class="form-control">
                                                         <span class="input-group-btn">
                                                             <button class="btn default" type="button">
-                                                                <i class="icon-calendar"></i>
-                                                                &nbsp;
-                                                                <i class="icon-calendar-empty"></i>
+                                                                <i class="fa fa-calendar"></i>
                                                             </button>
                                                         </span>
                                                     </div>
@@ -117,7 +115,7 @@
                                             <td><input type="text" class="form-control" data-name="offers_products_price" /></td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-default btn-danger btn-sm js_remove_product">
-                                                    <span class="icon-remove"></span>
+                                                    <span class="fa fa-remove"></span>
                                                 </button>
                                             </td>
                                         </tr>

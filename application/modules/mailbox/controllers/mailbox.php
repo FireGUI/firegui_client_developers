@@ -27,8 +27,12 @@ class Mailbox extends MX_Controller {
     
     
     public function index() {
+        $this->stampa('index');
+    }
+    
+    public function configure() {
         $data['configs'] = $this->imap_mailbox->getUserConfigs($this->auth->get('id'));
-        $this->stampa('index', $data);
+        $this->stampa('configure', $data);
     }
     
     public function form($id = null) {
@@ -99,7 +103,7 @@ class Mailbox extends MX_Controller {
         } catch (Exception $ex) {
             die(json_encode(array('status' => 0, 'txt' => $ex->getMessage())));
         }
-        echo json_encode(array('status' => 2));
+        echo json_encode(array('status' => 1, 'txt' => base_url('mailbox/configure')));
     }
 
     

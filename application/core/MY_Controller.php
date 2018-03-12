@@ -19,8 +19,13 @@ class MY_Controller extends CI_Controller {
     public function __construct() {
         parent::__construct();
         
-        // Profiler sse non è ajax
-        $this->output->enable_profiler(gethostname() === 'sfera' && !$this->input->is_ajax_request());
+        if ($this->input->get('_profiler') && $this->auth->check()) {
+            // Profiler se richiesto da superadmin
+            $this->output->enable_profiler(true);
+        } else {
+            // Profiler sse non è ajax su server di produzione di default
+            $this->output->enable_profiler(gethostname() === 'sfera' && !$this->input->is_ajax_request());
+        }
         
         // Abilita errori/profiler in ambiente di sviluppo
         if (gethostname() === 'sfera' OR $this->auth->is_admin()) {

@@ -2,7 +2,7 @@
 <!-- BEGIN INBOX DROPDOWN -->
 <li class="dropdown" id="header_inbox_bar">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-        <i class="icon-envelope"></i>
+        <i class="fa fa-envelope"></i>
         <span class="js_message_number badge"></span>
     </a>
     <ul class="dropdown-menu extended inbox">

@@ -40,20 +40,31 @@ class Apilib {
     private $originalPost = null;
     private $previousDebug;
     private $_loadedDataProcessors = [];
-    private $processMode;
+    private $processMode = self::MODE_DIRECT;
+    private $processEnabled = true;
     
-    
+    /**
+     * @var Crmentity
+     */
+    private $crmEntity; // Istanza crmEntity per usare la cache
     private $currentLanguage = null;
     private $fallbackLanguage = null;
 
+    /**
+     * Le relazioni pendenti da inserire dopo insert e dopo update
+     * @var array|null
+     */
+    private $pendingRelations;
 
 
 
     public function __construct() {
-        $this->load->model('crmentity');
+        // Prima carica la libreria di cache e dopo carica la crm entity
         $this->load->driver('cache', $this->getCacheAdapter());
+        $this->load->model('crmentity');
+        
         $this->previousDebug = $this->db->db_debug;
-        $this->processMode = self::MODE_DIRECT;
+        $this->crmEntity = $this->getCrmEntity();
     }
     
     
@@ -86,7 +97,13 @@ class Apilib {
         $this->setDebug($this->previousDebug);
     }
     
-    
+    /**
+     * Imposta il tipo di data process da chiamare
+     * @param string $mode Una delle costanti di classe:
+     *          - Apilib::MODE_API_CALL
+     *          - Apilib::MODE_DIRECT
+     *          - Apilib::MODE_CRM_FORM
+     */
     public function setProcessingMode($mode) {
         
         if (!in_array($mode, array(self::MODE_API_CALL, self::MODE_DIRECT, self::MODE_CRM_FORM))) {
@@ -96,10 +113,34 @@ class Apilib {
         $this->processMode = $mode;
     }
     
+    /**
+     * Abilita/Disabilita i data process
+     * @param bool $enable
+     */
+    public function enableProcessing($enable) {
+        $this->processEnabled = (bool) $enable;
+    }
+    
+    /**
+     * Controlla stato abilitazione data process
+     * @return bool
+     */
+    public function isEnabledProcessing() {
+        return $this->processEnabled;
+    }
+    
     
     public function setLanguage($langId = null, $fallbackLangId = null) {
         $this->currentLanguage = ((int) $langId)?:null;
         $this->fallbackLanguage = ((int) $fallbackLangId)?:null;
+    }
+    
+    public function getLanguage() {
+        return $this->currentLanguage;
+    }
+    
+    public function getFallbackLanguage() {
+        return $this->fallbackLanguage;
     }
     
     /**
@@ -168,15 +209,36 @@ class Apilib {
     
     
     public function clearCache($testMode = false) {
-        $files = glob(APPPATH . 'cache/*');
+//        $files = glob(APPPATH . 'cache/*');
+        
+        // Controllo che il parent della mia app directory sia la root
+        $files = [];
+        if (trim(dirname(APPPATH), DIRECTORY_SEPARATOR) !== trim(FCPATH, DIRECTORY_SEPARATOR)) {
+            
+            // Se così non fosse, allora sono in ambiente multiapp
+            $applicationContainer = dirname(APPPATH);
+            $di = new DirectoryIterator($applicationContainer);
+            
+            foreach ($di as $fileinfo) {
+                if ($fileinfo->isDot() OR $fileinfo->isFile()) {
+                    continue;
+                }
+                
+                $cachedir = $fileinfo->getRealPath() . DIRECTORY_SEPARATOR . 'cache/';
+                if (is_dir($cachedir)) {
+                    $files = array_merge($files, glob($cachedir.'*'));
+                }
+            }
+        }
+        
         $keep = array('cache-controller', 'index.html');
         $cleared = [];
         foreach ($files as $file) {
-            if (is_file($file) && !in_array(($name=basename($file)), $keep)) {
+            if (is_file($file) && !in_array(basename($file), $keep)) {
                 if (!$testMode) {
                     unlink($file);
                 }
-                $cleared[] = $name;
+                $cleared[] = substr($file, strlen(FCPATH));
             }
         }
         
@@ -239,7 +301,39 @@ class Apilib {
      * @param int $id
      */
     public function getById($entity, $id) {
-        return $this->db->get_where($entity, [$entity.'_id' => $id])->row_array();
+        
+        if (!is_numeric($id) OR !$id) {
+            return [];
+        }
+        
+        $query = $this->db->get_where($entity, [$entity.'_id' => $id]);
+        if ($query instanceof CI_DB_result) {
+            return $query->row_array();
+        }
+        
+        throw new Exception(sprintf('Impossibile estrarre il record %s da entità %s', $id, $entity));
+    }
+    
+    /**
+     * Esegue una query pulita su database prendendo l'entità per un array di
+     * id entità. Se l'array è vuoto non esegue la query
+     * 
+     * @param string $entity
+     * @param int $ids
+     * @return array
+     */
+    public function getByIds($entity, array $ids) {
+        
+        if (!$ids) {
+            return [];
+        }
+        
+        $query = $this->db->where_in($entity.'_id', $ids)->get($entity);
+        if ($query instanceof CI_DB_result) {
+            return $query->result_array();
+        }
+        
+        throw new Exception(sprintf('Impossibile estrarre i record da entità %s', $entity));
     }
     
     
@@ -247,11 +341,149 @@ class Apilib {
      * Crea un nuovo record con il post passato e lo ritorna via json
      * @param string $entity
      */
-    public function create($entity=null, $data=null) {
+    public function create($entity=null, $data=null, $returnRecord = true) {
         
         if( ! $entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
+        
+        $_data = $this->extractInputData($data);
+        
+        if($this->processData($entity, $_data, false)) {
+            
+            if (!$this->db->insert($entity, $_data)) {
+                $this->showError(self::ERR_GENERIC);
+            }
+
+            $id = $this->db->insert_id();
+            $this->savePendingRelations($id);
+            $this->runDataProcessing($entity, 'insert', $this->getById($entity, $id));
+            
+            $this->cache->clean();
+            
+            
+            // Prima di uscire voglio ripristinare il post precedentemente modificato
+            $_POST = $this->originalPost;
+            return $returnRecord ? $this->view($entity, $id): $id;
+        } else {
+            $_POST = $this->originalPost;
+            $this->showError();
+        }
+    }
+    
+    
+    
+    /**
+     * Fa l'update del record con id passato aggiornando i dati da post
+     * Ritorna i nuovi dati via json
+     * @param string $entity
+     */
+    public function edit($entity=null, $id=null, $data=null, $returnRecord = true) {
+        
+        if( ! $entity OR !$id) {
+            $this->showError(self::ERR_INVALID_API_CALL);
+        }
+        
+        $_data = $this->extractInputData($data);
+
+        if($this->processData($entity, $_data, true, $id)) {
+            $oldData = $this->getById($entity, $id);
+            $this->db->update($entity, $_data, [$entity.'_id' => $id]);
+            $newData = $this->getById($entity, $id);
+
+            $this->savePendingRelations($id);
+            $this->runDataProcessing($entity, 'update', [
+                'new' => $newData,
+                'old' => $oldData,
+                'diff' => array_diff_assoc($newData, $oldData),
+                'value_id' => $id
+            ]);
+
+            $this->cache->clean();
+            
+            $_POST = $this->originalPost;
+            return $returnRecord ? $this->view($entity, $id): $id;
+        } else {
+            $_POST = $this->originalPost;
+            $this->showError();
+        }
+    }
+    
+    
+    public function createMany($entity = null, $data = null) {
+        
+        // In questo caso $data è un array di righe multiple che verranno
+        // inserite e validate singolarmente. Questo è necessario perché ho
+        // bisogno degli ultimi record inseriti e dei rispettivi id per poter
+        // eseguire regolarmente i pre e post processes.
+        // ***
+        // L'idea è quella di far partire una transazione in modo tale che se
+        // uno fallisce falliscono tutti
+        /*$this->db->trans_start();
+        
+        $output = [];
+        foreach ($data as $row) {
+            $output[] = $this->create($entity, $row);
+        }
+        
+        $this->db->trans_complete();
+        return $output;*/
+        
+        if( ! $entity) {
+            $this->showError(self::ERR_INVALID_API_CALL);
+        }
+        
+        $_data = $this->extractInputData($data);
+        $groups = [];
+        
+        foreach ($_data as &$_item) {
+            
+            if (!is_array($_item)) {
+                $this->showError(self::ERR_INVALID_API_CALL);
+            }
+            
+            if (!$this->processData($entity, $_item, false)) {
+                $_POST = $this->originalPost;
+                $this->showError();
+            }
+            
+            // Devo verificare che i record abbiano tutti lo stesso tipo di chiavi.
+            // Devo raggruppare quindi i record in base alle chiavi che ha e dopo
+            // eseguire un insert_batch per ciascun gruppo
+            $keys = array_keys($_item);
+            sort($keys);
+            $groups[md5(serialize($keys))][] = $_item;
+        }
+        
+        foreach ($groups as $items) {
+            if (!$this->db->insert_batch($entity, $items)) {
+                $this->showError(self::ERR_GENERIC);
+            }
+        }
+        
+        $idfield = $entity . '_id';
+        $numChanged = count($_data);
+        $newRecords = $this->db->limit($numChanged)->order_by($idfield, 'DESC')->get($entity)->result_array();
+        
+        $ids = [];
+        foreach ($newRecords as $record) {
+            $ids[] = $record[$idfield];
+            $this->runDataProcessing($entity, 'insert', $record);
+        }
+        
+        $this->cache->clean();
+
+        // Prima di uscire voglio ripristinare il post precedentemente modificato
+        $_POST = $this->originalPost;
+        return $ids;
+    }
+    
+    
+    /**
+     * @param mixed $data
+     * @return array
+     */
+    private function extractInputData($data) {
         
         $this->originalPost = $this->input->post();
         if(empty($data) OR !is_array($data)) {
@@ -272,105 +504,9 @@ class Apilib {
             $data = (array) $data;
         }
         
-        
-        if($this->processData($entity, $data, false)) {
-            $insert = $this->db->insert($entity, $data);
-            if (!$insert) {
-                $this->showError(self::ERR_GENERIC);
-            }
-            $id = $this->db->insert_id();
-
-            $dati = $this->getById($entity, $id);
-            $this->runDataProcessing($entity, 'insert', $dati);
-            
-            $this->cache->clean();
-            
-            
-            // Prima di uscire voglio ripristinare il post precedentemente modificato
-            $_POST = $this->originalPost;
-            return $this->view($entity, $id);
-        } else {
-            $_POST = $this->originalPost;
-            $this->showError();
-        }
+        return $data;
     }
     
-    
-    public function createMany($entity = null, $data = null) {
-        
-        // In questo caso $data è un array di righe multiple che verranno
-        // inserite e validate singolarmente. Questo è necessario perché ho
-        // bisogno degli ultimi record inseriti e dei rispettivi id per poter
-        // eseguire regolarmente i pre e post processes.
-        // ***
-        // L'idea è quella di far partire una transazione in modo tale che se
-        // uno fallisce falliscono tutti
-        $this->db->trans_start();
-        
-        $output = [];
-        foreach ($data as $row) {
-            $output[] = $this->create($entity, $row);
-        }
-        
-        $this->db->trans_complete();
-        return $output;
-    }
-    
-    
-    
-    /**
-     * Fa l'update del record con id passato aggiornando i dati da post
-     * Ritorna i nuovi dati via json
-     * @param string $entity
-     */
-    public function edit($entity=null, $id=null, $data=null) {
-        
-        if( ! $entity || !$id) {
-            $this->showError(self::ERR_INVALID_API_CALL);
-        }
-        
-        
-        $this->originalPost = $this->input->post();
-        if(empty($data) || !is_array($data)) {
-            // Non ho passato dati, quindi prendo il post normalmente
-            $data = $this->originalPost;
-        } else {
-            // Per ragioni di validazione sovrascrivo il post in quanto il validator
-            // di CI 2.x va a cercare sempre nell'array post
-            $_POST = $data;
-        }
-        
-        
-        if(empty($data) && empty($_FILES)) {
-            $this->showError(self::ERR_NO_DATA_SENT);
-        }
-
-        if(!is_array($data)) {
-            $data = (array) $data;
-        }
-
-
-        if($this->processData($entity, $data, true, $id)) {
-            $oldData = $this->getById($entity, $id);
-            $this->db->update($entity, $data, [$entity.'_id' => $id]);
-            $newData = $this->getById($entity, $id);
-
-            $this->runDataProcessing($entity, 'update', [
-                'new' => $newData,
-                'old' => $oldData,
-                'diff' => array_diff_assoc($newData, $oldData),
-                'value_id' => $id
-            ]);
-
-            $this->cache->clean();
-            
-            $_POST = $this->originalPost;
-            return $this->view($entity, $id);
-        } else {
-            $_POST = $this->originalPost;
-            $this->showError();
-        }
-    }
     
     
     /**
@@ -480,7 +616,7 @@ class Apilib {
         
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "api.search.{$entity}.".md5(serialize($input))
-                .($limit? ".{$limit}":'').($offset? ".{$offset}": '').($orderBy? ".{$orderBy}.{$orderDir}": '');
+                .($limit? '.' . $limit:'').($offset? '.' . $offset: '').($orderBy? '.' . md5(serialize($orderBy)) . '.' . md5(serialize($orderDir)): '');
         
         
         
@@ -527,10 +663,10 @@ class Apilib {
                     } elseif (isset($order_dirs[$k])) {
                         // Mi assicuro che la direzione sia ASC o DESC
                         $direction = strtoupper($order_dirs[$k]);
-                        $order_array[] = $field . ' ' . (in_array($direction, ['ASC', 'DESC'])? $direction: 'ASC');
+                        $order_array[] = $field . ' ' . ($direction === 'DESC'? $direction: '');
                     } else {
-                        // Aggiungo con direzione ASC
-                        $order_array[] = $field . ' ASC';
+                        // Aggiungo con direzione ASC (default)
+                        $order_array[] = $field;
                     }
                 }
             }
@@ -550,8 +686,10 @@ class Apilib {
     }
     
     
-    public function searchFirst($entity=null, $input = []) {
-        $out = $this->search($entity, $input, 1);
+    public function searchFirst($entity=null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1) {
+        //$out = $this->search($entity, $input, 1);
+        //20151019 - Fix Matteo: aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
+        $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth);
         return array_shift($out)?:[];
     }
     
@@ -702,6 +840,8 @@ class Apilib {
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
     private function processData($entity, array &$dati, $editMode=false, $value_id = null) {
+        
+        // Recupero i dati dell'entità
         $entity_data = $this->getEntityByName($entity);
         if (empty($entity_data)) {
             $this->error = self::ERR_VALIDATION_FAILED;
@@ -709,18 +849,35 @@ class Apilib {
             return false;
         }
         
+        // Gestione delle custom fields actions - recupero il dato dall'entità
+        $entityCustomActions = empty($entity_data['entity_action_fields'])? [] : json_decode($entity_data['entity_action_fields'], true);
+        
+        
         $originalData = $dati;
         if($editMode) {
-            // Pre-fetch dei dati sennò fallisce la validazione
-            $dataDb = $this->db->get_where($entity, array($entity.'_id' => $value_id))->row_array();
+            
+            if (is_array($value_id)) {
+                // Value id deve contenere il mio record per intero. Estraggo
+                // quindi l'id
+                $dataDb = $value_id;
+                $value_id = $dataDb[$entity.'_id'];
+            } else {
+                // Pre-fetch dei dati sennò fallisce la validazione
+                $dataDb = $this->db->get_where($entity, array($entity.'_id' => $value_id))->row_array();
+            }
+            
             $_POST = $dati = array_merge($dataDb, $dati);
+        } else {
+            $value_id = null;
         }
         
-        $fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
+        $fields = $this->crmEntity->getFields($entity_data['entity_id']);
+        //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
         
         // Recupera dati di validazione
         foreach ($fields as $k => $field) {
-            $fields[$k]['validations'] = $this->db->get_where('fields_validation', array('fields_validation_fields_id' => $field['fields_id']))->result_array();
+            $fields[$k]['validations'] = $this->crmEntity->getValidations($field['fields_id']);
+            //$fields[$k]['validations'] = $this->db->get_where('fields_validation', array('fields_validation_fields_id' => $field['fields_id']))->result_array();
         }
 
         /**
@@ -822,35 +979,18 @@ class Apilib {
         }
         
         if (!empty($rules)) {
-            
-            // ************************ ACCROCCHIO *****************************
-            // FIX: non voglio usare il validator di CI direttamente (quello del
-            // controller, dato che potrebbe essere sporcato da eventuali altre
-            // validazioni precedenti, ma ne creo un'istanza al volo)
+            // Non uso $this->form_validation (del controller) se già
+            // inizializzato, ma ne creo uno nuovo all'occorrenza
             if( !class_exists('CI_Form_validation') && !class_exists('MY_Form_validation')) {
-                
-                // Classe non ancora caricata, quindi posso usare il validator
-                // del controller
                 $this->load->library('form_validation');
-                
             } else {
-                
-                // Classe già caricata, quindi ne creo uno nuovo
                 $validatorClass = (class_exists('MY_Form_validation')? 'MY_Form_validation': 'CI_Form_validation');
                 $this->form_validation = new $validatorClass;
-                
             }
-            
-            
-            
-            
             
             $this->form_validation->set_rules($rules);
             if (!$this->form_validation->run()) {
-                
-                /***
-                 * Voglio tornare solo il primo errore
-                 */
+                // Torno solo il primo errore
                 $this->error = self::ERR_VALIDATION_FAILED;
                 foreach($rules as $rule) {
                     // Non appena lo trovo break - almeno uno ci dev'essere
@@ -888,16 +1028,32 @@ class Apilib {
         }
         
         
-        /**
+        /*
          * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
          * es: password => md5($data['password'])
+         * 
+         * Mi salvo i cossiddetti relation bundles (pacchetti di dati con i
+         * quali gestisco le relazioni NxN) in una variabile locale in modo da
+         * tenerla al sicuro da possibili update ricorsivi (cioè lanciati da
+         * post process)... Una volta eseguito l'ultimo post process, questi
+         * relation bundles andranno inseriti dentro alla variabile d'istanza
+         * `pendingRelations`
          */
-                
+        $relationBundles = [];
         foreach ($fields as $field) {
             
             $name = $field['fields_name'];
             $value = isset($dati[$name]) ? $dati[$name]: null;
             $multilingual = $field['fields_multilingual'] == 't';
+            
+            $isRelation = $this->checkRelationsOnField($field, $value);
+            if ($isRelation) {
+                // Se il campo è una relazione allora dentro al $value ho il mio
+                // relation bundle. Me lo salvo e proseguo con il processing
+                $relationBundles[] = $value;
+                unset($dati[$name]);
+                continue;
+            }
             
             // Evito di processare il campo se il campo non è stato passato
             // nell'input, perché significa che è già stato processato
@@ -949,7 +1105,10 @@ class Apilib {
                 }
 
                 // A questo punto rifaccio l'encode sulla variabile $value
-                $value = json_encode($toSaveJSON);
+                // solamente se ho effettivamente passato il campo, altrimenti
+                // dentro a ... ho già il valore da salvare (perché non è mai
+                // stato modificato da com'è salvato in db)
+                $value = isset($originalData[$name]) ? json_encode($toSaveJSON) : $value;
                 
             // Per i campi non multilingua semplicemente processo il valore
             // normalmente (attenzione $value è per riferimento)
@@ -996,8 +1155,19 @@ class Apilib {
             $dati = $processed_data['post'];
         }
         
-        // Unsetta l'id entità - per sicurezza, non si sa mai cosa viene mandato tramite api
+        // Unsetta id entità per sicurezza:
         unset($dati[$entity.'_id']);
+        
+        // Autocalcola timestamp creazione se settato, se in creazione e se NON è stato passato manualmente
+        if (isset($entityCustomActions['create_time']) && !$editMode && empty($dati[$entityCustomActions['create_time']])) {
+            $dati[$entityCustomActions['create_time']] = date('Y-m-d H:i:s');
+        }
+        
+        // Autocalcola timestamp modifica se settato e se NON è stato passato manualmente
+        if (isset($entityCustomActions['update_time']) && empty($dati[$entityCustomActions['update_time']])) {
+            $dati[$entityCustomActions['update_time']] = $editMode ? date('Y-m-d H:i:s') : null;
+        }
+        
         
         /*
          * Filtro i campi su cui sto per fare la query.
@@ -1019,16 +1189,122 @@ class Apilib {
             $dati = array_diff_key($dati, array_flip($invalidFields));
         }
         
+        /*
+         * Prima di uscire memorizzo i relationsBundle
+         */
+        $this->pendingRelations = $relationBundles;
         return true;
     }
     
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * Controlla se esiste una relazione valida sul campo specificato e se i
+     * dati passati mi devono generare un inserimento di dati nella relazione.
+     * Questo metodo controlla anche se esistono delle "relazioni finte" cioè
+     * field_ref inseriti su campi STRINGA..
+     * 
+     * Nel qual caso esista una relazione "vera" associata al field, il metodo
+     * torna true e modifica il valore originale con i dati della relazione e
+     * i dati da inserire in db
+     * 
+     * @param string $field
+     * @param array $dataToInsert
+     * @return boolean
+     */
+    private function checkRelationsOnField($field, &$dataToInsert) {
+
+        if (!$field['fields_ref']) {
+            return false;
+        }
+
+        // In realtà il field ref dovrebbe puntare alla tabella pivot non
+        // alla tabella con cui è relazionata ad esempio ho aziende <-> tags
+        // il field ref di aziende non dovrebbe puntare a tags, ma ad
+        // aziende_tags (il nome della relazione).
+        // ====
+        // Per mantenere la retrocompatibilità vengono cercate entrambe le varianti
+        if (!is_array($dataToInsert)) {
+            return false;
+        }
+
+        $relations = $this->db->where_in('relations_name', [$field['entity_name'] . '_' . $field['fields_ref'], $field['fields_ref']])->get('relations');
+        if ($relations->num_rows() > 0) {
+            $relation = $relations->row();
+
+            // Se in un form, metto un campo relazione di un'altra entità,
+            // allora probabilmente voglio andare ad inserirlo con un PP
+            // Quindi ignoro il campo, assumendo che verrà gestito
+            // manualmente
+            if (!in_array($field['entity_name'], [$relation->relations_table_1, $relation->relations_table_2])) {
+                return false;
+            }
+
+            $dataToInsert = array(
+                'entity' => $relation->relations_name,
+                'relations_field_1' => $relation->relations_field_1,
+                'relations_field_2' => $relation->relations_field_2,
+                'value' => $dataToInsert
+            );
+            
+            return true;
+            
+        } elseif ($dataToInsert && in_array(strtoupper($field['fields_type']), ['VARCHAR', 'TEXT'])) {
+            $dataToInsert = implode(',', $dataToInsert);
+        }
+        
+        return false;
+
+    }
+
+
+    /**
+     * Inserisci i dati delle relazioni pendenti sull'id passato
+     * 
+     * @param int $savedId
+     * @return null
+     */
+    private function savePendingRelations($savedId) {
+        
+        if (!$this->pendingRelations OR !$savedId) {
+            return;
+        }
+        
+        foreach ($this->pendingRelations as $relationBundle) {
+            /* ==========================================================
+             * Prima di inserire i dati nella relazione faccio un delete 
+             * dei record con relations_field_1 uguale al mio insert id
+             * che corrispondono ai valori vecchi.
+             * --
+             * Nel caso di una modifica si eliminano valori vecchi
+             * nel caso di un inserimento non si elimina niente.
+             * Corretto?
+             * ========================================================= */
+            $this->db->delete($relationBundle['entity'], [$relationBundle['relations_field_1'] => $savedId]);
+            if (is_array($relationBundle['value']) && $relationBundle['value']) {
+
+                // Se $relation['value'] è vuoto allora anche
+                // $relationFullData sarà vuoto
+                $relationFullData = array_map(function($value) use ($relationBundle, $savedId) {
+                    return [
+                        $relationBundle['relations_field_1'] => $savedId,
+                        $relationBundle['relations_field_2'] => $value
+                    ];
+                }, $relationBundle['value']);
+
+                $this->db->insert_batch($relationBundle['entity'], $relationFullData);
+            }
+        }
+        $this->pendingRelations = null;
+    }
+
+
+
+
+
+
+
+
+
+
     /**
      * Lancia il processo di valutazione/validazione di un campo. Questo metodo
      * ritorna un booleano indicante il successo o meno dell'operazione.
@@ -1070,17 +1346,31 @@ class Apilib {
                 $value = $originalValue? md5($originalValue): null;
                 break;
 
-
-            case 'map':
-                // Lancia l'utility per filtrare input di tipo geography
-                $value = $this->filterInputGeo($value);
+            case 'upload':
+            case 'upload_image':
+                $value = $value ? : null;
                 break;
 
+            
+            case 'polygon':
+                // Lancia l'utility per filtrare input di tipo geography
+                $value = $this->filterInputPolygon($value);
+                break;
+            case 'polygon_multi':
+                // Lancia l'utility per filtrare input di tipo geography
+                $value = $this->filterInputPolygonMulti($value);
+                break;
+            case 'polygon_collection':
+                // Lancia l'utility per filtrare input di tipo geography
+                $value = $this->filterInputPolygonCollection($value);
+                
+                break;
             case 'date_range':
                 if($typeSQL === 'DATERANGE' && !isValidDateRange($value)) {
                     $value = '['.implode(',', array_map(function($date) { return date_toDbFormat($date); }, explode(' - ', $value))).']';
                 }
                 break;
+            
         }
 
 
@@ -1094,7 +1384,7 @@ class Apilib {
                         // automaticamente
                         $value = null;
                     } else {
-                        throw new Exception(sprintf("Il campo %s dev'essere un intero", $field['fields_name']));
+                        throw new ApiException(sprintf("Il campo %s dev'essere un intero", $field['fields_name']));
                     }
                 }
                 //----
@@ -1137,6 +1427,32 @@ class Apilib {
                     return false;
                 }
                 break;
+            case 'GEOGRAPHY':
+                // Lancia l'utility per filtrare input di tipo geography
+                $value = $this->filterInputGeo($value);
+                break;
+            case 'INT4RANGE':
+            case 'INT8RANGE':
+                // Lancia l'utility per filtrare input di tipo intrange
+                $arrval = extract_intrange_data($value);
+                
+                if ($arrval) {
+                    // Se uno dei due elementi fosse una stringa vuota
+                    // (che è !== 0) significa che l'intervallo non ha limite e
+                    // questa è una cosa buona e giusta
+                    if ($arrval['from'] <= $arrval['to'] OR $arrval['from']==='' OR $arrval['to']==='') {
+                        return $arrval['range'];
+                    } else {
+                        $this->error = self::ERR_VALIDATION_FAILED;
+                        $this->errorMessage = "L'estremo inferiore di {$field['fields_draw_label']} non può essere maggiore dell'estremo superiore";
+                        return false;
+                    }
+                } else {
+                    $value = null;
+                }
+                break;
+            
+            
         }
         
         return true;
@@ -1173,6 +1489,8 @@ class Apilib {
      * 
      * @param mixed $value
      * @return string|null
+     * 
+     * @todo Manca il controlloche il value passato non sia già una geography pronta. Verificare la presenza o meno del separatore tra lat e lon
      */
     protected function filterInputGeo($value) {
         
@@ -1183,22 +1501,121 @@ class Apilib {
         $exp = [];
         if (isset($value['lat']) && isset($value['lng'])) {
             $exp = [$value['lat'], $value['lng']];
+            
+        } elseif (isset($value['lat']) && isset($value['lon'])) {
+            $exp = [$value['lat'], $value['lon']];
+            
         } elseif (is_array($value) && count($value) > 1) {
             $exp = array_values($value);
-        } elseif (is_string($value)) {
+            
+        } elseif (is_string($value)) { 
             $nvalue = str_replace(',', ';', $value);
             $exp = (strpos($nvalue, ';') !== false)? explode(';', $nvalue): [];
+            
         }
         
-        if (isset($exp[0]) && isset($exp[1])) {
+        if (isset($exp[0]) && isset($exp[1]) && $exp[0] !== '' && $exp[1] !== '') {
             return $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
-        } else {
-            return null;
+        } elseif (!$value) {
+            // Ultima spiaggia: potrei aver passato una geography già pronta:
+            // una geography non è una stringa numerica..
+            return ($value && is_string($value) && !is_numeric($value))? $value : null;
         }
         
     }
     
+    /**
+     * Formattazione di un tipo di dato "Multipolygon"
+     * 
+     * 
+     * @param mixed $value Attenzione che value deve essere nel formato array, con poligoni espressi in lon lat e non lat lon
+     * @return string|null
+     */
+    protected function filterInputPolygonMulti($value) {
+        //debug($value,true);
+        if (isset($value['multipolygon'])) {
+            return $value['multipolygon'];
+        }        
+        //FORMATO: ST_GeographyFromText('MULTIPOLYGON(((lon lat, lon lat), (.......)))') AS geography
+        if (!is_array($value) || $value == array()) {
+            //debug('test');
+            return null;
+        } else {
+            
+            $collections = array();
+            //debug($value,true);
+            if (array_key_exists('polygons', $value)) {//Processo prima i poligoni
+                $value['polygons'] = array_map(
+                    function ($polygon) {
+                        $polygon_expl = explode(',', $polygon);
+                        //Se il poligono non è chiuso (ultimo punto uguale al primo, come vuole postgis)
+                        if ($polygon_expl[0] != $polygon_expl[count($polygon_expl)-1]) {
+                            $polygon_expl[] = $polygon_expl[0];
+                        }                    
+                        $polygon = implode(',', $polygon_expl);
+                        //Aggiungo le parentesi aperta e chiusa
+                        return '('.$polygon.')';
+
+                    }, $value['polygons']);
+                
+            } else {
+                $value['polygons'] = array();
+            }
+            if (array_key_exists('circles', $value)) {//Poi processo i cerchi
+                $value['circles'] = array_map(
+                    function ($circle) {
+                        $circle_expl = explode(',', $circle);
+                        $center = $circle_expl[0];
+                        $radius = $circle_expl[1];
+                        //Creo la geometry polygon che rappresenta il cerchio
+                        $points = json_decode($this->db->query("SELECT ST_AsGeoJSON(ST_Buffer(ST_GeographyFromText('POINT($center)'), $radius)) as circle")->row()->circle,true)['coordinates'];
+                        //debug($points,true);
+                        $points_space_imploded = [];
+                        foreach ($points[0] as $point) {
+                            $points_space_imploded[] = implode(' ', $point);
+                        }
+                        
+                        $polygon_circle = implode(',', $points_space_imploded);
+                        
+                        return '('.$polygon_circle.')';
+                    } ,$value['circles']);
+                
+            } else {
+                $value['circles'] = array();
+            }
+            
+            //debug($value['circles'],true);
+            
+            $merged_polygons = array_merge($value['circles'], $value['polygons']);
+            
+            //debug($merged_polygons,true);
+            
+            $multipolygon = "MULTIPOLYGON((".implode(',', $merged_polygons)."))";
+            
+            //Infine metto tutto dentro un unico calderone GEOMETRYCOLLECTION    
+            if ($merged_polygons != array()) {
+                //Commentare questa riga e decommentare l'altra se si preferisce non fare merge dei poligoni sovrapposti
+                return $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_GeographyFromText('$multipolygon')::geometry)))::geography AS geography")->row()->geography;
+                //return $this->db->query("SELECT ST_GeographyFromText('$multipolygon') AS geography")->row()->geography;
+            } else {
+                return null;
+            }
+            
+        }
+        
+    }
     
+    /**
+     * Formattazione di un tipo di dato "GEOMETRYCOLLECTION"
+     * 
+     * 
+     * @param array $value Attenzione che value deve essere nel formato array, con poligoni espressi in lon lat e non lat lon
+     * @return string|null
+     */
+    protected function filterInputPolygonCollection(array $value) {
+        debug('TODO...',true);
+        
+    }
     
     /**
      * Cloni del model datab del crm
@@ -1208,6 +1625,10 @@ class Apilib {
     }
     
     public function runDataProcessing($entity_id, $when, $data = []) {
+        
+        if (!$this->processEnabled) {
+            return $data;
+        }
         
         if( ! is_numeric($entity_id) && is_string($entity_id)) {
             $entity = $this->getEntityByName($entity_id);
@@ -1349,8 +1770,30 @@ class Apilib {
 
                 // Upload ok
                 $uploadData = $this->upload->data();
-                $output[$fieldName] = $uploadData['file_name'];
                 
+                defined('LOGIN_ENTITY') OR @include __DIR__ . '/../config/crm_configurations.php';
+                $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL: 0;
+                
+                if ($uploadDepthLevel > 0) {
+                    // Voglio comporre il nome locale in modo che se il nome del file fosse
+                    // pippo.jpg la cartella finale sarà: ./uploads/p/i/p/pippo.jpg
+                    $localFolder = '';
+                    for ($i=0;$i<$uploadDepthLevel;$i++) {
+                        // Assumo che le lettere siano tutte alfanumeriche,
+                        // alla fine le immagini sono tutte delle hash md5
+                        $localFolder .= strtolower(isset($uploadData['file_name'][$i]) ? $uploadData['file_name'][$i].DIRECTORY_SEPARATOR : '');
+                    }
+                    
+                    if (!is_dir(FCPATH . 'uploads/' . $localFolder)) {
+                        mkdir(FCPATH . 'uploads/' . $localFolder, 0777, true);
+                    }
+
+                    if (rename(FCPATH . 'uploads/' . $uploadData['file_name'], FCPATH . 'uploads/' . $localFolder . $uploadData['file_name'])) {
+                        $uploadData['file_name'] = $localFolder . $uploadData['file_name'];
+                    }
+                }
+                
+                $output[$fieldName] = $uploadData['file_name'];
             }
                 
 

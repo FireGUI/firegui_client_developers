@@ -11,7 +11,7 @@
         <div class="col-md-5 inbox-info-btn">
             <div class="btn-group">
                 <button class="btn blue reply-btn" data-message-id="<?php echo $dati['message'][MESSAGES_TABLE.'_id']; ?>">
-                    <i class="icon-reply"></i> Reply
+                    <i class="fa fa-reply"></i> Reply
                 </button>
             </div>
         </div>

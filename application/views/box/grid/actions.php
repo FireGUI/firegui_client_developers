@@ -1,4 +1,4 @@
-<ul class="list-inline list-actions" style="min-width:30px;margin: 0 -8px;">
+<div class="action-list">
     
     <?php if(isset($links['custom']) && $links['custom']): ?>
         <?php 
@@ -19,7 +19,7 @@
                 continue;
             }
             ?>
-            <li <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": null; ?>><?php echo $action; ?></li>
+            <span <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": null; ?>><?php echo $action; ?></span>
         <?php endforeach; ?>
     <?php endif; ?>
     
@@ -28,26 +28,20 @@
     
     
     <?php if(isset($links['view']) && $links['view']): ?>
-        <li>
             <a href="<?php echo $links['view'].$id; ?>" class="btn blue btn-xs <?php if(!empty($links['view_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Visualizza">
-                <span class="icon-zoom-in"></span>
+                <span class="fa fa-search-plus"></span>
             </a>
-        </li>
     <?php endif; ?>
 
     <?php if(isset($links['edit']) && $links['edit']): ?>
-        <li>
             <a href="<?php echo $links['edit'].$id; ?>" class="btn purple btn-xs <?php if(!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Modifica">
-                <span class="icon-pencil"></span>
+                <span class="fa fa-pencil"></span>
             </a>
-        </li>
     <?php endif; ?>
 
     <?php if(isset($links['delete']) && $links['delete']): ?>
-        <li>
             <a href="<?php echo $links['delete'].$id; ?>" data-confirm-text="<?php e("l'elemento selezionato verrà eliminato. Sei sicuro?"); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax <?php if(!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Elimina">
-                <span class="icon-remove"></span>
+                <span class="fa fa-remove"></span>
             </a>
-        </li>
     <?php endif; ?>
-</ul>
+    </div>

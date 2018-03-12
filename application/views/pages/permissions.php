@@ -4,7 +4,7 @@
         <div class="portlet box blue">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-lock"></i> Permessi
+                    <i class="fa fa-lock"></i> Permessi
                 </div>
                 <div class="tools"></div>
             </div>
@@ -60,7 +60,7 @@
         <div class="portlet box red">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-check-minus"></i> Impostazioni viste
+                    <i class="fa fa-check"></i> Impostazioni viste
                 </div>
                 <div class="tools"></div>
             </div>
@@ -68,43 +68,44 @@
 
                 <form id="views_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_views_permissions'); ?>" class="formAjax">
                     <div class="form-body">
-                        
-                        <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover table-responsive-scrollable">
-                            <thead>
-                                <tr>
-                                    <th>VISTE</th>
-                                    <?php foreach($dati['users_layout'] as $userID => $username): ?>
-                                        <th>
-                                            <label>
-                                                <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
-                                                <strong><?php echo (is_numeric($userID)? '': '<small class="text-muted" style="font-weight:normal">Gruppo</small> ') . $username; ?></strong>
-                                            </label>
-                                        </th>
-                                    <?php endforeach; ?>
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-                                <?php foreach($dati['layouts'] as $layoutID => $layout) : ?>
+                        <div class="table-scrollable table-scrollable-borderless">
+                            <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover">
+                                <thead>
                                     <tr>
-                                        <th>
-                                            <label style="width: 220px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title="<?php echo $layout; ?>">
-                                                <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
-                                                <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
-                                            </label>
-                                        </th>
+                                        <th>VISTE</th>
                                         <?php foreach($dati['users_layout'] as $userID => $username): ?>
-                                        <td>
-                                            <label>
-                                                <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layoutID; ?>][]" <?php if(!isset($dati['unallowed'][$userID]) || !in_array($layoutID, $dati['unallowed'][$userID])) echo 'checked' ?> />
-                                                <small class="text-muted"><?php echo $username; ?></small>
-                                            </label>
-                                        </td>
+                                            <th>
+                                                <label>
+                                                    <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
+                                                    <strong><?php echo (is_numeric($userID)? '': '<small class="text-muted" style="font-weight:normal">Gruppo</small> ') . $username; ?></strong>
+                                                </label>
+                                            </th>
                                         <?php endforeach; ?>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+
+                                <tbody>
+                                    <?php foreach($dati['layouts'] as $layoutID => $layout) : ?>
+                                        <tr>
+                                            <th>
+                                                <label style="width: 220px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title="<?php echo $layout; ?>">
+                                                    <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
+                                                    <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
+                                                </label>
+                                            </th>
+                                            <?php foreach($dati['users_layout'] as $userID => $username): ?>
+                                            <td>
+                                                <label>
+                                                    <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layoutID; ?>][]" <?php if(!isset($dati['unallowed'][$userID]) || !in_array($layoutID, $dati['unallowed'][$userID])) echo 'checked' ?> />
+                                                    <small class="text-muted"><?php echo $username; ?></small>
+                                                </label>
+                                            </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                         
                         <div class="form-group"><div id="msg_views_form" class="alert"></div></div>
 
@@ -275,7 +276,7 @@
     
     // Imposta di default i permessi come fullscreen
     $(document).ready(function() {
-        $('body').addClass('page-sidebar-closed');
+        $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
     });
 
 </script>

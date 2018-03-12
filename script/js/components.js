@@ -1,3 +1,6 @@
+/* Variabile globale per tracciare tutte le mappe create */
+L.maps = {};
+
 
 function initComponents() {
 
@@ -146,7 +149,15 @@ function initComponents() {
                 dataType: 'json',
                 type: 'POST',
                 data: function (term, page) {
-                    return {q: term, limit: 100, table: $(this).attr('data-ref'), referer: $(this).attr('name')};
+                    var input = $(this);
+                    // C'è un attributo data-referer che identifica il campo che richiede i dati?
+                    // Se non c'è prendi il name...
+                    var referer = input.data('referer');
+                    if (!referer) {
+                        referer = input.attr('name');
+                    }
+                    
+                    return {q: term, limit: 100, table: input.attr('data-ref'), referer: referer};
                 },
                 results: function (data, page) {
                     return {results: data};
@@ -248,7 +259,7 @@ function initComponents() {
  * Modal
  */
 var mAjaxCall = null;
-function loadModal(url, data, callbackSuccess) {
+function loadModal(url, data, callbackSuccess, method) {
     var modalContainer = $('#js_modal_container');
     if (typeof data === 'undefined') {
         data = {};
@@ -257,16 +268,19 @@ function loadModal(url, data, callbackSuccess) {
     if (mAjaxCall !== null) {
         mAjaxCall.abort();
     }
+    loading(true);
 
     mAjaxCall = $.ajax({
         url: url,
-        type: 'POST',
+        type: method? method.toUpperCase(): 'POST',
         data: data,
         dataType: 'html',
         success: function (data) {
             modalContainer.html(data);
             $('.modal', modalContainer).modal()
                     .on('shown.bs.modal', function (e) {
+                        loading(false);
+                        Metronic.initUniform();
                         initComponents();
 
                         // Disable by default the confirmation request
@@ -308,16 +322,51 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {
 
 
 
-function formatDate(dateTime) {
+function formatDate(dateTime, ignoreTimezone) {
+    
+    if (!ignoreTimezone) {
+        dateTime.setMinutes(dateTime.getMinutes() + dateTime.getTimezoneOffset());
+    }
+    
     var day = dateTime.getDate();
     var month = dateTime.getMonth() + 1;
 
-    var date = [day < 10 ? '0' + day : day, month < 10 ? '0' + month : month, dateTime.getFullYear()].join('/');
+    var date = [
+        day < 10 ? '0' + day : day,
+        month < 10 ? '0' + month : month,
+        dateTime.getFullYear(),
+    ].join('/');
 
     var hours = dateTime.getHours();
     var minutes = dateTime.getMinutes();
-    var time = [hours < 10 ? '0' + hours : hours, minutes < 10 ? '0' + minutes : minutes].join(':');
+    var time = [
+        hours < 10 ? '0' + hours : hours,
+        minutes < 10 ? '0' + minutes : minutes,
+        //'00'
+    ].join(':');
+    
     return date + ' ' + time;
+}
+
+
+function isAlldayEvent(datefrom, dateto, format) {
+    var start = format ? moment(datefrom, format): moment(datefrom);
+    var end   = format ? moment(dateto, format): moment(dateto);
+    
+    if (end.diff(start)!==86400000) {   // No an exact day
+        return false;
+    }
+    
+    if (start.minutes() !== 0 || end.minutes() !== 0) {   // Minutes are not 0
+        return false;
+    }
+    
+    if (start.hours() !== 0 || end.hours() !== 0) {       // Hours are not 0
+        return false;
+    }
+    
+    return true;
+    
 }
 
 
@@ -329,10 +378,10 @@ function changeStarsStatus(el) {
     $('.star', star.parent()).each(function () {
         if (parseInt($(this).attr('data-val')) <= val) {
             // Stella prima da attivare
-            $('i', $(this)).removeClass('icon-star-empty').addClass('icon-star');
+            $('i', $(this)).removeClass('fa fa-star-o').addClass('fa fa-star');
         } else {
             // Stella dopo
-            $('i', $(this)).removeClass('icon-star').addClass('icon-star-empty');
+            $('i', $(this)).removeClass('fa fa-star').addClass('fa fa-star-o');
 
         }
     });
@@ -363,10 +412,16 @@ function changeLanguageTemplate(langId) {
 
 
 $(function () {
-    App.init();
-    try {
+    
+    Metronic.init();    // init metronic core components
+    Layout.init();      // init current layout
+    
+    /*try {
         load_calendar();
-    } catch (e) {}
+    } catch (e) {}*/
+    /*try {
+        Ready();
+    } catch (e) {}*/
     
     
     initComponents();
@@ -390,17 +445,12 @@ $(function () {
         $(window).trigger('resize');
     });
 
-    $('body').tooltip({selector: '[data-toggle=tooltip]'});
-
-
-    try {
-        Ready();
-    } catch (e) {}
+    $('body').tooltip({selector: '[data-toggle=tooltip]', container: 'body'});
     
     
     
     var list = $('<ul id="language-switch" class="pull-right list-inline">');
-    $('.page-content > .page-title').append(list);
+    $('.page-content > .layout-container > .page-title').append(list);
     $.getJSON(base_url + 'get_ajax/langInfo', {}, function(json) {
         var curr = json.current;
         $.each(json.languages, function(i, lang) {
@@ -421,7 +471,9 @@ $(function () {
             });
         });
         
-        changeLanguageTemplate(curr.id);
+        if (curr) {
+            changeLanguageTemplate(curr.id);
+        }
     });
     
     

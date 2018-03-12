@@ -67,7 +67,7 @@
         
         
         <button type="button" class="btn btn-link btn-sm js_filter_form_add_row">
-            <span class="icon-plus"></span> Add condition
+            <span class="fa fa-plus"></span> Add condition
         </button>
     </div>
 

@@ -1,11 +1,14 @@
+<?php 
+$mapFormId = "clusered_map_form_{$data['maps']['maps_id']}";
+$mapId = "map_clusters{$data['maps']['maps_id']}";
+?>
 <div id="results">
     <div class="row">
-        <form id="<?php echo 'clusered_map_form_'.$data['maps']['maps_id']; ?>">
+        <form <?php echo sprintf('id="%s"', $mapFormId); ?>>
             <?php foreach($data['maps_fields'] as $map_field): ?>
                 <?php if($map_field['maps_fields_type'] !== 'latlng'): ?>
                     <div class="col-md-6">
-                        <?php $this->datab->build_form_input($map_field); ?>
-                        <?php // $this->load->view("box/form_fields/{$map_field['fields_draw_html_type']}", array('field' => $map_field, 'value' => NULL)); ?>
+                        <?php echo $this->datab->build_form_input($map_field); ?>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -18,7 +21,7 @@
     
     <div class="row" style="margin-top: 30px;">
         <div class="col-md-12">
-            <div id="<?php echo ($id = "map_clusters{$data['maps']['maps_id']}"); ?>" style="height:680px"></div>
+            <div <?php echo sprintf('id="%s"', $mapId); ?> style="height:680px"></div>
         </div>
     </div>
 </div>
@@ -30,7 +33,10 @@
         
         var markers = null;
         
-        var map = L.map('<?php echo $id; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
+        var map = L.map('<?php echo $mapId; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
+        
+        L.maps[<?php echo json_encode($mapId); ?>] = map;
+        
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -39,7 +45,7 @@
         });
         
 
-        var jqFilterForm = $('#<?php echo 'clusered_map_form_'.$data['maps']['maps_id']; ?>');
+        var jqFilterForm = $('#<?php echo $mapFormId; ?>');
         jqFilterForm.on('submit', function(e) {
             e.preventDefault();
 

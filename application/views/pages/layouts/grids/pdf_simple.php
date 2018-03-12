@@ -2,14 +2,14 @@
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field): ?>
-                <th><?php echo $field['fields_draw_label'];  ?></th>
+                <th><?php echo $field['grids_fields_column_name'];  ?></th>
             <?php endforeach; ?>
         </tr>
     </thead>
     <tbody>
         <?php if (isset($grid_data['data'])): ?>
             <?php foreach ($grid_data['data'] as $dato): ?>
-                <tr class="odd gradeX" data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>">
+                <tr class="odd gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
                     <?php foreach ($grid['grids_fields'] as $field): ?>
                         <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                     <?php endforeach; ?>

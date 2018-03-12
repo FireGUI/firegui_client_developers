@@ -1,5 +1,3 @@
-<div id="calendar" class="has-toolbar"></div>
-
 <?php 
 // Map the calendar fields with the entity fields
 $calendar_map = array();
@@ -16,33 +14,35 @@ if (isset($calendar_map['date_range'])) {
     $calendar_map['end'] = $calendar_map['date_range']."_end";
 }
 $element_id = (isset($value_id)? $value_id: NULL);
-
+$calendarId = 'calendar' . $data['calendars']['calendars_id'];
 ?>
-<?php //debug($data); ?>
+<div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 <script>
-    
-    function load_calendar() {
-        if (!jQuery().fullCalendar) {
-            return;
-        }
+
+    $(function () {
         
-        var sourceUrl = "<?php echo base_url("api/search/{$data['calendars']['entity_name']}?{$data['calendars']['calendars_where']}"); ?>";
+        if (!jQuery().fullCalendar) {
+            throw Error('Calendar not loaded');
+        }
+
+        var jqCalendar = $('#<?php echo $calendarId; ?>');
+        var sourceUrl = <?php echo json_encode(base_url("api/search/{$data['calendars']['entity_name']}")); ?>;
 
         var date = new Date();
         var d = date.getDate();
         var m = date.getMonth();
         var y = date.getFullYear();
         var h = {};
-        if ($('#calendar').width() <= 400) {
-            $('#calendar').addClass("mobile");
+        if (jqCalendar.width() <= 400) {
+            jqCalendar.addClass("mobile");
             h = {
                 left: 'title, prev, next',
                 center: '',
                 right: 'today,month,agendaWeek,agendaDay'
             };
         } else {
-            $('#calendar').removeClass("mobile");
-            if (App.isRTL()) {
+            jqCalendar.removeClass("mobile");
+            if (Metronic.isRTL()) {
                 h = {
                     right: 'title',
                     center: '',
@@ -57,8 +57,8 @@ $element_id = (isset($value_id)? $value_id: NULL);
             }
         }
 
-        $('#calendar').fullCalendar('destroy'); // destroy the calendar
-        $('#calendar').fullCalendar({
+        jqCalendar.fullCalendar('destroy'); // destroy the calendar
+        jqCalendar.fullCalendar({
             defaultView: 'agendaWeek',
             editable: true,
             selectable: true,
@@ -81,25 +81,25 @@ $element_id = (isset($value_id)? $value_id: NULL);
             select: function(start, end, allDay) {
                 
                 if (allDay) {
-                    end.setDate(end.getDate() + 1);
-                    end.setMinutes(end.getMinutes() - 1);
+                    end.date(end.date() + 1);
+                    end.minutes(end.minutes() - 1);
                 }
                 
                 data = {
-                    "<?php echo $calendar_map['start'] ?>": formatDate(start),
-                    "<?php echo $calendar_map['end'] ?>": formatDate(end),
-                    <?php if(isset($calendar_map['all_day'])): ?> "<?php echo $calendar_map['all_day'] ?>": (allDay? 1:0), <?php endif; ?>
+                    <?php echo json_encode($calendar_map['start']); ?>: formatDate(start),
+                    <?php echo json_encode($calendar_map['end']); ?>: formatDate(end),
+                    <?php if(isset($calendar_map['all_day'])): ?> <?php echo json_encode($calendar_map['all_day']); ?>: (allDay? 1:0), <?php endif; ?>
                 };
 
-                loadModal('<?php echo base_url("get_ajax/modal_form/" . $this->datab->get_default_form($data['calendars']['calendars_entity_id'])); ?>', data, function() {
-                    $('#calendar').fullCalendar('refetchEvents');
+                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
+                    jqCalendar.fullCalendar('refetchEvents');
                 });
                 
                 return;
             },
             eventClick: function( event, jsEvent, view ) {
-                loadModal('<?php echo base_url("get_ajax/modal_form/" . $this->datab->get_default_form($data['calendars']['calendars_entity_id'])); ?>/'+event.id, {}, function() {
-                    $('#calendar').fullCalendar('refetchEvents');
+                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?>+ '/' + event.id, {}, function() {
+                    jqCalendar.fullCalendar('refetchEvents');
                 });
                 return false;
             },
@@ -125,10 +125,10 @@ $element_id = (isset($value_id)? $value_id: NULL);
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        "<?php echo $calendar_map['id'] ?>": event.id,
-                        "<?php echo $calendar_map['start'] ?>": formatDate(oStart),
-                        "<?php echo $calendar_map['end'] ?>": formatDate(oEnd),
-                        <?php if(isset($calendar_map['all_day'])): ?> "<?php echo $calendar_map['all_day'] ?>": (allDay? 1:0), <?php endif; ?>
+                        <?php echo $calendar_map['id'] ?>: event.id,
+                        <?php echo json_encode($calendar_map['start']); ?>: formatDate(oStart),
+                        <?php echo json_encode($calendar_map['end']); ?>: formatDate(oEnd),
+                        <?php if(isset($calendar_map['all_day'])): ?> <?php echo json_encode($calendar_map['all_day']); ?>: (allDay? 1:0), <?php endif; ?>
                     },
                     success: function(data) {
                         if(parseInt(data.status) < 1) {
@@ -149,10 +149,10 @@ $element_id = (isset($value_id)? $value_id: NULL);
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        "<?php echo $calendar_map['id'] ?>": event.id,
-                        "<?php echo $calendar_map['start'] ?>": formatDate(event.start),
-                        "<?php echo $calendar_map['end'] ?>": formatDate(event.end),
-                        <?php if(isset($calendar_map['all_day'])): ?> "<?php echo $calendar_map['all_day'] ?>": 0, <?php endif; ?>
+                        <?php echo $calendar_map['id'] ?>: event.id,
+                        <?php echo json_encode($calendar_map['start']); ?>: formatDate(event.start),
+                        <?php echo json_encode($calendar_map['end']); ?>: formatDate(event.end),
+                        <?php if(isset($calendar_map['all_day'])): ?> <?php echo json_encode($calendar_map['all_day']); ?>: 0, <?php endif; ?>
                     },
                     success: function(data) {
                         if(parseInt(data.status) < 1) {
@@ -182,5 +182,6 @@ $element_id = (isset($value_id)? $value_id: NULL);
                 }
             ]
         });
-    }
+    });
+    
 </script>

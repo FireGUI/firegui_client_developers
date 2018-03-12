@@ -66,7 +66,14 @@ $html = ob_get_contents();
 ob_end_clean();
 echo $html;
 
-if($_SERVER['REMOTE_ADDR'] !== '88.86.183.74' && gethostname() !== 'sfera') {
+session_start();
+$md5 = md5($message);
+$minExp = 10;
+$time = time();
+
+$sentRecently = (isset($_SESSION['dberr'][$md5]) && $time - $_SESSION['dberr'][$md5] <= $minExp*60);
+
+if(!$sentRecently && $_SERVER['REMOTE_ADDR'] !== '88.86.183.74' && gethostname() !== 'sfera') {
     $header = 'From: '.DEFAULT_EMAIL_SENDER.' <'.DEFAULT_EMAIL_SYSTEM.'>'.PHP_EOL;
     $header .= "MIME-Version: 1.0".PHP_EOL;
     $header .= "Content-Type: text/html; charset=\"iso-8859-1\"".PHP_EOL;
@@ -89,5 +96,7 @@ if($_SERVER['REMOTE_ADDR'] !== '88.86.183.74' && gethostname() !== 'sfera') {
     
     $fullMessage[] = '<br/>$_SERVER <pre>' . print_r($_SERVER, true) . '</pre>';
     
-    mail('debug@h2-web.it', 'Errore database CRM', implode('<br/>', $fullMessage), $header);
+    if (mail('debug@h2-web.it', 'Errore database CRM', implode('<br/>', $fullMessage), $header)) {
+        $_SESSION['dberr'][$md5] = $time;
+    }
 }

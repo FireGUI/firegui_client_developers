@@ -3,8 +3,8 @@
         <?php if (count($link['submenu']) > 0): ?>
             <div class="btn-group">
                 <button type="button" class="btn dropdown-toggle default <?php echo $link['menu_css_class']; ?> menu-<?php echo $link['menu_id'] ?>" data-toggle="dropdown">
-                    <i class="<?php echo $link['menu_icon_class']; ?>"></i>
-                    <?php echo $link['menu_label']; ?> <i class="icon-angle-down"></i>
+                    <?php echo $link['menu_icon_class']? sprintf('<i class="%s"></i>', $link['menu_icon_class']): ''; ?>
+                    <?php echo $link['menu_label']; ?> <i class="fa fa-angle-down"></i>
                 </button>
                 <ul class="dropdown-menu">
                     <?php foreach ($link['submenu'] as $sub_menu): ?>
@@ -14,7 +14,7 @@
             </div>
         <?php elseif(($href=$this->datab->generate_menu_link($link, $value_id, $layout_data_detail))): ?>
             <a href="<?php echo $href; ?>" class="btn default <?php echo $link['menu_css_class']; ?> <?php if($link['menu_modal']=='t') echo 'js_open_modal'; ?> menu-<?php echo $link['menu_id'] ?>">
-                <i class="<?php echo $link['menu_icon_class']; ?>"></i>
+                <?php echo $link['menu_icon_class']? sprintf('<i class="%s"></i>', $link['menu_icon_class']): ''; ?>
                 <?php echo $link['menu_label']; ?>
             </a>
         <?php endif; ?>

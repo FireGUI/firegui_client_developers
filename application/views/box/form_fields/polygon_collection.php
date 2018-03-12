@@ -1,37 +1,104 @@
 <?php
-$map =  "js_map_container_{$field['fields_id']}_map" . ($lang? "_{$lang}": '');
-$input = "js_map_container_{$field['fields_id']}_input" . ($lang? "_{$lang}": '');
 
-if($value) {
-    $value_latlon = $this->db->query("SELECT ST_Y('{$value}'::geometry) AS lat, ST_X('{$value}'::geometry) AS lon")->row();
-    if(!empty($value_latlon)) {
-        $lat = $value_latlon->lat;
-        $lon = $value_latlon->lon;
-        $value = $lat.';'.$lon;
+$map = "js_map_container_{$field['fields_id']}_map" . ($lang ? "_{$lang}" : '');
+$input = "js_map_container_{$field['fields_id']}_input" . ($lang ? "_{$lang}" : '');
+$polygons = false;
+if ($value) {
+    $json_data = $this->db->query("SELECT ST_AsGeoJSON('{$value}'::geography) AS json_data")->row()->json_data;
+
+    $geometries = json_decode($json_data, true)['geometries'];
+    $polygons = $circles = [];
+    foreach ($geometries as $geometry) {
+        switch ($geometry['type']) {
+            case 'MultiPolygon':
+                foreach ($geometry['coordinates'][0] as $polygon) {
+                    $polygons[] = array_map(function ($lonlat) { //Inverto lon/lat in lat/lon
+                        return array($lonlat[1], $lonlat[0]);
+                    }, $polygon);
+                }
+                break;
+            default:
+                debug($geometry, true);
+                break;
+        }
     }
+    $polygons_str = [];
+    foreach ($polygons as $polygon) {
+        $polygons_str[] = implode(',', array_map(function ($latlon) {
+                    return $latlon[0] . ' ' . $latlon[1];
+                }, $polygon));
+    }
+    //debug($polygons_str,true);
 }
 ?>
-<div class="form-group" <?php echo $containerAttributes; ?>>
-    <?php echo $label; ?>
-    <input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" />
-    <div style="max-width: 400px;">
-        <div class="input-group">
-            <input type="text" class="form-control js_map_search" placeholder="<?php e('cerca località') ?>" />
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button"><i class="icon-search"></i></button>
-            </span>
-        </div>
-        <br/>
-        <div style="max-width: 100%; height: 400px;" <?php echo "id='{$map}'"; ?> <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?>></div>
-    </div>
-    <?php echo $help; ?>
+<?php echo $label; ?>
+<div id="inputs_container_<?php echo $input; ?>">
+    <?php /* if ($value) : ?>
+      <?php foreach ($polygons_str as $val) : ?>
+      <input type="input" name="<?php echo $field['fields_name']; ?>[]" class="<?php echo $class; ?> <?php echo $input; ?>" value="<?php echo $val; ?>" />
+      <?php endforeach; ?>
+      <?php else : ?>
+
+      <?php endif; */ ?>
 </div>
-
-
+<div style="max-width: 400px;">
+    <div class="input-group">
+        TODO
+    </div>
+    <br/>
+    <div style="max-width: 100%; height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
+</div>
+<?php echo $help; ?>
 
 <script>
     
     $(document).ready(function() {
+        function savePolygons() {
+            var bounds = [];
+            $('#inputs_container_<?php echo $input; ?>').html('');
+            var layers = drawnItems.getLayers();
+            for (var i in layers) {
+                if (layers[i] instanceof L.Polygon){
+                    var layerBounds = layers[i].getLatLngs();
+                
+                    for (var j in layerBounds) {
+                        bounds.push(layerBounds[j]);
+                    }
+
+                    //popolo gli input
+                    var latlng = layers[i].getLatLngs();
+                    var lnglatstrs = [];
+                    console.log(latlng);
+                    for (var j in latlng) {
+                        lnglatstrs.push(latlng[j].lng + ' ' + latlng[j].lat);
+                    }
+                    var val = lnglatstrs.join();
+                    $('#inputs_container_<?php echo $input; ?>').append('<input type="input" name="<?php echo $field['fields_name']; ?>[polygons][]" class="<?php echo $class; ?> <?php echo $input; ?>" value="'+val+'" />');
+                } else if (layers[i] instanceof L.Circle) {
+                    console.log(layers[i]);
+                    var circleBounds = layers[i].getBounds();
+                    for (var j in circleBounds) {
+                        bounds.push(circleBounds[j]);
+                    }
+                    var center = layers[i].getLatLng();
+                    var radius = layers[i].getRadius();
+                    var val = center.lng+' '+center.lat+','+radius;
+                    $('#inputs_container_<?php echo $input; ?>').append('<input type="input" name="<?php echo $field['fields_name']; ?>[circles][]" class="<?php echo $class; ?> <?php echo $input; ?>" value="'+val+'" />');
+                    continue;
+                } else {
+                    alert('Tipo di poligono non ancora gestito');
+                    continue;
+                }
+                
+                //console.log(val);
+                
+            }
+            
+            map.fitBounds(bounds);
+            
+            
+            
+        }
         
         var map = null;
         
@@ -41,15 +108,12 @@ if($value) {
             }
         });
         
-        
-        
         setTimeout(function() {
             var w = $('#<?php echo $map; ?>').width();
             if(w > 0) {
                 $('#<?php echo $map; ?>').height(w);
             }
         }, 1000);
-        
         
         map = L.map('<?php echo $map; ?>', {
             center: new L.LatLng(46.0649520, 13.2374247),
@@ -60,130 +124,95 @@ if($value) {
                 })
             ],
             minZoom: 5,
-        });
-        $(window).on('resize', function() {
-            map.invalidateSize();
-        });
-        
-        var marker = null;
-        map.on('click', function(e) {
-            var clickPosition = e.latlng;
-            if(marker === null) {
-                createMarker(clickPosition);
-            } else {
-                moveMarker(clickPosition);
-            }
             
         });
         
+        L.maps[<?php echo json_encode($map); ?>] = map;
         
-        function updateLatlngInput() {
-            var input = $('#<?php echo $input; ?>');
-            var str = '';
-            if(marker !== null) {
-                str = marker.getLatLng().lat+";"+marker.getLatLng().lng;
+        var drawnItems = L.featureGroup().addTo(map);
+        
+        var polygonOpt = {
+            allowIntersection: false,
+            shapeOptions: {
+                color: '#0000FF',
+//                weight: 10,
+//                smoothFactor: 1,
+//                noClip: false,
+//                stroke: true,
+//                opacity: 0.5,
+//                fill:true,
+//                fillColor: '#000099',
+//                fillOpacity: 0.5,
+//                fillRule: 'nonzero', //evenodd
+//                dashArray: null, //
+//                lineCap: null,
+//                lineJoin: null,
+//                clickable: true,
+//                pointerEvents: null,
+//                className: '',
+            },
+            drawError: {
+                color: '#990000', // Color the shape will turn when intersects
+                message: '<strong>Attenzione!<strong> non puoi intersecare le linee!' // Message that will show when intersect
+            },
+            guidelineDistance: 10,
+            metric: true,
+//            repeatMode: false,
+            selectedPathOptions: {
+                maintainColor: true,
+                opacity: 0.3,
+            },
+            showArea: true,
+        };
+    var circleOpt = {
+        shapeOptions: {
+                color: '#0000FF',
+        },
+    };
+        
+        map.addControl(new L.Control.Draw({
+            draw: { 
+                featureGroup: drawnItems, 
+                polygon: polygonOpt,
+                circle: circleOpt,
+                polyline: false,
+                marker: false,
+            },
+            edit: {
+                featureGroup: drawnItems,
+                polygon: polygonOpt,
+                circle: circleOpt,
+                polyline: false,
+                marker: false,
             }
-            input.val(str);
-        }
-        
-        
-        
-        
-        /*
-         * Geocoding
-         */
-        var searchInput = $('.js_map_search', $('#<?php echo $map; ?>').parent());
-        var geocoding = new L.Geocoding({
-            providers : {
-                custom: function(arg) {
-                    var that = this,
-                        query = arg.query,
-                        cb = arg.cb;
-                        $.ajax({
-                            url : 'http://nominatim.openstreetmap.org/search',
-                            dataType : 'jsonp',
-                            jsonp : 'json_callback',
-                            data : {q: query, format: 'json'}
-                        }).done(function(data){
-                            if (data.length>0) {
-                                var res=data[0];
-                                if(marker === null) {
-                                    createMarker(new L.LatLng(res.lat, res.lon));
-                                } else {
-                                    moveMarker(new L.LatLng(res.lat, res.lon));
-                                }
-                            } else {
-                                destroyMarker();
-                            }
-                        });
-                }
-            }
+        }));
+
+        map.on('draw:created', function(event) {
+            var layer = event.layer;
+            drawnItems.addLayer(layer);
+            savePolygons();
         });
-
-        // Set custom provider default
-        geocoding.setOptions({provider:'custom'});
-        map.addControl(geocoding);
-
-        // Geocoding
-
-        searchInput.on('blur', function() {
-            geocoding.geocode(searchInput.val());
+        map.on('draw:edited', function(event) {
+            savePolygons();
         });
-
         
+        map.on('draw:deleted', function () {
+            savePolygons();
+        });
         
-        
-        
-        
-        
-        function createMarker(latlng) {
-            if(map !== null) {
-                marker = L.marker(latlng, {
-                    draggable: true
-                }).on('dragend', function(e) {
-                    updateLatlngInput();
-                }).on('click', function(e) {
-                    var result = confirm('Rimuovere il marker?');
-                    if(result) {
-                        destroyMarker();
-                    }
-                }).addTo(map);
-
-                //Center the map on the marker
-                map.setView(latlng, 17, {animate: true});
-                updateLatlngInput();
-            }
-        }
-        
-        function moveMarker(latlng) {
-            if(map !== null && marker !== null) {
-                marker.setLatLng(latlng);
-                map.setView(latlng, 17, {animate: true});
-                updateLatlngInput();
-            }
-        }
-        
-        function destroyMarker() {
-            if(map !== null && marker !== null) {
-                map.removeLayer(marker);
-                marker = null;
-                updateLatlngInput();
-            }
-        }
-        
-        
-        
-        
-        <?php if(isset($lat) && isset($lon)): ?>
-            setTimeout(function() {
-                createMarker([<?php echo $lat ?>, <?php echo $lon ?>]);
-            }, 1000);
+        <?php if ($value) : ?>
+            <?php foreach ($polygons as $polygon) : ?>
+            var saved_polygon = L.polygon(<?php echo json_encode($polygon); ?>, polygonOpt);
+            drawnItems.addLayer(saved_polygon);
+            map.addLayer(saved_polygon);
+            <?php endforeach; ?>
+            savePolygons();
         <?php endif; ?>
         
-        
-        
-        
-        
+        $(window).on('resize', function() {
+            map.invalidateSize();
+            savePolygons();
+        });
         
     });
     

@@ -1,29 +1,35 @@
 <?php
 $form_id = "form_{$form['forms']['forms_id']}";
-$edit = isset($form['forms']['edit_data']['data'])? array_shift($form['forms']['edit_data']['data']): [];
+$rowStart = '<div class="row">';
+$rowEnd = '</div>';
+$rowCol = 0;
 ?>
 <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="formAjax" enctype="multipart/form-data" data-edit-id="<?php echo $value_id; ?>">
+    
+    <!-- FORM HIDDEN DATA -->
+    <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
+    
     <div class="form-body">
-        <?php $k=0; foreach ($form['forms_fields'] as $field): ?>
-            <?php $view = $this->datab->build_form_input($field, isset($edit[$field['fields_name']]) ? $edit[$field['fields_name']] : $this->input->get($field['fields_name']));
-            if($field['fields_draw_html_type'] == 'input_hidden') {
-                echo $view;
-            } elseif($field['fields_draw_html_type'] == 'wysiwyg') {
-                echo '<div class="clearfix"></div><div class="col-md-12">'.$view.'</div><div class="clearfix"></div>';
-                $k = 0;
-            } else {
-                echo '<div class="col-md-6">'.$view.'</div>';
-                $k++;
-            } ?>
-            <?php if( ! ($k%2)): ?>
-                <div class="clearfix"></div>
-            <?php endif; ?>
+        <?php foreach ($form['forms_fields'] as $k => $field): ?>
+            <?php 
+            // Stampa la prima row
+            echo $rowCol? '': $rowStart;
+            $col = $field['size'] ? : 6;
+            $rowCol += $col;
             
+            if ($rowCol > 12) {
+                $rowCol = $col;
+                echo $rowEnd, $rowStart;
+            }
+            ?>
+            <div class="<?php echo sprintf('col-lg-%d', $col); ?>"><?php echo $field['html']; ?></div>
         <?php endforeach; ?>
+        <?php echo $rowCol? $rowEnd: ''; ?>
 
-        <div class="clearfix"></div>
-        <div class="col-md-12">
-            <div <?php echo "id='msg_{$form_id}'"; ?> class="alert alert-danger hide"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div <?php echo "id='msg_{$form_id}'"; ?> class="alert alert-danger hide"></div>
+            </div>
         </div>
     </div>
 

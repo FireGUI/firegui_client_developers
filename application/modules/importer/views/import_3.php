@@ -6,7 +6,7 @@
         <div class="portlet box blue">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-upload-alt"></i> Import over
+                    <i class="fa fa-upload"></i> Import over
                 </div>
             </div>
             <div class="portlet-body">

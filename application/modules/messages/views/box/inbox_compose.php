@@ -1,6 +1,6 @@
 <form class="inbox-compose form-horizontal formAjax" id="fileupload" action="<?php echo base_url('messages/send'); ?>" method="POST" enctype="multipart/form-data">
     <div class="inbox-compose-btn">
-        <button class="btn blue"><i class="icon-check"></i>Send</button>
+        <button class="btn blue"><i class="fa fa-check"></i>Send</button>
         <button class="btn">Discard</button>
     </div>
     <div class="inbox-form-group mail-to">
@@ -26,7 +26,7 @@
     
     
     <div class="inbox-compose-btn">
-        <button class="btn blue"><i class="icon-check"></i>Send</button>
+        <button class="btn blue"><i class="fa fa-check"></i>Send</button>
         <button class="btn">Discard</button>
     </div>
 </form>

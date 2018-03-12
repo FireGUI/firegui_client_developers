@@ -9,7 +9,7 @@
             <div class="portlet box blue">
                 <div class="portlet-title">
                     <div class="caption">
-                        <i class="icon-upload-alt"></i> Map the CSV with the entity fields
+                        <i class="fa fa-upload"></i> Map the CSV with the entity fields
                     </div>
                 </div>
                 <div class="portlet-body form">

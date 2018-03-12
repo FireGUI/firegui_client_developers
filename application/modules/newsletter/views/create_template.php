@@ -5,7 +5,7 @@
         <div class="portlet box blue">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-sheets"></i> Templates
+                    <i class="fa fa-html5"></i> Templates
                 </div>
                 <div class="tools">
                     <a href="javascript:;" class="collapse"></a>
@@ -49,7 +49,7 @@
         <div class="portlet box blue">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-sheets"></i> Template form
+                    <i class="fa fa-html5"></i> Template form
                 </div>
             </div>
             <div class="portlet-body form">

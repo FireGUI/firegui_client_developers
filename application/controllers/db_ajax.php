@@ -44,10 +44,19 @@ class Db_ajax extends MY_Controller {
         // ==========================
         // Obtain parameters
         // ==========================
-        $dati = $this->input->post();
+        $dati = $this->input->post() ? : [];
         $isOneRecord = $form['forms_one_record'] == 't';
         $edit = (bool) $edit;
 
+        // Normalizza il post in modo che contenga tutti i field del form. Metti
+        // null se il campo non è stato passato (oppure un array vuoto se il 
+        // il campo è una multiselect
+        foreach ($form['fields'] as $field) {
+            if (!array_key_exists($field['fields_name'], $dati)) {
+                $type = $field['forms_fields_override_type'] ? : $field['fields_draw_html_type'];
+                $dati[$field['fields_name']] = ($type==='multiselect') ? []: null;
+            }
+        }
         
         // Vedo se ci sono field che si riferiscono a relazioni
         // ====
@@ -62,7 +71,7 @@ class Db_ajax extends MY_Controller {
         // questo campo non viene effettivamente passato, allora vuol dire
         // che devo eliminare tutte le eventuali relazioni (ciò vale per la
         // modifica)
-        $post_process_relations = [];
+        /*$post_process_relations = [];
         foreach ($form['fields'] as $field) {
             
             if (!$field['fields_ref']) {
@@ -102,7 +111,7 @@ class Db_ajax extends MY_Controller {
             } elseif ($dataToInsert && in_array(strtoupper($field['fields_type']), ['VARCHAR', 'TEXT'])) {
                 $dati[$field['fields_name']] = implode(',', $dataToInsert);
             }
-        }
+        }*/
         
         // ==========================
         // Data insert
@@ -114,16 +123,24 @@ class Db_ajax extends MY_Controller {
         try {
             
             if ($edit) {
-                $saved = $this->apilib->edit($entity, $value_id, $dati);
+                // In questo caso devo controllare se ci sono i dati perché
+                // potrebbe essere che abbia aggiornato solamente una relazione
+                // e quindi non devo fare un update sull'entità puntata dal
+                // form. In ogni caso mi assicuro che $saved contenga il record
+                // in questione
+//                $saved = $dati?
+//                        $this->apilib->edit($entity, $value_id, $dati):
+//                        $this->apilib->view($entity, $value_id);
+                $savedId = $this->apilib->edit($entity, $value_id, $dati, false);
             } else {
-                $saved = $this->apilib->create($entity, $dati);
+                $savedId = $this->apilib->create($entity, $dati, false);
             }
             
-            if (empty($saved[$entityIdField])) {
+            if (empty($savedId)) {
                 throw new Exception('Non è stato possibile salvare i dati');
             }
             
-            $savedId = $saved[$entityIdField];
+            $saved = $this->apilib->getById($entity, $savedId);
                     
         } catch (Exception $ex) {
             die(json_encode(['status' => 0, 'txt' => $ex->getMessage()]));
@@ -135,33 +152,33 @@ class Db_ajax extends MY_Controller {
         }
 
         
-        if (count($post_process_relations) > 0) {
-            foreach ($post_process_relations as $relation) {
-                /* ==========================================================
-                 * Prima di inserire i dati nella relazione faccio un delete 
-                 * dei record con relations_field_1 uguale al mio insert id
-                 * che corrispondono ai valori vecchi.
-                 * --
-                 * Nel caso di una modifica si eliminano valori vecchi
-                 * nel caso di un inserimento non si elimina niente.
-                 * Corretto?
-                 * ========================================================= */
-                $this->db->delete($relation['entity'], [$relation['relations_field_1'] => $savedId]);
-                if (is_array($relation['value']) && $relation['value']) {
-                    
-                    // Se $relation['value'] è vuoto allora anche
-                    // $relationFullData sarà vuoto
-                    $relationFullData = array_map(function($value) use ($relation, $savedId) {
-                        return [
-                            $relation['relations_field_1'] => $savedId,
-                            $relation['relations_field_2'] => $value
-                        ];
-                    }, $relation['value']);
-                                        
-                    $this->db->insert_batch($relation['entity'], $relationFullData);
-                }
-            }
-        }
+//        if (count($post_process_relations) > 0) {
+//            foreach ($post_process_relations as $relation) {
+//                /* ==========================================================
+//                 * Prima di inserire i dati nella relazione faccio un delete 
+//                 * dei record con relations_field_1 uguale al mio insert id
+//                 * che corrispondono ai valori vecchi.
+//                 * --
+//                 * Nel caso di una modifica si eliminano valori vecchi
+//                 * nel caso di un inserimento non si elimina niente.
+//                 * Corretto?
+//                 * ========================================================= */
+//                $this->db->delete($relation['entity'], [$relation['relations_field_1'] => $savedId]);
+//                if (is_array($relation['value']) && $relation['value']) {
+//                    
+//                    // Se $relation['value'] è vuoto allora anche
+//                    // $relationFullData sarà vuoto
+//                    $relationFullData = array_map(function($value) use ($relation, $savedId) {
+//                        return [
+//                            $relation['relations_field_1'] => $savedId,
+//                            $relation['relations_field_2'] => $value
+//                        ];
+//                    }, $relation['value']);
+//                                        
+//                    $this->db->insert_batch($relation['entity'], $relationFullData);
+//                }
+//            }
+//        }
 
         
         // ==========================
@@ -800,7 +817,7 @@ class Db_ajax extends MY_Controller {
     }
 
     public function ck_uploader() {
-        $url = './uploads/' . time() . "_" . strtolower(' ', '_', $_FILES['upload']['name']);
+        $url = './uploads/' . time() . "_" . strtolower(str_replace(' ', '_', $_FILES['upload']['name']));
         //extensive suitability check before doing anything with the file...
         if (($_FILES['upload'] == "none") OR ( empty($_FILES['upload']['name']))) {
             $message = "No file uploaded.";

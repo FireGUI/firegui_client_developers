@@ -9,7 +9,7 @@
 
 $id = uniqid('js-timeline-');
 
-$entity = $grid_data['entity'];
+$entity = $grid['grids'];
 $data = $grid_data['data'];
 $replaces = $grid['replaces'];
 

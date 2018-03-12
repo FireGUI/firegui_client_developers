@@ -71,7 +71,7 @@ if (isset($grid_data['data'])) {
         </div>
         <div class="btn-cont"> 
             <span class="arrow"></span>
-            <button class="btn blue icn-only"><i class="icon-ok icon-white"></i></button>
+            <button class="btn blue icn-only"><i class="fa fa-check icon-white"></i></button>
         </div>
     </form>
 </div>

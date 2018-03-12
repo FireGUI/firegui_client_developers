@@ -20,7 +20,7 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <input type="hidden" name="folders[<?php echo $k; ?>][mailbox_configs_folders_name]" value="<?php echo $folder; ?>" />
-                                    <label class="checkbox">
+                                    <label class="checkbox-inline">
                                         <input type="hidden" name="folders[<?php echo $k; ?>][mailbox_configs_folders_attiva]" value="f" />
                                         <input class="js-folder-toggle" type="checkbox" data-folder-id="<?php echo $k; ?>" name="folders[<?php echo $k; ?>][mailbox_configs_folders_attiva]" value="t" <?php echo (isset($real['mailbox_configs_folders_attiva']) && $real['mailbox_configs_folders_attiva']==='t')? 'checked': ''; ?> />
                                         <?php echo $folder; ?>

@@ -55,7 +55,7 @@ class Access extends MY_Controller {
         
         
         if(empty($data['users_users_email']) || empty($data['users_users_password'])) {
-            echo json_encode(array('status'=>0, 'txt'=>'Insert e-mail address and password'));
+            echo json_encode(array('status'=>0, 'txt'=>'Inserisci indirizzo e-mail e password'));
             die();
         }
         
@@ -70,7 +70,7 @@ class Access extends MY_Controller {
             $this->auth->reset_intended_url();
             echo json_encode(array( 'status'=>1, 'txt'=>$redirection_url ));
         } else {
-            echo json_encode(array( 'status'=>0, 'txt'=>'Login failed' ));
+            echo json_encode(array( 'status'=>0, 'txt'=>'E-mail o password non corrispondenti' ));
         }
     }
     
@@ -79,13 +79,13 @@ class Access extends MY_Controller {
         $email = $this->input->post('email');
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            show_error('Inserisci un indirizzo e-mail valido.');
+            die(json_encode(array( 'status'=>0, 'txt'=> 'Inserisci un indirizzo e-mail valido.')));
         }
 
-        $user = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $email))->row_array();
+        $user = $this->db->get_where(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $email])->row_array();
 
         if (empty($user)) {
-            show_error("L'indirizzo e-mail non &egrave; associato a nessun utente");
+            die(json_encode(array( 'status'=>0, 'txt'=> 'Spiacenti, l\'indirizzo inserito non è registrato.' )));
         }
 
         $senderName = DEFAULT_EMAIL_SENDER;
@@ -98,18 +98,18 @@ class Access extends MY_Controller {
 
         $this->load->library('email');
         $this->email->subject('Recupero password')->to($email)->from($senderMail, $senderName);
-        $msg = array(
+        $msg = [
             "Ciao {$user[LOGIN_NAME_FIELD]},",
             "questa mail ti è stata inviata perché hai richiesto un reset della tua password su {$senderName}.",
             "Se non hai richiesto un reset della password ignora questa e-mail, altrimenti clicca sul link sottostante",
             base_url("access/reset_password/{$userID}/{$hash}")
-        );
+        ];
 
         $this->email->message(implode(PHP_EOL, $msg));
         $success = $this->email->send();
 
         if (!$success) {
-            show_error("Errore invio mail");
+            die(json_encode(array( 'status'=>0, 'txt'=> 'Si è verificato un errore inviando la mail. Riprovare più tardi o contattare l\'amministrazione.' )));
         }
 
         $checkHash = md5($email . self::SALT);

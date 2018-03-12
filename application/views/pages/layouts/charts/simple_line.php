@@ -1,31 +1,44 @@
-<?php $chartId = "container_hightcharts_{$chart['charts_id']}"; ?>
+<?php
+$chartId = "container_hightcharts_{$chart['charts_id']}";
+// --- Series
+$series = [];
+foreach ($chart_data[0]['series'] as $name => $data) {
+    $series[] = ['name' => $name, 'data' => array_values(array_map('floatval', $data))];
+}
+?>
 <div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
 
 <script>
         
     $(function () {
+
+        var title = <?php echo json_encode($chart['charts_title']); ?>;
+        var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
+        var rotation = <?php echo json_encode((count($chart_data[0]['data']) > 8) ? -45 : 0); ?>;
+        var categories = <?php echo json_encode(array_values($chart_data[0]['x'])); ?>;
+        var label2 = <?php echo json_encode($chart_data[0]['element']['charts_elements_label2']); ?>;
+        var series = <?php echo json_encode($series); ?>;
+        
         $('#<?php echo $chartId; ?>').highcharts({
-            title: {
-                text: '<?php echo $chart['charts_title']; ?>',
-                x: -20 //center
-            },
-            subtitle: {
-                text: '<?php echo $chart['charts_subtitle']; ?>',
-                x: -20
-            },
+            title: {text: title, x: -20},
+            subtitle: {text: subtitle, x: -20},
             xAxis: {
-                categories: [<?php echo "'".implode("', '", array_map(function($item) { return addslashes($item);}, $chart_data[0]['x']))."'"; ?>]
+                labels: {
+                    rotation: rotation,
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                },
+                categories: categories
             },
             yAxis: {
-                title: { text: '<?php echo $chart_data[0]['element']['charts_elements_label2']; ?>' },
+                title: { text: label2 },
                 plotLines: [{
                     value: 0,
                     width: 1,
                     color: '#808080'
                 }]
-            },
-            tooltip: {
-                //valueSuffix: '°C'
             },
             legend: {
                 layout: 'vertical',
@@ -33,11 +46,7 @@
                 verticalAlign: 'middle',
                 borderWidth: 0
             },
-            series: [
-                <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    { name: '<?php echo addslashes($name); ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
-                <?php endforeach; ?>
-            ]
+            series: series
         });
     });
     

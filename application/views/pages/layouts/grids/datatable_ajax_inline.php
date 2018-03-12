@@ -6,11 +6,11 @@
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field): ?>
-                <th data-name="<?php echo $field['fields_name']; ?>"><?php echo $field['fields_draw_label']; ?></th>
+                <th data-name="<?php echo $field['fields_name']; ?>"><?php echo $field['grids_fields_column_name']; ?></th>
             <?php endforeach; ?>
 
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
+            <th data-prevent-order>&nbsp;</th>
+            <th data-prevent-order>&nbsp;</th>
         </tr>
     </thead>
     <tbody></tbody>

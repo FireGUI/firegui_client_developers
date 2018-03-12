@@ -6,7 +6,7 @@
     <div class="col-sm-3">
         <a href="<?php echo base_url("offers/create_offer"); ?>">
             <div class="dashboard-stat green">
-                <div class="visual"><i class="icon-upload-alt"></i></div>
+                <div class="visual"><i class="fa fa-upload"></i></div>
                 <div class="details">
                     <div class="number"><?php echo count($dati['offers']) ?></div>
                     <div class="desc">Offerte create</div>
@@ -19,7 +19,7 @@
     <div class="col-sm-3">
         <a href="<?php echo base_url("offers/expired_offers"); ?>">
             <div class="dashboard-stat green">
-                <div class="visual"><i class="icon-upload-alt"></i></div>
+                <div class="visual"><i class="fa fa-upload"></i></div>
                 <div class="details">
                     <div class="number"><?php echo count($dati['offers_expired']) ?></div>
                     <div class="desc">Offerte scadute</div>
@@ -36,7 +36,7 @@
         <div class="portlet box blue">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-list-alt"></i> Offerte scadute
+                    <i class="fa fa-list-alt"></i> Offerte scadute
                 </div>
             </div>
 

@@ -21,9 +21,23 @@ function startDataTables() {
      * Datatables
      */
     $('.js_datatable_slim:not(.dataTable)').each(function() {
-        var bEnableOrder = typeof($(this).attr('data-prevent-order')) === 'undefined';
-        $(this).dataTable({
+        
+        var oDataTable = $(this);
+        
+        var bEnableOrder = typeof(oDataTable.attr('data-prevent-order')) === 'undefined';
+        var aoColumns = [];
+        $('> thead > tr > th', oDataTable).each(function() {
+            var coldef = null;
+            coldef = {
+                bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined')
+            };
+
+            aoColumns.push(coldef);
+        });
+        
+        oDataTable.dataTable({
             bSort: bEnableOrder,
+            aoColumns: aoColumns,
             iDisplayLength: 5,
             bFilter: false,
             bLengthChange: false,

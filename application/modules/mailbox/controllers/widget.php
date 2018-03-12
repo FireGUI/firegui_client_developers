@@ -17,21 +17,39 @@ class Widget extends MX_Controller {
         $filter = $this->loadIndexFilters($current);
         
         
+        $searchFilters = [];
+        
+        $fixedFilter = $this->input->get('filter');
+        if ($fixedFilter) {
+            $allFixedFilters = unserialize(MAILBOX_FLAG_FILTERS);
+            foreach ($fixedFilter as $key) {
+                if (isset($allFixedFilters[$key])) {
+                    $searchFilters[] = $allFixedFilters[$key];
+                }
+            }
+        }
+        
         $search = trim($this->input->get('search'))?:null;
         if ($search) {
-            $filter[] = "(
-                    mailbox_emails_subject ILIKE '%{$search}%' OR 
-                    mailbox_emails_text_plain ILIKE '%{$search}%' OR 
-                    mailbox_emails_text_html ILIKE '%{$search}%' OR 
-                    mailbox_emails_id IN (
-                        SELECT mailbox_emails_addresses_email
-                        FROM mailbox_emails_addresses
-                        WHERE (
-                            mailbox_emails_addresses_name ILIKE '%{$search}%' OR 
-                            mailbox_emails_addresses_address ILIKE '%{$search}%'
+            $searchFilters[] = $search;
+        }
+        
+        foreach ($searchFilters as $q) {
+            if ($q) {
+                $filter[] = "(
+                        mailbox_emails_subject ILIKE '%{$q}%' OR 
+                        mailbox_emails_text_plain ILIKE '%{$q}%' OR 
+                        mailbox_emails_text_html ILIKE '%{$q}%' OR 
+                        mailbox_emails_id IN (
+                            SELECT mailbox_emails_addresses_email
+                            FROM mailbox_emails_addresses
+                            WHERE (
+                                mailbox_emails_addresses_name ILIKE '%{$q}%' OR 
+                                mailbox_emails_addresses_address ILIKE '%{$q}%'
+                            )
                         )
-                    )
-                )";
+                    )";
+            }
         }
 
         $data['search'] = $search;

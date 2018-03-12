@@ -4,7 +4,7 @@
         <ul class="inbox-nav margin-bottom-10">
             <li class="compose-btn">
                 <a href="javascript:;" data-title="Compose" class="btn green"> 
-                    <i class="icon-edit"></i> Compose
+                    <i class="fa fa-edit"></i> Compose
                 </a>
             </li>
             <li class="inbox active">
