@@ -1,5 +1,5 @@
-var nome_form = null;
-var formMessage = null;
+var formAjaxSubmittedFormId = null;
+var formAjaxShownMessage = null;
 
 
 var handleSuccess = function(msg) {
@@ -60,10 +60,12 @@ var handleSuccess = function(msg) {
 //var iShowCounter = 0;
 function loading(bShow) {
     if(bShow) {
+        $('.js_loading_overlay').fadeIn();
         $('.js_loading').fadeIn();
-        // Se in 2 secondi non ho ottenuto una risposta, nascondo automaticamente il loader
-        setTimeout(loading, 2000, false);
+        // Se in 4 secondi non ho ottenuto una risposta, nascondo automaticamente il loader
+        setTimeout(loading, 4000, false);
     } else {
+        $('.js_loading_overlay').fadeOut();
         $('.js_loading').fadeOut();
     }
 }
@@ -79,34 +81,43 @@ function loading(bShow) {
 $(document).ready(function() {
     $('body').on('submit', '.formAjax', function(e) {
         e.preventDefault();
-        var action = $(this).attr('action');
-        nome_form = $(this).attr('id');
-        
         var form = $(this);
-        if (formMessage === null) {
-            invio_form(action, form);
-        } else {
-            formMessage.fadeOut('fast', function() {
-                formMessage.removeClass('alert-success alert-danger').addClass('hide').css({'display':'', 'opacity': ''});
-                formMessage = null;
-                invio_form(action, form);
+        if (formAjaxShownMessage) {
+            formAjaxShownMessage.fadeOut('fast', function() {
+                formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({'display':'', 'opacity': ''});
+                formAjaxShownMessage = null;
+                formAjaxSend(form);
             });
+        } else {
+            formAjaxSend(form);
         }
         return false;
     });
         
+    
+    
+    $('body').on('click', '.js_confirm_button', function(e) {
+        var text = $(this).data('confirm-text');
+        if( ! confirm(text? text: 'Confermi?')) {
+            e.preventDefault();             // Prevent follow links
+            e.stopPropagation();            // Prevent propagation on parent DOM elements
+            e.stopImmediatePropagation();   // Prevent other handlers to be fired
+            return false;                   // Better sure than sorry :)
+        }
+    });
         
     $('body').on('click', '.js_link_ajax', function(e) {
-        e.preventDefault();
+        e.preventDefault();             // Prevent follow links
+        e.stopPropagation();            // Prevent propagation on parent DOM elements
+        e.stopImmediatePropagation();   // Prevent other handlers to be fired
 
-        if($(this).hasClass('js_confirm_button')) {
+        /*if($(this).hasClass('js_confirm_button')) {
             // Ask confirm first
             var text = $(this).attr('data-confirm-text');
             if( ! confirm(text? text: 'Confermi?')) {
                 return;
             }
-        }
-
+        }*/
 
         var url = $(this).attr('href');
         loading(true);
@@ -150,16 +161,24 @@ function sleep(milliseconds) {
 
 
 
-function invio_form(action, form) {
+function formAjaxSend(form, ajaxOverrideOptions) {
     
+    if (form instanceof Element || typeof form === 'string') {
+        form = $(form);
+    }
+    
+    if (!(form instanceof jQuery)) {
+        alert("Si è verificato un errore tecnico inviando il form. Contattare l'amministrazione");
+        return false;
+    }
+    
+    formAjaxSubmittedFormId = form.attr('id');
+    
+    var action = form.attr('action');
     var formEvents = $._data(form[0], 'events');
-    
-    try {
-        $('.formAjax #description').val(CKEDITOR.instances.description.getData());
-    } catch (e) {}
     var data = new FormData(form[0]);
-    loading(true);
-    $.ajax({
+    
+    var ajaxOptions = {
         url: action,
         type: 'POST',
         data: data,
@@ -199,7 +218,14 @@ function invio_form(action, form) {
                 }));
             }
         }
-    });
+    };
+    
+    if (ajaxOverrideOptions && typeof ajaxOverrideOptions === 'object') {
+        $.extend(ajaxOptions, ajaxOverrideOptions);
+    }
+    
+    loading(true);
+    $.ajax(ajaxOptions);
 }
 
 
@@ -209,38 +235,41 @@ function invio_form(action, form) {
 
 
 function error(txt) {
-
-    var console = $('#msg_' + nome_form);
-    console.html(txt);
-    formMessage = console;
+    formAjaxShownMessage = $('#msg_' + formAjaxSubmittedFormId).html(txt);
+    
+    // Reset della proprietà css inline display in modo che non interferisca con
+    // le classi di bootstrap
+    formAjaxShownMessage.css('display', '');
 
     if (txt) {
-        console.removeClass('hide alert-success').addClass('alert-danger');
+        formAjaxShownMessage.removeClass('hide hidden alert-success').addClass('alert-danger');
     } else {
-        console.addClass('hide');
+        formAjaxShownMessage.addClass('hide hidden').hide();
     }
-
 }
 
 
 function success(txt) {
+    formAjaxShownMessage = $('#msg_' + formAjaxSubmittedFormId).html(txt);
+    
+    // Reset della proprietà css inline display in modo che non interferisca con
+    // le classi di bootstrap
+    formAjaxShownMessage.css('display', '');
 
-    var console = $('#msg_' + nome_form);
-    console.html(txt);
-    formMessage = console;
-
+    var current = formAjaxShownMessage;
+    
     if (txt) {
-        console.removeClass('hide alert-danger').addClass('alert-success');
+        current.removeClass('hide alert-danger').addClass('alert-success');
         setTimeout(function() {
-            console.fadeOut(function() {
-                console.addClass('hide').html('').css('display', '');
-                if (formMessage === console) {
-                    formMessage = null;
+            current.fadeOut(function() {
+                current.addClass('hide hidden').html('');
+                
+                if (current === formAjaxShownMessage) {
+                    formAjaxShownMessage = null;
                 }
             });
         }, 8000);
     } else {
-        console.addClass('hide');
+        current.addClass('hide hidden');
     }
-
 }

@@ -40,20 +40,26 @@ class Datab extends CI_Model {
                     NOT EXISTS (SELECT 1 FROM unallowed_layouts WHERE layouts_id = unallowed_layouts_layout AND unallowed_layouts_user = ?) AND 
                     (
                         layouts_entity_id IS NULL OR
-                        layouts_entity_id NOT IN (SELECT entity_id FROM entity) OR
                         EXISTS (SELECT 1 FROM permissions WHERE permissions_admin AND permissions_user_id = ?) OR
-                        layouts_entity_id IN (
+                        NOT EXISTS (
+                            SELECT 1
+                            FROM permissions_entities
+                            JOIN permissions ON permissions_entities_permissions_id = permissions_id
+                            WHERE layouts_entity_id = permissions_entities_entity_id AND permissions_user_id = ?
+                        ) OR
+                        EXISTS (
                             SELECT permissions_entities_entity_id
                             FROM permissions_entities JOIN permissions ON permissions_entities_permissions_id = permissions_id
                             WHERE (
                                 permissions_user_id = ? AND
+                                layouts_entity_id = permissions_entities_entity_id AND
                                 permissions_entities_value <> ?
                             )
                         )
                     )
                 )
                 ORDER BY layouts_id
-            ", [$userId, $userId, $userId, PERMISSION_NONE])->result_array();
+            ", [$userId, $userId, $userId, $userId, PERMISSION_NONE])->result_array();
         $this->_accessibleLayouts = array_combine(array_key_map($accessibleLayouts, 'layouts_id'), $accessibleLayouts);
         
         foreach ($this->_accessibleLayouts as $id => $linfo) {
@@ -100,7 +106,10 @@ class Datab extends CI_Model {
 
     public function get_entity_by_name($entity_name) {
         
-        if(!$entity_name) {
+        $entity = $this->crmentity->getEntity($entity_name);
+        $entity['fields'] = $this->crmentity->getFields($entity_name);
+        
+        /*if(!$entity_name) {
             die("Nome entità richiesto");
         }
         
@@ -116,20 +125,34 @@ class Datab extends CI_Model {
         } else {
             $entity['fields'] = $this->db->query("SELECT * FROM fields WHERE fields_entity_id = ?", [$entity['entity_id']])->result_array();
             $this->_entities[$entity['entity_id']] = $entity;
-        }
+        }*/
         return $entity;
     }
 
     public function get_data_entity($entity_id, $only_visible_fields = 0, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE) {
-        $dati['entity'] = $this->get_entity($entity_id);
+        
+        /*$dati['entity'] = $this->get_entity($entity_id);
         $dati['relations'] = $this->db->query("SELECT relations_name FROM relations WHERE relations_table_1 = '{$dati['entity']['entity_name']}'")->result_array();
         $dati['visible_fields'] = $this->db->query("
             SELECT *
             FROM fields
                 LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
                 LEFT JOIN entity ON entity.entity_id = fields.fields_entity_id
-            WHERE fields_entity_id = ? AND NOT fields_draw_display_none", [$entity_id])->result_array();
+            WHERE fields_entity_id = ? AND NOT fields_draw_display_none", [$entity_id])->result_array();*/
+        
+        $expectedval = date('Ymdh');
+        if ($this->session->userdata('last_get_data_warning') != $expectedval) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $lastStep = array_pop($backtrace);
+            $text = print_r($lastStep, true);
+            mail('alberto@h2-web.it', "get_data_entity su {$_SERVER['HTTP_HOST']}", $text);
+            $this->session->set_userdata('last_get_data_warning', $expectedval);
+        }
 
+        $dati['entity'] = $this->crmentity->getEntity($entity_id);
+        $dati['relations'] = $this->crmentity->getEntityRelations($dati['entity']['entity_name']);
+        $dati['visible_fields'] = $this->crmentity->getVisibleFields($entity_id);
+        
         if (count($dati['visible_fields']) < 1) {
             debug("Entità {$dati['entity']['entity_name']} (id = {$entity_id}) senza campi");
             return false;
@@ -224,8 +247,14 @@ class Datab extends CI_Model {
                 
             } elseif (($campo['fields_ref'] && in_array(array('relations_name' => $campo['fields_ref']), $dati['relations']))) {
                 $relation_to = $this->db->query("SELECT relations_table_2 FROM relations WHERE relations_name = '{$campo['fields_ref']}'")->row()->relations_table_2;
-                $ent = $this->get_entity_by_name($relation_to);
-                $post_process_data_entity[$key]['entity_id'] = $ent['entity_id'];
+                $ent = $this->crmentity->getEntity($relation_to);
+                $ent['relation_name'] = $campo['fields_ref'];
+                $post_process_data_entity[$key] = $ent;
+
+                // Devo fare il controllo dei limiti sulle relazioni
+                /*if (!in_array($ent['entity_id'], $permission_entities)) {
+                    $permission_entities[] = $ent['entity_id'];
+                }*/
             }
         }
 
@@ -277,7 +306,9 @@ class Datab extends CI_Model {
             $this->db->offset($offset);
         }
         if ($order_by !== NULL && !$count) {
+            $this->db->_protect_identifiers = FALSE;
             $this->db->order_by($order_by . ',' . $dati['entity']['entity_name'] . '_id');
+            $this->db->_protect_identifiers = TRUE;
         }
 
         if ($count) {
@@ -316,17 +347,102 @@ class Datab extends CI_Model {
                     }
                     
                 }
+            
+                $mainEntityID = "{$dati['entity']['entity_name']}_id";
+                $entityIDs = array_key_map($dati['data'], $mainEntityID);
+                $implodedEntityIds = implode(',', $entityIDs);
+
+                foreach ($post_process_data_entity as $key => $entity) {
+                    $relEntityID = "{$entity['entity_name']}_id";
+                    $relationName = $entity['relation_name'];
+                    $dati['visible_fields'][$key]['data'] = $this->get_data_entity($entity['entity_id'], 0, "{$entity['entity_name']}.{$relEntityID} IN (SELECT {$relEntityID} FROM {$relationName} WHERE {$relationName}.{$mainEntityID} IN ({$implodedEntityIds}))");
+                }
             }
-
-
-            foreach ($post_process_data_entity as $key => $entity) {
-                $dati['visible_fields'][$key]['data'] = $this->get_data_entity($entity['entity_id']);
-            }
-
         }
         
         return $dati;
     }
+    
+    /**
+     * Cerca una lista di dati. Wrapper del search/count apilib, ma che tiene
+     * conto della sessione del crm e dei permessi
+     * 
+     * @param int|string $entity_id
+     * @param string|array $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param string $order_by
+     * @param int $depth
+     * @param bool $count
+     * @return array
+     */
+    public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE) {
+        
+        // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
+        // entità
+        $visibleFields = $this->crmentity->getFields($entity_id);
+        
+        // Estraggo i campi visibili anche di eventuali tabelle da joinare per
+        // calcolarne i permessi
+        $permissionEntities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti dei permessi
+        
+        foreach ($visibleFields as $k => $campo) {
+            if ($campo['fields_ref']) {
+                $joinEnt = $this->crmentity->getEntity($campo['fields_ref']);
+                $visibleFields = array_merge($visibleFields, $this->crmentity->getFields($joinEnt['entity_id']));
+                in_array($joinEnt['entity_id'], $permissionEntities) OR array_push($permissionEntities, $joinEnt['entity_id']);
+            }
+        }
+
+        // Preparo il where: accetto sia stringa che array, però dopo questo
+        // punto dovrà essere per forza un array di condizioni in AND
+        if ($where && !is_array($where)) {
+            $where = [$where];
+        }
+
+        // Applico limiti permessi sul where appena preparato
+        $userId = (int) $this->auth->get(LOGIN_ENTITY . '_id');
+        $operators = unserialize(OPERATORS);
+        $field_limits = $this->db->join('fields', 'limits_fields_id = fields_id')
+                ->where_in('fields_entity_id', $permissionEntities)
+                ->where_in('limits_operator', array_keys($operators))
+                ->get_where('limits', ['limits_user_id' => $userId])
+                ->result_array();
+        
+        foreach ($field_limits as $flimit) {
+            $field = $flimit['fields_name'];
+            $op = $flimit['limits_operator'];
+            $value = trim($flimit['limits_value']);
+            $sql_op = $operators[$op]['sql'];
+
+            // Modifico i value in alcuni casi particolari
+            switch ($op) {
+                case 'in':
+                    $value = "('" . implode("','", explode(',', $value)) . "')";
+                    break;
+
+                case 'like':
+                    $value = "'%{$value}%'";
+                    break;
+            }
+
+            // Costruisco il where - se non metto l'accettazione dei valori null
+            // allora mi è impossibile prendere i valori nulli se viene
+            // attivato questo where
+            $where[] = "({$field} IS NULL OR {$field} {$sql_op} {$value})";
+        }
+
+        // Ok, where pronto, mi resta solo da fare il dispatch ad apilib
+        $entity = $this->crmentity->getEntity($entity_id);
+
+        if ($count) {
+            return $this->apilib->count($entity['entity_name'], $where);
+        } else {
+            return $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth);
+        }
+    }
+    
+    
     
     
     
@@ -365,7 +481,11 @@ class Datab extends CI_Model {
      */
     public function get_default_fields_value($fields) {
 
-        $value = null;
+        $value = $this->input->get_post($fields['fields_name']);
+        if ($value === false) {
+            $value = null;
+        }
+        
         switch ($fields['forms_fields_default_type']) {
             case 'session':
                 // Mi aspetto una sintassi di questo tipo: {arr campo} oppure {campo}
@@ -426,7 +546,7 @@ class Datab extends CI_Model {
             die('ERRORE: Entity ID mancante');
 
 
-        $form_id = $this->db->query("SELECT * FROM forms WHERE forms_entity_id = '$entity_id' AND forms_default = 't' LIMIT 1")->row()->forms_id;
+        $form_id = $this->db->query("SELECT * FROM forms WHERE forms_entity_id = '{$entity_id}' AND forms_default = 't' LIMIT 1")->row()->forms_id;
         return $form_id;
     }
 
@@ -439,58 +559,76 @@ class Datab extends CI_Model {
         return $dati;
     }
 
-    public function get_form($form_id) {
-        if (!$form_id)
+    public function get_form($form_id, $value_id = null) {
+        if (!$form_id) {
             die('ERRORE: Form ID mancante');
+        }
+        
+        $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
+        if (!$form) {
+            die(sprintf('Form %s non esistente', $form));
+        }
+        
+        $fields = $this->db
+                ->join('fields', 'fields_id = forms_fields_fields_id')
+                ->join('fields_draw', 'forms_fields_fields_id = fields_draw_fields_id')
+                ->order_by('forms_fields_order')
+                ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id, 'fields_visible' => 't'])->result_array();
+        
+        $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}": ''));
+        
+        /*
+         * Per far funzionare correttamente i form non posso recuperare i valori
+         * già tradotti, quindi devo resettare il sistema lingue dell'apilib,
+         * fare la chiamata e poi ripristinarlo
+         */
+        $clanguage = $this->apilib->getLanguage();          // Current Language
+        $flanguage = $this->apilib->getFallbackLanguage();  // Fallback Language
+        
+        $this->apilib->setLanguage();
+        if ($form['forms_one_record'] == 't') {
+            $formData = $this->apilib->searchFirst($form['entity_name']);
+        } else {
+            $formData = $value_id ? $this->apilib->view($form['entity_name'], $value_id, 1): [];
+        }
+        $this->apilib->setLanguage($clanguage, $flanguage);
 
-        $dati = array();
-        $dati['forms'] = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON forms.forms_entity_id = entity.entity_id WHERE forms_id = '{$form_id}'")->row_array();
-
-        $dati['forms_fields'] = $this->db->query("SELECT * FROM forms_fields LEFT JOIN forms ON forms_fields.forms_fields_forms_id = forms.forms_id
-                                                                             LEFT JOIN fields ON fields.fields_id = forms_fields.forms_fields_fields_id 
-                                                                             LEFT JOIN fields_draw ON forms_fields.forms_fields_fields_id = fields_draw.fields_draw_fields_id
-                                                                             WHERE forms_id = '$form_id' AND fields_visible = 't' ORDER BY forms_fields_order ASC")->result_array();
-
-        // Il ref è il nome della tabella/entità di supporto/da joinare quindi estraggo i valori da proporre
         $operators = unserialize(OPERATORS);
-        foreach ($dati['forms_fields'] as $key => $field) {
+        foreach ($fields as &$field) {
+            // Il ref è il nome della tabella/entità di supporto/da joinare
+            // quindi estraggo i valori da proporre
             if (!$field['fields_ref']) {
                 continue;
             }
 
-            $entity = $this->get_entity_by_name($field['fields_ref']);
-            if (!isset($entity['entity_name'])) {
-                debug($field['fields_ref']);
-                debug($entity);
+            if (!($entity = $this->get_entity_by_name($field['fields_ref']))) {
                 echo "Campo legato ad una relazione inesistente (" . $field['fields_ref'] . ") ";
                 continue;
             }
 
             // Verifico se il ref si riferisce ad una eventuale relations oppure ad una tabella di supporto, in modo da gestirlo diversamente
             // Chiaramente x funzionare non ci devono essere 2 relazioni con lo stesso nome
-            $relations = $this->db->query("SELECT * FROM relations WHERE relations_name = '{$entity['entity_name']}'")->row_array();
+            $relations = $this->db->query("SELECT * FROM relations WHERE relations_name = ?", [$entity['entity_name']])->row_array();
             if (count($relations) > 0) {
-                $support_relation_table = $relations['relations_table_2'];
                 $entity = $this->get_entity_by_name($relations['relations_table_2']);
-                $field_support_id = $relations['relations_field_2'];
+                $support_relation_table = $relations['relations_table_2'];
+                $field['field_support_id'] = $relations['relations_field_2'];   // Dichiara il campo id da utilizzare nel form
             } else {
                 $support_relation_table = $field['fields_ref'];
-                $field_support_id = $entity['entity_name'] . "_id";
+                $field['field_support_id'] = $entity['entity_name'] . "_id";    // Dichiara il campo id da utilizzare nel form
+            }
+            
+            // A questo punto se il campo è ajax non pesco i dati, ma demando
+            // l'onere alla chiamata ajax
+            if ($field['fields_draw_html_type'] === 'select_ajax') {
+                continue;
             }
 
-            // Estraggo i campi che si possono visualizzare per la tabella o entità di supporto....
-            $visible_fields_supports = $this->db->query("SELECT * FROM fields LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
-                                                            LEFT JOIN entity ON entity.entity_id = fields.fields_entity_id
-                                                            WHERE fields_entity_id = '{$entity['entity_id']}' AND fields_preview = 't'")->result_array();
-            $support_fields = $this->fields_implode($visible_fields_supports);
-            $select = $field_support_id . ($support_fields? ',' . $support_fields: '');
-
             // Applico limiti permessi
-            $user_id = (int) $this->auth->get('id');
-            $data_entity = $this->get_entity_by_name($support_relation_table);
-            $field_limit = $this->db->query("SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = '{$user_id}' AND fields_entity_id = {$data_entity['entity_id']}")->row_array();
-            $wheres = array();
-            if (!empty($field_limit)) {
+            $field_limits = $this->getUserLimits($support_relation_table);
+            $wheres = [];
+            
+            foreach ($field_limits as $field_limit) {
                 $fieldLimitName = $field_limit['fields_name'];
                 $op = $field_limit['limits_operator'];
                 $value = $field_limit['limits_value'];
@@ -512,42 +650,114 @@ class Datab extends CI_Model {
                 }
             }
 
-            $fieldWhere = trim($field['fields_select_where']);
-            if ($fieldWhere) {
+            // Prendo la field select where
+            if (($fieldWhere = trim($field['fields_select_where']))) {
                 $wheres[] = $this->replace_superglobal_data($fieldWhere);
             }
 
-            $where = (empty($wheres)? '': 'WHERE ' . implode(' AND ', $wheres));
-            $support_data = (($field['fields_draw_html_type'] == 'select_ajax')? array(): $this->db->query("SELECT {$select} FROM {$support_relation_table} {$where}")->result_array());
-            $dati['forms_fields'][$key]['support_fields'] = $visible_fields_supports;
-            $dati['forms_fields'][$key]['support_data'] = $support_data;
-
-            // Fix x dichiarare quale sarà il campo id da utilizzare nel form
-            $dati['forms_fields'][$key]['field_support_id'] = $field_support_id;
+            $where = $wheres ? '(' . implode(' AND ', $wheres) . ')': '';
+            
+            // Se attualmente ci sono dei filtri E se il campo ha una
+            // corrispondenza nei dati del form (in modifica), allora voglio
+            // assicurarmi che il valore/i valori vengano preselezionati, a
+            // prescindere dai filtri
+            if ($where && isset($formData[$field['fields_name']])) {
+                
+                $lvalue = $field['field_support_id'];
+                $oper = '=';
+                $rvalue = $formData[$field['fields_name']];
+                
+                // è una relazione, quindi nelle chiavi ci sono gli id
+                if (is_array($rvalue)) {
+                    $oper = 'IN';
+                    $rvalue = '(' . implode(',', array_keys($rvalue)) . ')';
+                }
+                
+                $where .= (($where ? ' OR ': '') . '(' . $lvalue . ' ' . $oper . ' ' . $rvalue . ')');
+            }
+            
+            $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where);
         }
-        // Se il campo One record è impostato a TRUE mi prendo già i dati di
-        // quel form per popolarlo e renderlo quindi editable
-        if ($dati['forms']['forms_one_record'] == 't') {
-            $dati['forms']['edit_data'] = $this->get_data_entity($dati['forms']['forms_entity_id']);
+        unset($field);
+        
+        /*
+         * Combino i form data col get per fare il render dei fields
+         */
+        $formData = array_merge($formData, $this->input->get()?:[], array_filter($formData, function($val) {
+            return is_null($val) OR $val === '';
+        }));
+        
+        /*
+         * Splitto i fields in due categorie:
+         *  - form_fields: che funzionano come tutti quelli già inseriti
+         *  - hidden_fields: che vengono inseriti all'inizio del form
+         * ----
+         * NB: Faccio qua il pre-render dei fields in modo da poter unsettare i
+         *     dati e liberare memoria
+         */
+        $hidden = $shown = [];
+        foreach ($fields as $field) {
+            $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type']: $field['fields_draw_html_type'];
+            if ($type === 'input_hidden') {
+                $hidden[] = $field;
+            } else {
+                $shown[] = $field;
+            }
         }
+        
+        
+        /*$hidden = array_values(array_filter($fields, function($field) {
+            $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type']: $field['fields_draw_html_type'];
+            return $type === 'input_hidden';
+        }));*/
+        
+        foreach ($hidden as $k => $field) {
+            $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']])? $formData[$field['fields_name']]: null);
+        }
+        /*$shown = array_values(array_filter($fields, function($field) {
+            $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type']: $field['fields_draw_html_type'];
+            return $type !== 'input_hidden';
+        }));*/
+        
+        foreach ($shown as $k => $field) {
+            
+            // Dimensione del field:
+            //  - cerca prima un valore valido in `forms_fields_override_colsize`
+            //  - altrimenti controlla se è un wysiwyg e impostala a 12
+            //      - per controllare se è un wysiwyg prima controllo nel campo
+            //        `forms_fields_override_type`
+            //      - se questo è VUOTO allora prendo il `fields_draw_html_type`
+            //  - altrimenti metti null
+            $colsize = empty($field['forms_fields_override_colsize']) ? null : $field['forms_fields_override_colsize'];
+            $type = $field['forms_fields_override_type'] ? : $field['fields_draw_html_type'];
+            if (!$colsize && $type === 'wysiwyg') {
+                $colsize = 12;
+            }
+            
+            $shown[$k] = [
+                'id'        => $field['fields_id'],
+                'name'      => $field['fields_name'],
+                'label'     => $field['fields_draw_label'],
+                'size'      => $colsize,
+                'type'      => $type,
+                'datatype'  => $field['fields_type'],
+                'filterref' => empty($field['support_fields'][0]['entity_name'])? $field['fields_ref']: $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
+                'html'      => $this->build_form_input($field, isset($formData[$field['fields_name']])? $formData[$field['fields_name']]: null)
+            ];
+        }
+        
 
-        // 
-        return $dati;
+        return ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
     }
-
-    public function get_edit_form($form_id, $record_id) {
-        if (!$form_id)
-            die('ERRORE: Form ID mancante');
-
-        $form = $this->get_form($form_id);
-    }
+    
 
     /**
      * Grids
      */
     public function get_default_grid($entity_id) {
-        if (!$entity_id)
+        if (!$entity_id) {
             die('ERRORE: Entity ID mancante');
+        }
 
         $grid_id = $this->db->query("SELECT grids_id FROM grids WHERE grids_entity_id = '$entity_id' AND grids_default = 't'")->row()->grids_id;
         return $grid_id;
@@ -572,139 +782,147 @@ class Datab extends CI_Model {
             $additional_data = array();
         }
         
+        $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, is_array($where) ? implode(' AND ', $where): $where, $additional_data);
+
         
-
-
-        $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, $where, $additional_data);
-
-
         /** Valuta order_by * */
         if (is_null($order_by) && !empty($grid['grids']['grids_order_by']) && !$count) {
             $order_by = $grid['grids']['grids_order_by'];
         }
-
-        $data = $this->datab->get_data_entity($grid['grids']['grids_entity_id'], 0, $where, $limit, $offset, $order_by, $count);
+        
+        // Disabilita temporaneamente sistema di traduzioni in modo da pescare
+        // i dati completi
+        $clanguage = $this->apilib->getLanguage();          // Current Language
+        $flanguage = $this->apilib->getFallbackLanguage();  // Fallback Language
+        
+        $this->apilib->setLanguage();
+        
+        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, 2, $count);
+        
+        // Riabilita sistema traduzioni
+        $this->apilib->setLanguage($clanguage, $flanguage);
+        
         
 
-        if (!empty($data['relations']) && !empty($data['data'])) {
-            foreach ($data['relations'] as $relation) {
-                if (isset($relation['relations_name'])) {
-
-                    // Prendi i dati della relazione
-                    $rel = $this->db->get_where('relations', array('relations_name' => $relation['relations_name']))->row_array();
-
-                    // Se ho trovato dei dati allora posso provare a cercare le relazioni
-                    if (isset($data['data'][0]) && is_array($data['data'][0]) && array_key_exists($rel['relations_field_1'], $data['data'][0])) {
-                        $field = $rel['relations_field_1'];
-                        $other = $rel['relations_field_2'];
-                        $other_table = $rel['relations_table_2'];
-                    } elseif (isset($data['data'][0]) && is_array($data['data'][0]) && array_key_exists($rel['relations_field_2'], $data['data'][0])) {
-                        $field = $rel['relations_field_2'];
-                        $other = $rel['relations_field_1'];
-                        $other_table = $rel['relations_table_1'];
-                    } else {
-                        continue;
-                    }
-
-                    /**
-                     * Il risultato dell'operazione sarà un array di valori - questo array sarà il valore del campo dell'entità che va a relazionarsi con l'altra tabella
-                     * Ad esempio se una camera può avere più servizi voglio che tutti i servizi finiscano sul campo camere_servizi
-                     * $field_name_for_relation_values avrà in questo caso il valore di camere_servizi
-                     */
-                    $field_name_for_relation_values = NULL;
-                    foreach ($data['visible_fields'] as $visible_field) {
-                        
-                        if (in_array($visible_field['fields_ref'], array($rel['relations_table_1'] . '_' . $rel['relations_table_2'], $rel['relations_table_2'] . '_' . $rel['relations_table_1']))) {
-                            // Modalità nuova - faccio un field ref sulla relazione
-                            $field_name_for_relation_values = $visible_field['fields_name'];
-                            break;
-                        }
-                        
-                        if ($visible_field['fields_ref'] === $other_table) {
-                            $field_name_for_relation_values = $visible_field['fields_name'];
-                        }
-                    }
-
-                    
-                    if (!is_null($field_name_for_relation_values)) {
-
-                        // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
-                        $ids = array_map(function($dato) use($field) {
-                            return $dato[$field];
-                        }, $data['data']);
-
-                        // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
-                        $relation_data = $this->db->where_in($field, $ids)->get($relation['relations_name'])->result_array();
-
-                        // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
-                        // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
-                        $relation_data_by_ids = array();
-                        $related_data = array();
-                        foreach ($relation_data as $relation_dato) {
-                            if (empty($relation_data_by_ids[$relation_dato[$field]])) {
-                                $relation_data_by_ids[$relation_dato[$field]] = array();
-                            }
-
-                            $related_data[] = (int) $relation_dato[$other];
-                            $relation_data_by_ids[$relation_dato[$field]][] = $relation_dato[$other];
-                        }
-
-
-                        // Prendo le preview dei record relazionati
-                        if (!empty($related_data)) {
-                            $related_data_preview = $this->get_entity_preview_by_name($other_table, "{$other} IN (" . implode(',', $related_data) . ")");
-
-                            foreach ($data['data'] as $key => $dato) {
-                                $data['data'][$key][$field_name_for_relation_values] = array();
-                                if (isset($relation_data_by_ids[$dato[$field]])) {
-                                    foreach ($relation_data_by_ids[$dato[$field]] as $related_value) {
-                                        if (array_key_exists($related_value, $related_data_preview)) {
-                                            $data['data'][$key][$field_name_for_relation_values][] = $related_data_preview[$related_value];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        $data = $this->get_data_entity($grid['grids']['grids_entity_id'], 0, $where, $limit, $offset, $order_by, $count);
+//        if (!empty($data['relations']) && !empty($data['data'])) {
+//            foreach ($data['relations'] as $relation) {
+//                if (isset($relation['relations_name'])) {
+//
+//                    // Prendi i dati della relazione
+//                    $rel = $this->db->get_where('relations', array('relations_name' => $relation['relations_name']))->row_array();
+//
+//                    // Se ho trovato dei dati allora posso provare a cercare le relazioni
+//                    if (isset($data['data'][0]) && is_array($data['data'][0]) && array_key_exists($rel['relations_field_1'], $data['data'][0])) {
+//                        $field = $rel['relations_field_1'];
+//                        $other = $rel['relations_field_2'];
+//                        $other_table = $rel['relations_table_2'];
+//                    } elseif (isset($data['data'][0]) && is_array($data['data'][0]) && array_key_exists($rel['relations_field_2'], $data['data'][0])) {
+//                        $field = $rel['relations_field_2'];
+//                        $other = $rel['relations_field_1'];
+//                        $other_table = $rel['relations_table_1'];
+//                    } else {
+//                        continue;
+//                    }
+//
+//                    /**
+//                     * Il risultato dell'operazione sarà un array di valori - questo array sarà il valore del campo dell'entità che va a relazionarsi con l'altra tabella
+//                     * Ad esempio se una camera può avere più servizi voglio che tutti i servizi finiscano sul campo camere_servizi
+//                     * $field_name_for_relation_values avrà in questo caso il valore di camere_servizi
+//                     */
+//                    $field_name_for_relation_values = NULL;
+//                    foreach ($data['visible_fields'] as $visible_field) {
+//                        
+//                        if (in_array($visible_field['fields_ref'], array($rel['relations_table_1'] . '_' . $rel['relations_table_2'], $rel['relations_table_2'] . '_' . $rel['relations_table_1']))) {
+//                            // Modalità nuova - faccio un field ref sulla relazione
+//                            $field_name_for_relation_values = $visible_field['fields_name'];
+//                            break;
+//                        }
+//                        
+//                        if ($visible_field['fields_ref'] === $other_table) {
+//                            $field_name_for_relation_values = $visible_field['fields_name'];
+//                        }
+//                    }
+//
+//                    
+//                    if (!is_null($field_name_for_relation_values)) {
+//
+//                        // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
+//                        $ids = array_map(function($dato) use($field) {
+//                            return $dato[$field];
+//                        }, $data['data']);
+//
+//                        // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
+//                        $relation_data = $this->db->where_in($field, $ids)->get($relation['relations_name'])->result_array();
+//
+//                        // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
+//                        // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
+//                        $relation_data_by_ids = array();
+//                        $related_data = array();
+//                        foreach ($relation_data as $relation_dato) {
+//                            if (empty($relation_data_by_ids[$relation_dato[$field]])) {
+//                                $relation_data_by_ids[$relation_dato[$field]] = array();
+//                            }
+//
+//                            $related_data[] = (int) $relation_dato[$other];
+//                            $relation_data_by_ids[$relation_dato[$field]][] = $relation_dato[$other];
+//                        }
+//
+//
+//                        // Prendo le preview dei record relazionati
+//                        if (!empty($related_data)) {
+//                            $related_data_preview = $this->get_entity_preview_by_name($other_table, "{$other} IN (" . implode(',', $related_data) . ")");
+//
+//                            foreach ($data['data'] as $key => $dato) {
+//                                $data['data'][$key][$field_name_for_relation_values] = array();
+//                                if (isset($relation_data_by_ids[$dato[$field]])) {
+//                                    foreach ($relation_data_by_ids[$dato[$field]] as $related_value) {
+//                                        if (array_key_exists($related_value, $related_data_preview)) {
+//                                            $data['data'][$key][$field_name_for_relation_values][] = $related_data_preview[$related_value];
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         return $data;
     }
 
     public function get_grid($grid_id) {
-        if (!$grid_id)
+        if (!$grid_id) {
             die('ERRORE: grid ID mancante');
-
-        $dati = array();
-        $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
-
-        // FIX: aggiorna tutte le grid con layout "table" a "simple_table"
-        if ($dati['grids']['grids_layout'] === 'table') {
-            $dati['grids']['grids_layout'] = 'simple_table';
-            $this->db->update('grids', array('grids_layout' => 'simple_table'), array('grids_id' => $grid_id));
         }
 
-
-
+        $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
         $dati['grids_fields'] = $this->db->query("
                     SELECT *
                     FROM grids_fields
                         LEFT JOIN grids ON grids.grids_id = grids_fields.grids_fields_grids_id
                         LEFT JOIN fields ON fields.fields_id = grids_fields.grids_fields_fields_id 
                         LEFT JOIN fields_draw ON grids_fields.grids_fields_fields_id = fields_draw.fields_draw_fields_id
-                    WHERE grids_id = '$grid_id' AND fields_draw_display_none = 'f'
+                    WHERE grids_id = ? AND (fields_id IS NULL OR NOT fields_draw_display_none)
                     ORDER BY grids_fields_order ASC
-                ")->result_array();
-        // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO CON ENTITA PER ORA
-        $dati['grids_support_fields'] = array();
+                ", [$grid_id])->result_array();
+        
+        // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
+        // CON ENTITA PER ORA
         foreach ($dati['grids_fields'] as $key => $field) {
+
+            // Preparo il nome colonna
+            $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name']: $field['fields_draw_label'];
+            $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
+            
             if ($field['fields_ref']) {
-                $entity = $this->get_entity_by_name($field['fields_ref']);
-                $support_fields = $this->db->query("SELECT * FROM fields LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
-                                                WHERE fields_entity_id = '{$entity['entity_id']}' AND fields_preview = 't'")->result_array();
-                $dati['grids_fields'][$key]['support_fields'] = $support_fields;
+                $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
+                    $this->crmentity->getFields($field['fields_ref']),
+                    function($field) {
+                        return $field['fields_preview'] == 't';
+                    }
+                ));
             }
         }
 
@@ -718,22 +936,19 @@ class Datab extends CI_Model {
             unset($dati['grids']['links']['delete']);
         }
 
-
-        $can_write = $this->datab->can_write_entity($dati['grids']['entity_id']);
+        $can_write = $this->can_write_entity($dati['grids']['entity_id']);
         if (!$can_write) {
             unset($dati['grids']['links']['edit'], $dati['grids']['links']['delete']);
         }
 
         // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
         $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
-        foreach ($dati['grids']['links']['custom'] as $key => $custom_link) {
-            $html = $custom_link['grids_actions_html'];
-            $html = str_replace('{base_url}', base_url(), $html);
-            $dati['grids']['links']['custom'][$key]['grids_actions_html'] = $html;
-
-            $dati['grids']['links']['custom'][$key]['grids_actions_name'] = addslashes($custom_link['grids_actions_name']);
+        foreach ($dati['grids']['links']['custom'] as &$custom_link) {
+            
+            $html = str_replace('{base_url}', base_url(), $custom_link['grids_actions_html']);
+            $custom_link['grids_actions_html'] = $html;
+            $custom_link['grids_actions_name'] = addslashes($custom_link['grids_actions_name']);
         }
-
 
         // Mi assicuro che ogni link esistente termini con '/' e valuto se è da aprire con modale
         foreach ($dati['grids']['links'] as $type => $link) {
@@ -743,15 +958,14 @@ class Datab extends CI_Model {
             }
         }
         
-        // Carico il replace
-        $dati['replaces'] = array();
+        $dati['replaces'] = [];
         foreach($dati['grids_fields'] as $gridField) {
-            if ($gridField['grids_fields_replace']) {
+            $isValidType = (empty($dati['grids_fields_replace_type']) OR $dati['grids_fields_replace_type'] === 'field');
+            if ($isValidType && $gridField['grids_fields_replace']) {
                 $dati['replaces'][$gridField['grids_fields_replace']] = $gridField;
             }
         }
-
-        //debug($dati['grids']['links'],1);
+        
         return $dati;
     }
 
@@ -920,14 +1134,25 @@ class Datab extends CI_Model {
         if (!$calendar_id)
             die('ERRORE: calendar ID mancante');
 
-        $dati = array();
         $dati['calendars'] = $this->db->query("SELECT * FROM calendars LEFT JOIN entity ON entity.entity_id = calendars.calendars_entity_id WHERE calendars_id = '$calendar_id'")->row_array();
 
         $dati['calendars_fields'] = $this->db->query("SELECT * FROM calendars_fields 
                                                       LEFT JOIN fields ON fields.fields_id = calendars_fields.calendars_fields_fields_id 
                                                       LEFT JOIN calendars ON calendars.calendars_id = calendars_fields.calendars_fields_calendars_id
                                                       WHERE calendars_id = '$calendar_id'")->result_array();
-
+        
+        $defaultForm = null;    // Faccio la query solamente se è realmente necessario
+        $allowCreate = $dati['calendars']['calendars_allow_create']=='t';
+        $allowUpdate = $dati['calendars']['calendars_allow_edit']=='t';
+        $formCreate = $dati['calendars']['calendars_form_create'];
+        $formUpdate = $dati['calendars']['calendars_form_edit'];
+        
+        if (($allowCreate && !$formCreate) OR ($allowUpdate && !$formUpdate)) {
+            $defaultForm = $this->get_default_form($dati['calendars']['calendars_entity_id']);
+        }
+        
+        $dati['create_form'] = $allowCreate ? ($formCreate ? : $defaultForm) : null;
+        $dati['update_form'] = $allowUpdate ? ($formUpdate ? : $defaultForm) : null;
 
         return $dati;
     }
@@ -956,14 +1181,14 @@ class Datab extends CI_Model {
      * Utility methods
      */
     public function get_entity_preview_by_name($entity_name, $where = NULL, $limit = NULL, $offset = 0) {
-//        $entity = $this->datab->get_entity_by_name($entity_name);
+//        $entity = $this->get_entity_by_name($entity_name);
 //        if (empty($entity)) {
 //            debug("Entity {$entity_name} does not exists.", 1);
 //        }
 //
 //        /* Get the fields */
 //        $entity_id = $entity['entity_id'];
-//        $entity_data = $this->datab->get_data_entity($entity_id, 0, $where, $limit, $offset);
+//        $entity_data = $this->get_data_entity($entity_id, 0, $where, $limit, $offset);
 //        $all_fields = $entity_data['visible_fields'];
 //
 //        $entity_preview = array_filter($all_fields, function($field) use($entity_id, $all_fields) {
@@ -1175,29 +1400,16 @@ class Datab extends CI_Model {
             }
         }
 
-        // Se ho un id in ingresso gli inserisco il where di default... farei deprecare questa cosa.
-        // Pure io, anche perché crea solo casini - inoltre questa cosa andava fatta solo nel caso in cui non ci fosse nessun where aggiuntivo
-        /*if (isset($value_id) && $value_id && !$element[$element_type . "_where"]) {
-            $arr[] = "{$entity['entity_name']}_id = '$value_id'";
-        }*/
-
         // Genero il where in stringa
         $where = implode(" AND ", $arr);
-        //empty($arr) OR debug($arr);
-        //
-        // Rimpiazzo eventuali var value id
-        $where = str_replace('{value_id}', $value_id, $where);
-        if(is_array($additional_data) && $additional_data) {
-            foreach($additional_data as $k=>$v) {
-                $where = str_replace("{{$k}}", $v, $where);
-            }
-        }
         
+        $replaces['value_id'] = $value_id;
+        if(is_array($additional_data) && $additional_data) {
+            $replaces = array_merge($replaces, $additional_data);
+        }
 
-        // Rimpiazzo eventuali variabili dalla sessione
-        $where = $this->replace_superglobal_data($where);
-
-        return $where;
+        // Rimpiazzo eventuali variabili dalla sessione e dagli additional data
+        return $this->replace_superglobal_data(str_replace_placeholders($where, $replaces));
     }
 
     /**
@@ -1267,7 +1479,13 @@ class Datab extends CI_Model {
 
     public function replace_superglobal_data($string) {
         
-        $matches = array();
+        $replaces = array_merge(
+            ['post' => $this->input->post(), 'get' => $this->input->get()],
+            $this->session->all_userdata()
+        );
+        
+        return str_replace_placeholders($string, $replaces, true, true);
+        /*$matches = array();
         if (preg_match_all('/\{.[^\{\}]+\}/', $string, $matches) && count($matches) > 0) {
             
             foreach ($matches[0] as $pattern) {
@@ -1308,11 +1526,12 @@ class Datab extends CI_Model {
                     //debug($value);
                     continue;
                 }
+                
                 $string = str_replace($pattern, $value, $string);
             }
         }
 
-        return $string;
+        return $string;*/
     }
 
     public function fields_implode($fields) {
@@ -1338,8 +1557,65 @@ class Datab extends CI_Model {
             $this->db->offset($offset);
         }
         
-        $notifications = $this->db->order_by('notifications_date_creation', 'desc')->get_where('notifications', array('notifications_user_id' => $user_id))->result_array();
-        return $notifications;
+        $notifications = $this->db->order_by('notifications_read')->order_by('notifications_date_creation', 'desc')->get_where('notifications', array('notifications_user_id' => $user_id))->result_array();
+        
+        return array_map(function($notification) {
+            switch (true) {
+                case filter_var($notification['notifications_link'], FILTER_VALIDATE_URL):
+                    // Il link è un URL intero, quindi inseriscilo così senza toccarlo
+                    $href = $notification['notifications_link'];
+                    break;
+                
+                case is_numeric($notification['notifications_link']):
+                    // Il link è numerico, quindi assumo che sia l'id del layout che devo linkare
+                    $href = base_url("main/layout/{$notification['notifications_link']}");
+                    break;
+                
+                case $notification['notifications_link']:
+                    // Il link non è né un URL, né un numero, ma non è vuoto, quindi assumo che sia un URI e lo wrappo con base_url();
+                    $href = base_url($notification['notifications_link']);
+                    break;
+                
+                default:
+                    // Non è stato inserito nessun link quindi metti un'azione vuota nell'href
+                    $href = 'javascript:void(0);';
+            }
+            
+            
+            switch ($notification['notifications_type']) {
+                case NOTIFICATION_TYPE_ERROR:
+                    $label = ['class' => 'bg-red-thunderbird', 'icon' => 'fa fa-exclamation'];
+                    break;
+
+                case NOTIFICATION_TYPE_INFO:
+                    $label = ['class' => 'bg-blue-steel', 'icon' => 'fa fa-bullhorn'];
+                    break;
+
+                case NOTIFICATION_TYPE_MESSAGE:
+                    $label = ['class' => 'bg-green-jungle', 'icon' => 'fa fa-comment'];
+                    break;
+
+                case NOTIFICATION_TYPE_WARNING:
+                default :
+                    $label = ['class' => 'bg-yellow-gold', 'icon' => 'fa fa-bell'];
+                    break;
+            }
+                
+            $nDate = new DateTime($notification['notifications_date_creation']);
+            $diff = $nDate->diff(new DateTime);
+            
+            switch (true) {
+                case $diff->d < 1:     $datespan = $nDate->format('H:i'); break;
+                case $diff->days == 1: $datespan = 'yesterday'; break;
+                default:               $datespan = $nDate->format('d M');
+            }
+                    
+            $notification['href'] = $href;
+            $notification['label'] = $label;
+            $notification['datespan'] = $datespan;
+            return $notification;
+            
+        }, $notifications);
     }
     
     public function readAllNotifications() {
@@ -1380,9 +1656,14 @@ class Datab extends CI_Model {
     }
 
     /**
-     * Costruzione link
+     * Costruzione link di dettaglio
+     * 
+     * @param int|string $entity_id
+     * @param int $value_id
+     * @param bool|string $modal
+     * @return string
      */
-    public function get_detail_layout_link($entity_id, $value_id = null) {
+    public function get_detail_layout_link($entity_id, $value_id = null, $modal = false) {
         
         if (!is_numeric($entity_id)) {
             $entity = $this->get_entity_by_name($entity_id);
@@ -1392,7 +1673,24 @@ class Datab extends CI_Model {
             $entity_id = $entity['entity_id'];
         }
         
-        return isset($this->_accessibleEntityLayouts[$entity_id])? base_url("main/layout/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}"): false;
+        $baseRoute = 'main/layout';
+        $suffix = '';
+        $getSuffix = [];
+        if ($modal) {
+            $baseRoute = 'get_ajax/layout_modal';
+            if (is_string($modal)) {
+                $getSuffix['_size'] = $modal;
+            }
+        }
+        
+        if ($getSuffix) {
+            $suffix .= '?';
+        }
+        foreach ($getSuffix as $k => $v) {
+            $suffix .= $k . '=' . $v;
+        }
+        
+        return isset($this->_accessibleEntityLayouts[$entity_id])? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}"): false;
     }
 
     public function generate_menu_link($menu, $value_id = NULL, $data = NULL) {
@@ -1438,47 +1736,21 @@ class Datab extends CI_Model {
 
     public function get_menu($position = 'sidebar') {
         
-        /* Un utente può accedere ad un layout se
-         * - il campo layouts_entity_id è settato e l'utente ha i permessi di lettura almeno
-         * - la coppia (utente,layout) non è contenuta nella tabella `unallowed_layouts`
-         * - il campo layouts_entity_id non è settato */
-        $user_id = (int) $this->auth->get(LOGIN_ENTITY . "_id");
-        
-        if (!$this->is_admin()) {
-            // Se eseguo questa query son sicuro che l'utente non è un amministratore
-            $this->db->where("
-                (
-                    layouts_entity_id IS NULL OR
-                    NOT EXISTS ( SELECT 1 FROM permissions LEFT JOIN permissions_entities ON permissions_entities_permissions_id = permissions_id WHERE permissions_user_id = '{$user_id}' ) OR
-                    layouts_entity_id IN (
-                        SELECT permissions_entities_entity_id
-                        FROM permissions LEFT JOIN permissions_entities ON permissions_entities_permissions_id = permissions_id
-                        WHERE permissions_user_id = '{$user_id}' AND permissions_entities_value <> '" . PERMISSION_NONE . "'
-                    )
-                )", null, false);
-        }
-
-        // Controlla anche la tabella `unallowed_layouts`
-        $this->db->where("(
-                    menu.menu_layout IS NULL OR
-                    menu.menu_layout NOT IN (SELECT unallowed_layouts_layout FROM unallowed_layouts WHERE unallowed_layouts_user = '{$user_id}')
-                )");
-        
         // Prendi tutti i menu, con i sottomenu e poi ciclandoli costruisci un array multidimensionale
         $menu = $this->db->from('menu')->join('layouts', 'layouts.layouts_id = menu.menu_layout', 'left')
                 ->where('menu_position', $position)->order_by('menu_order')->get()->result_array();
         
-        $return = array();
-        $subs = array();
-        
+        $return = $subs = [];
         foreach($menu as $item) {
-            if($item['menu_parent']) {
+            if ($item['menu_parent']) {
                 // Se c'è un parent è un sottomenu
                 isset($subs[$item['menu_parent']]) OR $subs[$item['menu_parent']] = array();
                 $item['pages_names'] = array("layout_{$item['menu_layout']}");
                 $subs[$item['menu_parent']][] = $item;
             } else {
-                // Altrimenti ha un sottomenu
+                // Altrimenti potrebbe avere un sottomenu: imposto have_submenu
+                // a false e predispongo l'array dei sottomenu
+                $item['have_submenu'] = false;
                 $item['submenu'] = array();
                 $item['pages_names'] = array("layout_{$item['menu_layout']}");
                 $return[$item['menu_id']] = $item;
@@ -1487,15 +1759,61 @@ class Datab extends CI_Model {
         
         // Inserisci il sottomenu per ogni menu padre
         foreach($subs as $parent=>$items) {
+                
             if(isset($return[$parent]['submenu'])) {
-                $return[$parent]['submenu'] = $items;
+                // Dovrei avere realmente dei sottomenu.. se non ci sono vuol
+                // dire che sono proibiti dai permessi...
+                $return[$parent]['have_submenu'] = true;
+                
+                // Prendo i sottomenu che mi sono concessi...
+                $return[$parent]['submenu'] = array_filter($items, function($menu) {
+                    return empty($menu['menu_layout']) OR array_key_exists($menu['menu_layout'], $this->_accessibleLayouts);
+                });
+                
                 foreach ($items as $item) {
                     $return[$parent]['pages_names'][] = "layout_{$item['menu_layout']}";
                 }
             }
+            
         }
         
-        return $return;
+        return array_filter($return, function($menu) {
+            // Il layout è accessibile per i permessi? (il link del menu è
+            // considerato sempre accessibile se non punta ad un layout)
+            if (!empty($menu['menu_layout']) && !array_key_exists($menu['menu_layout'], $this->_accessibleLayouts)) {
+                return false;
+            }
+            
+            // Dato che il layout è accessibile, verifico se dovrebbe essere un
+            // container di sottomenu e se effettivamente ha i sottomenu, perché
+            // se `have_submenu` === true, allora `submenu` dev'essere pieno,
+            // ---
+            // se non lo fosse, allora tutte le voci del sottomenu sono bloccate
+            // da permessi e quindi non voglio mostrare nemmeno il parent vuoto.
+            $shouldHasSubmenu = $menu['have_submenu'];
+            $hasReallySubmenu = count($menu['submenu']) > 0;
+            
+            return (!$shouldHasSubmenu OR $hasReallySubmenu);
+        });
+    }
+    
+    
+    public function getUserLimits($entity, $user = null) {
+        if (!$user) {
+            $user = $this->auth->get('id');
+        }
+        
+        if (is_numeric($entity)) {
+            $entityId = $entity;
+        } else {
+            if (!is_array($entity)) {
+                $entity = $this->get_entity_by_name($entity);
+            }
+            $entityId = $entity['entity_id'];
+        }
+        
+        $query = "SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = ? AND fields_entity_id = ?";
+        return $this->db->query($query, [(int) $user, (int) $entityId])->result_array();
     }
     
     
@@ -1820,10 +2138,18 @@ class Datab extends CI_Model {
                 $where = $this->search_like($search, $fields);
 
                 //Calcola risultato e consideralo sse ha dati effettivi
-                $result = $this->get_data_entity($entity['entity_id'], 0, $where);
+                $result = $this->getDataEntity($entity['entity_id'], $where, null, null, null, 1);
+                if ($result) {
+                    $results[] = [
+                        'entity' => $entity,
+                        'visible_fields' => $this->crmentity->getVisibleFields($entity['entity_id']),
+                        'data' => $result
+                    ];
+                }
+                /*$result = $this->get_data_entity($entity['entity_id'], 0, $where);
                 if (!empty($result['data'])) {
                     $results[] = $result;
-                }
+                }*/
             }
         }
 
@@ -1920,16 +2246,17 @@ class Datab extends CI_Model {
         }
 
         if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0) {
-            $entity = $this->get_entity($dati['layout_container']['layouts_entity_id']);
+            $entity = $this->crmentity->getEntity($dati['layout_container']['layouts_entity_id']);
             if (isset($entity['entity_name'])) {
-                $data_entity = $this->get_data_entity($entity['entity_id'], 0, "{$entity['entity_name']}_id = {$value_id}", 1);
-                if (isset($data_entity['data'][0]) && !empty($data_entity['data'][0]) && is_array($data_entity['data'][0])) {
-                    $layout_data_detail = $data_entity['data'][0];
+                $data_entity = $this->getDataEntity($entity['entity_id'], ["{$entity['entity_name']}_id" => $value_id], 1);
+                $layout_data_detail = array_shift($data_entity);
+                /*if (!empty($data_entity[0])) {
+                    $layout_data_detail = $data_entity[0];
                 } else {
                     // FIX: siamo nella condizione in cui ho una vista di dettaglio,
                     // ma i dati sono assenti o perché mancano o per permessi mancanti
                     return NULL;
-                }
+                }*/
             }
         }
         
@@ -1981,17 +2308,12 @@ class Datab extends CI_Model {
 
         // I dati del record di dettaglio
         if (!empty($layout_data_detail)) {
-
-            $fields = array_map(function($key) {
-                return "{{$key}}";
-            }, array_keys($layout_data_detail));
-            $values = array_values($layout_data_detail);
-
-            $fields[] = '{value_id}';
-            $values[] = $value_id;
-
-            $dati['layout_container']['layouts_title'] = str_replace($fields, $values, $dati['layout_container']['layouts_title']);
-            $dati['layout_container']['layouts_subtitle'] = str_replace($fields, $values, $dati['layout_container']['layouts_subtitle']);
+            $replaces = $layout_data_detail;
+            $replaces['value_id'] = $value_id;
+            
+            $dati['layout_container']['layouts_title'] = str_replace_placeholders($dati['layout_container']['layouts_title'], $replaces);
+            $dati['layout_container']['layouts_subtitle'] = str_replace_placeholders($dati['layout_container']['layouts_subtitle'], $replaces);
+            
         }
         $dati['layout_data_detail'] = $layout_data_detail;
         
@@ -2031,8 +2353,26 @@ class Datab extends CI_Model {
     /**
      * Build della cella
      */
-    public function build_grid_cell($field, $dato, $processMultilingual = true, $multilingualLang = null) {
+    public function build_grid_cell($field, $dato) {
         
+        // Valuta eventuali grid fields eval e placeholder
+        $type = isset($field['grids_fields_replace_type']) ? $field['grids_fields_replace_type']: 'field';
+        
+        switch ($type) {
+            case 'placeholder':
+                return $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+            
+            case 'eval':
+                return $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
+            
+            case 'field':
+            default:
+                return $this->buildFieldGridCell($field, $dato, true);
+        }
+        
+    }
+    
+    private function buildFieldGridCell($field, $dato, $processMultilingual) {
         $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == 't';
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
         
@@ -2047,7 +2387,7 @@ class Datab extends CI_Model {
                 foreach ($contents as $idLang => $valueLang) {
                     $dato[$field['fields_name']] = $valueLang;
                     $style = ($idLang!=$this->_currentLanguage)? 'style="display:none"': '';
-                    $out[] = "<div data-lang='{$idLang}' {$style}>" . $this->build_grid_cell($field, $dato, false, $idLang) . '</div>';
+                    $out[] = "<div data-lang='{$idLang}' {$style}>" . $this->buildFieldGridCell($field, $dato, false) . '</div>';
                 }
             }
             
@@ -2061,7 +2401,7 @@ class Datab extends CI_Model {
                     return implode('<br/>', $value);
                 } elseif (!empty($field['support_fields'])) {
                     // Ho un field ref semplice - per stamparlo ho bisogno dei support fields (che sono i campi preview dell'entità referenziata)
-                    $link = $value ? $this->datab->get_detail_layout_link($field['support_fields'][0]['fields_entity_id']) : false;
+                    $link = $value ? $this->get_detail_layout_link($field['support_fields'][0]['fields_entity_id']) : false;
                     $idKey = $field['fields_ref'] . '_id';
 
                     if (empty($field['support_fields'])) {
@@ -2099,9 +2439,11 @@ class Datab extends CI_Model {
                                 $previewSegment = '';
                                 if ($support_field['fields_multilingual'] === 't') {
                                     $contents = json_decode($dato[$simpleKey], true);
-                                    foreach ($contents as $idLang => $valueLang) {
-                                        $style = ($idLang!=$this->_currentLanguage)? 'style="display:none"': '';
-                                        $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
+                                    if (is_array($contents)) {
+                                        foreach ($contents as $idLang => $valueLang) {
+                                            $style = ($idLang!=$this->_currentLanguage)? 'style="display:none"': '';
+                                            $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
+                                        }
                                     }
                                 } else {
                                     $previewSegment = $dato[$simpleKey];
@@ -2139,7 +2481,6 @@ class Datab extends CI_Model {
                         break;
 
                     case 'upload_image':
-
                         if ($value) {
                             return anchor(base_url_template("uploads/{$value}"), "<img src='" . base_url_template("imgn/1/50/50/uploads/{$value}") . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                         } else {
@@ -2179,8 +2520,8 @@ class Datab extends CI_Model {
                     case 'stars':
                         $out = "<span class='hide'>{$value}</span>";
                         for ($i = 1; $i <= 5; $i++) {
-                            $class = $i > $value ? 'icon-star-empty' : 'icon-star';
-                            $out .= "<i class='{$class}'></i>";
+                            $class = $i > $value ? 'fa-star-o' : 'fa-star';
+                            $out .= "<i class='fa {$class}'></i>";
                         }
                         return $out;
 
@@ -2189,7 +2530,6 @@ class Datab extends CI_Model {
                         return (($field['fields_type'] == 'BOOL') ? (($value == 't') ? 'Si' : 'No') : $value);
 
                     default:
-
                         if ($field['fields_type'] === 'DATERANGE') {
                             // Formato daterange 
                             $dates = dateRange_to_dates($value);
@@ -2201,16 +2541,19 @@ class Datab extends CI_Model {
                                 default:
                                     return '<small>[Formato daterange errato]</small>';
                             }
-                            
+                        } elseif ($field['fields_type'] === 'GEOGRAPHY') {
+                            return $value['geo'] ? sprintf('<small>Lat:</small>%s, <small>Lon:</small>%s', $value['lat'], $value['lng']): '';
                         } elseif (filter_var($value, FILTER_VALIDATE_EMAIL)) {
                             return mailto($value);
-                        } elseif (filter_var($value, FILTER_VALIDATE_URL) || (preg_match("/\A^www.( [^\s]* ).[a-zA-Z]$\z/ix", $value) && filter_var('http://' . $value, FILTER_VALIDATE_URL) !== false )) {
+                        } elseif (filter_var($value, FILTER_VALIDATE_URL) || (is_string($value) && preg_match("/\A^www.( [^\s]* ).[a-zA-Z]$\z/ix", $value) && filter_var('http://' . $value, FILTER_VALIDATE_URL) !== false )) {
 
                             if (stripos($value, 'http://') === false) {
                                 $value = 'http://' . $value;
                             }
 
                             return anchor($value, str_replace(array('http://', 'https://'), '', $value), array('target' => '_blank'));
+                        } elseif ($field['fields_type'] === 'INT4RANGE' || $field['fields_type'] === 'INT8RANGE') {
+                            return $value['from'].' - '.$value['to'];
                         } else {
                             return $value;
                         }
@@ -2221,63 +2564,106 @@ class Datab extends CI_Model {
         }
     }
     
+    private function buildPlaceholderGridCell($placeholderedString, $record) {
+        return $this->replace_superglobal_data(str_replace_placeholders($placeholderedString, $record));
+    }
+    
+    private function buildEvalGridCell($evalString, $data, $field) {
+        ob_start();
+        eval('?> ' . $evalString . '<?php ');
+        return ob_get_clean();
+    }
+
+
     /**
      * Build del form input
      */
     public function build_form_input(array $field, $value = null) {
-        
+
         if (!$value && !empty($field['forms_fields_default_value'])) {
             $value = $this->get_default_fields_value($field);
         }
         
+        $output = '';
         $isMultilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual']=='t';
-        $display = $field['fields_draw_display_none']==='f';
+        $languages = $isMultilingual? $this->_languages: [null];
         
-        $text = $field['fields_draw_label'];
-        $help = $field['fields_draw_help_text']? '<span class="help-block">' . $field['fields_draw_help_text'] . '</span>': '';
+        /*
+         * Parametri di base dell'input
+         * ---
+         * Questi sono i parametri presi dal form_field (o, se non presenti, dal
+         * field) 
+         * -- Messa una chiocciola perché posso anche usare questo metodo quando
+         * non sono in ambiente form
+         */
+        $baseLabel        = @$field['forms_fields_override_label'] ? : $field['fields_draw_label'];
+        $baseType         = @$field['forms_fields_override_type'] ? : $field['fields_draw_html_type'];
+        $basePlaceholder  = @$field['forms_fields_override_placeholder'] ? : $field['fields_draw_placeholder'];
+        $baseHelpText     = @$field['fields_draw_help_text']? '<span class="help-block">' . $field['fields_draw_help_text'] . '</span>': '';
+        $baseShow         = @$field['fields_draw_display_none']=='f';
+        $baseShowRequired = @$field['forms_fields_show_required'] ? $field['forms_fields_show_required']=='t' : ($field['fields_required']=='t' && !trim($field['fields_default']));
+        $baseShowLabel    = @$field['forms_fields_show_label']=='t';
+        $baseOnclick      = @$field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']): '';
+        
         $class = $field['fields_draw_css_extra'] . ' field_' . $field['fields_id'];
-        
-        $view = '';
         $name = $field['fields_name'];
-        
         if ($isMultilingual) {
             $value = json_decode($value, true);
         }
         
-        // Valori di default
-        $langId = null;
-        $langAttribute = null;
-        $displayLang = $display;
-        $realValue = $value;
+        /*
+         * Valori di default per monolingua
+         * ---
+         * Il caso monolingua è gestito come un multilingua con lingua === null
+         */
+        $langId         = null;
+        $langShow       = $baseShow;
+        $langValue      = $value;
+        $langAttribute  = null;
+        $langLabel      = $baseLabel;
         
-        $languages = $isMultilingual? $this->_languages: [null];
         foreach ($languages as $id => $lang) {
+            /*
+             * Faccio l'override delle variabili nel caso di multilingua e
+             * quindi una lingua valida ($lang non vuoto) e sia attivo e
+             * configurato nel crm il sistema multilingua. Se così non fosse,
+             * avrei i valori già settati precedentemente
+             */
             if ($lang && $isMultilingual) {
                 // Override dei valori per multilingua
                 $field['fields_name'] = $name . "[{$id}]";
-                $text = sprintf('<img src="%s" alt="%s" class="lang-flag" /> ', $lang['flag'], $lang['name']) . $field['fields_draw_label'];
+                $langLabel = sprintf('<img src="%s" alt="%s" class="lang-flag" /> ', $lang['flag'], $lang['name']) . $baseLabel;
                 
-                $langId = $id;
-                $langAttribute = "data-lang='{$id}'";
-                $displayLang = $this->_currentLanguage == $id && $display;
-                $realValue = isset($value[$id])? $value[$id]: null;
+                $langId         = $id;
+                $langShow       = $this->_currentLanguage == $id && $baseShow;
+                $langValue      = isset($value[$id])? $value[$id]: null;
+                $langAttribute  = "data-lang='{$id}'";
             }
 
-            $style = $displayLang? '': 'style="display:none"';
-            $label = '<label>' . $text . '</label>' . (($field['fields_required'] == 't')? ' <small class="text-danger icon-asterisk" style="font-size: 85%"></small>': '');
+            $style = $langShow? '': 'style="display:none"';
+            $label = $baseShowLabel ? '<label class="control-label">' . $langLabel . '</label>' . ($baseShowRequired? ' <small class="text-danger fa fa-asterisk" style="font-size: 85%"></small>': '') : '';
+            
             $data = [
-                'containerAttributes' => implode(' ', array_filter([$style, $langAttribute])),
-                'lang' => $langId,
-                'field' => $field,
-                'value' => $realValue,
-                'label' => $label,
-                'help'  => $help,
-                'class' => $class
+                'lang'      => $langId,
+                'field'     => $field,
+                'value'     => is_string($langValue) ? htmlspecialchars($langValue): $langValue,
+                'label'     => $label,
+                'placeholder' => $basePlaceholder,
+                'help'      => $baseHelpText,
+                'class'     => $class,
+                'onclick'   => $baseOnclick
             ];
-            $view .= $this->load->view("box/form_fields/{$field['fields_draw_html_type']}", $data, true);
+            
+            $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
+            if ($baseType !== 'input_hidden') {
+                $wrapAttributes = implode(' ', array_filter([$style, $langAttribute]));
+                $view = sprintf('<div class="form-group" %s>%s</div>', $wrapAttributes, $view);
+            }
+            
+            $output .= $view;
         }
         
-        return $view;
+        return $output;
     }
     
     
@@ -2347,9 +2733,9 @@ class Datab extends CI_Model {
                 }
                 
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
-                $grid_data = [];
+                $grid_data = ['data' => [], 'sub_grid_data' => []];
                 if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline'])) {
-                    $grid_data = $this->get_grid_data($grid, empty($layoutEntityData)? $value_id: ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
+                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData)? $value_id: ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
                 }
 
                 /***********************************************************
@@ -2363,8 +2749,8 @@ class Datab extends CI_Model {
                         debug("L'entità {$grid['grids']['entity_name']} non è referenziata dall'entità {$sub_grid['grids']['entity_name']}");
                     } else {
                         $sub_grid['grid_relation_field'] = $relation_field->row()->fields_name;
-                        if( ! empty($grid_data['data'])) {
-                            $entName = $grid_data['entity']['entity_name'];
+                        if ($grid_data['data']) {
+                            $entName = $grid['grids']['entity_name'];
                             $arr_parent_ids = array_map(function($parentRecord) use($entName) { return $parentRecord["{$entName}_id"]; }, $grid_data['data']);
                             $parent_ids = implode("','", $arr_parent_ids);
                             $where = "{$sub_grid['grid_relation_field']} IN ('{$parent_ids}')";
@@ -2378,84 +2764,7 @@ class Datab extends CI_Model {
 
             case "form":
                 $form_id = $contentRef;
-                $form = $this->get_form($form_id);
-                $form['forms']['action_url'] = base_url("db_ajax/save_form/{$form['forms']['forms_id']}");
-
-                // Se ho un id in ingresso tento di estrarre i dati per un possibile edit del form
-                if ($value_id) {
-                    $form['forms']['edit_data'] = $this->get_data_entity($form['forms']['entity_id'], 1, "{$form['forms']['entity_name']}_id = '$value_id'");
-                    $form['forms']['action_url'] = base_url("db_ajax/save_form/{$form['forms']['forms_id']}/true/$value_id");
-
-                    $data = $form['forms']['edit_data'];
-
-                    // Devo prendere per ogni relazione i valori selezionati
-                    if (!empty($data['relations']) && !empty($data['data'])) {
-                        foreach ($data['relations'] as $relation) {
-                            if (isset($relation['relations_name'])) {
-
-                                // Prendi i dati della relazione
-                                $rel = $this->db->get_where('relations', array('relations_name' => $relation['relations_name']))->row_array();
-
-                                // Se ho trovato dei dati allora posso provare a cercare le relazioni
-                                if (isset($data['data'][0]) && is_array($data['data'][0]) && array_key_exists($rel['relations_field_1'], $data['data'][0])) {
-                                    $field = $rel['relations_field_1'];
-                                    $other = $rel['relations_field_2'];
-                                    $other_table = $rel['relations_table_2'];
-                                } elseif (isset($data['data'][0]) && is_array($data['data'][0]) && array_key_exists($rel['relations_field_2'], $data['data'][0])) {
-                                    $field = $rel['relations_field_2'];
-                                    $other = $rel['relations_field_1'];
-                                    $other_table = $rel['relations_table_1'];
-                                } else {
-                                    continue;
-                                }
-
-                                /**
-                                 * Il risultato dell'operazione sarà un array di valori - questo array sarà il valore del campo dell'entità che va a relazionarsi con l'altra tabella
-                                 * Ad esempio se una camera può avere più servizi voglio che tutti i servizi finiscano sul campo camere_servizi
-                                 * $field_name_for_relation_values avrà in questo caso il valore di camere_servizi
-                                 */
-                                $field_name_for_relation_values = NULL;
-                                foreach ($data['visible_fields'] as $visible_field) {
-                                    if (in_array($visible_field['fields_ref'], array($rel['relations_table_1'] . '_' . $rel['relations_table_2'], $rel['relations_table_2'] . '_' . $rel['relations_table_1']))) {
-                                        // Modalità nuova - faccio un field ref sulla relazione
-                                        $field_name_for_relation_values = $visible_field['fields_name'];
-                                        break;
-                                    }
-
-                                    if ($visible_field['fields_ref'] === $other_table) {
-                                        $field_name_for_relation_values = $visible_field['fields_name'];
-                                    }
-                                }
-
-
-                                if (!is_null($field_name_for_relation_values)) {
-
-                                    // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
-                                    $ids = array_map(function($dato) use($field) {
-                                        return $dato[$field];
-                                    }, $data['data']);
-                                    $relation_data = $this->db->where_in($field, $ids)->get($relation['relations_name'])->result_array();
-
-                                    // Ciclando tutti i dati della relazione li raggruppo in un array che contiene id_entità_padre => array( tutti gli id a lui correlati )
-                                    $relation_data_by_ids = array();
-                                    foreach ($relation_data as $relation_dato) {
-                                        if (empty($relation_data_by_ids[$relation_dato[$field]])) {
-                                            $relation_data_by_ids[$relation_dato[$field]] = array();
-                                        }
-
-                                        $relation_data_by_ids[$relation_dato[$field]][] = $relation_dato[$other];
-                                    }
-
-                                    // Prendo le preview dei record relazionati
-                                    foreach ($form['forms']['edit_data']['data'] as $key => $dato) {
-                                        $form['forms']['edit_data']['data'][$key][$field_name_for_relation_values] = (isset($relation_data_by_ids[$dato[$field]]) ? $relation_data_by_ids[$dato[$field]] : array());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
+                $form = $this->get_form($form_id, $value_id);
 
                 // Controllo i permessi per questa grid
                 if (!$this->can_write_entity($form['forms']['forms_entity_id'])) {
@@ -2540,7 +2849,7 @@ class Datab extends CI_Model {
         }
         
         if ($img) {
-            $flag = base_url_template('template/crm/img/flags/' . strtolower($img) . '.png');
+            $flag = base_url_template('template/crm-v2/assets/global/img/flags/' . strtolower($img) . '.png');
         }
         
         return [

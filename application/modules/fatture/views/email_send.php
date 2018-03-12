@@ -41,7 +41,7 @@
                             <p class="form-control-static">
                                 <a href="<?php echo base_url("pdf/offerta_{$dati['offer_id']}"); ?>" target="_blank">Offerta <strong><?php echo $dati['offer_realnumber']; ?></strong></a>
                                 &nbsp;
-                                <a download="offerta_<?php echo $dati['offer_realnumber']; ?>" href="<?php echo base_url("pdf/offerta_{$dati['offer_id']}"); ?>" class="btn btn-xs blue"><i class="icon-download"></i></a>
+                                <a download="offerta_<?php echo $dati['offer_realnumber']; ?>" href="<?php echo base_url("pdf/offerta_{$dati['offer_id']}"); ?>" class="btn btn-xs blue"><i class="fa fa-download"></i></a>
                             </p>
                         </div>
                     </div>

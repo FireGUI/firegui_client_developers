@@ -1,11 +1,16 @@
+<?php 
+$mapFormId = "clusered_map_form_{$data['maps']['maps_id']}";
+$mapGeocodeInput = "clusered_map_geocoding_{$data['maps']['maps_id']}";
+$mapGeocodeToggle = "clusered_map_geocoding_toggle_{$data['maps']['maps_id']}";
+$mapId = "map_clusters{$data['maps']['maps_id']}";
+?>
 <div id="results">
     <div class="row">
-        <form id="<?php echo 'clusered_map_form_'.$data['maps']['maps_id']; ?>">
+        <form <?php echo sprintf('id="%s"', $mapFormId); ?>>
             <?php foreach($data['maps_fields'] as $map_field): ?>
                 <?php if($map_field['maps_fields_type'] !== 'latlng'): ?>
                     <div class="col-md-6">
-                        <?php $this->datab->build_form_input($map_field); ?>
-                        <?php // $this->load->view("box/form_fields/{$map_field['fields_draw_html_type']}", array('field' => $map_field, 'value' => NULL)); ?>
+                        <?php echo $this->datab->build_form_input($map_field); ?>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -19,9 +24,9 @@
     <div class="row">
         <div class="col-md-offset-8 col-md-4">
             <div class="input-group">
-                <input id="<?php echo 'clusered_map_geocoding_'.$data['maps']['maps_id']; ?>" class="form-control" type="text" placeholder="<?php e('cerca località') ?>" />
+                <input <?php echo sprintf('id="%s"', $mapGeocodeInput); ?> class="form-control" type="text" placeholder="<?php e('cerca località') ?>" />
                 <span class="input-group-btn">
-                    <button id="<?php echo 'clusered_map_geocoding_toggle_'.$data['maps']['maps_id']; ?>" class="btn btn-default" type="button"> <span class="icon-search"></span> </button>
+                    <button <?php echo sprintf('id="%s"', $mapGeocodeToggle); ?> class="btn btn-default" type="button"> <span class="fa fa-search"></span> </button>
                 </span>
             </div>
         </div>
@@ -29,7 +34,7 @@
     
     <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">
-            <div id="<?php echo ($id = "map_clusters_geocoding{$data['maps']['maps_id']}"); ?>" style="height:680px"></div>
+            <div <?php echo sprintf('id="%s"', $mapId); ?> style="height:680px"></div>
         </div>
     </div>
 </div>
@@ -39,11 +44,15 @@
         
         $(function() {
             var markers = null;
-            var searchInput = $('#<?php echo 'clusered_map_geocoding_'.$data['maps']['maps_id']; ?>');
-            var searchInputToggle = $('#<?php echo 'clusered_map_geocoding_toggle_'.$data['maps']['maps_id']; ?>');
+            var searchInput = $('#<?php echo $mapGeocodeInput; ?>');
+            var searchInputToggle = $('#<?php echo $mapGeocodeToggle; ?>');
             var geocoding = null;
 
-            var map = L.map('<?php echo $id; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
+            var map = L.map('<?php echo $mapId; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
+            
+            L.maps[<?php echo json_encode($mapId); ?>] = map;
+            
+            
             L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
@@ -51,7 +60,7 @@
                 map.invalidateSize();
             });
             
-            var jqFilterForm = $('#<?php echo 'clusered_map_form_'.$data['maps']['maps_id']; ?>');
+            var jqFilterForm = $('#<?php echo $mapFormId; ?>');
             jqFilterForm.on('submit', function(e) {
                 e.preventDefault();
 

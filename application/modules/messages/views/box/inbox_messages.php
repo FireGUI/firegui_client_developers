@@ -4,19 +4,19 @@
             <th colspan="3">
                 <input type="checkbox" class="mail-checkbox mail-group-checkbox">
                 <span class="btn-group">
-                    <a class="btn btn-sm blue" href="#" data-toggle="dropdown"> More<i class="icon-angle-down"></i></a>
+                    <a class="btn btn-sm blue" href="#" data-toggle="dropdown"> More<i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#"><i class="icon-pencil"></i> Mark as Read</a></li>
-                        <li><a href="#"><i class="icon-ban-circle"></i> Spam</a></li>
+                        <li><a href="#"><i class="fa fa-pencil"></i> Mark as Read</a></li>
+                        <li><a href="#"><i class="fa fa-ban-circle"></i> Spam</a></li>
                         <li class="divider"></li>
-                        <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
+                        <li><a href="#"><i class="fa fa-trash"></i> Delete</a></li>
                     </ul>
                 </span>
             </th>
             <th class="pagination-control" colspan="3">
                 <span class="pagination-info">1-30 of 789</span>
-                <a class="btn btn-sm blue"><i class="icon-angle-left"></i></a>
-                <a class="btn btn-sm blue"><i class="icon-angle-right"></i></a>
+                <a class="btn btn-sm blue"><i class="fa fa-angle-left"></i></a>
+                <a class="btn btn-sm blue"><i class="fa fa-angle-right"></i></a>
             </th>
         </tr>
     </thead>

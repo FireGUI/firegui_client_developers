@@ -5,7 +5,7 @@
     <div class="col-md-3">
         <a href="<?php echo base_url("importer/import_start"); ?>">
             <div class="dashboard-stat red">
-                <div class="visual"><i class="icon-upload-alt"></i></div>
+                <div class="visual"><i class="fa fa-upload"></i></div>
 
                 <div class="details">
                     <div class="number">Import</div>
@@ -20,7 +20,7 @@
     <div class="col-md-3">
         <a href="#">
             <div class="dashboard-stat green">
-                <div class="visual"><i class="icon-download-alt"></i></div>
+                <div class="visual"><i class="fa fa-download"></i></div>
 
                 <div class="details">
                     <div class="number">Export</div>

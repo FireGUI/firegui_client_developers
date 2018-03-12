@@ -1,43 +1,45 @@
-.portlet.grey.solid small { color: #d4d4d4; }
-.portlet.grey.solid a:not(.btn) { color: #428BCA; }
-.leaflet-map-pane { color: #333333; }
-.portlet-title.js_title_collapse { cursor: pointer; }
-.js_result_list.media-list { padding:0 }
 
-/* Actions lists */
-.list-actions {
-    padding: 0!important; margin-bottom: 0px;
-    float: right;
+/*******************************
+    Header fixes
+*******************************/
+.page-header.navbar .page-logo a {
+    text-align: center;
+    display: block;
+    width: 100%;
+    padding: 5px;
 }
 
-.dl-actions .list-actions {
-    float: left;
+.page-header.navbar .page-logo a:hover {
+    opacity: 0.75
 }
 
-.list-actions li {
-    margin: 0 2px;
-    padding: 0!important;
+.page-header.navbar .page-logo .crm-name {
+    padding-left: 5px;
+    font-size: 19px;
+    line-height: 37px;
+    color: #fff;
+    text-decoration: none;
 }
 
-.list-actions li:empty {
-    display:none!important;
+.page-header.navbar .page-logo .logo-default {
+    margin: 0;
+    height: 36px;
 }
 
-.list-actions li a.btn.btn-xs {
-  padding: 1px 3px;
+.js_loading_overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    z-index: 10000;
 }
 
-.list-actions li a.btn.btn-xs * {
-  font-size: 13px;
-}
-
-
-/* Loader */
 .js_loading {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: 50%;
     left: 0;
-    right: 0;
+    right: 0; 
 
     display: none;
     width: 200px;
@@ -45,14 +47,100 @@
     padding: 4px;
     text-align: center;
     color: #ffffff;
+    z-index: 10002;
 }
 
+a {
+    color: #4B77BF
+}
+
+
+
+/*******************************
+    Portlets
+*******************************/
+.portlet.grey.solid small {
+    color: #d4d4d4;
+}
+
+.portlet.grey.solid a:not(.btn) {
+    color: #428BCA;
+}
+
+.leaflet-map-pane {
+    color: #333333;
+}
+
+.portlet-title.js_title_collapse {
+    cursor: pointer;
+}
+
+.js_result_list.media-list {
+    padding:0
+}
+
+.portlet.gren {
+    padding: 0!important;
+    box-shadow: none;
+}
+
+.form.portlet.light {
+    padding: 12px 20px 15px!important;
+}
+
+.portlet.box.bg-inverse .portlet-body {
+    background: #F7F7F7
+}
+
+
+
+
+/*******************************
+    Actions lists & buttons
+*******************************/
+
+.action-list {
+    white-space:nowrap;
+    text-align: right;
+    padding:1px;
+}
+
+.table .action-list .btn {
+    margin-right: 2px;
+}
+
+.btn.btn-xs {
+    padding: 3px 5px;
+}
+
+.btn[data-dismiss=modal] {
+    display: none;
+}
+
+.modal .btn[data-dismiss=modal] {
+    display: inline-block;
+}
+
+.btn[class*="-stripe"] {
+    border-left-width: 3px!important;
+}
+
+.btn > i {
+    margin:0;   /* allinea le icon con i come quelle con span */
+}
+
+
+
+/*******************************
+    Tables
+*******************************/
+.table[id*="grid_"] td {
+    vertical-align: middle!important;
+}
 
 .table-small th, .table-small td {
     padding: 0 !important;
 }
-
-
 
 .table-middle th, .table-middle td {
     vertical-align: middle !important;
@@ -66,7 +154,6 @@
     border: none !important;
 }
 
-
 .table th.text-right, .table td.text-right {
     text-align: right;
 }
@@ -74,9 +161,6 @@
 .table th.text-left, .table td.text-left {
     text-align: left;
 }
-
-
-
 
 .table-strong > thead > tr > th:first-child,
 .table-strong > tbody > tr > td:first-child {
@@ -101,19 +185,51 @@
 
 
 
-/** FIX pulsante elimina */
-.btn[data-dismiss=modal] {
-    display: none;
+/*******************************
+    Table colors
+*******************************/
+
+/* .active */
+.table > thead > tr > td.active, .table > thead > tr > th.active, .table > thead > tr.active > td, .table > thead > tr.active > th, .table > tbody > tr > td.active, .table > tbody > tr > th.active, .table > tbody > tr.active > td, .table > tbody > tr.active > th, .table > tfoot > tr > td.active, .table > tfoot > tr > th.active, .table > tfoot > tr.active > td, .table > tfoot > tr.active > th {
+    background: rgba(53, 152, 220, 0.4);
+    color: #276E9E;
 }
 
-
-.modal .btn[data-dismiss=modal] {
-    display: inline-block;
+.table-hover > tbody > tr > td.active:hover, .table-hover > tbody > tr > th.active:hover, .table-hover > tbody > tr.active:hover > td, .table-hover > tbody > tr.active:hover > th {
+    background: rgba(53, 152, 220, 0.5);
 }
 
+/* .success */
+.table > thead > tr > td.success, .table > thead > tr > th.success, .table > thead > tr.success > td, .table > thead > tr.success > th, .table > tbody > tr > td.success, .table > tbody > tr > th.success, .table > tbody > tr.success > td, .table > tbody > tr.success > th, .table > tfoot > tr > td.success, .table > tfoot > tr > th.success, .table > tfoot > tr.success > td, .table > tfoot > tr.success > th {
+    background: rgba(33, 145, 135, 0.27);
+    color: #677776;
+}
 
+.table-hover > tbody > tr > td.success:hover, .table-hover > tbody > tr > th.success:hover, .table-hover > tbody > tr.success:hover > td, .table-hover > tbody > tr.success:hover > th {
+    background: rgba(33, 145, 135, 0.47);
+}
 
-/** Verde **/
+/* .warning */
+.table > thead > tr > td.warning, .table > thead > tr > th.warning, .table > thead > tr.warning > td, .table > thead > tr.warning > th, .table > tbody > tr > td.warning, .table > tbody > tr > th.warning, .table > tbody > tr.warning > td, .table > tbody > tr.warning > th, .table > tfoot > tr > td.warning, .table > tfoot > tr > th.warning, .table > tfoot > tr.warning > td, .table > tfoot > tr.warning > th {
+    background: rgba(247, 202, 24, 0.38);
+    color: #967B11;
+}
+
+.table-hover > tbody > tr > td.warning:hover, .table-hover > tbody > tr > th.warning:hover, .table-hover > tbody > tr.warning:hover > td, .table-hover > tbody > tr.warning:hover > th {
+    background: rgba(247, 202, 24, 0.58);
+}
+
+/* .danger */
+.table > thead > tr > td.danger, .table > thead > tr > th.danger, .table > thead > tr.danger > td, .table > thead > tr.danger > th, .table > tbody > tr > td.danger, .table > tbody > tr > th.danger, .table > tbody > tr.danger > td, .table > tbody > tr.danger > th, .table > tfoot > tr > td.danger, .table > tfoot > tr > th.danger, .table > tfoot > tr.danger > td, .table > tfoot > tr.danger > th {
+    background: rgba(243, 86, 93, 0.5);
+    color: #8C3438;
+}
+
+.table-hover > tbody > tr > td.danger:hover, .table-hover > tbody > tr > th.danger:hover, .table-hover > tbody > tr.danger:hover > td, .table-hover > tbody > tr.danger:hover > th {
+    background: rgba(241, 62, 70, 0.59);
+}
+
+/* .success.bright */
 .table>thead>tr>td.success.bright, .table>tbody>tr>td.success.bright, .table>tfoot>tr>td.success.bright, .table>thead>tr>th.success.bright, .table>tbody>tr>th.success.bright, .table>tfoot>tr>th.success.bright, .table>thead>tr.success.bright>td, .table>tbody>tr.success.bright>td, .table>tfoot>tr.success.bright>td, .table>thead>tr.success.bright>th, .table>tbody>tr.success.bright>th, .table>tfoot>tr.success.bright>th {
     background-color: #65DA77;
     border-color: #35AA47;
@@ -124,8 +240,7 @@
     border-color: #259A37;
 }
 
-
-/** Giallo **/
+/* .warning.heavy */
 .table>thead>tr>td.warning.heavy, .table>tbody>tr>td.warning.heavy, .table>tfoot>tr>td.warning.heavy, .table>thead>tr>th.warning.heavy, .table>tbody>tr>th.warning.heavy, .table>tfoot>tr>th.warning.heavy, .table>thead>tr.warning.heavy>td, .table>tbody>tr.warning.heavy>td, .table>tfoot>tr.warning.heavy>td, .table>thead>tr.warning.heavy>th, .table>tbody>tr.warning.heavy>th, .table>tfoot>tr.warning.heavy>th {
     background-color: #EDD968;
     border-color: #E1CD5C;
@@ -136,8 +251,7 @@
     border-color: #EDD968;
 }
 
-
-/** Rosso **/
+/* .danger.heavy */
 .table>thead>tr>td.danger.heavy, .table>tbody>tr>td.danger.heavy, .table>tfoot>tr>td.danger.heavy, .table>thead>tr>th.danger.heavy, .table>tbody>tr>th.danger.heavy, .table>tfoot>tr>th.danger.heavy, .table>thead>tr.danger.heavy>td, .table>tbody>tr.danger.heavy>td, .table>tfoot>tr.danger.heavy>td, .table>thead>tr.danger.heavy>th, .table>tbody>tr.danger.heavy>th, .table>tfoot>tr.danger.heavy>th {
     background-color: #f2492b;
     border-color: #990000;
@@ -148,38 +262,57 @@
     border-color: #660000;
 }
 
-/** Fix uploaders **/
-.fileupload .thumbnail img {
-    max-width: 200px
-}
 
 
-/** Fix form in modale/tabs **/
+/*******************************
+    Fix modal forms
+    Fix tab panes
+    Fix menu
+*******************************/
 .modal .portlet.gren.form {
-    margin: 0 -20px -20px -20px;
+    margin: 0 -15px -15px -15px;
 }
 
 .tab-content > .tab-pane > form {
     margin: -10px;
 }
 
+.menu_group:not(.portlet),
+.menu_big_button:not(.portlet),
+.portlet.gren.menu_group,
+.portlet.gren.menu_big_button {
+    margin-bottom: 18px;
+}
 
-
-/** Fix menu utente **/
 .header .navbar-nav {
     padding-right: 0;
 }
 
+.nav.navbar-nav > li > a:not(.dropdown-toggle),
+.nav.navbar-nav > li > a:not(.dropdown-toggle):hover,
+.nav.navbar-nav > li > a:not(.dropdown-toggle):visited,
+.nav.navbar-nav > li > a:not(.dropdown-toggle):active {
+    background: transparent;
+}
 
-/** FIX CI profiler **/
+.page-sidebar-closed .page-sidebar-menu li.heading h3 {
+    display: none;
+}
+
+
+
+/*******************************
+    CI Profiler
+*******************************/
 #codeigniter_profiler {
     overflow-x: auto;
 }
 
 
 
-
-/** Stile mappe **/
+/*******************************
+    Maps style
+*******************************/
 .js_result_list > .js_result_item {
     border-bottom: 1px solid #e4e4e4;
 }
@@ -193,7 +326,6 @@
     color: #408FCF;
 }
 
-
 .portlet.grey.solid .js_result_list > .js_result_item {
     border-bottom: 1px solid #666;
 }
@@ -206,12 +338,15 @@
     color: #408FCF;
 }
 
+[data-layout-box] .chart {
+    height: auto;
+}
 
 
 
-
-
-/*** STELLINE ****/
+/*******************************
+    Star-rate input
+*******************************/
 .star-container .star {
     margin: 2px;
     padding: 1px;
@@ -238,17 +373,14 @@
 
 
 
-
-
+/*******************************
+    Input components
+*******************************/
 .select2-drop-active {
     z-index: 50000;
 }
 
 
-
-
-
-/*** DATEPICKER FIXES ***/
 .datepicker table tr td.today, .datepicker table tr td.today:hover, .datepicker table tr td.today.disabled, .datepicker table tr td.today.disabled:hover,
 .datetimepicker table tr td.today, .datetimepicker table tr td.today:hover, .datetimepicker table tr td.today.disabled, .datetimepicker table tr td.today.disabled:hover {
     background-color: transparent;
@@ -261,15 +393,38 @@
     background-color: #E4E4E4;
 }
 
-
-
 .daterangepicker {
     z-index: 999999;
 }
 
 
+.fileinput-filename {
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-/** CK-EDITOR FIX */
+/*******************************
+    INT RANGE INPUT
+*******************************/
+
+.input-intrange-wrapper {
+    float: left;
+    width: 49%;
+}
+
+.input-intrange-wrapper:first-child {
+    clear: both;
+    margin-right: 2%;
+}
+
+
+
+
+/*******************************
+    CK-Editor modal style
+*******************************/
 .cke_dialog_background_cover,
 .cke_combopanel,
 .cke_panel,
@@ -294,10 +449,14 @@
 }
 
 
+
+/*******************************
+    Static vertical grids
+    DL/DT Horiz/Vert grids
+*******************************/
 .static-vertical-grid {font-size: 110%;}
 .static-vertical-grid dt, .static-vertical-grid dd {margin-bottom: 2px;}
 
-/* V */
 .dl-vertical.static-vertical-grid dt {}
 .dl-vertical.static-vertical-grid dd {margin-bottom:9px;}
 .dl-vertical.static-vertical-grid dd:empty:before {content: '-'; color:#555}
@@ -306,7 +465,6 @@
 .dl-vertical.static-vertical-grid dt.dl-actions-label {margin-top: 12px;}
 .dl-vertical.static-vertical-grid dd.dl-actions .list-actions .btn.btn-xs {padding: 1px 5px 0px;}
 
-/* H */
 .dl-horizontal.static-vertical-grid dt {width:125px;}
 .dl-horizontal.static-vertical-grid dd {margin-left: 140px;}
 .dl-horizontal.static-vertical-grid dd img {margin-bottom: 4px;}
@@ -314,8 +472,6 @@
 .dl-horizontal.static-vertical-grid dd.dl-actions {margin-top:9px;margin-left: 140px;}
 .dl-horizontal.static-vertical-grid dd.dl-actions .list-actions .btn.btn-xs {padding: 3px 3px 1px;}
 
-
-/* H */
 .dl-horizontal.dl-horizontal-compact.static-vertical-grid dt {text-align: left;}
 .dl-horizontal.dl-horizontal-compact.static-vertical-grid dd {margin-left: 140px;}
 .dl-horizontal.dl-horizontal-compact.static-vertical-grid dd img {margin-bottom: 4px;}
@@ -326,24 +482,31 @@
 
 
 
-
-
-
-
-/**** Notifier ****/
-ul.js_notification_dropdown_list li.unread a {
-    background-color: #eee;
+/*******************************
+    Notification widget style
+*******************************/
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-extended .dropdown-menu > li.external {
+    border-bottom: 1px solid #D7D9DC;
 }
 
-ul.js_notification_dropdown_list li.unread a:hover {
-    background-color: #ededed;
-    font-weight: bold;
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-extended .dropdown-menu > li .js_notification_dropdown_list > li a .message {
+    line-height: 10px;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-extended .dropdown-menu > li .js_notification_dropdown_list > li.unread a {
+    background-color: #eaedf2;
+}
+
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-extended .dropdown-menu > li .js_notification_dropdown_list > li a:hover,
+.page-header.navbar .top-menu .navbar-nav > li.dropdown-user .dropdown-menu > li > a:hover {
+    background-color: #dee1e5;
+    color: #2B3643;
 }
 
 
-
-
-/*** FIX lists */
+/*******************************
+    Grid List Widget Style
+*******************************/
 .list-grid ul:empty {
     display: none;
 }
@@ -370,23 +533,9 @@ ul.js_notification_dropdown_list li.unread a:hover {
 
 
 
-/** Sidebar fixes */
-.page-sidebar-menu li.heading {
-    color: #A4A4A4;
-    text-transform: uppercase;
-    font-size: 13px;
-    padding-left: 18px;
-    padding-top: 14px;
-    padding-bottom: 9px;
-    font-weight: 300;
-}
-
-.page-sidebar-closed .page-sidebar-menu li.heading span {
-    display: none;
-}
-
-
-
+/*******************************
+    Tile [???] list widget
+*******************************/
 .big-tile-list-item {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
@@ -437,20 +586,11 @@ ul.js_notification_dropdown_list li.unread a:hover {
     height: 34px;
 }
 
-.big-tile-list-item .details .desc.tasks-to-do {
-    
-}
-.big-tile-list-item .details .desc.delivery {
-}
 
 
-
-.inbox td i.icon-paper-clip {
-    color:#777!important;
-}
-
-
-/* Language switch */
+/*******************************
+    Language switch widget
+*******************************/
 #language-switch li a {
     opacity: 0.3;
 }
@@ -462,4 +602,44 @@ ul.js_notification_dropdown_list li.unread a:hover {
 label .lang-flag {
     margin-bottom: 3px;
     margin-right: 2px;
+}
+
+
+/*******************************
+    CKEDITOR
+*******************************/
+.cke_editable {
+    font-size: 13px;
+    line-height: 1.6em;
+}
+
+.cke_contents_ltr blockquote {
+    padding-left: 20px;
+    padding-right: 8px;
+    border-left-width: 5px;
+}
+
+.cke_contents_rtl blockquote {
+    padding-left: 8px;
+    padding-right: 20px;
+    border-right-width: 5px;
+}
+
+.marker {
+    background-color: Yellow;
+}
+
+
+
+
+/*******************************
+    LIGHTBOX
+*******************************/
+
+.lightboxOverlay {
+    z-index: 10150;
+}
+
+.lightbox {
+    z-index: 11100;
 }

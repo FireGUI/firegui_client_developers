@@ -6,11 +6,11 @@
             <form class="inbox-compose form-horizontal formAjax" action="<?php echo base_url("newsletter/add_to_queue"); ?>">
 
                 <div class="inbox-compose-btn">
-                    <button class="pull-left btn blue"><i class="icon-check"></i>Send</button>
+                    <button class="pull-left btn blue"><i class="fa fa-check"></i>Send</button>
                     <button type="button" onclick="javascript:history.back();" class="pull-left btn">Cancel</button>
                     <?php if(count($dati['templates']) > 0): ?>
                         <div class="pull-left dropdown">
-                            <button type="button" class="btn" id="templatesmenu" data-toggle="dropdown">Templates <span class="icon-angle-down"></span></button>
+                            <button type="button" class="btn" id="templatesmenu" data-toggle="dropdown">Templates <span class="fa fa-angle-down"></span></button>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="templatesmenu">
                                 <?php foreach ($dati['templates'] as $template): ?>
                                     <li role="presentation">
@@ -97,7 +97,7 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="inbox-compose-btn">
-                    <button class="btn blue"><i class="icon-check"></i>Send</button>
+                    <button class="btn blue"><i class="fa fa-check"></i>Send</button>
                     <button type="button" onclick="javascript:window.location = '<?php echo base_url('newsletter') ?>'" class="btn">Cancel</button>
                 </div>
             </form>

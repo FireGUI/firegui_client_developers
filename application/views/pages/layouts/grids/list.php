@@ -6,7 +6,7 @@
                     <div class="cont">
                         <div class="cont-col1">
                             <div class="label label-sm label-info">                        
-                                <i class="icon-list"></i>
+                                <i class="fa fa-list"></i>
                             </div>
                         </div>
                         <div class="cont-col2">
@@ -27,7 +27,7 @@
                 </div>
                 <div class="col2">
                     <?php if(grid_has_action($grid['grids'])): ?>
-                        <?php $this->load->view('box/grid/actions', array( 'links'=> $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name']."_id"], 'row_data' => $dato )); ?>
+                        <?php $this->load->view('box/grid/actions', array( 'links'=> $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name']."_id"], 'row_data' => $dato )); ?>
                     <?php endif; ?>
                 </div>
             </li>

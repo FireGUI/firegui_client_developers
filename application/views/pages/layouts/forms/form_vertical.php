@@ -1,18 +1,16 @@
-<?php
-$form_id = "form_{$form['forms']['forms_id']}";
-$edit = isset($form['forms']['edit_data']['data'])? array_shift($form['forms']['edit_data']['data']): [];
-?>
+<?php $form_id = "form_{$form['forms']['forms_id']}"; ?>
 <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="formAjax" enctype="multipart/form-data" data-edit-id="<?php echo $value_id; ?>">
+    
+    <!-- FORM HIDDEN DATA -->
+    <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
+    
+    
     <div class="form-body">
-        <?php foreach ($form['forms_fields'] as $k=>$field): ?>
-            <div class="col-md-12">
-                <?php echo $this->datab->build_form_input(
-                        $field,
-                        isset($edit[$field['fields_name']]) ? $edit[$field['fields_name']] : $this->input->get($field['fields_name'])
-                ); ?>
+        <?php foreach ($form['forms_fields'] as $field): ?>
+            <div class="row">
+                <div class="<?php echo sprintf('col-lg-%d', $field['size'] ? : 12); ?>"><?php echo $field['html']; ?></div>
             </div>
         <?php endforeach; ?>
-        <div class="clearfix"></div>
         
         <div class="row">
             <div class="col-md-12">

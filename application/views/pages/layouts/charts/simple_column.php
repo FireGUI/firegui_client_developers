@@ -1,34 +1,47 @@
-<?php $chartId = "container_hightcharts_{$chart['charts_id']}"; ?>
+<?php
+$chartId = "container_hightcharts_{$chart['charts_id']}";
+// --- Series
+$series = [];
+foreach ($chart_data[0]['series'] as $name => $data) {
+    $series[] = ['name' => $name, 'data' => array_values(array_map('floatval', $data))];
+}
+?>
 <div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
 
 <script>
     $(function () {
+
+        var title = <?php echo json_encode($chart['charts_title']); ?>;
+        var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
+        var rotation = <?php echo json_encode((count($chart_data[0]['data']) > 8) ? -45 : 0); ?>;
+        var categories = <?php echo json_encode(array_values($chart_data[0]['x'])); ?>;
+        var label2 = <?php echo json_encode($chart_data[0]['element']['charts_elements_label2']); ?>;
+        var series = <?php echo json_encode($series); ?>;
+
         $('#<?php echo $chartId; ?>').highcharts({
-            chart: { type: 'column' },
-            title: { text: '<?php echo $chart['charts_title']; ?>' },
-            subtitle: { text: '<?php echo $chart['charts_subtitle']; ?>' },
+            chart: {type: 'column'},
+            title: {text: title},
+            subtitle: {text: subtitle},
             xAxis: {
-                  labels: {
-                    <?php if (count($chart_data[0]['data']) > 8): ?>
-                     rotation: -45,
-                   <?php endif; ?>
+                labels: {
+                    rotation: rotation,
                     style: {
                         fontSize: '13px',
                         fontFamily: 'Verdana, sans-serif'
                     }
                 },
-                categories: [<?php echo "'".implode("', '", array_map(function($item) { return addslashes($item);}, $chart_data[0]['x']))."'"; ?>]
+                categories: categories
             },
             yAxis: {
                 min: 0,
                 title: {
-                    title: { text: '<?php echo $chart_data[0]['element']['charts_elements_label2']; ?>' },
+                    title: {text: label2},
                 }
             },
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
                 useHTML: true
@@ -39,13 +52,9 @@
                     borderWidth: 0
                 }
             },
-            series: [
-                <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    { name: '<?php echo addslashes($name); ?>', data: <?php echo '['.implode(',', $data).']'; ?> },
-                <?php endforeach; ?>
-            ]
+            series: series
         });
     });
-    
+
 
 </script>

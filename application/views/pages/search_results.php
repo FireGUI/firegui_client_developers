@@ -10,50 +10,69 @@
                 <div class="portlet box blue">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="icon-search"></i> <?php echo ucwords(str_replace('_', ' ', $entity_result['entity']['entity_name'])); ?>
+                            <i class="fa fa-search"></i> <?php echo ucwords(str_replace('_', ' ', $entity_result['entity']['entity_name'])); ?>
                         </div>
                         <div class="tools"></div>
                     </div>
                     <div class="portlet-body">
-                        <?php $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']); ?>
-                        <table class="table table-condensed table-bordered table-hover table-scrollable js_search_datatable">
+                        <?php
+                        // Mostro solo i campi che hanno qualcosa da mostrare...
+
+                        $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']);
+                        usort($entity_result['visible_fields'], function($f1, $f2) {
+                            if ($f2['fields_preview'] == 't') {
+                                return 1;
+                            } elseif ($f1['fields_preview'] == 't') {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                        $fields = array_values(array_filter($entity_result['visible_fields'], function($field) {
+                                    return $field['fields_draw_label'] && in_array($field['fields_type'], ['INT', 'VARCHAR', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
+                                }));
+                        ?>
+                        <table class="table table-condensed table-bordered table-hover table-scrollable table-scrollable-borderless js_search_datatable">
                             <thead>
                                 <tr>
-                                    <?php foreach ($entity_result['visible_fields'] as $field): ?>
-                                        <?php if ($field['fields_preview'] == 't' AND $field['fields_draw_label']): ?>
-                                            <th><?php echo $field['fields_draw_label']; ?></th>
-                                        <?php endif; ?>
+                                    <?php foreach ($fields as $field): ?>
+                                        <th><?php
+                                            $label = $field['fields_draw_label'];
+                                            if ($field['fields_entity_id'] != $entity_result['entity']['entity_id']) {
+                                                $ePrefix = ucwords(str_replace('_', ' ', $field['entity_name']));
+                                                // Non voglio aggiungere un eventuale
+                                                // prefisso alla label se questa è
+                                                // già prefissata:
+                                                // caso frequente, le support table
+                                                if (stripos(trim($label), trim($ePrefix)) !== 0) {
+                                                    $label = $ePrefix . ' ' . $label;
+                                                }
+                                            }
+
+                                            echo $label;
+                                            ?></th>
                                     <?php endforeach; ?>
-                                            
-                                    <?php /*if($link): ?>
-                                        <th></th>
-                                    <?php endif;*/ ?>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($entity_result['data'] as $data): ?>
                                     <tr>
-                                        <?php $first=true; foreach ($entity_result['visible_fields'] as $field): ?>
-                                            <?php if ($field['fields_preview'] == 't' AND $field['fields_draw_label']): ?>
-                                                <?php if($first && $link): $first=false; ?>
-                                                    <td><a href="<?php echo $link.'/'.$data[$entity_result['entity']['entity_name'] . '_id']; ?>" class="btn btn-link btn-xs"><?php echo $data[$field['fields_name']]; ?></a></td>
+                                        <?php foreach ($fields as $i => $field): ?>
+                                            <td>
+                                                <?php if ($link && !$i): ?>
+                                                    <?php echo anchor($link . '/' . $data[$entity_result['entity']['entity_name'] . '_id'], $data[$field['fields_name']]); ?>
                                                 <?php else: ?>
-                                                    <td><?php echo $data[$field['fields_name']]; ?></td>
+                                                    <?php echo $this->datab->build_grid_cell($field, $data); ?>
                                                 <?php endif; ?>
-                                            <?php endif; ?>
+                                                <?php // echo ($link && !$i) ? anchor($link.'/'.$data[$entity_result['entity']['entity_name'] . '_id'], $data[$field['fields_name']]) : $data[$field['fields_name']]; ?>
+                                            </td>
                                         <?php endforeach; ?>
-                                        
-                                        <?php /*if($link): ?>
-                                            <td><a href="<?php echo $link.'/'.$data[$entity_result['entity']['entity_name'] . '_id']; ?>" class="btn btn-link btn-xs">View</a></td>
-                                        <?php endif;*/ ?>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
-                        <?php // debug($entity_result); ?>
                     </div>
                 </div>
-                <!-- END SAMPLE FORM PORTLET-->
             </div>
         <?php endforeach; ?>
     </div>
@@ -63,21 +82,74 @@
 
 
     <script>
+        $(document).ready(function () {
+            $.fn.dataTableExt.oApi.fnHideEmptyColumns = function (oSettings, tableObject) {
+                /**
+                 * This plugin hides the columns that are empty.
+                 * If you are using datatable inside jquery tabs
+                 * you have to add manually this piece of code
+                 * in the tabs initialization
+                 * $("#mytable").datatables().fnAdjustColumnSizing();
+                 * where #mytable is the selector of table
+                 * object pointing to this plugin.
+                 * This plugin can be invoked from
+                 * <a href="//legacy.datatables.net/ref#fnInitComplete">fnInitComplete</a> callback.
+                 * @author John Diaz
+                 * @version 1.0
+                 * @date 06/28/2013
+                 */
+                var selector = tableObject.selector;
+                var columnsToHide = [];
 
-        $(document).ready(function() {
-            $('.js_search_datatable').each(function() {
+                $(selector).find('th').each(function (i) {
+
+                    var columnIndex = $(this).index();
+                    var rows = $(this).parents('table').find('tr td:nth-child(' + (i + 1) + ')'); //Find all rows of each column 
+                    var rowsLength = $(rows).length;
+                    var emptyRows = 0;
+
+                    rows.each(function (r) {
+                        if (!this.innerHTML.trim() == '') {
+                            emptyRows++;
+                        } else {
+                            console.log(this.innerHTML.trim());
+                        }
+                    });
+
+                    if (emptyRows == rowsLength) {
+                        columnsToHide.push(columnIndex);  //If all rows in the colmun are empty, add index to array
+                    }
+                });
+                for (var i = 0; i < columnsToHide.length; i++) {
+                    tableObject.fnSetColumnVis(columnsToHide[i], false); //Hide columns by index
+                }
+                /**
+                 * The following line doesn't work when the plugin
+                 * is used inside jquery tabs, then you should
+                 * add manually this piece of code inside
+                 * the tabs initialization where ("#myTable") is
+                 * your table id selector
+                 * ej: $("#myTable").dataTable().fnAdjustColumnSizing();
+                 */
+
+                tableObject.fnAdjustColumnSizing();
+            }
+
+            $('.js_search_datatable').each(function () {
                 $(this).dataTable({
                     bLengthChange: false,
                     bFilter: false,
                     "oLanguage": {
-                        "sUrl": base_url_template+"script/datatable.transl.json"
+                        "sUrl": base_url_template + "script/datatable.transl.json"
+                    },
+                    "fnInitComplete": function () {
+                        this.fnHideEmptyColumns(this);
                     }
                 });
             });
         });
-
     </script>
-<?php elseif($dati['count_total'] === 0): ?>
+<?php elseif ($dati['count_total'] === 0): ?>
     <h3 class="page-title"><?php e('Ricerca'); ?> <small><?php e('nessun risultato trovato per la ricerca effettuata: %s', 0, array($dati['search_string'])); ?></small></h3>
 <?php else: ?>
     <h3 class="page-title"><?php e('Ricerca'); ?> <small><?php e('la stringa di ricerca deve essere di almeno 3 lettere', 0); ?></small></h3>

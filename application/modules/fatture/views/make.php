@@ -1,7 +1,4 @@
 <h3 class="page-title">Fatture <small><?php echo $dati['fattura']? 'modifica': 'crea nuova'; ?></small></h3>
-    
-    
-
 
 <form class="form-horizontal formAjax" id="new_fattura" action="<?php echo base_url('fatture/db_ajax/create'); ?>">
     
@@ -28,7 +25,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-md-4">Cliente <span class="text-danger">*</span></label>
                                     <div class="col-md-8">
-                                        <input type="hidden" name="fattura[fatture_cliente]" data-ref="<?php echo ENTITY_CUSTOMERS; ?>" class="form-control js_select_ajax js_fattura_customer" value="<?php echo $dati['fatture_cliente']; ?>" />
+                                        <input type="hidden" name="fattura[fatture_cliente]" data-ref="<?php echo FATTURE_E_CUSTOMERS; ?>" class="form-control js_select_ajax js_fattura_customer" value="<?php echo $dati['fatture_cliente']; ?>" />
                                     </div>
                                 </div>
                                 
@@ -37,14 +34,14 @@
                                     <div class="col-md-8">
                                         <?php if (count($dati['serie']) === 1): ?>
                                             <div class="input-group">
-                                                <input type="text" name="fattura[fatture_numero]" class="form-control" placeholder="Numero" />
+                                                <input type="text" name="fattura[fatture_numero]" class="form-control" placeholder="Numero" value="<?php echo $dati['fatture_numero']; ?>" />
                                                 <span class="input-group-addon" id="basic-addon2"><?php echo reset($dati['serie']); ?></span>
                                             </div>
                                         <?php else: ?>
                                             <div class="input-group">
-                                                <input type="text" name="fattura[fatture_numero]" class="form-control" placeholder="Numero" />
+                                                <input type="text" name="fattura[fatture_numero]" class="form-control" placeholder="Numero" value="<?php echo $dati['fatture_numero']; ?>" />
                                                 <div class="input-group-btn">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="js-serie-prev"><?php echo reset($dati['serie']); ?></span> <span class="caret"></span></button>
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="js-serie-prev"><?php echo $dati['fatture_serie'] ? : reset($dati['serie']); ?></span> <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <?php foreach($dati['serie'] as $serie): ?>
                                                             <li><a href="javascript:setSeries('<?php echo $serie; ?>');"><?php echo $serie; ?></a></li>
@@ -59,7 +56,7 @@
                                                 }
                                             </script>
                                         <?php endif; ?>
-                                        <input type="hidden" name="fattura[fatture_serie]" value="<?php echo reset($dati['serie']); ?>" />
+                                        <input type="hidden" name="fattura[fatture_serie]" value="<?php echo $dati['fatture_serie'] ? : reset($dati['serie']); ?>" />
                                     </div>
                                 </div>
                             </div>
@@ -70,7 +67,7 @@
                                     <label class="control-label col-md-4">Scadenza pagamento <span class="text-danger">*</span></label>
                                     <div class="col-md-8">
                                         <div class="input-group js_form_datepicker date">
-                                            <input name="fattura[fatture_scadenza_pagamento]" type="text" class="form-control" value="<?php if(isset($fattura['fatture_scadenza_pagamento'])): echo date('d/m/Y', strtotime($fattura['fatture_scadenza_pagamento'])); endif; ?>" />
+                                            <input name="fattura[fatture_scadenza_pagamento]" type="text" class="form-control" value="<?php echo $dati['fatture_scadenza_pagamento']; ?>" />
                                             <span class="input-group-btn">
                                                 <button class="btn default" type="button"><i class="icon-calendar"></i></button>
                                             </span>
@@ -83,8 +80,9 @@
                                     <label class="control-label col-md-4">Metodo di pagamento <span class="text-danger">*</span></label>
                                     <div class="col-md-8 col-lg-3">
                                         <select class="form-control" name="fattura[fatture_metodo_pagamento]">
+                                            <option></option>
                                             <?php foreach($dati['metodi_pagamento'] as $metodo): ?>
-                                                <option value="<?php echo $metodo; ?>"><?php echo $metodo; ?></option>
+                                                <option value="<?php echo $metodo; ?>" <?php echo $metodo == $dati['fatture_metodo_pagamento'] ? 'selected' : ''; ?>><?php echo $metodo; ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -126,14 +124,30 @@
                                                     <td><input type="text" class="form-control input-sm" data-name="fatture_prodotti_quantita" placeholder="1" /></td>
                                                     <td><input type="text" class="form-control input-sm text-right" data-name="fatture_prodotti_prezzo" placeholder="0.00" /></td>
                                                     <td><input type="text" class="form-control input-sm text-right" data-name="fatture_prodotti_sconto" placeholder="0" /></td>
-                                                    <td><input type="text" class="form-control input-sm text-right" data-name="fatture_prodotti_iva" placeholder="0" /></td>
+                                                    <td><input type="text" class="form-control input-sm text-right" data-name="fatture_prodotti_iva" placeholder="22" /></td>
                                                     <td><p class="form-control-static text-right js-importo">0.00</p></td>
                                                     <td class="text-center">
-                                                        <button type="button" class="btn btn-default btn-danger btn-sm js_remove_product">
-                                                            <span class="icon-remove"></span>
+                                                        <button type="button" class="btn btn-default btn-danger btn-xs js_remove_product">
+                                                            <span class="fa fa-remove"></span>
                                                         </button>
                                                     </td>
                                                 </tr>
+                                                <?php foreach($dati['prodotti'] as $k => $prodotto): ?>
+                                                    <tr>
+                                                        <td><input type="text" class="form-control input-sm" name="ed_products[<?php echo $prodotto['fatture_prodotti_id']; ?>][fatture_prodotti_codice]" value="<?php echo $prodotto['fatture_prodotti_codice']; ?>" /></td>
+                                                        <td><input type="text" class="form-control input-sm" name="ed_products[<?php echo $prodotto['fatture_prodotti_id']; ?>][fatture_prodotti_nome]" value="<?php echo $prodotto['fatture_prodotti_nome']; ?>" /></td>
+                                                        <td><input type="text" class="form-control input-sm" name="ed_products[<?php echo $prodotto['fatture_prodotti_id']; ?>][fatture_prodotti_quantita]" value="<?php echo $prodotto['fatture_prodotti_quantita']; ?>" placeholder="1" /></td>
+                                                        <td><input type="text" class="form-control input-sm text-right" name="ed_products[<?php echo $prodotto['fatture_prodotti_id']; ?>][fatture_prodotti_prezzo]" value="<?php echo $prodotto['fatture_prodotti_prezzo']; ?>" placeholder="0.00" /></td>
+                                                        <td><input type="text" class="form-control input-sm text-right" name="ed_products[<?php echo $prodotto['fatture_prodotti_id']; ?>][fatture_prodotti_sconto]" value="<?php echo $prodotto['fatture_prodotti_sconto']; ?>" placeholder="0" /></td>
+                                                        <td><input type="text" class="form-control input-sm text-right" name="ed_products[<?php echo $prodotto['fatture_prodotti_id']; ?>][fatture_prodotti_iva]" value="<?php echo $prodotto['fatture_prodotti_iva']; ?>" placeholder="22" /></td>
+                                                        <td><p class="form-control-static text-right js-importo">0.00</p></td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-danger btn-xs js_remove_product">
+                                                                <span class="fa fa-remove"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -157,7 +171,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-md-2">Note</label>
                                     <div class="col-md-10">
-                                        <textarea name="fattura[fatture_note]" rows="10" class="form-control" placeholder="Inserisci delle note [opzionali]"></textarea>
+                                        <textarea name="fattura[fatture_note]" rows="10" class="form-control" placeholder="Inserisci delle note [opzionali]"><?php echo $dati['fatture_note']; ?></textarea>
                                     </div>
                                 </div>
                             </div>

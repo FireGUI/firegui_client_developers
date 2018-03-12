@@ -9,12 +9,7 @@
         <div class="portlet box purple">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="icon-plus-sign-alt"></i> <?php e("Aggiungi sincronizzazione"); ?>
-                </div>
-                <div class="tools">
-                    <button id="tutorial" type="button" class="btn btn-xs purple pull-right" data-container="body" data-toggle="popover" data-placement="right" title="Rimborsi chilometrici" data-content="Affinchè vengano conteggiate le trasferte, queste devono essere regolarmente registrate come appuntamenti aventi categoria <strong>Lavoro</strong> o <strong>Riunione</strong>.">
-                        <span class="icon-question-sign"></span>
-                    </button>
+                    <i class="fa fa-plus-circle"></i> <?php e("Aggiungi sincronizzazione"); ?>
                 </div>
             </div>
 

@@ -30,7 +30,7 @@ class Pdf extends MX_Controller {
 
         $dati['offer'] = $this->db->
                         from('offers')->
-                        join(ENTITY_CUSTOMERS, 'offers_customer = '.ENTITY_CUSTOMERS.'_id', 'left')->
+                        join(FATTURE_E_CUSTOMERS, 'offers_customer = '.FATTURE_E_CUSTOMERS.'_id', 'left')->
                         join(ENTITY_USERS, 'offers_user = '.ENTITY_USERS.'_id', 'left')->
                         join(ENTITY_CITY, CUSTOMER_CITY.' = '.CITY_ID, 'left')->
                         join(ENTITY_PROV, CUSTOMER_PROV.' = '.PROV_ID, 'left')->

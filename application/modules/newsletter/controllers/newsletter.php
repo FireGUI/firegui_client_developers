@@ -170,7 +170,7 @@ class Newsletter extends MX_Controller {
             
             $entity_mails = $this->input->post('entity_mails');
             if($entity_mails['entity'] && !empty($entity_mails['field'])) {
-                if($entity_mails['filter']) {
+                if(!empty($entity_mails['filter'])) {
                     $mails = $this->get_emails_in_field($entity_mails['field'], $entity_mails['filter_field'], $entity_mails['op_field'], $entity_mails['val_field'], $entity_mails['manual_where']);
                 } else {
                     $mails = $this->get_emails_in_field($entity_mails['field']);
@@ -223,8 +223,11 @@ class Newsletter extends MX_Controller {
         } else {
             $this->db->insert('newsletter_email_templates', $data);
         }
-        
-        redirect(base_url('newsletter/create_template'));
+        if($this->input->is_ajax_request()) {
+            echo json_encode(['status' => 2]);
+        } else {
+            redirect(base_url('newsletter/create_template'));
+        }
     }
     
     

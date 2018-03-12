@@ -6,7 +6,7 @@
     <div class="col-md-3">
         <a href="<?php echo base_url("newsletter/create_template"); ?>">
             <div class="dashboard-stat blue">
-                <div class="visual"><i class="icon-plus"></i></div>
+                <div class="visual"><i class="fa fa-plus"></i></div>
 
                 <div class="details">
                     <div class="number"><?php echo count($dati['templates']); ?></div>
@@ -20,7 +20,7 @@
         <a href="<?php echo base_url("newsletter/write_mail"); ?>">
             <div class="dashboard-stat green">
                 <div class="visual">
-                    <i class="icon-pencil"></i>
+                    <i class="fa fa-pencil"></i>
                 </div>
 
                 <div class="details">
@@ -50,7 +50,7 @@
                         <td><?php echo $newsletter['newsletter_date']; ?></td>
                         <td><?php echo $this->db->where('mail_sent', 't')->where('mail_newsletter', $newsletter['newsletter_id'])->count_all_results('newsletter_mail_queue'); ?> / <?php echo $this->db->where('mail_newsletter', $newsletter['newsletter_id'])->count_all_results('newsletter_mail_queue'); ?></td>
                         <td>
-                            <a class="btn btn-xs blue" href="<?php echo base_url("newsletter/riproponi/{$newsletter['newsletter_id']}"); ?>"><i class="icon-share-alt"></i></a>
+                            <a class="btn btn-xs blue" href="<?php echo base_url("newsletter/riproponi/{$newsletter['newsletter_id']}"); ?>"><i class="fa fa-share-alt"></i></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -3,6 +3,8 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+include_once __DIR__ . '/../helpers/general_helper.php';
+
 /*
  * 
  *  SI SUPPONE CHE NEL REF DI UN FIELDS CI SARà IL NOME TABELLA E NON L'ID O IL NOME DEL FIELDS CHE DEVE JOINARE... PERCHè? PERCHè SI è STABILITO, CHE OGNI TABELLA DI SUPPORTO O ENTITà AVRà PER FORZA
@@ -14,14 +16,14 @@ if (!defined('BASEPATH'))
 class Crmentity extends CI_Model {
 
     const CACHE_TIME = 300;
+    const SCHEMA_CACHE_KEY = 'crm.schema';
 
     /** Cache */
-    private $_entities = array();
-    private $_entity_names = array();
     private $_entities_processed = array();
     private $_relations = array();
     private $_fields_ref_by = array();
     private $_visible_fields = array();
+    private $_schemaCache = null;
     //private $cache = array();
 
     /** Dati della entity */
@@ -35,17 +37,14 @@ class Crmentity extends CI_Model {
         parent :: __construct();
         
         $this->load->driver('cache');
+        $this->buildSchemaCacheIfNotValid();
+        
         $this->setLanguages($languageId);
         
         if ($entity_name) {
             $this->entity_name = $entity_name;
             $this->table = $entity_name;
-
-            $entity = $this->get_entity_by_name($entity_name);
-            if (empty($entity)) {
-                show_error("Entit&agrave; inesistente: {$entity_name}");
-            }
-
+            $entity = $this->getEntity($entity_name);
             $this->entity_id = $entity['entity_id'];
         }
     }
@@ -146,7 +145,7 @@ class Crmentity extends CI_Model {
             $result_ids = array_key_map($data['data'], $entity_name . '_id');
 
             if (!empty($result_ids)) {
-                $fieldsGeography = $fieldsWysiwyg = $fieldsMultilingual = [];
+                $fieldsGeography = $fieldsWysiwyg = $fieldsMultilingual = $fieldsRanges = [];
                     
                 foreach ($data['visible_fields'] as $field) {
                     
@@ -188,6 +187,13 @@ class Crmentity extends CI_Model {
                     if ($this->languages && $field['fields_multilingual'] === 't') {
                         $fieldsMultilingual[$field['fields_id']] = $field;
                     }
+                    
+                    //Attenzione se un domani vogliamo aggiungere il floatrange, temo succeda casino con l'estremo superiore (vd function rangeHumanFriendly)
+                    if ($field['fields_type'] === 'INT8RANGE' || $field['fields_type'] === 'INT4RANGE') {
+                        $fieldsRanges[$field['fields_id']] = $field;
+                        
+                       
+                    }
                 }
                 
                 
@@ -217,7 +223,12 @@ class Crmentity extends CI_Model {
                     foreach ($fieldsMultilingual as $field) {
                         $_data[$field['fields_name']] = $this->translateValue($_data[$field['fields_name']]);
                     }
-
+                    
+                    foreach ($fieldsRanges as $field) {
+                        $_data[$field['fields_name']] = extract_intrange_data($_data[$field['fields_name']]);
+                        
+                    }
+                    
                     // Sovrascrivo il vecchio valore di data
                     $data['data'][$key] = $_data;
                 }
@@ -238,9 +249,16 @@ class Crmentity extends CI_Model {
                         continue;
                     }
                     
-                    $refererWhere = sprintf('%s.%s IN (%s)', $refererEntity, $refererField, implode(',', $result_ids));
-                    $referersKeys[$refererEntity] = [];
+                    if (in_array($entity['fields_type'], ['VARCHAR', 'TEXT'])) {
+                        // Sono in presenza di relazioni dove i miei id sono
+                        // contenuti separati da virgola...
+                        $refererWhere = sprintf("EXISTS(SELECT UNNEST(regexp_split_to_array(%s.%s, ',')) INTERSECT SELECT UNNEST(array[%s]))", $refererEntity, $refererField, "'" . implode("','", $result_ids) . "'");
+                    } else {
+                        // Caso normale
+                        $refererWhere = sprintf('%s.%s IN (%s)', $refererEntity, $refererField, implode(',', $result_ids));
+                    }
                     
+                    $referersKeys[$refererEntity] = [];
                     
                     $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
                     if (!empty($referingData['data'])) {
@@ -306,6 +324,9 @@ class Crmentity extends CI_Model {
                             if ($visible_field['fields_ref'] == $relation['relations_name']) {
                                 $field_name_for_relation_values = $visible_field['fields_name'];
                                 break;
+                            /*
+                            Rimosso il 12/10/2015 perché questo sistema causa problemi con la possibilità
+                            di mettere il ref più volte alla stessa tabella
                             } else if ($visible_field['fields_ref'] == $other_table) {
                                 // Questo metodo è la versione vecchia in cui il
                                 // field_ref di relazione puntava all'entità
@@ -313,6 +334,7 @@ class Crmentity extends CI_Model {
                                 // relazione... tenuto per retrocompatibilità
                                 $field_name_for_relation_values = $visible_field['fields_name'];
                                 break;
+                             */
                             }
                         }
 
@@ -383,35 +405,24 @@ class Crmentity extends CI_Model {
 
                     $names[] = $name;
                     $fake_relation_ids = array();
-                    foreach ($data['data'] as $_data) {
+                    foreach ($data['data'] as &$_data) {
+                        $_data[$name] = $_data[$name] ? explode(',', $_data[$name]) : [];
                         if ($_data[$name]) {
-                            $fake_relation_ids = array_merge($fake_relation_ids, explode(',', $_data[$name]));
+                            $fake_relation_ids = array_merge($fake_relation_ids, $_data[$name]);
                         }
                     }
-
+                    
                     $fullData = array();
                     if (!empty($fake_relation_ids)) {
                         $imploded_fake_relation_ids = implode(',', $fake_relation_ids);
-                        $frEntity = $this->get_entity_by_name($related);
+                        $frEntity = $this->getEntity($related);
                         $qFullData = $this->get_data_simple_list($frEntity['entity_id'], "{$related}_id IN ({$imploded_fake_relation_ids})", null, 0, null, false, false, $depth - 1);
-                        $fullData = array_combine(array_map(function ($dato) use ($related) {
-                                    return $dato["{$related}_id"];
-                                }, $qFullData), $qFullData);
+                        $fullData = array_combine(array_key_map($qFullData, "{$related}_id"), $qFullData);
                     }
 
-                    // E li inserisco al posto della geometry
-                    foreach ($data['data'] as $key => $_data) {
-                        if (!$_data[$name]) {
-                            continue;
-                        }
-
-                        $fieldIds = array_merge($fake_relation_ids, explode(',', $_data[$name]));
-                        $data['data'][$key][$name] = array();
-                        foreach ($fieldIds as $id) {
-                            if (array_key_exists($id, $fullData)) {
-                                $data['data'][$key][$name][$id] = $fullData[$id];
-                            }
-                        }
+                    // E li inserisco al loro posto
+                    foreach ($data['data'] as &$_data) {
+                        $_data[$name] = array_intersect_key($fullData, array_flip($_data[$name]));
                     }
                 }
             }
@@ -420,7 +431,7 @@ class Crmentity extends CI_Model {
         }
         return $data;
     }
-
+    
     public function get_data_simple_list($entity_id = null, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $extra_data = false, $depth = 2) {
         if ($entity_id === null) {
             $entity_id = $this->entity_id;
@@ -429,7 +440,8 @@ class Crmentity extends CI_Model {
         $dati = $this->getEntityFullData($entity_id);
 
         if (count($dati['visible_fields']) < 1) {
-            return false;
+            $dati['data'] = [];
+            return $dati;
         }
 
         $visible_fields = $this->fields_implode($dati['visible_fields']);
@@ -437,15 +449,15 @@ class Crmentity extends CI_Model {
         // Estraggo i campi visibili anche di eventuali tabelle da joinare
         foreach ($dati['visible_fields'] as $k => $campo) {
             if ($campo['fields_ref'] && !in_array(array('relations_name' => $campo['fields_ref']), $dati['relations'])) {
-                $entity = $this->get_entity_by_name($campo['fields_ref']);
+                $entity = $this->getEntity($campo['fields_ref']);
                 if (empty($entity)) {
                     // L'entità non esiste più quindi svuoto il fields_ref
                     $dati['visible_fields'][$k]['fields_ref'] = '';
                 } else {
                     $visible_fields_supports = $this->getVisibleFields($entity['entity_id']);
-                    $this->db->query("SELECT * FROM fields LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
+                    /*$this->db->query("SELECT * FROM fields LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
                                                     LEFT JOIN entity ON entity.entity_id = fields.fields_entity_id
-                                                    WHERE fields_entity_id = '{$entity['entity_id']}' AND (fields_preview = 't')")->result_array();
+                                                    WHERE fields_entity_id = '{$entity['entity_id']}' AND (fields_preview = 't')")->result_array();*/
 
                     $fields = $this->fields_implode($visible_fields_supports);
 
@@ -470,7 +482,7 @@ class Crmentity extends CI_Model {
             // Attenzione!! Devo distinguere da where con chiave numerica a
             // quelli con chiave a stringa: dei primi ignoro la chiave, mentre
             // dei secondi faccio un where(key, value);
-            array_walk($where, function($value, $key) {
+            array_walk(array_filter($where), function($value, $key) {
                 if (is_numeric($key)) {
                     $this->db->where($value, null, false); // non escapare nemmeno qui
                 } elseif (is_string($key)) {
@@ -489,9 +501,13 @@ class Crmentity extends CI_Model {
         // Aggiungo in automatico i join SUPPONENDO che il campo da joinare, nella tabella sarà nometabella_id ********
         $permission_entities = array($entity_id);   // Lista delle entità su cui devo applicare i limiti
         $post_process_data_entity = array();
+        
         foreach ($dati['visible_fields'] as $key => $campo) {
+            $leftJoinable = (empty($campo['fields_ref_auto_left_join']) OR $campo['fields_ref_auto_left_join']=='t');
+            $rightJoinable = (empty($campo['fields_ref_auto_right_join']) OR $campo['fields_ref_auto_right_join']=='t');
+            
             // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
-            if (($campo['fields_ref'] && !in_array(array('relations_name' => $campo['fields_ref']), $dati['relations']))) {
+            if ($campo['fields_ref'] && $leftJoinable && !in_array(array('relations_name' => $campo['fields_ref']), $dati['relations'])) {
 
                 if (in_array($campo['fields_ref'], $joined)) {
                     // Metto nella lista dei join later
@@ -501,14 +517,14 @@ class Crmentity extends CI_Model {
                     array_push($joined, $campo['fields_ref']);
 
                     // Devo fare il controllo dei limiti sui field ref
-                    $ent = $this->get_entity_by_name($campo['fields_ref']);
+                    $ent = $this->getEntity($campo['fields_ref']);
                     if (!in_array($ent['entity_id'], $permission_entities)) {
                         $permission_entities[] = $ent['entity_id'];
                     }
                 }
-            } elseif (($campo['fields_ref'] && in_array(array('relations_name' => $campo['fields_ref']), $dati['relations']))) {
+            } elseif (($campo['fields_ref'] && $rightJoinable && in_array(array('relations_name' => $campo['fields_ref']), $dati['relations']))) {
                 $relation_to = $this->db->query("SELECT relations_table_2 FROM relations WHERE relations_name = '{$campo['fields_ref']}'")->row()->relations_table_2;
-                $ent = $this->get_entity_by_name($relation_to);
+                $ent = $this->getEntity($relation_to);
                 $ent['relation_name'] = $campo['fields_ref'];
                 $post_process_data_entity[$key] = $ent;
 
@@ -531,7 +547,9 @@ class Crmentity extends CI_Model {
             $this->db->offset($offset);
         }
         if ($order_by !== NULL && !$count) {
+            $this->db->_protect_identifiers = FALSE;
             $this->db->order_by($order_by);
+            $this->db->_protect_identifiers = TRUE;
         }
 
         if ($count) {
@@ -546,25 +564,26 @@ class Crmentity extends CI_Model {
                 //debug(array_map(function($dbg) { unset($dbg['object']); return $dbg; }, debug_backtrace()),1);
                 throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
             }
-
-
-
+            
             // Qui devo emulare un join, quindi so che per ogni query avrò un solo
             // risultato, perché sennò avrei usato le relazioni
             // (foreach successivo)
+            // ---
+            // Attenzione: questa operazione è indipendente dalla depth, in
+            // quanto è da considerarsi alla pari di una join diretta.
             if ($dati['data'] && $depth > 0) {
                 foreach ($to_join_later as $main_field => $sub_entity_name) {
-                    $sub_entity = $this->get_entity_by_name($sub_entity_name);
-                    $main_field_values = implode(',', array_filter(array_map(function ($record) use($main_field) {
+                    $sub_entity = $this->getEntity($sub_entity_name);
+                    $main_field_values = implode(',', array_unique(array_filter(array_map(function ($record) use($main_field) {
                                         return $record[$main_field];
-                                    }, $dati['data'])));
+                                    }, $dati['data']))));
                     if (!$main_field_values) {
                         continue;
                     }
 
                     // Ritrova i dati - jData sono i dati grezzi, mentre mergeable
                     // sono i dati pronti ad essere uniti ai dati principali
-                    $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", null, 0, null, false, false, $depth - 1);
+                    $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", null, 0, null, false, false, $depth-1);
                     $mergeable = array();
 
                     foreach ($jData as $record) {
@@ -620,140 +639,35 @@ class Crmentity extends CI_Model {
     }
 
     /**
-     * Get entity by ID
-     * @param int $entity_id
+     * Ritrova i dati completi da un'entità
+     * 
+     * @param int|string $entity
      * @return array
      */
-    public function get_entity($entity_id) {
-        $entity = $this->extractEntityFromCache($entity_id);
-        if (!$entity) {
-            $entity = $this->db->query("SELECT * FROM entity WHERE entity_id = '{$entity_id}'")->row_array();
-            if (empty($entity)) {
-                show_error("L'entità {$entity_id} non esiste");
-            }
-            $this->cacheEntity($entity);
-        }
-        return $entity;
-    }
-
-    /**
-     * Get entity by name
-     * @param string $entity_name
-     * @return array
-     */
-    public function get_entity_by_name($entity_name) {
-        $entity = $this->extractEntityFromCache($entity_name);
-        if (!$entity) {
-            $qEntity = $this->db->query("SELECT * FROM entity WHERE entity_name = '{$entity_name}'");
-            if (!$qEntity instanceof CI_DB_result) {
-                show_error("L'entità {$entity_name} non esiste");
-            }
-            $entity = $qEntity->row_array();
-            $this->cacheEntity($entity);
-        }
-        return $entity;
-    }
-
     private function getEntityFullData($entity) {
         return array(
-            'entity' => is_numeric($entity) ? $this->get_entity($entity) : $this->get_entity_by_name($entity),
+            'entity' => $this->getEntity($entity),
             'relations' => $this->getEntityRelations($entity),
             'fields_ref_by' => $this->getFieldsRefBy($entity),
             'visible_fields' => $this->getVisibleFields($entity),
         );
     }
 
-    private function getFieldsRefBy($entity) {
-
-        if (is_numeric($entity)) {
-            $entityData = $this->get_entity($entity);
-            $entity = $entityData['entity_name'];
-        }
-
-        if (!array_key_exists($entity, $this->_fields_ref_by)) {
-            $this->_fields_ref_by[$entity] = $this->db->select('entity_id, entity_name, fields_name')->join('entity', 'entity.entity_id = fields.fields_entity_id')->get_where('fields', array('fields_ref' => $entity))->result_array();
-        }
-
-        return $this->_fields_ref_by[$entity];
-    }
-
-    private function getVisibleFields($entity) {
-
-        if (!is_numeric($entity)) {
-            $entityData = $this->get_entity($entity);
-            $entity = $entityData['entity_id'];
-        }
-
-        if (!array_key_exists($entity, $this->_visible_fields)) {
-            
-            $this->_visible_fields[$entity] = $this->db->query("
-                    SELECT *
-                    FROM fields
-                        JOIN entity ON entity.entity_id = fields.fields_entity_id
-                        JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
-                    WHERE fields_entity_id = ? AND NOT fields_draw_display_none
-                    ORDER BY fields_name
-                ", [$entity])->result_array();
-            
-        }
-
-        return $this->_visible_fields[$entity];
-    }
-
-    private function getEntityRelations($entity) {
-
-        if (is_numeric($entity)) {
-            $entityData = $this->get_entity($entity);
-            $entity = $entityData['entity_name'];
-        }
-
-        if (!array_key_exists($entity, $this->_relations)) {
-            $this->_relations[$entity] = $this->db->select('relations_name')->get_where('relations', array('relations_table_1' => $entity))->result_array();
-        }
-
-        return $this->_relations[$entity];
-    }
-
     /**
-     * Salva entità su cache
-     * @param array $entity
+     *  Utility methods 
      */
-    private function cacheEntity(array $entity) {
-        $this->_entities[$entity['entity_id']] = $entity;
-        $this->_entity_names[$entity['entity_name']] = $entity['entity_id'];
-    }
-
-    /**
-     * Ritrova entità da cache
-     * @param mixed $id
-     */
-    private function extractEntityFromCache($id) {
-
-        if (!is_numeric($id)) {
-            if (array_key_exists($id, $this->_entity_names)) {
-                $id = $this->_entity_names[$id];
-            } else {
-                return null;
-            }
-        }
-
-        // ID è numerico ora
-        return (array_key_exists($id, $this->_entities) ? $this->_entities[$id] : null);
-    }
-
-    /*     * ********** Utility methods ****************** */
-
     public function getEntityPreview($entityIdentifier, $where = NULL, $limit = NULL, $offset = 0) {
-        $entity = is_numeric($entityIdentifier)? $this->get_entity($entityIdentifier): $this->get_entity_by_name($entityIdentifier);
-        if (!$entity) {
-            throw new Exception(sprintf('Entità %s inesistente', $entityIdentifier));
-        }
+        $entity = $this->getEntity($entityIdentifier);
 
         /* Get the fields */
         $entity_id = $entity['entity_id'];
         $entity_name = $entity['entity_name'];
 
         $entity_data = $this->get_data_simple_list($entity_id, $where, $limit, $offset, null, false, true);
+        if (!$entity_data) {
+            return [];
+        }
+        
         $all_fields = $entity_data['visible_fields'];
 
         $entity_preview = array_filter($all_fields, function($field) use($entity_id, $all_fields) {
@@ -835,5 +749,189 @@ class Crmentity extends CI_Model {
     }
     
     
+    
+    // =========================================================================
+    // Schema Cache Control
+    // =========================================================================
+    public function reloadSchemaCache() {
+        $this->cache->file->delete(self::SCHEMA_CACHE_KEY);
+        $this->buildSchemaCacheIfNotValid();
+    }
+    
+    
+    protected function buildSchemaCacheIfNotValid() {
+        
+        $this->_schemaCache = $this->cache->file->get(self::SCHEMA_CACHE_KEY);
+        if ($this->_schemaCache) {
+            return;
+        }
+        
+        $entities = $this->createDataMap($this->db->get('entity')->result_array(), 'entity_id');
+        $fields = $validations = [];
+        
+        // ==== Get entity sub-data
+        $this->db->join('entity', 'entity.entity_id = fields.fields_entity_id')
+            ->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id')
+            ->order_by('fields_name');
+        $_fields = $this->createDataMap($this->db->get('fields')->result_array(), 'fields_id');
+        
+        $_validations = $this->createDataMap($this->db->get('fields_validation')->result_array(), 'fields_validation_fields_id');
+        
+        
+        // Fields validation rules
+        foreach ($_validations as $rule) {
+            $validations[$rule['fields_validation_fields_id']][] = $rule;
+        }
+        
+        // Fields
+        foreach ($_fields as $field) {
+            $fields[$field['fields_entity_id']][] = $field;
+        }
+        
+        // Build the cached array
+        $this->_schemaCache = [
+            'entity_names' => $this->createDataMap($entities, 'entity_name', 'entity_id'),
+            'entities' => $entities,
+            'fields' => $fields,
+            'validations' => $validations
+        ];
+        
+        // And persist it
+        $this->cache->file->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600*24);  // 1h * 24 <= Salva cache per un giorno
+    }
+    
+    /**
+     * Crea un array di mappatura a partire dai dati. From e To sono le
+     * sottochiavi sulle quali eseguire la mappatura (array risultante avrà i
+     * valori dei from sulle chiavi e i valori di to sui rispettivi valori).
+     * Se to è null, allora viene preso l'intero record
+     * 
+     * @param array $data
+     * @param string $from
+     * @param string|null $to
+     */
+    private function createDataMap(array $data, $from, $to = null) {
+        return array_combine(
+            array_key_map($data, $from),
+            $to ? array_key_map($data, $to) : $data
+        );
+    }
 
+    
+    
+    
+    /**
+     * Ritrova entità
+     * @param mixed $id
+     */
+    public function getEntity($id) {
+        
+        if (!is_numeric($id)) {
+            if (empty($this->_schemaCache['entity_names'][$id])) {
+                throw new Exception(sprintf("Entità '%s' non esistente", $id));
+            }
+            
+            $id = $this->_schemaCache['entity_names'][$id];
+        }
+        
+        if (empty($this->_schemaCache['entities'][$id])) {
+            throw new Exception(sprintf("Entità '%s' non esistente", $id));
+        }
+        
+        return $this->_schemaCache['entities'][$id];
+    }
+    
+    
+    /**
+     * Ritrova TUTTI i fields di un'entità
+     * @param int|string $entity
+     */
+    public function getFields($entity) {
+
+        if (!is_numeric($entity)) {
+            $entity = $this->getEntity($entity)['entity_id'];
+        }
+        
+        if (empty($this->_schemaCache['fields'][$entity])) {
+            // L'entità esiste, ma non ha campi
+            return [];
+        }
+        
+        return $this->_schemaCache['fields'][$entity];
+    }
+    
+    
+    /**
+     * Ritrova tutte le regole di validazione per un dato field id
+     * 
+     * @param int $fieldId
+     */
+    public function getValidations($fieldId) {
+        
+        // Ci sono regole di validazione per il campo? [Assumo esista]
+        return empty($this->_schemaCache['validations'][$fieldId]) ? []: $this->_schemaCache['validations'][$fieldId];
+    }
+
+    /**
+     * Ottieni i campi che puntano all'entità passata, sse questi campi
+     * permettono la right join automatica
+     * 
+     * @param string|int $entity
+     * @return array
+     */
+    public function getFieldsRefBy($entity) {
+
+        if (is_numeric($entity)) {
+            $entity = $this->getEntity($entity)['entity_name'];
+        }
+
+        if (!array_key_exists($entity, $this->_fields_ref_by)) {
+            $this->_fields_ref_by[$entity] = $this->db->select('entity_id, entity_name, fields_name, fields_type')
+                    ->join('entity', 'entity.entity_id = fields.fields_entity_id')
+                    ->get_where('fields', array('fields_ref' => $entity, 'fields_ref_auto_right_join' => 't'))->result_array();
+        }
+
+        return $this->_fields_ref_by[$entity];
+    }
+
+    /**
+     * Ottieni i field visibili
+     * @param type $entity
+     * @return type
+     */
+    public function getVisibleFields($entity) {
+        if (!array_key_exists($entity, $this->_visible_fields)) {
+            $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function($item) {
+                return $item['fields_draw_display_none'] !== 't';
+            });
+        }
+
+        return $this->_visible_fields[$entity];
+    }
+
+    /**
+     * Ritrova relazioni da entità
+     * 
+     * @param string|int|array $entity
+     * @return array
+     */
+    public function getEntityRelations($entity) {
+        
+        if (is_array($entity) && isset($entity['entity_id'])) {
+            $entity = $entity['entity_id'];
+        }
+
+        if (is_numeric($entity)) {
+            $entity = $this->getEntity($entity)['entity_name'];
+        } elseif (!is_string($entity)) {
+            throw new InvalidArgumentException(__METHOD__ . ' accetta come argomento un id o un nome entità, oppure un array contenente la chiave entity_id');
+        }
+
+        if (!array_key_exists($entity, $this->_relations)) {
+            $this->_relations[$entity] = $this->db->select('relations_name')->get_where('relations', array('relations_table_1' => $entity))->result_array();
+        }
+
+        return $this->_relations[$entity];
+    }
+    
 }

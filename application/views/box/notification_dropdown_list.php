@@ -1,14 +1,18 @@
-
 <!-- BEGIN NOTIFICATION DROPDOWN -->
-<li class="dropdown" id="header_notification_bar">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
-       data-close-others="true">
-        <i class="icon-comment"></i>
-        <span class="js_notification_number_label badge"></span>
+<li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+        <i class="fa fa-bell"></i>
+        <span class="js_notification_number_label badge badge-danger"></span>
     </a>
-    <ul class="dropdown-menu extended notification" style="width:400px!important;max-width:none!important">
-        <li><p>Hai <span class="js_notification_number"></span> nuove notifiche</p></li>
-        <li><ul class="js_notification_dropdown_list dropdown-menu-list scroller" style="height: 450px"></ul></li>
+    <ul class="dropdown-menu" style="width:400px!important;max-width:none!important">
+        <li class="external">
+            <h3>Hai <span class="js_notification_number bold"><!-- ... notification count here ... --></span> nuove notifiche</h3>
+            <!--<a href="page_todo.html">view all</a>-->
+        </li>
+        <li>
+            <ul class="js_notification_dropdown_list dropdown-menu-list scroller" style="height: 450px"><!-- ... notification list here ... --></ul>
+        </li>
+        
         <?php /*
         <li class="external">   
             <a href="#">See all notifications <i class="m-icon-swapright"></i></a>
@@ -17,8 +21,6 @@
     </ul>
 </li>
 <!-- END NOTIFICATION DROPDOWN -->
-
-
 
 
 <script>

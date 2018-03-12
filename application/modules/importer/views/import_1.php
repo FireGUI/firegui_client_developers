@@ -7,7 +7,7 @@
             <div class="portlet box blue">
                 <div class="portlet-title">
                     <div class="caption">
-                        <i class="icon-upload-alt"></i> Select an entity to import
+                        <i class="fa fa-upload"></i> Select an entity to import
                     </div>
                 </div>
                 <div class="portlet-body form">
@@ -33,17 +33,17 @@
                                     <div class="input-group">
                                         <span class="input-group-btn">
                                             <span class="uneditable-input">
-                                                <i class="icon-file fileupload-exists"></i> 
+                                                <i class="fa fa-file fileupload-exists"></i> 
                                                 <span class="fileupload-preview"></span>
                                             </span>
                                         </span>
                                         <span class="btn default btn-file">
                                             <span class="fileupload-new"><i class="icon-paper-clip"></i> Select file</span>
-                                            <span class="fileupload-exists"><i class="icon-undo"></i> Change</span>
+                                            <span class="fileupload-exists"><i class="fa fa-undo"></i> Change</span>
                                             <input type="file" class="default" name="csv_file" />
                                         </span>
                                         <a href="#" class="btn red fileupload-exists" data-dismiss="fileupload">
-                                            <i class="icon-trash"></i> Remove
+                                            <i class="fa fa-remove"></i> Remove
                                         </a>
                                     </div>
                                 </div>

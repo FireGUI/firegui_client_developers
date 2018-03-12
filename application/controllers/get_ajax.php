@@ -10,6 +10,11 @@ class Get_ajax extends MY_Controller {
             show_404();
         }
         
+        $modalSize = $this->input->get('_size');
+        if(!in_array($modalSize, ['small', 'large'])) {
+            $modalSize = null;
+        }
+        
         $dati = $this->datab->build_layout($layout_id, $value_id);
         if(is_null($dati)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
@@ -21,6 +26,7 @@ class Get_ajax extends MY_Controller {
         }
         
         $this->load->view("layout/modal_container", array(
+            'size' => $modalSize,
             'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
             'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
             'content' => $pagina,
@@ -138,11 +144,20 @@ class Get_ajax extends MY_Controller {
                     $where = ($where? "{$where} AND ({$where_referer})": $where_referer);
                 }
                 
-                $result_array = $this->datab->get_entity_preview_by_name($table, $where, $limit);
+                // 17/11/2015 - Voglio i filtri su ricerca apilib. Quelli dei
+                // post-process quindi prima mi prendo tutti gli id facendo un
+                // apilib search e poi chiamo getEntityPreview con WHERE id IN (...)
+                $preSearchRecords = $this->apilib->search($table, $where, $limit, null, null, null, 1);
                 $result_json = array();
-                if(!empty($result_array)) {
-                    foreach($result_array as $id=>$name) {
-                        $result_json[] = array('id' => $id, 'name'  => $name);
+                if ($preSearchRecords) {
+                    $idKey = "{$table}_id";
+                    $whereIdInList = sprintf('%s IN (%s)', $idKey, implode(',', array_key_map($preSearchRecords, $idKey)));
+
+                    $result_array = $this->datab->get_entity_preview_by_name($table, $whereIdInList, $limit);
+                    if(!empty($result_array)) {
+                        foreach($result_array as $id=>$name) {
+                            $result_json[] = array('id' => $id, 'name'  => $name);
+                        }
                     }
                 }
             }
@@ -350,12 +365,24 @@ class Get_ajax extends MY_Controller {
             $where = '';
         }
         
-        $order_by = (isset($grid['grids_fields'][$order_col]['fields_name']) && empty($grid['grids']['grids_order_by']))? "{$grid['grids_fields'][$order_col]['fields_name']} {$order_dir}": NULL;
+        if (isset($grid['grids_fields'][$order_col]['fields_name']) && empty($grid['grids']['grids_order_by'])) {
+            //Se il campo è multilingua, forzo l'ordinamento per chiave lingua corrente
+            if ($grid['grids_fields'][$order_col]['fields_multilingual'] == 't') {
+                $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
+            } elseif ($grid['grids_fields'][$order_col]['fields_type'] == 'JSON') {
+                $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}::TEXT {$order_dir}";
+            } else {
+                $order_by = "{$grid['grids_fields'][$order_col]['fields_name']} {$order_dir}";
+            }            
+        } else {
+            $order_by = NULL;
+        }
+        
         $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit>0)? $limit: NULL, $offset, $order_by);
 
         
         $out_array = array();
-        foreach ($grid_data['data'] as $dato) {
+        foreach ($grid_data as $dato) {
             $tr = array();
             foreach ($grid['grids_fields'] as $field) {
                 /*$tr[] = $this->load->view('box/grid/td', array('field'=>$field, 'dato'=>$dato), TRUE);*/
@@ -364,21 +391,17 @@ class Get_ajax extends MY_Controller {
             
             // Controlla se ho delle action da stampare in fondo
             if($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
-                $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid_data['entity']['entity_name']."_id"]), TRUE);
-                $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid_data['entity']['entity_name']."_id"]), TRUE);
+                $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name']."_id"]), TRUE);
+                $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name']."_id"]), TRUE);
             } elseif(grid_has_action($grid['grids'])) {
-                $tr[] = $this->load->view('box/grid/actions', array('links'=> $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name']."_id"], 'row_data' => $dato), TRUE);
+                $tr[] = $this->load->view('box/grid/actions', array('links'=> $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name']."_id"], 'row_data' => $dato), TRUE);
             }
             
             $out_array[] = $tr;
         }
         
-        //$this->db->count_all($grid['grids']['entity_name']);
-        $totalDisplayRecordData = $this->datab->get_grid_data($grid, $valueID, $where, NULL, 0, NULL, TRUE);
-        $totalRecordsData = $this->datab->get_grid_data($grid, $valueID, NULL, NULL, 0, NULL, TRUE);
-        
-        $totalRecords = $totalRecordsData['data'];
-        $totalDisplayRecord = $totalDisplayRecordData['data'];
+        $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true);
+        $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true);
         
         echo json_encode(array(
             'iTotalRecords' => $totalRecords,
@@ -388,11 +411,13 @@ class Get_ajax extends MY_Controller {
         ));
     }
     
+    
+    
+    
     public function get_map_markers($map_id, $value_id = NULL) {
         $data = $this->datab->get_map($map_id);
         
-        $where = array();
-        
+        $where = array_filter((array) $this->datab->generate_where("maps", $map_id, $value_id));
         
         $fields = array();
         $latlng_field = NULL;
@@ -403,7 +428,7 @@ class Get_ajax extends MY_Controller {
             }
         }
         
-        
+        $isSearchMode = false;
         $post_where = (array) $this->input->post('where');
         if( ! empty($post_where)) {
             foreach($post_where as $post_cond) {
@@ -413,10 +438,12 @@ class Get_ajax extends MY_Controller {
                     switch ($fields[$field]['fields_type']) {
                         case 'VARCHAR': case 'TEXT':
                             $where[] = "{$field} ILIKE '%{$value}%'";
+                            $isSearchMode = true;
                             break;
 
                         default :
                             $where[] = "{$field} = '{$value}'";
+                            $isSearchMode = true;
                             break;
 
                     }
@@ -427,7 +454,7 @@ class Get_ajax extends MY_Controller {
         
         // Geography data
         $bounds = $this->input->post('bounds');
-        if ($latlng_field !== NULL && $bounds && empty($where)) {
+        if ($latlng_field !== NULL && $bounds && !$isSearchMode) {
 
             $ne_lat = $bounds['ne_lat'];
             $ne_lng = $bounds['ne_lng'];
@@ -440,27 +467,28 @@ class Get_ajax extends MY_Controller {
         }
         
         if($data['maps']['maps_where']) {
-            $where[] = str_replace('{value_id}', $value_id, $data['maps']['maps_where']);
+            $where[] = $this->datab->replace_superglobal_data(str_replace('{value_id}', $value_id, $data['maps']['maps_where']));
         }
         
         $order_by = (trim($data['maps']['maps_order_by']))? $data['maps']['maps_order_by']: NULL;
-        $data_entity = $this->datab->get_data_entity($data['maps']['maps_entity_id'], 0, implode(' AND ', array_filter($where)), NULL, NULL, $order_by);
+        //$data_entity = $this->datab->get_data_entity($data['maps']['maps_entity_id'], 0, implode(' AND ', array_filter($where)), NULL, NULL, $order_by);
+        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), NULL, NULL, $order_by, 1);
         
 
         $markers = array();
-        if( ! empty($data_entity['data'])) {
+        if( ! empty($data_entity)) {
             // Cerco un link se c'è qui per non fare una query ogni ciclo
             $link = $this->datab->get_detail_layout_link($data['maps']['maps_entity_id']);
 
             // Recupero tutti i lat e lon di ogni marker che mi serve per evitare di fare le query dopo
             $data_ids = array();
-            foreach ($data_entity['data'] as $marker) {
-                $data_ids[] = $marker[$data_entity['entity']['entity_name'].'_id'];
+            foreach ($data_entity as $marker) {
+                $data_ids[] = $marker[$data['maps']['entity_name'].'_id'];
             }
 
             $geography = array();
-            $this->db->select("{$data_entity['entity']['entity_name']}_id as id, ST_Y({$latlng_field}::geometry) AS lat, ST_X({$latlng_field}::geometry) AS lon")
-                    ->from($data_entity['entity']['entity_name'])->where_in($data_entity['entity']['entity_name'].'_id', $data_ids);
+            $this->db->select("{$data['maps']['entity_name']}_id as id, ST_Y({$latlng_field}::geometry) AS lat, ST_X({$latlng_field}::geometry) AS lon")
+                    ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'].'_id', $data_ids);
 
             // Indicizzo i risultati per id
             foreach ($this->db->get()->result_array() as $result) {
@@ -470,7 +498,7 @@ class Get_ajax extends MY_Controller {
             
             
             
-            foreach ($data_entity['data'] as $marker) {
+            foreach ($data_entity as $marker) {
 
                 $mark = array();
                 foreach ($data['maps_fields'] as $field) {
@@ -491,7 +519,7 @@ class Get_ajax extends MY_Controller {
 
                 // Get the id
                 if (empty($mark['id'])) {
-                    $mark['id'] = $marker[$data_entity['entity']['entity_name'] . "_id"];
+                    $mark['id'] = $marker[$data['maps']['entity_name'] . "_id"];
                 }
                 
                 
@@ -504,9 +532,9 @@ class Get_ajax extends MY_Controller {
                 
 
                 // Elaboro le coordinate
-                if(!empty($mark['latlng']) && isset($geography[$marker[$data_entity['entity']['entity_name'] . "_id"]])) {
-                    $mark['lat'] = $geography[$marker[$data_entity['entity']['entity_name'] . "_id"]]['lat'];
-                    $mark['lon'] = $geography[$marker[$data_entity['entity']['entity_name'] . "_id"]]['lon'];
+                if(!empty($mark['latlng']) && isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
+                    $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
+                    $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     $mark['link'] = ($link? $link.'/'.$mark['id']: '');
                     array_push($markers, $mark);
                 }    
@@ -531,9 +559,11 @@ class Get_ajax extends MY_Controller {
         // Prendi eventi sse compresi tra start ed end
         $ts_start = $this->input->post('start');
         $ts_end = $this->input->post('end');
-        if(is_numeric($ts_start) && is_numeric($ts_end) && $ts_start && $ts_end) {
-            $start = date('Y-m-d H:i:s', $ts_start);
-            $end = date('Y-m-d H:i:s', $ts_end);
+        
+        if($ts_start && $ts_end) {
+            
+            $start = dateTime_toDbFormat($ts_start);
+            $end = dateTime_toDbFormat($ts_end);
             
             // Prendi data di partenza
             $start_field = null;
@@ -544,19 +574,18 @@ class Get_ajax extends MY_Controller {
             }
             
             if($start_field !== NULL) {
-                $where[] = "{$start_field} BETWEEN '{$start}' AND '{$end}'";
+                $where[] = "{$start_field}::DATE >= '{$start}' AND {$start_field}::DATE <= '{$end}'";
             }
         }
         
-        //$data_entity = $this->datab->get_data_entity($data['calendars']['calendars_entity_id'], 0, implode(' AND ', $where));
         $generatedWhere = $this->datab->generate_where('calendars', $calendar_id, $value_id, $where);
-        $data_entity = $this->datab->get_data_entity($data['calendars']['calendars_entity_id'], 0, $generatedWhere);
-        
+        $data_entity = $this->datab->getDataEntity($data['calendars']['calendars_entity_id'], $generatedWhere, null, null, null, 1);
+        /*$data_entity = $this->datab->get_data_entity($data['calendars']['calendars_entity_id'], 0, $generatedWhere);*/
         
         $previews = array();
         foreach ($data['calendars_fields'] as $field) {
             if($field['fields_ref']) {
-                $ids = array_filter(array_unique(array_map(function($dato) use($field) { return $dato[$field['fields_name']]; }, $data_entity['data'])));
+                $ids = array_filter(array_unique(array_map(function($dato) use($field) { return $dato[$field['fields_name']]; }, $data_entity)));
                 if(empty($ids)) {
                     $previews[$field['fields_ref']] = array();
                 } else {
@@ -564,10 +593,9 @@ class Get_ajax extends MY_Controller {
                 }
             }
         }
-        
 
         $events = array();
-        foreach ($data_entity['data'] as $event) {
+        foreach ($data_entity as $event) {
             $ev = array();
             foreach ($data['calendars_fields'] as $field) {
                 if($field['calendars_fields_type']!=='title' || (!empty($event[$field['fields_name']]) && empty($ev['title']))) {
@@ -590,12 +618,15 @@ class Get_ajax extends MY_Controller {
 
             // Get the id
             if (!isset($ev['id']) || !$ev['id']) {
-                $ev['id'] = $event[$data_entity['entity']['entity_name'] . "_id"];
+                $ev['id'] = $event[$data['calendars']['entity_name'] . "_id"];
             }
 
             // Date start & date end & all day parameters
-            $ev['start'] = date('Y/m/d H:i', strtotime($ev['start']));
-            $ev['end'] = date('Y/m/d H:i', strtotime($ev['end']));
+//            $ev['start'] = date('Y/m/d H:i', strtotime($ev['start']));
+//            $ev['end'] = date('Y/m/d H:i', strtotime($ev['end']));
+            // Store timezone
+            $ev['start'] = date('c', strtotime($ev['start']));
+            $ev['end'] = date('c', strtotime($ev['end']));
             
             if(empty($ev['all_day'])) {
                 $arr_start = explode(' ', $ev['start']);
@@ -619,17 +650,9 @@ class Get_ajax extends MY_Controller {
 
     public function modal_form($form_id = '', $value_id = '') {
         
-        $form = $this->datab->get_form($form_id);
-        if ($value_id) {
-            $form['forms']['edit_data'] = $this->datab->get_data_entity($form['forms']['entity_id'], 1, "{$form['forms']['entity_name']}_id = '$value_id'");
-            $form['forms']['action_url'] = base_url("db_ajax/save_form/{$form['forms']['forms_id']}/true/$value_id");
-        } else {
-            $form['forms']['action_url'] = base_url("db_ajax/save_form/{$form['forms']['forms_id']}");
-        }
-        
         $viewData = array(
-            'form' => $form,
             'value_id' => $value_id,
+            'form' => $this->datab->get_form($form_id, $value_id),
             'data' => $this->input->post()
         );
         

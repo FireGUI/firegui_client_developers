@@ -1,21 +1,34 @@
-<?php $chartId = "container_hightcharts_{$chart['charts_id']}"; ?>
+<?php
+$chartId = "container_hightcharts_{$chart['charts_id']}";
+// --- Series
+$series = [];
+foreach ($chart_data[0]['series'] as $name => $data) {
+    $pdata = [];
+    foreach ($data as $x => $y) {
+        $pdata[] = ['name' => $x, 'y' => (float) $y];
+    }
+
+    $series[] = ['name' => $name, 'data' => $pdata];
+}
+?>
 <div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
 
 <script>
-    $(function() {
+    $(function () {
+
+        var title = <?php echo json_encode($chart['charts_title']); ?>;
+        var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
+        var series = <?php echo json_encode($series); ?>;
 
         $('#<?php echo $chartId; ?>').highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
-                plotShadow: false
+                plotShadow: false,
+                type: 'pie'
             },
-            title: {
-                text: '<?php echo json_encode($chart['charts_title']); ?>'
-            },
-            subtitle: {
-                text: '<?php echo json_encode($chart['charts_subtitle']); ?>'
-            },
+            title: {text: title},
+            subtitle: {text: subtitle},
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.y}</b>'
             },
@@ -29,13 +42,7 @@
                     showInLegend: true
                 }
             },
-            series: [{
-                type: 'pie',
-                <?php foreach($chart_data[0]['series'] as $name => $data): ?>
-                    name: '<?php echo addslashes($name); ?>',
-                    data: [<?php foreach($data as $x => $y) {echo sprintf("['%s', %s],", json_encode($x), $y);} ?>]
-                <?php endforeach; ?>
-            }]
+            series: series
         });
     });
 

@@ -1,29 +1,20 @@
-<div class="form-group" <?php echo $containerAttributes; ?>>
-    <?php echo $label; ?>
-    <div class="fileupload fileupload-new <?php echo $class ?>" data-provides="fileupload" <?php if($field['fields_draw_onclick']) echo 'onclick="'.$field['fields_draw_onclick'].'"' ?>>
-        <input type="hidden">
-        <div class="fileupload-preview fileupload-exists thumbnail"></div>
-        <?php if($value): ?>
-            <input type="hidden" class="default" name="<?php echo $field['fields_name']; ?>" value="<?php echo $value; ?>" />
-            <div class="fileupload-new thumbnail">
-                <img src="<?php echo base_url_template("uploads/{$value}"); ?>" alt="" />
-            </div>
-        <?php else: ?>
-            <div class="fileupload-new thumbnail">
-                <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt="">
-            </div>
-        <?php endif; ?>
-        <div>
-            <span class="btn default btn-file btn-sm">
-                <span class="fileupload-new"><i class="icon-paper-clip"></i> Select image</span>
-                <span class="fileupload-exists"><i class="icon-undo"></i> Change</span>
-                <input type="file" class="default" name="<?php echo $field['fields_name']; ?>" />
-            </span>
-            <a href="#" class="btn btn-sm red fileupload-exists" data-dismiss="fileupload"><i class="icon-trash"></i> Remove</a>
-            <?php if($value): ?>
-                <a href="#" class="btn btn-sm red" onclick="var c = $(this).parent().parent();$('input[type=hidden][name=<?php echo $field['fields_name']; ?>][value]', c).val('');$('img', c).attr('src', 'http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image')"><i class="icon-remove"></i></a>
-            <?php endif; ?>
-        </div>
+<?php echo $label; ?>
+<br/>
+<div class="<?php echo $class ?> fileinput <?php echo $value ? 'fileinput-exists' : 'fileinput-new' ?>" data-provides="fileinput">
+    <input type="hidden" class="default" name="<?php echo $field['fields_name']; ?>" value="<?php echo $value; ?>" />
+    <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+        <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&amp;text=no+image" alt=""/>
     </div>
-    <?php echo $help; ?>
+    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;">
+        <img src="<?php echo $value ? base_url_template("uploads/{$value}"): ''; ?>" alt="" style="max-height: 140px;">
+    </div>
+    <div>
+        <span class="btn default btn-sm btn-file">
+            <span class="fileinput-new">Seleziona immagine</span>
+            <span class="fileinput-exists">Cambia</span>
+            <input type="file" name="<?php echo $field['fields_name']; ?>">
+        </span>
+        <a href="javascript:;" class="btn red btn-sm fileinput-exists" data-dismiss="fileinput">Rimuovi</a>
+    </div>
 </div>
+<?php echo $help; ?>

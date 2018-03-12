@@ -5,14 +5,14 @@
  * Configurazioni di base del CRM
  * ============================================================
  * SHOW_MEDIA_MODULE    Mostra/Nascondi link modulo media su sidebar [bool]
- * COLOR_HEADER         Imposta colori per header, vuoto per default
- * COLOR_SIDEBAR        Imposta colore per sidebar e footer, vuoto per default
- * COLOR_CONTAINER      Imposta colore per sfondo container, vuoto per default
+ * THEME_CSS_PATH       Path relativo alla root per css tema base
+ * CUSTOM_CSS_PATH     Foglio di stile custom per crm
+ * UPLOAD_DEPTH_LEVEL   Imposta il valore di annidamento nella cartella uploads per i file caricati da apilib
  */
 define('SHOW_MEDIA_MODULE', true);
-define('COLOR_HEADER', null);
-define('COLOR_SIDEBAR', null);
-define('COLOR_CONTAINER', null);
+define('THEME_CSS_PATH', null);
+define('CUSTOM_CSS_PATH', null);
+define('UPLOAD_DEPTH_LEVEL', 3);
 
 
 /*
@@ -50,13 +50,13 @@ define('DEFAULT_EMAIL_REPLY', 'Reply-To: H2 CRM <no-reply@h2-web.it>');
  * LANG_NAME_FIELD          Campo nome lingua
  * LANG_DEFAULT_FIELD       Campo lingua di default
  */
-define('LOGIN_ENTITY', 'agenti');
-define('LOGIN_USERNAME_FIELD', 'agenti_email');
-define('LOGIN_PASSWORD_FIELD', 'agenti_password');
-define('LOGIN_ACTIVE_FIELD', '');
-define('LOGIN_NAME_FIELD', 'agenti_nome');
-define('LOGIN_SURNAME_FIELD', 'agenti_cognome');
-define('LOGIN_IMG_FIELD', 'agenti_thumbnail');
+define('LOGIN_ENTITY',          'utenti');
+define('LOGIN_USERNAME_FIELD',  'utenti_email');
+define('LOGIN_PASSWORD_FIELD',  'utenti_password');
+define('LOGIN_ACTIVE_FIELD',    'utenti_attivo');
+define('LOGIN_NAME_FIELD',      'utenti_nome');
+define('LOGIN_SURNAME_FIELD',   'utenti_cognome');
+define('LOGIN_IMG_FIELD',       'utenti_foto');
 
 define('LANG_ENTITY',       'languages');
 define('LANG_CODE_FIELD',   'languages_code');

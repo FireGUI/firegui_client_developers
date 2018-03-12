@@ -1,8 +1,8 @@
 <?php if (isset($grid_data['data'])): ?>
     <?php $has_action = grid_has_action($grid['grids']); ?>
-    <?php if (strpos($grid_data['entity']['entity_name'], 'media_') === 0 && !empty($value_id)): ?>
+    <?php if (strpos($grid['grids']['entity_name'], 'media_') === 0 && !empty($value_id)): ?>
         <ul class="list-inline text-right" style='padding:0;margin:0'>
-            <li><a href="<?php echo base_url("media/modal_upload/{$grid_data['entity']['entity_name']}/{$value_id}"); ?>" class="btn green js_open_modal"><i class="icon-upload-alt"></i> Carica media</a></li>
+            <li><a href="<?php echo base_url("media/modal_upload/{$grid['grids']['entity_name']}/{$value_id}"); ?>" class="btn green js_open_modal"><i class="fa fa-upload"></i> Carica media</a></li>
         </ul>
         <div class="clearfix"></div>
         <br/>
@@ -10,7 +10,7 @@
 
     <ul class="list-inline">
         <?php foreach ($grid_data['data'] as $k => $dato): ?>
-            <li data-id="<?php echo $dato[$grid_data['entity']['entity_name'] . "_id"]; ?>">
+            <li data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
                 <?php foreach ($grid['grids_fields'] as $field): ?>
                     <?php if (in_array($field['fields_draw_html_type'], array('upload_image', 'upload'))): ?>
 
@@ -22,7 +22,7 @@
                             // Valuta estensione del file - se non è jpg o png linka il file
                             $ext = pathinfo($file, PATHINFO_EXTENSION);
                             $link_url = base_url_template("uploads/{$dato[$field['fields_name']]}");
-                            switch ($ext) {
+                            switch (strtolower($ext)) {
                                 case 'png': case 'jpg': case 'jpeg': case 'bmp':
                                     $img_url = base_url_template("imgn/1/75/75/uploads/{$dato[$field['fields_name']]}");
                                     $attributes = array( 'class' => 'js_thumbnail', 'rel' => "grid_gallery_{$grid['grids']['grids_id']}", 'style' => 'height: 75px' );
@@ -43,7 +43,7 @@
                             ?>
                             <?php if ($has_action): ?>
                                 <div class="text-right" style="margin: 1px -2px 0 0;">
-                                    <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid_data['entity']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
+                                    <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
                                 </div>
                             <?php endif; ?>
                         </div>
