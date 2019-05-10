@@ -78,7 +78,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                             query = arg.query,
                             cb = arg.cb;
                             $.ajax({
-                                url : 'http://nominatim.openstreetmap.org/search',
+                                url : 'https://nominatim.openstreetmap.org/search',
                                 dataType : 'jsonp',
                                 jsonp : 'json_callback',
                                 data : {q: query, format: 'json'}
@@ -144,7 +144,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                             var html = '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '">Visualizza Dettagli</a>';
                             var icon;
                             if(val.marker) {
-                                icon = L.icon({ iconUrl: base_url_template+'images/markers/'+val.marker, iconSize: [32,32], iconAnchor: [16,32] });
+                                icon = L.icon({ iconUrl: base_url_admin + 'images/markers/'+val.marker, iconSize: [32,32], iconAnchor: [16,32] });
                             } else {
                                 icon = new L.Icon.Default();
                             }

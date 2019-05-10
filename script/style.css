@@ -25,7 +25,7 @@
     margin: 0;
     height: 36px;
 }
-
+/*
 .js_loading_overlay {
     position: fixed;
     width: 100%;
@@ -33,11 +33,11 @@
     background-color: rgba(0, 0, 0, 0.7);
     display: none;
     z-index: 10000;
-}
+}*/
 
 .js_loading {
     position: fixed;
-    top: 50%;
+    /*top: 50%;*/
     left: 0;
     right: 0; 
 
@@ -108,6 +108,9 @@ a {
 .table .action-list .btn {
     margin-right: 2px;
 }
+.btn {
+/*margin: 5px;*/
+}
 
 .btn.btn-xs {
     padding: 3px 5px;
@@ -128,9 +131,115 @@ a {
 .btn > i {
     margin:0;   /* allinea le icon con i come quelle con span */
 }
+.btn.default {
+    color: #333333;
+    background-color: #E5E5E5;
+}
+.btn.btn-sm {
+    font-size: 11px;
+    padding: 6px 18px 6px 18px;
+}
+.btn-file > input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-size: 23px;
+    cursor: pointer;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    direction: ltr;
+}
+.btn-file > input:hover{
+    color: #333333;
+  background-color: lightgray;
+}
+.bold {
+    font-weight: 700 !important;
+}
+.btn.green {
+    color: #fff;
+    background-color: #00a65a;
+    border-color: #008d4c;
+}
+.btn.green:hover {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #398439;
+}
+.btn.red {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+.btn.red:hover {
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+/* Button */
+.btn.yellow {
+  color: #FFFFFF;
+  background-color: #c49f47;
+}
 
+.btn.yellow:hover, .btn.yellow:focus, .btn.yellow:active, .btn.yellow.active {
+  color: #FFFFFF;
+  background-color: #af8c38;
+}
 
+/* Button */
+.btn.purple {
+  color: #FFFFFF;
+  background-color: #8e5fa2;
+}
 
+.btn.purple:hover, .btn.purple:focus, .btn.purple:active, .btn.purple.active {
+  color: #FFFFFF;
+  background-color: #7a518c;
+}
+
+/* Button */
+.btn.grey {
+  color: #333333;
+  background-color: #E5E5E5;
+}
+.btn.grey:hover, .btn.grey:focus, .btn.grey:active, .btn.grey.active {
+  color: #333333;
+  background-color: lightgray;
+}
+
+/* Button Strip */
+.btn.blue-dark-stripe {
+  border-left: 3px solid #5e738b;
+}
+/* Button Strip */
+.btn.blue-stripe {
+  border-left: 3px solid #3598dc;
+}
+
+/* Button Strip */
+.btn.green-stripe {
+  border-left: 3px solid #26a69a;
+}
+/* Button Strip */
+.btn.grey-stripe {
+  border-left: 3px solid #E5E5E5;
+}
+/* Button Strip */
+.btn.red-stripe {
+  border-left: 3px solid #cb5a5e;
+}
+/* Button Strip */
+.btn.yellow-stripe {
+  border-left: 3px solid #c49f47;
+}
+/* Button Strip */
+.btn.purple-stripe {
+  border-left: 3px solid #8e5fa2;
+}
 /*******************************
     Tables
 *******************************/
@@ -182,6 +291,17 @@ a {
     text-align: center;
     color: #ffc700;
 }
+
+
+@media (max-width:767px){
+    div.dataTables_filter label, 
+    div.dataTables_length label {
+        float: none;
+    }
+    
+}
+
+
 
 
 
@@ -273,9 +393,9 @@ a {
     margin: 0 -15px -15px -15px;
 }
 
-.tab-content > .tab-pane > form {
+/*COMMENTATO PER problema SU TAB (perdeva il margin su metronic...). Potrebbe perdere o scazzare però qualcosa su adminlte, da verificare... .tab-content > .tab-pane > form {
     margin: -10px;
-}
+}*/
 
 .menu_group:not(.portlet),
 .menu_big_button:not(.portlet),
@@ -376,8 +496,13 @@ a {
 /*******************************
     Input components
 *******************************/
+.modal-open .select2-drop,
 .select2-drop-active {
-    z-index: 50000;
+    z-index: 150000;
+}
+
+.select2-results .select2-result.select2-result-unselectable.select2-result-with-children:hover {
+    background: #fafafa;
 }
 
 
@@ -591,17 +716,31 @@ a {
 /*******************************
     Language switch widget
 *******************************/
-#language-switch li a {
+.language-switch li a {
     opacity: 0.3;
 }
 
-#language-switch li a.current {
+.language-switch li a.current {
     opacity: 1;
+}
+
+.language-switch.floating {
+    position: absolute;
+    background: #fff;
+    padding: 1px 5px;
+    border: 1px solid #cacaca;
+    border-radius: 5px;
+    top: -2px;
 }
 
 label .lang-flag {
     margin-bottom: 3px;
     margin-right: 2px;
+    cursor: pointer;
+    
+    padding: 2px;
+    border: 1px solid #c4c4c4;
+    border-radius: 3px;
 }
 
 
@@ -630,12 +769,9 @@ label .lang-flag {
 }
 
 
-
-
 /*******************************
-    LIGHTBOX
+    LIGHTBOX / FANCYBOX
 *******************************/
-
 .lightboxOverlay {
     z-index: 10150;
 }
@@ -643,3 +779,163 @@ label .lang-flag {
 .lightbox {
     z-index: 11100;
 }
+
+.fancybox-white .fancybox-skin {
+    background: #fff;
+}
+
+
+/*******************************
+    FULLCALENDAR
+*******************************/
+.fc-agendaWeek-view .fc-widget-content,
+.fc-agendaDay-view .fc-widget-content {
+     height: 40px !important;
+}
+
+.portlet.calendar .fc-event .fc-content * {
+    font-size: 11px;
+}
+
+.fc-widget-content:hover .fc-event {
+    opacity: 0.9;
+}
+
+.fc-widget-content:hover .fc-event:hover  {
+    opacity: 1;
+    z-index: 1000!important;
+}
+
+.fc-today {
+    background: rgba(251, 230, 176, 0.47)!important;
+}
+
+
+/***************************** Boxes colors *********************************/
+/* red box */
+.box.red{
+  border-top-color: #cb5a5e; 
+}
+.box.red-pink {
+ border-top-color: #E08283;
+}
+.box.red-sunglo {
+  border-top-color: #E26A6A;
+}
+.box.red-intense {
+ border-top-color: #e35b5a;
+}
+.box.red-thunderbird {
+  border-top-color: #D91E18;
+}
+.box.red-flamingo {
+  border-top-color: #EF4836;
+}
+
+/* blue box */
+.box.blue{
+  border-top-color: #3598dc;
+}
+.box.blue-hoki {
+ border-top-color: #67809F;
+}
+.box.blue-steel {
+  border-top-color: #4B77BE;
+}
+.box.blue-madison {
+ border-top-color: #578ebe;
+}
+.box.blue-chambray {
+ border-top-color: #2C3E50;
+}
+.box.blue-ebonyclay {
+  border-top-color: #22313F;
+}
+
+/************************ green box ********************/
+.box.green{
+  border-top-color: #26a69a;
+}
+.box.green-meadow {
+  border-top-color: #1BBC9B;
+}
+
+.box.green-seagreen {
+  border-top-color: #1BA39C;
+}
+
+
+.box.yellow{
+  border-top-color: #c49f47;
+}
+.box.yellow-casablanca {
+  border-top-color: #f2784b;
+}
+.box.purple{
+    border-top-color: #8e5fa2;
+}
+
+.box.grey{
+  border-top-color: #E5E5E5;
+}
+
+.box.grey-cascade {
+  border-top-color: #95A5A6;
+}
+
+
+
+/***
+Responsive & Scrollable Tables
+***/
+.table-scrollable {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #dddddd;
+  margin: 10px 0 !important;
+}
+.table-scrollable.table-scrollable-borderless {
+  border: 0;
+}
+.table-scrollable > .table {
+  width: 100% !important;
+  margin: 0 !important;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+.table-scrollable > .table > thead > tr > th,
+.table-scrollable > .table > tbody > tr > th,
+.table-scrollable > .table > tfoot > tr > th,
+.table-scrollable > .table > tfoot > tr > th,
+.table-scrollable > .table > tfoot > tr > td {
+  white-space: nowrap;
+}
+.table-scrollable > .table-bordered {
+  border: 0;
+}
+.table-scrollable > .table-bordered > thead > tr > th:first-child,
+.table-scrollable > .table-bordered > tbody > tr > th:first-child,
+.table-scrollable > .table-bordered > tfoot > tr > th:first-child,
+.table-scrollable > .table-bordered > thead > tr > td:first-child,
+.table-scrollable > .table-bordered > tbody > tr > td:first-child,
+.table-scrollable > .table-bordered > tfoot > tr > td:first-child {
+  border-left: 0;
+}
+.table-scrollable > .table-bordered > thead > tr > th:last-child,
+.table-scrollable > .table-bordered > tbody > tr > th:last-child,
+.table-scrollable > .table-bordered > tfoot > tr > th:last-child,
+.table-scrollable > .table-bordered > thead > tr > td:last-child,
+.table-scrollable > .table-bordered > tbody > tr > td:last-child,
+.table-scrollable > .table-bordered > tfoot > tr > td:last-child {
+  border-right: 0;
+}
+.table-scrollable > .table-bordered > thead > tr:last-child > th,
+.table-scrollable > .table-bordered > tbody > tr:last-child > th,
+.table-scrollable > .table-bordered > tfoot > tr:last-child > th,
+.table-scrollable > .table-bordered > thead > tr:last-child > td,
+.table-scrollable > .table-bordered > tbody > tr:last-child > td,
+.table-scrollable > .table-bordered > tfoot > tr:last-child > td {
+  border-bottom: 0;
+}
+

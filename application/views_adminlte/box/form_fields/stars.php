@@ -1,5 +1,5 @@
 <?php echo $label; ?>
-<?php if (in_array($field['fields_type'], array('INT', 'FLOAT'))): ?>
+<?php if (in_array($field['fields_type'], array(DB_INTEGER_IDENTIFIER, 'INT', 'FLOAT'))): ?>
     <div class="star-container">
         <input class="<?php echo $class ?>" type="hidden" value="<?php echo $value; ?>" name="<?php echo $field['fields_name']; ?>" />
 

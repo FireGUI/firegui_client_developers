@@ -19,10 +19,9 @@
         </div>
     </div>
 
-    <div class="form-actions fluid">
-        <div class="col-md-12">
-            <button type="submit" class="btn blue">Salva</button>
-            <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
-        </div>
+    <div class="form-actions">
+
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+        <button type="submit" class="btn btn-primary">Salva</button>
     </div>
 </form>

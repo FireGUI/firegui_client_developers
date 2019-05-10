@@ -1,3 +1,8 @@
+<?php 
+if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
+    $this->load->view('pages/layouts/custom_views/login');
+} else {
+?>
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
@@ -13,133 +18,131 @@
         <meta name="MobileOptimized" content="320">
 
         <!-- CORE LEVEL STYLES -->
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/plugins/font-awesome/css/font-awesome.min.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/plugins/simple-line-icons/simple-line-icons.min.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/plugins/bootstrap/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/plugins/uniform/css/uniform.default.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/font-awesome/css/font-awesome.min.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>"/>
 
-        <!-- BEGIN PAGE LEVEL STYLES --> 
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/admin/pages/css/login-soft.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/iCheck/square/blue.css?v={$this->config->item('version')}"); ?>"/>
 
 
-        <!-- BEGIN THEME STYLES --> 
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/css/components-md.css?v={$this->config->item('version')}"); ?>" id="style_components" />
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/global/css/plugins-md.css?v={$this->config->item('version')}"); ?>" />
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/admin/layout/css/layout.css?v={$this->config->item('version')}"); ?>" />
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/admin/layout/css/themes/darkblue.css?v={$this->config->item('version')}"); ?>" id="style_color" />
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/crm-v2/assets/admin/layout/css/custom.css?v={$this->config->item('version')}"); ?>" />
 
-        <!-- JQUERY -->
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/jquery-migrate.min.js?v={$this->config->item('version')}"); ?>"></script>
-        <script>
-            var base_url = <?php echo json_encode(base_url()); ?>;
-            var base_url_template = <?php echo json_encode(base_url_template()); ?>;
-        </script>
+        <!-- Google Font -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
     </head>
 
 
 
-    <body class="login">
+    <body class="hold-transition login-page">
 
-        <div class="logo">
-            <?php if ($this->settings === array()): ?>
-                <h2 class="text-danger">Your Company</h2>
-            <?php elseif ($this->settings['settings_company_logo']): ?>
-                <img src="<?php echo base_url_template("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
-            <?php else: ?>
-                <h2 class="text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
-            <?php endif; ?>
-        </div>
+        <div class="login-box">
+            <div class="logo">
+                <div class="text-center">
+                <?php if ($this->settings === array()): ?>
+                    <h2 class="login-logo">Your Company</h2>
+                <?php elseif ($this->settings['settings_company_logo']): ?>
+                    <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
+                <?php else: ?>
+                    <h2 class="text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
+                <?php endif; ?>
+            </div>
+            </div>
 
-        <div class="content">
-            <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
+            <div class="login-box-body">
+                <p class="login-box-msg"><?php e('Entra nel tuo profilo'); ?></p>
 
-                <h3 class="form-title">Entra nel tuo profilo</h3>
-
-                <div class="form-group">
-                    <label class="control-label visible-ie8 visible-ie9">Indirizzo e-mail</label>
-                    <div class="input-icon">
-                        <i class="fa fa-envelope"></i>
-                        <input class="form-control placeholder-no-fix" type="email" autocomplete="off" placeholder="Indirizzo e-mail" name="users_users_email"/>
+                <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
+                    <div class="form-group has-feedback">
+                        <input type="email" class="form-control" placeholder="Indirizzo e-mail" name="users_users_email" />
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label visible-ie8 visible-ie9">Password</label>
-                    <div class="input-icon">
-                        <i class="fa fa-lock"></i>
-                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" name="users_users_password"/>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" placeholder="Password" name="users_users_password" >
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <div class="controls">
-                        <div id="msg_login" class="alert alert-danger hide"></div>
+                    <div class="form-group">
+                        <div class="controls">
+                            <div id="msg_login" class="alert alert-danger hide"></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-actions" style="border-bottom: none;">
-                    <label class="checkbox">
-                        <input type="checkbox" name="remember" value="1"/> Ricordami
-                    </label>
-                    <button type="submit" class="btn blue pull-right">
-                        Login <i class="m-icon-swapright m-icon-white"></i>
-                    </button>            
-                </div>
+                    <div class="form-group">
+                        <label class="control-label"><?php e('Disconnetti dopo') ;?></label>
+                        <select name="timeout">
+                            <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
+                            <option value="5" class="form-control input-sm select2">5 minuti</option>
+                            <option value="10" class="form-control input-sm select2">10 minuti</option>
+                            <option value="30" class="form-control input-sm select2">30 minuti</option>
+                            <option value="60" class="form-control input-sm select2">1 ora</option>
+                            <option value="120" class="form-control input-sm select2">2 ore</option>
+                            <option value="240" class="form-control input-sm select2" selected="selected">4 ore</option>
+                            <option value="480" class="form-control input-sm select2">8 ore</option>
+                            <option value="720" class="form-control input-sm select2">12 ore</option>
+                            <option value="1440" class="form-control input-sm select2">1 giorno</option>
+                            <option value="10080" class="form-control input-sm select2">7 giorni</option>
+                            <option value="43200" class="form-control input-sm select2">1 mese</option>
+                            <option value="518400" class="form-control input-sm select2">Mai</option>
+                        </select>
+                    </div>
+
+                    
+                    
+                    <div class="form-actions">
+                        <div class="row">
+                            <div class="col-xs-8">
+                                <div class="checkbox icheck" style="display:none;">
+                                    <label>
+                                        <input name="remember" value="1" type="checkbox"> <?php e('Ricordami'); ?>
+                                    </label>
+                                </div>
+
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-xs-4">
+                                <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </div>
+                </form>
+
+
+                <!-- /.social-auth-links -->
+
                 <div class="forget-password">
-                    <h4>Hai dimenticato la tua password?</h4>
-                    <p><a href="<?php echo base_url("access/recovery"); ?>">Clicca qui</a> per resettarla.</p>
+                    <h5><?php e('Hai dimenticato la tua password?'); ?></h5>
+                    <p><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Clicca qui'); ?></a> <?php e('per resettarla.'); ?></p>
                 </div>
-            </form>
+
+
+            </div>
+
+
+            <div class="copyright"><?php /* powered by <a href="http://h2web.it" class="text-danger" target="_blank">H2 web</a> */ ?></div>
         </div>
-
-
-
-
-        <div class="copyright"><?php /*powered by <a href="http://h2-web.it" class="text-danger" target="_blank">H2 web</a>*/ ?></div>
-
-
 
         <!-- COMMON PLUGINS -->
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/jquery-ui/jquery-ui.min.js?v={$this->config->item('version')}"); ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/bootstrap/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js?v={$this->config->item('version')}"); ?>" ></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js?v=" . $this->config->item('version')); ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/jquery.blockui.min.js?v=" . $this->config->item('version')); ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/jquery.cokie.min.js?v=" . $this->config->item('version')); ?>"></script>
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/uniform/jquery.uniform.min.js?v=" . $this->config->item('version')); ?>" ></script>
 
-        <!-- METRONIC SCRIPTS -->
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/scripts/metronic.js?v={$this->config->item('version')}"); ?>"></script> 
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/admin/layout/scripts/layout.js?v={$this->config->item('version')}"); ?>"></script> 
-        <script type="text/javascript" src="<?php echo base_url_template("template/crm-v2/assets/global/plugins/backstretch/jquery.backstretch.min.js?v={$this->config->item('version')}"); ?>"></script> 
+        <script  src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
+        <script  src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
 
+        <script  src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>" ></script>
         <!-- CUSTOM COMPONENTS -->
-        <script type="text/javascript" src="<?php echo base_url_template("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script> 
+        <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script> 
+
 
         <script>
-
             $(function () {
-
-                Metronic.init();
-                Layout.init();
-
-                // init background slide images
-                var images = [
-                    base_url_template + "template/crm-v2/assets/admin/pages/media/bg/1.jpg",
-                    base_url_template + "template/crm-v2/assets/admin/pages/media/bg/2.jpg",
-                    base_url_template + "template/crm-v2/assets/admin/pages/media/bg/3.jpg",
-                    base_url_template + "template/crm-v2/assets/admin/pages/media/bg/4.jpg",
-                ];
-
-                $.backstretch(images, {fade: 1000, duration: 8000});
-
+                $('input').iCheck({
+                    checkboxClass: 'icheckbox_square-blue',
+                    radioClass: 'iradio_square-blue',
+                    increaseArea: '20%' /* optional */
+                });
             });
-
         </script>
 
     </body>
 </html>
+        <?php } ?>

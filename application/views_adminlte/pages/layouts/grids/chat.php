@@ -17,23 +17,23 @@ if (isset($grid_data['data'])) {
             }
             
             $item = array(
-                'thumb' => empty($grid['replaces']['thumbnail'])? 'assets/img/avatar1.jpg': base_url_template('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
+                'thumb' => empty($grid['replaces']['thumbnail'])? 'assets/img/avatar1.jpg': base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
                 'username' => isset($grid['replaces']['username'])?
-                    (
-                        ($dato[$grid['replaces']['username']['fields_name']] != null)?
-                            $this->datab->build_grid_cell($grid['replaces']['username'], $dato):
-                            '<strong>Cliente</strong>'
-                    ):
-                    null,
+                (
+                    ($dato[$grid['replaces']['username']['fields_name']] != null)?
+                    $this->datab->build_grid_cell($grid['replaces']['username'], $dato):
+                    '<strong>Cliente</strong>'
+                ):
+                null,
                 'date' => $thisDate,
                 'body' => '',
                 'user' => $thisUser,
-                'class' => $userField? (($dato[$userField] == $this->auth->get('id'))? 'out': 'in'): (($x%2 == 0) ? 'in' : 'out')
+                'class' => $userField? (($dato[$userField] == $this->auth->get('id'))? 'out': 'right'): (($x%2 == 0) ? 'right' : 'out')
             );
         }
         
         $item['body'] .= (isset($grid['replaces']['text'])? $this->datab->build_grid_cell($grid['replaces']['text'], $dato): '') .
-                    ((!empty($grid['replaces']['file']) && !empty($dato[$grid['replaces']['file']['fields_name']]))? $this->datab->build_grid_cell($grid['replaces']['file'], $dato): '') . '<br/>';
+        ((!empty($grid['replaces']['file']) && !empty($dato[$grid['replaces']['file']['fields_name']]))? $this->datab->build_grid_cell($grid['replaces']['file'], $dato): '') . '<br/>';
         
     }
     
@@ -42,100 +42,102 @@ if (isset($grid_data['data'])) {
     }
 }
 ?>
-<div class="portlet-body" <?php echo "id='{$itemId}'"; ?>>
-    <div class="scroller" style="min-height:300px;max-height: 435px;overflow-y:auto" data-always-visible="1" data-rail-visible1="1">
-        <ul class="chats">
-            <?php foreach ($items as $item): ?>
-                <li class="<?php echo $item['class']; ?>">
-                    <img class="avatar img-responsive" alt="" src="<?php echo $item['thumb']; ?>" />
-                    <div class="message">
-                        <span class="arrow"></span>
-                        <a href="#" class="name"><?php echo $item['username']; ?></a>
 
-                        <span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
-                        <span class="body"><?php echo $item['body']; ?></span>
+<div class="direct-chat direct-chat-primary" <?php echo "id='{$itemId}'"; ?>>
+    <div class="scroller" style="min-height:300px;max-height: 435px;overflow-y:auto" data-always-visible="1" data-rail-visible1="1">
+        <ul class="direct-chat-messages chats">
+            <?php foreach ($items as $item): ?>
+                <li class="direct-chat-msg <?php echo $item['class']; ?>">
+                    <div class="direct-chat-primary clearfix">
+                        <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
+                        <span class="direct-chat-timestamp pull-right datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
+                    </div>
+                    <img class="direct-chat-img avatar" src="<?php echo $item['thumb']; ?>" alt="message user image">
+                    <div class="direct-chat-text body">
+                        <?php echo $item['body']; ?>
                     </div>
                 </li>
             <?php endforeach; ?>
         </ul>
-    </div>
-    <form class="chat-form" action="<?php echo base_url("db_ajax/new_chat_message/{$grid['grids']['grids_id']}"); ?>">
-        <input type="hidden" name="user" value="<?php echo $this->auth->get('id'); ?>" />
         
-        <?php if(isset($grid['replaces']['value_id'])): ?>
-            <input type="hidden" name="value_id" value="<?php echo $value_id; ?>" />
-        <?php endif; ?>
+        <form class="chat-form" action="<?php echo base_url("db_ajax/new_chat_message/{$grid['grids']['grids_id']}"); ?>">
+            <input type="hidden" name="user" value="<?php echo $this->auth->get('id'); ?>" />
             
-        <div class="input-cont">   
-            <input class="form-control" type="text" name="text" placeholder="Scrivi un messaggio..." />
-        </div>
-        <div class="btn-cont"> 
-            <span class="arrow"></span>
-            <button class="btn blue icn-only"><i class="fa fa-check icon-white"></i></button>
-        </div>
-    </form>
+            <?php if(isset($grid['replaces']['value_id'])): ?>
+                <input type="hidden" name="value_id" value="<?php echo $value_id; ?>" />
+            <?php endif; ?>
+            <div class="input-group">
+                <input class="form-control" name="text" placeholder="Scrivi un messaggio...">
+                
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
-
 
 <script>
 
-    var ChatWidget = function() {
-        
-        return {
-            
-            element: $('#<?php echo $itemId; ?>'),
-            
-            sendMessage: function(event) {
-                
-                event.preventDefault();
-                var widget = event.data;
-                
-                var form = $(this);
-                $.post(form.attr('action'), form.serialize(), function(json) {
-                    widget.appendMessage(json); $('[name=text]', form).val('');
-                    
-                    // Se siamo in una modale comunichiamo che i dati sono stati
-                    // salvati
-                    $('.modal').each(function() {
-                        try {
-                            $(this).data('bs.modal').askConfirmationOnClose = false;
-                        } catch (e) {}
-                    });
-                }, 'json');
-                
-            },
-            
-            appendMessage: function(message) {
-                var chatContainer = $('.chats', this.element);
-                //var thisClass = ($('li:last-child', chatContainer).hasClass('in')? 'out': 'in');
-                var thisClass = 'out';  // I miei messaggi sono sempre a dx...
-                var listItem = $('<li/>').addClass(thisClass);
-                listItem.append(
-                    $('<img/>').attr('src', message.thumbnail).addClass('avatar img-responsive'),
-                    $('<div/>').addClass('message').append(
-                        $('<span/>').addClass('arrow'),
-                        $('<a/>').addClass('name').attr('href', '#').html(message.username),
-                        $('<span/>').addClass('datetime').html(message.date),
-                        $('<span/>').addClass('body').html(message.text)
-                    )
-                ).appendTo(chatContainer);
-                this.scrollChat();
-            },
-            
-            scrollChat: function() {
-                var scroller = $('.scroller', this.element);
-                scroller.scrollTop(scroller.height());
-            },
-            
-            init: function() {
-                $('.chat-form', this.element).on('submit', this, this.sendMessage);
-                setTimeout(this.scrollChat, 800);
-            }
-        };
-        
-    }();
-
-
-    $(document).ready(ChatWidget.init());
+var ChatWidget = function() {
     
+    return {
+        
+        element: $('#<?php echo $itemId; ?>'),
+        
+        sendMessage: function(event) {
+            
+            event.preventDefault();
+            var widget = event.data;
+            
+            var form = $(this);
+            $.post(form.attr('action'), form.serialize(), function(json) {
+                widget.appendMessage(json); $('[name=text]', form).val('');
+                
+                // Se siamo in una modale comunichiamo che i dati sono stati
+                // salvati
+                $('.modal').each(function() {
+                    try {
+                        $(this).data('bs.modal').askConfirmationOnClose = false;
+                    } catch (e) {}
+                });
+            }, 'json');
+            
+        },
+
+        appendMessage: function(message) {
+            var chatContainer = $('.chats', this.element);
+            //var thisClass = ($('li:last-child', chatContainer).hasClass('in')? 'out': 'in');
+            var thisClass = 'direct-chat-msg out';  // I miei messaggi sono sempre a dx...
+            var listItem = $('<li/>').addClass(thisClass);
+            listItem.append(
+                $('<div/>').addClass('direct-chat-primary clearfix').append(
+                    $('<a/>').addClass('direct-chat-name pull-left name').attr('href', '#').html(message.username),
+                    $('<span/>').addClass('direct-chat-timestamp pull-right datetime').html(message.date),
+                ),
+                $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive'),
+                $('<div/>').addClass('direct-chat-text body').append(
+                    //$('<span/>').addClass('arrow'),
+                    $('<span/>').html(message.text)
+                )
+            ).appendTo(chatContainer);
+            this.scrollChat();
+        },
+        
+        scrollChat: function() {
+            var scroller = $('.scroller', this.element);
+            scroller.scrollTop(scroller.height());
+        },
+        
+        init: function() {
+            $('.chat-form', this.element).on('submit', this, this.sendMessage);
+            setTimeout(this.scrollChat, 800);
+        }
+    };
+    
+}();
+
+
+$(document).ready(ChatWidget.init());
+
 </script>

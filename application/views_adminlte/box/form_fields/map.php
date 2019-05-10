@@ -12,7 +12,7 @@ if ($value) {
     if (!empty($value_latlon)) {
         $lat = $value_latlon['lat'];
         $lon = isset($value_latlon['lon']) ? $value_latlon['lon'] : $value_latlon['lng'];
-        $value = $lat . ';' . $lon;
+        $value = trim($lat . ';' . $lon, ';') ?: null;
     }
 }
 ?>
@@ -65,6 +65,7 @@ if ($value) {
 
 
         L.maps[<?php echo json_encode($map); ?>] = map;
+        map.marker = null;
 
 
 
@@ -72,10 +73,9 @@ if ($value) {
             map.invalidateSize();
         });
 
-        var marker = null;
         map.on('click', function (e) {
             var clickPosition = e.latlng;
-            if (marker === null) {
+            if (map.marker === null) {
                 createMarker(clickPosition);
             } else {
                 moveMarker(clickPosition);
@@ -87,8 +87,8 @@ if ($value) {
         function updateLatlngInput() {
             var input = $('#<?php echo $input; ?>');
             var str = '';
-            if (marker !== null) {
-                str = marker.getLatLng().lat + ";" + marker.getLatLng().lng;
+            if (map.marker !== null) {
+                str = map.marker.getLatLng().lat + ";" + map.marker.getLatLng().lng;
             }
             input.val(str);
         }
@@ -107,14 +107,14 @@ if ($value) {
                             query = arg.query,
                             cb = arg.cb;
                     $.ajax({
-                        url: 'http://nominatim.openstreetmap.org/search',
+                        url: 'https://nominatim.openstreetmap.org/search',
                         dataType: 'jsonp',
                         jsonp: 'json_callback',
                         data: {q: query, format: 'json'}
                     }).done(function (data) {
                         if (data.length > 0) {
                             var res = data[0];
-                            if (marker === null) {
+                            if (map.marker === null) {
                                 createMarker(new L.LatLng(res.lat, res.lon));
                             } else {
                                 moveMarker(new L.LatLng(res.lat, res.lon));
@@ -145,7 +145,7 @@ if ($value) {
 
         function createMarker(latlng) {
             if (map !== null) {
-                marker = L.marker(latlng, {
+                map.marker = L.marker(latlng, {
                     draggable: true
                 }).on('dragend', function (e) {
                     updateLatlngInput();
@@ -163,22 +163,22 @@ if ($value) {
         }
 
         function moveMarker(latlng) {
-            if (map !== null && marker !== null) {
-                marker.setLatLng(latlng);
+            if (map !== null && map.marker !== null) {
+                map.marker.setLatLng(latlng);
                 map.setView(latlng, 17, {animate: true});
                 updateLatlngInput();
             }
         }
 
         function destroyMarker() {
-            if (map !== null && marker !== null) {
-                map.removeLayer(marker);
-                marker = null;
+            if (map !== null && map.marker !== null) {
+                map.removeLayer(map.marker);
+                map.marker = null;
                 updateLatlngInput();
             }
         }
 
-
+        setTimeout(function() {map.invalidateSize(true)}, 2000);
 
 <?php if (isset($lat) && isset($lon)): ?>
             setTimeout(function () {

@@ -4,9 +4,11 @@ function startDataTables() {
         var bEnableOrder = typeof($(this).attr('data-prevent-order')) === 'undefined';
         $(this).dataTable({
             bSort: bEnableOrder,
+            aaSorting: [],
+            stateSave: true,
             aLengthMenu: [10, 50, 100, 200, 500, 'Tutti'],
             "oLanguage": {
-                "sUrl": base_url_template+"script/datatable.transl.json"
+                "sUrl": base_url_scripts + "script/datatable.transl.json"
             }
         });
         var id = '#' + $(this).attr('id') + '_wrapper';
@@ -37,11 +39,13 @@ function startDataTables() {
         
         oDataTable.dataTable({
             bSort: bEnableOrder,
+            aaSorting: [],
             aoColumns: aoColumns,
             iDisplayLength: 5,
             bFilter: false,
+            stateSave: true,
             bLengthChange: false,
-            oLanguage: { sUrl: base_url_template+"script/datatable.transl.json" }
+            oLanguage: { sUrl: base_url_scripts + "script/datatable.transl.json" }
         }).on('init', function(e) {
             var wrapper = e.target.parent;
             $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input

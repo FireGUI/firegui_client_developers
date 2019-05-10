@@ -48,7 +48,10 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                                 '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '">Visualizza Dettagli</a>';
                         var icon;
                         if (val.marker) {
-                            icon = L.icon({ iconUrl: base_url_template + 'uploads/' + val.marker, iconSize: [64, null] });
+                            icon = L.icon({
+                                iconUrl: base_url_uploads + 'uploads/' + val.marker,
+                                iconSize: [32, null]
+                            });
                         } else {
                             icon = new L.Icon.Default();
                         }

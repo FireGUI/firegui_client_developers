@@ -1,0 +1,1094 @@
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
+
+include_once __DIR__ . '/../helpers/general_helper.php';
+
+class Crmentity extends CI_Model {
+
+    const CACHE_TIME = 300;
+    const SCHEMA_CACHE_KEY = 'crm.schema';
+
+    /** Cache */
+    private $_fields_ref_by = [];
+    private $_visible_fields = [];
+    private $_schemaCache = null;
+
+    /** Dati della entity */
+    private $entity_name = '';
+    private $entity_id = null;
+    private $table;
+    private $languages;
+
+    /**
+     * Class constructor
+     * @param string $entity_name
+     * @param array $languageId
+     */
+    function __construct($entity_name = '', array $languageId = []) {
+        parent :: __construct();
+
+        $this->load->driver('cache');
+        $this->buildSchemaCacheIfNotValid();
+
+        $this->setLanguages($languageId);
+
+        if ($entity_name) {
+            $this->entity_name = $entity_name;
+            $this->table = $entity_name;
+            $entity = $this->getEntity($entity_name);
+            $this->entity_id = $entity['entity_id'];
+        }
+    }
+
+    /**
+     * Imposta le lingue usate per le traduzioni
+     * @param array $languagesId
+     */
+    public function setLanguages(array $languagesId) {
+        $this->languages = array_filter($languagesId, function($item) {
+            return $item && is_numeric($item);
+        });
+    }
+
+    /**
+     * Controlla se la $key è definita nella cache, altrimenti esegue $callback
+     * e salva il valore ritornato in cache.
+     * 
+     * @param string $key       Chiave della cache
+     * @param Closure $callback Funzione da eseguire in caso di cache-miss
+     * @return mixed            Il valore contenuto in cache
+     */
+    private function getFromCache($key, Closure $callback) {
+        $result = $this->cache->get($key);
+
+        if ($result === false) {
+            $result = $callback();
+            $this->cache->save($key, $result, self::CACHE_TIME);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Estrai singolo record per id. Solo il record associato alla Crmentity 
+     * corrente viene estratto
+     * 
+     * @param int $id
+     * @param int $maxDepthLevel
+     * @return array
+     */
+    public function get_data_full($id, $maxDepthLevel = 2) {
+        $arr = $this->get_data_full_list($this->entity_id, null, "{$this->entity_name}.{$this->entity_name}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
+        return array_get($arr, 0, []);
+    }
+
+    /**
+     * Esegue una query sull'entità e ritorna una lista di record - Vengono 
+     * calcolate eventuali relazioni da aggiungere ad ogni record, risolte le 
+     * geography, tradotti i campi multilingua (se ci sono lingue impostate), 
+     * ecc.
+     * 
+     * !! Il risultato viene salvato in cache !!
+     * 
+     * @param int|null $entity_id
+     * @param null $unused_entity_name      DA DEPRECARE, PROBABILMENTE ADOTTEREI STRATEGIA DI ARRAY OPTIONS vedi `get_data_simple_list()`
+     * @param array|string $where
+     * @param int|null $limit
+     * @param int $offset
+     * @param string|null $order_by
+     * @param bool $count
+     * @param int $depth
+     * 
+     * @return array
+     * 
+     * @throws Exception
+     */
+    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2) {
+        if (!$entity_id) {
+            if (!$this->entity_id) {
+                throw new Exception("Impossibile eseguire la query: entità non specificata.");
+            }
+
+            $entity_id = $this->entity_id;
+        }
+
+        // Entity name è da deprecare...
+        $entity_name = $this->getEntity($entity_id)['entity_name'];
+        $_cache_key = md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
+
+        if ($depth-- <= 0) {    // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
+            return [];
+        }
+
+        return $this->getFromCache($_cache_key, function() use($entity_id, $entity_name, $where, $limit, $offset, $order_by, $count, $depth) {
+
+                    $extra_data = true;
+                    $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth'));
+
+                    //debug($data,true);
+
+                    // Se è count ho finito qua, ma anche se non ho nessun risultato
+                    if ($count OR ! $data['data']) {
+                        return $data['data'];
+                    }
+
+                    // ---------------------------------------------------------
+                    // CON CALMA E TEMPO TUTTO STO PROCESSO E' DA OTTIMIZZARE!!!
+                    // ---------------------------------------------------------
+                    // Cercare se possibile di ciclare $data['data'] e 
+                    // $data['visible_fields'] al più UNA volta ciascuno
+                    // Un array contenente tutti gli id dei risultati della query
+                    $result_ids = array_key_map($data['data'], $entity_name . '_id');
+                    $fieldsGeography = $fieldsWysiwyg = $fieldsMultilingual = $fieldsRanges = $fieldsFloat = [];
+
+                    foreach ($data['visible_fields'] as $field) {
+
+                        $fieldOfMainEntity = $field['entity_name'] === $entity_name;
+
+                        // Detect GEOGRAPHY
+                        // -----
+                        // Estraggo i geography per ricavarne latitudine e 
+                        // longitudine - prendo solo quelli della mia stessa entità
+                        // altrimenti ho un db error
+                        if ($field['fields_type'] === 'GEOGRAPHY' && $fieldOfMainEntity) {
+
+                            $geographyValues = [];
+                            $geographyField = $field['fields_name'];
+                            
+                            if ($this->db->dbdriver == 'postgre') {
+                                $casted_field = "{$geographyField}::geometry";
+                            } else {
+                                $casted_field = "{$geographyField}";
+                            }
+                            
+                            
+                            // Indicizzo i risultati per id
+                            $this->db->select("{$entity_name}_id as id, ST_Y($casted_field) AS lat, ST_X($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
+                            foreach ($this->db->get($entity_name)->result_array() as $result) {
+                                $geographyValues[$result['id']] = ['lat' => $result['lat'], 'lng' => $result['lng']];
+                            }
+
+                            $fieldsGeography[$geographyField] = $geographyValues;
+                        }
+
+                        // Detect WYSIWYG
+                        // -----
+                        // Estraggo i campi html (fields_draw_html_type === wysiwyg)
+                        if ($field['fields_draw_html_type'] === 'wysiwyg') {
+                            $fieldsWysiwyg[] = $field;
+                        }
+
+                        // Detect MULTILINGUAL
+                        // -----
+                        // Estraggo i campi multilingua sse ho una lista di priorità
+                        // lingue. Nel caso self::languages sia pieno, prendo per
+                        // ogni valore, il primo non vuoto ('' or null - 0 è ok).
+                        // Se non ho nessuna lingua, allora il valore è un array
+                        // contenente tutti i valori disponibili
+                        if ($this->languages && $field['fields_multilingual'] === DB_BOOL_TRUE) {
+                            $fieldsMultilingual[$field['fields_id']] = $field;
+                        }
+
+                        //Attenzione se un domani vogliamo aggiungere il floatrange, temo succeda casino con l'estremo superiore (vd function rangeHumanFriendly)
+                        if ($field['fields_type'] === 'INT8RANGE' || $field['fields_type'] === 'INT4RANGE') {
+                            $fieldsRanges[$field['fields_id']] = $field;
+                        }
+                        
+                        if (strtolower($field['fields_type']) === 'float') {
+                            $fieldsFloat[$field['fields_id']] = $field;
+                        }
+                        
+                        
+                        
+                    }
+
+
+                    $baseUrl = function_exists('base_url_admin') ? base_url_admin() : base_url();
+                    foreach ($data['data'] as $key => $_data) {
+                        //debug($_data);
+                        $id = $_data[$entity_name . '_id'];
+
+                        foreach ($fieldsGeography as $fieldName => $values) {
+                            $geodata = array_get($values, $id, ['lat' => null, 'lon' => null]);
+                            $geodata['geo'] = $_data[$geographyField];
+                            $_data[$fieldName] = $geodata;
+                        }
+
+                        // Rimpiazzo il placeholder {base_url} dentro ai campi
+                        // contenenti un HTML
+                        foreach ($fieldsWysiwyg as $field) {
+                            $name = $field['fields_name'];
+                            if (!empty($_data[$name])) {
+                                $_data[$name] = str_replace('{base_url}', $baseUrl, $_data[$name]);
+                            }
+                        }
+
+                        // Decodifica json del campo
+                        foreach ($fieldsMultilingual as $field) {
+                            $_data[$field['fields_name']] = $this->translateValue($_data[$field['fields_name']]);
+                        }
+
+                        foreach ($fieldsRanges as $field) {
+                            $_data[$field['fields_name']] = extract_intrange_data($_data[$field['fields_name']]);
+                        }
+                        
+                        //Per i campi float li formato number_format 2, altrimenti mysql fa le bizze e mostra cose tipo 123.359999999999996
+                        if ($this->db->dbdriver != 'postgre') {
+                            foreach ($fieldsFloat as $field) {
+                                $_data[$field['fields_name']] = number_format($_data[$field['fields_name']], 3, '.', '');
+                                if (substr($_data[$field['fields_name']], -1) === '0') {
+                                    $_data[$field['fields_name']] = substr($_data[$field['fields_name']], 0, -1);
+                                }
+                            }
+                        }
+
+                        // Sovrascrivo il vecchio valore di data
+                        $data['data'][$key] = $_data;
+                    }
+
+
+                    // Cerco i campi che puntano a questa entità e ne ottengo i dati
+                    // sono sicuro che $result_ids non è vuoto
+                    $referersKeys = [];
+                    $referersRecords = array_fill_keys($result_ids, []);
+                    foreach ($data['fields_ref_by'] ?: [] as $entity) {
+                        $refererEntity = $entity['entity_name'];
+                        $refererField = $entity['fields_name'];
+
+                        // Se il campo che fa riferimento alla mia entità, ha lo
+                        // stesso nome dell'id di questa entità allora lo skippo,
+                        // perché vorrebbe dire che questa è una relazione
+                        if ($refererField == $entity_name . '_id') {
+                            continue;
+                        }
+
+                        if (in_array($entity['fields_type'], ['VARCHAR', 'TEXT'])) {
+                            // Sono in presenza di relazioni dove i miei id sono
+                            // contenuti separati da virgola...
+                            $refererWhere = sprintf("EXISTS(SELECT UNNEST(regexp_split_to_array(%s.%s, ',')) INTERSECT SELECT UNNEST(array[%s]))", $refererEntity, $refererField, "'" . implode("','", $result_ids) . "'");
+                        } else {
+                            // Caso normale
+                            $refererWhere = sprintf('%s.%s IN (%s)', $refererEntity, $refererField, implode(',', $result_ids));
+                        }
+
+                        $referersKeys[$refererEntity] = [];
+
+                        $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
+                        if (!empty($referingData)) {
+                            foreach ($referingData as $record) {
+                                // Se il campo è NON VISIBILE la query NON FALLISCE,
+                                // ma non viene incluso nel risultato... quindi si
+                                // rende necessario controllare se nel risultato è
+                                // settata la chiave
+                                if (array_key_exists($refererField, $record) && !is_array($record[$refererField]) && !is_object($record[$refererField])) {
+                                    $referersRecords[$record[$refererField]][$refererEntity][] = $record;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach ($data['data'] as &$_data) {
+                        $_data = array_merge($_data, $referersKeys, $referersRecords[$_data[$entity_name . '_id']]);
+                    }
+
+
+                    // Estraggo le eventuali relazioni
+                    foreach ($data['relations'] as $relation) {
+
+                        // Prendi i dati della relazione
+                        $rel = $this->getRelationByName($relation);
+
+                        // Se ho trovato dei dati allora posso provare a cercare le relazioni
+                        if (array_key_exists($rel['relations_field_1'], $data['data'][0])) {
+                            $field = $rel['relations_field_1'];
+                            $other = $rel['relations_field_2'];
+                            $other_table = $rel['relations_table_2'];
+                        } elseif (array_key_exists($rel['relations_field_2'], $data['data'][0])) {
+                            $field = $rel['relations_field_2'];
+                            $other = $rel['relations_field_1'];
+                            $other_table = $rel['relations_table_1'];
+                        } else {
+                            continue;
+                        }
+
+                        /**
+                         * Il risultato dell'operazione sarà un array di valori - questo array sarà il valore del campo dell'entità che va a relazionarsi con l'altra tabella
+                         * Ad esempio se una camera può avere più servizi voglio che tutti i servizi finiscano sul campo camere_servizi
+                         * $field_name_for_relation_values avrà in questo caso il valore di camere_servizi
+                         */
+                        $field_name_for_relation_values = null;
+                        foreach ($data['visible_fields'] as $visible_field) {
+                            if ($visible_field['fields_ref'] == $relation) {
+                                $field_name_for_relation_values = $visible_field['fields_name'];
+                                break;
+                            }
+                        }
+
+                        if (!$field_name_for_relation_values) {
+                            continue;
+                        }
+
+
+                        // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
+                        $ids = array_key_map($data['data'], $field);
+
+                        // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
+                        $relation_data = $this->db->where_in($field, $ids)->get($relation)->result_array();
+
+                        
+                        
+                        
+                        // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
+                        // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
+                        $relation_data_by_ids = [];
+                        $related_data = [];
+                        foreach ($relation_data as $relation_dato) {
+                            if (empty($relation_data_by_ids[$relation_dato[$field]])) {
+                                $relation_data_by_ids[$relation_dato[$field]] = [];
+                            }
+
+                            $related_data[] = $relation_dato[$other];
+                            $relation_data_by_ids[$relation_dato[$field]][] = $relation_dato[$other];
+                        }
+
+                        // Prendo le preview dei record relazionati
+                        if (!empty($related_data)) {
+                            $related_data_preview = $this->getEntityPreview($other_table, "{$other_table}.{$other} IN (" . implode(',', $related_data) . ")");
+
+                            foreach ($data['data'] as $key => $dato) {
+                                if (isset($relation_data_by_ids[$dato[$field]])) {
+                                    foreach ($relation_data_by_ids[$dato[$field]] as $related_value) {
+
+                                        // Se il campo non è un array per il momento non ho soluzioni migliori se non farlo diventare un array vuoto
+                                        // perché in effetti non dovrebbe mai essere pieno
+                                        if (array_key_exists($related_value, $related_data_preview)) {
+
+                                            if (!is_array($data['data'][$key][$field_name_for_relation_values])) {
+                                                $data['data'][$key][$field_name_for_relation_values] = [];
+                                            }
+
+                                            $data['data'][$key][$field_name_for_relation_values][$related_value] = $related_data_preview[$related_value];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    // Recupero le eventuali fake relations, cioè tutti i fields con
+                    // fields_ref che hanno fields_type o VARCHAR o TEXT
+                    $fake_relations_fields = array_filter($data['visible_fields'], function($field) {
+                        return $field['fields_ref'] && in_array($field['fields_type'], array('VARCHAR', 'TEXT'));
+                    });
+
+                    $names = [];
+                    foreach ($fake_relations_fields as $field) {
+                        $name = $field['fields_name'];
+                        $related = $field['fields_ref'];
+
+                        if (in_array($name, $names)) {
+                            continue;
+                        }
+
+                        $names[] = $name;
+                        $fake_relation_ids = [];
+                        foreach ($data['data'] as &$_data) {
+                            $_data[$name] = $_data[$name] ? explode(',', $_data[$name]) : [];
+                            if ($_data[$name]) {
+                                $fake_relation_ids = array_merge($fake_relation_ids, $_data[$name]);
+                            }
+                        }
+
+                        $fullData = [];
+                        if (!empty($fake_relation_ids)) {
+                            $imploded_fake_relation_ids = implode(',', $fake_relation_ids);
+                            $frEntity = $this->getEntity($related);
+                            $qFullData = $this->get_data_simple_list($frEntity['entity_id'], "{$related}_id IN ({$imploded_fake_relation_ids})", ['depth' => $depth - 1]);
+                            $fullData = array_combine(array_key_map($qFullData, "{$related}_id"), $qFullData);
+                        }
+
+                        // E li inserisco al loro posto
+                        foreach ($data['data'] as &$_data) {
+                            $_data[$name] = array_intersect_key($fullData, array_flip($_data[$name]));
+                        }
+                    }
+                    //debug($data);
+                    return $data['data'];
+                });
+    }
+
+    /**
+     * Esegui una query specificando l'entità oppure utilizzando l'eventuale 
+     * entity bindata alla crmentity
+     * 
+     * @param int|string $entity_id
+     * @param string|array $where
+     * @param array $options        Le opzioni della query. Opzioni valide:
+     *      - select [array]
+     *      - count [bool]
+     *      - extra_data [bool]
+     *      - depth [int]
+     *      - limit
+     *      - offset
+     *      - order_by
+     * @return array|int
+     * 
+     * @throws Exception
+     */
+    public function get_data_simple_list($entity_id = null, $where = null, array $options = []) {
+        if (!$entity_id) {
+            if (!$this->entity_id) {
+                throw new Exception("Impossibile eseguire la query: entità non specificata.");
+            }
+
+            $entity_id = $this->entity_id;
+        }
+
+        // Params extraction
+        $count = array_get($options, 'count', false);
+        $extra_data = array_get($options, 'extra_data', false);
+        $depth = array_get($options, 'depth', 2);
+        // =================
+
+        $dati = $this->getEntityFullData($entity_id);
+        $this->buildSelect($dati, $options);
+        $this->buildWhere($where);
+        $this->buildLimitOffsetOrder($options);
+
+        // Mi salvo l'elenco delle entità joinate, in modo da evitare doppi join
+        // in futuro non dovrò evitare, ma semplicemente assegnare un alias
+        $this->db->from($dati['entity']['entity_name']);
+        $joined = array($dati['entity']['entity_name']);
+        $to_join_later = [];
+
+        // Aggiungo in automatico i join SUPPONENDO che il campo da joinare, nella tabella sarà nometabella_id ********
+        $permission_entities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti
+
+        foreach ($dati['visible_fields'] as $key => $campo) {
+            $leftJoinable = (empty($campo['fields_ref_auto_left_join']) OR $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
+
+            // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
+            if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
+
+                if (in_array($campo['fields_ref'], $joined)) {
+                    // Metto nella lista dei join later
+                    $to_join_later[$campo['fields_name']] = $campo['fields_ref'];
+                } else {
+                    $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
+                    array_push($joined, $campo['fields_ref']);
+
+                    // Devo fare il controllo dei limiti sui field ref
+                    $ent = $this->getEntity($campo['fields_ref']);
+                    if (!in_array($ent['entity_id'], $permission_entities)) {
+                        $permission_entities[] = $ent['entity_id'];
+                    }
+                }
+            }
+        }
+
+        // =====================================================================
+        // QUERY OUT - COUNT
+        // ---
+        // Se ho un count allora non procedo, ritorno direttamente il risultato
+        // richiesto (in base al fatto che voglia gli extra_data o meno)
+        // =====================================================================
+        if ($count) {
+            $dati['data'] = $this->db->count_all_results();
+            return $extra_data ? $dati : $dati['data'];
+        }
+
+        // =====================================================================
+        // QUERY OUT - RESULTS
+        // ---
+        // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
+        // query sia andata a buon fine
+        // =====================================================================
+        $qResult = $this->db->get();
+
+        //debug($this->db->last_query());
+
+
+        if (!$qResult instanceof CI_DB_result) {
+            // Errore, la query 
+            throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
+        }
+
+        $dati['data'] = $qResult->result_array();
+        $qResult->free_result();
+
+        // =====================================================================
+        // SUPPORTO MULTI-JOIN
+        // ---
+        // Un'entità (A) può essere joinata più di una volta ad un'altra entità
+        // (B) mediante altrettanti campi (ab1 e ab2). Non posso fare tutto in 
+        // una query perché dovrei usare degli alias e, per retrocompatibilità,
+        // questo non è possibile (tutte le query inserite scoppierebbero).
+        // Quindi nella query appena fatta ho joinato 1 solo campo, mentre gli
+        // altri campi li "joino" ora. Non si tratta di un vero e proprio join, 
+        // in quanto devo estrarre manualmente i dati.
+        // =====================================================================
+        if ($dati['data'] && $depth > 0) {
+            foreach ($to_join_later as $main_field => $sub_entity_name) {
+                $sub_entity = $this->getEntity($sub_entity_name);
+                //$main_field_values = implode(',', array_unique(array_filter(array_key_map($dati['data'], $main_field))));
+                $main_field_values = $this->buildWhereInList(array_filter(array_key_map($dati['data'], $main_field)));
+
+                if (!$main_field_values) {
+                    continue;
+                }
+
+                // Ritrova i dati - jData sono i dati grezzi, mentre mergeable
+                // sono i dati pronti ad essere uniti ai dati principali
+                $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", ['depth' => $depth - 1]);
+                $mergeable = [];
+
+                foreach ($jData as $record) {
+                    // Rimappo ogni valore in modo da avere il main field
+                    // anteposto al vero field. Quindi se ho
+                    // messaggi con campo messaggi_utente che ha ref a
+                    // utenti, ogni campo recuperato da questa join sarà
+                    // rinominato in messaggi_utente_utenti_*
+                    $mergeable[$record[$sub_entity_name . '_id']] = array_combine(array_map(function($key) use($main_field) {
+                                return $main_field . '_' . $key;
+                            }, array_keys($record)), array_values($record));
+                }
+
+                foreach ($dati['data'] as $k => $record) {
+                    $id = $record[$main_field];
+                    $dati['data'][$k] = array_merge($record, array_get($mergeable, $id, []));
+                }
+            }
+        }
+
+        return $extra_data ? $dati : $dati['data'];
+    }
+
+    /**
+     * Estrai a partire dai fulldata di un'entità e da un array di condizioni 
+     * select, l'eventuale select da usare nella query. $entityFullData è 
+     * passato per riferimento dato che dev'essere aggiornato con i campi delle
+     * entità joinate
+     * 
+     * @param array $entityFullData
+     * @param array $options
+     */
+    private function buildSelect(array &$entityFullData, array $options = []) {
+        // Inizializzo i fields: se ho specificato una select allora sono a
+        // posto, altrimenti li autocalcolo in base ai fields entità
+        $visible_fields = array_get($options, 'select', []);
+        $entityName = $entityFullData['entity']['entity_name'];
+
+
+        if (!$visible_fields) {
+
+            foreach ($entityFullData['visible_fields'] as $campo) {
+
+                // Aggiungo il campo alla select
+                $visible_fields[] = sprintf('%s.%s', $entityName, $campo['fields_name']);
+
+                // Ciclo i campi uno ad uno e se:
+                // -- sono campi semplici non faccio altro che aggiungere il nome
+                // del field alla mia select ($visible_fields)
+                // -- altrimenti se sono field ref devo estrarre a sua volta i 
+                // suoi campi (valutare chiamate ricorsive). ATTENZIONE CHE IL
+                // CAMPO NON DEV'ESSERE RELAZIONE, perchè lo gestisco 
+                // diversamente
+
+                $hasFieldRef = (bool) $campo['fields_ref'];
+                $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
+                $isJoinable = $campo['fields_ref_auto_left_join'] === DB_BOOL_TRUE;
+
+                if ($hasFieldRef && !$isRelation && $isJoinable) {
+                    $entity = $this->getEntity($campo['fields_ref']);
+                    foreach ($this->getVisibleFields($entity['entity_id']) as $supfield) {
+                        $visible_fields[] = sprintf('%s.%s', $campo['fields_ref'], $supfield['fields_name']);
+                        $entityFullData['visible_fields'][] = $supfield;
+                    }
+                }
+            }
+        }
+
+        // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
+        // duplicati
+        //array_unshift($visible_fields, sprintf('%s_id', $entityName));
+        array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
+        $this->db->select(array_unique($visible_fields));
+    }
+
+    /**
+     * Compila la clausola where della query
+     * @param string|array $where
+     */
+    private function buildWhere($where) {
+        // Mi assicuro che il where stringa contenga altre cose oltre che parentesi, spazi bianchi, ecc...
+        if (is_string($where) && trim($where, " \t\n\r\0\x0B()")) {
+            // Attenzione!! Se il primo e l'ultimo carattere sono parentesi tonde,
+            // allora non serve wrappeggiare il where stringhiforme perché è già
+            // wrappeggiato in codesta maniera
+            $this->db->where(($where[0] === '(' && $where[strlen($where) - 1] === ')') ? "({$where})" : $where, null, false);   // null: il valore, false: NON FARE ESCAPE
+        } elseif (is_array($where) && count($where) > 0) {
+            // Attenzione!! Devo distinguere da where con chiave numerica a
+            // quelli con chiave a stringa: dei primi ignoro la chiave, mentre
+            // dei secondi faccio un where(key, value);
+            $func = function($value, $key) {
+                if (is_numeric($key)) {
+                    $this->db->where($value, null, false); // non escapare nemmeno qui
+                } elseif (is_string($key)) {
+                    $this->db->where($key, $value);
+                }
+            };
+            $where = array_filter($where);
+            array_walk($where, $func);
+        }
+    }
+
+    /**
+     * Compila la sezione LIMIT-OFFSET e ORDER BY della query
+     * @param array $options
+     */
+    private function buildLimitOffsetOrder(array $options) {
+        $limit = array_get($options, 'limit', null);
+        $offset = array_get($options, 'offset', 0);
+        $order_by = array_get($options, 'order_by', null);
+        $count = array_get($options, 'count', false);
+
+        if ($limit !== NULL) {
+            $this->db->limit($limit);
+        }
+        if ($offset > 0) {
+            $this->db->offset($offset);
+        }
+
+        //debug($order_by);
+
+        if ($order_by !== NULL && !$count) {
+            $this->db->_protect_identifiers = FALSE;
+            $this->db->order_by($order_by);
+            $this->db->_protect_identifiers = TRUE;
+        }
+    }
+
+    /**
+     * Converte una lista di valori in una lista valida per il where in.
+     *  [1, 2, 3, 4] => '1','2','3','4'
+     * 
+     * 
+     * @param array $values
+     * @return string
+     */
+    private function buildWhereInList(array $values) {
+        $out = implode("','", array_map(function($value) {
+                    return str_replace("'", "''", $value);
+                }, array_filter($values)));
+        return $out ? "'{$out}'" : '';
+    }
+
+    /**
+     * Ritrova i dati completi da un'entità
+     * 
+     * @param int|string $entity
+     * @return array
+     */
+    private function getEntityFullData($entity) {
+        return array(
+            'entity' => $this->getEntity($entity),
+            'relations' => array_key_map($this->getEntityRelations($entity), 'relations_name'),
+            'fields_ref_by' => $this->getFieldsRefBy($entity),
+            'visible_fields' => $this->getVisibleFields($entity),
+        );
+    }
+
+    /**
+     *  Utility methods 
+     */
+    public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0) {
+        $key = sprintf('previews-%s', md5(serialize(func_get_args())));
+
+        return $this->getFromCache($key, function() use($entityIdentifier, $where, $limit, $offset) {
+                    $entity = $this->getEntity($entityIdentifier);
+                    $previewFields = $this->getEntityPreviewFields($entityIdentifier);
+
+                    $entity_id = $entity['entity_id'];
+                    $entity_name = $entity['entity_name'];
+
+                    $select = array_key_map($previewFields, 'fields_name');
+
+                    //Aggiungo ordinamento qualora l'entità ne avesse configurato uno di default
+                    $entityCustomActions = empty($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
+
+                    if (isset($entityCustomActions['order_by_asc'])) {
+                        $order_by = $entityCustomActions['order_by_asc'] . ' ASC';
+                    } elseif (isset($entityCustomActions['order_by_desc'])) {
+                        $order_by = $entityCustomActions['order_by_desc'] . ' DESC';
+                    } else {
+                        $order_by = null;
+                    }
+
+                    //20170608 - Matteo Puppis - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+                    if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
+                        //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
+                        //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
+                        if (stripos($where, $entityCustomActions['soft_delete_flag']) === FALSE) {
+                            if (empty($where)) {
+                                $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                            } else {
+                                $where .= " AND ({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                            }
+                        }
+                    }
+
+                    $records = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'select', 'order_by'));
+
+                    /* Build preview */
+                    $result = [];
+                    foreach ($records as $record) {
+
+                        $id = array_get($record, $entity_name . '_id');
+                        $preview = "";
+
+                        foreach ($previewFields as $field) {
+                            $rawval = array_get($record, $field['fields_name']);
+                            $val = ($field['fields_multilingual'] === DB_BOOL_TRUE) ? $this->translateValue($rawval) : $rawval;
+
+                            // Se non abbiamo nessuna lingua impostata, translateValue
+                            // mi ritorna un array, generando un warning array-to-string
+                            // nell'append successivo - quindi per ora implode sulla
+                            // virgola
+                            if (is_array($val)) {
+                                $val = implode(',', $val);
+                            }
+
+                            // Se vuoto (null o stringa vuota - voglio tenere eventuali 0),
+                            // allora lo skippo
+                            if (is_null($val) OR $val === '') {
+                                continue;
+                            }
+
+                            $preview .= "{$val} ";
+                        }
+
+                        // Metto nei results, mappando per id del record...
+                        $result[$id] = trim($preview) ?: "ID #{$id}";
+                    }
+
+                    return $result;
+                });
+    }
+
+    /**
+     * Traduci un valore secondo l'array delle lingue corrente
+     * 
+     * @param string $jsonEncodedValue rappresentazione json del valore
+     * @return mixed
+     */
+    public function translateValue($jsonEncodedValue) {
+
+        $transVal = json_decode($jsonEncodedValue, true);
+
+        // Se non ci sono lingue in lista, allora lascia il valore json decoded
+        // cioè l'array con tutte le lingue (o eventualmente un null)
+        if (!$this->languages) {
+            return $transVal;
+        }
+
+        // Cicla tutte le lingue, quelle prima sono quelle che hanno maggiore
+        // priorità, al primo valore trovato (non nullo e non stringa vuota - 0
+        // va bene) ritornalo. Se nessun valore viene trovato allora torna null
+        foreach ($this->languages as $langId) {
+            if (isset($transVal[$langId]) && $transVal[$langId] !== '') {
+                return $transVal[$langId];
+            }
+        }
+
+        return null;
+    }
+
+    // =========================================================================
+    // Schema Cache Control
+    // =========================================================================
+    public function reloadSchemaCache() {
+        $this->cache->file->delete(self::SCHEMA_CACHE_KEY);
+        $this->buildSchemaCacheIfNotValid();
+    }
+
+    protected function buildSchemaCacheIfNotValid() {
+
+        $this->_schemaCache = $this->cache->file->get(self::SCHEMA_CACHE_KEY);
+
+        //echo('INTERVENIRE QUI PER LA CACHE');
+
+        if ($this->_schemaCache) {
+            return;
+        }
+        //echo 'test';
+        $entities = $this->createDataMap($this->db->get('entity')->result_array(), 'entity_id');
+        $fields = $validations = [];
+
+        // ==== Get entity sub-data
+        $this->db->join('entity', 'entity.entity_id = fields.fields_entity_id')
+                ->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id', 'left')   // LEFT JOIN perché a quanto pare non tutti i field hanno un fields_draw.
+                ->order_by('fields_name');
+        $_fields = $this->createDataMap($this->db->get('fields')->result_array(), 'fields_id');
+
+        $_validations = $this->createDataMap($this->db->get('fields_validation')->result_array(), 'fields_validation_fields_id');
+
+
+        // Fields validation rules
+        foreach ($_validations as $rule) {
+            $validations[$rule['fields_validation_fields_id']][] = $rule;
+        }
+
+        // Fields
+        foreach ($_fields as $field) {
+            $fields[$field['fields_entity_id']][] = $field;
+        }
+
+        // Relations
+        $relations = $this->db->get('relations')->result_array();
+        $relbyname = $relbyent = [];
+
+        foreach ($relations as $relation) {
+            $relbyname[$relation['relations_name']] = $relation;
+            $relbyent[$relation['relations_table_1']][] = $relation;
+        }
+
+
+        // Build the cached array
+        $this->_schemaCache = [
+            'entity_names' => $this->createDataMap($entities, 'entity_name', 'entity_id'),
+            'entities' => $entities,
+            'fields' => $fields,
+            'validations' => $validations,
+            'relations' => ['by_name' => $relbyname, 'by_entity' => $relbyent]
+        ];
+
+        // And persist it
+        $this->cache->file->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24);  // 1h * 24 <= Salva cache per un giorno
+    }
+
+    /**
+     * Crea un array di mappatura a partire dai dati. From e To sono le
+     * sottochiavi sulle quali eseguire la mappatura (array risultante avrà i
+     * valori dei from sulle chiavi e i valori di to sui rispettivi valori).
+     * Se to è null, allora viene preso l'intero record
+     * 
+     * @param array $data
+     * @param string $from
+     * @param string|null $to
+     */
+    private function createDataMap(array $data, $from, $to = null) {
+        return array_combine(
+                array_key_map($data, $from), $to ? array_key_map($data, $to) : $data
+        );
+    }
+
+    /**
+     * Ritrova entità
+     * @param mixed $id
+     */
+    public function getEntity($id) {
+        if (is_array($id) && isset($id['entity_id'])) {
+            $id = $id['entity_id'];
+        }
+
+        if (!is_numeric($id)) {
+            if (empty($this->_schemaCache['entity_names'][$id])) {
+                throw new Exception(sprintf("Entità '%s' non esistente", $id));
+            }
+
+            $id = $this->_schemaCache['entity_names'][$id];
+        }
+
+        if (empty($this->_schemaCache['entities'][$id])) {
+            throw new Exception(sprintf("Entità '%s' non esistente", $id));
+        }
+
+        return $this->_schemaCache['entities'][$id];
+    }
+
+    /**
+     * Ritrova TUTTI i fields di un'entità
+     * @param int|string $entity
+     */
+    public function getFields($entity) {
+
+        if (!is_numeric($entity)) {
+            $entity = $this->getEntity($entity)['entity_id'];
+        }
+
+        if (empty($this->_schemaCache['fields'][$entity])) {
+            // L'entità esiste, ma non ha campi
+            return [];
+        }
+
+        return $this->_schemaCache['fields'][$entity];
+    }
+
+    /**
+     * Ritrova tutte le regole di validazione per un dato field id
+     * 
+     * @param int $fieldId
+     */
+    public function getValidations($fieldId) {
+        // Ci sono regole di validazione per il campo? [Assumo esista]
+        return empty($this->_schemaCache['validations'][$fieldId]) ? [] : $this->_schemaCache['validations'][$fieldId];
+    }
+
+    /**
+     * Ottieni i campi che puntano all'entità passata, sse questi campi
+     * permettono la right join automatica
+     * 
+     * @param string|int $entity
+     * @return array
+     */
+    public function getFieldsRefBy($entity) {
+        if (!$this->_fields_ref_by) {
+            $_allFieldsRefBy = $this->db->query("
+                SELECT entity_id, entity_name, fields_name, fields_type, fields_ref 
+                FROM fields JOIN entity ON entity_id = fields_entity_id 
+                WHERE fields_ref IS NOT NULL AND fields_ref != '' AND fields_ref_auto_right_join
+            ")->result_array();
+
+            foreach ($_allFieldsRefBy as $field) {
+                $this->_fields_ref_by[$field['fields_ref']][] = $field;
+            }
+        }
+
+        $ename = $this->getEntity($entity)['entity_name'];
+        return array_get($this->_fields_ref_by, $ename, []);
+    }
+
+    /**
+     * Ottieni i field visibili
+     * @param type $entity
+     * @return type
+     */
+    public function getVisibleFields($entity) {
+        if (!array_key_exists($entity, $this->_visible_fields)) {
+            $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function($item) {
+                return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
+            });
+        }
+
+        return $this->_visible_fields[$entity];
+    }
+
+    /**
+     * Ritrova relazioni da entità
+     * 
+     * @param string|int|array $entity
+     * @return array
+     */
+    public function getEntityRelations($entity) {
+        $e_name = $this->getEntity($entity)['entity_name'];
+        return array_get($this->_schemaCache['relations']['by_entity'], $e_name, []);
+    }
+
+    /**
+     * Ottieni una relazione a partire dal suo nome
+     * @param string $name
+     * @return array
+     */
+    public function getRelationByName($name) {
+        return array_get($this->_schemaCache['relations']['by_name'], $name, []);
+    }
+
+    /**
+     * Data un'entità ottieni i suoi campi di preview
+     * 
+     * @param string|int $entity
+     * @return array
+     */
+    protected function getEntityPreviewFields($entity) {
+        $e = $this->getEntity($entity);
+        $eid = $e['entity_id'];
+
+        return $this->getFromCache("preview-fields-{$eid}", function() use($eid) {
+                    $preview = [];
+                    $fields = $this->getVisibleFields($eid);
+
+                    foreach ($fields as $field) {
+                        
+                        // Non interessato alle non preview
+                        if ($field['fields_preview'] !== DB_BOOL_TRUE) {
+                            continue;
+                        }
+
+                        // Sono preview...
+                        // Field normale? Inseriscilo nei miei campi preview
+                        if (!$field['fields_ref']) {
+                            $preview[] = $field;
+                            continue;
+                        }
+
+                        // Caso `complesso`: preview in un field ref - prendo tutti i campi
+                        // preview del ref 
+                        $subfields = $this->getVisibleFields($field['fields_ref']);
+                        foreach ($subfields as $subfield) {
+                            
+                            if ($subfield['fields_preview'] == DB_BOOL_TRUE && !$subfield['fields_ref']) {
+                                $preview[] = $subfield;
+                            }
+                        }
+                    }
+
+                    return $preview;
+                });
+    }
+
+    /**
+     * Risolve un'entità referenziata dal field passato: se è un'entità semplice
+     * allora questo metodo ritorna l'equivalente di 
+     *              Crmentity::getEntity($field[fields_ref])
+     * mentre se è una relazione, allora viene risolta l'entità relazionata e 
+     * ritornata quella
+     * 
+     * @param string|int|array $field
+     * @return array
+     */
+    public function getReferencedEntity($field) {
+        // Step 1: Risolvo il field - entità di appartenenza e referenziata
+        if (is_numeric($field)) {
+            $field = $this->db->query("SELECT * FROM fields WHERE fields_id = ?", [$field])->result_array();
+        } elseif (is_string($field)) {
+            $field = $this->db->query("SELECT * FROM fields WHERE fields_name = ?", [$field])->result_array();
+        } elseif (!is_array($field) OR ! array_key_exists('fields_ref', $field) OR ! array_key_exists('fields_entity_id', $field)) {
+            throw new InvalidArgumentException("Impossibile riconoscere il campo specificato");
+        }
+
+        // Step 2: Risolvo l'eventuale entità referenziata
+        if (!$field['fields_ref']) {
+            // nessun'entità referenziata
+            return [];
+        }
+
+        $referencedEntity = $this->getEntity($field['fields_ref']);
+
+        if ($referencedEntity['entity_type'] == ENTITY_TYPE_RELATION) {
+
+            // Step 3a: il field punta ad una relazione, quindi devo estrarre la
+            // relazione e prendere l'entità puntata
+            $relation = $this->getRelationByName($referencedEntity['entity_name']);
+            $refererEntity = $this->getEntity($field['fields_entity_id']);
+
+            if ($relation['relations_table_1'] == $refererEntity['entity_name']) {
+                // Il mio referer corrisponde all'entità 1, quindi devo 
+                // risolvere la tabella 2
+                return $this->getEntity($relation['relations_table_2']);
+            } elseif ($relation['relations_table_2'] == $refererEntity['entity_name']) {
+                // Il mio referer corrisponde all'entità 2, quindi devo 
+                // risolvere la tabella 1
+                return $this->getEntity($relation['relations_table_2']);
+            }
+
+            // Non ho risolto nulla...
+            return [];
+        } else {
+            return $referencedEntity;
+        }
+    }
+
+}

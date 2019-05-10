@@ -13,13 +13,14 @@ class Init_hook {
     
     public function initialize() {
         
-        $language = $this->ci->session->userdata('language');
+        // Deprecato: si occupa il datab di effettuare questo passaggio
+        /*$language = $this->ci->session->userdata('language');
         if($language === FALSE) {
             $language = $this->ci->config->item('language');
             $this->ci->session->set_userdata('language', $language);
         }
         
-        $this->ci->load->language($language, $language);
+        $this->ci->load->language($language, $language);*/
     }
     
 }
