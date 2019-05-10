@@ -1,11 +1,12 @@
 
 <?php if (isset($grid_data['data'])): ?>
     <?php foreach ($grid_data['data'] as $dato): ?>
-        <div class="row">
-            <dl <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>" class="dl-horizontal static-vertical-grid" >
+        
+            <dl <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>" class="dl-horizontal static-vertical-grid <?php echo $grid['grids']['grids_append_class']; ?>" >
                 <?php foreach ($grid['grids_fields'] as $field): ?>
                     <dt class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $field['grids_fields_column_name']; ?>:</dt>
                     <dd class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $this->datab->build_grid_cell($field, $dato); ?></dd>
+                    <hr style="margin: 3px; margin-left: 3%; width: 30%">
                 <?php endforeach; ?>
                 <?php if (grid_has_action($grid['grids'])): ?>
                     <dt class="dl-actions-label">Azioni disponibili</dt>
@@ -14,6 +15,5 @@
                     </dd>
                 <?php endif; ?>
             </dl>
-        </div>
     <?php endforeach; ?>
 <?php endif; ?>

@@ -7,36 +7,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 
  * @author Alberto
  * @property-read Apilib $apilib
+ * @property-read Auth $auth
  * @property-read Datab $datab
+ * @property-read Crmentity $crmentity
  * @property-read Mail_model $mail_model
  * @property-read CI_Input $input
  */
 class MY_Controller extends CI_Controller {
 
-    public $template = [];
-    public $settings = [];
+    /**
+     * @var array
+     */
+    protected $template = [];
     
+    /**
+     * @var array
+     */
+    public $settings;
+    
+    /**
+     * @var bool
+     */
+    public $isAdmin;
+    
+    /**
+     * @var bool
+     */
+    public $isDev;
+    
+    /**
+     * Class constructor
+     * Initialize base options
+     */
     public function __construct() {
         parent::__construct();
         
-        if ($this->input->get('_profiler') && $this->auth->check()) {
-            // Profiler se richiesto da superadmin
-            $this->output->enable_profiler(true);
-        } else {
-            // Profiler sse non è ajax su server di produzione di default
-            $this->output->enable_profiler(gethostname() === 'sfera' && !$this->input->is_ajax_request());
-        }
+        // Inizializza le variabili d'istanza del controller
+        $this->settings = $this->db->get('settings')->row_array();
+        $this->isAdmin = $this->auth->is_admin();
+        $this->isDev = is_development();
+        
+        // Profiler se richiesto da amministratori (oppure se in modalità sviluppo)
+        $this->output->enable_profiler($this->input->get('_profiler') && ($this->isAdmin OR $this->isDev));
         
         // Abilita errori/profiler in ambiente di sviluppo
-        if (gethostname() === 'sfera' OR $this->auth->is_admin()) {
+        if ($this->isAdmin OR $this->isDev) {
             ini_set('display_errors', '1');
             error_reporting(E_ALL);
         } else {
             $this->apilib->setDebug(false);
         }
-        
-        // Recupera settings
-        $this->settings = $this->db->get('settings')->row_array();
         
         // Imposto lingue apilib
         $currentLang = $this->datab->getLanguage();

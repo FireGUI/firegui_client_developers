@@ -9,7 +9,7 @@ $rowCol = 0;
     <!-- FORM HIDDEN DATA -->
     <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
     
-    <div class="form-body">
+    <div class="box-body">
         <?php foreach ($form['forms_fields'] as $k => $field): ?>
             <?php 
             // Stampa la prima row
@@ -22,6 +22,7 @@ $rowCol = 0;
                 echo $rowEnd, $rowStart;
             }
             ?>
+        
             <div class="<?php echo sprintf('col-lg-%d', $col); ?>"><?php echo $field['html']; ?></div>
         <?php endforeach; ?>
         <?php echo $rowCol? $rowEnd: ''; ?>
@@ -33,10 +34,8 @@ $rowCol = 0;
         </div>
     </div>
 
-    <div class="form-actions fluid">
-        <div class="col-md-12">
-            <button type="submit" class="btn blue">Salva</button>
-            <button type="button" class="btn default" data-dismiss="modal">Cancel</button>
-        </div>
+    <div class="form-actions pull-right">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Annulla'); ?></button>
+        <button type="submit" class="btn btn-primary"><?php e('Salva'); ?></button>
     </div>
 </form>

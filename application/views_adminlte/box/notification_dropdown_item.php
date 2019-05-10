@@ -1,5 +1,5 @@
 <?php foreach($notifications as $notification): ?>
-    <?php echo sprintf('<li data-notification="%s" class="%s">', $notification['notifications_id'], ($notification['notifications_read']==='f')? 'unread': ''); ?>
+    <?php echo sprintf('<li data-notification="%s" class="%s">', $notification['notifications_id'], ($notification['notifications_read']===DB_BOOL_FALSE)? 'unread': ''); ?>
         <a href="<?php echo $notification['href']; ?>">
             <span class="time"><?php echo $notification['datespan']; ?></span>
             <span class="details">
