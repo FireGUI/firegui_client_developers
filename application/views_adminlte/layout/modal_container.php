@@ -8,6 +8,9 @@ if (isset($size)) {
         case 'large':
             $sizeClass = 'modal-lg';
             break;
+        case 'extra':
+            $sizeClass = 'modal-xl';
+            break;
     }
 }
 ?>
@@ -15,9 +18,11 @@ if (isset($size)) {
     <div class="modal-dialog <?php echo $sizeClass; ?>">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
                 <h4 class="modal-title" id="myModalLabel"><?php echo $title; ?> <?php if (!empty($subtitle)) echo "<small>{$subtitle}</small>" ?> </h4>
             </div>
+             
             <div class="modal-body">
                 <?php echo $content; ?>
             </div>

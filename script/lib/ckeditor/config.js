@@ -26,6 +26,6 @@ CKEDITOR.editorConfig = function( config ) {
 	// need to have in the Standard(s) toolbar.
 	//config.removeButtons = 'Save,NewPage,Preview,Print,Templates,Flash,Smiley,Iframe';
 	config.removeButtons = 'Save,NewPage,Flash,Smiley';
-        config.allowedContent = true;
+        config.allowedContent = 'p u span h1 h2 h3 h4 h5 div hr img a button input em strong i table tbody thead tfoot th tr td dt dl dd address article b big br blockquote cite code font footer header strike small ul ol li sup sub center s[*]{*}(*)';
         config.extraAllowedContent = true;
 };

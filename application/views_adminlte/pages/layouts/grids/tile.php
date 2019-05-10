@@ -6,7 +6,7 @@ if (isset($grid_data['data'])) {
     foreach ($grid_data['data'] as $x => $dato) {
         
         $items[$dato[$grid['grids']['entity_name'] . "_id"]] = array(
-            'thumb' => isset($grid['replaces']['thumbnail']) ? base_url("uploads/{$dato[$grid['replaces']['thumbnail']['fields_name']]}") : null,
+            'thumb' => isset($grid['replaces']['thumbnail']) ? base_url_uploads("uploads/{$dato[$grid['replaces']['thumbnail']['fields_name']]}") : null,
             'nome' => isset($grid['replaces']['progetto']) ? $this->datab->build_grid_cell($grid['replaces']['progetto'], $dato) : null,
             'consegnaDemo' => isset($grid['replaces']['consegnaDemo']) ? $this->datab->build_grid_cell($grid['replaces']['consegnaDemo'], $dato) : null,
             'consegna' => isset($grid['replaces']['consegna']) ? $this->datab->build_grid_cell($grid['replaces']['consegna'], $dato) : null,
@@ -22,6 +22,7 @@ if (isset($grid_data['data'])) {
  */
 ?>
 
+
 <div class="row">
     <?php foreach ($items as $id => $item): ?>
         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
@@ -36,7 +37,7 @@ if (isset($grid_data['data'])) {
                         </p>
                         <!--<div class="desc">Task da fare: <?php echo ''; ?></div>-->
                         <?php if ($item['consegna']): ?>
-                            <div class="desc">Consegna prevista: <?php echo $item['consegna']; ?></div>
+                            <div class="desc"><?php e('Consegna prevista:'); ?> <?php echo $item['consegna']; ?></div>
                         <?php endif; ?>
                     </div>
                     <span class="more" style="position: absolute;bottom: 0;width: 100%;">Stato: <?php echo $item['stato']; ?> <i class="m-icon-swapright m-icon-white"></i></span>
@@ -45,3 +46,4 @@ if (isset($grid_data['data'])) {
         </div>
     <?php endforeach; ?>
 </div>
+  

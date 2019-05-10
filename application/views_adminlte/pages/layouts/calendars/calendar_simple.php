@@ -28,6 +28,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
         var jqCalendar = $('#<?php echo $calendarId; ?>');
         var calendarFetchType = <?php echo json_encode($data['calendars']['calendars_method']); ?>;
+        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time')?:'06:00:00'); ?>;
+        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time')?:'22:00:00'); ?>;
 
         var date = new Date();
         var d = date.getDate();
@@ -44,7 +46,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
             };
         } else {
             jqCalendar.removeClass("mobile");
-            if (Metronic.isRTL()) {
+            /*if (Metronic.isRTL()) {
                 h = {
                     right: 'title',
                     center: '',
@@ -56,7 +58,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                     center: '',
                     right: 'prev,next,today,month,agendaWeek,agendaDay'
                 };
-            }
+            }*/
         }
 
         //$('#calendar').fullCalendar('destroy'); // destroy the calendar [???]
@@ -64,6 +66,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
         switch (calendarFetchType) {
             case 'json':
                 jqCalendar.fullCalendar({
+                    minTime: minTime,
+                    maxTime: maxTime,
                     editable: true,
                     disableDragging: false,
                     header: h,
@@ -84,6 +88,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
             case 'static':
                 jqCalendar.fullCalendar({
+                    minTime: minTime,
+                    maxTime: maxTime,
                     disableDragging: true,
                     header: h,
                     editable: true,
@@ -93,6 +99,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
             case 'gcal':
                 jqCalendar.fullCalendar({
+                    minTime: minTime,
+                    maxTime: maxTime,
                     events: <?php echo json_encode($data['calendars']['calendars_method_param']); ?>,
                     eventClick: function (event) {
                         window.open(event.url, 'gcalevent', 'width=700,height=600');

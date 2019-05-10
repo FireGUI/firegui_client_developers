@@ -103,7 +103,7 @@
 				<div id="oneline" class="info">Specify here your Highcharts
 					configuration object.</div>
 				<textarea id="options" name="options" rows="12" cols="30"><%@include
-						file="/WEB-INF/jspf/config.js"%></textarea>
+						file="/WEB-INF/jspf/config.json"%></textarea>
 			</div>
 			<div id="svg"></div>
 			<label for="type">Image file format</label> <select name="type">

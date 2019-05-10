@@ -5,52 +5,42 @@
 <html lang="en">
 <!--<![endif]-->
 
-    <!-- BEGIN HEAD -->
-    <head>
-        <?php echo $head; ?>
-    </head>
-    <!-- END HEAD -->
-    
-    
-    <!-- BEGIN BODY -->
-    <body class="page-md page-header-fixed">
-        
-        <!-- BEGIN HEADER -->   
-        <div class="page-header md-shadow-z-1-i navbar navbar-fixed-top">
-           <?php echo $header; ?>
+<!-- BEGIN HEAD -->
+<head>
+    <?php echo $head; ?>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header class="main-header">
+
+        <?php echo $header; ?>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
+
+        <?php echo $sidebar; ?>
+
+    </aside>
+    <!-- Content Wrapper. Contains page content -->
+
+    <div class="content-wrapper" >
+
+        <?php if (!empty($this->settings['settings_maintenance_mode']) && $this->settings['settings_maintenance_mode'] == DB_BOOL_TRUE): ?>
+        <div class="callout callout-danger">
+            <h4>Aggiornamenti in corso</h4>
+
+            <p>Gentile cliente, stiamo effettuando degli aggiornamenti alla tua piattaforma, il servizio potrebbe subire leggere interruzioni, ci scusiamo per il disagio.</p>
         </div>
-        <!-- END HEADER -->
-        
-        
-        <div class="clearfix"></div>
-        
-        
-        <!-- BEGIN CONTAINER -->
-        <div class="page-container">
-            
-            <!-- BEGIN SIDEBAR -->
-            <div class="page-sidebar-wrapper">
-                <div class="page-sidebar navbar-collapse collapse">
-                    <?php echo $sidebar; ?>
-                </div>
-            </div>
-            <!-- END SIDEBAR -->
-            
-            <!-- BEGIN PAGE -->
-            <div class="page-content-wrapper">
-                <div class="page-content">
-                    <?php echo $page; ?>
-                </div>
-            </div>
-            <!-- END PAGE -->
-            
-        </div>
-        <!-- END CONTAINER -->
-        
-        
-        <?php echo $footer; ?>
-        
-    </body>
-    <!-- END BODY -->
-    
+        <?php endif; ?>
+
+        <?php echo $page; ?>
+    </div>
+    <?php echo $footer; ?>
+</div>
+
+</body>
+<!-- END BODY -->
 </html>

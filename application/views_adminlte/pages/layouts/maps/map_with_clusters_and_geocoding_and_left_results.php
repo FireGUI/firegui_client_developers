@@ -9,7 +9,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
         <div class="col-xs-12" style="margin-bottom: 10px">
             <a href="<?php // echo "#clusered_map_form_".$data['maps']['maps_id']; ?>" onclick="$('#<?php echo 'clusered_map_form_toggle' . $data['maps']['maps_id']; ?>').fadeIn('slow');" class="btn btn-xs red"><i class="fa fa-remove"></i></a>
         </div>
-        <form <?php echo sprintf('id="%s"', $mapFormId); ?> class="collapse">
+        <form <?php echo sprintf('id="%s"', $mapFormId); ?> class="__collapse">
             <div class="clearfix"></div>
 
             <?php foreach ($data['maps_fields'] as $map_field): ?>
@@ -28,7 +28,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
     <div class="row">
         <div class="col-md-8">
-            <a <?php echo sprintf('id="clusered_map_form_toggle%s"', $data['maps']['maps_id']); ?> href="<?php echo '#clusered_map_form_' . $data['maps']['maps_id']; ?>" data-toggle="collapse" onclick="$(this).fadeOut('fast');" class="btn btn-primary">Mostra filtri</a>
+            <!--<a <?php echo sprintf('id="clusered_map_form_toggle%s"', $data['maps']['maps_id']); ?> href="<?php echo '#clusered_map_form_' . $data['maps']['maps_id']; ?>" data-toggle="collapse" onclick="$(this).fadeOut('fast');" class="btn btn-primary">Mostra filtri</a>-->
         </div>
         <div class="col-md-4">
             <div class="input-group">
@@ -50,7 +50,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
             <ul class="js_result_list media-list">
                 <li class="js_result_item media hide">
                     <a class="js_result_link pull-right" href="#">
-                        <img class="js_result_image media-object" src="<?php echo base_url_template('images/no-image-50x50.gif'); ?>" alt="">
+                        <img class="js_result_image media-object" src="<?php echo base_url_admin('images/no-image-50x50.gif'); ?>" alt="">
                     </a>
                     <div class="media-body">
                         <h5 class="media-heading bold">
@@ -132,10 +132,10 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
                                     $.each(data, function (i, val) {
 
-                                        var html = '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '">Visualizza Dettagli</a>';
+                                        var html = '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '" target="_blank">Visualizza Dettagli</a>';
                                         var icon;
                                         if (val.marker) {
-                                            icon = L.icon({iconUrl: base_url_template + 'images/markers/' + val.marker, iconSize: [32, 32], iconAnchor: [16, 32]});
+                                            icon = L.icon({iconUrl: base_url_admin + 'images/markers/' + val.marker, iconSize: [32, 32], iconAnchor: [16, 32]});
                                         } else {
                                             icon = new L.Icon.Default();
                                         }
@@ -156,7 +156,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
                                             // Immagine
                                             if (val.thumbnail) {
-                                                $('.js_result_image', item).attr('src', base_url_template + 'uploads/' + val.thumbnail).css({
+                                                $('.js_result_image', item).attr('src', base_url_uploads + 'uploads/' + val.thumbnail).css({
                                                     width: '50px',
                                                     height: 'auto'
                                                 });
@@ -165,7 +165,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                                             }
 
                                             // Link
-                                            $('.js_result_link', item).attr('href', val.link);
+                                            $('.js_result_link', item).attr('href', val.link).attr('target', '_blank');
 
                                             // Titolo
                                             $('.js_result_title', item).html(val.title);
@@ -254,7 +254,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                                             cb = arg.cb;
                                     loading(true);
                                     $.ajax({
-                                        url: 'http://nominatim.openstreetmap.org/search',
+                                        url: 'https://nominatim.openstreetmap.org/search',
                                         dataType: 'jsonp',
                                         jsonp: 'json_callback',
                                         data: {q: query, format: 'json'},

@@ -61,7 +61,10 @@ if ($value) {
 <!--<div style="max-width: 400px;">-->
 <div style="max-width: 100%;">
     <div class="input-group">
-
+        <input type="text" class="form-control js_map_search" placeholder="<?php e('cerca località') ?>" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+        </span>
     </div>
     <br/>
     <div style="max-width: 100%; height: 300px; max-height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
@@ -238,7 +241,55 @@ if ($value) {
             map.invalidateSize();
             savePolygons();
         });
+        
+        
+        /*
+         * Geocoding
+         */
+        var searchInput = $('.js_map_search', $('#<?php echo $map; ?>').parent());
+        var geocoding = new L.Geocoding({
+            providers: {
+                custom: function (arg) {
+                    var that = this,
+                            query = arg.query,
+                            cb = arg.cb;
+                    $.ajax({
+                        url: 'https://nominatim.openstreetmap.org/search',
+                        dataType: 'jsonp',
+                        jsonp: 'json_callback',
+                        data: {q: query, format: 'json'}
+                    }).done(function (data) {
+                        if (data.length > 0) {
+                            var res = data[0];
+                            map.setView(new L.LatLng(res.lat, res.lon), 12, {animate: true});
+                        } 
+                    });
+                }
+            }
+        });
 
+        // Set custom provider default
+        geocoding.setOptions({provider: 'custom'});
+        map.addControl(geocoding);
+
+        // Geocoding
+
+        searchInput.on('blur', function () {
+            geocoding.geocode(searchInput.val());
+        });
+        // disabilito l'enter
+        searchInput.on('keypress', function (e) {
+            if(e.keyCode == 13){
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                geocoding.geocode(searchInput.val());
+            }
+        });
+
+        
+        
+        
     });
 
 </script>
