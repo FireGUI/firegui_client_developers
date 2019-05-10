@@ -2,9 +2,11 @@
     RewriteEngine On
     RewriteBase /dev/mastercrm/
 
+    
+
+    RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5/$6/$7/$8&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]
     RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5/$6&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]
     RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]
-
 
     #Removes access to the system folder by users.
     #Additionally this will allow you to create a System.php controller,
@@ -36,4 +38,25 @@
     # Submitted by: ElliotHaughin
 
     ErrorDocument 404 /index.php
+</IfModule>
+<IfModule mod_expires.c>
+
+# Enable expirations
+ExpiresActive On
+
+# Default directive
+ExpiresDefault "access plus 1 month"
+
+# Images
+ExpiresByType image/gif "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+ExpiresByType image/jpg "access plus 1 month"
+ExpiresByType image/jpeg "access plus 1 month"
+
+# CSS
+ExpiresByType text/css "access 1 month"
+
+# Javascript
+ExpiresByType application/javascript "access plus 1 year"
+
 </IfModule>

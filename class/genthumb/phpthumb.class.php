@@ -311,10 +311,14 @@ class phpthumb {
 		$this->ResolveSource();
 			$this->phpThumbDebug('8b');
 		$this->SetCacheFilename();
+                
 			$this->phpThumbDebug('8c');
+                        
 		$this->ExtractEXIFgetImageSize();
+                
 			$this->phpThumbDebug('8d');
 		if ($this->useRawIMoutput) {
+                    
 			$this->DebugMessage('Skipping rest of GenerateThumbnail() because ($this->useRawIMoutput == true)', __FILE__, __LINE__);
 			return true;
 		}
@@ -2907,7 +2911,9 @@ exit;
 		}
 
 		if (is_null($this->getimagesizeinfo)) {
+                    
 			$this->getimagesizeinfo = @GetImageSize($this->sourceFilename);
+                        
 		}
 
 		if (!empty($this->getimagesizeinfo)) {
@@ -2930,8 +2936,12 @@ exit;
 		$this->SetOrientationDependantWidthHeight();
 
 		if (phpthumb_functions::version_compare_replacement(phpversion(), '4.2.0', '>=') && function_exists('exif_read_data')) {
-			$this->exif_raw_data = @exif_read_data($this->sourceFilename, 0, true);
+                    //Matteo: tolto, non viene mai usato e dava errore!
+                    //$this->exif_raw_data = @exif_read_data($this->sourceFilename, 0, true);
+                    
+                    
 		}
+                
 		if (function_exists('exif_thumbnail') && ($this->getimagesizeinfo[2] == 2)) {
 			// Extract EXIF info from JPEGs
 
@@ -2941,8 +2951,8 @@ exit;
 
 			// The parameters width, height and imagetype are available since PHP v4.3.0
 			if (phpthumb_functions::version_compare_replacement(phpversion(), '4.3.0', '>=')) {
-
-				$this->exif_thumbnail_data = @exif_thumbnail($this->sourceFilename, $this->exif_thumbnail_width, $this->exif_thumbnail_height, $this->exif_thumbnail_type);
+                                //Matteo: tolto perchè credo che non serva e dava errore!
+				//$this->exif_thumbnail_data = @exif_thumbnail($this->sourceFilename, $this->exif_thumbnail_width, $this->exif_thumbnail_height, $this->exif_thumbnail_type);
 
 			} else {
 
@@ -3802,7 +3812,7 @@ exit;
 							$this->DebugMessage('gif_loadFileToGDimageResource('.$tempfilename.') completed', __FILE__, __LINE__);
 							unlink($tempfilename);
 							return $gdimg_source;
-							break;
+							//break;
 						} else {
 							$ErrorMessage = 'Failed to open tempfile in '.__FILE__.' on line '.__LINE__;
 							$this->DebugMessage($ErrorMessage, __FILE__, __LINE__);

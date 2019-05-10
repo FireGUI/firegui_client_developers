@@ -1,8 +1,19 @@
+<?php
+$all_sub_data = [];
+if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
+    $relation_field = $sub_grid['grid_relation_field'];
+    foreach ($grid_data['sub_grid_data'] as $sub_record) {
+        $all_sub_data[$sub_record[$relation_field]][] = $sub_record;
+    }
+
+    unset($grid_data['sub_grid_data']); // Free memory
+}
+?>
 <?php if (empty($grid_data['data'])): ?>
     <p>Nessun dato disponibile</p>
 <?php else: ?>
     <div class="table-scrollable table-scrollable-borderless">
-        <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> class="table table-striped table-bordered table-hover table-hover">
+        <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> class="table table-striped table-bordered table-hover table-hover <?php echo $grid['grids']['grids_append_class']; ?>">
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field): ?>
@@ -13,57 +24,48 @@
             </thead>
             <tbody>
                 <?php foreach ($grid_data['data'] as $key => $dato): ?>
+                    <?php $sub_data = isset($all_sub_data[$dato[$grid['grids']['entity_name'] . "_id"]]) ? $all_sub_data[$dato[$grid['grids']['entity_name'] . "_id"]] : []; ?>
                     <tr class="odd gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
                         <?php foreach ($grid['grids_fields'] as $field): ?>
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
 
-                        <?php
-                        if (empty($sub_grid) || empty($grid_data['sub_grid_data']['data'])) {
-                            $sub_data = array();
-                        } else {
-                            $parent_id = $dato[$grid['grids']['entity_name'] . "_id"];
-                            $relation_field = $sub_grid['grid_relation_field'];
-
-                            $sub_data = array_filter($grid_data['sub_grid_data']['data'], function ($sub_dato) use($parent_id, $relation_field) {
-                                return $sub_dato[$relation_field] == $parent_id;
-                            });
-                        }
-                        ?>
-
-                        <td <?php if(! empty($sub_data)): ?>style="border-bottom: 1px solid #000000 !important;" rowspan="2"<?php endif; ?>>
+                            <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?>>
                             <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
-                            <?php if ( ! empty($sub_data)): ?>
-                                <a class="btn btn-primary btn-xs pull-right" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
-                                    <span data-toggle="tooltip" class="caret"></span>
+                            <?php if ($sub_data): ?>
+                                <br>
+                                <a class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
+                                   espandi <span data-toggle="tooltip" class="caret"></span>
                                 </a>
                             <?php endif; ?>
                         </td>
                     </tr>
 
                     <?php /* INIZIO SUB ENTITY */ ?>
-                    <?php if (!empty($sub_data)): ?>
+                    <?php if ($sub_data): ?>
                         <tr>
-                            <td <?php echo 'colspan="' . count($grid['grids_fields']) . '"'; ?>  style="padding: 0; border-bottom: 1px solid #000000 !important;">
-                                <table <?php echo "id='{$collapse_id}'"; ?> class="collapse table table-bordered table-condensed table-full-width" style="margin-bottom: 0!important;">
-                                    <thead>
-                                        <tr>
-                                            <?php foreach ($sub_grid['grids_fields'] as $field): ?>
-                                                <th style="background-color: #999999; color: #ffffff"><?php echo $field['fields_draw_label']; ?></th>
-                                            <?php endforeach; ?>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($sub_data as $sub_dato): ?>
-                                            <tr class="odd gradeX" data-id="<?php echo $sub_dato[$sub_grid['entity']['entity_name'] . "_id"]; ?>">
+                            <td <?php echo 'colspan="' . count($grid['grids_fields']) . '"'; ?>  style="padding: 0;border: none;">
+                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse">
+                                    <table class="table table-bordered table-full-width" style="margin-bottom: 0!important;">
+                                        <thead>
+                                            <tr>
                                                 <?php foreach ($sub_grid['grids_fields'] as $field): ?>
-                                                <td><?php echo $this->datab->build_grid_cell($field, $sub_dato); ?></td>
+                                                    <th style="background-color: #dcdcdc; color: #000"><?php echo $field['grids_fields_column_name']; ?></th>
                                                 <?php endforeach; ?>
-
                                             </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($sub_data as $sub_dato): ?>
+                                                <tr class="odd gradeX" data-id="<?php echo $sub_dato[$sub_grid['grids']['entity_name'] . "_id"]; ?>">
+                                                    <?php foreach ($sub_grid['grids_fields'] as $field): ?>
+                                                        <td><?php echo $this->datab->build_grid_cell($field, $sub_dato); ?></td>
+                                                    <?php endforeach; ?>
+
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </td>
                         </tr>
                     <?php endif; ?>

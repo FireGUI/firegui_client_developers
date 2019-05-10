@@ -39,33 +39,31 @@ var handleSuccess = function(msg) {
             
         case 5:
             // Success
+            
             success(msg.txt);
             break;
-    }
-    
-    // Eventually close all modals if needed
-    if(typeof msg.close_modals !== 'undefined' && msg.close_modals) {
-        $('.modal').each(function() {
-            try {
-                $(this).data('bs.modal').askConfirmationOnClose = false;
-            } catch (e) {}
+        case 6:
+            // Success
             
-            $(this).modal('hide');
-        });
+            success(msg.txt);
+            break;
+        case 9:
+            // Callback
+            eval(msg.txt);
+            break;
     }
-
 };
 
 
 //var iShowCounter = 0;
 function loading(bShow) {
     if(bShow) {
-        $('.js_loading_overlay').fadeIn();
+//        $('.js_loading_overlay').fadeIn();
         $('.js_loading').fadeIn();
         // Se in 4 secondi non ho ottenuto una risposta, nascondo automaticamente il loader
         setTimeout(loading, 4000, false);
     } else {
-        $('.js_loading_overlay').fadeOut();
+//        $('.js_loading_overlay').fadeOut();
         $('.js_loading').fadeOut();
     }
 }
@@ -163,6 +161,7 @@ function sleep(milliseconds) {
 
 function formAjaxSend(form, ajaxOverrideOptions) {
     
+    refreshCkeditors();
     if (form instanceof Element || typeof form === 'string') {
         form = $(form);
     }
@@ -200,6 +199,11 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 // Default
                 handleSuccess(msg);
             }
+    
+            // Eventually close all modals if needed
+            if(typeof msg.close_modals !== 'undefined' && msg.close_modals) {
+                closeContainingPopups(form);
+            }
         },
         error: function(xhr, ajaxOptions, thrownError) {
             if (formEvents && formEvents.hasOwnProperty('form-ajax-error')) {
@@ -208,7 +212,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             } else {
                 // Default
                 var errorBox = $('#submitajax-error');
-                if (!errorBox.size()) {
+                if (!errorBox.length) {
                     errorBox = $('<div id="submitajax-error">').prependTo($('body'));
                     errorBox.css({'background-color':'#fff', 'z-index': 999999, 'padding': 15});
                 }
@@ -234,8 +238,16 @@ function formAjaxSend(form, ajaxOverrideOptions) {
 
 
 
-function error(txt) {
-    formAjaxShownMessage = $('#msg_' + formAjaxSubmittedFormId).html(txt);
+function error(txt, idform) {
+    console.log(idform);
+    if (typeof idform != 'undefined') {
+        
+        formAjaxShownMessage = $('#msg_' + idform).html(txt);
+    } else {
+        
+        formAjaxShownMessage = $('#msg_' + formAjaxSubmittedFormId).html(txt);
+    }
+    
     
     // Reset della proprietà css inline display in modo che non interferisca con
     // le classi di bootstrap
@@ -259,7 +271,7 @@ function success(txt) {
     var current = formAjaxShownMessage;
     
     if (txt) {
-        current.removeClass('hide alert-danger').addClass('alert-success');
+        current.removeClass('hide hidden alert-danger').addClass('alert-success');
         setTimeout(function() {
             current.fadeOut(function() {
                 current.addClass('hide hidden').html('');
@@ -273,3 +285,33 @@ function success(txt) {
         current.addClass('hide hidden');
     }
 }
+
+function refreshCkeditors() {
+    if (typeof CKEDITOR == 'undefined') {
+        return;
+    }
+    
+    var id;
+    for (id in CKEDITOR.instances) {
+        CKEDITOR.instances[id].updateElement();
+    }
+}
+
+
+function closeContainingPopups(el) {
+    // Try to close bootstrap modals
+    var bsModalParent = el.parents('.modal');
+    if (bsModalParent.size()) {
+        try {
+            bsModalParent.data('bs.modal').askConfirmationOnClose = false;
+        } catch (e) {}
+        bsModalParent.modal('hide');
+    }
+    
+    // Try to close fancybox
+    var fancyboxParent = el.parents('.fancybox-opened');
+    if (fancyboxParent.size()) {
+        $.fancybox.close();
+    }
+}
+

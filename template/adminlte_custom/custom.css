@@ -1,0 +1,52 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 18-apr-2018, 15.07.50
+    Author     : h2snc
+*/
+
+#search_form input[name="search"] {
+    margin: 5px 0;
+    
+}
+
+.table-scrollable {
+    overflow:auto;
+}
+
+.maintenance_mode_alert {
+    color:#ff1b08;
+    font-weight:bold;
+    font-size:20px;
+    margin: 0 auto;
+    position: absolute;
+    margin-top: 11px;
+    margin-left: 58px;
+}
+
+.blink_me {
+    animation: blinker 2s linear infinite;
+}
+.select2-container {
+    z-index: 1000!important;
+}
+#js_modal_container .modal-dialog .select2-container,.select2-container--open {
+    z-index: 9999 !important;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (min-width: 992px) {
+    .modal-xl {
+        width: 90%;
+        max-width: 1500px;
+    }
+}
+

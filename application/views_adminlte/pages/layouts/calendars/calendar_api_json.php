@@ -27,6 +27,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
         var jqCalendar = $('#<?php echo $calendarId; ?>');
         var sourceUrl = <?php echo json_encode(base_url("api/search/{$data['calendars']['entity_name']}")); ?>;
+        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time')?:'06:00:00'); ?>;
+        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time')?:'22:00:00'); ?>;
 
         var date = new Date();
         var d = date.getDate();
@@ -42,7 +44,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
             };
         } else {
             jqCalendar.removeClass("mobile");
-            if (Metronic.isRTL()) {
+            /*if (Metronic.isRTL()) {
                 h = {
                     right: 'title',
                     center: '',
@@ -54,7 +56,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                     center: '',
                     right: 'prev,next,today,month,agendaWeek,agendaDay'
                 };
-            }
+            }*/
         }
 
         jqCalendar.fullCalendar('destroy'); // destroy the calendar
@@ -64,12 +66,16 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
             selectable: true,
             disableDragging: false,
             header: h,
+            minTime: minTime,
+            maxTime: maxTime,
             
             monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
             monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
             dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
             dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
             firstDay: 1,
+            timeFormat: 'H:mm',
+            axisFormat: 'H:mm',
             buttonText: {
                 today:    'Mostra oggi',
                 month:    'Mese',

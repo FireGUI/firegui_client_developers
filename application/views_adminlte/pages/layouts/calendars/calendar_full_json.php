@@ -22,6 +22,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
         var jqCalendar = $('#<?php echo $calendarId; ?>');
         var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>";
+        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time')?:'06:00:00'); ?>;
+        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time')?:'22:00:00'); ?>;
 
         var date = new Date();
         var d = date.getDate();
@@ -33,23 +35,16 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
             h = {
                 left: 'title, prev, next',
                 center: '',
-                right: 'today,month,agendaWeek,agendaDay'
+                left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
             };
         } else {
             jqCalendar.removeClass("mobile");
-            if (Metronic.isRTL()) {
-                h = {
-                    right: 'title',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaDay'
-                };
-            } else {
-                h = {
-                    left: 'title',
-                    center: '',
-                    right: 'prev,next,today,month,agendaWeek,agendaDay'
-                };
-            }
+            
+            h = {
+                right: 'title',
+                center: '',
+                left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
+            };
         }
 
         jqCalendar.fullCalendar('destroy'); // destroy the calendar
@@ -59,8 +54,12 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
             selectable: true,
             disableDragging: false,
             header: h,
+            lang: 'it',
             selectHelper: true,
-            
+            minTime: minTime,
+            maxTime: maxTime,
+            timeFormat: 'H:mm',
+            axisFormat: 'H:mm',
             monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
             monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
             dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
@@ -77,7 +76,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                 var fStart = formatDate(start.toDate());    // formatted start
                 var fEnd = formatDate(end.toDate());        // formatted end
                 var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
-                var data = {<?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "t":"f"': ''); ?>};
+                var data = {<?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "'.DB_BOOL_TRUE.'":"'.DB_BOOL_FALSE.'"': ''); ?>};
                 loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
                     jqCalendar.fullCalendar('refetchEvents');
                 }, 'get');
@@ -92,7 +91,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                 var allDay = isAlldayEvent(event.start, event.end);
                 var fStart = event.start.format('DD/MM/YYYY HH:mm');    // formatted start
                 var fEnd = event.end.format('DD/MM/YYYY HH:mm');        // formatted end
-                var data = {<?php echo json_encode($calendar_map['id']).' : event.id,' . json_encode($calendar_map['start']).' : fStart, ' . json_encode($calendar_map['end']).' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']).' : allDay? "t":"f"': ''); ?>};
+                var data = {<?php echo json_encode($calendar_map['id']).' : event.id,' . json_encode($calendar_map['start']).' : fStart, ' . json_encode($calendar_map['end']).' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']).' : allDay? "'.DB_BOOL_TRUE.'":"'.DB_BOOL_FALSE.'"': ''); ?>};
 
                 $.ajax({
                     url: "<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>",
@@ -115,7 +114,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                 var allDay = isAlldayEvent(event.start, event.end);
                 var fStart = event.start.format('DD/MM/YYYY HH:mm');    // formatted start
                 var fEnd = event.end.format('DD/MM/YYYY HH:mm');        // formatted end
-                var data = {<?php echo json_encode($calendar_map['id']).' : event.id,' . json_encode($calendar_map['start']).' : fStart, ' . json_encode($calendar_map['end']).' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']).' : allDay? "t":"f"': ''); ?>};
+                var data = {<?php echo json_encode($calendar_map['id']).' : event.id,' . json_encode($calendar_map['start']).' : fStart, ' . json_encode($calendar_map['end']).' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']).' : allDay? "'.DB_BOOL_TRUE.'":"'.DB_BOOL_FALSE.'"': ''); ?>};
 
                 
                 $.ajax({

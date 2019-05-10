@@ -64,7 +64,7 @@ $autoload['libraries'] = array('session', 'database', 'apilib');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url', 'cookie', 'general_helper', 'language', 'text', 'entity');
+$autoload['helper'] = array('string' , 'url', 'cookie', 'general_helper', 'language', 'text', 'entity');
 
 
 /*

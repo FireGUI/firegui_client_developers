@@ -5,7 +5,7 @@
             <ul class="js_result_list media-list">
                 <li class="js_result_item media hide">
                     <a class="js_result_link pull-right" href="#">
-                        <img class="js_result_image media-object" src="<?php echo base_url_template('images/no-image-50x50.gif'); ?>" alt="">
+                        <img class="js_result_image media-object" src="<?php echo base_url_admin('images/no-image-50x50.gif'); ?>" alt="">
                     </a>
                     <div class="media-body">
                         <a class="js_result_link" href="#">
@@ -52,7 +52,7 @@
 
                         if(val.marker) {
                             var icon = L.icon({
-                                iconUrl: base_url_template+'uploads/'+val.marker,
+                                iconUrl: base_url_uploads + 'uploads/' + val.marker,
                                 iconSize: [64, null],
                             });
                         } else {
@@ -72,7 +72,7 @@
 
                         // Immagine
                         if(val.thumbnail) {
-                            $('.js_result_image', item).attr('src', base_url_template+'uploads/'+val.thumbnail).css({
+                            $('.js_result_image', item).attr('src', base_url_uploads + 'uploads/' + val.thumbnail).css({
                                 width: '50px',
                                 height: 'auto'
                             });
