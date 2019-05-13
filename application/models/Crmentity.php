@@ -581,6 +581,7 @@ class Crmentity extends CI_Model {
         $visible_fields = array_get($options, 'select', []);
         $entityName = $entityFullData['entity']['entity_name'];
 
+        //debug($entityFullData,true);
 
         if (!$visible_fields) {
 

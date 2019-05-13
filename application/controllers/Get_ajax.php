@@ -508,9 +508,13 @@ class Get_ajax extends MY_Controller {
         
         $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
 
+        
 
         $out_array = array();
         foreach ($grid_data as $dato) {
+            
+            
+            
             $tr = array();
             if ($has_bulk) {
                 $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
