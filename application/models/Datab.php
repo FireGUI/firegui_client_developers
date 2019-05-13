@@ -520,7 +520,12 @@ class Datab extends CI_Model
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE)
     {
         //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
-
+        $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
+            return ($field['grids_fields_replace_type'] == 'eval' && $field['grids_fields_eval_cache_type'] && $field['grids_fields_eval_cache_type'] != 'no_cache');
+        });
+        
+        debug($eval_cachable_fields,true);
+        
         if (is_array($value_id)) {
             $additional_data = isset($value_id['additional_data']) ? $value_id['additional_data'] : array();
             $value_id = isset($value_id['value_id']) ? $value_id['value_id'] : null;
