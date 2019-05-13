@@ -127,7 +127,7 @@ class Crmentity extends CI_Model {
                     $extra_data = true;
                     $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
 
-                    //debug($data,true);
+                    debug($data,true);
 
                     // Se è count ho finito qua, ma anche se non ho nessun risultato
                     if ($count OR ! $data['data']) {
@@ -457,7 +457,7 @@ class Crmentity extends CI_Model {
 
         $dati = $this->getEntityFullData($entity_id);
         
-        debug($dati,true);
+        
         
         $this->buildSelect($dati, $options);
         $this->buildWhere($where);
@@ -584,6 +584,8 @@ class Crmentity extends CI_Model {
         // Inizializzo i fields: se ho specificato una select allora sono a
         // posto, altrimenti li autocalcolo in base ai fields entità
         $visible_fields = array_get($options, 'select', []);
+        $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
+        
         $entityName = $entityFullData['entity']['entity_name'];
 
         //debug($entityFullData,true);
@@ -617,11 +619,22 @@ class Crmentity extends CI_Model {
             }
         }
 
+        //Aggiungo eventuali eval cachable
+        foreach ($eval_cachable_fields as $eval_field) {
+            if ($eval_field['grids_fields_eval_cache_type'] == 'query_equivalent') {
+                $visible_fields[] = $eval_field['grids_fields_eval_cache_data'];
+            }
+        }
+        
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
         //array_unshift($visible_fields, sprintf('%s_id', $entityName));
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
         $this->db->select(array_unique($visible_fields));
+        
+        debug($this->db->get_compiled_select(),true);
+        
+        
     }
 
     /**
