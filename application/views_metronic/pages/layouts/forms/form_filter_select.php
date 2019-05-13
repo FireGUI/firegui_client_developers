@@ -112,7 +112,23 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             </script>
                         <?php else: ?>
                             <?php if($field['filterref']): ?>
+                            <?php //debug($value); ?>
+                                <?php if ($field['type'] == 'multiselect'): ?>
+                                <select multiple class="form-control select2me field_<?php echo $field['id']; ?>"
+                                        name="conditions[<?php echo $k; ?>][value][]"
+                                        data-val="<?php echo $value; ?>" 
+                                        data-ref="<?php echo $field['filterref']; ?>"
+                                        data-source-field=""
+                                        data-minimum-input-length="0" >
+                                        
+                                    <?php foreach ($this->crmentity->getEntityPreview($field['filterref']) as $id => $name) : ?>
+                                    <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                                    <?php endforeach; ?>
+                                    
+                                </select>   
+                                <?php else: ?>
                                 <input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo $field['filterref']; ?>" data-referer="<?php echo $field['name']; ?>" class="form-control js_select_ajax field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />
+                                <?php endif; ?>
                             <?php else: ?>
                                 <input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-field-id="<?php echo $field['id']; ?>" class="form-control js_select_ajax_distinct field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />
                             <?php endif; ?>
@@ -127,7 +143,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
         <div class="col-md-12">
             <div class="pull-right">
                 
-                <?php if ($where_data): ?>
+                <?php if ($where_data): //Ho dovuto fare sto accrocchione perchè il new FormData che viene usato nel submit ajax non posta gli input type button... ?>
                 <input type="hidden" id="clear-filters-<?php echo $form['forms']['forms_id']; ?>" name="clear-filters" value="" />
                 <input type="button" onclick="javascript:$('#clear-filters-<?php echo $form['forms']['forms_id']; ?>').val('1');$('#form_<?php echo $form['forms']['forms_id']; ?>').trigger('submit');" class="btn red-intense"  value="Svuota filtri" />
                 <?php endif; ?>
