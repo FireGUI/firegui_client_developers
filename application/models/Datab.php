@@ -1880,6 +1880,7 @@ class Datab extends CI_Model
         $fields_ids = [];
 
 
+        
         if ($search) {
 
             $maxint4 = 2147483647;  // Max per int4
@@ -1892,6 +1893,9 @@ class Datab extends CI_Model
                 if (empty($field['support_fields'])) {
                     if (isset($field['fields_type']) && isset($field['fields_name'])) {
                         $_fields[] = $field;
+                    } else {
+                        //Se entro qui potrebbe essere un eval cachable...
+                        $_fields[] = $field;
                     }
                 } else {
                     foreach ($field['support_fields'] as $sfield) {
@@ -1903,9 +1907,12 @@ class Datab extends CI_Model
                 $fields_ids[] = $field['fields_id'];
             }
 
+            
+            
             $fields = $_fields;
 
 
+            
             /*
              * Facendo così penalizzo i risultati contenenti la stringa intera
              * cercata
@@ -1934,31 +1941,41 @@ class Datab extends CI_Model
                 $chunk = str_replace("'", "''", $_chunk);
                 $inner_where = [];
                 foreach ($fields as $field) {
-                    switch (($type = strtoupper($field['fields_type']))) {
-                        case 'VARCHAR': case 'TEXT':
-                            if ($this->db->dbdriver != 'postgre') {
-                                $chunk = strtolower($chunk);
-                                $inner_where[] = "LOWER({$field['fields_name']} LIKE '%{$chunk}%')";
-                            } else {
-                                 $inner_where[] = "({$field['fields_name']}::TEXT ILIKE '%{$chunk}%')";
-                            }
-                            
-                            break;
-                        
-                        case 'INT':
-                            if (is_numeric($chunk) && $chunk <= $maxint4) {
-                                $i_chunk = (int) $chunk;
-                                $inner_where[] = "({$field['fields_name']} = '{$i_chunk}')";
-                            }
-                            break;
-                        
-                        case 'FLOAT':
-                            if (is_numeric($chunk)) {
-                                $f_chunk = (float) $chunk;
-                                $inner_where[] = "({$field['fields_name']} = '{$f_chunk}')";
-                            }
-                            break;
+                    if  (!empty($field['fields_type'])) {
+                        switch (($type = strtoupper($field['fields_type']))) {
+                            case 'VARCHAR': case 'TEXT':
+                                if ($this->db->dbdriver != 'postgre') {
+                                    $chunk = strtolower($chunk);
+                                    $inner_where[] = "LOWER({$field['fields_name']} LIKE '%{$chunk}%')";
+                                } else {
+                                     $inner_where[] = "({$field['fields_name']}::TEXT ILIKE '%{$chunk}%')";
+                                }
+
+                                break;
+
+                            case 'INT':
+                                if (is_numeric($chunk) && $chunk <= $maxint4) {
+                                    $i_chunk = (int) $chunk;
+                                    $inner_where[] = "({$field['fields_name']} = '{$i_chunk}')";
+                                }
+                                break;
+
+                            case 'FLOAT':
+                                if (is_numeric($chunk)) {
+                                    $f_chunk = (float) $chunk;
+                                    $inner_where[] = "({$field['fields_name']} = '{$f_chunk}')";
+                                }
+                                break;
+                        }
+                    } else {
+                        if ($this->db->dbdriver != 'postgre') {
+                            $chunk = strtolower($chunk);
+                            $inner_where[] = "LOWER({$field['grids_fields_eval_cache_data']} LIKE '%{$chunk}%')";
+                        } else {
+                            $inner_where[] = "({$field['grids_fields_eval_cache_data']}::TEXT ILIKE '%{$chunk}%')";
+                        }
                     }
+                    
                 }
 
                 if ($inner_where) {

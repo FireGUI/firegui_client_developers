@@ -18,7 +18,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                     </th>
                 <?php endif; ?>
                 <?php foreach ($grid['grids_fields'] as $field): ?>
-                    <th <?php echo ($field['grids_fields_replace_type']!=='field') ? 'data-prevent-order': ''; ?> <?php if($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
+                    <th <?php echo ($field['grids_fields_replace_type']!=='field' && ($field['grids_fields_eval_cache_type'] == '' OR $field['grids_fields_eval_cache_type'] == 'no_cache')) ? 'data-prevent-order': ''; ?> <?php if($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
                 <?php endforeach; ?>
 
                 <?php if(grid_has_action($grid['grids'])): ?>
