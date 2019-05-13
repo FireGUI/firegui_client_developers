@@ -32,3 +32,7 @@ uploads/*
 .DS_Store
 nbproject/*
 
+.gitignore
+.project
+.buildpath
+.travis.yml
