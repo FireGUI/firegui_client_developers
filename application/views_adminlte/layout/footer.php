@@ -1,6 +1,6 @@
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-        <b>Version</b> 2.4.0
+        <b>Version</b> <?php echo VERSION; ?>
     </div>
     <strong>Copyright &copy; 2015-2019 <a href="<?php echo base_url();?>">H2 Web S.n.c.</a>.</strong> All rights
     reserved.

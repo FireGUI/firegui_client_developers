@@ -111,9 +111,10 @@ class Datab extends CI_Model
      * @param string $order_by
      * @param int $depth
      * @param bool $count
+     * @param array $eval_cachable_fields Eventuale array degli eval fields della grid cachabili. Servono per buildare correttamente il where e l'order by
      * @return array
      */
-    public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE)
+    public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE, $eval_cachable_fields = [])
     {
 
         // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
@@ -176,7 +177,8 @@ class Datab extends CI_Model
         if ($count) {
             return $this->apilib->count($entity['entity_name'], $where);
         } else {
-            return $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth);
+            
+            return $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields);
         }
     }
 
@@ -524,7 +526,7 @@ class Datab extends CI_Model
             return ($field['grids_fields_replace_type'] == 'eval' && $field['grids_fields_eval_cache_type'] && $field['grids_fields_eval_cache_type'] != 'no_cache');
         });
         
-        debug($eval_cachable_fields,true);
+        //debug($eval_cachable_fields,true);
         
         if (is_array($value_id)) {
             $additional_data = isset($value_id['additional_data']) ? $value_id['additional_data'] : array();
@@ -576,7 +578,7 @@ class Datab extends CI_Model
 
         $this->apilib->setLanguage();
 
-        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, 2, $count);
+        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, 2, $count, $eval_cachable_fields);
 
         // Riabilita sistema traduzioni
         $this->apilib->setLanguage($clanguage, $flanguage);
