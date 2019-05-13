@@ -28,4 +28,6 @@ controllers/custom/*
 uploads/*
 .idea/*
 .AppleDouble/*
+.AppleDouble
+.DS_Store
 nbproject/*
