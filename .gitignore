@@ -17,6 +17,10 @@ application/logs/*
 /vendor/
 
 application/config/database.php
+application/config/config.php
+application/config/crm_configurations.php
+.htaccess
+
 modules/*
 
 uploads/*
