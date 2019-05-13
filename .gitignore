@@ -16,6 +16,10 @@ application/logs/*
 !application/logs/.htaccess
 /vendor/
 
+database.php
+
+
 uploads/*
 .idea/*
 .AppleDouble/*
+nbproject/*
