@@ -7,7 +7,7 @@ class Api extends MY_Controller {
     
     public function __construct() {
         parent::__construct();
-        
+
         // Imposto l'apilib:
         // ---
         // 1)   L'apilib deve funzionare in modalità API per quanto riguarda i
@@ -19,9 +19,10 @@ class Api extends MY_Controller {
         $this->apilib->setLanguage();
         
         header('Access-Control-Allow-Origin: *');
-        header('Content-Type: application/json');
-        
+        header('Content-Type: application/json'); 
+
         // Niente profiler in API
+        // Profiler
         $this->output->enable_profiler(false);
     }
     
