@@ -105,7 +105,7 @@ class Crmentity extends CI_Model {
      * 
      * @throws Exception
      */
-    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2) {
+    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2, $eval_cachable_fields = []) {
         if (!$entity_id) {
             if (!$this->entity_id) {
                 throw new Exception("Impossibile eseguire la query: entità non specificata.");
@@ -122,10 +122,10 @@ class Crmentity extends CI_Model {
             return [];
         }
 
-        return $this->getFromCache($_cache_key, function() use($entity_id, $entity_name, $where, $limit, $offset, $order_by, $count, $depth) {
+        return $this->getFromCache($_cache_key, function() use($entity_id, $entity_name, $where, $limit, $offset, $order_by, $count, $depth, $eval_cachable_fields) {
 
                     $extra_data = true;
-                    $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth'));
+                    $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
 
                     //debug($data,true);
 
@@ -451,9 +451,14 @@ class Crmentity extends CI_Model {
         $count = array_get($options, 'count', false);
         $extra_data = array_get($options, 'extra_data', false);
         $depth = array_get($options, 'depth', 2);
+        $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
+        
         // =================
 
         $dati = $this->getEntityFullData($entity_id);
+        
+        debug($dati,true);
+        
         $this->buildSelect($dati, $options);
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);

@@ -818,7 +818,7 @@ class Apilib {
     
     
     
-    public function search($entity=null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2) {
+    public function search($entity=null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = []) {
         //die('test');
         if( ! $entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -908,7 +908,8 @@ class Apilib {
             //$order = $orderBy? $orderBy.' '.($orderDir==='ASC'? $orderDir: 'DESC'): null;
             
             try {
-                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit?:null, $offset, $order, false, $maxDepth);
+                
+                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit?:null, $offset, $order, false, $maxDepth, $eval_cachable_fields);
                 $this->cache->save($cache_key, $out, $this->CACHE_TIME);
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
