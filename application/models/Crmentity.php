@@ -127,7 +127,7 @@ class Crmentity extends CI_Model {
                     $extra_data = true;
                     $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
 
-                    debug($data,true);
+                    //debug($data,true);
 
                     // Se è count ho finito qua, ma anche se non ho nessun risultato
                     if ($count OR ! $data['data']) {
@@ -619,12 +619,7 @@ class Crmentity extends CI_Model {
             }
         }
 
-        //Aggiungo eventuali eval cachable
-        foreach ($eval_cachable_fields as $eval_field) {
-            if ($eval_field['grids_fields_eval_cache_type'] == 'query_equivalent') {
-                $visible_fields[] = $eval_field['grids_fields_eval_cache_data'];
-            }
-        }
+        
         
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
@@ -632,9 +627,20 @@ class Crmentity extends CI_Model {
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
         $this->db->select(array_unique($visible_fields));
         
-        debug($this->db->get_compiled_select(),true);
+        $select_str = $this->db->get_compiled_select();
         
-        
+        //Aggiungo eventuali eval cachable
+        $eval_fields = [];
+        foreach ($eval_cachable_fields as $eval_field) {
+            if ($eval_field['grids_fields_eval_cache_type'] == 'query_equivalent') {
+                $eval_fields[] = $eval_field['grids_fields_eval_cache_data'].' AS '. url_title($eval_field['grids_fields_column_name'],'_',true);
+            }
+        }
+        if (!empty($eval_fields)) {
+            //Rimuovo la scritta "SELECT " davanti
+            $select_str = str_ireplace("SELECT ", '', $select_str);
+            $this->db->select($select_str.','.implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
+        }
     }
 
     /**
