@@ -22,6 +22,8 @@ application/config/crm_configurations.php
 .htaccess
 
 modules/*
+custom_views/*
+controllers/custom/*
 
 uploads/*
 .idea/*
