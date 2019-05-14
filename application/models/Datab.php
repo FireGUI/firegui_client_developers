@@ -2659,6 +2659,7 @@ class Datab extends CI_Model
                     $sub_grid = $this->get_grid($grid['grids']['grids_sub_grid_id']);
                     $relation_field = $this->db->select('fields_name')->from('fields')->where('fields_entity_id', $sub_grid['grids']['grids_entity_id'])->where('fields_ref', $grid['grids']['entity_name'])->get();
                     if ($relation_field->num_rows() < 1) {
+                        //debug($grid);
                         debug("L'entità {$grid['grids']['entity_name']} non è referenziata dall'entità {$sub_grid['grids']['entity_name']}");
                     } else {
                         $sub_grid['grid_relation_field'] = $relation_field->row()->fields_name;
