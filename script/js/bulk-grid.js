@@ -3,7 +3,7 @@ $(document).ready(function () {
     $("input:checkbox.js_bulk_check,.js-bulk-select-all").removeAttr('checked').trigger('change');
     $.uniform.update();
     $('.js-bulk-select-all').on('click', function () {
-        var grid_container = $(this).closest('div[data-layout-box]');
+        var grid_container = $(this).closest('table.table');
         
         if ($(this).is(':checked')) {
             $('input[type="checkbox"].js_bulk_check', grid_container).attr('checked', 'checked').trigger('change');
@@ -30,7 +30,7 @@ $(document).ready(function () {
     $("table").on('click',"input:checkbox.js_bulk_check",  function () {
         //Questo ridisegna le checkbox metronic
         $.uniform.update();
-        var grid_container = $(this).closest('div[data-layout-box]');
+        var grid_container = $(this).closest('table.table');
         var chkbx_ids = $("input:checkbox.js_bulk_check:checked", grid_container).map(function(){
             return $(this).val();
         }).get();
