@@ -1887,8 +1887,9 @@ class Datab extends CI_Model
 
             /** FIX: Cerco gli eventuali support fields di un singolo field e li metto in un array al più bidimensionale * */
             $_fields = array();
+            
             foreach ($fields as $field) {
-                if (in_array($field['fields_id'], $fields_ids))
+                if (in_array($field['fields_id'], $fields_ids) && $field['fields_id'] != '')
                     continue;
                 if (empty($field['support_fields'])) {
                     if (isset($field['fields_type']) && isset($field['fields_name'])) {
@@ -1907,10 +1908,7 @@ class Datab extends CI_Model
                 $fields_ids[] = $field['fields_id'];
             }
 
-            
-            
             $fields = $_fields;
-
 
             
             /*
@@ -1948,7 +1946,7 @@ class Datab extends CI_Model
                                     $chunk = strtolower($chunk);
                                     $inner_where[] = "LOWER({$field['fields_name']} LIKE '%{$chunk}%')";
                                 } else {
-                                     $inner_where[] = "({$field['fields_name']}::TEXT ILIKE '%{$chunk}%')";
+                                    $inner_where[] = "({$field['fields_name']}::TEXT ILIKE '%{$chunk}%')";
                                 }
 
                                 break;
@@ -1968,22 +1966,25 @@ class Datab extends CI_Model
                                 break;
                         }
                     } else {
-                        if ($this->db->dbdriver != 'postgre') {
-                            $chunk = strtolower($chunk);
-                            $inner_where[] = "LOWER({$field['grids_fields_eval_cache_data']} LIKE '%{$chunk}%')";
-                        } else {
-                            $inner_where[] = "({$field['grids_fields_eval_cache_data']}::TEXT ILIKE '%{$chunk}%')";
+                        if (!empty($field['grids_fields_eval_cache_data'])) {
+                            if ($this->db->dbdriver != 'postgre') {
+                                $chunk = strtolower($chunk);
+                                $inner_where[] = "LOWER({$field['grids_fields_eval_cache_data']} LIKE '%{$chunk}%')";
+                            } else {
+
+                                $inner_where[] = "({$field['grids_fields_eval_cache_data']}::TEXT ILIKE '%{$chunk}%')";
+                            }
                         }
                     }
                     
                 }
-
+//debug($inner_where,true);
                 if ($inner_where) {
                     $outer_where[] = '(' . implode(' OR ', $inner_where) . ')';
                 }
             }
         }
-        //debug($outer_where);
+        
         return implode(' AND ', $outer_where);
     }
     private function is_layout_cachable($layout_id) {
