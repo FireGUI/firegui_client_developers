@@ -64,7 +64,7 @@
                 if (stripos($custom_action['grids_actions_link'], '{value_id}')) {
                     $url = str_ireplace('{value_id}', $id, $custom_action['grids_actions_link']);
                 } else {
-                    $url = "$url/$id";
+                    $url = "{$custom_action['grids_actions_link']}/$id";
                 }
                 
                 
