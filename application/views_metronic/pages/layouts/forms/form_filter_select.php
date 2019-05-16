@@ -111,27 +111,52 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 });
                             </script>
                         <?php else: ?>
-                            <?php if($field['filterref']): ?>
-                            <?php //debug($value); ?>
-                                <?php if ($field['type'] == 'multiselect'): ?>
-                                <select multiple class="form-control select2me field_<?php echo $field['id']; ?>"
-                                        name="conditions[<?php echo $k; ?>][value][]"
-                                        data-val="<?php echo $value; ?>" 
-                                        data-ref="<?php echo $field['filterref']; ?>"
-                                        data-source-field=""
-                                        data-minimum-input-length="0" >
+                        	
+                        	<?php if ($field['type'] == 'multiselect'): ?>
+                            	<input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
+    							<?php if($field['filterref']): ?>
+                                    <select multiple class="form-control select2me field_<?php echo $field['id']; ?>"
+                                            name="conditions[<?php echo $k; ?>][value][]"
+                                            data-val="<?php echo $value; ?>" 
+                                            data-ref="<?php echo $field['filterref']; ?>"
+                                            data-source-field=""
+                                            data-minimum-input-length="0" >
+                                            
+                                        <?php foreach ($this->crmentity->getEntityPreview($field['filterref']) as $id => $name) : ?>
+                                        <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                                        <?php endforeach; ?>
                                         
-                                    <?php foreach ($this->crmentity->getEntityPreview($field['filterref']) as $id => $name) : ?>
-                                    <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
-                                    <?php endforeach; ?>
-                                    
-                                </select>   
+                                    </select>  
                                 <?php else: ?>
-                                <input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo $field['filterref']; ?>" data-referer="<?php echo $field['name']; ?>" class="form-control js_select_ajax field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />
-                                <?php endif; ?>
+                                    <?php 
+                                    $field_completo = $this->datab->get_field($field['id']);
+                                    $entity = $this->datab->get_entity($field_completo['fields_entity_id']); 
+                                    ?>
+                                    <select multiple class="form-control select2me field_<?php echo $field['id']; ?>"
+                                            name="conditions[<?php echo $k; ?>][value][]"
+                                            data-val="<?php echo $value; ?>" 
+                                            data-ref=""
+                                            data-source-field=""
+                                            data-minimum-input-length="0" >
+                                            
+                                        <?php foreach ($this->db->query("SELECT DISTINCT({$field_completo['fields_name']}) as foo FROM {$entity['entity_name']}")->result_array() as $val) : ?>
+                                        <option value="<?php echo $val['foo']; ?>" <?php echo (in_array($val['foo'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $val['foo']; ?></option>
+                                        <?php endforeach; ?>
+                                        
+                                    </select>
+                                <?php endif; ?> 
                             <?php else: ?>
-                                <input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-field-id="<?php echo $field['id']; ?>" class="form-control js_select_ajax_distinct field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />
+                            	<?php if($field['filterref']): ?>
+                            	<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo $field['filterref']; ?>" data-referer="<?php echo $field['name']; ?>" class="form-control js_select_ajax field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />
+                            	<?php  else : ?>
+                            	<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-field-id="<?php echo $field['id']; ?>" class="form-control js_select_ajax_distinct field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />
+                            	<?php  endif; ?>
                             <?php endif; ?>
+                        
+                            
+                            <?php //debug($value); ?>
+                                
+                            
                         <?php endif; ?>
                     </div>
                 </div>     
