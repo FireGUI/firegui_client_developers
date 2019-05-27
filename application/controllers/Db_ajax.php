@@ -80,11 +80,16 @@ class Db_ajax extends MY_Controller {
                 // in questione
 
                 if (!is_array($value_id)) {
-
                     $savedId = $this->apilib->edit($entity, $value_id, $dati, false);
                 } else {
+                    //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
+                    foreach ($dati as $key => $val) {
+                         if (!in_array($key, $this->input->post('edit_fields'))) {
+                             unset($dati[$key]);
+                         }   
+                    }
                     foreach ($value_id as $val) {
-
+                        
                         $savedId = $this->apilib->edit($entity, $val, $dati, false);
                     }
                 }

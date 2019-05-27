@@ -543,7 +543,7 @@ class Datab extends CI_Model
         //20190327 Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
         if (is_null($order_by) && !$count) {
             
-            $order_by = $grid['grids']['entity_name'].'_id DESC';
+            $order_by = $grid['grids']['entity_name'].'.'.$grid['grids']['entity_name'].'_id DESC';
         }
         
         $has_bulk = !empty($grid['grids_bulk_mode']);
