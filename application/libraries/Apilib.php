@@ -2011,6 +2011,7 @@ class Apilib {
         if (!empty($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype])) {
             foreach ($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype] as $function) {
                 try {
+                    
                     eval($function['post_process_what']);
                 } catch (Exception $ex) {
                     throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
