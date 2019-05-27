@@ -1,4 +1,7 @@
-<?php $form_id = "form_{$form['forms']['forms_id']}"; ?>
+<?php 
+$form_id = "form_{$form['forms']['forms_id']}"; 
+$bulk_mode = (is_array($value_id));
+?>
 
 <?php
 $sizeClass = '';
@@ -34,14 +37,31 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                     <div class="col-xs-12">
 
                         <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="form formAjax" enctype="multipart/form-data" data-edit-id="<?php echo $value_id; ?>">
-
+                            <?php if ($bulk_mode) : ?>
+                                        <?php foreach ($value_id as $val) : ?>
+                                            <input type="hidden" name="value_id[]" value="<?php echo $val; ?>" />
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                             <!-- FORM HIDDEN DATA -->
                             <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
 
                             <div class="form-body">
                                 <div class="row">
                                 <?php foreach ($form['forms_fields'] as $field): ?>
-                                    <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
+                                                <?php if ($bulk_mode) : ?>
+                                                <div class="js_field_container">
+                                                    <div class="col-lg-3">
+                                                        <label>Edit this:</label>
+                                                        <input type="checkbox" class="_form-control js_field_check" name="edit_fields[]" value="<?php echo $field['name']; ?>" />
+                                                    </div>
+                                                    <div class="col-lg-9">
+                                                <?php else: ?>
+                                                <div class="<?php echo sprintf('col-lg-%d', $field['size'] ? : 12); ?>">
+                                                <?php endif; ?>
+                                                    <?php echo $field['html']; ?>
+                                                
+                                                </div>
+                                                <?php if ($bulk_mode) : ?></div><?php endif; ?>
                                 <?php endforeach; ?>
                                 </div>
 
@@ -74,3 +94,18 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
             </div>
         </div>
     </div>
+<?php if ($bulk_mode) : ?>
+        <script>
+        $(document).ready(function () {
+            $(':input:not(.js_field_check,button,[type="hidden"])', $('#<?php echo $form_id; ?>')).attr('disabled', 'disabled');
+            $('.js_field_check').on('click', function () {
+                if ($(this).is(':checked')) {
+                    $(':input:not(.js_field_check)', $(this).closest('.js_field_container')).removeAttr('disabled');
+                } else {
+                    $(':input:not(.js_field_check,button,[type="hidden"])', $(this).closest('.js_field_container')).attr('disabled', 'disabled');
+                }
+                
+            });
+        });
+    </script>
+<?php endif; ?>

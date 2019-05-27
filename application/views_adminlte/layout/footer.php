@@ -67,7 +67,7 @@
 
 
 
-<script  src="<?php echo base_url_scripts("script/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js?v={$this->config->item('version')}"); ?>"></script>
+<!--<script  src="<?php echo base_url_scripts("script/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js?v={$this->config->item('version')}"); ?>"></script>-->
 
 <script  src="<?php echo base_url_scripts("script/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js?v={$this->config->item('version')}"); ?>"></script>
 <!--<script  src="<?php echo base_url_scripts("script/global/scripts/metronic.js?v={$this->config->item('version')}"); ?>"></script>-->

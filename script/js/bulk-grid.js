@@ -3,7 +3,8 @@ $(document).ready(function () {
     $("input:checkbox.js_bulk_check,.js-bulk-select-all").removeAttr('checked').trigger('change');
     $.uniform.update();
     $('.js-bulk-select-all').on('click', function () {
-        var grid_container = $(this).closest('table.table');
+        
+        var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
         
         if ($(this).is(':checked')) {
             $('input[type="checkbox"].js_bulk_check', grid_container).attr('checked', 'checked').trigger('change');
@@ -30,15 +31,17 @@ $(document).ready(function () {
     $("table").on('click',"input:checkbox.js_bulk_check",  function () {
         //Questo ridisegna le checkbox metronic
         $.uniform.update();
-        var grid_container = $(this).closest('table.table');
+        var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
         var chkbx_ids = $("input:checkbox.js_bulk_check:checked", grid_container).map(function(){
             return $(this).val();
         }).get();
         //alert(chkbx_ids.length);
         if (chkbx_ids.length == 0) {
+            
             $('.js-bulk-first-option',grid_container).html('');
             $('.js-bulk-action option', grid_container).attr('disabled', 'disabled');
         } else {
+            console.log("UAI?");
             $('.js-bulk-first-option',grid_container).html(chkbx_ids.length+' selected');
             $('.js-bulk-action option', grid_container).removeAttr('disabled');
         }
