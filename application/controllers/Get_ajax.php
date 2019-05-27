@@ -55,7 +55,7 @@ class Get_ajax extends MY_Controller {
         }
 
         $modalSize = $this->input->get('_size');
-        if (!in_array($modalSize, ['small', 'large'])) {
+        if (!in_array($modalSize, ['small', 'large', 'extra'])) {
             $modalSize = null;
         }
 
@@ -91,7 +91,7 @@ class Get_ajax extends MY_Controller {
         }
 
         $modalSize = $this->input->get('_size');
-        if (!in_array($modalSize, ['small', 'large'])) {
+        if (!in_array($modalSize, ['small', 'large', 'extra'])) {
             $modalSize = null;
         }
 
