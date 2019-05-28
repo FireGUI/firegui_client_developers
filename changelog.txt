@@ -1,0 +1,5 @@
+Changelog version 1.4.2
+
+aggiunto xy
+fato anche questo
+
