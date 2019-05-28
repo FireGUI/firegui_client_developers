@@ -36,3 +36,4 @@ nbproject/*
 .project
 .buildpath
 .travis.yml
+/TMP/firegui_client_release107/nbproject/private/
