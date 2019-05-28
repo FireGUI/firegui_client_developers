@@ -1,5 +1,5 @@
-Changelog version 1.6.6
+Changelog version 1.0.9
  
-test change
-sadasdasd
-asdassgsfgrwijv   wjnaskgas
+New update system
+Removed unused files
+Bugfixing
