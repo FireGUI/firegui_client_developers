@@ -1,5 +1,4 @@
-Changelog version 1.0.9
+Changelog version 1.1.1
  
-New update system
-Removed unused files
-Bugfixing
+Bug fix
+Added get version
