@@ -122,6 +122,9 @@ class Firegui extends MY_Controller
     }
 
 
+    public function get_client_version() {
+        echo VERSION;
+    }
 }
 
 /* End of file welcome.php */
