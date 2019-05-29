@@ -122,24 +122,18 @@ class Firegui extends MY_Controller
     }
 
     public function updateClient() {
-        $versionDataJson = $this->input->post('client');
-        $version_data = @json_decode($versionDataJson);
+        /*$versionDataJson = $this->input->post('client');
+        $version_data = @json_decode($versionDataJson);*///DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
         //var_dump($version_data);
 
         if (!class_exists('ZipArchive')) {
             die("Missing ZipArchive class in client");
         }
 
-        if ($version_data) {
-            $version_data = (array)$version_data;
-            $file = $version_data['clients_releases_file'];
-            //debug($file);
-            $base_url_upload_firegui = FIREGUI_BASEURL."mastercrm_firegui/uploads/";
-
-            $url = $base_url_upload_firegui.$file;
-
+            $file_link = FIREGUI_BUILDER_BASEURL."public/client/getLastClientVersion";
+            
             $newfile = './tmp_file.zip';
-            if (!copy($url, $newfile)) {
+            if (!copy($file_link, $newfile)) {
                 throw new Exception("Error while copying zip file.");
             } else{
 
@@ -156,9 +150,7 @@ class Firegui extends MY_Controller
                 }
             }
 
-        } else {
-            throw new Exception("Error while getting client version informations...");
-        }
+        
 
 
     }
