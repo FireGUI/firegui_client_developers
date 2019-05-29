@@ -864,7 +864,7 @@ class Db_ajax extends MY_Controller {
         $this->load->library('upload', array(
             'upload_path' => FCPATH . 'uploads/' . $localFolder,
             'allowed_types' => '*',
-            'max_size' => '50000',
+            'max_size' => '100000',
             'encrypt_name' => false,
             'file_name' => $filename,
         ));
