@@ -131,7 +131,7 @@ class Firegui extends MY_Controller
         }
 
             $file_link = FIREGUI_BUILDER_BASEURL."public/client/getLastClientVersion";
-            
+            //die($file_link); 
             $newfile = './tmp_file.zip';
             if (!copy($file_link, $newfile)) {
                 throw new Exception("Error while copying zip file.");
