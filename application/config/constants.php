@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') OR define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '1.1.4');
+defined('VERSION') OR define('VERSION', '1.1.5');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -187,7 +187,8 @@ define('FIELDS_PERMISSIONS', serialize([
     4 => 'Read/Write (insert & update)'
 ]));
 
-define('FIREGUI_BASEURL', 'https://builder.firegui.com/');
+define('FIREGUI_BUILDER_BASEURL', 'https://builder.firegui.com/');
+define('FIREGUI_ADMIN_BASEURL', 'https://admin.firegui.com/');
 
 /*
 |--------------------------------------------------------------------------
