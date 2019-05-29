@@ -134,7 +134,7 @@ class Firegui extends MY_Controller
             $version_data = (array)$version_data;
             $file = $version_data['clients_releases_file'];
             //debug($file);
-            $base_url_upload_firegui = FIREGUI_BASEURL."uploads/";
+            $base_url_upload_firegui = FIREGUI_BASEURL."mastercrm_firegui/uploads/";
 
             $url = $base_url_upload_firegui.$file;
 
@@ -149,7 +149,7 @@ class Firegui extends MY_Controller
                    throw new Exception("Cannot open <$newfile>");
                 } else {
                     $temp_folder = FCPATH;
-                    mkdir($temp_folder);
+                    @mkdir($temp_folder);
                     $zip->extractTo($temp_folder);
                     $zip->close();
                     echo 'ok';
