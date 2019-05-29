@@ -121,6 +121,47 @@ class Firegui extends MY_Controller
 
     }
 
+    public function updateClient() {
+        $versionDataJson = $this->input->post('client');
+        $version_data = @json_decode($versionDataJson);
+        //var_dump($version_data);
+
+        if (!class_exists('ZipArchive')) {
+            die("Missing ZipArchive class in client");
+        }
+
+        if ($version_data) {
+            $version_data = (array)$version_data;
+            $file = $version_data['clients_releases_file'];
+            //debug($file);
+            $base_url_upload_firegui = FIREGUI_BASEURL."uploads/";
+
+            $url = $base_url_upload_firegui.$file;
+
+            $newfile = './tmp_file.zip';
+            if (!copy($url, $newfile)) {
+                throw new Exception("Error while copying zip file.");
+            } else{
+
+                $zip = new ZipArchive();
+
+                if ($zip->open($newfile) !== TRUE) {
+                   throw new Exception("Cannot open <$newfile>");
+                } else {
+                    $temp_folder = FCPATH;
+                    mkdir($temp_folder);
+                    $zip->extractTo($temp_folder);
+                    $zip->close();
+                    echo 'ok';
+                }
+            }
+
+        } else {
+            throw new Exception("Error while getting client version informations...");
+        }
+
+
+    }
 
     public function get_client_version() {
         echo VERSION;
