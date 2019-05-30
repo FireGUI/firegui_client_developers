@@ -1,3 +1,3 @@
-Changelog version 1.1.8
+Changelog version 1.1.9
  
-Excluded crm_configurations.php from master project
+Fix while creating zip archive if destination's folders doesn't exists (forced mkdir)
