@@ -1,3 +1,3 @@
-Changelog version 1.1.9
+Changelog version 1.2.0
  
-Fix while creating zip archive if destination's folders doesn't exists (forced mkdir)
+Fix general_helper.php on array_pop (only variables should be passed by reference error)

@@ -828,7 +828,8 @@ if (!function_exists('zip_folder')) {
         }
 
         //Folder tree creation before open destination
-        $dirs = array_pop(explode('/',$destination));
+        $dirs = explode('/',$destination);
+        array_pop($dirs);
         foreach ($dirs as $dir) {
             if (!is_dir(FCPATH . $dir)) {
                 mkdir(FCPATH . $dir, DIR_WRITE_MODE, true);
