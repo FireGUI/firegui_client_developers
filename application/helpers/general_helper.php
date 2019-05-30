@@ -827,6 +827,14 @@ if (!function_exists('zip_folder')) {
             return false;
         }
 
+        //Folder tree creation before open destination
+        $dirs = array_pop(explode('/',$destination));
+        foreach ($dirs as $dir) {
+            if (!is_dir(FCPATH . $dir)) {
+                mkdir(FCPATH . $dir, DIR_WRITE_MODE, true);
+            }
+        }
+        
         $zip = new ZipArchive();
         if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
             //return $zip->getStatusString();
@@ -871,7 +879,9 @@ if (!function_exists('zip_folder')) {
             }
             
         }
-        //var_dump($zip->getStatusString());
+        
+        //die($destination);
+        
         return $zip->close();
         
         
