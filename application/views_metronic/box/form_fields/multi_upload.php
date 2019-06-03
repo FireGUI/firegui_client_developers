@@ -30,6 +30,8 @@
                 autoProcessQueue: false,
                 parallelUploads: 1,
                 addRemoveLinks: true,
+                maxThumbnailFilesize: <?php echo (int)((defined('MAX_UPLOAD_SIZE')?MAX_UPLOAD_SIZE:10000)/1000); ?>,
+                maxFilesize: <?php echo (int)((defined('MAX_UPLOAD_SIZE')?MAX_UPLOAD_SIZE:10000)/1000); ?>,
                 clickable: true,
                 complete: function (file) {
                     //alert(1);
