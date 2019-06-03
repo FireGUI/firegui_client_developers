@@ -153,7 +153,8 @@ $PHPTHUMB_CONFIG['output_interlace'] = false;   // if true: interlaced output fo
 $PHPTHUMB_CONFIG['error_image_width']           = 400;      // default width for error images
 $PHPTHUMB_CONFIG['error_image_height']          = 100;      // default height for error images
 
-$current_img = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$current_img = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 $current_path_expl = explode('/', $current_img);
 array_pop($current_path_expl);
 array_pop($current_path_expl);
