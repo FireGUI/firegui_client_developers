@@ -1,3 +1,3 @@
-Changelog version 1.2.1
+Changelog version 1.2.2
  
-Bugfix crmentity model: lose select string when no eval column were sent and force to * instead of correct select string.
+Bugfix dataTable in jquery.dataTables.min.js, forse parseInt() on parameter _iDisplayLength, causing next button stop working.
