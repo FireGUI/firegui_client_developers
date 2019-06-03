@@ -231,7 +231,8 @@ function initTable(gridID) {
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
-    var defaultLimit = oDataTable.attr('default-limit');
+    var defaultLimit = parseInt(oDataTable.attr('default-limit'));
+    console.log('limite:'+defaultLimit);
     var aoColumns = [];
     $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;

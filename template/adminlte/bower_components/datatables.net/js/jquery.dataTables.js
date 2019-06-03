@@ -4934,9 +4934,11 @@
 	{
 		var
 			start     = settings._iDisplayStart,
-			len       = settings._iDisplayLength,
+			len       = parseInt(settings._iDisplayLength),
 			records   = settings.fnRecordsDisplay();
-
+                
+                
+                    
 		if ( records === 0 || len === -1 )
 		{
 			start = 0;
@@ -4967,6 +4969,7 @@
 		}
 		else if ( action == "next" )
 		{
+                    
 			if ( start + len < records )
 			{
 				start += len;
