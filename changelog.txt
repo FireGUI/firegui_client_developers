@@ -1,3 +1,3 @@
-Changelog version 1.2.0
+Changelog version 1.2.1
  
-Fix general_helper.php on array_pop (only variables should be passed by reference error)
+Bugfix crmentity model: lose select string when no eval column were sent and force to * instead of correct select string.

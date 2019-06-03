@@ -312,7 +312,7 @@ class V1 extends MY_Controller {
             } else {
                 $where = [];
             }
-            
+
             
             
             $postData = $this->apilib->runDataProcessing($entity, 'pre-search', $postData);
@@ -341,7 +341,6 @@ class V1 extends MY_Controller {
 //                    ->offset($offset)
 //                    ->get($entity)->result_array();
 
-            
             $this->filterOutputFields($entity, $output);
             
             $this->logAction(__FUNCTION__, func_get_args());
