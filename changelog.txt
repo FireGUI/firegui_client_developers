@@ -1,4 +1,4 @@
-Changelog version 1.2.4
+Changelog version 1.2.6
  
 First automatic update
 Added count update modules in sidebar
