@@ -830,7 +830,7 @@ class Apilib {
         
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.search.{$entity}.".md5(serialize($input))
-                .($limit? '.' . $limit:'').($offset? '.' . $offset: '').($orderBy? '.' . md5(serialize($orderBy)) . '.' . md5(serialize($orderDir)): '');
+                .($limit? '.' . $limit:'').$maxDepth.($offset? '.' . $offset: '').($orderBy? '.' . md5(serialize($orderBy)) . '.' . md5(serialize($orderDir)): '');
         
         
         

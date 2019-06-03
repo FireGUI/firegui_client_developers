@@ -125,6 +125,7 @@ class Crmentity extends CI_Model {
         return $this->getFromCache($_cache_key, function() use($entity_id, $entity_name, $where, $limit, $offset, $order_by, $count, $depth, $eval_cachable_fields) {
 
                     $extra_data = true;
+                    //die('depth:'.$depth);
                     $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
 
                     //debug($data,true);
@@ -459,7 +460,7 @@ class Crmentity extends CI_Model {
         
         
         
-        $this->buildSelect($dati, $options);
+        $this->buildSelect($dati, $options); 
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);
 
@@ -493,6 +494,8 @@ class Crmentity extends CI_Model {
                 }
             }
         }
+        
+        
 
         // =====================================================================
         // QUERY OUT - COUNT
@@ -513,7 +516,7 @@ class Crmentity extends CI_Model {
         // =====================================================================
         $qResult = $this->db->get();
 
-        //debug($this->db->last_query());
+        //debug($this->db->last_query(),true);
 
 
         if (!$qResult instanceof CI_DB_result) {
@@ -624,10 +627,15 @@ class Crmentity extends CI_Model {
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
         //array_unshift($visible_fields, sprintf('%s_id', $entityName));
+        
+        
+        
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
         $this->db->select(array_unique($visible_fields));
         
-        $select_str = $this->db->get_compiled_select();
+        
+        
+        
         
         //Aggiungo eventuali eval cachable
         $eval_fields = [];
@@ -638,9 +646,10 @@ class Crmentity extends CI_Model {
         }
         if (!empty($eval_fields)) {
             //Rimuovo la scritta "SELECT " davanti
+            $select_str = $this->db->get_compiled_select();
             $select_str = str_ireplace("SELECT ", '', $select_str);
             $this->db->select($select_str.','.implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
-        }
+        } 
     }
 
     /**
