@@ -1,4 +1,3 @@
-Changelog version 1.2.6
+Changelog version 1.2.3
  
-First automatic update
-Added count update modules in sidebar
+Addedd protocol http or https check on genthumb class
