@@ -1,3 +1,4 @@
-Changelog version 1.2.2
+Changelog version 1.2.3
  
-Bugfix dataTable in jquery.dataTables.min.js, forse parseInt() on parameter _iDisplayLength, causing next button stop working.
+First automatic update
+Added count update modules in sidebar
