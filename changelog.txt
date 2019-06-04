@@ -1,3 +1,3 @@
-Changelog version 1.2.5
+Changelog version 1.2.6
  
-Add MAX_UPLOAD_SIZE as parameter in new Dropzone function, to force preview and upload image to work correctly
+Added cache eval fields to datatabel ajax slim
