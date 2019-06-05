@@ -1,3 +1,4 @@
-Changelog version 1.2.6
+Changelog version 1.2.7
  
-Added cache eval fields to datatabel ajax slim
+Datable fixed
+Json request api
