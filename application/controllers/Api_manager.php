@@ -66,6 +66,13 @@ class Api_manager extends MY_Controller {
         }
         $token_data['api_manager_tokens_creation_date'] = date('Y-m-d H:m:s');
         
+        if (empty($token_data['api_manager_tokens_ms_between_requests'])) {
+            unset($token_data['api_manager_tokens_ms_between_requests']);
+        }
+        if (empty($token_data['api_manager_tokens_limit_per_minute'])) {
+            unset($token_data['api_manager_tokens_limit_per_minute']);
+        }
+        
         $this->db->insert('api_manager_tokens', $token_data);
         //TODO: forzare i permessi di default, ovvero:
         //      - support table in sola lettura
