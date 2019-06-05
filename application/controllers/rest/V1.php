@@ -199,7 +199,7 @@ class V1 extends MY_Controller {
      */
     public function index($entity = null, $depth = 2) {
 
-        $this->logAction(__FUNCTION__, func_get_args());
+        
         
         $where = $this->getEntityWhere($entity);
         
@@ -207,6 +207,7 @@ class V1 extends MY_Controller {
             //$output = $this->apilib->index($entity, $depth);
             $output = $this->apilib->search($entity, $where, null, 0, null, 'ASC', $depth);
             $this->filterOutputFields($entity, $output);
+            $this->logAction(__FUNCTION__, func_get_args(),$output);
             $this->showOutput($output);
         } catch (ApiException $e) {
             $this->showError($e->getMessage(), $e->getCode());
@@ -226,7 +227,7 @@ class V1 extends MY_Controller {
             $_output = $this->apilib->search($entity, $where, null, 0, null, 'ASC', $depth);
             $this->filterOutputFields($entity, $_output);
             $output = $_output[0];
-            $this->logAction(__FUNCTION__, func_get_args());
+            $this->logAction(__FUNCTION__, func_get_args(),$output);
             $this->showOutput($output);
         } catch (ApiException $e) {
 
@@ -343,7 +344,7 @@ class V1 extends MY_Controller {
 
             $this->filterOutputFields($entity, $output);
             
-            $this->logAction(__FUNCTION__, func_get_args());
+            $this->logAction(__FUNCTION__, func_get_args(), $output);
             $this->showOutput($output);
         } catch (ApiException $e) {
 
@@ -381,11 +382,12 @@ class V1 extends MY_Controller {
      */
     public function delete($entity = null, $id = null, $output = 'json') {
 
-        $this->logAction(__FUNCTION__, func_get_args());
+        
 
         try {
             $this->apilib->delete($entity, $id);
-            $this->buildOutput($output, array());
+            $this->logAction(__FUNCTION__, func_get_args(),array());
+            $this->buildOutput($output, array()); 
         } catch (ApiException $e) {
             $this->showError($e->getMessage(), $e->getCode());
         }

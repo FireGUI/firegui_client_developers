@@ -1,3 +1,3 @@
 Changelog version 1.2.8
  
-Fixed topbar menu
+Added output of api rest V1 in log_api
