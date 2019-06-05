@@ -1,3 +1,11 @@
-Changelog version 1.2.8
+Changelog version 1.2.9
  
-Added output of api rest V1 in log_api
+Fixed various element on header, added toggle for maintenance and expert mode
+Graphic fixes and changes on project boxes
+Moved Layouts menu item inside Elements menu
+Fixed Api Logs layout
+Redesigned Modules search boxes
+Integrated DropzoneJS inside Publish module modal
+Fixed some DropzoneJs bugs inside update module modal 
+Moved "upload module" section inside a tab
+Changed module icon to firegui logo
