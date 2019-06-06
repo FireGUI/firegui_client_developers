@@ -2620,8 +2620,6 @@ class Datab extends CI_Model
 
                     }
                     
-                    
-                    
                     $tabs[$key] = [
                         'title' => $subbox['layouts_boxes_title'],
                         'content' => $content,

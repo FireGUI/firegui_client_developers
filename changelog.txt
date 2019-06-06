@@ -1,3 +1,3 @@
-Changelog version 1.2.9
+Changelog version 1.3.0
  
-Added evaluating pre-grid, pre-form, post-grid, post-form ecc in tabbed layout
+Added datatable ajax slim to metronic template
