@@ -2607,9 +2607,24 @@ class Datab extends CI_Model
                 $tabId = 'tabs_' . $layoutBoxData['layouts_boxes_id'];
                 $subboxes = (isset($layoutBoxData['subboxes']) && is_array($layoutBoxData['subboxes'])) ? $layoutBoxData['subboxes'] : [];
                 foreach ($subboxes as $key => $subbox) {
+                    //20190606 - MP - Nelle tab non venivano scatenati i pre-grid, post-grid, ecc.... ora si!
+                    $content = $this->getBoxContent($subbox, $value_id, $layoutEntityData);
+                    
+                    $hookSuffix = $subbox['layouts_boxes_content_type'];
+                    $hookRef = $subbox['layouts_boxes_content_ref'];
+
+                    if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
+                        $content = $this->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
+                                $content .
+                                $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+
+                    }
+                    
+                    
+                    
                     $tabs[$key] = [
                         'title' => $subbox['layouts_boxes_title'],
-                        'content' => $this->getBoxContent($subbox, $value_id, $layoutEntityData),
+                        'content' => $content,
                     ];
                 }
                 return $this->load->view("pages/layouts/tabbed/{$contentType}", array('tabs' => $tabs, 'tabs_id' => $tabId, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
