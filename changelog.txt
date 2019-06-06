@@ -1,11 +1,3 @@
-Changelog version 1.2.9
+Changelog version 1.3.0
  
-Fixed various element on header, added toggle for maintenance and expert mode
-Graphic fixes and changes on project boxes
-Moved Layouts menu item inside Elements menu
-Fixed Api Logs layout
-Redesigned Modules search boxes
-Integrated DropzoneJS inside Publish module modal
-Fixed some DropzoneJs bugs inside update module modal 
-Moved "upload module" section inside a tab
-Changed module icon to firegui logo
+Changed maintenance label color
