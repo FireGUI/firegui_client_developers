@@ -1,4 +1,3 @@
 Changelog version 1.3.2
  
-Bugfix download client version
-
+Bugfixing download client
