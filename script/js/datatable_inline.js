@@ -209,6 +209,7 @@ function initTable(gridID) {
         stateSave: true,
         bSort: bEnableOrder,
         aoColumns: aoColumns,
+        scrollX: true,
         aaSorting: [],
         bRetrieve: true,
         bProcessing: true,
