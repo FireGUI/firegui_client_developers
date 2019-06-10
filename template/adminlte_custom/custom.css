@@ -25,6 +25,10 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
     overflow:auto;
 }
 
+.dataTables_wrapper {
+    overflow-x:scroll;
+}
+
 .maintenance_mode_alert {
     color:#ff1b08;
     font-weight:bold;
