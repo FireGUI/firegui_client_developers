@@ -39,7 +39,7 @@ function startDataTables() {
         
         oDataTable.dataTable({
             bSort: bEnableOrder,
-            scrollX: true,
+            
             aaSorting: [],
             aoColumns: aoColumns,
             iDisplayLength: 5,
