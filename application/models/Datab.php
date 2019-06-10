@@ -891,6 +891,7 @@ class Datab extends CI_Model
      */
     public function get_entity_preview_by_name($entity_name, $where = NULL, $limit = NULL, $offset = 0)
     {
+        
         return $this->crmentity->getEntityPreview($entity_name, $where, $limit, $offset);
     }
 
@@ -2559,10 +2560,14 @@ class Datab extends CI_Model
                 'subform' => $subform
             ];
             
+            //20190610 - Matteo Puppis - if value is a comma separated string of values, explodes...
+//            if ($field['fields_type'] == 'INT' && count(explode(',',$data['value'])) > 1) {
+//                $data['value'] = explode(',', $data['value']);
+//            }
+            //debug($field,true);
             //20190409 - Matteo Puppis - Aggiungo la preview del value, da usare nelle nuove select_ajax
-            if (!empty($data['value']) && !is_array($data['value']) && !empty($field['fields_ref'])) {
-//                debug($field);
-//                debug($data);
+            if (!empty($data['value']) && !is_array($data['value']) && !empty($field['fields_ref']) && $field['forms_fields_override_type'] != 'input_hidden') {
+                
                 $preview = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id = '{$data['value']}'", 1);
                 $data['value_preview'] = array_pop($preview);
             }
