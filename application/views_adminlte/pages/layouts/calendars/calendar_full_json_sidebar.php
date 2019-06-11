@@ -106,7 +106,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
         if (jqCalendar.width() <= 400) {
             jqCalendar.addClass("mobile");
             h = {
-                left: 'title, prev, next',
+                right: 'title, prev, next',
                 center: '',
                 left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
             };
