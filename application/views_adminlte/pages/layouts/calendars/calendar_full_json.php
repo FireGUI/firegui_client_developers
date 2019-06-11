@@ -33,7 +33,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
         if (jqCalendar.width() <= 400) {
             jqCalendar.addClass("mobile");
             h = {
-                left: 'title, prev, next',
+                right: 'title, prev, next',
                 center: '',
                 left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
             };
