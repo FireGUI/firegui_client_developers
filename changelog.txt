@@ -1,4 +1,3 @@
-Changelog version 1.3.7
+Changelog version 1.3.8
  
-Moved to last td inputs hidden on inline edit grid
-export grid buttons exploded
+Fixed inputs hidden not moving to last (intended where save button is located) td but in the previous one
