@@ -43,7 +43,7 @@ CrmNewInlineTable.prototype.createRow = function () {
     
     //Aggiungo comunque gli hidden
     $('[type="hidden"]', form).each(function () {
-        $('td',tr).first().append($(this).clone());
+        $('td',tr).last().append($(this).clone());
     });
 
     //Aggiungo l'action per annullare e per salvare
