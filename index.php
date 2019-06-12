@@ -266,7 +266,7 @@ switch (ENVIRONMENT)
 
 	define('APPPATH', $application_folder.DIRECTORY_SEPARATOR);
         
-        if (in_array($_SERVER['SERVER_NAME'], array("crm.emporioadv.it", "crm.apibinfermieribologna.com", "cellulariusati.info","mybio.biofarma.it","sevenet.servizivenezia.it"))) {
+        if (in_array($_SERVER['SERVER_NAME'], array("crm.emporioadv.it", "crm.apibinfermieribologna.com", "cellulariusati.info","mybio.biofarma.it","sevenet.servizivenezia.it", "gestionale.atenapro.it"))) {
             $view_folder = APPPATH . 'views_metronic';
         } else {
             $view_folder = APPPATH . 'views_adminlte';
