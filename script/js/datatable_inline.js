@@ -40,16 +40,15 @@ CrmNewInlineTable.prototype.createRow = function () {
             }
         }
     });
-    
-    //Aggiungo comunque gli hidden
-    $('[type="hidden"]', form).each(function () {
-        $('td',tr).last().append($(this).clone());
-    });
 
     //Aggiungo l'action per annullare e per salvare
     var button_save = $('<a class="btn btn-success _btn-xs pull-left js_save_row">Save</a>');
     tr.append($('<td>' + button_save.prop('outerHTML') + '</td>'));
 
+    //Aggiungo comunque gli hidden
+    $('[type="hidden"]', form).each(function () {
+        $('td',tr).last().append($(this).clone());
+    });
 
     $('tbody', this.grid).append(tr);
 
