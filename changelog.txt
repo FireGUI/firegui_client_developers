@@ -1,3 +1,3 @@
-Changelog version 1.3.8
+Changelog version 1.3.9
  
-Fixed inputs hidden not moving to last (intended where save button is located) td but in the previous one
+Added eval cachable columns orderable in datatable_ajax
