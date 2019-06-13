@@ -1696,9 +1696,14 @@ class Datab extends CI_Model
 
     public function insertModulesPermissions($permId, array $modulesPermissions)
     {
+        
         $this->db->delete('permissions_modules', ['permissions_modules_permissions_id' => $permId]);
         $modulesPermissionsData = [];
         foreach ($modulesPermissions as $moduleName => $permissionValue) {
+            if ($moduleName === 0) {//20190613 - MP - Sembra che la nuova gestione moduli passi qualcosa di sbagliato e quindi qui arriva un modulo con nome '0'... ovviamente inesistente nel db. Skippo
+                //debug($modulesPermissions);
+                continue;
+            }
             $modulesPermissionsData[] = ['permissions_modules_permissions_id' => $permId, 'permissions_modules_module_name' => $moduleName, 'permissions_modules_value' => $permissionValue];
         }
 
