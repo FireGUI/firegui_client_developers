@@ -38,8 +38,10 @@
                                     }
                                 });
                                 $fields = array_values(array_filter($entity_result['visible_fields'], function($field) {
-                                            return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
+                                    //debug($field['fields_type']);
+                                            return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'varchar', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
                                         }));
+                                        //debug($entity_result['visible_fields']);
                                 ?>
                                 <table class="table table-condensed table-bordered table-hover table-scrollable table-scrollable-borderless js_search_datatable">
                                     <thead>
@@ -69,7 +71,7 @@
                                                 <?php foreach ($fields as $i => $field): ?>
                                                     <td>
                                                         <?php
-                                                        echo ($link && !$i) ?
+                                                        echo ($link && !$i) ? //Mostro per le prime 4 colonne il link al dettaglio
                                                                 anchor($link . '/' . $data[$entity_result['entity']['entity_name'] . '_id'], $data[$field['fields_name']]) :
                                                                 $this->datab->build_grid_cell($field, $data);
                                                         ?>

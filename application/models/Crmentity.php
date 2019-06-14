@@ -1003,6 +1003,8 @@ class Crmentity extends CI_Model {
     public function getVisibleFields($entity) {
         if (!array_key_exists($entity, $this->_visible_fields)) {
             $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function($item) {
+//                debug($item);
+//                var_dump($item['fields_draw_display_none'] !== DB_BOOL_TRUE);
                 return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
             });
         }
