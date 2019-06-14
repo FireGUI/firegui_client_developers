@@ -16,7 +16,7 @@
                 <input tabindex="0" type="text" name="search" placeholder="<?php e("Cerca..."); ?>"
                        value="<?php echo isset($dati['search_string']) ? $dati['search_string'] : ''; ?>"
                        class="form-control"> <span class="input-group-btn">
-                    <button type="submit" name="search" id="search-btn" class="btn btn-flat"
+                    <button type="submit" name="___search" id="search-btn" class="btn btn-flat"
                             onclick="document.getElementById('search_form').submit();">
                         <i class="fa fa-search"></i>
                 </button>
