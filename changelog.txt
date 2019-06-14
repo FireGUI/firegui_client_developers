@@ -1,3 +1,3 @@
-Changelog version 1.4.1
+Changelog version 1.4.2
  
-Fixed width 100% on select2 container
+Removed name search from button on sidebar adminlte, causing missing parameter search
