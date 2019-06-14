@@ -1,3 +1,3 @@
-Changelog version 1.4.2
+Changelog version 1.4.3
  
-Removed name search from button on sidebar adminlte, causing missing parameter search
+Fixed search result visible fields (varchar was ignored in mariadb)
