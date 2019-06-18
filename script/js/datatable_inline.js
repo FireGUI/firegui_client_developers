@@ -76,7 +76,16 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                     $(this).val(Object.keys(data.data[field_name])).trigger('change');
                     
                 } else {
-                    $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                    if ($(this).is(':checkbox')) {
+                        if (data.data[$(this).attr('name')] == 1) {
+                            $(this).attr('checked', 'checked').trigger('change');
+                        } else {
+                            $(this).removeAttr('checked').trigger('change');
+                        }
+                    } else {
+                        $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                    }
+                    
                 }
                 
             });
