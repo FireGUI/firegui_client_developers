@@ -5,6 +5,12 @@
 <table data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT'))?DEFAULT_GRID_LIMIT:10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' ?> data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
     <thead>
         <tr>
+            <?php if ($has_bulk) : ?>
+                <th data-prevent-order data-name="_foo">
+                    <input type="checkbox" class="js-bulk-select-all" />
+                </th>
+            <?php endif; ?>
+
             <?php foreach ($grid['grids_fields'] as $field): ?>
                 <th data-name="<?php echo $field['fields_name']; ?>"><?php echo $field['grids_fields_column_name']; ?></th>
             <?php endforeach; ?>
