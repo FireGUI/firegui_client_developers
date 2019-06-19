@@ -519,8 +519,6 @@ class Get_ajax extends MY_Controller {
         $out_array = array();
         foreach ($grid_data as $dato) {
             
-            
-            
             $tr = array();
             if ($has_bulk) {
                 $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';

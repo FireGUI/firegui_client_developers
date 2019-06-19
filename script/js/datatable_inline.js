@@ -21,22 +21,34 @@ CrmNewInlineTable.prototype.createRow = function () {
     //Inserisco un nuovo TR con i vari TD
     jqThs.each(function () {
         var name = $(this).attr('data-name');
-        if (typeof name == 'undefined') { //Vuol dire che sono nella colonna action o in un eval
+        console.log(name);
+        if (name == '_foo') {
+            tr.append($('<td></td>'));
+        } else if (typeof name == 'undefined') { //Vuol dire che sono nella colonna action o in un eval
             //tr.append($('<td></td>'));
         } else {
             //Trovo il campo tra quelli del form
-            var field = $('[name*="' + name + '"]', form);
-            //console.log(name);
-            if (field.length == 0) { //Vuol dire che nel form manca un campo che invece c'è come colonna nella grid
-                console.log('TODO: autogenerare un campo in base al tipo di field? Per ora semplice input text...');
+            var fields = $('[name*="' + name + '"]', form);
+            console.log(name);
+            if (fields.length == 0) { //Vuol dire che nel form manca un campo che invece c'è come colonna nella grid
+                //console.log('TODO: autogenerare un campo in base al tipo di field? Per ora semplice input text...');
                 tr.append($('<td><input class="form-control" type="text" readonly name="' + name + '" placeholder="' + $(this).html() + '" /></td>'));
             } else {
-                var cloned_field = field.clone();
-                //cloned_field.attr('placeholder', name);
-                cloned_field.attr('placeholder', $(this).html());
-                
-                cloned_field.removeClass('select2-hidden-accessible');
-                tr.append($('<td>' + cloned_field.prop('outerHTML') + '</td>'));
+                //Nel caso di checkbox il campo potrebbe esserci più volte (per ovviare al problema che le checkbox non vengono inviate se non checkate, c'è un trick con un campo hidden che forza sempre l'invio del chk
+                //In questo caso li stampo entrambi...
+                var field_html = '';
+                //console.log(fields.get());
+                for (var i in fields.get()) {
+                    var field = $(fields[i]);
+                    
+                    var cloned_field = field.clone();
+                    //cloned_field.attr('placeholder', name);
+                    cloned_field.attr('placeholder', $(this).html());
+
+                    cloned_field.removeClass('select2-hidden-accessible');
+                    field_html += cloned_field.prop('outerHTML');
+                }
+                tr.append($('<td>' + field_html + '</td>'));
             }
         }
     });
@@ -77,13 +89,13 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                     
                 } else {
                     if ($(this).is(':checkbox')) {
-                        if (data.data[$(this).attr('name')] == 1) {
+                        if ($(this).val() == data.data[$(this).attr('name')]) {
                             $(this).attr('checked', 'checked').trigger('change');
-                        } else {
-                            $(this).removeAttr('checked').trigger('change');
                         }
                     } else {
-                        $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                        if ($(this).data('notmodifiable') != 1) {
+                            $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                        }                        
                     }
                     
                 }
@@ -135,7 +147,15 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
         if (name === sEntityName + '_id') {
             id = input.val();
         } else {
-            data[name] = input.val();
+            if (input.is(':checkbox') && input.is(':checked')) {
+                
+                data[name] = input.val();
+            } else {
+                if (!(name in data)) {
+                    data[name] = input.val();
+                }
+            }
+            
         }
     });
 
