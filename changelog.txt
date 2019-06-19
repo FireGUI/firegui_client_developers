@@ -1,4 +1,3 @@
-Changelog version 1.4.5
+Changelog version 1.4.6
  
-Fixed checkbox functionality in datatable inline form edit
-Fixed inline datatable edit when datatable is bulkable
+Added charts on module creator
