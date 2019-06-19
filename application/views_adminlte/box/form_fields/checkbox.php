@@ -13,7 +13,9 @@ $inline = count($choiches) < 4;
 <?php echo $label; ?>
 <div class="row">
     <div class="col-xs-12">
-        <?php if ($is_bool && count($choiches) > 1): ?><input type="hidden" value="<?php echo DB_BOOL_FALSE; ?>" name="<?php echo $field['fields_name']; ?>"  /><?php endif; ?>
+        <?php if ($is_bool): ?>
+            <input type="hidden" value="<?php echo DB_BOOL_FALSE; ?>" name="<?php echo $field['fields_name']; ?>" data-notmodifiable="1" />
+        <?php endif; ?>
         <?php foreach($choiches as $id => $name): ?>
             <?php $isSelected = ((is_array($value) && isset($value[$id])) OR (!is_array($value) && $value == $id)); ?>
             <label class="<?php echo $inline ? '': 'checkbox' ?>">
