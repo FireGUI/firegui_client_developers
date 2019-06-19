@@ -21,8 +21,15 @@ class Firegui extends MY_Controller
             'controllers', 'models', 'views', 'assets'
         ];
 
-        $prefix_folder = FCPATH . 'application/modules/' . $identifier . '/';
+        $modules_path = FCPATH . 'application/modules/';
 
+        if (!is_dir($modules_path)) //create the folder if it's not already exists
+        {
+            mkdir($modules_path, DIR_WRITE_MODE, true);
+        }
+
+        $prefix_folder = $modules_path . $identifier . '/';
+        
         foreach ($folders as $folder) {
             if (!is_dir($prefix_folder . $folder)) //create the folder if it's not already exists
             {

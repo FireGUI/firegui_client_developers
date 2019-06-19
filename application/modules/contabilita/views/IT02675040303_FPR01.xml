@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica
+ versione="FPR12" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2 http://www.fatturapa.gov.it/export/fatturazione/sdi/fatturapa/v1.2/Schema_del_file_xml_FatturaPA_versione_1.2.xsd">
+ <FatturaElettronicaHeader>
+  <DatiTrasmissione>
+   <IdTrasmittente>
+    <IdPaese>IT</IdPaese>
+    <IdCodice>02675040303</IdCodice>
+    
+   </IdTrasmittente>
+   
+   <ProgressivoInvio>00001</ProgressivoInvio>
+   
+   
+   <FormatoTrasmissione>SDI11</FormatoTrasmissione>
+   
+   
+   <CodiceDestinatario>0000000</CodiceDestinatario>
+   
+   
+   <PECDestinatario></PECDestinatario>
+   <ContattiTrasmittente>
+    <Telefono></Telefono>
+    <Email></Email>
+   </ContattiTrasmittente>
+  </DatiTrasmissione>
+  <CedentePrestatore>
+   <DatiAnagrafici>
+    <IdFiscaleIVA>
+     
+     <IdPaese>IT</IdPaese>
+     
+     <IdCodice>02675040303</IdCodice>
+     
+    </IdFiscaleIVA>
+    <CodiceFiscale></CodiceFiscale>
+    <Anagrafica>
+     <Denominazione>H2 SNC</Denominazione>
+     
+     <Nome></Nome>
+     
+     <Cognome></Cognome>
+     
+     <Titolo></Titolo>
+     <CodEORI></CodEORI>
+    </Anagrafica>
+    <AlboProfessionale></AlboProfessionale>
+    <ProvinciaAlbo></ProvinciaAlbo>
+    <NumeroIscrizioneAlbo></NumeroIscrizioneAlbo>
+    <DataIscrizioneAlbo></DataIscrizioneAlbo>
+    
+    <RegimeFiscale>RF01</RegimeFiscale>
+    
+   </DatiAnagrafici>
+   <Sede>
+    <Indirizzo>Via IV Novembre 43</Indirizzo>
+    
+    <NumeroCivico></NumeroCivico>
+    
+    <CAP>33010</CAP>
+    
+    <Comune>TAVAGNACCO</Comune>
+    
+    <Provincia>Udine</Provincia>
+    
+    <Nazione>IT</Nazione>
+    
+   </Sede>
+   <StabileOrganizzazione>
+    <Indirizzo></Indirizzo>
+    
+    <NumeroCivico></NumeroCivico>
+    <CAP></CAP>
+    
+    <Comune></Comune>
+    
+    <Provincia></Provincia>
+    <Nazione></Nazione>
+    
+   </StabileOrganizzazione>
+   <IscrizioneREA>
+    <Ufficio></Ufficio>
+    
+    <NumeroREA></NumeroREA>
+    
+    <CapitaleSociale></CapitaleSociale>
+    
+    <SocioUnico></SocioUnico>
+    
+    <StatoLiquidazione></StatoLiquidazione>
+    
+   </IscrizioneREA>
+   <Contatti>
+    <Telefono></Telefono>
+    <Fax></Fax>
+    <Email></Email>
+   </Contatti>
+   <RiferimentoAmministrazione></RiferimentoAmministrazione>
+  </CedentePrestatore>
+  <RappresentanteFiscale>
+   <DatiAnagrafici>
+    <IdFiscaleIVA>
+     <IdPaese></IdPaese>
+     
+     <IdCodice></IdCodice>
+     
+    </IdFiscaleIVA>
+    <CodiceFiscale></CodiceFiscale>
+    <Anagrafica>
+     <Denominazione></Denominazione>
+     
+     <Nome></Nome>
+     
+     <Cognome></Cognome>
+     
+     <Titolo></Titolo>
+     <CodEORI></CodEORI>
+    </Anagrafica>
+   </DatiAnagrafici>
+  </RappresentanteFiscale>
+  <CessionarioCommittente>
+   <DatiAnagrafici>
+    <IdFiscaleIVA>
+     <IdPaese></IdPaese>
+     
+     <IdCodice></IdCodice>
+     
+    </IdFiscaleIVA>
+    <CodiceFiscale>02027750302</CodiceFiscale>
+    
+    <Anagrafica>
+     <Denominazione>Real Power Soc. Coop. Cons. a r.l.</Denominazione>
+     
+     <Nome></Nome>
+     
+     <Cognome></Cognome>
+     
+     <Titolo></Titolo>
+     <CodEORI></CodEORI>
+    </Anagrafica>
+   </DatiAnagrafici>
+   <Sede>
+    <Indirizzo>Via Tricesimo 103</Indirizzo>
+    
+    <NumeroCivico></NumeroCivico>
+    
+    <CAP>33100</CAP>
+    
+    
+    <Comune>UDINE</Comune>
+    
+    
+    <Provincia>Udine</Provincia>
+    
+    <Nazione>IT</Nazione>
+    
+   </Sede>
+   
+  </CessionarioCommittente>
+  <TerzoIntermediarioOSoggettoEmittente>
+   <DatiAnagrafici>
+    <IdFiscaleIVA>
+     <IdPaese></IdPaese>
+     <IdCodice></IdCodice>
+    </IdFiscaleIVA>
+    <CodiceFiscale></CodiceFiscale>
+    <Anagrafica>
+     <Denominazione></Denominazione>
+     <Nome></Nome>
+     <Cognome></Cognome>
+     <Titolo></Titolo>
+     <CodEORI></CodEORI>
+    </Anagrafica>
+   </DatiAnagrafici>
+  </TerzoIntermediarioOSoggettoEmittente>
+  <SoggettoEmittente></SoggettoEmittente>
+  
+ </FatturaElettronicaHeader>
+ <FatturaElettronicaBody>
+  <DatiGenerali>
+   <DatiGeneraliDocumento>
+    
+    <TipoDocumento>Fattura Elettronica</TipoDocumento>
+    
+    <Divisa>EUR</Divisa>
+    
+    <Data>2018-12-03</Data>
+    
+    <Numero>1</Numero>
+    
+    <DatiRitenuta>
+     <TipoRitenuta></TipoRitenuta>
+     
+     <ImportoRitenuta></ImportoRitenuta>
+     
+     <AliquotaRitenuta></AliquotaRitenuta>
+     
+     <CausalePagamento></CausalePagamento>
+     
+    </DatiRitenuta>
+    <DatiBollo>
+     <NumeroBollo></NumeroBollo>
+     
+     <ImportoBollo></ImportoBollo>
+     
+    </DatiBollo>
+    <DatiCassaPrevidenziale>
+     <TipoCassa></TipoCassa>
+     
+     <AlCassa></AlCassa>
+     
+     <ImportoContributoCassa></ImportoContributoCassa>
+     
+     <ImponibileCassa></ImponibileCassa>
+     <AliquotaIVA></AliquotaIVA>
+     
+     <Ritenuta></Ritenuta>
+     <Natura></Natura>
+     <RiferimentoAmministrazione></RiferimentoAmministrazione>
+    </DatiCassaPrevidenziale>
+    <ScontoMaggiorazione>
+     <Tipo></Tipo>
+     <Percentuale></Percentuale>
+     <Importo></Importo>
+    </ScontoMaggiorazione>
+    <ImportoTotaleDocumento></ImportoTotaleDocumento>
+    <Arrotondamento></Arrotondamento>
+    
+    
+    <Causale></Causale>
+    <Art73></Art73>
+   </DatiGeneraliDocumento>
+   <DatiOrdineAcquisto>
+    
+    <RiferimentoNumeroLinea></RiferimentoNumeroLinea>
+    
+    
+    <IdDocumento>276</IdDocumento>
+    
+    <Data></Data>
+    
+    <NumItem>276</NumItem>
+    
+    <CodiceCommessaConvenzione></CodiceCommessaConvenzione>
+    <CodiceCUP></CodiceCUP>
+    <CodiceCIG></CodiceCIG>
+   </DatiOrdineAcquisto>
+   <DatiContratto>
+    <RiferimentoNumeroLinea></RiferimentoNumeroLinea>
+    
+    <IdDocumento></IdDocumento>
+    
+    <Data></Data>
+    
+    <NumItem></NumItem>
+    
+    <CodiceCommessaConvenzione></CodiceCommessaConvenzione>
+    <CodiceCUP></CodiceCUP>
+    <CodiceCIG></CodiceCIG>
+   </DatiContratto>
+   <DatiConvenzione>
+    <RiferimentoNumeroLinea></RiferimentoNumeroLinea>
+    <IdDocumento></IdDocumento>
+    <Data></Data>
+    <NumItem></NumItem>
+    <CodiceCommessaConvenzione></CodiceCommessaConvenzione>
+    <CodiceCUP></CodiceCUP>
+    <CodiceCIG></CodiceCIG>
+   </DatiConvenzione>
+   <DatiRicezione>
+    <RiferimentoNumeroLinea></RiferimentoNumeroLinea>
+    
+    <IdDocumento></IdDocumento>
+    
+    <Data></Data>
+    
+    <NumItem></NumItem>
+    
+    <CodiceCommessaConvenzione></CodiceCommessaConvenzione>
+    <CodiceCUP></CodiceCUP>
+    <CodiceCIG></CodiceCIG>
+   </DatiRicezione>
+   <DatiFattureCollegate>
+    <RiferimentoNumeroLinea></RiferimentoNumeroLinea>
+    
+    <IdDocumento></IdDocumento>
+    
+    <Data></Data>
+    
+    <NumItem></NumItem>
+    
+    <CodiceCommessaConvenzione></CodiceCommessaConvenzione>
+    <CodiceCUP></CodiceCUP>
+    <CodiceCIG></CodiceCIG>
+   </DatiFattureCollegate>
+   <DatiSAL>
+    <RiferimentoFase></RiferimentoFase>
+   </DatiSAL>
+   <DatiDDT>
+    <NumeroDDT></NumeroDDT>
+    
+    <DataDDT></DataDDT>
+    
+    <RiferimentoNumeroLinea></RiferimentoNumeroLinea>
+   </DatiDDT>
+   <DatiTrasporto>
+    <DatiAnagraficiVettore>
+     <IdFiscaleIVA>
+      <IdPaese></IdPaese>
+      <IdCodice></IdCodice>
+     </IdFiscaleIVA>
+     <CodiceFiscale></CodiceFiscale>
+     <Anagrafica>
+      <Denominazione></Denominazione>
+      <Nome></Nome>
+      <Cognome></Cognome>
+      <Titolo></Titolo>
+      <CodEORI></CodEORI>
+     </Anagrafica>
+     <NumeroLicenzaGuida></NumeroLicenzaGuida>
+    </DatiAnagraficiVettore>
+    <MezzoTrasporto></MezzoTrasporto>
+    <CausaleTrasporto></CausaleTrasporto>
+    <NumeroColli></NumeroColli>
+    <Descrizione></Descrizione>
+    <UnitaMisuraPeso></UnitaMisuraPeso>
+    <PesoLordo></PesoLordo>
+    <PesoNetto></PesoNetto>
+    <DataOraRitiro></DataOraRitiro>
+    <DataInizioTrasporto></DataInizioTrasporto>
+    <TipoResa></TipoResa>
+    <IndirizzoResa>
+     <Indirizzo></Indirizzo>
+     <NumeroCivico></NumeroCivico>
+     <CAP></CAP>
+     <Comune></Comune>
+     <Provincia></Provincia>
+     <Nazione></Nazione>
+    </IndirizzoResa>
+    <DataOraConsegna></DataOraConsegna>
+   </DatiTrasporto>
+   <NormaDiRiferimento></NormaDiRiferimento>
+   
+   <FatturaPrincipale>
+    <NumeroFatturaPrincipale></NumeroFatturaPrincipale>
+    
+    <DataFatturaPrincipale></DataFatturaPrincipale>
+    
+   </FatturaPrincipale>
+  </DatiGenerali>
+  <DatiBeniServizi>
+   <DettaglioLinee>
+    <NumeroLinea>1</NumeroLinea>
+    
+    <TipoCessionePrestazione></TipoCessionePrestazione>
+    
+    <CodiceArticolo>
+     <CodiceTipo></CodiceTipo>
+     <CodiceValore></CodiceValore>
+    </CodiceArticolo>
+    <Descrizione></Descrizione>
+    
+    <Quantita>1.00</Quantita>
+    
+    <UnitaMisura></UnitaMisura>
+    
+    <DataInizioPeriodo></DataInizioPeriodo>
+    
+    <DataFinePeriodo></DataFinePeriodo>
+    
+    <PrezzoUnitario>50.00</PrezzoUnitario>
+    
+    <ScontoMaggiorazione>
+     <Tipo></Tipo>
+     
+     <Percentuale></Percentuale>
+     
+     <Importo></Importo>
+     
+    </ScontoMaggiorazione>
+    <PrezzoTotale>50.00</PrezzoTotale>
+    
+    <AliquotaIVA>22.00</AliquotaIVA>
+    
+    <Ritenuta></Ritenuta>
+    <Natura></Natura>
+    <RiferimentoAmministrazione></RiferimentoAmministrazione>
+    <AltriDatiGestionali>
+     <TipoDato></TipoDato>
+     <RiferimentoTesto></RiferimentoTesto>
+     <RiferimentoNumero></RiferimentoNumero>
+     <RiferimentoData></RiferimentoData>
+    </AltriDatiGestionali>
+   </DettaglioLinee>
+   <DatiRiepilogo>
+    <AliquotaIVA>11</AliquotaIVA>
+    
+    <Natura></Natura>
+    <SpeseAccessorie></SpeseAccessorie>
+    <Arrotondamento></Arrotondamento>
+    <ImponibileImporto>50.00</ImponibileImporto>
+    
+    <Imposta>50.00</Imposta>
+    
+    <EsigibilitaIVA>D</EsigibilitaIVA>
+    
+    <RiferimentoNormativo></RiferimentoNormativo>
+   </DatiRiepilogo>
+  </DatiBeniServizi>
+  <DatiVeicoli>
+   <Data></Data>
+   
+   <TotalePercorso></TotalePercorso>
+   
+  </DatiVeicoli>
+  <DatiPagamento>
+   
+   <CondizioniPagamento>Fattura Elettronica</CondizioniPagamento>
+   <DettaglioPagamento>
+    <Beneficiario></Beneficiario>
+    
+    <ModalitaPagamento>bonifico bancario</ModalitaPagamento>
+    <DataRiferimentoTerminiPagamento></DataRiferimentoTerminiPagamento>
+    <GiorniTerminiPagamento></GiorniTerminiPagamento>
+    <DataScadenzaPagamento>2018-12-03</DataScadenzaPagamento>
+    <ImportoPagamento>61</ImportoPagamento>
+    <CodUfficioPostale></CodUfficioPostale>
+    <CognomeQuietanzante></CognomeQuietanzante>
+    <NomeQuietanzante></NomeQuietanzante>
+    <CFQuietanzante></CFQuietanzante>
+    <TitoloQuietanzante></TitoloQuietanzante>
+    <IstitutoFinanziario></IstitutoFinanziario>
+    <IBAN></IBAN>
+    <ABI></ABI>
+    <CAB></CAB>
+    <BIC></BIC>
+    <ScontoPagamentoAnticipato></ScontoPagamentoAnticipato>
+    <DataLimitePagamentoAnticipato></DataLimitePagamentoAnticipato>
+    <PenalitaPagamentiRitardati></PenalitaPagamentiRitardati>
+    <DataDecorrenzaPenale></DataDecorrenzaPenale>
+    <CodicePagamento></CodicePagamento>
+   </DettaglioPagamento>
+  </DatiPagamento>
+  <Allegati>
+   <NomeAttachment></NomeAttachment>
+   <AlgoritmoCompressione></AlgoritmoCompressione>
+   <FormatoAttachment></FormatoAttachment>
+   <DescrizioneAttachment></DescrizioneAttachment>
+   <Attachment></Attachment>
+  </Allegati>
+ </FatturaElettronicaBody>
+</p:FatturaElettronica>
