@@ -29,7 +29,7 @@ class Firegui extends MY_Controller
         }
 
         $prefix_folder = $modules_path . $identifier . '/';
-        
+
         foreach ($folders as $folder) {
             if (!is_dir($prefix_folder . $folder)) //create the folder if it's not already exists
             {

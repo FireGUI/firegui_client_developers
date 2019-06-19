@@ -1,3 +1,3 @@
-Changelog version 1.4.8
+Changelog version 1.4.8.1
  
-Log viewer added
+Fix LOG_LINE_START_PATTERN in CILogViewer.php class, escaping "-" characters at line 30 and 31
