@@ -130,7 +130,7 @@ class Firegui extends MY_Controller
             die("Missing ZipArchive class in client");
         }
 
-            $file_link = FIREGUI_BUILDER_BASEURL."public/client/getLastClientVersion";
+            $file_link = FIREGUI_BUILDER_BASEURL."public/client/getLastClientVersion/".VERSION;
             //die($file_link); 
             $newfile = './tmp_file.zip';
             if (!copy($file_link, $newfile)) {
