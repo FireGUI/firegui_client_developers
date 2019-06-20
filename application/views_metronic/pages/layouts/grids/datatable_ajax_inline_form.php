@@ -1,3 +1,6 @@
+<?php 
+$has_bulk = !empty($grid['grids']['grids_bulk_mode']); 
+?>
 <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">Nuovo valore</a>
 <div class="clearfix"></div>
 <br/>
