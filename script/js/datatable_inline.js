@@ -85,8 +85,9 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                 //Se il name contiene [] allora è una multiselect
                 if ($(this).attr('name').endsWith('[]')) {
                     var field_name = $(this).attr('name').substring(0, $(this).attr('name').length-2);
-                    $(this).val(Object.keys(data.data[field_name])).trigger('change');
-                    
+                    if (data.data[field_name]) {
+                        $(this).val(Object.keys(data.data[field_name])).trigger('change');
+                    }
                 } else {
                     if ($(this).is(':checkbox')) {
                         if ($(this).val() == data.data[$(this).attr('name')]) {
