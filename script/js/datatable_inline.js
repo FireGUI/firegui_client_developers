@@ -8,12 +8,12 @@ CrmNewInlineTable.prototype.getDatatableHandler = function () {
 CrmNewInlineTable.prototype.getEntityName = function () {
     return this.grid.data('entity');
 };
-CrmNewInlineTable.prototype.createRow = function () {
+CrmNewInlineTable.prototype.createRow = function (id) {
     // Devo sapere quante colonne ho per prima cosa
     var sEntityName = this.grid.attr('data-entity');
     var jqThs = $('tr th', this.grid);
     var datatable = this.getDatatableHandler();
-    var tr = $('<tr></tr>');
+    var tr = $('<tr data-id="'+id+'"></tr>');
     var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]');
     var form = $('form', form_container);
 
@@ -73,7 +73,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     var entityName = this.getEntityName();
     //Step 1: clono il form
     console.log('clono il form');
-    this.createRow();
+    this.createRow(id);
     
     var row_with_form = $('tr:last', this.grid);
     
@@ -186,7 +186,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
         e.preventDefault();
 
-        inlineTable.createRow();
+        inlineTable.createRow(0);
     });
     
     // Edit record
