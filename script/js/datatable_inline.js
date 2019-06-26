@@ -29,7 +29,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
         } else {
             //Trovo il campo tra quelli del form
             var fields = $('[name*="' + name + '"]', form);
-            console.log(name);
+            //console.log(name);
             if (fields.length == 0) { //Vuol dire che nel form manca un campo che invece c'è come colonna nella grid
                 //console.log('TODO: autogenerare un campo in base al tipo di field? Per ora semplice input text...');
                 tr.append($('<td><input class="form-control" type="text" readonly name="' + name + '" placeholder="' + $(this).html() + '" /></td>'));
@@ -72,7 +72,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     var aData = datatable.fnGetData(nRow);
     var entityName = this.getEntityName();
     //Step 1: clono il form
-    console.log('clono il form');
+    //console.log('clono il form');
     this.createRow(id);
     
     var row_with_form = $('tr:last', this.grid);
@@ -81,6 +81,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     $.ajax(base_url + 'get_ajax/getJsonRecord/' + entityName + '/' + id, {
         dataType: "json",
         success: function (data) {
+            var selects_vals = [];
             $(':input', row_with_form).each(function () {
                 //Se il name contiene [] allora è una multiselect
                 if ($(this).attr('name').endsWith('[]')) {
@@ -95,13 +96,39 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                         }
                     } else {
                         if ($(this).data('notmodifiable') != 1) {
-                            $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                            //Mi salvo i valori delle input select per risettarli dopo (qualora un trigger change dovesse scatenare il reload dei valori di una tendina con quel field_ref)
+                            if ($(this).is('select')) {
+                                var valore = data.data[$(this).attr('name')];
+                                var current_sel = {name:$(this).attr('name'),val:valore};
+                                selects_vals.push(current_sel);
+                                $(this).val(data.data[$(this).attr('name')]); //Se sono select, triggero il change solo alla fine di tutto (serve per essere sicuri di avere almeno in un preciso istante tutte le tendine col val corretto)
+                                //Nel dubbio assegno anche l'attributo selected...
+                                $('option[value='+valore+']',$(this)).attr('selected', 'selected');
+                                //console.log($(this).attr('name')+': '+valore);
+                            } else {
+                                $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                            }
+                            
                         }                        
                     }
                     
                 }
                 
             });
+            //Adesso è il momento di triggerare il change sulle select
+            for (i in selects_vals) {
+                var name = selects_vals[i].name;
+                $('[name="'+name+'"]',row_with_form).trigger('change');
+                //console.log(name+': triggerato change');
+            }
+            //Non mi accontento! Dopo il change, nel dubbio risetto i valori cachati precedentemente. Questo per essere sicuro abbia selezionato effettivamente i valori giusti.
+            for (i in selects_vals) {
+                var select_data = selects_vals[i];
+                var name = select_data.name;
+                var val = select_data.val;
+                $('[name="'+name+'"]',row_with_form).val(val); //Volutamente non triggero il change in questo caso altrimenti rischio di svuotare nuovamente altre select
+                //console.log(name+': '+val);
+            }
             
             //Forzo l'elemento id nel form per fare in modo che poi il sistema capisca che è una edit al saveRow... (vd sotto)
             $('td',row_with_form).first().append('<input type="hidden" name="'+entityName+'_id" value="'+data.data[entityName+'_id']+'" />');
