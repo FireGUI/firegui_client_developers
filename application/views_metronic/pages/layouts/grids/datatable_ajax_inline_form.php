@@ -1,5 +1,9 @@
 <?php 
 $has_bulk = !empty($grid['grids']['grids_bulk_mode']); 
+$grid_id = 'grid_'.$grid['grids']['grids_id'];
+$has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
+
+$cols = ($has_bulk && $has_exportable) ? 6 : 12;
 ?>
 <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">Nuovo valore</a>
 <div class="clearfix"></div>
@@ -25,6 +29,28 @@ $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
     <tbody></tbody>
 </table>
 
+    <?php if ($has_bulk OR $has_exportable) : ?>
+        <div class="row">
+            <?php if ($has_bulk) : ?>
+                <div class="col-md-<?php echo $cols; ?>">
+                    <select class="form-control js-bulk-action" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>" style="width: auto;">
+                        <option value="" class="js-bulk-first-option" selected="selected"></option>
+
+                        <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' OR $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
+                            <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
+                        <?php endif; ?>
+                        <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete' OR $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
+                            <option value="bulk_delete" disabled="disabled">Delete</option>
+                        <?php endif; ?>
+                    </select>
+                </div>
+            <?php endif; ?>
+            <?php if ($has_exportable) : ?>
+                <?php $this->load->view('pages/layouts/grids/export_button', ['grid' => $grid, 'cols' => $cols]); ?>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div>
 <?php
 $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null);
 
