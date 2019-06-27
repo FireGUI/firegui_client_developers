@@ -50,7 +50,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
             <?php endif; ?>
         </div>
     <?php endif; ?>
-</div>
+
 <?php
 $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null);
 

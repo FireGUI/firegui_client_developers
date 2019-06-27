@@ -30,6 +30,9 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
         <!-- Google Font -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+        <style>
+            .main-header .navbar { background-color: <?php echo TOPBAR_COLOR; ?> }
+        </style>
     </head>
 
 
