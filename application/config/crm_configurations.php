@@ -73,6 +73,11 @@ define('DEFAULT_GRID_LIMIT', 10);
 define('API_MANAGER_PRIVATE_KEY', 'vi!UOat4');
 define('API_MANAGER_CRM_PASSPARTOUT', 'ApiP4ss!');
 
+/* ============
+ * Colori Custom
+ * ============ */
+define('TOPBAR_COLOR', '#b81f1e');
+define('TOPBAR_HOVER', '#851717');
 /*
  * ============================================================
  * Base URL ADMIN 
