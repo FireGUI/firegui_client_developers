@@ -128,7 +128,8 @@ class Firegui extends MY_Controller
 
     }
 
-    public function updateClient() {
+    public function updateClient()
+    {
         /*$versionDataJson = $this->input->post('client');
         $version_data = @json_decode($versionDataJson);*///DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
         //var_dump($version_data);
@@ -137,32 +138,61 @@ class Firegui extends MY_Controller
             die("Missing ZipArchive class in client");
         }
 
-            $file_link = FIREGUI_BUILDER_BASEURL."public/client/getLastClientVersion/".VERSION;
-            //die($file_link); 
-            $newfile = './tmp_file.zip';
-            if (!copy($file_link, $newfile)) {
-                throw new Exception("Error while copying zip file.");
-            } else{
+        $old_version = $this->get_client_version();
 
-                $zip = new ZipArchive();
+        $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION;
+        //die($file_link);
+        $newfile = './tmp_file.zip';
+        if (!copy($file_link, $newfile)) {
+            throw new Exception("Error while copying zip file.");
+        } else {
 
-                if ($zip->open($newfile) !== TRUE) {
-                   throw new Exception("Cannot open <$newfile>");
-                } else {
-                    $temp_folder = FCPATH;
-                    @mkdir($temp_folder);
-                    $zip->extractTo($temp_folder);
-                    $zip->close();
-                    echo 'ok';
+            $zip = new ZipArchive();
+
+            if ($zip->open($newfile) !== TRUE) {
+                throw new Exception("Cannot open <$newfile>");
+            } else {
+                $temp_folder = FCPATH;
+                @mkdir($temp_folder);
+                $zip->extractTo($temp_folder);
+                $zip->close();
+
+
+                // Search update databases file for this version
+                $files = scandir(FCPATH . '/database');
+                foreach ($files as $file) {
+                    if ($file == 'update_db.php') {
+
+                        // Check if exist an update_db file to execute update queries
+                        include(FCPATH . '/database/update_db.php');
+
+                        if (isset($updates)) {
+
+                            // Sort array from oldest version to newest
+                            usort($updates, 'version_compare');
+                            
+                            foreach ($updates as $key => $value) {
+                                // Check if the version number is old or new
+                                if (version_compare($key, $old_version) > 0) {
+                                    foreach ($value as $query) {
+                                        $this->db->query($query);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-            }
 
-        
+
+                echo 'ok';
+            }
+        }
 
 
     }
 
-    public function get_client_version() {
+    public function get_client_version()
+    {
         echo VERSION;
     }
 }

@@ -105,6 +105,8 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                                 //Nel dubbio assegno anche l'attributo selected...
                                 $('option[value='+valore+']',$(this)).attr('selected', 'selected');
                                 //console.log($(this).attr('name')+': '+valore);
+                                
+                                
                             } else {
                                 $(this).val(data.data[$(this).attr('name')]).trigger('change');
                             }
@@ -138,6 +140,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     //Step 3: posiziono e faccio apparire il form con la stessa logica del nuova riga, ovvero con i campi in corrispondenza della colonna corretta
     tr.replaceWith(row_with_form);
     
+    //reset_theme_components();
     
 };
 

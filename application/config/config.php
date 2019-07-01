@@ -392,7 +392,7 @@ $config['encryption_key'] = md5($_SERVER['HTTP_HOST'].pathinfo(FCPATH, PATHINFO_
 */
 $config['sess_driver'] = 'database';
 $config['sess_cookie_name'] = 'ci_session';
-$config['sess_expiration'] = 43200; //30gg
+$config['sess_expiration'] = 7200; // 5 days
 $config['sess_save_path'] = NULL;
 $config['sess_expire_on_close'] = FALSE;
 $config['sess_encrypt_cookie'] = FALSE;
