@@ -160,23 +160,20 @@ class Firegui extends MY_Controller
 
                 // Search update databases file for this version
                 $files = scandir(FCPATH . 'application/database');
+
                 foreach ($files as $file) {
                     if ($file == 'update_db.php') {
-
                         // Check if exist an update_db file to execute update queries
                         include(FCPATH . 'application/database/update_db.php');
 
-                        if (isset($updates)) {
+                        // Sort array from oldest version to newest
+                        uasort($updates, 'version_compare');
 
-                            // Sort array from oldest version to newest
-                            usort($updates, 'version_compare');
-
-                            foreach ($updates as $key => $value) {
-                                // Check if the version number is old or new
-                                if (version_compare($key, $old_version) > 0) {
-                                    foreach ($value as $query) {
-                                        $this->db->query($query);
-                                    }
+                        foreach ($updates as $key => $value) {
+                            // Check if the version number is old or new
+                            if (version_compare($key, $old_version) >= 0) {
+                                foreach ($value as $query) {
+                                    $this->db->query($query);
                                 }
                             }
                         }
