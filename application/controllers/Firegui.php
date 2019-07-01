@@ -138,7 +138,7 @@ class Firegui extends MY_Controller
             die("Missing ZipArchive class in client");
         }
 
-        $old_version = $this->get_client_version();
+        $old_version = VERSION;
 
         $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION;
         //die($file_link);
@@ -159,18 +159,18 @@ class Firegui extends MY_Controller
 
 
                 // Search update databases file for this version
-                $files = scandir(FCPATH . '/database');
+                $files = scandir(FCPATH . 'application/database');
                 foreach ($files as $file) {
                     if ($file == 'update_db.php') {
 
                         // Check if exist an update_db file to execute update queries
-                        include(FCPATH . '/database/update_db.php');
+                        include(FCPATH . 'application/database/update_db.php');
 
                         if (isset($updates)) {
 
                             // Sort array from oldest version to newest
                             usort($updates, 'version_compare');
-                            
+
                             foreach ($updates as $key => $value) {
                                 // Check if the version number is old or new
                                 if (version_compare($key, $old_version) > 0) {
