@@ -131,6 +131,15 @@
 
 
                         </li>
+                        
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <a href="<?php echo base_url('main/system_log'); ?>"><i class="fa fa-history"></i>
+                                        System Log</a>
+                                </div>
+                            </div>
+                        </li>
 
                         <li class="user-body">
                             <div class="row">
