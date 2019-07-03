@@ -188,7 +188,23 @@ class Main extends MY_Controller
         }
 
     }
-
+    
+    /**
+     * Log CRM page
+     */
+    public function system_log() {
+        if (!$this->datab->is_admin()) {
+            $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
+            $this->stampa($pagina);
+            return;
+        }
+        
+        $dati['current_page'] = 'system_log';
+    
+        $pagina = $this->load->view("pages/system_log", array('dati' => $dati), true);
+        $this->stampa($pagina);
+    }
+    
     /**
      * Permissions page
      */

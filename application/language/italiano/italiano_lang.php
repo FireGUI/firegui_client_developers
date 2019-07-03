@@ -39,3 +39,4 @@ $lang['filtra'] = 'filtra';
 $lang['Permessi'] = 'Permessi';
 $lang['Permessi'] = 'Permessi';
 $lang['Impostazioni viste'] = 'Impostazioni viste';
+$lang['Log CRM'] = 'Log CRM';
