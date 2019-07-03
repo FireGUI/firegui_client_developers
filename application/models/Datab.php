@@ -230,10 +230,15 @@ class Datab extends CI_Model
                 // Mi aspetto una sintassi di questo tipo: {arr campo} oppure {campo}
                 $str = str_replace(array("{", "}"), "", $fields['forms_fields_default_value']);
                 $exp = explode(' ', $str);
+
                 if (count($exp) > 1) {
+                    // Fix compatibility with old version
+                    if ($exp[0] == 'master_crm_login') {
+                        $exp[0] == SESS_LOGIN;
+                    }
                     $sess_arr = $this->session->userdata($exp[0]);
 
-                    $value = $sess_arr[$exp[1]];
+                    $value = (isset($sess_arr[$exp[1]])) ? $sess_arr[$exp[1]] : '';
                 } else {
                     $value = $this->session->userdata($exp[0]);
                 }
@@ -241,6 +246,7 @@ class Datab extends CI_Model
             case 'static_value':
                 $value = $fields['forms_fields_default_value'];
                 break;
+
             case 'function':
                 // Esplodo xkè potrebbero esserci dei valori
                 $exp = explode(',', $fields['forms_fields_default_value']);
