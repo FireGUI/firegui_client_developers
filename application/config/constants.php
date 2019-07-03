@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') OR define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '1.5.5');
+defined('VERSION') OR define('VERSION', '1.5.5.2');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -59,7 +59,7 @@ define('DEFAULT_LAYOUT_MAP',        'map_standard');
 
 
 /*********** Session fields *********/
-define('SESS_LOGIN',        'master_crm_login');
+define('SESS_LOGIN',        'session_login');
 define('SESS_GRIDS_DATA',   'master_crm_grids');
 define('SESS_WHERE_DATA',   'master_crm_where_data');
 

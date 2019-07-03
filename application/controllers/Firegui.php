@@ -170,6 +170,7 @@ class Firegui extends MY_Controller
                         uasort($updates, 'version_compare');
 
                         foreach ($updates as $key => $value) {
+
                             // Check if the version number is old or new
                             if (version_compare($key, $old_version) >= 0) {
                                 foreach ($value as $query) {
