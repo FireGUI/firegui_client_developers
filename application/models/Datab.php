@@ -1183,6 +1183,10 @@ class Datab extends CI_Model
 
     public function replace_superglobal_data($string)
     {
+        // Fix per mantenere vecchia compatibilità con replace di sessioni login
+        if (strpos($string, 'master_crm_login') !== false) {
+            $string = str_replace('master_crm_login', SESS_LOGIN, $string);
+        }
 
         $replaces = array_merge(
                 ['post' => $this->input->post(), 'get' => $this->input->get()], $this->session->all_userdata()
