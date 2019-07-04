@@ -4,8 +4,10 @@ $chartId = "container_hightcharts_{$chart['charts_id']}";
 $series = [];
 
 foreach ($chart_data as $x => $chart_element_data) {
-    foreach ($chart_element_data['series'] as $name => $data) {
-        $series[] = ['name' => $name, 'data' => array_values(array_map('floatval', $data))];
+    if (!empty($chart_element_data['series'])) {
+        foreach ($chart_element_data['series'] as $name => $data) {
+            $series[] = ['name' => $name, 'data' => array_values(array_map('floatval', $data))];
+        }
     }
 }
 ?>
