@@ -234,7 +234,7 @@ class Datab extends CI_Model
                 if (count($exp) > 1) {
                     // Fix compatibility with old version
                     if ($exp[0] == 'master_crm_login') {
-                        $exp[0] == SESS_LOGIN;
+                        $exp[0] = SESS_LOGIN;
                     }
                     $sess_arr = $this->session->userdata($exp[0]);
 
@@ -1183,6 +1183,7 @@ class Datab extends CI_Model
 
     public function replace_superglobal_data($string)
     {
+
         // Fix per mantenere vecchia compatibilità con replace di sessioni login
         if (strpos($string, 'master_crm_login') !== false) {
             $string = str_replace('master_crm_login', SESS_LOGIN, $string);
