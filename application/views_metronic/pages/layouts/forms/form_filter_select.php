@@ -121,7 +121,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                             data-ref="<?php echo $field['filterref']; ?>"
                                             data-source-field=""
                                             data-minimum-input-length="0" >
-                                            
+                                        
                                         <?php foreach ($this->crmentity->getEntityPreview($field['filterref']) as $id => $name) : ?>
                                         <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                         <?php endforeach; ?>
@@ -140,7 +140,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                             data-minimum-input-length="0" >
                                             
                                         <?php foreach ($this->db->query("SELECT DISTINCT({$field_completo['fields_name']}) as foo FROM {$entity['entity_name']}")->result_array() as $val) : ?>
-                                        <option value="<?php echo $val['foo']; ?>" <?php echo (in_array($val['foo'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $val['foo']; ?></option>
+                                        <option value="<?php echo $val['foo']; ?>" <?php echo ($value && in_array($val['foo'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $val['foo']; ?></option>
                                         <?php endforeach; ?>
                                         
                                     </select>
