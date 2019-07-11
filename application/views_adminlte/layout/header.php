@@ -19,22 +19,22 @@
     <?php endif; ?>
 
 </a>
-<?php if(!empty(TOPBAR_COLOR)): ?>
-<style>
-    .navbar-static-top, .logo, .user-header {
-        background-color: <?php echo TOPBAR_COLOR; ?> !important;
-    }
+<?php if(defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)): ?>
+    <style>
+        .navbar-static-top, .logo, .user-header {
+            background-color: <?php echo TOPBAR_COLOR; ?> !important;
+        }
 
-    <?php if(!empty(TOPBAR_HOVER)): ?>
-    .sidebar-toggle:hover {
-        background-color: <?php echo TOPBAR_HOVER; ?> !important;
-    }
-    <?php endif; ?>
-    
-    .user-header {
-        background-color: <?php echo TOPBAR_COLOR; ?> !important;
-    }
-</style>
+        <?php if(defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)): ?>
+        .sidebar-toggle:hover {
+            background-color: <?php echo TOPBAR_HOVER; ?> !important;
+        }
+        <?php endif; ?>
+
+        .user-header {
+            background-color: <?php echo TOPBAR_COLOR; ?> !important;
+        }
+    </style>
 <?php endif; ?>
 <nav class="navbar navbar-static-top" >
 
