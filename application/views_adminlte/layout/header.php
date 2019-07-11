@@ -19,17 +19,31 @@
     <?php endif; ?>
 
 </a>
+<?php if(!empty(TOPBAR_COLOR)): ?>
+<style>
+    .navbar-static-top, .logo, .user-header {
+        background-color: <?php echo TOPBAR_COLOR; ?> !important;
+    }
 
-
-<nav class="navbar navbar-static-top">
+    <?php if(!empty(TOPBAR_HOVER)): ?>
+    .sidebar-toggle:hover {
+        background-color: <?php echo TOPBAR_HOVER; ?> !important;
+    }
+    <?php endif; ?>
+    
+    .user-header {
+        background-color: <?php echo TOPBAR_COLOR; ?> !important;
+    }
+</style>
+<?php endif; ?>
+<nav class="navbar navbar-static-top" >
 
     <!-- Sidebar toggle button-->
-
-    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button" >
 
     </a>
 
-    <div class="navbar-custom-menu">
+    <div class="navbar-custom-menu" >
 
 
         <ul class="nav navbar-nav">

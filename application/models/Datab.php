@@ -1739,7 +1739,7 @@ class Datab extends CI_Model
         // Se non ne trovo ho finito, in quanto ho già eliminato le vecchie
         // impostazioni e non ci sono altri utenti da cui copiare i layout non
         // accessibili
-        if (defined('LOGIN_ACTIVE_FIELD')) {
+        if (defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
             $permissionWithGroup = $this->db
                     ->where('permissions_user_id IS NOT NULL')
                     ->where('permissions_user_id IN (SELECT '.LOGIN_ENTITY.'_id FROM '.LOGIN_ENTITY.' WHERE '.LOGIN_ACTIVE_FIELD.' = \''.DB_BOOL_TRUE.'\')') 
