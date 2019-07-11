@@ -1046,8 +1046,30 @@ class Datab extends CI_Model
                                 
                                 if ($this->db->dbdriver != 'postgre') {
                                     //die('test');
-                                    $arr[] = "({$where_prefix}{$field->fields_name} BETWEEN '{$start}' AND '{$end}'{$where_suffix})";
-                                    //debug($arr,true);
+                                    if ($is_another_entity) { //Sono costretto a ricontrollare se questo campo fa riferimento a un'altra tabella
+                                        $other_entity = $this->get_entity($field->fields_entity_id);
+                                        $other_field_select = $this->db->get_where('fields', array('fields_entity_id' => $field->fields_entity_id, 'fields_ref' => $entity['entity_name']))->row();
+                                        if (isset($other_field_select->fields_name)) {
+                                            // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
+                                            $arr[] = "{$entity['entity_name']}._id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
+                                        } else {
+                                            // Caso 2: è questa entità che sta ha il ref nell'altra entità
+                                            // devo trovare codesto field
+                                            $field_referencing = $this->db->get_where('fields', array('fields_entity_id' => $entity['entity_id'], 'fields_ref' => $other_entity['entity_name']))->row();
+                                            if (empty($field_referencing)) {
+                                                // Non so come gestirlo, per ora piazzo un continue e tolgo debug
+                                                //debug("Campo errato nella ricerca: {$field->fields_name}");
+                                                continue;
+                                            }
+                                            $arr[] = "{$entity['entity_name']}.{$field_referencing->fields_name} IN (SELECT {$other_entity['entity_name']}_id FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
+                                            //$where_prefix = "{$entity['entity_name']}.{$field_referencing->fields_name} IN (SELECT {$other_entity['entity_name']}_id FROM {$other_entity['entity_name']} WHERE ";
+                                        }
+                                        
+                                    } else {
+                                        $arr[] = "(CAST({$where_prefix}{$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'{$where_suffix})";
+                                    }
+                                    
+                                    //debug($where_prefix,true);
                                 } else {
                                     $arr[] = "({$where_prefix}{$field->fields_name}::DATE >= '{$start}'::DATE AND {$field->fields_name}::DATE <= '{$end}'::DATE{$where_suffix})";
                                 }
