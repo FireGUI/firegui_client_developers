@@ -275,7 +275,7 @@ function initTable(gridID) {
         sServerMethod: "POST",
         bServerSide: true,
         sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + gridID + '/' + valueID + '?' + getParameters,
-        aLengthMenu: [10, 50, 100, 200, 500, 'Tutti'],
+        aLengthMenu: [10, 50, 100, 200, 500,  1000, 'Tutti'],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
         oLanguage: {
