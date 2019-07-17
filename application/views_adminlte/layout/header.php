@@ -19,23 +19,30 @@
     <?php endif; ?>
 
 </a>
-<?php if(defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)): ?>
-    <style>
+<style>
+    <?php if(defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)): ?>
         .navbar-static-top, .logo, .user-header {
             background-color: <?php echo TOPBAR_COLOR; ?> !important;
         }
-
+    
         <?php if(defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)): ?>
         .sidebar-toggle:hover {
             background-color: <?php echo TOPBAR_HOVER; ?> !important;
         }
         <?php endif; ?>
-
+    
         .user-header {
             background-color: <?php echo TOPBAR_COLOR; ?> !important;
         }
-    </style>
-<?php endif; ?>
+    <?php endif; ?>
+    
+    <?php if(defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)): ?>
+        .skin-blue .sidebar-menu>li:hover>a, .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li.menu-open>a {
+            color: #fff;
+            background: <?php echo SIDEBAR_ELEMENT; ?>;
+        }
+    <?php endif; ?>
+</style>
 <nav class="navbar navbar-static-top" >
 
     <!-- Sidebar toggle button-->
