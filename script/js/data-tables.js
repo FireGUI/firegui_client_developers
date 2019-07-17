@@ -6,7 +6,7 @@ function startDataTables() {
             bSort: bEnableOrder,
             aaSorting: [],
             stateSave: true,
-            aLengthMenu: [10, 50, 100, 200, 500, 'Tutti'],
+            aLengthMenu: [10, 50, 100, 200, 500,  1000, 'Tutti'],
             "oLanguage": {
                 "sUrl": base_url_scripts + "script/datatable.transl.json"
             }
