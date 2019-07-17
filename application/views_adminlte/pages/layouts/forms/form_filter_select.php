@@ -116,7 +116,18 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             
                             <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source']))?$field['fields_source']:'' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref']))?$field['fields_ref']:'' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                 <option value="">---</option>
-                                <?php foreach ($this->crmentity->getEntityPreview($field['filterref']) as $id => $name) : ?>
+                                <?php
+                                    $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
+                                    $where = '1';
+                                    foreach ($data as $campo => $valore) {
+                                        if ($campo) {
+                                            $where .= " AND {$campo} = '$valore'";
+                                        } else {
+                                            $where .= " AND $valore";
+                                        }
+                                    }
+                                ?>
+                                <?php foreach ($this->crmentity->getEntityPreview($field['filterref'], $where) as $id => $name) : ?>
                                 <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -131,6 +142,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 ?>
                                 <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                     <option value="">---</option>
+                                    
                                     <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row) : ?>
                                     <?php if (!empty($row['valore'])) : ?><option value="<?php echo $row['valore']; ?>"<?php if ($value == $row['valore']) : ?> selected="selected"<?php endif; ?>><?php echo $row['valore']; ?></option><?php endif; ?>
                                     <?php endforeach; ?>
