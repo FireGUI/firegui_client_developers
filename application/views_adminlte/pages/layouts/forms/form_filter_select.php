@@ -113,20 +113,25 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <?php else: ?>
                             <?php if($field['filterref']): ?>
                                 <!--<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo $field['filterref']; ?>" data-referer="<?php echo $field['name']; ?>" class="form-control  __js_select_ajax field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />-->
-                            
+                            <?php
+                                $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
+                                $where = '1';
+                                foreach ($data as $campo => $valore) {
+                                    if ($campo) {
+                                        $where .= " AND {$campo} = '$valore'";
+                                    } else {
+                                        $where .= " AND $valore";
+                                    }
+                                }
+                                
+                                if ($where === '1') {
+                                    $where = null;
+                                }
+                                //debug($where);
+                            ?>
                             <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source']))?$field['fields_source']:'' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref']))?$field['fields_ref']:'' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                 <option value="">---</option>
-                                <?php
-                                    $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
-                                    $where = '1';
-                                    foreach ($data as $campo => $valore) {
-                                        if ($campo) {
-                                            $where .= " AND {$campo} = '$valore'";
-                                        } else {
-                                            $where .= " AND $valore";
-                                        }
-                                    }
-                                ?>
+                                
                                 <?php foreach ($this->crmentity->getEntityPreview($field['filterref'], $where) as $id => $name) : ?>
                                 <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                 <?php endforeach; ?>
