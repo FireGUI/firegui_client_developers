@@ -78,6 +78,7 @@ define('API_MANAGER_CRM_PASSPARTOUT', 'ApiP4ss!');
  * ============ */
 define('TOPBAR_COLOR', '#b81f1e');
 define('TOPBAR_HOVER', '#851717');
+//define('LOGIN_COLOR', '#b81f1e');
 /*
  * ============================================================
  * Base URL ADMIN 
