@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') OR define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '1.5.7.1');
+defined('VERSION') OR define('VERSION', '1.5.7.2');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
