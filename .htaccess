@@ -60,5 +60,6 @@ ExpiresByType application/javascript "access plus 1 year"
 </IfModule>
 
 <IfModule mod_env.c>
-    SetEnv CI_ENV testing
+    #testing
+    SetEnv CI_ENV development
 </IfModule>
