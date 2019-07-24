@@ -41,17 +41,32 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                 for (var i in fields.get()) {
                     var field = $(fields[i]);
                     
+                    //Prendo anche il container (per le date è il container che mi dice se devo stamparla come datepicker o meno...
+                    var field_container = field.parent();
+                    
+                    //console.log(field_container);
+                    
+                    
                     var cloned_field = field.clone();
                     //cloned_field.attr('placeholder', name);
                     cloned_field.attr('placeholder', $(this).html());
 
                     cloned_field.removeClass('select2-hidden-accessible');
-                    field_html += cloned_field.prop('outerHTML');
+                    
+                    if (field_container.hasClass('js_form_datetimepicker')) {
+                        field_html += field_container.prop('outerHTML');
+                    } else {
+                        field_html += cloned_field.prop('outerHTML');
+                    }
                 }
+                
+                console.log(field_html);
+                
                 tr.append($('<td>' + field_html + '</td>'));
             }
         }
     });
+    
 
     //Aggiungo l'action per annullare e per salvare
     var button_save = $('<a class="btn btn-success _btn-xs pull-left js_save_row">Save</a>');
@@ -63,6 +78,8 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     });
 
     $('tbody', this.grid).append(tr);
+    
+    initComponents();
 
 };
 
@@ -84,7 +101,8 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
             var selects_vals = [];
             $(':input', row_with_form).each(function () {
                 //Se il name contiene [] allora è una multiselect
-                if ($(this).attr('name').endsWith('[]')) {
+                //console.log($(this));
+                if ($(this).attr('name') && $(this).attr('name').endsWith('[]')) {
                     var field_name = $(this).attr('name').substring(0, $(this).attr('name').length-2);
                     if (data.data[field_name]) {
                         $(this).val(Object.keys(data.data[field_name])).trigger('change');
@@ -191,6 +209,7 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
     });
 
     // Save data
+    //Perchè non postare direttamente alla save_form? Avremmo tutto potenzialmente...
     $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data)
             .success(function () {
                 
