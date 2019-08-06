@@ -120,6 +120,7 @@ $tsuffix = 'CRM';
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v={$this->config->item('version')}"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v={$this->config->item('version')}"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v={$this->config->item('version')}"); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url_template("script/js/fontawesome4to5.js?v={$this->config->item('version')}"); ?>"></script>
 <script>
     $(function () {
         Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function (color) {
