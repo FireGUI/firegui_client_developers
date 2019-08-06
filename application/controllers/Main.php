@@ -270,7 +270,7 @@ class Main extends MY_Controller
         $dati['layouts'] = array_combine($layoutIds, $ucfirsLayoutTitles);
 
         //Fix per non prendere tutti gli utenti ma solo quelli che possono fare login
-        if (!empty(LOGIN_ACTIVE_FIELD)) {
+        if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
             $this->db->where("unallowed_layouts_user IN (SELECT ".LOGIN_ENTITY."_id FROM ".LOGIN_ENTITY." WHERE ".LOGIN_ACTIVE_FIELD." = '".DB_BOOL_TRUE."')", null, false);
         }
 
