@@ -1820,7 +1820,7 @@ class Datab extends CI_Model
         $idField = LOGIN_ENTITY . '_id';
 
          //Fix per non prendere tutti gli utenti ma solo quelli che possono fare login
-        if (!empty(LOGIN_ACTIVE_FIELD)) {
+        if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
             $this->db->where("permissions_user_id IN (SELECT ".LOGIN_ENTITY."_id FROM ".LOGIN_ENTITY." WHERE ".LOGIN_ACTIVE_FIELD." = '".DB_BOOL_TRUE."')", null, false);
         }
         
