@@ -90,7 +90,7 @@
 
     <?php if(isset($links['edit']) && $links['edit']): ?>
             <a href="<?php echo $links['edit'].$id; ?>" class="btn purple btn-xs <?php if(!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Modifica">
-                <span class="fa fa-pencil"></span>
+                <span class="fa fa-edit"></span>
             </a>
     <?php endif; ?>
 
