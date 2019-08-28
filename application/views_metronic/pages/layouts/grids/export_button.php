@@ -13,7 +13,11 @@
                 <a target="_blank" href="<?php echo base_url("export/download_excel/{$grid['grids']['grids_id']}/$value_id"); ?>">Excel (xls)</a>
             </li>
         </ul> */ ?>
-        <a target="_blank" class="btn default" href="<?php echo base_url("export/download_csv/{$grid['grids']['grids_id']}/$value_id"); ?>">Comma separated values (csv)</a>
-        <a target="_blank" class="btn default" href="<?php echo base_url("export/download_excel/{$grid['grids']['grids_id']}/$value_id"); ?>">Excel (xls)</a>
+        
+        <?php //debug($_SERVER["QUERY_STRING"]); ?>
+        
+        
+        <a target="_blank" class="btn default" href="<?php echo base_url("export/download_csv/{$grid['grids']['grids_id']}/$value_id"); ?><?php echo ($_SERVER["QUERY_STRING"])?"/?{$_SERVER["QUERY_STRING"]}":'' ; ?>">Comma separated values (csv)</a>
+        <a target="_blank" class="btn default" href="<?php echo base_url("export/download_excel/{$grid['grids']['grids_id']}/$value_id"); ?><?php echo ($_SERVER["QUERY_STRING"])?"/?{$_SERVER["QUERY_STRING"]}":'' ; ?>">Excel (xls)</a>
     </div>
 </div>
