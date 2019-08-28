@@ -181,7 +181,7 @@ class Firegui extends MY_Controller
                     }
                 }
 
-
+                unlink($newfile);
                 echo 'ok';
             }
         }
