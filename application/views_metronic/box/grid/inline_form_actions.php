@@ -1,5 +1,5 @@
 <a href="#" class="js_edit btn bg-purple btn-xs" data-id="<?php echo $id; ?>">
-    <span class="fa fa-pencil"></span>
+    <span class="fa fa-edit"></span>
 </a>
 
 
