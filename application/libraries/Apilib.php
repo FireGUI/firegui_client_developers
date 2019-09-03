@@ -2277,6 +2277,8 @@ class Apilib {
         $logEntry['log_crm_extra'] = $logEntry['log_crm_extra'] ? json_encode($logEntry['log_crm_extra']): null;
         
         $this->db->insert('log_crm', $logEntry);
+        
+        // @todo 20190902 - Da fare cancellazione log dopo 30/60 giorni
     }
 
 
