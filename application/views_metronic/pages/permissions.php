@@ -1,3 +1,15 @@
+<?php
+//Check per evitare il bug quando max_input_data è minore del numero di checkbox stampati...
+
+$stima_campi = (count($dati['layouts']) * count($dati['users_layout'])) * 2; //Mi tengo un margine doppio, non voglio rischiare...
+$max_input_vars = ini_get('max_input_vars');
+
+if ($max_input_vars < $stima_campi) {
+    throw new Exception("max_input_vars troppo basso per utilizzare questa pagina ($max_input_vars < $stima_campi).");
+}
+
+?>
+
 <h3 class="page-title"><?php e("permessi"); ?> <small><?php e("imposta permessi per agenti", 0); ?></small></h3>
 <div class="row">
     <div class="col-md-8">
