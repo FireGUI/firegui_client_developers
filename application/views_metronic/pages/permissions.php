@@ -1,12 +1,12 @@
 <?php
 //Check per evitare il bug quando max_input_data è minore del numero di checkbox stampati...
 
-$stima_campi = (count($dati['layouts']) * count($dati['users_layout'])) * 2; //Mi tengo un margine doppio, non voglio rischiare...
+//$stima_campi = (count($dati['layouts']) * count($dati['users_layout'])) * 2; //Mi tengo un margine doppio, non voglio rischiare...
 $max_input_vars = ini_get('max_input_vars');
 
-if ($max_input_vars < $stima_campi) {
-    throw new Exception("max_input_vars troppo basso per utilizzare questa pagina ($max_input_vars < $stima_campi).");
-}
+//if ($max_input_vars < $stima_campi) {
+//    throw new Exception("max_input_vars troppo basso per utilizzare questa pagina ($max_input_vars < $stima_campi).");
+//}
 
 ?>
 
@@ -141,6 +141,15 @@ if ($max_input_vars < $stima_campi) {
 
 
 <script>
+    
+    $(document).ready(function () {
+        var numero_di_campi = $('#views_form :input').length;
+        if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
+            alert('Il limite max_input_vars (<?php echo $max_input_vars; ?>) è troppo basso rispetto al numero di campi in questa pagina ('+numero_di_campi+')! Funzionalità disattivata.');
+            $('#views_form button').hide();
+        }
+    });
+    
     
     function refreshPermissionTable(userId) {
         var jqTableContainer = $('#js_permission_table');
