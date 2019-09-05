@@ -154,6 +154,14 @@ if ($max_input_vars < $stima_campi) {
 
 <script>
 
+    $(document).ready(function () {
+        var numero_di_campi = $('#views_form :input').length;
+        if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
+            alert('Il limite max_input_vars (<?php echo $max_input_vars; ?>) è troppo basso rispetto al numero di campi in questa pagina ('+numero_di_campi+')! Funzionalità disattivata.');
+            $('#views_form button').hide();
+        }
+    });
+
     function refreshPermissionTable(userId) {
         var jqTableContainer = $('#js_permission_table');
         var formButton = $('#js_form_toggler');
