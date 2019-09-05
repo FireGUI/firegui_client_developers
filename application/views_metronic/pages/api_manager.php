@@ -69,7 +69,7 @@
             <div class="form portlet box grey-silver">
                 <div class="portlet-title ">
                     <div class="caption">
-                        <i class=" fa fa-pencil-square-o"></i>
+                        <i class=" fa fa-edit"></i>
                         <span class=" ">
                             Autorizza nuovo token
                         </span>

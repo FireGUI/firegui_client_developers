@@ -2693,7 +2693,8 @@ class Datab extends CI_Model
                 
                 // Ci sono problemi se inizializzo una datatable senza colonne!!
                 if (empty($grid['grids_fields'])) {
-                    return sprintf('*** Tabella `%s` senza campi ***', $contentRef);
+                    //debug($grid);
+                    return sprintf('*** Grid `%s` senza campi ***', $contentRef);
                 }
 
                 // Controllo i permessi per questa grid
