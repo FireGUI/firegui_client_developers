@@ -1,7 +1,7 @@
 <?php 
 $iconsMapForContentType = [
     'grid' => 'fa fa-th',
-    'form' => 'fa fa-pencil-square-o',
+    'form' => 'fa fa-edit',
     'chart' => 'fa fa-bar-chart-o',
     'map' => 'fa fa-map-marker',
     'calendar' => 'fa fa-calendar',

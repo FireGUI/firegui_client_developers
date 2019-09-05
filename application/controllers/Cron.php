@@ -123,8 +123,8 @@ class Cron extends MY_Controller {
         
         // ============= SVUOTAMENTO LOGS VARI =============
         if ($this->db->dbdriver != 'postgre') {
-            $this->db->where("log_api_date < now() - interval 30 days", null, false)->delete('log_api');
-            $this->db->where("log_crm_time < now() - interval 30 days", null, false)->delete('log_crm');
+            $this->db->where("log_api_date < now() - interval 30 day", null, false)->delete('log_api');
+            $this->db->where("log_crm_time < now() - interval 30 day", null, false)->delete('log_crm');
         } else {
             $this->db->where("log_api_date < now() - INTERVAL '1 month'", null, false)->delete('log_api');
             $this->db->where("log_crm_time < now() - INTERVAL '1 month'", null, false)->delete('log_crm');
