@@ -278,8 +278,21 @@ class Datab extends CI_Model
                 }
                 break;
             case 'variable':
-                //TODO
-                debug("NON GESTITA DEFAULT TYPE VARIABLE");
+                // Mi aspetto una sintassi di questo tipo: {arr campo} oppure {campo}
+                $str = str_replace(array("{", "}"), "", $fields['forms_fields_default_value']);
+                $exp = explode(' ', $str);
+
+                if (count($exp) > 1) {
+                    // Fix compatibility with old version
+                    if ($exp[0] == 'get') {
+                        $value = $this->input->get($exp[1]);
+                    } else {
+                        debug("NON GESTITA DEFAULT TYPE VARIABLE");
+                    }
+                } else {
+                    debug("NON GESTITA DEFAULT TYPE VARIABLE");
+                }
+                
                 break;
         }
 

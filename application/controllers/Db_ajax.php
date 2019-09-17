@@ -887,7 +887,33 @@ class Db_ajax extends MY_Controller {
 
         if ($field['fields_ref']) { //Se ha una relazione collegata...
             $relations = $this->db->where('relations_name', $field['fields_ref'])->get('relations');
-            if ($relations->num_rows() > 0) {
+            
+            if ($relations->num_rows() == 0) { //Allora il campo non punta a una relazione ma a una tabella diretta
+                //Cerco allora la tabella
+                //$table = $this->db->where('entity_name', $field['fields_ref'])->get('entity');
+                
+                $entity_data = $this->datab->get_entity_by_name($field['fields_ref']);
+
+                //Cerco il campo file e lo uso per inserire
+                $field_insert = false;
+                foreach ($entity_data['fields'] as $_field) {
+                    if (in_array($_field['fields_draw_html_type'], ['upload_image', 'upload'])) {
+                        $field_insert = $_field;
+                    }
+                }
+                if (!$field_insert) {
+                    echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
+                    exit;
+                }
+                $_FILES = [];
+                $id = $this->apilib->create($field['fields_ref'], [$field_insert['fields_name'] => $up_data['path_local']], false);
+                echo json_encode(['status' => 1, 'file' => $id]);
+                
+            } else {
+                
+            
+            
+            
                 $relation = $relations->row();
                 //Verifico che effettivamente il campo sia di una tabella presente nella relazione
                 if (!in_array($field['entity_name'], [$relation->relations_table_1, $relation->relations_table_2])) {
