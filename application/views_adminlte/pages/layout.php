@@ -16,7 +16,7 @@ $portletBgColorMap = [];
     <?php if ($dati['show_title']): ?>
 
         <section class="content-header">
-            <h1>
+            <h1 class="js_title">
                 <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?>
                 <small><?php echo $dati['layout_container']['layouts_subtitle']; ?></small>
             </h1>
@@ -28,7 +28,7 @@ $portletBgColorMap = [];
 
     <?php endif; ?>
 
-    <section class="content">
+<!--    <section class="content">-->
         <?php foreach ($dati['layout'] as $row): ?>
         
             <div class="row">
@@ -69,7 +69,7 @@ $portletBgColorMap = [];
                     ?>
                     <div class="<?php echo sprintf('col-md-%s', $layout['layouts_boxes_cols']); ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>">
 
-                        <div class="box <?php echo $layout['layouts_boxes_css']." ".$layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
+                        <div class="<?php echo $layout['layouts_boxes_css']." ".$layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
                             
                             <?php if ($layout['layouts_boxes_titolable'] === DB_BOOL_TRUE): ?>
 
@@ -116,5 +116,5 @@ $portletBgColorMap = [];
             </script>
         <?php endif; ?>
 
-    </section>
+<!--    </section>-->
 
