@@ -45,6 +45,7 @@ class Export extends MY_Controller {
                             //$this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
         $out_array = array();
         foreach ($grid_data as $dato) {
+            //debug($dato,true);
             $tr = array();
             
             foreach ($grid['grids_fields'] as $field) {
@@ -99,14 +100,41 @@ class Export extends MY_Controller {
         ini_set('display_startup_errors', TRUE);
         
 
+        $grid = $this->datab->get_grid($grid_id);
+        $fields = $grid['grids_fields'];
+        
+        
         $data = $this->prepareData($grid_id, $value_id);
         
         // Instantiate our custom binder, with a list of columns, and tell PHPExcel to use it
         PHPExcel_Cell::setValueBinder(new PHPExcel_Cell_MyColumnValueBinder([]));
 
         $objPHPExcel = new PHPExcel();
-        $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), NULL,'A1');
-        $objPHPExcel->getActiveSheet()->fromArray($data, null, 'A2');
+        
+        $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '','A1');
+        
+        //Imposto le colonne numeriche (per permettere a formule e altro di funzionare correttamente)
+        foreach ($fields as $key => $field) {
+            if (in_array(strtoupper($field['fields_type']), ['FLOAT','DOUBLE','INT','INTEGER']) ) {
+                $numeric_cells[$key] = $field['grids_fields_column_name'];
+            }
+        }
+        
+        foreach ($data as $key => $dato) {
+            foreach ($numeric_cells as $col_pos => $numeric_cell) {
+                $data[$key][$numeric_cell] = str_replace('.', ',', $dato[$numeric_cell]);
+            }            
+        }
+        
+        foreach ($numeric_cells as $col_pos => $numeric_cell) {
+            $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
+            //debug($col_letter,true);
+            $objPHPExcel->getActiveSheet()->getStyle($col_letter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+            $objPHPExcel->getActiveSheet()->getStyle($col_letter)->setQuotePrefix(false);
+        }
+        //debug($data,true);
+        
+        $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=\"grid{$grid_id}.xlsx\"");
