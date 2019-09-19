@@ -270,7 +270,6 @@ switch (ENVIRONMENT)
             $view_folder = APPPATH . 'views_metronic';
         } else {
             $view_folder = APPPATH . 'views_adminlte';
-            $view_folder = APPPATH . 'views_adminlte';
         }
         
 	// The path to the "views" directory
