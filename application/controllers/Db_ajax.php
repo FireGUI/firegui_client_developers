@@ -829,58 +829,17 @@ class Db_ajax extends MY_Controller {
 
     public function multi_upload_async($field_id) {
 
-//        $exif = exif_read_data($_FILES['file']['tmp_name'], 'IFD0');
-//        debug($exif);
-//        die();
 
         $field = $this->datab->get_field($field_id);
 
-        //debug($field,true);
+//        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+//        $filename = md5(time() . $_FILES['file']['name']) . '.' . $ext;
+//        $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
 
-        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $filename = md5(time() . $_FILES['file']['name']) . '.' . $ext;
-        $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
-
-        if ($uploadDepthLevel > 0) {
-            // Voglio comporre il nome locale in modo che se il nome del file fosse
-            // foofoo.jpg la cartella finale sarà: ./uploads/f/o/o/foofoo.jpg
-            $localFolder = '';
-            for ($i = 0; $i < $uploadDepthLevel; $i++) {
-                // Assumo che le lettere siano tutte alfanumeriche,
-                // alla fine le immagini sono tutte delle hash md5
-                $localFolder .= strtolower(isset($filename[$i]) ? $filename[$i] . DIRECTORY_SEPARATOR : '');
-            }
-
-            if (!is_dir(FCPATH . 'uploads/' . $localFolder)) {
-                mkdir(FCPATH . 'uploads/' . $localFolder, DIR_WRITE_MODE, true);
-            }
-        }
-        //die($localFolder.$filename);
-        if (file_exists(FCPATH . 'uploads/' . $localFolder . $filename)) {
-            echo json_encode(['status' => 0, 'txt' => "File '{$filename}' already exists!"]);
-            exit;
-        }
-
-        $this->load->library('upload', array(
-            'upload_path' => FCPATH . 'uploads/' . $localFolder,
-            'allowed_types' => '*',
-            'max_size' => defined('MAX_UPLOAD_SIZE')?MAX_UPLOAD_SIZE:10000,
-            'encrypt_name' => false,
-            'file_name' => $filename,
-        ));
-
-        $uploaded = $this->upload->do_upload('file');
-        if (!$uploaded) {
-            debug($this->upload->display_errors());
-            die();
-        }
-
-        $up_data = $this->upload->data();
-        $up_data['original_filename'] = $_FILES['file']['name'];
-        $up_data['path_local'] = $localFolder . $filename;
-        //$session = (array)($this->session->userdata('files'));
-        //$session[] = $up_data;
-        //$this->session->set_userdata('files', $session);
+        $old_file_data =  $_FILES['file'];
+        unset($_FILES['file']);
+        $_FILES[$field['fields_name']] = $old_file_data;
+        
         usleep(100);
 
         //A questo punto, devo valutare se il field ha una tabella collegata ed è di tipo INT (forse questo non serve o se invece è di tipo JSON e allora chissene, va bene così (tanto mi salvo il json con tutte le info sul file
@@ -905,15 +864,15 @@ class Db_ajax extends MY_Controller {
                     echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
                     exit;
                 }
-                $_FILES = [];
-                $id = $this->apilib->create($field['fields_ref'], [$field_insert['fields_name'] => $up_data['path_local']], false);
-                echo json_encode(['status' => 1, 'file' => $id]);
+                
+                $data = $this->apilib->create($field['fields_ref'], [], true);
+                echo json_encode(['status' => 1, 'file' => $data[$field['fields_ref']].'_id']);
                 
             } else {
                 
             
-            
-            
+//            
+//            
                 $relation = $relations->row();
                 //Verifico che effettivamente il campo sia di una tabella presente nella relazione
                 if (!in_array($field['entity_name'], [$relation->relations_table_1, $relation->relations_table_2])) {
@@ -936,12 +895,56 @@ class Db_ajax extends MY_Controller {
                     echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
                     exit;
                 }
-                $_FILES = [];
-                $id = $this->apilib->create($file_table, [$field_insert['fields_name'] => $up_data['path_local']], false);
+                
+                $id = $this->apilib->create($file_table, [], false);
                 echo json_encode(['status' => 1, 'file' => $id]);
             }
             //debug($field['fields_ref'],true);
         } else {
+            $ext = pathinfo($_FILES[$field['fields_name']]['name'], PATHINFO_EXTENSION);
+            $filename = md5(time() . $_FILES[$field['fields_name']]['name']) . '.' . $ext;
+            $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
+
+            if ($uploadDepthLevel > 0) {
+                // Voglio comporre il nome locale in modo che se il nome del file fosse
+                // foofoo.jpg la cartella finale sarà: ./uploads/f/o/o/foofoo.jpg
+                $localFolder = '';
+                for ($i = 0; $i < $uploadDepthLevel; $i++) {
+                    // Assumo che le lettere siano tutte alfanumeriche,
+                    // alla fine le immagini sono tutte delle hash md5
+                    $localFolder .= strtolower(isset($filename[$i]) ? $filename[$i] . DIRECTORY_SEPARATOR : '');
+                }
+
+                if (!is_dir(FCPATH . 'uploads/' . $localFolder)) {
+                    mkdir(FCPATH . 'uploads/' . $localFolder, DIR_WRITE_MODE, true);
+                }
+            }
+            //die($localFolder.$filename);
+            if (file_exists(FCPATH . 'uploads/' . $localFolder . $filename)) {
+                echo json_encode(['status' => 0, 'txt' => "File '{$filename}' already exists!"]);
+                exit;
+            }
+
+            $this->load->library('upload', array(
+                'upload_path' => FCPATH . 'uploads/' . $localFolder,
+                'allowed_types' => '*',
+                'max_size' => defined('MAX_UPLOAD_SIZE')?MAX_UPLOAD_SIZE:10000,
+                'encrypt_name' => false,
+                'file_name' => $filename,
+            ));
+
+            $uploaded = $this->upload->do_upload($field['fields_name']);
+            if (!$uploaded) {
+                debug($this->upload->display_errors());
+                die();
+            }
+
+            $up_data = $this->upload->data();
+            $up_data['original_filename'] = $_FILES[$field['fields_name']]['name'];
+            $up_data['path_local'] = $localFolder . $filename;
+            //$session = (array)($this->session->userdata('files'));
+            //$session[] = $up_data;
+            //$this->session->set_userdata('files', $session);
             echo json_encode(['status' => 1, 'file' => $up_data]);
         }
     }
