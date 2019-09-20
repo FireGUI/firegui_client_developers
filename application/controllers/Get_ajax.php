@@ -474,6 +474,8 @@ class Get_ajax extends MY_Controller {
 
         $preview_fields = $this->db->get_where('fields', array('fields_entity_id' => $grid['grids']['grids_entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
 
+        $where_append = $this->input->get('where_append');
+        
         $where = $this->datab->search_like($search, array_merge($grid['grids_fields'], $preview_fields));
 
         if (preg_match('/(\()+(\))+/', $where)) {
@@ -510,6 +512,11 @@ class Get_ajax extends MY_Controller {
             $order_by = null;
         }
 
+        if ($where_append && $where) {
+            $where .= " AND $where_append";
+        } elseif($where_append && !$where) {
+            $where = $where_append;
+        }
         
         
         $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
