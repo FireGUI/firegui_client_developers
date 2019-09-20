@@ -226,10 +226,13 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 
 
 
-function initTable(gridID) {
-    var oDataTable = $('#grid_' + gridID);
+function initTable(grid) {
+    var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
+    
+    
+    
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
     console.log('limite:'+defaultLimit);
@@ -256,7 +259,7 @@ function initTable(gridID) {
         bProcessing: true,
         sServerMethod: "POST",
         bServerSide: true,
-        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + gridID + '/' + valueID+'?'+getParameters,
+        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID+'?'+getParameters,
         aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
@@ -274,7 +277,8 @@ function startAjaxTables() {
     
     $('.js_ajax_datatable:not(.dataTable)').each(function () {
         var gridID = $(this).attr('data-grid-id');
-        initTable(gridID).on('init', function (e) {
+        var grid = $(this);
+        initTable(grid).on('init', function (e) {
             var wrapper = e.target.parent;
             $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
             $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
@@ -289,7 +293,7 @@ function startAjaxTables() {
 
     $('.js_datatable_inline').each(function () {
         var grid = $(this);
-        initTable(grid.attr('data-grid-id'));
+        initTable(grid);
 
         var dtInline = new CrmInlineTable(grid);
         dtInline.registerEvents();

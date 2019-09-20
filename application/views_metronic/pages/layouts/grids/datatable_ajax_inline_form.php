@@ -2,6 +2,7 @@
 $has_bulk = !empty($grid['grids']['grids_bulk_mode']); 
 $grid_id = 'grid_'.$grid['grids']['grids_id'];
 $has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
+$is_sub_grid = (empty($is_sub_grid))?false:$is_sub_grid; //TODO: usare questo parametro per rendere più "bellina" la grid quando è dentro un tr td di un altra grid madre e filtrare i risultati in base alla row madre
 
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 ?>
@@ -9,7 +10,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 <div class="clearfix"></div>
 <br/>
 
-<table data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT'))?DEFAULT_GRID_LIMIT:10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' ?> data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
+<table data-where_append="<?php echo (empty($where))?'':$where; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT'))?DEFAULT_GRID_LIMIT:10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' ?> data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
     <thead>
         <tr>
             <?php if ($has_bulk) : ?>
