@@ -13,15 +13,17 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     var sEntityName = this.grid.attr('data-entity');
     var jqThs = $('tr th', this.grid);
     var datatable = this.getDatatableHandler();
-    var tr = $('<tr data-id="'+id+'"></tr>');
-    var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]');
+    var tr = $('<tr data-id="'+id+'"></tr>', this.grid);
+    //console.log(tr);
+    var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
+    //console.log(form_container);
     var form = $('form', form_container);
 
 
     //Inserisco un nuovo TR con i vari TD
     jqThs.each(function () {
         var name = $(this).attr('data-name');
-        console.log(name);
+        //console.log(name);
         if (name == '_foo') {
             tr.append($('<td></td>'));
         } else if (typeof name == 'undefined') { //Vuol dire che sono nella colonna action o in un eval
@@ -38,7 +40,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                 //In questo caso li stampo entrambi...
                 var field_html = '';
                 //console.log(fields.get());
-                for (var i in fields.get()) {
+                for (var i in fields.get()) { 
                     var field = $(fields[i]);
                     
                     //Prendo anche il container (per le date è il container che mi dice se devo stamparla come datepicker o meno...
@@ -60,7 +62,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                     }
                 }
                 
-                console.log(field_html);
+                //console.log(field_html);
                 
                 tr.append($('<td>' + field_html + '</td>'));
             }
@@ -90,15 +92,19 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     var entityName = this.getEntityName();
     //Step 1: clono il form
     //console.log('clono il form');
+    
     this.createRow(id);
     
     var row_with_form = $('tr:last', this.grid);
     
+//    console.log(row_with_form);
+//    return;
     //Step 2: popolo i valori del form clonato in base ai valori dell'attuale riga (faccio un ajax per avere i dati completi, più sicuro)
     $.ajax(base_url + 'get_ajax/getJsonRecord/' + entityName + '/' + id, {
         dataType: "json",
         success: function (data) {
             var selects_vals = [];
+            console.log($(':input', row_with_form).length);
             $(':input', row_with_form).each(function () {
                 //Se il name contiene [] allora è una multiselect
                 //console.log($(this));
@@ -244,10 +250,14 @@ CrmNewInlineTable.prototype.registerEvents = function () {
         
         /* Get the row as a parent of the link that was clicked on */
         var button = $(this);
-        var tr = button.parents('tr');
+        var tr = button.parents('tr:first');
+        //console.log(tr);
         //var nRow = button.parents('tr')[0];
         var id = button.data('id');
-        inlineTable.editRow(tr, id);
+        
+        //console.log(tr);
+        
+       inlineTable.editRow(tr, id);
         
     });
     
@@ -264,10 +274,21 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     });
 };
 
-function initTable(gridID) {
-    var oDataTable = $('#grid_' + gridID);
+function initTable(grid) {
+    //console.log(grid);
+    var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
+    
+    var where_append = oDataTable.data('where_append');
+    if (typeof (where_append) === 'undefined') {
+        where_append = '';
+    }
+    var getParameters = oDataTable.data('get_pars');
+    if (typeof (getParameters) === 'undefined') {
+        getParameters = '';
+    }
+    
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
     
@@ -293,7 +314,7 @@ function initTable(gridID) {
         bProcessing: true,
         sServerMethod: "POST",
         bServerSide: true,
-        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + gridID + '/' + valueID + '?' + getParameters,
+        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append='+where_append,
         aLengthMenu: [10, 50, 100, 200, 500,  1000, 'Tutti'],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
@@ -311,7 +332,9 @@ function startNewDatatableInline() {
         if (!grid.data('inline_initializated')) {
             grid.data('inline_initializated', true);
 
-            initTable(grid.attr('data-grid-id'));
+            //initTable(grid.attr('data-grid-id'));
+            
+            initTable(grid);
 
             var dtInline = new CrmNewInlineTable(grid);
             dtInline.registerEvents();

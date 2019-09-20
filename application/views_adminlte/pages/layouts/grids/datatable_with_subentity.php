@@ -8,6 +8,8 @@ if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
 
     unset($grid_data['sub_grid_data']); // Free memory
 }
+
+//debug($sub_grid,true);
 ?>
 <?php if (empty($grid_data['data'])): ?>
     <p>Nessun dato disponibile</p>
@@ -46,6 +48,7 @@ if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
                         <tr>
                             <td <?php echo 'colspan="' . count($grid['grids_fields']) . '"'; ?>  style="padding: 0;border: none;">
                                 <div <?php echo "id='{$collapse_id}'"; ?> class="collapse">
+                                    <?php if (!$sub_grid['grids']['grids_layout']) : ?>
                                     <table class="table table-bordered table-full-width" style="margin-bottom: 0!important;">
                                         <thead>
                                             <tr>
@@ -65,6 +68,22 @@ if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
+                                    <?php else: ?>
+                                    <?php 
+                                        
+                                        //debug($dato,true);
+                                        $this->load->view("pages/layouts/grids/{$sub_grid['grids']['grids_layout']}", 
+                                                array(
+                                                    'grid' => $sub_grid, 
+                                                    'sub_grid' => false, 
+                                                    'grid_data' => $sub_data, 
+                                                    //'value_id' => $value_id, 
+                                                    'layout_data_detail' => [],
+                                                    'is_sub_grid' => true,
+                                                    'where' => "{$sub_grid['grid_relation_field']} = '{$dato[$grid['grids']['entity_name'] . "_id"]}'"
+                                                ));
+                                    ?>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
