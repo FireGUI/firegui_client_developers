@@ -256,7 +256,12 @@ class Datab extends CI_Model
 
                 switch ($func) {
                     case '{now_date}':
-                        $value = date("d/m/Y");
+                        if (!empty($var1)) {
+                            $value = date($var1);
+                        } else {
+                            $value = date("d/m/Y");
+                        }
+                        
                         break;
                     case '{different_date}':
                         $timestamp = strtotime($var1 . ((trim($var1) === '+1') ? " day" : " days"));
@@ -272,7 +277,9 @@ class Datab extends CI_Model
                     case '{now_date_time}':
                         $value = date("d/m/Y H:i");
                         break;
+                    
                     default:
+                        
                         debug("NON GESTITA DEFAULT TYPE FUNCTION");
                         break;
                 }
