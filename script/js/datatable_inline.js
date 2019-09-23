@@ -9,6 +9,7 @@ CrmNewInlineTable.prototype.getEntityName = function () {
     return this.grid.data('entity');
 };
 CrmNewInlineTable.prototype.createRow = function (id) {
+    //console.log('test');
     // Devo sapere quante colonne ho per prima cosa
     var sEntityName = this.grid.attr('data-entity');
     var jqThs = $('tr th', this.grid);
@@ -78,7 +79,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     $('[type="hidden"]', form).each(function () {
         $('td',tr).last().append($(this).clone());
     });
-
+    //console.log($('tbody', this.grid));
     $('tbody', this.grid).append(tr);
     
     initComponents();
@@ -240,7 +241,8 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     // Create empty record
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
         e.preventDefault();
-
+        //e.stopImmediatePropagation();
+        
         inlineTable.createRow(0);
     });
     
