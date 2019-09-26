@@ -12,10 +12,10 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     //console.log('test');
     // Devo sapere quante colonne ho per prima cosa
     var sEntityName = this.grid.attr('data-entity');
-    var jqThs = $('tr th', this.grid);
+    var jqThs = $('> thead > tr > th', this.grid);
     var datatable = this.getDatatableHandler();
-    var tr = $('<tr data-id="'+id+'"></tr>', this.grid);
-    //console.log(tr);
+    var tr = $('<tr data-id="' + id + '"></tr>', this.grid);
+    //console.log(jqThs.length);
     var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
     //console.log(form_container);
     var form = $('form', form_container);
@@ -23,6 +23,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
     //Inserisco un nuovo TR con i vari TD
     jqThs.each(function () {
+        
         var name = $(this).attr('data-name');
         //console.log(name);
         if (name == '_foo') {
@@ -105,7 +106,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
         dataType: "json",
         success: function (data) {
             var selects_vals = [];
-            console.log($(':input', row_with_form).length);
+            //console.log($(':input', row_with_form).length);
             $(':input', row_with_form).each(function () {
                 //Se il name contiene [] allora è una multiselect
                 //console.log($(this));
@@ -240,6 +241,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
 
     // Create empty record
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
+        
         e.preventDefault();
         //e.stopImmediatePropagation();
         
@@ -290,7 +292,19 @@ function initTable(grid) {
     if (typeof (getParameters) === 'undefined') {
         getParameters = '';
     }
-    
+    var no_server_side = oDataTable.data('no-server-side');
+    if (typeof (no_server_side) === 'undefined') {
+        no_server_side = false;
+    } else {
+        no_server_side = true;
+    }
+    var no_ordering = oDataTable.data('no-ordering');
+    if (typeof (no_ordering) === 'undefined') {
+        no_ordering = false;
+    } else {
+        no_ordering = true;
+    }
+    //console.log(no_server_side);
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
     
@@ -298,27 +312,30 @@ function initTable(grid) {
     $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;
         coldef = {
-            bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined')
+            bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined'),
+            defaultContent:""
         };
 
         aoColumns.push(coldef);
     });
 
-
+    //console.log(aoColumns.length);
 
     var datatable = oDataTable.dataTable({
         stateSave: true,
         bSort: bEnableOrder,
-        aoColumns: aoColumns,
+        //aoColumns: aoColumns,
         /*scrollX: true,*/
         aaSorting: [],
-        bRetrieve: true,
-        bProcessing: true,
+        ordering: !no_ordering,
+        bRetrieve: !no_server_side,
+        bProcessing: !no_server_side,
         sServerMethod: "POST",
-        bServerSide: true,
-        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append='+where_append,
+        bServerSide: !no_server_side,
+        sAjaxSource: (no_server_side)?null:(base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append='+where_append),
         aLengthMenu: [10, 50, 100, 200, 500,  1000, 'Tutti'],
         iDisplayLength: defaultLimit,
+        autoWidth:false,
         //bLengthChange: false,
         oLanguage: {
             sUrl: base_url_scripts + "script/datatable.transl.json"
@@ -329,15 +346,13 @@ function initTable(grid) {
 }
 
 function startNewDatatableInline() {
-    $('.js_datatable_new_inline').each(function () {
+    $('.js_datatable_new_inline:not(.disabled)').each(function () {
         var grid = $(this);
         if (!grid.data('inline_initializated')) {
             grid.data('inline_initializated', true);
 
-            //initTable(grid.attr('data-grid-id'));
             
             initTable(grid);
-
             var dtInline = new CrmNewInlineTable(grid);
             dtInline.registerEvents();
         }

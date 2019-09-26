@@ -33,7 +33,13 @@ if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
                         <?php endforeach; ?>
 
                             <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?>>
-                            <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
+                            <?php 
+                            $this->load->view('box/grid/actions', array(
+                                'links' => $grid['grids']['links'], 
+                                'id' => $dato[$grid['grids']['entity_name'] . "_id"], 
+                                'row_data' => $dato,
+                                'grid' => $grid['grids'])); 
+                            ?>
                             <?php if ($sub_data): ?>
                                 <br>
                                 <a class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
