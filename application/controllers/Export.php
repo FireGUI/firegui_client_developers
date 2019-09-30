@@ -98,7 +98,7 @@ class Export extends MY_Controller {
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
-        
+        setlocale(LC_MONETARY, 'it_IT');
 
         $grid = $this->datab->get_grid($grid_id);
         $fields = $grid['grids_fields'];
@@ -107,7 +107,7 @@ class Export extends MY_Controller {
         $data = $this->prepareData($grid_id, $value_id);
         
         // Instantiate our custom binder, with a list of columns, and tell PHPExcel to use it
-        PHPExcel_Cell::setValueBinder(new PHPExcel_Cell_MyColumnValueBinder([]));
+        //PHPExcel_Cell::setValueBinder(new PHPExcel_Cell_MyColumnValueBinder([]));
 
         $objPHPExcel = new PHPExcel();
         
@@ -115,25 +115,49 @@ class Export extends MY_Controller {
         
         //Imposto le colonne numeriche (per permettere a formule e altro di funzionare correttamente)
         foreach ($fields as $key => $field) {
-            if (in_array(strtoupper($field['fields_type']), ['FLOAT','DOUBLE','INT','INTEGER']) ) {
+            //if (in_array(strtoupper($field['fields_type']), ['FLOAT','DOUBLE','INT','INTEGER']) ) {
                 $numeric_cells[$key] = $field['grids_fields_column_name'];
+            //}
+        }
+        //Per gli eval, devo passarmi tutti i dati per capire se qualche cella è anch'essa un numero (ricordarsi che number format torna una stringa e non un numero, quindi crea problemi con le formule excell dopo...)
+        foreach ($data as $key => $dato) {
+            foreach ($dato as $column => $value) {
+                //Provo a castarlo a numero, se no, tolgo questa colonna tra quelle numeriche
+                $possible_number = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND|FILTER_FLAG_ALLOW_FRACTION); 
+
+                if ($possible_number === '') {
+
+                    $numeric_cells = array_diff($numeric_cells, [$column]);
+                } elseif ((float)$possible_number !== (float)$value) {
+                    $numeric_cells = array_diff($numeric_cells, [$column]);
+                }
+            }     
+            
+        }
+        //die('test');
+        foreach ($data as $key => $dato) {
+//            foreach ($numeric_cells as $col_pos => $numeric_cell) {
+//                $data[$key][$numeric_cell] = str_replace('.', ',', $dato[$numeric_cell]);
+//            }
+            foreach ($numeric_cells as $col_pos => $numeric_cell) {
+                $data[$key][$numeric_cell] = (float) str_ireplace('.', '', filter_var($dato[$numeric_cell], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND|FILTER_FLAG_ALLOW_FRACTION));
+                //var_dump($data[$key][$numeric_cell]);
             }
         }
         
-        foreach ($data as $key => $dato) {
-            foreach ($numeric_cells as $col_pos => $numeric_cell) {
-                $data[$key][$numeric_cell] = str_replace('.', ',', $dato[$numeric_cell]);
-            }            
-        }
+        //debug($numeric_cells,true);
         
         foreach ($numeric_cells as $col_pos => $numeric_cell) {
             $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
-            //debug($col_letter,true);
-            $objPHPExcel->getActiveSheet()->getStyle($col_letter)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-            $objPHPExcel->getActiveSheet()->getStyle($col_letter)->setQuotePrefix(false);
+            for ($i=2;$i<=count($data)+1;$i++) {
+                //debug($col_letter.$i);
+//                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_000);
+//                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->setQuotePrefix(false);
+            }
+            
         }
         //debug($data,true);
-        
+        //debug(var_dump($data),true);
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
