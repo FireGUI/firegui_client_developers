@@ -120,8 +120,13 @@ class Export extends MY_Controller {
             //}
         }
         //Per gli eval, devo passarmi tutti i dati per capire se qualche cella è anch'essa un numero (ricordarsi che number format torna una stringa e non un numero, quindi crea problemi con le formule excell dopo...)
-        foreach ($data as $key => $dato) {
+        foreach (array_slice($data,0,10) as $key => $dato) {
             foreach ($dato as $column => $value) {
+                
+                if (!in_array($column,$numeric_cells)) { //Se già non è tra le numeric cells, skippo...
+                    continue;
+                }
+                
                 //Provo a castarlo a numero, se no, tolgo questa colonna tra quelle numeriche
                 $possible_number = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND|FILTER_FLAG_ALLOW_FRACTION); 
 
@@ -147,15 +152,15 @@ class Export extends MY_Controller {
         
         //debug($numeric_cells,true);
         
-        foreach ($numeric_cells as $col_pos => $numeric_cell) {
-            $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
-            for ($i=2;$i<=count($data)+1;$i++) {
+//        foreach ($numeric_cells as $col_pos => $numeric_cell) {
+//            $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
+//            for ($i=2;$i<=count($data)+1;$i++) {
                 //debug($col_letter.$i);
 //                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_000);
 //                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->setQuotePrefix(false);
-            }
+//            }
             
-        }
+//        }
         //debug($data,true);
         //debug(var_dump($data),true);
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
