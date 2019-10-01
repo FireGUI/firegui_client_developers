@@ -111,4 +111,5 @@ if(!$sentRecently && $_SERVER['REMOTE_ADDR'] !== 'XXXXXXXXXX' && gethostname() !
     if (mail('debug@h2web.it', 'Errore database CRM', implode('<br/>', $fullMessage), $header)) {
         $_SESSION['dberr'][$md5] = $time;
     }
-}?>
+}
+?>

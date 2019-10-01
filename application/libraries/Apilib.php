@@ -2016,8 +2016,36 @@ class Apilib {
         if (!empty($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype])) {
             foreach ($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype] as $function) {
                 try {
+                    //20191001 - Matteo Puppis - Se arrivo qua, potrei avere anche dei fi_events con action non gestita.
+                    //Es.: i fi_events di tipo custom code, creano anche il relativo pp che continuerà a funzionare senza problemi (è retro compatibile).
+                    //Le nuove action però (quindi non i custom code, che continueranno a funzionare con gli eval), devono avere una gestione ad hoc.
+                    switch ($function['fi_events_action']) {
+                        case '':
+                        case 'custom_code':
+                            eval($function['post_process_what']);
+                            break;
+                        case 'curl':
+                            $ch = curl_init();
+                            $url = json_decode($function['fi_events_actiondata'],true)['url'];
+
+                            //die('test');
+                            // set URL and other appropriate options
+                            curl_setopt($ch, CURLOPT_URL, $url);
+                            curl_setopt($ch, CURLOPT_HEADER, 0);
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+                            // grab URL and pass it to the browser
+                            $result = curl_exec($ch);
+
+                            // close cURL resource, and free up system resources
+                            curl_close($ch);
+                            break;
+                        default:
+                            debug($function,true);
+                            break;
+                    }
                     
-                    eval($function['post_process_what']);
+                    
                 } catch (Exception $ex) {
                     throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
                 }
@@ -2030,8 +2058,10 @@ class Apilib {
     private function preLoadDataProcessors()
     {
         if (empty($this->_loadedDataProcessors)) {
-            $process = $this->db->get('post_process')->result_array();
-            
+            $process = $this->db
+                    ->join('fi_events', 'fi_events_post_process_id = post_process_id', 'LEFT')
+                    ->get('post_process')->result_array();
+            //debug($process,true);
             $this->_loadedDataProcessors = [
                 self::MODE_DIRECT   => [],
                 self::MODE_API_CALL => [],
