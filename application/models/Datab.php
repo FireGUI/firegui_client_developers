@@ -1350,7 +1350,9 @@ class Datab extends CI_Model
             $entity_id = $entity['entity_id'];
         }
 
-        $post_process = $this->db->get_where('post_process', array(
+        $post_process = $this->db
+                ->join('fi_events', 'fi_events_post_process_id = post_process_id', 'LEFT')
+                ->get_where('post_process', array(
             'post_process_entity_id' => $entity_id,
             'post_process_when' => $when,
             'post_process_crm' => DB_BOOL_TRUE
@@ -1358,7 +1360,35 @@ class Datab extends CI_Model
 
         if ($post_process->num_rows() > 0) {
             foreach ($post_process->result_array() as $function) {
-                eval($function['post_process_what']);
+                //20191001 - Matteo Puppis - Se arrivo qua, potrei avere anche dei fi_events con action non gestita.
+                //Es.: i fi_events di tipo custom code, creano anche il relativo pp che continuerà a funzionare senza problemi (è retro compatibile).
+                //Le nuove action però (quindi non i custom code, che continueranno a funzionare con gli eval), devono avere una gestione ad hoc.
+
+                switch ($function['fi_events_action']) {
+                    case '':
+                        eval($function['post_process_what']);
+                        break;
+                    case 'curl':
+                        $ch = curl_init();
+                        $url = json_decode($function['fi_events_actiondata'],true)['url'];
+
+                        //die('test');
+                        // set URL and other appropriate options
+                        curl_setopt($ch, CURLOPT_URL, $url);
+                        curl_setopt($ch, CURLOPT_HEADER, 0);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+                        // grab URL and pass it to the browser
+                        $result = curl_exec($ch);
+
+                        // close cURL resource, and free up system resources
+                        curl_close($ch);
+                        break;
+                    default:
+                        debug($function,true);
+                        break;
+                }
+                
             }
         }
 

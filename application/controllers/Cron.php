@@ -129,7 +129,7 @@ class Cron extends MY_Controller {
         } else {
             $this->db->where("log_api_date < now() - INTERVAL '1 month'", null, false)->delete('log_api');
             $this->db->where("log_crm_time < now() - INTERVAL '1 month'", null, false)->delete('log_crm');
-            $this->db->where("timestamp < now() - INTERVAL '1 month'", null, false)->delete('ci_sessions');
+            $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
         }
         // ============= SVUOTAMENTO LOGS VARI =============
         
