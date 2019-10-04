@@ -90,7 +90,7 @@ class MX_Loader extends CI_Loader
 	/** Load a module config file **/
 	public function config($file, $use_sections = FALSE, $fail_gracefully = FALSE)
 	{
-		return CI::$APP->config->load($file, $use_sections, $fail_gracefully, $this->_module);
+            return CI::$APP->config->load($file, $use_sections, $fail_gracefully, $this->_module);
 	}
 
 	/** Load the database drivers **/
@@ -383,8 +383,9 @@ class MX_Loader extends CI_Loader
 	/** Autoload module items **/
 	public function _autoloader($autoload)
 	{
-		$path = FALSE;
-
+	
+            $path = FALSE;
+                
 		if ($this->_module)
 		{
 			list($path, $file) = Modules::find('constants', $this->_module, 'config/');
