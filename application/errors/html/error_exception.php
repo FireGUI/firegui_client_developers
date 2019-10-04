@@ -7,7 +7,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 // Invio l'errore al metodo centralizzato
 $error['type'] = 'exception';
 $error['error_type'] = get_class($exception);
-$error['error_message'] = $message;
+$severity = get_class($exception);
+$filepath = $exception->getFile();
+$line = $exception->getLine();
+$error['error_message'] = "<p>Type: $severity </p>
+    <p>Message: $message</p>
+    <p>Filename: $filepath</p>
+    <p>Line Number: $line</p>";
 $error['error_filename'] = $exception->getFile();
 $error['error_linenumber'] = $exception->getLine();
 $error['error_extra_data'] = json_encode($exception->getTrace());
@@ -20,10 +26,11 @@ include_once(APPPATH . 'errors/html/module_hook.php');
 
     <h4>An uncaught Exception was encountered</h4>
 
-    <p>Type: <?php echo get_class($exception); ?></p>
+    <!-- <p>Type: <?php echo get_class($exception); ?></p>
     <p>Message: <?php echo $message; ?></p>
     <p>Filename: <?php echo $exception->getFile(); ?></p>
-    <p>Line Number: <?php echo $exception->getLine(); ?></p>
+    <p>Line Number: <?php echo $exception->getLine(); ?></p> -->
+    <?php echo $error['error_message']; ?>
 
     <?php if (defined('SHOW_DEBUG_BACKTRACE') && SHOW_DEBUG_BACKTRACE === TRUE) : ?>
 
