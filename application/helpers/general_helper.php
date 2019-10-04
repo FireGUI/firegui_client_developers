@@ -916,7 +916,7 @@ if (!function_exists('send_telegram_log')) {
 
         // Se sono dentro come superadmin non invio messaggi di errore su telegram
         if ($CI->auth->get('customers_id') == 1) {
-            return false;
+            //return false;
         }
         $ch = curl_init();
         $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
@@ -925,6 +925,9 @@ if (!function_exists('send_telegram_log')) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
         $result = curl_exec($ch);
+
+        //die($result);
+
         curl_close($ch);
         return $result;
     }
