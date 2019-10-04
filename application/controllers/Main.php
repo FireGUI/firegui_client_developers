@@ -11,7 +11,7 @@ class Main extends MY_Controller
      */
     function __construct()
     {
-        parent:: __construct();
+        parent::__construct();
 
         // Controllo anche la current uri
         if ($this->auth->guest()) {
@@ -80,9 +80,9 @@ class Main extends MY_Controller
         //Se non è un numero, vuol dire che sto passando un url-key
         if (!is_numeric($layout_id)) {
             $result = $this->db->where('layouts_identifier', $layout_id)->get('layouts');
-            
+
             //debug($this->db->last_query(),true);
-            
+
             if ($result->num_rows() == 0) {
                 show_error("Layout '$layout_id' non trovato!");
             } else {
@@ -186,25 +186,25 @@ class Main extends MY_Controller
         } else {
             $this->stampa($content);
         }
-
     }
-    
+
     /**
      * Log CRM page
      */
-    public function system_log() {
+    public function system_log()
+    {
         if (!$this->datab->is_admin()) {
             $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
             $this->stampa($pagina);
             return;
         }
-        
+
         $dati['current_page'] = 'system_log';
-    
+
         $pagina = $this->load->view("pages/system_log", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
-    
+
     /**
      * Permissions page
      */
@@ -249,7 +249,7 @@ class Main extends MY_Controller
             $users = $this->db->get(LOGIN_ENTITY)->result_array();
         }
 
-        
+
         // Crea un array di mappatura layout_id => ucwords(n. cognome)
         $userIds = array_key_map($users, LOGIN_ENTITY . '_id');
         $ucwordsUserNames = array_map(function ($user) {
@@ -259,7 +259,7 @@ class Main extends MY_Controller
         }, $users);
         $usersLayouts = array_combine($userIds, $ucwordsUserNames);
 
-        
+
         // Crea un array di mappatura layout_id => ucfirst(layout_title)
         $layouts = $this->db->order_by('layouts_title')->get('layouts')->result_array();
         $layoutIds = array_key_map($layouts, 'layouts_id');
@@ -271,7 +271,7 @@ class Main extends MY_Controller
 
         //Fix per non prendere tutti gli utenti ma solo quelli che possono fare login
         if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
-            $this->db->where("unallowed_layouts_user IN (SELECT ".LOGIN_ENTITY."_id FROM ".LOGIN_ENTITY." WHERE ".LOGIN_ACTIVE_FIELD." = '".DB_BOOL_TRUE."')", null, false);
+            $this->db->where("unallowed_layouts_user IN (SELECT " . LOGIN_ENTITY . "_id FROM " . LOGIN_ENTITY . " WHERE " . LOGIN_ACTIVE_FIELD . " = '" . DB_BOOL_TRUE . "')", null, false);
         }
 
         $unalloweds = $this->db->get('unallowed_layouts')->result_array();
@@ -323,7 +323,7 @@ class Main extends MY_Controller
         $dati['current_page'] = 'search';
         $dati['search_string'] = $this->input->get_post('search');
 
-        if (strlen($dati['search_string']) >= (defined('MIN_SEARCH_CHARS'))?MIN_SEARCH_CHARS:3) {
+        if (strlen($dati['search_string']) >= (defined('MIN_SEARCH_CHARS')) ? MIN_SEARCH_CHARS : 3) {
             $dati['count_total'] = 0;
             $dati['results'] = $this->datab->get_search_results($dati['search_string']);
             foreach ($dati['results'] as $res) {
@@ -375,14 +375,14 @@ class Main extends MY_Controller
                 $this->apilib->toggleCachingSystem(false);
 
                 //Oltre a disattivare il driver di cache, vado a cancellarla perchè altrimenti continua a usarla...
-//                $this->apilib->clearCache();
-//                @unlink(APPPATH . 'cache/'.Crmentity::SCHEMA_CACHE_KEY);
-//
-//                // Pulisco cache frontend se c'è...
-//                if (is_dir(APPPATH . '../core/cache/')) {
-//                    $this->load->helper('file');
-//                    delete_files(APPPATH . '../core/cache/', false);
-//                }
+                //                $this->apilib->clearCache();
+                //                @unlink(APPPATH . 'cache/'.Crmentity::SCHEMA_CACHE_KEY);
+                //
+                //                // Pulisco cache frontend se c'è...
+                //                if (is_dir(APPPATH . '../core/cache/')) {
+                //                    $this->load->helper('file');
+                //                    delete_files(APPPATH . '../core/cache/', false);
+                //                }
                 break;
 
             case 'clear':
@@ -397,7 +397,7 @@ class Main extends MY_Controller
 
                 break;
 
-            default :
+            default:
                 show_error('Action non definita');
         }
 
@@ -486,7 +486,7 @@ class Main extends MY_Controller
         redirect(base_url());
     }
 
-    public function custom_view_to_pdf($view, $orientation="landscape", $html=FALSE)
+    public function custom_view_to_pdf($view, $orientation = "landscape", $html = FALSE)
     {
 
         if ($html) {
@@ -494,7 +494,7 @@ class Main extends MY_Controller
             die($content);
         } else {
 
-            $relative_path = ($this->input->get('relative_path'))?:'';
+            $relative_path = ($this->input->get('relative_path')) ?: '';
 
             $pdfFile = $this->layout->generate_pdf($view, $orientation, $relative_path);
 
@@ -504,20 +504,19 @@ class Main extends MY_Controller
             header("Content-Length: " . filesize($pdfFile));
             fpassthru($fp);
         }
-
     }
-    
-    
-//    public function testLoop() {
-//        for ($i=0; $i < 1000; $i++) {
-//            $cliente = $this->apilib->searchFirst('clienti');
-//            $this->apilib->edit('clienti', $cliente['clienti_id'],['clienti_nome' => 'test']);
-//            echo_flush(' . ');
-//        }
-//    }
-    
-//    public function test_load_view() {
-//        echo $this->load->module_view('documents/views', 'elfinder', [], true);
-//    }
+
+
+    //    public function testLoop() {
+    //        for ($i=0; $i < 1000; $i++) {
+    //            $cliente = $this->apilib->searchFirst('clienti');
+    //            $this->apilib->edit('clienti', $cliente['clienti_id'],['clienti_nome' => 'test']);
+    //            echo_flush(' . ');
+    //        }
+    //    }
+
+    //    public function test_load_view() {
+    //        echo $this->load->module_view('documents/views', 'elfinder', [], true);
+    //    }
 
 }

@@ -1,64 +1,126 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
 <head>
-<meta charset="utf-8">
-<title>404 Page Not Found</title>
-<style type="text/css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fire GUI</title>
+    <meta name="author" content="H2 WEB SNC" />
+    <meta name="dcterms.rightsHolder" content="H2 WEB SNC" />
 
-::selection { background-color: #E13300; color: white; }
-::-moz-selection { background-color: #E13300; color: white; }
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <!DOCTYPE html>
+    <html lang="en" class="no-js">
 
-body {
-	background-color: #fff;
-	margin: 40px;
-	font: 13px/20px normal Helvetica, Arial, sans-serif;
-	color: #4F5155;
-}
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Fire GUI</title>
+        <meta name="author" content="H2 WEB SNC" />
+        <meta name="dcterms.rightsHolder" content="H2 WEB SNC" />
 
-a {
-	color: #003399;
-	background-color: transparent;
-	font-weight: normal;
-}
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Responsive helper -->
 
-h1 {
-	color: #444;
-	background-color: transparent;
-	border-bottom: 1px solid #D0D0D0;
-	font-size: 19px;
-	font-weight: normal;
-	margin: 0 0 14px 0;
-	padding: 14px 15px 10px 15px;
-}
+        <meta name="author" content="www.h2-web.it" />
+        <meta name="geo.region" content="IT-UD" />
+        <meta name="geo.placename" content="Udine" />
+        <meta name="geo.position" content="46.065208, 13.243737" />
+        <meta name="ICBM" content="46.065208, 13.243737" />
 
-code {
-	font-family: Consolas, Monaco, Courier New, Courier, monospace;
-	font-size: 12px;
-	background-color: #f9f9f9;
-	border: 1px solid #D0D0D0;
-	color: #002166;
-	display: block;
-	margin: 14px 0 14px 0;
-	padding: 12px 10px 12px 10px;
-}
+        <meta name="google-site-verification" content="aDltbg7Ye4Yy7sEs1oyQCkztcO-KRVW0xj7qgJA4xsg" />
 
-#container {
-	margin: 10px;
-	border: 1px solid #D0D0D0;
-	box-shadow: 0 0 8px #D0D0D0;
-}
+        <!-- Apple devices -->
+        <link rel="apple-touch-icon-precomposed" href="https://www.h2web.it/images/favicon.ico" /> <!-- 152x152 -->
+        <link rel="icon" href="https://www.h2web.it/images/favicon.ico"> <!-- 32x32 or 64x64 -->
 
-p {
-	margin: 12px 15px 12px 15px;
-}
-</style>
-</head>
-<body>
-	<div id="container">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
-	</div>
+        <!-- For IE -->
+        <!--[if IE]><link rel="shortcut icon" href="https://www.h2web.it/images/favicon.ico"><![endif]-->
+        <!-- 16x16 -->
+
+        <!-- For Mobile Windows -->
+        <meta name="msapplication-TileColor" content="#D83434">
+
+
+        <!-- Fonts-->
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,700' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700' rel='stylesheet' type='text/css'>
+
+
+        <link rel="stylesheet" href="https://www.h2web.it/script/frontend/lib/bootstrap-3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://www.h2web.it/script/frontend/lib/font-awesome-4.2.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://www.h2web.it/script/frontend/lib/lightbox/css/lightbox.css">
+
+
+        <link rel="stylesheet" href="https://www.h2web.it/script/frontend/css/style.css">
+
+
+        <script>
+            var base_url = 'https://www.h2web.it/';
+        </script>
+
+
+        <link href="https://www.h2web.it/script/frontend/css/404.css" rel="stylesheet">
+
+        <!-- Custom Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+
+
+<body id="page-top" class="index">
+
+
+
+    <nav class="navbar topbar">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <a class="navbar-brand" href="https://www.h2web.it/"><img src="https://builder.firegui.com/images/logo_orizzontale.png" class="logo"></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="intro-text">
+                        <p><span class="ops">Oops!</span>
+                            <span class="text">Oh no :(<br />
+                                This page not found!</span>
+                        </p>
+                        <p><a class="btn btn-squared pull-left" href="https://firegui.com">Go to home</a></p>
+
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 hidden-xs">
+                    <img class="img-responsive" src="https://www.h2web.it/images/einstein_baffoni.gif" alt="">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- aggiungere footer -->
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <!--        <div class="scroll-top page-scroll visible-xs visble-sm">
+            <a class="btn btn-primary" href="#page-top">
+                <i class="fa fa-chevron-up"></i>
+            </a>
+        </div>-->
+
+
 </body>
+
 </html>
