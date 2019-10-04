@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File CSS tema
  */
@@ -10,10 +11,10 @@ $tsuffix = 'CRM';
 <title><?php echo ucwords(trim(implode(' - ', array_filter([$tprefix, $title, $tsuffix])))); ?></title>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-<meta content="" name="description"/>
-<meta name="application-name" content="<?php echo $title; ?>"/>
+<meta content="" name="description" />
+<meta name="application-name" content="<?php echo $title; ?>" />
 <meta name="msapplication-TileColor" content="#FFFFFF" />
 
 
@@ -22,66 +23,67 @@ $tsuffix = 'CRM';
 
 
 <!-- CORE LEVEL STYLES -->
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/font-awesome/css/font-awesome.min.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/@fortawesome/fontawesome-free/css/all.min.css?v={$this->config->item('version')}"); ?>"/>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/@fortawesome/fontawesome-free/css/all.min.css?v={$this->config->item('version')}"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/jvectormap/jquery-jvectormap.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/jvectormap/jquery-jvectormap.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v={$this->config->item('version')}"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v={$this->config->item('version')}"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
 
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>"/>-->
 
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("template/adminlte/bower_components/select2/dist/css/select2.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("template/adminlte/bower_components/select2/dist/css/select2.css?v={$this->config->item('version')}"); ?>" />
 
 
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/jquery-multi-select/css/multi-select.css?v={$this->config->item('version')}"); ?>"/>-->
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css.map?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/timeline/build/css/timeline.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/fullcalendar/fullcalendar.min.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css.map?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/timeline/build/css/timeline.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/fullcalendar/fullcalendar.min.css?v={$this->config->item('version')}"); ?>" />
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css?v={$this->config->item('version')}"); ?>"/>-->
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.css"); ?>" />
 
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>"></link>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>"></link>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>">
+</link>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>">
+</link>
 
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>"/>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/skins/_all-skins.min.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/skins/_all-skins.min.css?v={$this->config->item('version')}"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css?v={$this->config->item('version')}"); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css?v={$this->config->item('version')}"); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css"); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . $this->config->item('version')); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . $this->config->item('version')); ?>" />
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/crm-v2/assets/global/plugins/dropzone/css/dropzone.css'); ?>" />
 
 <!-- STYLE OVERRIDE -->
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/style.css?v={$this->config->item('version')}"); ?>" />-->
 
-<?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH): ?>
+<?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
     <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v={$this->config->item('version')}"); ?>" />
 <?php endif; ?>
 
 
-<?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON): ?>
+<?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON) : ?>
 
 
     <link rel="apple-touch-icon" sizes="57x57" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-57x57.png">
@@ -93,7 +95,7 @@ $tsuffix = 'CRM';
     <link rel="apple-touch-icon" sizes="144x144" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-16x16.png">
@@ -118,18 +120,21 @@ $tsuffix = 'CRM';
 
 
 <!-- HIGHCHARTS -->
-<script  src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
-<script  src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v={$this->config->item('version')}"); ?>"></script>
-<script  src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v={$this->config->item('version')}"); ?>"></script>
-<script  src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v={$this->config->item('version')}"); ?>"></script>
-<script  src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_template("script/js/fontawesome4to5.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v={$this->config->item('version')}"); ?>"></script>
 
 <script>
-    $(function () {
-        Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function (color) {
+    $(function() {
+        Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function(color) {
             return {
-                radialGradient: {cx: 0.5, cy: 0.3, r: 0.7},
+                radialGradient: {
+                    cx: 0.5,
+                    cy: 0.3,
+                    r: 0.7
+                },
                 stops: [
                     [0, color],
                     [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
