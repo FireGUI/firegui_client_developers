@@ -162,7 +162,7 @@ class Firegui extends MY_Controller
                         include(FCPATH . 'application/migrations/update_db.php');
 
                         // Sort array from oldest version to newest
-                        uasort($updates, 'version_compare');
+                        uksort($updates, 'my_version_compare');
 
                         foreach ($updates as $key => $value) {
 
@@ -178,7 +178,7 @@ class Firegui extends MY_Controller
                         include(FCPATH . 'application/migrations/update_php_code.php');
 
                         // Sort array from oldest version to newest
-                        uasort($updates, 'version_compare');
+                        uksort($updates, 'my_version_compare');
 
                         foreach ($updates as $key => $value) {
 
