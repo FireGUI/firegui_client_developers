@@ -188,11 +188,23 @@ class Firegui extends MY_Controller
                                     if ($key_type == 'eval') {
                                         eval($code);
                                     } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
-                                        $file_migration = FCPATH . 'application/migrations/' . $code;
-                                        if (file_exists($file_migration)) {
-                                            include($file_migration);
+                                        if (is_array($code)) {
+                                            foreach ($code as $file_to_include) {
+                                                $file_migration = FCPATH . 'application/migrations/' . $file_to_include;
+                                                if (file_exists($file_migration)) {
+                                                    include($file_migration);
+                                                } else {
+                                                    log_message('error', "Migration file {$file_migration} missing!");
+                                                }
+                                            }
                                         } else {
-                                            log_message('error', "Migration file {$file_migration} missing!");
+                                            $file_migration = FCPATH . 'application/migrations/' . $code;
+
+                                            if (file_exists($file_migration)) {
+                                                include($file_migration);
+                                            } else {
+                                                log_message('error', "Migration file {$file_migration} missing!");
+                                            }
                                         }
                                     }
                                 }
