@@ -4,13 +4,13 @@
 
 $updates = array();
 
-// Updates to 1.6.4
+// Updates to 1.6.6.6
 if ($this->db->dbdriver != 'postgres') {
     //mysql
-    $updates['1.6.6'] = ["ALTER TABLE menu ADD COLUMN menu_type VARCHAR(250);", "ALTER TABLE menu ADD COLUMN menu_form BIGINT;"];
+    $updates['1.6.6.6'] = ["ALTER TABLE menu ADD COLUMN menu_type VARCHAR(250);", "ALTER TABLE menu ADD COLUMN menu_form BIGINT;"];
 } else {
     //Pg
-    $updates['1.6.6'] = ["ALTER TABLE menu ADD COLUMN menu_type VARCHAR;", "ALTER TABLE menu ADD COLUMN menu_form INT;"];
+    $updates['1.6.6.6'] = ["ALTER TABLE menu ADD COLUMN menu_type VARCHAR;", "ALTER TABLE menu ADD COLUMN menu_form INT;"];
 }
 
 // Updates to 1.5.5
