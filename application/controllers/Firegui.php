@@ -136,7 +136,7 @@ class Firegui extends MY_Controller
         $old_version = VERSION;
 
         $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION;
-        //die($file_link);
+        $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
         $newfile = './tmp_file.zip';
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
@@ -167,7 +167,7 @@ class Firegui extends MY_Controller
                         foreach ($updates as $key => $value) {
 
                             // Check if the version number is old or new
-                            if ($key == $old_version) {
+                            if ($key == $new_version) {
                                 foreach ($value as $query) {
                                     $this->db->query($query);
                                 }
@@ -183,7 +183,7 @@ class Firegui extends MY_Controller
                         foreach ($updates as $key => $value) {
 
                             // Check if the version number is old or new
-                            if ($key == $old_version) {
+                            if ($key == $new_version) {
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
                                         eval($code);
