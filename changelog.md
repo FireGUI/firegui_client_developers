@@ -1,3 +1,4 @@
-Changelog version 1.6.4
+Changelog version 1.6.5
  
-New fields in entity menu
+Removed release 1.6.2 causing a bug
+Added release 1.6.5 for events migrations
