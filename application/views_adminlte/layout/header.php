@@ -60,7 +60,7 @@
             <!-- Notifications: style can be found in dropdown.less -->
             <?php if (false): ?>
                 <li class="dropdown notifications-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-bell-o"></i> <span
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="far fa-bell"></i> <span
                                 class="label label-warning">10</span> </a>
                     <ul class="dropdown-menu">
                         <li class="header">You have 10 notifications</li>
@@ -68,20 +68,20 @@
                             <!-- inner menu: contains the actual data -->
                             <ul class="menu">
                                 <li>
-                                    <a href="#"> <i class="fa fa-users text-aqua"></i> 5 new members joined today </a>
+                                    <a href="#"> <i class="fas fa-users text-aqua"></i> 5 new members joined today </a>
                                 </li>
                                 <li>
-                                    <a href="#"> <i class="fa fa-warning text-yellow"></i> Very long description here
+                                    <a href="#"> <i class="fas fa-exclamation-triangle text-yellow"></i> Very long description here
                                         that may not fit into the page and may cause design problems </a>
                                 </li>
                                 <li>
-                                    <a href="#"> <i class="fa fa-users text-red"></i> 5 new members joined </a>
+                                    <a href="#"> <i class="fas fa-users text-red"></i> 5 new members joined </a>
                                 </li>
                                 <li>
-                                    <a href="#"> <i class="fa fa-shopping-cart text-green"></i> 25 sales made </a>
+                                    <a href="#"> <i class="fas fa-shopping-cart text-green"></i> 25 sales made </a>
                                 </li>
                                 <li>
-                                    <a href="#"> <i class="fa fa-user text-red"></i> You changed your username </a>
+                                    <a href="#"> <i class="fas fa-user text-red"></i> You changed your username </a>
                                 </li>
                             </ul>
                         </li>
@@ -103,7 +103,7 @@
                             class="user-image"
                             alt="User Image"> <span
                             class="hidden-xs"><?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?></span>
-                    <i class="fa fa-angle-down"></i> </a>
+                    <i class="fas fa-angle-down"></i> </a>
                 <ul class="dropdown-menu menu">
                     <!-- User image -->
                     <li class="user-header">
@@ -130,7 +130,7 @@
                                     <div class="col-xs-12 text-center">
                                         <a href="<?php echo $this->datab->generate_menu_link($menu); ?>" <?php echo ($menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?>
                                            class="<?php echo ($menu['menu_modal'] == DB_BOOL_TRUE) ? 'js_open_modal' : ''; ?>">
-                                            <i class="<?php echo($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fa fa-list') ?>"></i>
+                                            <i class="<?php echo($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fas fa-list') ?>"></i>
                                             <?php echo ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label'])); ?>
                                         </a>
                                     </div>
@@ -145,7 +145,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/permissions'); ?>"><i class="fa fa-lock"></i>
+                                    <a href="<?php echo base_url('main/permissions'); ?>"><i class="fas fa-lock"></i>
                                         Permessi</a>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/system_log'); ?>"><i class="fa fa-history"></i>
+                                    <a href="<?php echo base_url('main/system_log'); ?>"><i class="fas fa-history"></i>
                                         System Log</a>
                                 </div>
                             </div>
@@ -165,7 +165,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('api_manager'); ?>"><i class="fa fa-cubes"></i> Api
+                                    <a href="<?php echo base_url('api_manager'); ?>"><i class="fas fa-cubes"></i> Api
                                         manager</a>
                                 </div>
                             </div>
@@ -176,10 +176,10 @@
                                 <div class="col-xs-12 text-center">
                                     <?php if ($this->apilib->isCacheEnabled()): ?>
                                         <a href="<?php echo base_url('main/cache_control/off'); ?>"><i
-                                                    class="fa fa-cogs"></i> Disabilita cache</a>
+                                                    class="fas fa-cogs"></i> Disabilita cache</a>
                                     <?php else: ?>
                                         <a href="<?php echo base_url('main/cache_control/on'); ?>"><i
-                                                    class="fa fa-cogs"></i> Ri-abilita cache</a>
+                                                    class="fas fa-cogs"></i> Ri-abilita cache</a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -189,7 +189,7 @@
                             <div class="row">
                                 <div class="col-xs-12 text-center">
                                     <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i
-                                                class="fa fa-trash"></i> Pulisci cache</a>
+                                                class="fas fa-trash-alt"></i> Pulisci cache</a>
                                 </div>
                             </div>
                         </li>

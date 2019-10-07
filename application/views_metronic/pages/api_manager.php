@@ -9,7 +9,7 @@
             <div class="grid portlet box grey-cascade">
                 <div class="portlet-title ">
                     <div class="caption">
-                        <i class="fa fa-th"></i>
+                        <i class="fas fa-th"></i>
                         <span class=" ">
                             Elenco token                                    
                         </span>
@@ -48,10 +48,10 @@
                                     <td>
                                         <div class="action-list">
                                             <a href="<?php echo base_url("api_manager/permissions/{$token['api_manager_tokens_id']}"); ?>" class="btn btn-xs green js_open_modal">
-                                                <span class="fa fa-external-link"></span>
+                                                <span class="fas fa-external-link-alt"></span>
                                             </a>
                                             <a href="<?php echo base_url('api_manager/delete_token/'.$token['api_manager_tokens_id']); ?>" data-confirm-text="are you sure you want to delete this record?" class="btn btn-danger btn-xs js_confirm_button js_link_ajax " data-toggle="tooltip" title="Elimina">
-                                                <span class="fa fa-remove"></span>
+                                                <span class="fas fa-times"></span>
                                             </a>
                                         </div>
                                     </td>
@@ -69,7 +69,7 @@
             <div class="form portlet box grey-silver">
                 <div class="portlet-title ">
                     <div class="caption">
-                        <i class=" fa fa-edit"></i>
+                        <i class=" fas fa-edit"></i>
                         <span class=" ">
                             Autorizza nuovo token
                         </span>

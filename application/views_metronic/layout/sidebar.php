@@ -55,7 +55,7 @@
         <?php if($isLinkOrContainer): ?>
             <li class="<?php echo implode(' ', $classes); ?>">
                 <a href="<?php echo $link ? : 'javascript:;'; ?>" <?php echo ($menu['layouts_pdf']==DB_BOOL_TRUE) ? 'target="_blank"': ''; ?>>
-                    <i class="<?php echo $menu['menu_icon_class'] ? : 'fa fa-list'; ?>"></i>
+                    <i class="<?php echo $menu['menu_icon_class'] ? : 'fas fa-list'; ?>"></i>
                     <span class="title"><?php echo $label; ?></span>
                     <?php if ($isCurrent): ?><span class="selected"></span><?php endif; ?>
                     <?php if ($hasSubmenu): ?><span class="arrow"></span><?php endif; ?>
@@ -72,7 +72,7 @@
                             ?>
                             <li class="<?php echo implode(' ', $classes); ?>">
                                 <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php echo ($sub_menu['layouts_pdf']==DB_BOOL_TRUE) ? 'target="_blank"': ''; ?>>
-                                    <i class="<?php echo $sub_menu['menu_icon_class'] ? : 'fa fa-empty'; ?>"></i>
+                                    <i class="<?php echo $sub_menu['menu_icon_class'] ? : 'fas fa-empty'; ?>"></i>
                                     <?php echo ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])); ?>
                                 </a>
                             </li>
@@ -92,7 +92,7 @@
             <?php if ($module['modules_home_url']) : ?>
         <li class="<?php echo $module['modules_name']; ?> <?php echo $isCurrent ? "active" : ''; ?>">
             <a href="<?php echo base_url($module['modules_home_url']) ?>">
-                <i class="fa fa-plus-circle"></i>
+                <i class="fas fa-plus-circle"></i>
                 <span class="title"><?php echo $module['modules_name']; ?></span>
                 <?php if ($isCurrent): ?><span class="selected"></span><?php endif; ?>
             </a>
@@ -103,7 +103,7 @@
     <?php if(SHOW_MEDIA_MODULE===true): ?>
         <li class="<?php echo ($current_page == "module_media") ? "active" : ''; ?>">
             <a href="<?php echo base_url('media/upload') ?>">
-                <i class="fa fa-upload"></i>
+                <i class="fas fa-upload"></i>
                 <span class="title">Media</span>
                 <?php if ($current_page == "module_media"): ?><span class="selected"></span><?php endif; ?>
             </a>

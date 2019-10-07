@@ -44,7 +44,7 @@
                         $_img = ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) ? base_url_admin("uploads/".$this->auth->get(LOGIN_IMG_FIELD)) : base_url_admin("imgn/1/29/29/uploads/".$this->auth->get(LOGIN_IMG_FIELD));
                         echo ($this->auth->get(LOGIN_IMG_FIELD)? $_img : base_url_admin('images/no-image-29x29.gif')); ?>" width="29"/>
                     <span class="username"><?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?></span>
-                    <i class="fa fa-angle-down"></i>
+                    <i class="fas fa-angle-down"></i>
                 </a>
 
                 <ul class="dropdown-menu">
@@ -55,7 +55,7 @@
                         <?php foreach ($profile_menu_list as $menu): ?>
                             <li>
                                 <a href="<?php echo $this->datab->generate_menu_link($menu); ?>" <?php echo ($menu['layouts_pdf']==DB_BOOL_TRUE) ? 'target="_blank"': ''; ?> class="<?php echo ($menu['menu_modal']==DB_BOOL_TRUE)? 'js_open_modal':''; ?>">
-                                    <i class="<?php echo ($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fa fa-list') ?>"></i>
+                                    <i class="<?php echo ($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fas fa-list') ?>"></i>
                                     <?php echo ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label'])); ?>
                                 </a>
                             </li>
@@ -65,18 +65,18 @@
 
 
                     <?php if($this->datab->is_admin()): ?>
-                        <li><a href="<?php echo base_url('main/permissions'); ?>"><i class="fa fa-lock"></i> Permessi</a></li>
-                        <li><a href="<?php echo base_url('api_manager'); ?>"><i class="fa fa-cubes"></i> Api manager</a></li>
+                        <li><a href="<?php echo base_url('main/permissions'); ?>"><i class="fas fa-lock"></i> Permessi</a></li>
+                        <li><a href="<?php echo base_url('api_manager'); ?>"><i class="fas fa-cubes"></i> Api manager</a></li>
                         <?php if ($this->apilib->isCacheEnabled()): ?>
-                            <li><a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="fa fa-cogs"></i> Disabilita cache</a></li>
+                            <li><a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="fas fa-cogs"></i> Disabilita cache</a></li>
                         <?php else: ?>
-                            <li><a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="fa fa-cogs"></i> Ri-abilita cache</a></li>
+                            <li><a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="fas fa-cogs"></i> Ri-abilita cache</a></li>
                         <?php endif; ?>
-                        <li><a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fa fa-trash"></i> Pulisci cache</a></li>
+                        <li><a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fas fa-trash-alt"></i> Pulisci cache</a></li>
                     <?php endif; ?>
 
 
-                    <li><a href="<?php echo base_url("access/logout"); ?>"><i class="fa fa-key"></i> Log Out</a></li>
+                    <li><a href="<?php echo base_url("access/logout"); ?>"><i class="fas fa-key"></i> Log Out</a></li>
                 </ul>
 
             </li>

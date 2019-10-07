@@ -26,7 +26,7 @@ if ($max_input_vars < $stima_campi) {
                 <div class="box box-primary">
                     <div class="box-header">
 
-                        <i class="fa fa-lock"></i> 
+                        <i class="fas fa-lock"></i> 
                         <h5 class="box-title"><?php e("Permessi"); ?></h5>
                     </div>
                     <div class="box-body form">
@@ -82,7 +82,7 @@ if ($max_input_vars < $stima_campi) {
                 <div class="box box-primary">
                     <div class="box-header">
                         <div class="caption">
-                            <i class="fa fa-check"></i> 
+                            <i class="fas fa-check"></i> 
                             <h3 class="box-title"><?php e("Impostazioni viste", 0); ?></h3>
                         </div>
                         <div class="tools"></div>

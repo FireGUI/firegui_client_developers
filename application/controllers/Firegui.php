@@ -8,7 +8,7 @@ class Firegui extends MY_Controller
 
     function __construct()
     {
-        parent:: __construct();
+        parent::__construct();
 
         // TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO FIREGUI DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
     }
@@ -36,7 +36,6 @@ class Firegui extends MY_Controller
                 mkdir($prefix_folder . $folder, DIR_WRITE_MODE, true);
             }
         }
-
     }
 
     public function uninstallModule($identifier)
@@ -93,7 +92,6 @@ class Firegui extends MY_Controller
                 } else {
                     die('Can not create  ' . $destination_file);
                 }
-
             } else {
                 die($success);
             }
@@ -115,23 +113,20 @@ class Firegui extends MY_Controller
         debug($_FILES);
 
         if (file_exists($_FILES['module_file']['tmp_name'])) {
-            echo('file esistente');
-        } else {
-
-        }
+            echo ('file esistente');
+        } else { }
 
         $content = file_get_contents($_FILES['module_file']['tmp_name']);
-        echo('Inizio contenuto...');
-        echo(strlen($content));
+        echo ('Inizio contenuto...');
+        echo (strlen($content));
         //echo($content);
         die('test');
-
     }
 
     public function updateClient()
     {
         /*$versionDataJson = $this->input->post('client');
-        $version_data = @json_decode($versionDataJson);*///DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
+        $version_data = @json_decode($versionDataJson);*/ //DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
         //var_dump($version_data);
 
         if (!class_exists('ZipArchive')) {
@@ -159,12 +154,12 @@ class Firegui extends MY_Controller
 
 
                 // Search update databases file for this version
-                $files = scandir(FCPATH . 'application/database');
+                $files = scandir(FCPATH . 'application/migrations');
 
                 foreach ($files as $file) {
                     if ($file == 'update_db.php') {
                         // Check if exist an update_db file to execute update queries
-                        include(FCPATH . 'application/database/update_db.php');
+                        include(FCPATH . 'application/migrations/update_db.php');
 
                         // Sort array from oldest version to newest
                         uasort($updates, 'version_compare');
@@ -178,6 +173,26 @@ class Firegui extends MY_Controller
                                 }
                             }
                         }
+                    } elseif ($file == 'update_php_code.php') {
+                        // Check if exist an update_db file to execute update queries
+                        include(FCPATH . 'application/migrations/update_php_code.php');
+
+                        // Sort array from oldest version to newest
+                        uasort($updates, 'version_compare');
+
+                        foreach ($updates as $key => $value) {
+
+                            // Check if the version number is old or new
+                            if (version_compare($key, $old_version) >= 0) {
+                                foreach ($value as $key_type => $code) {
+                                    if ($key_type == 'eval') {
+                                        eval($code);
+                                    } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
+                                        include(FCPATH . 'application/migrations/' . $code);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -185,10 +200,31 @@ class Firegui extends MY_Controller
                 echo 'ok';
             }
         }
-
-
     }
+    public function test_update_php_code($version)
+    {
+        $files = scandir(FCPATH . 'application/migrations');
 
+
+        foreach ($files as $file) {
+            if ($file == 'update_php_code.php') {
+                // Check if exist an update_db file to execute update queries
+                include(FCPATH . 'application/migrations/update_php_code.php');
+
+                if (array_key_exists($version, $updates)) {
+                    //debug($updates[$version], true);
+                    foreach ($updates[$version] as $key_type => $code) {
+                        if ($key_type == 'eval') {
+                            eval($code);
+                        } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
+                            //debug($code, true);
+                            include(FCPATH . 'application/migrations/' . $code);
+                        }
+                    }
+                }
+            }
+        }
+    }
     public function get_client_version()
     {
         echo VERSION;

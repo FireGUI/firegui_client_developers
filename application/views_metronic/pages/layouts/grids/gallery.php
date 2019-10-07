@@ -2,7 +2,7 @@
     <?php $has_action = grid_has_action($grid['grids']); ?>
     <?php if (strpos($grid['grids']['entity_name'], 'media_') === 0 && !empty($value_id)): ?>
         <ul class="list-inline text-right" style='padding:0;margin:0'>
-            <li><a href="<?php echo base_url("media/modal_upload/{$grid['grids']['entity_name']}/{$value_id}"); ?>" class="btn green js_open_modal"><i class="fa fa-upload"></i> Carica media</a></li>
+            <li><a href="<?php echo base_url("media/modal_upload/{$grid['grids']['entity_name']}/{$value_id}"); ?>" class="btn green js_open_modal"><i class="fas fa-upload"></i> Carica media</a></li>
         </ul>
         <div class="clearfix"></div>
         <br/>
