@@ -1,3 +1,3 @@
-Changelog version 1.6.2
+Changelog version 1.6.3
  
-Migration to events firegui
+Removed crm_exception_handler as exception handler
