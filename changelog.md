@@ -1,3 +1,3 @@
-Changelog version 1.6.3
+Changelog version 1.6.4
  
-Removed crm_exception_handler as exception handler
+New fields in entity menu
