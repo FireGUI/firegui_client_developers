@@ -167,7 +167,7 @@ class Firegui extends MY_Controller
                         foreach ($updates as $key => $value) {
 
                             // Check if the version number is old or new
-                            if (version_compare($key, $old_version) >= 0) {
+                            if ($key == $old_version) {
                                 foreach ($value as $query) {
                                     $this->db->query($query);
                                 }
@@ -183,12 +183,17 @@ class Firegui extends MY_Controller
                         foreach ($updates as $key => $value) {
 
                             // Check if the version number is old or new
-                            if (version_compare($key, $old_version) >= 0) {
+                            if ($key == $old_version) {
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
                                         eval($code);
                                     } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
-                                        include(FCPATH . 'application/migrations/' . $code);
+                                        $file_migration = FCPATH . 'application/migrations/' . $code;
+                                        if (file_exists($file_migration)) {
+                                            include($file_migration);
+                                        } else {
+                                            log_message('error', "Migration file {$file_migration} missing!");
+                                        }
                                     }
                                 }
                             }
@@ -201,30 +206,30 @@ class Firegui extends MY_Controller
             }
         }
     }
-    public function test_update_php_code($version)
-    {
-        $files = scandir(FCPATH . 'application/migrations');
+    // public function test_update_php_code($version)
+    // {
+    //     $files = scandir(FCPATH . 'application/migrations');
 
 
-        foreach ($files as $file) {
-            if ($file == 'update_php_code.php') {
-                // Check if exist an update_db file to execute update queries
-                include(FCPATH . 'application/migrations/update_php_code.php');
+    //     foreach ($files as $file) {
+    //         if ($file == 'update_php_code.php') {
+    //             // Check if exist an update_db file to execute update queries
+    //             include(FCPATH . 'application/migrations/update_php_code.php');
 
-                if (array_key_exists($version, $updates)) {
-                    //debug($updates[$version], true);
-                    foreach ($updates[$version] as $key_type => $code) {
-                        if ($key_type == 'eval') {
-                            eval($code);
-                        } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
-                            //debug($code, true);
-                            include(FCPATH . 'application/migrations/' . $code);
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //             if (array_key_exists($version, $updates)) {
+    //                 //debug($updates[$version], true);
+    //                 foreach ($updates[$version] as $key_type => $code) {
+    //                     if ($key_type == 'eval') {
+    //                         eval($code);
+    //                     } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
+    //                         //debug($code, true);
+    //                         include(FCPATH . 'application/migrations/' . $code);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     public function get_client_version()
     {
         echo VERSION;
