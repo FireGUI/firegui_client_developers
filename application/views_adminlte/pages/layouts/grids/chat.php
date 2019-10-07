@@ -70,7 +70,7 @@ if (isset($grid_data['data'])) {
                 <input class="form-control" name="text" placeholder="Scrivi un messaggio...">
                 
                 <div class="input-group-btn">
-                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
         </form>

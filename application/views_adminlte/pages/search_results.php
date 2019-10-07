@@ -19,7 +19,7 @@
                         <div class="box box-primary">
                             <div class="box-header">
 
-                                <i class="fa fa-search"></i> 
+                                <i class="fas fa-search"></i> 
                                 <h4 class="box-title"><?php echo ucwords(str_replace('_', ' ', $entity_result['entity']['entity_name'])); ?></h4>
 
                             </div>

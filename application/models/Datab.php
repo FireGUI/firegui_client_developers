@@ -1290,20 +1290,20 @@ class Datab extends CI_Model
 
             switch ($notification['notifications_type']) {
                 case NOTIFICATION_TYPE_ERROR:
-                    $label = ['class' => 'bg-red-thunderbird', 'icon' => 'fa fa-exclamation'];
+                    $label = ['class' => 'bg-red-thunderbird', 'icon' => 'fas fa-exclamation'];
                     break;
 
                 case NOTIFICATION_TYPE_INFO:
-                    $label = ['class' => 'bg-blue-steel', 'icon' => 'fa fa-bullhorn'];
+                    $label = ['class' => 'bg-blue-steel', 'icon' => 'fas fa-bullhorn'];
                     break;
 
                 case NOTIFICATION_TYPE_MESSAGE:
-                    $label = ['class' => 'bg-green-jungle', 'icon' => 'fa fa-comment'];
+                    $label = ['class' => 'bg-green-jungle', 'icon' => 'fas fa-comment'];
                     break;
 
                 case NOTIFICATION_TYPE_WARNING:
                 default :
-                    $label = ['class' => 'bg-yellow-gold', 'icon' => 'fa fa-bell'];
+                    $label = ['class' => 'bg-yellow-gold', 'icon' => 'fas fa-bell'];
                     break;
             }
 
@@ -2634,7 +2634,7 @@ class Datab extends CI_Model
             
             
             $style = $langShow ? '' : 'style="display:none"';
-            $label = $baseShowLabel ? '<label class="control-label">' . $langLabel . '</label>' . ($baseShowRequired ? ' <small class="text-danger fa fa-asterisk" style="font-size: 85%"></small>' : '') : '';
+            $label = $baseShowLabel ? '<label class="control-label">' . $langLabel . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk" style="font-size: 85%"></small>' : '') : '';
 
             $data = [
                 'lang' => $langId,

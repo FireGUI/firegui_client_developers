@@ -7,7 +7,7 @@
     <div class="col-lg-9" data-layout-box="58">
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title"><i class="fa fa-th"></i> Elenco Token</h3>
+          <h3 class="box-title"><i class="fas fa-th"></i> Elenco Token</h3>
         </div>
         
         <div class="box-body">
@@ -40,10 +40,10 @@
                   <td>
                     <div class="action-list">
                       <a href="<?php echo base_url("api_manager/permissions/{$token['api_manager_tokens_id']}"); ?>" class="btn btn-xs green js_open_modal">
-                        <span class="fa fa-external-link"></span>
+                        <span class="fas fa-external-link-alt"></span>
                       </a>
                       <a href="<?php echo base_url('api_manager/delete_token/'.$token['api_manager_tokens_id']); ?>" data-confirm-text="Sei sicuro di voler eliminare questo record" class="btn btn-danger btn-xs js_confirm_button js_link_ajax " data-toggle="tooltip" title="Elimina">
-                        <span class="fa fa-remove"></span>
+                        <span class="fas fa-times"></span>
                       </a>
                     </div>
                   </td>
@@ -58,7 +58,7 @@
     <div class="col-lg-3">
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title"><i class=" fa fa-edit"></i> Autorizza nuovo token</h3>
+          <h3 class="box-title"><i class=" fas fa-edit"></i> Autorizza nuovo token</h3>
         </div>
         
         <div class="box-body">

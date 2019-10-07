@@ -52,7 +52,7 @@ $config = &get_config();
             <img src="<?php echo $config['base_url']; ?>/template/crm-v2/assets/admin/pages/media/pages/earth.jpg" class="img-responsive" alt="">
         </div>
         <div class="container error-404">
-            <h1><i class="fa fa-exclamation-triangle" style="font-size: inherit"></i></h1>
+            <h1><i class="fas fa-exclamation-triangle" style="font-size: inherit"></i></h1>
             <h2>Houston, abbiamo un problema.</h2>
             <h5><?php echo $heading; ?></h5>
             <p style="max-width: 60%;max-height: 600px;overflow: scroll">

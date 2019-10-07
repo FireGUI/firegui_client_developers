@@ -581,6 +581,11 @@ if (!function_exists('crm_exception_handler')) {
 
     function crm_exception_handler($ex, $print = true, $sendQueryListing = false)
     {
+        // $CI = &get_instance();
+        // //$CI->load->model('Exception');
+        // //$CI->show_exception($ex);
+        // Exceptions::show_exception($ex);
+        // exit;
         // messaggio per utente
         $out = '<div style="padding:10px;background:#efefef;border-radius:7px;">';
         $out .= 'Si &egrave; verificato un errore imprevisto. Il problema &egrave; gi&agrave; stato inoltrato al nostro staff tecnico<br/>';

@@ -6,7 +6,7 @@
                     <div class="cont">
                         <div class="cont-col1">
                             <div class="label label-sm label-info">                        
-                                <i class="fa fa-list"></i>
+                                <i class="fas fa-list"></i>
                             </div>
                         </div>
                         <div class="cont-col2">
