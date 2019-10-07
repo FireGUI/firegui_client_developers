@@ -1,10 +1,10 @@
 <?php
 $iconsMapForContentType = [
-    'grid' => 'fa fa-th',
-    'form' => 'fa fa-edit',
-    'chart' => 'fa fa-bar-chart-o',
-    'map' => 'fa fa-map-marker',
-    'calendar' => 'fa fa-calendar',
+    'grid' => 'fas fa-th',
+    'form' => 'fas fa-edit',
+    'chart' => 'far fa-chart-bar',
+    'map' => 'fas fa-map-marker-alt',
+    'calendar' => 'fas fa-calendar-alt',
 ];
 
 $portletBgColorMap = [];
@@ -21,7 +21,7 @@ $portletBgColorMap = [];
                 <small><?php echo $dati['layout_container']['layouts_subtitle']; ?></small>
             </h1>
             <ol class="breadcrumb">
-                <li><a href="<?php echo base_url('main/layout/1'); ?>"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="<?php echo base_url('main/layout/1'); ?>"><i class="fas fa-tachometer-alt"></i> Home</a></li>
                 <li class="active"> <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?></li>
             </ol>
         </section>
@@ -76,7 +76,7 @@ $portletBgColorMap = [];
                                 <div class="box-header with-border <?php echo ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) ? 'js_title_collapse' : ''; ?> ">
 
                                     <div class="box-title">
-                                        <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fa fa-reorder'; ?>"></i>
+                                        <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
                                         <span class="<?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
                                             <?php echo ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])); ?>
                                         </span>
@@ -84,8 +84,8 @@ $portletBgColorMap = [];
 
                                     <div class="box-tools">
                                        
-                                        <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE): ?><button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button><?php endif; ?>
-                                        <?php if ($layout['layouts_boxes_discardable'] === DB_BOOL_TRUE): ?><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button><?php endif; ?>
+                                        <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE): ?><button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fas fa-minus"></i></button><?php endif; ?>
+                                        <?php if ($layout['layouts_boxes_discardable'] === DB_BOOL_TRUE): ?><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fas fa-times"></i></button><?php endif; ?>
                                         <?php if ($layout['layouts_boxes_reloadable'] === DB_BOOL_TRUE): ?><a href="javascript:;" class="reload"></a><?php endif; ?>
                                     </div>
                                 </div>

@@ -149,7 +149,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
             axisFormat: 'H:mm',
             minTime: minTime,
             maxTime: maxTime,
-            allDayHtml: "<i class='fa fa-clock-o'></i>",
+            allDayHtml: "<i class='far fa-clock'></i>",
             eventRender: function (event, element) {
                 element.attr('data-id', event.id).css({
                     'margin-bottom': '1px',
@@ -273,3 +273,4 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
     });
 
 </script>
+

@@ -1,10 +1,10 @@
 <?php 
 $iconsMapForContentType = [
-    'grid' => 'fa fa-th',
-    'form' => 'fa fa-edit',
-    'chart' => 'fa fa-bar-chart-o',
-    'map' => 'fa fa-map-marker',
-    'calendar' => 'fa fa-calendar',
+    'grid' => 'fas fa-th',
+    'form' => 'fas fa-edit',
+    'chart' => 'far fa-chart-bar',
+    'map' => 'fas fa-map-marker-alt',
+    'calendar' => 'fas fa-calendar-alt',
 ];
 
 $portletBgColorMap = [
@@ -63,7 +63,7 @@ $portletBgColorMap = [
                         <?php if($layout['layouts_boxes_titolable'] === DB_BOOL_TRUE): ?>
                             <div class="portlet-title <?php echo ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) ? 'js_title_collapse' : ''; ?>">
                                 <div class="caption">
-                                    <i class="<?php echo $titleColor ? 'font-' . $titleColor:''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fa fa-reorder'; ?>"></i>
+                                    <i class="<?php echo $titleColor ? 'font-' . $titleColor:''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
                                     <span class="<?php echo ($titleColor ? 'font-' . $titleColor:'') . ' ' . ($isLight ? 'caption-subject bold uppercase': ''); ?>">
                                         <?php echo ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])); ?>
                                     </span>

@@ -16,7 +16,7 @@ $max_input_vars = ini_get('max_input_vars');
         <div class="portlet box blue">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="fa fa-lock"></i> Permessi
+                    <i class="fas fa-lock"></i> Permessi
                 </div>
                 <div class="tools"></div>
             </div>
@@ -72,7 +72,7 @@ $max_input_vars = ini_get('max_input_vars');
         <div class="portlet box red">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="fa fa-check"></i> Impostazioni viste
+                    <i class="fas fa-check"></i> Impostazioni viste
                 </div>
                 <div class="tools"></div>
             </div>

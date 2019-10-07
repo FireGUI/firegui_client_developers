@@ -10,7 +10,7 @@
                 <div class="portlet box blue">
                     <div class="portlet-title">
                         <div class="caption">
-                            <i class="fa fa-search"></i> <?php echo ucwords(str_replace('_', ' ', $entity_result['entity']['entity_name'])); ?>
+                            <i class="fas fa-search"></i> <?php echo ucwords(str_replace('_', ' ', $entity_result['entity']['entity_name'])); ?>
                         </div>
                         <div class="tools"></div>
                     </div>
