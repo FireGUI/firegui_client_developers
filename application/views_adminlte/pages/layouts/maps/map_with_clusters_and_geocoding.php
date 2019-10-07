@@ -26,7 +26,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
             <div class="input-group">
                 <input <?php echo sprintf('id="%s"', $mapGeocodeInput); ?> class="form-control" type="text" placeholder="<?php e('cerca località') ?>" />
                 <span class="input-group-btn">
-                    <button <?php echo sprintf('id="%s"', $mapGeocodeToggle); ?> class="btn btn-default" type="button"> <span class="fa fa-search"></span> </button>
+                    <button <?php echo sprintf('id="%s"', $mapGeocodeToggle); ?> class="btn btn-default" type="button"> <span class="fas fa-search"></span> </button>
                 </span>
             </div>
         </div>

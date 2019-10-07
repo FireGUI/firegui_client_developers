@@ -23,7 +23,7 @@ if ($value) {
     <div class="input-group" style="margin-bottom: 3px;">
         <input type="text" class="form-control js_map_search" placeholder="<?php e('cerca località') ?>" />
         <span class="input-group-btn">
-            <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+            <button class="btn btn-default" type="button"><i class="fas fa-search"></i></button>
         </span>
     </div>
     <div style="max-width: 100%; height: 300px; max-height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>

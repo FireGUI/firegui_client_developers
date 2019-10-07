@@ -81,7 +81,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
         
         
         <button type="button" class="btn btn-link btn-sm js_filter_form_add_row">
-            <span class="fa fa-plus"></span> Add condition
+            <span class="fas fa-plus"></span> Add condition
         </button>
     </div>
 

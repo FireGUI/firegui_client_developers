@@ -5,12 +5,12 @@
 
         <?php for ($i = 1; $i <= 5; $i++): ?>
             <span class="star" data-val="<?php echo $i; ?>" style="cursor:pointer;" onclick="changeStarsStatus(this)">
-                <i class="<?php echo (($i > $value) ? 'fa fa-star-o' : 'fa fa-star'); ?>"></i>
+                <i class="<?php echo (($i > $value) ? 'far fa-star' : 'fas fa-star'); ?>"></i>
             </span>
         <?php endfor; ?>
 
         <a href="javascript:void(0);" onclick="$('input', $(this).parent()).val('');
-                        $('.star i', $(this).parent()).removeClass('fa fa-star').addClass('fa fa-star-o');">
+                        $('.star i', $(this).parent()).removeClass('fas fa-star').addClass('far fa-star');">
             &times;
         </a>
     </div>

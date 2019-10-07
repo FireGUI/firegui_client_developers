@@ -1,7 +1,7 @@
 <!-- BEGIN NOTIFICATION DROPDOWN -->
 <li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-        <i class="fa fa-bell"></i>
+        <i class="fas fa-bell"></i>
         <span class="js_notification_number_label badge badge-danger"></span>
     </a>
     <ul class="dropdown-menu" style="width:400px!important;max-width:none!important">

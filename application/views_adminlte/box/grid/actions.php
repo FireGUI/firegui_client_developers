@@ -32,7 +32,7 @@
             [grids_actions_html] =&gt; 
             [grids_actions_link] =&gt; 
             [grids_actions_layout] =&gt; 3
-            [grids_actions_icon] =&gt; fa fa-pencil-square-o
+            [grids_actions_icon] =&gt; far fa-edit
             [grids_actions_mode] =&gt; default
             [grids_actions_type] =&gt; edit_layout
             [grids_actions_color] =&gt; rgb(255, 193, 7)
@@ -88,19 +88,20 @@
     
     <?php if(isset($links['view']) && $links['view']): ?>
             <a href="<?php echo $links['view'].$id; ?>" class="btn btn-success btn-xs <?php if(!empty($links['view_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Visualizza">
-                <span class="fa fa-search-plus"></span>
+                <span class="fas fa-search-plus"></span>
             </a>
     <?php endif; ?>
 
     <?php if(isset($links['edit']) && $links['edit']): ?>
             <a href="<?php echo $links['edit'].$id; ?>" class="btn bg-purple btn-xs <?php if(!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Modifica">
-                <span class="fa fa-edit"></span>
+                <span class="fas fa-edit"></span>
             </a>
     <?php endif; ?>
 
     <?php if(isset($links['delete']) && $links['delete']): ?>
             <a href="<?php echo $links['delete'].$id; ?>" data-confirm-text="<?php e("Sei sicuro di voler eliminare questo record?"); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax <?php if(!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Elimina">
-                <span class="fa fa-remove"></span>
+                <span class="fas fa-times"></span>
             </a>
     <?php endif; ?>
     </div>
+ </div>

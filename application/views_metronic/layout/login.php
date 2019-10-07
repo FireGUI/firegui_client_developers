@@ -65,7 +65,7 @@
                 <div class="form-group">
                     <label class="control-label visible-ie8 visible-ie9"><?php e('Indirizzo e-mail') ;?></label>
                     <div class="input-icon">
-                        <i class="fa fa-envelope"></i>
+                        <i class="fas fa-envelope"></i>
                         <input class="form-control placeholder-no-fix" type="email" autocomplete="off" placeholder="Indirizzo e-mail" name="users_users_email"/>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="form-group">
                     <label class="control-label visible-ie8 visible-ie9"><?php e('Password') ;?></label>
                     <div class="input-icon">
-                        <i class="fa fa-lock"></i>
+                        <i class="fas fa-lock"></i>
                         <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" name="users_users_password"/>
                     </div>
                 </div>

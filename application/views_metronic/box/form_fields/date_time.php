@@ -14,9 +14,9 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
             <input name="<?php echo $field['fields_name']; ?>" type="text" class="form-control" value="<?php echo $value; ?>" <?php echo $onclick; ?> />
             <span class="input-group-btn">
                 <button class="btn default date-set" type="button">
-                    <i class="fa fa-calendar-o"></i>
+                    <i class="far fa-calendar"></i>
                     &nbsp;
-                    <i class="fa fa-clock-o"></i>
+                    <i class="far fa-clock"></i>
                 </button>
             </span>
         </div>
@@ -24,3 +24,4 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
     </div>
 </div>
 <div class="clearfix"></div>
+>

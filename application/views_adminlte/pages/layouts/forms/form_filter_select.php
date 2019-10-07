@@ -37,12 +37,12 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             <div class="input-group js_form_daterangepicker">
                                 <input name="conditions[<?php echo $k; ?>][value]" type="text" class="form-control" value="<?php echo $value; ?>" />
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button"> <i class="fa fa-calendar"></i> </button>
+                                    <button class="btn btn-default" type="button"> <i class="fas fa-calendar-alt"></i> </button>
                                 </span>
                             </div>
                         <?php elseif($field['datatype'] == DB_BOOL_IDENTIFIER): ?>
                             <button type="button" class="btn-link" onclick="$('.field_<?php echo $field['id']; ?>', $('#<?php echo "form_{$form['forms']['forms_id']}" ?>')).attr('checked', false)" data-toggle="tooltip" title="Rimuovi selezione" >
-                                <small><i class="fa fa-remove"></i></small>
+                                <small><i class="fas fa-times"></i></small>
                             </button>
                             <div class="col-xs-12">
                                 <label class="radio-inline">

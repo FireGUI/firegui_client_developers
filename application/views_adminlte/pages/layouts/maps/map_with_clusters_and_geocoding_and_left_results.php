@@ -7,7 +7,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 <div id="results">
     <div class="row">
         <div class="col-xs-12" style="margin-bottom: 10px">
-            <a href="<?php // echo "#clusered_map_form_".$data['maps']['maps_id']; ?>" onclick="$('#<?php echo 'clusered_map_form_toggle' . $data['maps']['maps_id']; ?>').fadeIn('slow');" class="btn btn-xs red"><i class="fa fa-remove"></i></a>
+            <a href="<?php // echo "#clusered_map_form_".$data['maps']['maps_id']; ?>" onclick="$('#<?php echo 'clusered_map_form_toggle' . $data['maps']['maps_id']; ?>').fadeIn('slow');" class="btn btn-xs red"><i class="fas fa-times"></i></a>
         </div>
         <form <?php echo sprintf('id="%s"', $mapFormId); ?> class="__collapse">
             <div class="clearfix"></div>
@@ -34,7 +34,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
             <div class="input-group">
                 <input <?php echo sprintf('id="%s"', $mapGeocodeInput); ?> class="form-control" type="text" placeholder="<?php e('cerca località') ?>" />
                 <span class="input-group-btn">
-                    <button <?php echo sprintf('id="%s"', $mapGeocodeToggle); ?> class="btn btn-default" type="button"> <span class="fa fa-search"></span> </button>
+                    <button <?php echo sprintf('id="%s"', $mapGeocodeToggle); ?> class="btn btn-default" type="button"> <span class="fas fa-search"></span> </button>
                 </span>
             </div>
         </div>

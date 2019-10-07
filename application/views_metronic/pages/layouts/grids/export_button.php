@@ -2,7 +2,7 @@
     <div class="btn-group pull-right">
         <?php /*
         <button type="button" class="btn btn-fit-height grey dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
-        Export <i class="fa fa-angle-down"></i>
+        Export <i class="fas fa-angle-down"></i>
         </button>
         <ul class="dropdown-menu " role="menu">
             <li>

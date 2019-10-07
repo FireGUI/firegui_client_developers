@@ -13,7 +13,7 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
         <div class="input-group js_form_datepicker date <?php echo $class ?>">
             <input name="<?php echo $field['fields_name']; ?>" type="text" class="form-control" <?php echo $onclick; ?> value="<?php echo $value; ?>" />
             <span class="input-group-btn">
-                <button class="btn default" type="button"><i class="fa fa-calendar"></i></button>
+                <button class="btn default" type="button"><i class="fas fa-calendar-alt"></i></button>
             </span>
         </div>
         <?php echo $help; ?>
