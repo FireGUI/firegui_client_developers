@@ -1,4 +1,3 @@
-Changelog version 1.6.6.8
+Changelog version 1.6.6.9
  
-Fixed input date
-Changed module_name, in error management, to error_module_name in config.json
+Added possibility to run install.php during module install

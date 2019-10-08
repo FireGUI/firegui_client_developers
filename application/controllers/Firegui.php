@@ -110,17 +110,10 @@ class Firegui extends MY_Controller
             die('Wrong zip archive!');
         }
 
-        debug($_FILES);
-
-        if (file_exists($_FILES['module_file']['tmp_name'])) {
-            echo ('file esistente');
-        } else { }
-
-        $content = file_get_contents($_FILES['module_file']['tmp_name']);
-        echo ('Inizio contenuto...');
-        echo (strlen($content));
-        //echo($content);
-        die('test');
+        //Una volta scompresso, eseguo l'eventuale file di install
+        if (file_exists(FCPATH . "/application/modules/{$identifier}/install/install.php")) {
+            include(FCPATH . "/application/modules/{$identifier}/install/install.php");
+        }
     }
 
     public function updateClient()
