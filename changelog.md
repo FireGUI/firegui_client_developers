@@ -1,3 +1,4 @@
-Changelog version 1.6.6.7
+Changelog version 1.6.6.8
  
-Fix actions div not opened bug
+Fixed input date
+Changed module_name, in error management, to error_module_name in config.json
