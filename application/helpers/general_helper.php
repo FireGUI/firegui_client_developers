@@ -903,8 +903,6 @@ if (!function_exists('calculateDistance')) {
         // Non potendo fare più di 10 richieste al secondo metto un leggero tempo di attesa dopo ogni richiesta
         usleep(250000); // 250 ms è un valore sperimentale che mi permette di poter eseguire tutte le richieste una dopo l'altra
 
-
-
         if (empty($data['properties']['distance'])) {
             return 0;
         } else {

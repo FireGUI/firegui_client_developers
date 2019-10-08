@@ -24,4 +24,3 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
     </div>
 </div>
 <div class="clearfix"></div>
->
