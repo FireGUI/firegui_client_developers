@@ -1,3 +1,3 @@
-Changelog version 1.6.6.9
+Changelog version 1.6.7
  
-Added possibility to run install.php during module install
+Fixed icons on fullcalendar, temporary uncompatible with fontawesome 5
