@@ -99,5 +99,5 @@
                 <span class="fas fa-times"></span>
             </a>
     <?php endif; ?>
-    </div>
+    
  </div>
