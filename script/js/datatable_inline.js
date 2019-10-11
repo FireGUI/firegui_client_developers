@@ -1,4 +1,4 @@
-function CrmNewInlineTable(grid) {
+function CrmNewInlineTable(grid) {
     this.grid = grid;
 }
 
@@ -12,6 +12,13 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     //console.log('test');
     // Devo sapere quante colonne ho per prima cosa
     var sEntityName = this.grid.attr('data-entity');
+
+    var parent_field = this.grid.attr('data-parent_field');
+    var parent_id = this.grid.attr('data-parent_id');
+
+    // console.log(parent_field);
+    // console.log(parent_id);
+
     var jqThs = $('> thead > tr > th', this.grid);
     var datatable = this.getDatatableHandler();
     var tr = $('<tr data-id="' + id + '"></tr>', this.grid);
@@ -23,7 +30,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
     //Inserisco un nuovo TR con i vari TD
     jqThs.each(function () {
-        
+
         var name = $(this).attr('data-name');
         //console.log(name);
         if (name == '_foo') {
@@ -42,35 +49,38 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                 //In questo caso li stampo entrambi...
                 var field_html = '';
                 //console.log(fields.get());
-                for (var i in fields.get()) { 
+                for (var i in fields.get()) {
                     var field = $(fields[i]);
-                    
+
                     //Prendo anche il container (per le date è il container che mi dice se devo stamparla come datepicker o meno...
                     var field_container = field.parent();
-                    
+
                     //console.log(field_container);
-                    
-                    
+
+
                     var cloned_field = field.clone();
+
+
+
                     //cloned_field.attr('placeholder', name);
                     cloned_field.attr('placeholder', $(this).html());
 
                     cloned_field.removeClass('select2-hidden-accessible');
-                    
+
                     if (field_container.hasClass('js_form_datetimepicker')) {
                         field_html += field_container.prop('outerHTML');
                     } else {
                         field_html += cloned_field.prop('outerHTML');
                     }
                 }
-                
+
                 //console.log(field_html);
-                
+
                 tr.append($('<td>' + field_html + '</td>'));
             }
         }
     });
-    
+
 
     //Aggiungo l'action per annullare e per salvare
     var button_save = $('<a class="btn btn-success _btn-xs pull-left js_save_row">Save</a>');
@@ -78,11 +88,14 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
     //Aggiungo comunque gli hidden
     $('[type="hidden"]', form).each(function () {
-        $('td',tr).last().append($(this).clone());
+        if ($(this).attr('name') == parent_field) {
+            $(this).val(parent_id);
+        }
+        $('td', tr).last().append($(this).clone());
     });
     //console.log($('tbody', this.grid));
     $('tbody', this.grid).append(tr);
-    
+
     initComponents();
 
 };
@@ -94,13 +107,13 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     var entityName = this.getEntityName();
     //Step 1: clono il form
     //console.log('clono il form');
-    
+
     this.createRow(id);
-    
+
     var row_with_form = $('tr:last', this.grid);
-    
-//    console.log(row_with_form);
-//    return;
+
+    //    console.log(row_with_form);
+    //    return;
     //Step 2: popolo i valori del form clonato in base ai valori dell'attuale riga (faccio un ajax per avere i dati completi, più sicuro)
     $.ajax(base_url + 'get_ajax/getJsonRecord/' + entityName + '/' + id, {
         dataType: "json",
@@ -111,7 +124,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                 //Se il name contiene [] allora è una multiselect
                 //console.log($(this));
                 if ($(this).attr('name') && $(this).attr('name').endsWith('[]')) {
-                    var field_name = $(this).attr('name').substring(0, $(this).attr('name').length-2);
+                    var field_name = $(this).attr('name').substring(0, $(this).attr('name').length - 2);
                     if (data.data[field_name]) {
                         $(this).val(Object.keys(data.data[field_name])).trigger('change');
                     }
@@ -125,28 +138,28 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                             //Mi salvo i valori delle input select per risettarli dopo (qualora un trigger change dovesse scatenare il reload dei valori di una tendina con quel field_ref)
                             if ($(this).is('select')) {
                                 var valore = data.data[$(this).attr('name')];
-                                var current_sel = {name:$(this).attr('name'),val:valore};
+                                var current_sel = { name: $(this).attr('name'), val: valore };
                                 selects_vals.push(current_sel);
                                 $(this).val(data.data[$(this).attr('name')]); //Se sono select, triggero il change solo alla fine di tutto (serve per essere sicuri di avere almeno in un preciso istante tutte le tendine col val corretto)
                                 //Nel dubbio assegno anche l'attributo selected...
-                                $('option[value='+valore+']',$(this)).attr('selected', 'selected');
+                                $('option[value=' + valore + ']', $(this)).attr('selected', 'selected');
                                 //console.log($(this).attr('name')+': '+valore);
-                                
-                                
+
+
                             } else {
                                 $(this).val(data.data[$(this).attr('name')]).trigger('change');
                             }
-                            
-                        }                        
+
+                        }
                     }
-                    
+
                 }
-                
+
             });
             //Adesso è il momento di triggerare il change sulle select
             for (i in selects_vals) {
                 var name = selects_vals[i].name;
-                $('[name="'+name+'"]',row_with_form).trigger('change');
+                $('[name="' + name + '"]', row_with_form).trigger('change');
                 //console.log(name+': triggerato change');
             }
             //Non mi accontento! Dopo il change, nel dubbio risetto i valori cachati precedentemente. Questo per essere sicuro abbia selezionato effettivamente i valori giusti.
@@ -154,24 +167,24 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                 var select_data = selects_vals[i];
                 var name = select_data.name;
                 var val = select_data.val;
-                $('[name="'+name+'"]',row_with_form).val(val); //Volutamente non triggero il change in questo caso altrimenti rischio di svuotare nuovamente altre select
+                $('[name="' + name + '"]', row_with_form).val(val); //Volutamente non triggero il change in questo caso altrimenti rischio di svuotare nuovamente altre select
                 //console.log(name+': '+val);
             }
-            
+
             //Forzo l'elemento id nel form per fare in modo che poi il sistema capisca che è una edit al saveRow... (vd sotto)
-            $('td',row_with_form).first().append('<input type="hidden" name="'+entityName+'_id" value="'+data.data[entityName+'_id']+'" />');
+            $('td', row_with_form).first().append('<input type="hidden" name="' + entityName + '_id" value="' + data.data[entityName + '_id'] + '" />');
         }
     });
-    
+
     //Step 3: posiziono e faccio apparire il form con la stessa logica del nuova riga, ovvero con i campi in corrispondenza della colonna corretta
     tr.replaceWith(row_with_form);
-    
+
     //reset_theme_components();
-    
+
 };
 
 CrmNewInlineTable.prototype.deleteRow = function (nRow, id) {
-    
+
     var datatable = this.getDatatableHandler();
     var aData = datatable.fnGetData(nRow);
 
@@ -196,6 +209,10 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
 
     var data = {};
     var id = '';
+
+    console.log(sEntityName);
+    console.log(jqInputs);
+
     jqInputs.each(function () {
 
         var input = $(this);
@@ -205,32 +222,32 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
             id = input.val();
         } else {
             if (input.is(':checkbox') && input.is(':checked')) {
-                
+
                 data[name] = input.val();
             } else {
                 if (!(name in data)) {
                     data[name] = input.val();
                 }
             }
-            
+
         }
     });
 
     // Save data
     //Perchè non postare direttamente alla save_form? Avremmo tutto potenzialmente...
     $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data)
-            .success(function () {
-                
-                datatable.fnDraw();
-            })
-                    .error(function () {
-                        console.log('ERRORE...');
-                    });
+        .success(function () {
+
+            datatable.fnDraw();
+        })
+        .error(function () {
+            console.log('ERRORE...');
+        });
 
 
 };
 CrmNewInlineTable.prototype.registerEvents = function () {
-    
+
     var inlineTable = this;
     var gridID = this.grid.data('grid-id');
 
@@ -241,34 +258,34 @@ CrmNewInlineTable.prototype.registerEvents = function () {
 
     // Create empty record
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
-        
+
         e.preventDefault();
         //e.stopImmediatePropagation();
-        
+
         inlineTable.createRow(0);
     });
-    
+
     // Edit record
     this.grid.on('click', '.js_edit', function (e) {
         e.preventDefault();
-        
+
         /* Get the row as a parent of the link that was clicked on */
         var button = $(this);
         var tr = button.parents('tr:first');
         //console.log(tr);
         //var nRow = button.parents('tr')[0];
         var id = button.data('id');
-        
+
         //console.log(tr);
-        
-       inlineTable.editRow(tr, id);
-        
+
+        inlineTable.editRow(tr, id);
+
     });
-    
+
     // Delete record
     this.grid.on('click', '.js_delete', function (e) {
         e.preventDefault();
-        
+
         if (confirm("Are you sure?") == false) {
             return;
         }
@@ -283,7 +300,7 @@ function initTable(grid) {
     var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
-    
+
     var where_append = oDataTable.data('where_append');
     if (typeof (where_append) === 'undefined') {
         where_append = '';
@@ -307,13 +324,13 @@ function initTable(grid) {
     //console.log(no_server_side);
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
-    
+
     var aoColumns = [];
     $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;
         coldef = {
             bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined'),
-            defaultContent:""
+            defaultContent: ""
         };
 
         aoColumns.push(coldef);
@@ -332,10 +349,10 @@ function initTable(grid) {
         bProcessing: !no_server_side,
         sServerMethod: "POST",
         bServerSide: !no_server_side,
-        sAjaxSource: (no_server_side)?null:(base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append='+where_append),
-        aLengthMenu: [10, 50, 100, 200, 500,  1000, 'Tutti'],
+        sAjaxSource: (no_server_side) ? null : (base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append),
+        aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
         iDisplayLength: defaultLimit,
-        autoWidth:false,
+        autoWidth: false,
         //bLengthChange: false,
         oLanguage: {
             sUrl: base_url_scripts + "script/datatable.transl.json"
@@ -351,7 +368,7 @@ function startNewDatatableInline() {
         if (!grid.data('inline_initializated')) {
             grid.data('inline_initializated', true);
 
-            
+
             initTable(grid);
             var dtInline = new CrmNewInlineTable(grid);
             dtInline.registerEvents();

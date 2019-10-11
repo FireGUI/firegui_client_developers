@@ -20,7 +20,7 @@
                     continue;
                 }
                 ?>
-                <span <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": null; ?>><?php echo $action; ?></span>
+                <span <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": null; ?> style="color:white !important;"><?php echo $action; ?></span>
             <?php else : ?>
     
             <?php 
@@ -69,7 +69,7 @@
             ?>
             <span <?php echo $custom_action['grids_actions_name']? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'": null; ?>>
                 <a class="js-action_button btn btn-xs <?php if(in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large'])) echo 'js_open_modal'; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color'])?:'#CCCCCC'; ?>">
-                    <span class="<?php echo $custom_action['grids_actions_icon']; ?>"></span>
+                    <span class="<?php echo $custom_action['grids_actions_icon']; ?>" style="color:white !important;"></span>
                 </a>
             </span>
             
@@ -84,19 +84,19 @@
     
     <?php if(isset($links['view']) && $links['view']): ?>
             <a href="<?php echo $links['view'].$id; ?>" class="btn blue btn-xs <?php if(!empty($links['view_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Visualizza">
-                <span class="fas fa-search-plus"></span>
+                <span class="fas fa-search-plus" style="color:white !important;"></span>
             </a>
     <?php endif; ?>
 
     <?php if(isset($links['edit']) && $links['edit']): ?>
             <a href="<?php echo $links['edit'].$id; ?>" class="btn purple btn-xs <?php if(!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Modifica">
-                <span class="fas fa-edit"></span>
+                <span class="fas fa-edit" style="color:white !important;"></span>
             </a>
     <?php endif; ?>
 
     <?php if(isset($links['delete']) && $links['delete']): ?>
             <a href="<?php echo $links['delete'].$id; ?>" data-confirm-text="<?php e("are you sure you want to delete this record?"); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax <?php if(!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="Elimina">
-                <span class="fas fa-times"></span>
+                <span class="fas fa-times" style="color:white !important;"></span>
             </a>
     <?php endif; ?>
     
