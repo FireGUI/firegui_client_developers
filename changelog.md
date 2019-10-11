@@ -1,3 +1,3 @@
-Changelog version 1.6.7
+Changelog version 1.6.7.1
  
-Fixed icons on fullcalendar, temporary uncompatible with fontawesome 5
+Impostato colore bianco su tutte le grid actions
