@@ -58,7 +58,7 @@
                     <i class="<?php echo $menu['menu_icon_class'] ? : 'fas fa-list'; ?>"></i>
                     <span class="title"><?php echo $label; ?></span>
                     <?php if ($isCurrent): ?><span class="selected"></span><?php endif; ?>
-                    <?php if ($hasSubmenu): ?><span class="arrow"></span><?php endif; ?>
+                    <?php if ($hasSubmenu): ?><span class="fas fa-chevron-right pull-right" style="margin-top: 3px !important;"></span><?php endif; ?>
                 </a>
                 
                 <?php if ($hasSubmenu): ?>
