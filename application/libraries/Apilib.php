@@ -98,7 +98,7 @@ class Apilib
 
         // Aggiungi tracciamento eccezioni non catchate, quantomeno per non
         // bloccare il sistema e che nessuno sappia nulla
-        //set_exception_handler('crm_exception_handler');
+        set_exception_handler('crm_exception_handler');
 
         //Se impostato un tempo di cache diverso prendo quello
         if (defined('CACHE_TIME')) {
@@ -255,13 +255,8 @@ class Apilib
         } else {
             $adapter = ['adapter' => 'file', 'backup' => 'dummy'];
         }
-        if (!is_dir(APPPATH . 'cache')) {
-            mkdir(APPPATH . 'cache');
-        }
+
         //$adapter = $enable? ['adapter' => 'file', 'backup' => 'dummy']: ['adapter' => 'dummy'];
-        if (!file_exists(APPPATH . 'cache/cache-controller')) {
-            @fopen(APPPATH . 'cache/cache-controller', 'w+') or die('Unable to open file: ' . APPPATH . 'cache/cache-controller');
-        }
         $out = file_put_contents(APPPATH . 'cache/cache-controller', serialize($adapter), LOCK_EX);
         return $out !== false;
     }
@@ -469,30 +464,20 @@ class Apilib
                 unset($_data[$field['fields_name']]);
             }
             //Per i campi date e date_time, se sono su mysql li converto in formato mysql
-            elseif ($this->db->dbdriver != 'postgre' && in_array($field['fields_type'], ['TIMESTAMP', 'DATETIME']) && !empty($_data[$field['fields_name']])) {
-                if (array_key_exists(1, explode('-', $_data[$field['fields_name']]))) {
-                    //Se entra qui teoricamente la data è già stata formattata correttamente a monte...
+            elseif ($this->db->dbdriver != 'postgre' && in_array($field['fields_type'], ['TIMESTAMP']) && !empty($_data[$field['fields_name']])) {
+                //Valuto se la data ha anche ore e minuti
+                if (array_key_exists(1, explode(' ', $_data[$field['fields_name']]))) {
+                    $date = DateTime::createFromFormat("d/m/Y H:i", $_data[$field['fields_name']]);
                 } else {
-                    //Valuto se la data ha anche ore e minuti
-                    if (array_key_exists(1, explode(' ', $_data[$field['fields_name']]))) {
-                        if (array_key_exists(2, explode(':', $_data[$field['fields_name']]))) { //Se ha anche i secondi
-                            //debug($_data[$field['fields_name']]);
-                            $date = DateTime::createFromFormat("d/m/Y H:i:s", $_data[$field['fields_name']]);
-                        } else {
-                            $date = DateTime::createFromFormat("d/m/Y H:i", $_data[$field['fields_name']]);
-                        }
-                    } else {
-                        $date = DateTime::createFromFormat("d/m/Y", $_data[$field['fields_name']]);
-                    }
-
-                    if (!$date) {
-                        throw new ApiException("Date format incorrect or unknown: '{$_data[$field['fields_name']]}'", self::ERR_INTERNAL_DB);
-                        //debug($_data,true);
-                    }
-
-
-                    $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
+                    $date = DateTime::createFromFormat("d/m/Y", $_data[$field['fields_name']]);
                 }
+
+                if (!$date) {
+                    throw new ApiException("Date format incorrect or unknown: '{$_data[$field['fields_name']]}'", self::ERR_INTERNAL_DB);
+                    //debug($_data,true);
+                }
+
+                $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
             }
         }
 
@@ -850,7 +835,7 @@ class Apilib
 
 
 
-    public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = [])
+    public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2)
     {
         //die('test');
         if (!$entity) {
@@ -862,13 +847,8 @@ class Apilib
         }
 
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
-
-        if (array_key_exists('_out', $input)) {
-            return $input['_out'];
-        }
-
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input))
-            . ($limit ? '.' . $limit : '') . $maxDepth . ($offset ? '.' . $offset : '') . ($orderBy ? '.' . md5(serialize($orderBy)) . '.' . md5(serialize($orderDir)) : '');
+            . ($limit ? '.' . $limit : '') . ($offset ? '.' . $offset : '') . ($orderBy ? '.' . md5(serialize($orderBy)) . '.' . md5(serialize($orderDir)) : '');
 
 
 
@@ -945,8 +925,7 @@ class Apilib
             //$order = $orderBy? $orderBy.' '.($orderDir==='ASC'? $orderDir: 'DESC'): null;
 
             try {
-
-                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, $eval_cachable_fields);
+                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth);
                 $this->cache->save($cache_key, $out, $this->CACHE_TIME);
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
@@ -1063,7 +1042,7 @@ class Apilib
             // tipicamente questo errore non dovrebbe capitare in development
             // in quanto avrei il db_debug attivo, ma in produzione, quando le
             // query sono nascoste.
-            //crm_exception_handler($exception, false, true);
+            crm_exception_handler($exception, false, true);
         }
 
         // Lancio eccezione
@@ -1176,7 +1155,6 @@ class Apilib
         // Gestione delle custom fields actions - recupero il dato dall'entità
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
-        $fields = $this->crmEntity->getFields($entity_data['entity_id']);
 
         $originalData = $dati;
         if ($editMode) {
@@ -1188,14 +1166,16 @@ class Apilib
                 $value_id = $dataDb[$entity . '_id'];
             } else {
                 // Pre-fetch dei dati sennò fallisce la validazione
-                $dataDb = $this->db->select(array_key_map($fields, 'fields_name'))->get_where($entity, array($entity . '_id' => $value_id))->row_array();
+                $dataDb = $this->db->get_where($entity, array($entity . '_id' => $value_id))->row_array();
             }
-            //debug($dataDb);
+
             $_POST = $dati = array_merge($dataDb, $dati);
-            //debug($dati,true);
         } else {
             $value_id = null;
         }
+
+        $fields = $this->crmEntity->getFields($entity_data['entity_id']);
+        //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
 
         // Recupera dati di validazione
         foreach ($fields as $k => $field) {
@@ -1208,18 +1188,14 @@ class Apilib
          */
         $rules = [];
         $rules_date_before = [];
-
-
-
         foreach ($fields as $field) {
             $rule = [];
 
             // Inserisci la regola required per i campi che la richiedono
             // (una password è required solo se sto creando il record per la
             // prima volta)
-            //debug($field);
             if ($field['fields_required'] === DB_BOOL_TRUE && !$field['fields_default']) {
-                //die('dentro');
+
                 switch ($field['fields_draw_html_type']) {
                         // Questo perchè l'upload viene giustamente fatto dopo il
                         // controllo delle regole di validazione
@@ -1311,14 +1287,9 @@ class Apilib
         /**
          * Eseguo il process di pre-validation
          */
-
-
-        //debug($rules,true);
-
-
         $_predata = $dati;
         $mode = $editMode ? 'update' : 'insert';
-        $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id]);   // Pre-validation specifico
+        $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->original_post]);   // Pre-validation specifico
         $processed_predata_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-validation', $processed_predata_1);                                     // Pre-validation generico
         if (isset($processed_predata_2['post'])) {
             // Metto i dati processati nel post
@@ -1371,14 +1342,10 @@ class Apilib
          * stati notificati dalla funzione uploadAll, quindi mi basta fare un
          * return false;
          */
-
-
-
         $result = $this->uploadAll(true);
         if ($result === false) {
             return false;
         } elseif ($result && is_array($result)) {
-
             $dati = array_merge($dati, $result);
             $originalData = array_merge($originalData, $result);
         }
@@ -1396,9 +1363,6 @@ class Apilib
          * `pendingRelations`
          */
         $relationBundles = [];
-
-
-
         foreach ($fields as $field) {
 
             $name = $field['fields_name'];
@@ -1413,7 +1377,6 @@ class Apilib
                 unset($dati[$name]);
                 continue;
             }
-
 
             // Evito di processare il campo se il campo non è stato passato
             // nell'input, perché significa che è già stato processato
@@ -1553,8 +1516,6 @@ class Apilib
          * Ovviamente se sono in modalità form crm non mando l'errore, ma
          * rimuovo semplicemente i campi in più
          */
-
-        //debug(array_key_map($fields, 'fields_name'));
         $invalidFields = array_diff(array_keys($dati), array_key_map($fields, 'fields_name'));
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
@@ -2067,34 +2028,7 @@ class Apilib
         if (!empty($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype])) {
             foreach ($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype] as $function) {
                 try {
-                    //20191001 - Matteo Puppis - Se arrivo qua, potrei avere anche dei fi_events con action non gestita.
-                    //Es.: i fi_events di tipo custom code, creano anche il relativo pp che continuerà a funzionare senza problemi (è retro compatibile).
-                    //Le nuove action però (quindi non i custom code, che continueranno a funzionare con gli eval), devono avere una gestione ad hoc.
-                    switch ($function['fi_events_action']) {
-                        case '':
-                        case 'custom_code':
-                            eval($function['post_process_what']);
-                            break;
-                        case 'curl':
-                            $ch = curl_init();
-                            $url = json_decode($function['fi_events_actiondata'], true)['url'];
-
-                            //die('test');
-                            // set URL and other appropriate options
-                            curl_setopt($ch, CURLOPT_URL, $url);
-                            curl_setopt($ch, CURLOPT_HEADER, 0);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-                            // grab URL and pass it to the browser
-                            $result = curl_exec($ch);
-
-                            // close cURL resource, and free up system resources
-                            curl_close($ch);
-                            break;
-                        default:
-                            debug($function, true);
-                            break;
-                    }
+                    eval($function['post_process_what']);
                 } catch (Exception $ex) {
                     throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
                 }
@@ -2107,10 +2041,8 @@ class Apilib
     private function preLoadDataProcessors()
     {
         if (empty($this->_loadedDataProcessors)) {
-            $process = $this->db
-                ->join('fi_events', 'fi_events_post_process_id = post_process_id', 'LEFT')
-                ->get('post_process')->result_array();
-            //debug($process,true);
+            $process = $this->db->get('post_process')->result_array();
+
             $this->_loadedDataProcessors = [
                 self::MODE_DIRECT   => [],
                 self::MODE_API_CALL => [],
@@ -2158,7 +2090,7 @@ class Apilib
         $this->load->library('upload', [
             'upload_path' => FCPATH . 'uploads/',
             'allowed_types' => '*',
-            'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
+            'max_size' => 50000,
             'encrypt_name' => true
         ]);
 
@@ -2229,7 +2161,7 @@ class Apilib
 
                 if ($uploadDepthLevel > 0) {
                     // Voglio comporre il nome locale in modo che se il nome del file fosse
-                    // foofoo.jpg la cartella finale sarà: ./uploads/f/o/o/foofoo.jpg
+                    // pippo.jpg la cartella finale sarà: ./uploads/p/i/p/pippo.jpg
                     $localFolder = '';
                     for ($i = 0; $i < $uploadDepthLevel; $i++) {
                         // Assumo che le lettere siano tutte alfanumeriche,
@@ -2364,8 +2296,6 @@ class Apilib
         $logEntry['log_crm_extra'] = $logEntry['log_crm_extra'] ? json_encode($logEntry['log_crm_extra']) : null;
 
         $this->db->insert('log_crm', $logEntry);
-
-        // @todo 20190902 - Da fare cancellazione log dopo 30/60 giorni
     }
 
 
