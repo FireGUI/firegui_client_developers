@@ -1486,7 +1486,7 @@ class Apilib
         /**
          * Eseguo il process di pre-action
          */
-        $processed_data_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-{$mode}", ['post' => $dati, 'value_id' => $value_id]); // Pre-process specifico
+        $processed_data_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-{$mode}", ['post' => $dati, 'value_id' => $value_id, 'original_post' => $this->original_post]); // Pre-process specifico
         $processed_data_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-save', $processed_data_1);                             // Pre-process generico
         if (isset($processed_data_2['post'])) {
             // Metto i dati processati nell'array da inserire su db
