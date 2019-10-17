@@ -73,8 +73,8 @@ class Layout extends CI_Model
         } else {
             if (
                 !$module
-                || file_exists(FCPATH . "application/views_adminlte/custom/{$module}/{$relative_path}{$view}.php"
-                    || file_exists(FCPATH . "application/views_metronic/custom/{$module}/{$relative_path}{$view}.php"))
+                || file_exists(FCPATH . "application/views_adminlte/custom/{$module}/{$relative_path}{$view}.php")
+                || file_exists(FCPATH . "application/views_metronic/custom/{$module}/{$relative_path}{$view}.php")
             ) {
                 if ($module) {
                     $relative_path = $module . '/' . $relative_path;
@@ -82,8 +82,8 @@ class Layout extends CI_Model
                 $content = $this->parser->parse("custom/{$relative_path}{$view}", $extra_data, true);
             } elseif (
                 !$module
-                || file_exists(FCPATH . "application/views_adminlte/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php"
-                    || file_exists(FCPATH . "application/views_metronic/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php"))
+                || file_exists(FCPATH . "application/views_adminlte/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php")
+                || file_exists(FCPATH . "application/views_metronic/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php")
 
             ) {
                 if ($module) {
