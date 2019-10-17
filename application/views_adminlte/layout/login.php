@@ -1,13 +1,16 @@
-<?php 
-if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
-    $this->load->view('pages/layouts/custom_views/login');
+<?php
+if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
+    $this->load->view('custom/layout/login');
 } else {
-?>
-<!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
-<!--[if !IE]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+    ?>
+    <!DOCTYPE html>
+    <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+    <!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+    <!--[if !IE]><!-->
+    <html lang="en" class="no-js">
+    <!--<![endif]-->
     <!-- BEGIN HEAD -->
+
     <head>
         <meta charset="utf-8" />
         <title>Login</title>
@@ -18,12 +21,12 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
         <meta name="MobileOptimized" content="320">
 
         <!-- CORE LEVEL STYLES -->
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/font-awesome/css/font-awesome.min.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/font-awesome/css/font-awesome.min.css?v={$this->config->item('version')}"); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>" />
 
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>"/>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/iCheck/square/blue.css?v={$this->config->item('version')}"); ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/iCheck/square/blue.css?v={$this->config->item('version')}"); ?>" />
 
 
 
@@ -31,8 +34,11 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
         <style>
-            <?php if(defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)): ?>
-            .login-page, .register-page { background: <?php echo LOGIN_COLOR; ?>; }
+            <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
+            .register-page {
+                background: <?php echo LOGIN_COLOR; ?>;
+            }
+
             <?php endif; ?>
         </style>
     </head>
@@ -44,14 +50,14 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
         <div class="login-box">
             <div class="logo">
                 <div class="text-center">
-                <?php if ($this->settings === array()): ?>
-                    <h2 class="login-logo">Your Company</h2>
-                <?php elseif ($this->settings['settings_company_logo']): ?>
-                    <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
-                <?php else: ?>
-                    <h2 class="text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
-                <?php endif; ?>
-            </div>
+                    <?php if ($this->settings === array()) : ?>
+                        <h2 class="login-logo">Your Company</h2>
+                    <?php elseif ($this->settings['settings_company_logo']) : ?>
+                        <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
+                    <?php else : ?>
+                        <h2 class="text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <div class="login-box-body">
@@ -63,7 +69,7 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                        <input type="password" class="form-control" placeholder="Password" name="users_users_password" >
+                        <input type="password" class="form-control" placeholder="Password" name="users_users_password">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
 
@@ -74,7 +80,7 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"><?php e('Disconnetti dopo') ;?></label>
+                        <label class="control-label"><?php e('Disconnetti dopo'); ?></label>
                         <select name="timeout">
                             <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
                             <option value="5" class="form-control input-sm select2">5 minuti</option>
@@ -92,8 +98,8 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
                         </select>
                     </div>
 
-                    
-                    
+
+
                     <div class="form-actions">
                         <div class="row">
                             <div class="col-xs-8">
@@ -130,16 +136,16 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
 
         <!-- COMMON PLUGINS -->
 
-        <script  src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
-        <script  src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
+        <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
+        <script src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
 
-        <script  src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>" ></script>
+        <script src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- CUSTOM COMPONENTS -->
-        <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script> 
+        <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
 
 
         <script>
-            $(function () {
+            $(function() {
                 $('input').iCheck({
                     checkboxClass: 'icheckbox_square-blue',
                     radioClass: 'iradio_square-blue',
@@ -149,5 +155,6 @@ if (file_exists(__DIR__ . '/../pages/layouts/custom_views/login.php')) {
         </script>
 
     </body>
-</html>
-        <?php } ?>
+
+    </html>
+<?php } ?>
