@@ -16,16 +16,21 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     var parent_field = this.grid.attr('data-parent_field');
     var parent_id = this.grid.attr('data-parent_id');
 
+
+
     // console.log(parent_field);
     // console.log(parent_id);
 
     var jqThs = $('> thead > tr > th', this.grid);
     var datatable = this.getDatatableHandler();
-    var tr = $('<tr data-id="' + id + '"></tr>', this.grid);
+
+    var tr = $('<tr data-id="' + id + '"></tr>');
     //console.log(jqThs.length);
     var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
     //console.log(form_container);
     var form = $('form', form_container);
+
+
 
 
     //Inserisco un nuovo TR con i vari TD
@@ -255,6 +260,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     this.grid.on('click', '.js_save_row', function (e) {
         inlineTable.saveRow($(this));
     });
+
 
     // Create empty record
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
