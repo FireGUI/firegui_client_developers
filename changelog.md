@@ -1,4 +1,4 @@
-Changelog version 1.6.7.3
+Changelog version 1.6.7.4
  
-Fixed syntax error '>' in date_time picker
-Fixed ci_sessions on dbforge postgres
+Alter postgres ci_sessions table
+Edit cron check to purge ci_sessions data older than 30 days in postgres

@@ -135,6 +135,8 @@ class Cron extends MY_Controller
             $this->db->where("log_api_date < now() - interval 30 day", null, false)->delete('log_api');
             $this->db->where("log_crm_time < now() - interval 30 day", null, false)->delete('log_crm');
             $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
+            //$this->db->query('DELETE FROM ci_sessions WHERE  timestamp < NOW() - INTERVAL 1 MONTH');
+            $this->db->query('OPTIMIZE TABLE ci_sessions');
         } else {
             $this->db
                 ->where("log_api_date < now() - INTERVAL '1 month'", null, false)
@@ -142,6 +144,9 @@ class Cron extends MY_Controller
             $this->db
                 ->where("log_crm_time < now() - INTERVAL '1 month'", null, false)
                 ->delete('log_crm');
+            $this->db
+                ->where("to_timestamp(last_activity)::date < now() - interval '30 day'", null, false)
+                ->delete('ci_sessions');
         }
         // ============= SVUOTAMENTO LOGS VARI =============
 
