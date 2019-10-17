@@ -1,7 +1,8 @@
 <?php
 
 
-class Layout extends CI_Model {
+class Layout extends CI_Model
+{
 
     /**
      * @var array
@@ -11,14 +12,16 @@ class Layout extends CI_Model {
     /**
      * @param int $layoutId
      */
-    public function addLayout($layoutId) {
+    public function addLayout($layoutId)
+    {
         $this->structure[] = (int) $layoutId;
     }
 
     /**
      * @param int $layoutId
      */
-    public function removeLastLayout() {
+    public function removeLastLayout()
+    {
         array_pop($this->structure);
     }
 
@@ -26,14 +29,16 @@ class Layout extends CI_Model {
      * @param int $layoutId
      * @return bool
      */
-    public function isCalled($layoutId) {
+    public function isCalled($layoutId)
+    {
         return in_array((int) $layoutId, $this->structure);
     }
 
     /**
      * @return int|null
      */
-    public function getCurrentLayout() {
+    public function getCurrentLayout()
+    {
         $layouts = array_values($this->structure);
         return array_pop($layouts);
     }
@@ -41,16 +46,18 @@ class Layout extends CI_Model {
     /**
      * @return int|null
      */
-    public function getMainLayout() {
+    public function getMainLayout()
+    {
         $layouts = array_values($this->structure);
         return array_shift($layouts);
     }
-    
-    public function generate_pdf($view, $orientation="landscape", $relative_path="", $extra_data=[], $module = false, $content_html = false) {
+
+    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false)
+    {
 
         $this->load->library('parser');
 
-        $physicalDir = __DIR__ ."/../../uploads";
+        $physicalDir = __DIR__ . "/../../uploads";
         $filename = date('Ymd-H-i-s');
         $pdfFile = "{$physicalDir}/{$filename}.pdf";
 
@@ -58,33 +65,43 @@ class Layout extends CI_Model {
         if ($content_html === true) {
             ob_start();
             extract($extra_data);
-            eval( '?>' . $view );
+            eval('?>' . $view);
             //$content = $this->parser->parse_string($view, $extra_data, true);
-            
+
             $content = ob_get_clean();
             //die($content);
         } else {
-            if (!$module 
-                    || file_exists(FCPATH . "application/views_adminlte/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php" 
-                    || file_exists(FCPATH . "application/views_metronic/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php"))) {
-
+            if (
+                !$module
+                || file_exists(FCPATH . "application/views_adminlte/custom/{$module}/{$relative_path}{$view}.php"
+                    || file_exists(FCPATH . "application/views_metronic/custom/{$module}/{$relative_path}{$view}.php"))
+            ) {
                 if ($module) {
-                    $relative_path = $module.'/'.$relative_path;
+                    $relative_path = $module . '/' . $relative_path;
+                }
+                $content = $this->parser->parse("custom/{$relative_path}{$view}", $extra_data, true);
+            } elseif (
+                !$module
+                || file_exists(FCPATH . "application/views_adminlte/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php"
+                    || file_exists(FCPATH . "application/views_metronic/pages/layouts/custom_views/{$module}/{$relative_path}{$view}.php"))
+
+            ) {
+                if ($module) {
+                    $relative_path = $module . '/' . $relative_path;
                 }
                 //die("application/views_adminlte/pages/layouts/custom_views/{$module}/{$relative_path}{$view}");
                 $content = $this->parser->parse("pages/layouts/custom_views/{$relative_path}{$view}", $extra_data, true);
             } else {
 
-                $content = $this->load->module_view($module."/views/{$relative_path}", $view, $extra_data, true);
-
-            }  
+                $content = $this->load->module_view($module . "/views/{$relative_path}", $view, $extra_data, true);
+            }
         }
-              
+
 
         if ($this->input->get('html')) {
             die($content);
         }
-        
+
         // Create a temporary file with the view html
         if (!is_dir($physicalDir)) {
             mkdir($physicalDir, 0755, true);
@@ -100,7 +117,6 @@ class Layout extends CI_Model {
 
 
         return $pdfFile;
-
     }
 
 
@@ -135,15 +151,13 @@ class Layout extends CI_Model {
                 $thisSubboxes = [];
                 $index = 0;
                 foreach ($box['subboxes'] as $subboxId) {
-                    $thisSubboxes[$myKey.'-'.$index++] = $lboxes[$subboxId];
+                    $thisSubboxes[$myKey . '-' . $index++] = $lboxes[$subboxId];
                 }
 
                 $boxes[$myKey]['subboxes'] = $thisSubboxes;
             }
-
         }
 
         return $boxes;
     }
-
 }
