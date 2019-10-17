@@ -237,7 +237,68 @@ class Firegui extends MY_Controller
     // }
     public function get_client_version()
     {
-        echo VERSION;
+        $check = $this->db->where('meta_data_key', 'db_version')->get('meta_data')->row_array();
+        if ($check) {
+            echo VERSION;
+        } else {
+            echo VERSION;
+        }
+    }
+
+    public function executeMigrations($module_identifier, $old_version, $new_version)
+    {
+        $migration_dir = FCPATH . "application/modules/$module_identifier/migrations";
+        if (file_exists($migration_dir)) {
+            $files = scandir($migration_dir);
+
+            foreach ($files as $file) {
+                if ($file == 'update_php_code.php') {
+                    // Check if exist an update_db file to execute update queries
+                    include("$migration_dir/$file");
+
+                    // Sort array from oldest version to newest
+                    uksort($updates, 'my_version_compare');
+                    //debug($updates, true);
+
+                    foreach ($updates as $key => $value) {
+                        $version_compare_old = version_compare($key, $old_version);
+                        if ($version_compare_old) { //1 se old è < di key
+                            foreach ($value as $key_type => $code) {
+                                if ($key_type == 'eval') {
+                                    eval($code);
+                                } elseif ($key_type == 'include') {
+                                    if (is_array($code)) {
+                                        foreach ($code as $file_to_include) {
+                                            $file_migration = "$migration_dir/$file_to_include";
+                                            if (file_exists($file_migration)) {
+                                                include($file_migration);
+                                            } else {
+                                                log_message('error', "Migration file {$file_migration} missing!");
+                                            }
+                                        }
+                                    } else {
+                                        $file_migration = FCPATH . 'application/migrations/' . $code;
+
+                                        if (file_exists($file_migration)) {
+                                            include($file_migration);
+                                        } else {
+                                            log_message('error', "Migration file {$file_migration} missing!");
+                                        }
+                                    }
+                                }
+                            }
+                        } else { //0 se uguale, -1 se old > key
+                            //Vuol dire che gli ho già eseguiti, quindi skippo
+                            echo ("$key version already run.");
+                            continue;
+                        }
+                    }
+                }
+            }
+            die('ok');
+        } else {
+            die('ok');
+        }
     }
 }
 
