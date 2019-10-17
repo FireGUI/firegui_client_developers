@@ -8,7 +8,8 @@ class PHPExcel_Cell_MyColumnValueBinder extends PHPExcel_Cell_DefaultValueBinder
 {
     protected $stringColumns = [];
 
-    public function __construct(array $stringColumnList = []) {
+    public function __construct(array $stringColumnList = [])
+    {
         // Accept a list of columns that will always be set as strings
         $this->stringColumns = $stringColumnList;
     }
@@ -26,65 +27,67 @@ class PHPExcel_Cell_MyColumnValueBinder extends PHPExcel_Cell_DefaultValueBinder
     }
 }
 
-class Export extends MY_Controller {
-    
+class Export extends MY_Controller
+{
+
     function __construct()
     {
-        parent :: __construct();
+        parent::__construct();
 
         // Qualunque chiamata alle apilib da qua dentro è considerata una
         // chiamata in modalità CRM_FORM
         $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
     }
-    
-    private function prepareData($grid_id = null, $value_id = null) {
+
+    private function prepareData($grid_id = null, $value_id = null)
+    {
         //prendo tutti i dati della grid (filtri compresi) e li metto in un array associativo, pronto per essere esportato
         $grid = $this->datab->get_grid($grid_id);
-        
+
         $grid_data = $this->datab->get_grid_data($grid, $value_id, '', NULL, 0, null);
-                            //$this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
+        //$this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
         $out_array = array();
         foreach ($grid_data as $dato) {
             //debug($dato,true);
             $tr = array();
-            
+
             foreach ($grid['grids_fields'] as $field) {
                 $tr[] = trim(strip_tags($this->datab->build_grid_cell($field, $dato, false)));
             }
 
             $out_array[] = $tr;
         }
-        
+
         $columns_names = [];
         //Rimpiazzo i nomi delle colonne
         foreach ($grid['grids_fields'] as $key => $field) {
-            $columns_names[$key.$field['fields_name']] = $field['grids_fields_column_name'];
-            
+            $columns_names[$key . $field['fields_name']] = $field['grids_fields_column_name'];
         }
-        
+
         //debug($columns_names,true);
-        array_walk($out_array, function($value,$key) use ($columns_names, &$out_array){
-//            debug($columns_names);
-//            debug($value);
+        array_walk($out_array, function ($value, $key) use ($columns_names, &$out_array) {
+            //            debug($columns_names);
+            //            debug($value);
             $out_array[$key] = array_combine($columns_names, $value);
         });
-//        foreach ($data as $key1 => $row) {
-//            foreach ($row as $key => $val) {
-//                if (is_array($val)) {
-//                    $data[$key1][$key] = implode(';', $val);
-//                }
-//            }
-//        }
+        //        foreach ($data as $key1 => $row) {
+        //            foreach ($row as $key => $val) {
+        //                if (is_array($val)) {
+        //                    $data[$key1][$key] = implode(';', $val);
+        //                }
+        //            }
+        //        }
         //debug($out_array,true);
         //debug($columns_names,true);
         return $out_array;
     }
-    
-    public function download_csv($grid_id, $value_id = null) {
+
+    public function download_csv($grid_id, $value_id = null)
+    {
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
-        
+
         $data = $this->prepareData($grid_id, $value_id);
         $csv = $this->arrayToCsv($data, ',');
         header("Content-Type: text/csv");
@@ -92,9 +95,9 @@ class Export extends MY_Controller {
         header("Content-disposition: attachment; filename=\"grid{$grid_id}.csv\"");
         echo $csv;
         exit;
-        
     }
-    public function download_excel($grid_id, $value_id = null) {
+    public function download_excel($grid_id, $value_id = null)
+    {
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
@@ -102,65 +105,66 @@ class Export extends MY_Controller {
 
         $grid = $this->datab->get_grid($grid_id);
         $fields = $grid['grids_fields'];
-        
-        
+
+
         $data = $this->prepareData($grid_id, $value_id);
-        
+
         // Instantiate our custom binder, with a list of columns, and tell PHPExcel to use it
         //PHPExcel_Cell::setValueBinder(new PHPExcel_Cell_MyColumnValueBinder([]));
 
         $objPHPExcel = new PHPExcel();
-        
-        $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '','A1');
-        
+
+        $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '', 'A1');
+
         //Imposto le colonne numeriche (per permettere a formule e altro di funzionare correttamente)
         foreach ($fields as $key => $field) {
             //if (in_array(strtoupper($field['fields_type']), ['FLOAT','DOUBLE','INT','INTEGER']) ) {
-                $numeric_cells[$key] = $field['grids_fields_column_name'];
+            $numeric_cells[$key] = $field['grids_fields_column_name'];
             //}
         }
         //Per gli eval, devo passarmi tutti i dati per capire se qualche cella è anch'essa un numero (ricordarsi che number format torna una stringa e non un numero, quindi crea problemi con le formule excell dopo...)
-        foreach (array_slice($data,0,10) as $key => $dato) {
+        foreach (array_slice($data, 0, 10) as $key => $dato) {
             foreach ($dato as $column => $value) {
-                
-                if (!in_array($column,$numeric_cells)) { //Se già non è tra le numeric cells, skippo...
+
+                if (!in_array($column, $numeric_cells)) { //Se già non è tra le numeric cells, skippo...
                     continue;
                 }
-                
+
                 //Provo a castarlo a numero, se no, tolgo questa colonna tra quelle numeriche
-                $possible_number = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND|FILTER_FLAG_ALLOW_FRACTION); 
+                $possible_number = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION);
 
                 if ($possible_number === '') {
 
                     $numeric_cells = array_diff($numeric_cells, [$column]);
-                } elseif ((float)$possible_number !== (float)$value) {
+                } elseif ((float) $possible_number !== (float) $value) {
                     $numeric_cells = array_diff($numeric_cells, [$column]);
                 }
-            }     
-            
+            }
         }
         //die('test');
         foreach ($data as $key => $dato) {
-//            foreach ($numeric_cells as $col_pos => $numeric_cell) {
-//                $data[$key][$numeric_cell] = str_replace('.', ',', $dato[$numeric_cell]);
-//            }
+            //            foreach ($numeric_cells as $col_pos => $numeric_cell) {
+            //                $data[$key][$numeric_cell] = str_replace('.', ',', $dato[$numeric_cell]);
+            //            }
             foreach ($numeric_cells as $col_pos => $numeric_cell) {
-                $data[$key][$numeric_cell] = (float) str_ireplace('.', '', filter_var($dato[$numeric_cell], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND|FILTER_FLAG_ALLOW_FRACTION));
+                //debug($dato[$numeric_cell]);
+                //$data[$key][$numeric_cell] = (float) str_ireplace('.', '', filter_var($dato[$numeric_cell], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION));
+                $data[$key][$numeric_cell] = (float) tofloat($dato[$numeric_cell]);
                 //var_dump($data[$key][$numeric_cell]);
             }
         }
-        
+        //debug($data, true);
         //debug($numeric_cells,true);
-        
-//        foreach ($numeric_cells as $col_pos => $numeric_cell) {
-//            $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
-//            for ($i=2;$i<=count($data)+1;$i++) {
-                //debug($col_letter.$i);
-//                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_000);
-//                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->setQuotePrefix(false);
-//            }
-            
-//        }
+
+        //        foreach ($numeric_cells as $col_pos => $numeric_cell) {
+        //            $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
+        //            for ($i=2;$i<=count($data)+1;$i++) {
+        //debug($col_letter.$i);
+        //                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_000);
+        //                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->setQuotePrefix(false);
+        //            }
+
+        //        }
         //debug($data,true);
         //debug(var_dump($data),true);
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
@@ -179,31 +183,31 @@ class Export extends MY_Controller {
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->setPreCalculateFormulas(true);
-        
+
         $objWriter->save('php://output');
-        
     }
-    
-    
-    private function arrayToCsv(array $data, $delim = ",", $enclosure = '"') {
+
+
+    private function arrayToCsv(array $data, $delim = ",", $enclosure = '"')
+    {
         if (!$data) {
             return '';
         }
 
         // Apri un nuovo file, mi serve per avere un handler per usare
         // nativamente fputcsv che fa gli escape corretti
-        $tmp = tmpfile() OR show_error('Impossibile creare file temporaneo');
+        $tmp = tmpfile() or show_error('Impossibile creare file temporaneo');
 
         $keys = array_keys(array_values($data)[0]);
         fputcsv($tmp, $keys, $delim, $enclosure);
 
-        
-        
+
+
         foreach ($data as $row) {
-//            debug($row);
-//            debug($delim);
-//            debug($enclosure);
-            
+            //            debug($row);
+            //            debug($delim);
+            //            debug($enclosure);
+
             if (fputcsv($tmp, $row, $delim, $enclosure) === false) {
                 show_error('Impossibile scrivere sul file temporaneo');
             }
@@ -226,7 +230,6 @@ class Export extends MY_Controller {
         fclose($tmp);   // Rilascia risorsa
         return $filedata;
     }
-
 }
 
 
