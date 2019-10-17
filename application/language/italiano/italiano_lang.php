@@ -43,3 +43,5 @@ $lang['Log CRM'] = 'Log CRM';
 $lang['moduli'] = 'moduli';
 $lang['accesso'] = 'accesso';
 $lang['gruppo'] = 'gruppo';
+$lang['Password dimenticata?'] = 'Password dimenticata?';
+$lang['Inserisci il tuo indirizzo e-mail per resettare la password.'] = 'Inserisci il tuo indirizzo e-mail per resettare la password.';

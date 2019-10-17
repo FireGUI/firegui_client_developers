@@ -2177,7 +2177,8 @@ class Datab extends CI_Model
      */
     public function loadCustomView($viewName, $data = [], $return = false)
     {
-        return $this->load->view("pages/layouts/custom_views/{$viewName}", $data, $return);
+        //return $this->load->view("pages/layouts/custom_views/{$viewName}", $data, $return);
+        return $this->load->view("custom/{$viewName}", $data, $return);
     }
 
     /**
