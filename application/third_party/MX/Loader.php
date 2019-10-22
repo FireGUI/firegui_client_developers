@@ -116,9 +116,11 @@ class MX_Loader extends CI_Loader
 
 		if ($path === FALSE) {
 			//201910170932 - Check if helper exists eventually in a folder called "custom"
-			if (file_exists(APPPATH . "helpers/custom/{$helper}.php")) {
+			if (file_exists(APPPATH . "helpers/custom/{$helper}_helper.php")) {
 				$helper = "custom/$helper";
 			}
+			//echo ($helper);
+
 			return parent::helper($helper);
 		} else {
 			Modules::load_file($_helper, $path);
