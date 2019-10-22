@@ -4,7 +4,7 @@
  * @param {jQuery} grid
  * @returns {CrmInlineTable}
  */
-function CrmInlineTable(grid) {
+function CrmInlineTable(grid) {
     this.grid = grid;
     this.nEditing = null;
 }
@@ -30,7 +30,7 @@ CrmInlineTable.prototype.getEntityName = function () {
  * @returns {null}
  */
 CrmInlineTable.prototype.registerEvents = function () {
-    
+
     var inlineTable = this;
     var gridID = this.grid.data('grid-id');
 
@@ -68,11 +68,11 @@ CrmInlineTable.prototype.registerEvents = function () {
     // Delete record
     this.grid.on('click', '.js_delete', function (e) {
         e.preventDefault();
-        
+
         if (confirm("Vuoi davvero eliminare la riga?") == false) {
             return;
         }
-        
+
         var nRow = $(this).parents('tr')[0];
         inlineTable.deleteRow(nRow);
     });
@@ -121,7 +121,7 @@ CrmInlineTable.prototype.editRow = function (nRow) {
     var jqThs = $('tr th', datatable);
 
     for (var i = 0; i < max - 2; i++) {
-        jqTds[i].innerHTML = '<input type="text" class="form-control input-small" name="' + $(jqThs[i]).attr('data-name') + '" value="' + (aData[i] ? aData[i]: '') + '">';
+        jqTds[i].innerHTML = '<input type="text" class="form-control input-small" name="' + $(jqThs[i]).attr('data-name') + '" value="' + (aData[i] ? aData[i] : '') + '">';
     }
 
     jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Salva</a>';
@@ -208,7 +208,7 @@ CrmInlineTable.prototype.createRow = function () {
  * @returns {undefined}
  */
 CrmInlineTable.prototype.deleteRow = function (nRow) {
-    
+
     var datatable = this.getDatatableHandler();
     var aData = datatable.fnGetData(nRow);
 
@@ -226,16 +226,16 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 
 
 
-function initTable(grid) {
+function initTableAjax(grid) {
     var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
-    
-    
-    
+
+
+
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
-    console.log('limite:'+defaultLimit);
+    console.log('limite:' + defaultLimit);
     var aoColumns = [];
     $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;
@@ -246,7 +246,7 @@ function initTable(grid) {
         aoColumns.push(coldef);
     });
 
-    
+
 
     var datatable = oDataTable.dataTable({
         stateSave: true,
@@ -259,7 +259,7 @@ function initTable(grid) {
         bProcessing: true,
         sServerMethod: "POST",
         bServerSide: true,
-        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID+'?'+getParameters,
+        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters,
         aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
@@ -274,17 +274,18 @@ function initTable(grid) {
 
 /** Init ajax datatables **/
 function startAjaxTables() {
-    
+
     $('.js_ajax_datatable:not(.dataTable)').each(function () {
+
         var gridID = $(this).attr('data-grid-id');
         var grid = $(this);
-        initTable(grid).on('init', function (e) {
+        initTableAjax(grid).on('init', function (e) {
             var wrapper = e.target.parent;
             $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
             $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
             $('.dataTables_processing', wrapper).addClass("col-md-6"); // modify table per page dropdown
 
-            $('.dataTables_info', wrapper).css({"margin-top": '20px', position: 'static'});
+            $('.dataTables_info', wrapper).css({ "margin-top": '20px', position: 'static' });
             $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
             $('.dataTables_length', wrapper).parent().parent().height(0);
         });
@@ -298,7 +299,7 @@ function startAjaxTables() {
         var dtInline = new CrmInlineTable(grid);
         dtInline.registerEvents();
     });
-    
-    
+
+
 }
 
