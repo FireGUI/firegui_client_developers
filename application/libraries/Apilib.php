@@ -2090,7 +2090,7 @@ class Apilib
         $this->load->library('upload', [
             'upload_path' => FCPATH . 'uploads/',
             'allowed_types' => '*',
-            'max_size' => 50000,
+            'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
             'encrypt_name' => true
         ]);
 
