@@ -250,7 +250,8 @@ function initTableAjax(grid) {
 
 
     var datatable = oDataTable.dataTable({
-        stateSave: false,//Si potrà rimettere false una volta aggiornati tutti i client!
+        stateSave: true,
+        stateDuration: 60 * 60, //valido per un'ora
         bSort: bEnableOrder,
         //sScrollX: "100%",
 
