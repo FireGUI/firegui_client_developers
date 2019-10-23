@@ -1,3 +1,3 @@
-Changelog version 1.6.9
+Changelog version 1.6.9.1
  
-Definetively solved datatable ajax by changing parameter stateSave from true to false.
+Fix datatable ajax
