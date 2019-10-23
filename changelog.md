@@ -1,3 +1,3 @@
-Changelog version 1.6.8
+Changelog version 1.6.9
  
-Restore initTableAjax new function
+Definetively solved datatable ajax by changing parameter stateSave from true to false.

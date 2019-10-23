@@ -227,6 +227,7 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 
 
 function initTableAjax(grid) {
+
     var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
@@ -235,7 +236,7 @@ function initTableAjax(grid) {
 
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
-    console.log('limite:' + defaultLimit);
+    //console.log('limite2:' + defaultLimit);
     var aoColumns = [];
     $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;
@@ -249,7 +250,7 @@ function initTableAjax(grid) {
 
 
     var datatable = oDataTable.dataTable({
-        stateSave: true,
+        stateSave: false,//Si potrà rimettere false una volta aggiornati tutti i client!
         bSort: bEnableOrder,
         //sScrollX: "100%",
 
@@ -267,7 +268,7 @@ function initTableAjax(grid) {
             sUrl: base_url_scripts + "script/datatable.transl.json"
         }
     });
-
+    console.log(datatable);
     return datatable;
 }
 
