@@ -226,7 +226,7 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 
 
 
-function initTable(grid) {
+function initTableAjax(grid) {
     var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
@@ -278,7 +278,7 @@ function startAjaxTables() {
     $('.js_ajax_datatable:not(.dataTable)').each(function () {
         var gridID = $(this).attr('data-grid-id');
         var grid = $(this);
-        initTable(grid).on('init', function (e) {
+        initTableAjax(grid).on('init', function (e) {
             var wrapper = e.target.parent;
             $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
             $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
