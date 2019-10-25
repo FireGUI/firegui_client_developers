@@ -103,6 +103,11 @@ class Get_ajax extends MY_Controller
             $value_id = $this->input->post('ids');
         }
 
+        if (!$this->datab->get_form($form_id)) {
+            $this->load->view("box/errors/missing_form", ['form_id' => $form_id]);
+            return;
+        }
+
         $viewData = array(
             'size' => $modalSize,
             'value_id' => $value_id,
