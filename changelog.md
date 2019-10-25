@@ -1,3 +1,3 @@
-Changelog version 1.6.9.1
+Changelog version 1.6.9.2
  
-Fix datatable ajax
+Restored stateSave true on datatable
