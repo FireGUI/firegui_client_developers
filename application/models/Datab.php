@@ -312,7 +312,8 @@ class Datab extends CI_Model
         $form_id or die('ERRORE: Form ID mancante');
         $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
         if (!$form) {
-            die(sprintf('Form %s non esistente', $form));
+            return false;
+            //die(sprintf('Form %s non esistente', $form));
         }
 
         $fields = $this->db
@@ -2780,13 +2781,16 @@ class Datab extends CI_Model
             case "form":
                 $form_id = $contentRef;
                 $form = $this->get_form($form_id, $value_id);
+                if ($form) {
+                    // Controllo i permessi per questa grid
+                    if (!$this->can_write_entity($form['forms']['forms_entity_id'])) {
+                        return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+                    }
 
-                // Controllo i permessi per questa grid
-                if (!$this->can_write_entity($form['forms']['forms_entity_id'])) {
-                    return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+                    return $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", array('form' => $form, 'ref_id' => $contentRef, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
+                } else {
+                    return $this->load->view("box/errors/missing_form", ['form_id' => $form_id], true);
                 }
-
-                return $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", array('form' => $form, 'ref_id' => $contentRef, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
 
             case "calendar":
                 $data = $this->get_calendar($contentRef);

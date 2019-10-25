@@ -1,3 +1,3 @@
-Changelog version 1.6.9.4
+Changelog version 1.6.9.5
  
-Fixed function buildSelect with depth > 2
+Added box form missing. Now the layout will be loaded without triggering errors, but showing an "ops!" box.
