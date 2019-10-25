@@ -609,7 +609,7 @@ class Crmentity extends CI_Model
             foreach ($entityFullData['visible_fields'] as $campo) {
 
                 // Aggiungo il campo alla select
-                $visible_fields[] = sprintf('%s.%s', $entityName, $campo['fields_name']);
+                $visible_fields[] = sprintf('%s.%s', $campo['entity_name'], $campo['fields_name']);
 
                 // Ciclo i campi uno ad uno e se:
                 // -- sono campi semplici non faccio altro che aggiungere il nome
@@ -640,7 +640,7 @@ class Crmentity extends CI_Model
         // duplicati
         //array_unshift($visible_fields, sprintf('%s_id', $entityName));
 
-
+        //debug(array_unique($visible_fields));
 
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
         $this->db->select(array_unique($visible_fields));
@@ -1039,6 +1039,7 @@ class Crmentity extends CI_Model
                 $depth--;
                 foreach ($this->_visible_fields[$entity] as $field) {
                     if (!empty($field['fields_ref'])) {
+                        //debug($this->getVisibleFields($field['fields_ref'], $depth));
                         $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
                         //debug($this->_visible_fields[$entity], true);
                     }
@@ -1046,7 +1047,7 @@ class Crmentity extends CI_Model
                 }
             }
         }
-
+        //debug($this->_visible_fields[$entity]);
         return $this->_visible_fields[$entity];
     }
 

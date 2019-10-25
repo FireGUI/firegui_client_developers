@@ -1,3 +1,3 @@
-Changelog version 1.6.9.3
+Changelog version 1.6.9.4
  
-Restored stateSave true on datatable
+Fixed function buildSelect with depth > 2
