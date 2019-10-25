@@ -2,7 +2,7 @@
 <a href="<?php echo base_url('main/dashboard'); ?>" class="logo">
 
 
-    <?php if (empty($this->settings['settings_company_logo'])): ?>
+    <?php if (empty($this->settings['settings_company_logo'])) : ?>
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini">
             <?php echo empty($this->settings['settings_company_short_name']) ? 'Companny' : $this->settings['settings_company_short_name']; ?>
@@ -14,43 +14,43 @@
 
         </span>
 
-    <?php else: ?>
+    <?php else : ?>
         <img class="logo-default img-responsive" src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" style="height:100%;margin: 0 auto">
     <?php endif; ?>
 
 </a>
 <style>
-    <?php if(defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)): ?>
-        .navbar-static-top, .logo, .user-header {
-            background-color: <?php echo TOPBAR_COLOR; ?> !important;
-        }
-    
-        <?php if(defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)): ?>
-        .sidebar-toggle:hover {
-            background-color: <?php echo TOPBAR_HOVER; ?> !important;
-        }
-        <?php endif; ?>
-    
-        .user-header {
-            background-color: <?php echo TOPBAR_COLOR; ?> !important;
-        }
-    <?php endif; ?>
-    
-    <?php if(defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)): ?>
-        .skin-blue .sidebar-menu>li:hover>a, .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li.menu-open>a {
-            color: #fff;
-            background: <?php echo SIDEBAR_ELEMENT; ?>;
-        }
+    <?php if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) : ?>.navbar-static-top,
+    .logo,
+    .user-header {
+        background-color: <?php echo TOPBAR_COLOR; ?> !important;
+    }
+
+    <?php if (defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)) : ?>.sidebar-toggle:hover {
+        background-color: <?php echo TOPBAR_HOVER; ?> !important;
+    }
+
+    <?php endif; ?>.user-header {
+        background-color: <?php echo TOPBAR_COLOR; ?> !important;
+    }
+
+    <?php endif; ?><?php if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) : ?>.skin-blue .sidebar-menu>li:hover>a,
+    .skin-blue .sidebar-menu>li.active>a,
+    .skin-blue .sidebar-menu>li.menu-open>a {
+        color: #fff;
+        background: <?php echo SIDEBAR_ELEMENT; ?>;
+    }
+
     <?php endif; ?>
 </style>
-<nav class="navbar navbar-static-top" >
+<nav class="navbar navbar-static-top">
 
     <!-- Sidebar toggle button-->
-    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button" >
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
 
     </a>
 
-    <div class="navbar-custom-menu" >
+    <div class="navbar-custom-menu">
 
 
         <ul class="nav navbar-nav">
@@ -58,10 +58,9 @@
             <?php $this->load->view('box/notification_dropdown_list'); ?>
             <?php $this->hook->message_dropdown(); ?>
             <!-- Notifications: style can be found in dropdown.less -->
-            <?php if (false): ?>
+            <?php if (false) : ?>
                 <li class="dropdown notifications-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="far fa-bell"></i> <span
-                                class="label label-warning">10</span> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="far fa-bell"></i> <span class="label label-warning">10</span> </a>
                     <ul class="dropdown-menu">
                         <li class="header">You have 10 notifications</li>
                         <li>
@@ -98,18 +97,12 @@
                     $_img = ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) ? base_url_admin("uploads/" . $this->auth->get(LOGIN_IMG_FIELD)) : base_url_admin("imgn/1/100/100/uploads/" . $this->auth->get(LOGIN_IMG_FIELD));
                     ?>
 
-                    <img
-                            src="<?php echo($this->auth->get(LOGIN_IMG_FIELD) ? $_img : base_url_admin('images/user.png')); ?>"
-                            class="user-image"
-                            alt="User Image"> <span
-                            class="hidden-xs"><?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?></span>
+                    <img src="<?php echo ($this->auth->get(LOGIN_IMG_FIELD) ? $_img : base_url_admin('images/user.png')); ?>" class="user-image" alt="User Image"> <span class="hidden-xs"><?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?></span>
                     <i class="fas fa-angle-down"></i> </a>
                 <ul class="dropdown-menu menu">
                     <!-- User image -->
                     <li class="user-header">
-                        <img src="<?php echo($this->auth->get(LOGIN_IMG_FIELD) ? $_img : base_url_admin('images/user.png')); ?>"
-                             class="img-circle"
-                             alt="User Image">
+                        <img src="<?php echo ($this->auth->get(LOGIN_IMG_FIELD) ? $_img : base_url_admin('images/user.png')); ?>" class="img-circle" alt="User Image">
                         <p>
                             <?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?>
                             <small><?php echo $this->auth->get('users_email'); ?></small>
@@ -122,15 +115,14 @@
                     <?php $profile_menu_list = $this->datab->get_menu('profile'); ?>
 
 
-                    <?php if (!empty($profile_menu_list)): ?>
+                    <?php if (!empty($profile_menu_list)) : ?>
 
-                        <?php foreach ($profile_menu_list as $menu): ?>
+                        <?php foreach ($profile_menu_list as $menu) : ?>
                             <li class="user-body">
                                 <div class="row">
                                     <div class="col-xs-12 text-center">
-                                        <a href="<?php echo $this->datab->generate_menu_link($menu); ?>" <?php echo ($menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?>
-                                           class="<?php echo ($menu['menu_modal'] == DB_BOOL_TRUE) ? 'js_open_modal' : ''; ?>">
-                                            <i class="<?php echo($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fas fa-list') ?>"></i>
+                                        <a href="<?php echo $this->datab->generate_menu_link($menu); ?>" <?php echo ($menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?> class="<?php echo ($menu['menu_modal'] == DB_BOOL_TRUE) ? 'js_open_modal' : ''; ?>">
+                                            <i class="<?php echo ($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fas fa-list') ?>"></i>
                                             <?php echo ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label'])); ?>
                                         </a>
                                     </div>
@@ -141,18 +133,18 @@
                     <?php endif; ?>
 
 
-                    <?php if ($this->datab->is_admin()): ?>
+                    <?php if ($this->datab->is_admin()) : ?>
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
                                     <a href="<?php echo base_url('main/permissions'); ?>"><i class="fas fa-lock"></i>
-                                        Permessi</a>
+                                        Permissions</a>
                                 </div>
                             </div>
 
 
                         </li>
-                        
+
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
@@ -174,12 +166,10 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <?php if ($this->apilib->isCacheEnabled()): ?>
-                                        <a href="<?php echo base_url('main/cache_control/off'); ?>"><i
-                                                    class="fas fa-cogs"></i> Disabilita cache</a>
-                                    <?php else: ?>
-                                        <a href="<?php echo base_url('main/cache_control/on'); ?>"><i
-                                                    class="fas fa-cogs"></i> Ri-abilita cache</a>
+                                    <?php if ($this->apilib->isCacheEnabled()) : ?>
+                                        <a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="fas fa-cogs"></i> Disable cache</a>
+                                    <?php else : ?>
+                                        <a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="fas fa-cogs"></i> Enable cache</a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -188,8 +178,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i
-                                                class="fas fa-trash-alt"></i> Pulisci cache</a>
+                                    <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fas fa-trash-alt"></i> Clean cache</a>
                                 </div>
                             </div>
                         </li>
@@ -199,11 +188,11 @@
                     <li class="user-footer">
                         <div class="pull-left">
                             <?php
-                                $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '".DB_BOOL_TRUE."' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '".LOGIN_ENTITY."')");
-                                
-                                if ($form_user_default->num_rows() != 0) :
-                            ?>
-                            <a href="<?php echo base_url("get_ajax/modal_form/".$form_user_default->row()->forms_id."/".$this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal">Profile</a>
+                            $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
+
+                            if ($form_user_default->num_rows() != 0) :
+                                ?>
+                                <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal">Profile</a>
                             <?php endif; ?>
                         </div>
                         <div class="pull-right">
