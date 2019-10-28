@@ -1,1 +1,1 @@
-<a href="#" class="js_edit">Modifica</a>
+<a href="#" class="js_edit"><?php e('Modifica'); ?></a>
