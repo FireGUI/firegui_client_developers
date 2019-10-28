@@ -63,7 +63,7 @@ define('LOGIN_IMG_FIELD',       'users_avatar');
 define('LANG_ENTITY',       'languages');
 define('LANG_CODE_FIELD',   'languages_code');
 define('LANG_NAME_FIELD',   'languages_name');
-define('LANG_DEFAULT_FIELD','languages_default');
+define('LANG_DEFAULT_FIELD', 'languages_default');
 
 define('MIN_SEARCH_CHARS', 3);
 //define('STRICT_SEARCH', false); //TODO: per decidere le logiche con cui combinare AND e OR
@@ -76,9 +76,9 @@ define('API_MANAGER_CRM_PASSPARTOUT', 'ApiP4ss!');
 /* ============
  * Colori Custom
  * ============ */
-define('TOPBAR_COLOR', '#b81f1e');
+define('TOPBAR_COLOR', '#ff4b01');
 define('TOPBAR_HOVER', '#851717');
-//define('LOGIN_COLOR', '#b81f1e');
+define('LOGIN_COLOR', '#ff4b01');
 /*
  * ============================================================
  * Base URL ADMIN 
@@ -86,7 +86,8 @@ define('TOPBAR_HOVER', '#851717');
  * Funzione usata dal sito per accedere all'indirizzo base senza eventuali
  * suffissi. Può variare da piattaforma a piattaforma
  */
-function base_url_admin($uri = '') {
+function base_url_admin($uri = '')
+{
     if (function_exists('base_url')) {
         return base_url($uri);
     } else {
@@ -101,14 +102,17 @@ function base_url_admin($uri = '') {
  * Funzioni usate dal template per accedere all'indirizzo base senza eventuali
  * suffissi. Può variare da piattaforma a piattaforma
  */
-function base_url_template($uri = '') {
-    return base_url_admin($uri);    
+function base_url_template($uri = '')
+{
+    return base_url_admin($uri);
 }
-function base_url_scripts($uri = '') {
-    return base_url_admin($uri);    
+function base_url_scripts($uri = '')
+{
+    return base_url_admin($uri);
 }
-function base_url_uploads($uri = '') {
-    return base_url_admin($uri);    
+function base_url_uploads($uri = '')
+{
+    return base_url_admin($uri);
 }
 
 
@@ -132,4 +136,3 @@ $config = array(
         'Content-Transfer-Encoding' => '8bit',
     )
 );
-
