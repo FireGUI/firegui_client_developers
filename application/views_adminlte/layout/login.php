@@ -28,7 +28,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/iCheck/square/blue.css?v={$this->config->item('version')}"); ?>" />
 
-
+        <link rel="shortcut icon" href="/favicon.ico" />
 
         <!-- Google Font -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -39,7 +39,11 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 background: <?php echo LOGIN_COLOR; ?>;
             }
 
-            <?php endif; ?>
+            <?php if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) : ?>.logo h2 {
+                color: <?php echo LOGIN_TITLE_COLOR; ?>
+            }
+
+            <?php endif; ?><?php endif; ?>
         </style>
     </head>
 
@@ -51,7 +55,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
             <div class="logo">
                 <div class="text-center">
                     <?php if ($this->settings === array()) : ?>
-                        <h2 class="login-logo">Your Company</h2>
+                        <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
                     <?php elseif ($this->settings['settings_company_logo']) : ?>
                         <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
                     <?php else : ?>
@@ -65,11 +69,11 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
                 <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
                     <div class="form-group has-feedback">
-                        <input type="email" class="form-control" placeholder="Indirizzo e-mail" name="users_users_email" />
+                        <input type="email" class="form-control" placeholder="<?php e('Indirizzo e-mail'); ?>" name="users_users_email" />
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                        <input type="password" class="form-control" placeholder="Password" name="users_users_password">
+                        <input type="password" class="form-control" placeholder="<?php e('Password'); ?>" name="users_users_password">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
 
@@ -83,18 +87,18 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                         <label class="control-label"><?php e('Disconnetti dopo'); ?></label>
                         <select name="timeout">
                             <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
-                            <option value="5" class="form-control input-sm select2">5 minuti</option>
-                            <option value="10" class="form-control input-sm select2">10 minuti</option>
-                            <option value="30" class="form-control input-sm select2">30 minuti</option>
-                            <option value="60" class="form-control input-sm select2">1 ora</option>
-                            <option value="120" class="form-control input-sm select2">2 ore</option>
-                            <option value="240" class="form-control input-sm select2" selected="selected">4 ore</option>
-                            <option value="480" class="form-control input-sm select2">8 ore</option>
-                            <option value="720" class="form-control input-sm select2">12 ore</option>
-                            <option value="1440" class="form-control input-sm select2">1 giorno</option>
-                            <option value="10080" class="form-control input-sm select2">7 giorni</option>
-                            <option value="43200" class="form-control input-sm select2">1 mese</option>
-                            <option value="518400" class="form-control input-sm select2">Mai</option>
+                            <option value="5" class="form-control input-sm select2">5 <?php e('minuti'); ?></option>
+                            <option value="10" class="form-control input-sm select2">10 <?php e('minuti'); ?></option>
+                            <option value="30" class="form-control input-sm select2">30 <?php e('minuti'); ?></option>
+                            <option value="60" class="form-control input-sm select2">1 <?php e('ora'); ?></option>
+                            <option value="120" class="form-control input-sm select2">2 <?php e('ore'); ?></option>
+                            <option value="240" class="form-control input-sm select2" selected="selected">4 <?php e('ore'); ?></option>
+                            <option value="480" class="form-control input-sm select2">8 <?php e('ore'); ?></option>
+                            <option value="720" class="form-control input-sm select2">12 <?php e('ore'); ?></option>
+                            <option value="1440" class="form-control input-sm select2">1 <?php e('giorno'); ?></option>
+                            <option value="10080" class="form-control input-sm select2">7 <?php e('giorni'); ?></option>
+                            <option value="43200" class="form-control input-sm select2">1 <?php e('mese'); ?></option>
+                            <option value="518400" class="form-control input-sm select2"><?php e('Mai'); ?></option>
                         </select>
                     </div>
 
@@ -112,7 +116,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                             </div>
                             <!-- /.col -->
                             <div class="col-xs-4">
-                                <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                                <button type="submit" class="btn btn-primary btn-block btn-flat"><?php e('Accedi'); ?></button>
                             </div>
                             <!-- /.col -->
                         </div>

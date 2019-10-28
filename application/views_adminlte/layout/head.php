@@ -17,11 +17,6 @@ $tsuffix = 'CRM';
 <meta name="application-name" content="<?php echo $title; ?>" />
 <meta name="msapplication-TileColor" content="#FFFFFF" />
 
-
-
-
-
-
 <!-- CORE LEVEL STYLES -->
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v={$this->config->item('version')}"); ?>" />
@@ -59,10 +54,8 @@ $tsuffix = 'CRM';
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.css"); ?>" />
 
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>">
-</link>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>">
-</link>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>" />
 
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
@@ -82,6 +75,25 @@ $tsuffix = 'CRM';
     <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v={$this->config->item('version')}"); ?>" />
 <?php endif; ?>
 
+<link rel="shortcut icon" href="<?php echo base_url('/favicon.ico'); ?>" />
+
+<style>
+    .main-header .sidebar-toggle {
+        float: left;
+        background-color: transparent;
+        background-image: none;
+        padding: 15px 15px;
+        /* font-family: fontAwesome; */
+        font-family: "Font Awesome\ 5 Free";
+        /* cjr */
+    }
+
+    .main-header .sidebar-toggle:before {
+        content: "\f0c9";
+        font-weight: 900;
+        /* cjr */
+    }
+</style>
 
 <?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON) : ?>
 
@@ -115,9 +127,6 @@ $tsuffix = 'CRM';
     var base_url_scripts = <?php echo json_encode(base_url_scripts()); ?>;
     var base_url_uploads = <?php echo json_encode(base_url_uploads()); ?>;
 </script>
-
-
-
 
 <!-- HIGHCHARTS -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
