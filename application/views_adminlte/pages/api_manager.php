@@ -39,7 +39,7 @@
                   <td><?php echo ($token['api_manager_tokens_active'] == DB_BOOL_TRUE) ? 'Sì' : 'No'; ?></td>
                   <td>
                     <div class="action-list">
-                      <a href="<?php echo base_url("api_manager/permissions/{$token['api_manager_tokens_id']}"); ?>" class="btn btn-xs green js_open_modal">
+                      <a href="<?php echo base_url("api_manager/permissions/{$token['api_manager_tokens_id']}"); ?>" class="btn btn-xs btn-success js_open_modal">
                         <span class="fas fa-external-link-alt"></span>
                       </a>
                       <a href="<?php echo base_url('api_manager/delete_token/' . $token['api_manager_tokens_id']); ?>" data-confirm-text="Sei sicuro di voler eliminare questo record" class="btn btn-danger btn-xs js_confirm_button js_link_ajax " data-toggle="tooltip" title="Elimina">
@@ -89,7 +89,7 @@
               <div class="row">
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="control-label"><?php e('ms tra una richiesta e l\'altra'); ?></label>
+                    <label class="control-label"><?php e('ms tra le richieste'); ?></label>
                     <input type="text" name="api_manager_tokens_ms_between_requests" class="form-control" placeholder="1000" value="">
                   </div>
                 </div>

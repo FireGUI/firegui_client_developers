@@ -1,1 +1,1 @@
-<a href="#" class="js_delete">Elimina</a>
+<a href="#" class="js_delete"><?php e('Elimina'); ?></a>

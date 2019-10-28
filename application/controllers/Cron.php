@@ -145,7 +145,7 @@ class Cron extends MY_Controller
                 ->where("log_crm_time < now() - INTERVAL '1 month'", null, false)
                 ->delete('log_crm');
             $this->db
-                ->where("to_timestamp(last_activity)::date < now() - interval '30 day'", null, false)
+                ->where("to_timestamp(timestamp)::date < now() - interval '30 day'", null, false)
                 ->delete('ci_sessions');
         }
         // ============= SVUOTAMENTO LOGS VARI =============
@@ -173,6 +173,7 @@ class Cron extends MY_Controller
                 $this->cron_php_file($cron);
                 break;
             case 'php_code':
+            case 'custom_code':
                 $this->cron_php_code($cron);
                 break;
             default:

@@ -1,82 +1,82 @@
-<?php $is_administrator = (isset($dati['permissions']['permissions_admin']) AND $dati['permissions']['permissions_admin'] === DB_BOOL_TRUE); ?>
+<?php $is_administrator = (isset($dati['permissions']['permissions_admin']) and $dati['permissions']['permissions_admin'] === DB_BOOL_TRUE); ?>
 
-<?php if($dati['mode'] === 'user'): ?>
+<?php if ($dati['mode'] === 'user') : ?>
 
     <label class="col-md-3 control-label"><?php e("gruppo"); ?></label>
     <div class="col-md-9">
         <select name="permissions_group" class="form-control input-large js-group">
             <option value=""></option>
-            <?php foreach($dati['groups'] as $group): ?>
-                <option value="<?php echo $group; ?>" <?php if(isset($dati['permissions']['permissions_group']) && $dati['permissions']['permissions_group'] === $group) echo 'selected' ?>><?php echo $group; ?></option>
+            <?php foreach ($dati['groups'] as $group) : ?>
+                <option value="<?php echo $group; ?>" <?php if (isset($dati['permissions']['permissions_group']) && $dati['permissions']['permissions_group'] === $group) echo 'selected' ?>><?php echo $group; ?></option>
             <?php endforeach; ?>
         </select>
     </div>
-    
-<?php elseif($dati['mode'] === 'group.create'): ?>
-    
+
+<?php elseif ($dati['mode'] === 'group.create') : ?>
+
     <label class="col-md-3 control-label"><?php e("nome del gruppo"); ?></label>
     <div class="col-md-9">
-        <input type="text" class="form-control input-large" name="permissions_group" value="<?php echo isset($dati['permissions']['permissions_group'])? $dati['permissions']['permissions_group']: ''; ?>" />
+        <input type="text" class="form-control input-large" name="permissions_group" value="<?php echo isset($dati['permissions']['permissions_group']) ? $dati['permissions']['permissions_group'] : ''; ?>" />
     </div>
-    
-<?php elseif($dati['mode'] === 'group.edit'): ?>
-    
+
+<?php elseif ($dati['mode'] === 'group.edit') : ?>
+
     <label class="col-md-3 control-label"><?php e("rinomina gruppo"); ?></label>
     <div class="col-md-9">
         <input type="text" class="form-control input-large" name="permissions_group_rename" />
     </div>
-    
+
 <?php endif; ?>
 <div class="clearfix"></div>
-<br/>
-    
-    
-    
+<br />
+
+
+
 
 <div id="all-permissions">
     <label class="col-md-3 control-label"><?php e("admin"); ?></label>
     <div class="col-md-9">
         <label class="radio-inline">
-            <input type="radio" name="permissions_admin" value="<?php echo DB_BOOL_FALSE; ?>" class="toggle permission_toggle" <?php if (!$is_administrator) echo 'checked'; ?>  />
+            <input type="radio" name="permissions_admin" value="<?php echo DB_BOOL_FALSE; ?>" class="toggle permission_toggle" <?php if (!$is_administrator) echo 'checked'; ?> />
             <?php e("no"); ?>
         </label>
         <label class="radio-inline">
-            <input type="radio" name="permissions_admin" value="<?php echo DB_BOOL_TRUE; ?>" class="toggle permission_toggle" <?php if ($is_administrator) echo 'checked'; ?>  />
+            <input type="radio" name="permissions_admin" value="<?php echo DB_BOOL_TRUE; ?>" class="toggle permission_toggle" <?php if ($is_administrator) echo 'checked'; ?> />
             <?php e("si"); ?>
         </label>
     </div>
 
 
     <div class="clearfix"></div>
-    <br/>
+    <br />
 
 
 
-    <div id="permission_container" class="<?php echo ($is_administrator? 'collapse': 'in'); ?>">
+    <div id="permission_container" class="<?php echo ($is_administrator ? 'collapse' : 'in'); ?>">
         <table class="table table-striped table-condensed table-hover">
             <thead>
                 <tr>
-                    <th ><?php e('entità'); ?></th>
+                    <th><?php e('entità'); ?></th>
                     <th style="width: 15%" class="text-center"><?php e('nessuno'); ?></th>
                     <th style="width: 15%" class="text-center"><?php e('lettura'); ?></th>
                     <th style="width: 15%" class="text-center"><?php e('scrittura'); ?></th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($dati['entities'] as $entity): ?>
+                <?php foreach ($dati['entities'] as $entity) : ?>
                     <tr>
                         <td><?php echo $entity['entity_name']; ?></td>
-                        <td class="text-center"><input type="radio" name="entities[<?php echo $entity['entity_id']; ?>]" value="<?php echo PERMISSION_NONE; ?>" class="toggle" <?php if (isset($dati['permissions_entities'][$entity['entity_id']]) AND $dati['permissions_entities'][$entity['entity_id']] === PERMISSION_NONE) echo 'checked'; ?> /></td>
-                        <td class="text-center"><input type="radio" name="entities[<?php echo $entity['entity_id']; ?>]" value="<?php echo PERMISSION_READ; ?>" class="toggle" <?php if (isset($dati['permissions_entities'][$entity['entity_id']]) AND $dati['permissions_entities'][$entity['entity_id']] === PERMISSION_READ) echo 'checked'; ?> /></td>
+                        <td class="text-center"><input type="radio" name="entities[<?php echo $entity['entity_id']; ?>]" value="<?php echo PERMISSION_NONE; ?>" class="toggle" <?php if (isset($dati['permissions_entities'][$entity['entity_id']]) and $dati['permissions_entities'][$entity['entity_id']] === PERMISSION_NONE) echo 'checked'; ?> /></td>
+                        <td class="text-center"><input type="radio" name="entities[<?php echo $entity['entity_id']; ?>]" value="<?php echo PERMISSION_READ; ?>" class="toggle" <?php if (isset($dati['permissions_entities'][$entity['entity_id']]) and $dati['permissions_entities'][$entity['entity_id']] === PERMISSION_READ) echo 'checked'; ?> /></td>
                         <td class="text-center"><input type="radio" name="entities[<?php echo $entity['entity_id']; ?>]" value="<?php echo PERMISSION_WRITE; ?>" class="toggle" <?php if (!isset($dati['permissions_entities'][$entity['entity_id']]) || $dati['permissions_entities'][$entity['entity_id']] === PERMISSION_WRITE) echo 'checked'; ?> /></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
         <div class="clearfix"></div>
-        <br/>
+        <br />
 
-        <?php if (!empty($dati['modules'])): ?>
+        <?php if (!empty($dati['modules'])) : ?>
             <table class="table table-striped table-condensed table-hover">
                 <thead>
                     <tr>
@@ -86,11 +86,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($dati['modules'] as $mod): ?>
+                    <?php foreach ($dati['modules'] as $mod) : ?>
                         <tr>
                             <td><?php echo $mod['modules_name']; ?></td>
-                            <td class="text-center"><input type="radio" name="modules[<?php echo $mod['modules_name']; ?>]" value="<?php echo PERMISSION_NONE; ?>" class="toggle" <?php if (!isset($dati['permissions_modules'][$mod['modules_name']]) || $dati['permissions_modules'][$mod['modules_name']] === PERMISSION_NONE) echo 'checked'; ?>  /></td>
-                            <td class="text-center"><input type="radio" name="modules[<?php echo $mod['modules_name']; ?>]" value="<?php echo PERMISSION_WRITE; ?>" class="toggle" <?php if (isset($dati['permissions_modules'][$mod['modules_name']]) AND $dati['permissions_modules'][$mod['modules_name']] === PERMISSION_WRITE) echo 'checked'; ?> /></td>
+                            <td class="text-center"><input type="radio" name="modules[<?php echo $mod['modules_name']; ?>]" value="<?php echo PERMISSION_NONE; ?>" class="toggle" <?php if (!isset($dati['permissions_modules'][$mod['modules_name']]) || $dati['permissions_modules'][$mod['modules_name']] === PERMISSION_NONE) echo 'checked'; ?> /></td>
+                            <td class="text-center"><input type="radio" name="modules[<?php echo $mod['modules_name']; ?>]" value="<?php echo PERMISSION_WRITE; ?>" class="toggle" <?php if (isset($dati['permissions_modules'][$mod['modules_name']]) and $dati['permissions_modules'][$mod['modules_name']] === PERMISSION_WRITE) echo 'checked'; ?> /></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -99,36 +99,36 @@
         <?php endif; ?>
     </div>
 </div>
-    
+
 <div class="clearfix"></div>
-<br/>
+<br />
 
 
-<?php if($dati['mode'] === 'user'): ?>
-    <h4><strong>Imposta limiti</strong> <small>Gli utenti con un limite impostato potranno vedere solamente i dati compresi nel sottoinsieme a lui assegnato</small></h4>
+<?php if ($dati['mode'] === 'user') : ?>
+    <h4><strong><?php e('Imposta limiti'); ?></strong> <small><?php e('Gli utenti con un limite impostato potranno vedere solamente i dati compresi nel sottoinsieme a lui assegnato'); ?></small></h4>
     <table id="js_limits" class="table table-striped table-bordered table-condensed table-hover">
         <thead>
             <tr>
-                <th>Entità</th>
-                <th>Campo</th>
-                <th style="display:none">Operatore</th>
-                <th>Valori</th>
+                <th><?php e('Entità'); ?></th>
+                <th><?php e('Campo'); ?></th>
+                <th style="display:none"><?php e('Operatore'); ?></th>
+                <th><?php e('Valori'); ?></th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach($dati['limits'] as $k=>$limit): ?>
-                <tr class="<?php if(empty($limit)) echo 'hide' ?>">
+            <?php foreach ($dati['limits'] as $k => $limit) : ?>
+                <tr class="<?php if (empty($limit)) echo 'hide' ?>">
                     <td>
                         <select class="form-control input-sm js_limit_entity">
                             <option value=""></option>
-                            <?php foreach ($dati['entities'] as $entity): ?>
-                                <option value="<?php echo $entity['entity_id']; ?>" <?php if(isset($limit['entity_id']) && $limit['entity_id']==$entity['entity_id']) echo 'selected'; ?>><?php echo $entity['entity_name']; ?></option>
+                            <?php foreach ($dati['entities'] as $entity) : ?>
+                                <option value="<?php echo $entity['entity_id']; ?>" <?php if (isset($limit['entity_id']) && $limit['entity_id'] == $entity['entity_id']) echo 'selected'; ?>><?php echo $entity['entity_name']; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </td>
                     <td>
-                        <select class="form-control input-sm js_limit_field" name="<?php echo "limits[{$k}][limits_fields_id]" ?>" data-value="<?php if(isset($limit['limits_fields_id'])) echo $limit['limits_fields_id']; ?>"></select>
+                        <select class="form-control input-sm js_limit_field" name="<?php echo "limits[{$k}][limits_fields_id]" ?>" data-value="<?php if (isset($limit['limits_fields_id'])) echo $limit['limits_fields_id']; ?>"></select>
                     </td>
                     <td style="display:none">
                         <input type="hidden" name="<?php echo "limits[{$k}][limits_operator]" ?>" value="in" class="js_limit_op" />
@@ -141,9 +141,9 @@
                         </select>
                          */ ?>
                     </td>
-                    <td><input type="text" class="form-control input-sm js_limit_val" name="<?php echo "limits[{$k}][limits_value]" ?>" value="<?php if(isset($limit['limits_value'])) echo $limit['limits_value']; ?>" /></td>
+                    <td><input type="text" class="form-control input-sm js_limit_val" name="<?php echo "limits[{$k}][limits_value]" ?>" value="<?php if (isset($limit['limits_value'])) echo $limit['limits_value']; ?>" /></td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-link" onclick="$(this).parent().parent().remove()" data-id="<?php if(isset($limit['limits_id'])) echo $limit['limits_id']; ?>">Elimina</button>
+                        <button type="button" class="btn btn-link" onclick="$(this).parent().parent().remove()" data-id="<?php if (isset($limit['limits_id'])) echo $limit['limits_id']; ?>">Elimina</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -151,7 +151,7 @@
         <tfoot>
             <tr>
                 <td colspan="5" class="text-center">
-                    <button type="button" id="js_limit_add" class="btn btn-block btn-link">Aggiungi</button>
+                    <button type="button" id="js_limit_add" class="btn btn-block btn-link"><?php e('Aggiungi'); ?></button>
                 </td>
             </tr>
         </tfoot>
@@ -164,7 +164,6 @@
 
 
 <script>
-    
     /**
      * Gestione limiti
      */
@@ -172,32 +171,34 @@
         var jqAdd = $('#js_limit_add');
         var jqTable = $('#js_limits');
         var jqFirstRow = $('tbody tr.hide', jqTable);
-        
+
         // Add a new row
         jqAdd.on('click', function() {
             var iNumRows = $('tbody tr', jqTable).size();
             var jqRow = jqFirstRow.clone().removeClass('hide');
-            
+
             jqRow.appendTo($('tbody', jqTable));
-            $('.js_limit_field', jqRow).attr('name', 'limits['+iNumRows+'][limits_fields_id]');
-            $('.js_limit_op', jqRow).attr('name', 'limits['+iNumRows+'][limits_operator]');
-            $('.js_limit_val', jqRow).attr('name', 'limits['+iNumRows+'][limits_value]');
+            $('.js_limit_field', jqRow).attr('name', 'limits[' + iNumRows + '][limits_fields_id]');
+            $('.js_limit_op', jqRow).attr('name', 'limits[' + iNumRows + '][limits_operator]');
+            $('.js_limit_val', jqRow).attr('name', 'limits[' + iNumRows + '][limits_value]');
         });
-        
+
         // Update the fields list
         jqTable.on('change', '.js_limit_entity', function() {
             var iValue = $(this).val();
             var jqField = $('.js_limit_field', $(this).parents('tr').filter(':first'));
             $('option', jqField).remove();
-            
-            $.ajax(base_url+'get_ajax/entity_fields', {
+
+            $.ajax(base_url + 'get_ajax/entity_fields', {
                 type: 'POST',
-                data: { entity_id: iValue },
+                data: {
+                    entity_id: iValue
+                },
                 dataType: 'JSON',
                 success: function(json) {
                     $.each(json, function(k, value) {
                         var jqOpt = $('<option></option>').val(value.fields_id).html(value.fields_draw_label);
-                        if(jqField.attr('data-value') === value.fields_id) {
+                        if (jqField.attr('data-value') === value.fields_id) {
                             jqOpt.prop('selected', true);
                         }
                         jqField.append(jqOpt);
@@ -207,47 +208,55 @@
                 }
             });
         });
-        
+
         // Initialize field lists
         $('.js_limit_entity', jqTable).trigger('change');
-        
-        
+
+
         // Initialize multiselect
         jqTable.on('change', '.js_limit_field', function() {
             var iValue = $(this).val();
-            if(iValue) {
+            if (iValue) {
                 var jqObj = $('.js_limit_val', $(this).parents('tr').filter(':first'));
                 initMultiselect(jqObj, iValue);
             }
         });
-        
-        
-        
-        
-        
+
+
+
+
+
         var initMultiselect = function(jqObj, iFieldID) {
             jqObj.select2({
                 multiple: true,
                 minimumInputLength: 0,
                 ajax: {
-                    url: base_url+'get_ajax/search_field_values',
+                    url: base_url + 'get_ajax/search_field_values',
                     dataType: 'json',
                     type: 'POST',
-                    data: function (term, page) {
-                        return { q: term, field_id: iFieldID };
+                    data: function(term, page) {
+                        return {
+                            q: term,
+                            field_id: iFieldID
+                        };
                     },
-                    results: function (data, page) {
-                        return { results: data };
+                    results: function(data, page) {
+                        return {
+                            results: data
+                        };
                     }
                 },
-                initSelection: function (element, callback) {
+                initSelection: function(element, callback) {
                     var id = $(element).val();
                     if (id !== "") {
-                        $.ajax(base_url+'get_ajax/search_field_values', {
+                        $.ajax(base_url + 'get_ajax/search_field_values', {
                             type: 'POST',
                             dataType: "json",
-                            data: { field_id: iFieldID, id: id }
-                        }).done(function (data) {
+                            data: {
+                                field_id: iFieldID,
+                                id: id
+                            }
+                        }).done(function(data) {
                             callback(data);
                         });
                     }
@@ -260,34 +269,31 @@
                 }
             });
         };
-        
-        
-        
+
+
+
         // Mostra/nascondi tabelle permessi alla disattivazione/attivazione del campo amministratore
         $('.permission_toggle').on('change', function() {
             var jqToggle = $(this);
             console.log(jqToggle.val());
             $('#permission_container').collapse(
-                    (jqToggle.val() === '<?php echo DB_BOOL_TRUE; ?>')?
-                        'hide':     // Sto dicendo che l'utente è un admin, quindi non serve mostrare i permessi - li ha già tutti
-                        'show'      // Sto dicendo che l'utente non è admin, quindi mostra selezione permessi
+                (jqToggle.val() === '<?php echo DB_BOOL_TRUE; ?>') ?
+                'hide' : // Sto dicendo che l'utente è un admin, quindi non serve mostrare i permessi - li ha già tutti
+                'show' // Sto dicendo che l'utente non è admin, quindi mostra selezione permessi
             );
         });
-        
-        
+
+
         $('.js-group').on('change', function() {
             var groupAssigned = $(this).val();
-            
-            if(groupAssigned) {
+
+            if (groupAssigned) {
                 $('#all-permissions').hide();
             } else {
                 $('#all-permissions').show();
             }
         }).trigger('change');
-        
-        
+
+
     });
-    
-    
-    
 </script>
