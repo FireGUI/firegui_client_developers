@@ -1,6 +1,3 @@
-Changelog version 1.6.9.7
+Changelog version 1.6.9.8
  
-Renamed crm_configurations.php to enviroment.php
-Moved constant passepartout for login into enviroment.php
-Translated enviroment.php
-Bug fixes
+Fixed cron test_now method

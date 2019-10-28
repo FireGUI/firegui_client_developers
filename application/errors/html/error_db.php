@@ -26,7 +26,6 @@ include_once(APPPATH . 'errors/html/module_hook.php');
 
 
 ?>
-</select>
 <!DOCTYPE html>
 <html lang="en">
 
