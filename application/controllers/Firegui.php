@@ -116,7 +116,7 @@ class Firegui extends MY_Controller
         }
     }
 
-    public function updateClient()
+    public function updateClient($close = false)
     {
         /*$versionDataJson = $this->input->post('client');
         $version_data = @json_decode($versionDataJson);*/ //DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
@@ -207,7 +207,11 @@ class Firegui extends MY_Controller
                 }
 
                 unlink($newfile);
-                echo 'ok';
+                if ($close) {
+                    echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();}, 5000);</script>";
+                } else {
+                    echo 'ok';
+                }
             }
         }
     }
