@@ -1,40 +1,38 @@
 <!-- BEGIN NOTIFICATION DROPDOWN -->
 <li class="dropdown notifications-menu" id="header_notification_bar">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <i class="far fa-bell"></i>
         <span class="js_notification_number_label badge badge-danger"></span>
     </a>
     <ul class="dropdown-menu">
 
-        <li class="header" >
-        <row >
-            <h5><?php e('Hai');?> <span class="js_notification_number bold">0<!-- ... notification count here ... --></span> <?php e('nuove notifiche');?></h5> 
-            <a href="#" onclick="CrmNotifier.readAll();return false;" role='button'><?php e('segna come letto');?></a>
-        </row>
-</li>
+        <li class="header">
+            <h5><?php e('Hai'); ?> <span class="js_notification_number bold">0
+                    <!-- ... notification count here ... --></span> <?php e('nuove notifiche'); ?></h5>
+            <a href="#" onclick="CrmNotifier.readAll();return false;" role='button'><?php e('segna come letto'); ?></a>
+        </li>
 
-<li>
-    <!-- inner menu: contains the actual data -->
-    <ul class=" menu js_notification_dropdown_list dropdown-menu-list scroller" style="height: 450px">
         <li>
-            <!--                                <a href="#">
+            <!-- inner menu: contains the actual data -->
+            <ul class=" menu js_notification_dropdown_list dropdown-menu-list scroller" style="height: 450px">
+                <li>
+                    <!--                                <a href="#">
                                                 <i class="fas fa-users text-aqua"></i> 5 new members joined today
                                             </a>-->
+                </li>
+            </ul>
         </li>
-    </ul>
-</li>
 
-<?php /*
+        <?php /*
   <li class="external">
   <a href="#">See all notifications <i class="m-icon-swapright"></i></a>
   </li>
  */ ?>
-</ul>
+    </ul>
 </li>
 <!-- END NOTIFICATION DROPDOWN -->
 
 <script>
-
     var CrmNotifier = {
 
         /**
@@ -52,12 +50,12 @@
         audio: null,
         played: false,
 
-        fetch: function () {
+        fetch: function() {
             var notifier = this;
             $.ajax({
                 url: base_url + 'get_ajax/dropdown_notification_list',
                 dataType: 'json',
-                success: function (json) {
+                success: function(json) {
                     notifier.number = json.count;
                     notifier.showUnread(json.view);
                     if (notifier.number > 0) {
@@ -70,7 +68,7 @@
             });
         },
 
-        showUnread: function (html) {
+        showUnread: function(html) {
 
             if (typeof html === 'string') {
                 $('.js_notification_dropdown_list', this.listContainer).html(html);
@@ -81,7 +79,7 @@
 
         },
 
-        playNotificationSound: function (notificationSound) {
+        playNotificationSound: function(notificationSound) {
 
             if (!notificationSound) {
                 alert('Ci sono nuove notifiche');
@@ -100,7 +98,7 @@
             }
         },
 
-        isPlayable: function () {
+        isPlayable: function() {
 
             var time = localStorage.getItem('played');
             if (!time) {
@@ -117,7 +115,7 @@
             return diff / 1000 > 1500;
         },
 
-        setRead: function (notificationId) {
+        setRead: function(notificationId) {
             if (this.number < 1 && !notificationId) {
                 return null;
             }
@@ -125,22 +123,22 @@
             return $.ajax(base_url + 'db_ajax/notify_read/' + ((typeof notificationId === 'undefined') ? '' : notificationId));
         },
 
-        readAll: function () {
+        readAll: function() {
             var ajax = this.setRead();
             if (ajax !== null) {
                 var notifier = this;
-                ajax.success(function () {
+                ajax.success(function() {
                     notifier.number = 0;
                     notifier.showUnread();
                 });
             }
         },
 
-        readAndGoto: function (notificationId, link) {
+        readAndGoto: function(notificationId, link) {
             var that = this;
             var ajax = this.setRead(notificationId);
             if (ajax !== null) {
-                ajax.success(function () {
+                ajax.success(function() {
                     if (link === 'javascript:void(0);') {
                         that.fetch();
                     } else {
@@ -150,19 +148,19 @@
             }
         },
 
-        init: function () {
+        init: function() {
             var notifier = this;
             notifier.fetch();
 
-            setInterval(function () {
+            setInterval(function() {
                 notifier.fetch();
-            }, 5 * 60 * 1000);  // 5 min
+            }, 5 * 60 * 1000); // 5 min
 
             /*notifier.listContainer.on('mouseenter', function(e) {
              notifier.readAll();
              });*/
 
-            notifier.listContainer.on('click', '[data-notification]', function (e) {
+            notifier.listContainer.on('click', '[data-notification]', function(e) {
                 e.preventDefault();
 
                 var $this = $(this);
@@ -175,8 +173,7 @@
 
 
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         CrmNotifier.init();
     });
-
 </script>
