@@ -2156,7 +2156,7 @@ class Apilib
                 // Upload ok
                 $uploadData = $this->upload->data();
 
-                defined('LOGIN_ENTITY') or @include __DIR__ . '/../config/crm_configurations.php';
+                defined('LOGIN_ENTITY') or @include __DIR__ . '/../config/enviroment.php';
                 $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
 
                 if ($uploadDepthLevel > 0) {

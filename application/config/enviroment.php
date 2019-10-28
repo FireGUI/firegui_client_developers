@@ -2,14 +2,13 @@
 
 /*
  * ============================================================
- * Configurazioni di base del CRM
+ * Base configurations
  * ============================================================
- * SHOW_MEDIA_MODULE    Mostra/Nascondi link modulo media su sidebar [bool]
- * THEME_CSS_PATH       Path relativo alla root per css tema base
- * CUSTOM_CSS_PATH     Foglio di stile custom per crm
- * UPLOAD_DEPTH_LEVEL   Imposta il valore di annidamento nella cartella uploads per i file caricati da apilib
+ 
+ * THEME_CSS_PATH       Path to custom theme css
+ * CUSTOM_CSS_PATH     Path to custom css
+ * UPLOAD_DEPTH_LEVEL   Annidated folders to create for uploads directory
  */
-define('SHOW_MEDIA_MODULE', false);
 define('THEME_CSS_PATH', null);
 define('CUSTOM_CSS_PATH', null);
 define('UPLOAD_DEPTH_LEVEL', 3);
@@ -21,36 +20,52 @@ define('CUSTOM_FAVICON', null);
  * ============================================================
  * E-mail system
  * ============================================================
- * DEFAULT_EMAIL_SYSTEM     Indirizzo per mail di sistema (ad esempio recupero
- *                          password e mail di errore)
- * DEFAULT_EMAIL_SENDER     Nome indirizzo mail di sistema (ad esempio recupero
- *                          password e mail di errore)
- * DEFAULT_EMAIL_FROM       "From" header di default del mail_model
- * DEFAULT_EMAIL_REPLY      "Reply To" header di default del mail_model
+ * DEFAULT_EMAIL_SYSTEM     System email address (for debugging, error log, ecc....)
+ * DEFAULT_EMAIL_SENDER     Default email sender
+ * DEFAULT_EMAIL_FROM       "From" default header
+ * DEFAULT_EMAIL_REPLY      "Reply To" default header
  */
-define('DEFAULT_EMAIL_SYSTEM', 'crm@h2web.it');
-define('DEFAULT_EMAIL_SENDER', 'MasterCRM');
-define('DEFAULT_EMAIL_FROM', 'From: H2 CRM <info@h2web.it>');
-define('DEFAULT_EMAIL_REPLY', 'Reply-To: H2 CRM <no-reply@h2web.it>');
-
+define('DEFAULT_EMAIL_SYSTEM', 'no-reply@yourdomain.com');
+define('DEFAULT_EMAIL_SENDER', 'FireGUI');
+define('DEFAULT_EMAIL_FROM', 'From: No Reply <no-reply@yourdomain.com>');
+define('DEFAULT_EMAIL_REPLY', 'Reply-To: No Reply <no-reply@yourdomain.com>');
 
 /*
  * ============================================================
- * Entità base
+ * Additional and customizable configurations
  * ============================================================
- * LOGIN_ENTITY             Entità su cui fare login
- * LOGIN_USERNAME_FIELD     Campo username/email di LOGIN_ENTITY
- * LOGIN_PASSWORD_FIELD     Campo password di LOGIN_ENTITY
- * LOGIN_ACTIVE_FIELD       Campo attivo/disattivo - dev'essere un campo boolean
- *                          se non usato può essere lasciato vuoto
- * LOGIN_NAME_FIELD         Campo nome dell'entità di login
- * LOGIN_SURNAME_FIELD      Campo cognome entità di login
- * LOGIN_IMG_FIELD          Campo immagine entità di login
+ * 
+ */
+$config = array(
+    'version' => 1,
+    'email_deferred' => false,
+    'email_headers' => array(
+        'From' => DEFAULT_EMAIL_FROM,
+        'Reply-To' => DEFAULT_EMAIL_REPLY,
+        'X-Mailer' => "PHP/" . phpversion(),
+        //'X-Priority' => 3,
+        'MIME-Version' => '1.0',
+        'Content-type' => 'text/html; charset=utf-8',
+        'Content-Transfer-Encoding' => '8bit',
+    )
+);
+
+/*
+ * ============================================================
+ * Base entities
+ * ============================================================
+ * LOGIN_ENTITY             Entity to use for the login
+ * LOGIN_USERNAME_FIELD     Username/email field for login
+ * LOGIN_PASSWORD_FIELD     Password field for login
+ * LOGIN_ACTIVE_FIELD       Active field for login
+ * LOGIN_NAME_FIELD         Name field for login
+ * LOGIN_SURNAME_FIELD      Surname field for login
+ * LOGIN_IMG_FIELD          Avatar field for login
  *
- * LANG_ENTITY              Entità lingue [può non essere settata]
- * LANG_CODE_FIELD          Campo codice lingua
- * LANG_NAME_FIELD          Campo nome lingua
- * LANG_DEFAULT_FIELD       Campo lingua di default
+ * LANG_ENTITY              Language entity
+ * LANG_CODE_FIELD          Language code field
+ * LANG_NAME_FIELD          Language name/identifier field
+ * LANG_DEFAULT_FIELD       Language "is default" field
  */
 define('LOGIN_ENTITY',          'users');
 define('LOGIN_USERNAME_FIELD',  'users_email');
@@ -66,18 +81,18 @@ define('LANG_NAME_FIELD',   'languages_name');
 define('LANG_DEFAULT_FIELD', 'languages_default');
 
 define('MIN_SEARCH_CHARS', 3);
-//define('STRICT_SEARCH', false); //TODO: per decidere le logiche con cui combinare AND e OR
+//define('STRICT_SEARCH', false);
 define('EXPLODE_SPACES', true);
 define('DEFAULT_GRID_LIMIT', 10);
 
-define('API_MANAGER_PRIVATE_KEY', 'vi!UOat4');
-define('API_MANAGER_CRM_PASSPARTOUT', 'ApiP4ss!');
+define('API_MANAGER_PRIVATE_KEY', '*******');
+define('API_MANAGER_CRM_PASSPARTOUT', '*******');
 
 //MD5 Passepartout for login password (example: if you want to login with every user email using the string 'your-secret-password', you should copy&paste the md5 of 'your-secret-password' here.)
 define('PASSEPARTOUT', '*********************************');
 
 /* ============
- * Colori Custom
+ * Custom colors
  * ============ */
 define('TOPBAR_COLOR', '#ff4b01');
 define('TOPBAR_HOVER', '#851717');
@@ -88,8 +103,7 @@ define('LOGIN_TITLE_COLOR', '#f0f0f0');
  * ============================================================
  * Base URL ADMIN 
  * ============================================================
- * Funzione usata dal sito per accedere all'indirizzo base senza eventuali
- * suffissi. Può variare da piattaforma a piattaforma
+ *
  */
 function base_url_admin($uri = '')
 {
@@ -104,8 +118,7 @@ function base_url_admin($uri = '')
  * ============================================================
  * Base URL Template , Base URL Script, Base URL Uploads
  * ============================================================
- * Funzioni usate dal template per accedere all'indirizzo base senza eventuali
- * suffissi. Può variare da piattaforma a piattaforma
+ * 
  */
 function base_url_template($uri = '')
 {
@@ -119,25 +132,3 @@ function base_url_uploads($uri = '')
 {
     return base_url_admin($uri);
 }
-
-
-/*
- * ============================================================
- * Eventuali configurazioni aggiuntive CRM
- * ============================================================
- * Versioni risorse,
- * Header di default per mail model
- */
-$config = array(
-    'version' => 1,
-    'email_deferred' => false,
-    'email_headers' => array(
-        'From' => 'H2 CRM <info@h2web.it>',
-        'Reply-To' => 'H2 CRM <no-reply@h2web.it>',
-        'X-Mailer' => "PHP/" . phpversion(),
-        //'X-Priority' => 3,
-        'MIME-Version' => '1.0',
-        'Content-type' => 'text/html; charset=utf-8',
-        'Content-Transfer-Encoding' => '8bit',
-    )
-);
