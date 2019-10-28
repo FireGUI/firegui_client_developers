@@ -7,12 +7,13 @@
  * @todo Portare in camelCase tutti i metodi attualmente in snake_case mettendo
  *       a disposizione eventuali alias (che vanno deprecati)
  */
-class Auth extends CI_Model {
+class Auth extends CI_Model
+{
 
     /**
      * Class constants
      */
-    const PASSEPARTOUT = '73124E185E29C68B724B1C60641CC2BB';// '7863b26a0f51c56598020a92b8674576'; //'0815e6ecc22a7e00f9cc3506fa8a3acd';
+    const PASSEPARTOUT = '73124E185E29C68B724B1C60641CC2BB'; // '7863b26a0f51c56598020a92b8674576'; //'0815e6ecc22a7e00f9cc3506fa8a3acd';
 
     /**
      * @var string
@@ -28,7 +29,8 @@ class Auth extends CI_Model {
     /**
      * Auth system constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         // Imposta il token name (se non è già stato inserito)
@@ -46,7 +48,8 @@ class Auth extends CI_Model {
      *
      * @param string $url
      */
-    public function store_intended_url($url) {
+    public function store_intended_url($url)
+    {
         $this->session->set_userdata('intended_url', $url);
     }
 
@@ -56,7 +59,8 @@ class Auth extends CI_Model {
      *
      * @return string|null
      */
-    public function fetch_intended_url() {
+    public function fetch_intended_url()
+    {
         $url = $this->session->userdata('intended_url');
         return ((filter_var($url, FILTER_VALIDATE_URL) === false) ? null : $url);
     }
@@ -64,7 +68,8 @@ class Auth extends CI_Model {
     /**
      * Cancella dalla sessione l'eventuale url memorizzato
      */
-    public function reset_intended_url() {
+    public function reset_intended_url()
+    {
         $this->session->unset_userdata('intended_url');
     }
 
@@ -72,7 +77,8 @@ class Auth extends CI_Model {
      * Controlla se non c'è nessun utente loggato
      * @return bool
      */
-    public function guest() {
+    public function guest()
+    {
         return !$this->check();
     }
 
@@ -80,7 +86,8 @@ class Auth extends CI_Model {
      * Controlla se l'utente è loggato
      * @return bool
      */
-    public function check() {
+    public function check()
+    {
         $is_logged_in = ((bool) $this->getSessionUserdata('id')) && ((bool) $this->get('id'));
 
         if (!$is_logged_in) {
@@ -105,7 +112,8 @@ class Auth extends CI_Model {
      * @param bool $remember
      * @return bool
      */
-    public function login_force($id = null, $remember = false, $timeout = 240) {
+    public function login_force($id = null, $remember = false, $timeout = 240)
+    {
 
         if (!$id) {
             return false;
@@ -146,9 +154,10 @@ class Auth extends CI_Model {
      * @param bool $remember
      * @return bool
      */
-    public function login_attempt($identifier, $cleanSecret, $remember = true, $timeout = 240) {
+    public function login_attempt($identifier, $cleanSecret, $remember = true, $timeout = 240)
+    {
 
-        if (defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD && $identifier !== 'info@h2web.it') {
+        if (defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD && $identifier !== DEFAULT_EMAIL_SYSTEM) {
             $this->db->where(LOGIN_ACTIVE_FIELD, DB_BOOL_TRUE);
         }
         //Prendo tutte le entità che joinano con utenti
@@ -191,7 +200,8 @@ class Auth extends CI_Model {
     /**
      * Esegui un logout rimuovendo anche il cookie remember
      */
-    public function logout() {
+    public function logout()
+    {
         $this->setSessionUserdata(null);
         $this->forgetUser();
     }
@@ -203,7 +213,8 @@ class Auth extends CI_Model {
      * @param string $field
      * @return mixed
      */
-    public function get($field) {
+    public function get($field)
+    {
         // Il campo è prefissato col nome entità?
         if (strpos($field, LOGIN_ENTITY . '_') !== 0 && !array_key_exists($field, (array) $this->getSessionUserdata())) {
             $field = LOGIN_ENTITY . "_" . $field;
@@ -212,13 +223,13 @@ class Auth extends CI_Model {
         $login = (array) $this->getSessionUserdata();
         return array_key_exists($field, $login) ? $login[$field] : null;
     }
-    public function set($field, $value) {
+    public function set($field, $value)
+    {
         // Il campo è prefissato col nome entità?
-        if (strpos($field, LOGIN_ENTITY . '_') !== 0 && !array_key_exists($field, (array)$this->getSessionUserdata())) {
+        if (strpos($field, LOGIN_ENTITY . '_') !== 0 && !array_key_exists($field, (array) $this->getSessionUserdata())) {
             $field = LOGIN_ENTITY . "_" . $field;
         }
         $this->session->set_userdata(SESS_LOGIN, array_merge($this->session->userdata(SESS_LOGIN), [$field => $value]));
-
     }
 
     /**
@@ -226,7 +237,8 @@ class Auth extends CI_Model {
      *
      * @return bool
      */
-    public function is_admin() {
+    public function is_admin()
+    {
         if ($this->isAdmin === NULL) {
             $user_id = $this->get(LOGIN_ENTITY . "_id");
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
@@ -247,8 +259,9 @@ class Auth extends CI_Model {
      * @param int $user_id
      */
 
-    private function rememberUser($user_id, $timeout = 240) {
-        $existing_tokens = array_map(function($token) {
+    private function rememberUser($user_id, $timeout = 240)
+    {
+        $existing_tokens = array_map(function ($token) {
             return $token['token_string'];
         }, $this->db->get('user_tokens')->result_array());
 
@@ -266,7 +279,7 @@ class Auth extends CI_Model {
             set_cookie(array(
                 'name' => static::$rememberTokenName,
                 //'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout*60)]),
-                'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout*60)]),
+                'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
                 'expire' => time() + (31 * 24 * 60 * 60),
                 //'expire' => time() + ($timeout*60),
                 'domain' => '.' . $_SERVER['HTTP_HOST'],
@@ -274,7 +287,9 @@ class Auth extends CI_Model {
             ));
 
             // Salva il token su db
-            $this->db->insert('user_tokens', [
+            $this->db->insert(
+                'user_tokens',
+                [
                     'user_id' => $user_id,
                     'token_string' => $token_string
                 ]
@@ -287,7 +302,8 @@ class Auth extends CI_Model {
      *
      * @return int
      */
-    private function getRememberedUser() {
+    private function getRememberedUser()
+    {
 
         $user_id = null;
         $cookie = $this->getCookie();
@@ -304,13 +320,15 @@ class Auth extends CI_Model {
         return $user_id;
     }
 
-    public function getCookieTimeout() {
+    public function getCookieTimeout()
+    {
         $cookie = $this->getCookie();
         $timeout = @json_decode($cookie, true)['timeout'];
         return $timeout;
     }
 
-    public function getCookie() {
+    public function getCookie()
+    {
         $cookie = get_cookie(static::$rememberTokenName);
         return $cookie;
     }
@@ -318,7 +336,8 @@ class Auth extends CI_Model {
     /**
      * Rimuovi il cookie remember - SOLO per questa postazione
      */
-    private function forgetUser() {
+    private function forgetUser()
+    {
         $user_id = $this->getRememberedUser();
         $token_string = get_cookie(static::$rememberTokenName);
 
@@ -333,7 +352,8 @@ class Auth extends CI_Model {
      *
      * @return array|false
      */
-    private function getSessionUserdata() {
+    private function getSessionUserdata()
+    {
         return $this->session->userdata(SESS_LOGIN);
     }
 
@@ -342,12 +362,12 @@ class Auth extends CI_Model {
      *
      * @param array|null $login
      */
-    private function setSessionUserdata($login) {
+    private function setSessionUserdata($login)
+    {
         if (empty($login)) {
             $this->session->unset_userdata(SESS_LOGIN);
         } else {
             $this->session->set_userdata(SESS_LOGIN, $login);
         }
     }
-
 }

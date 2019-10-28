@@ -1,12 +1,12 @@
 <?php ob_start(); ?>
 <div style="border:1px solid #990000;padding-left:20px;margin:0 0 10px 0;">
 
-<h4>A PHP Error was encountered</h4>
+    <h4>A PHP Error was encountered</h4>
 
-<p>Severity: <?php echo $severity; ?></p>
-<p>Message:  <?php echo $message; ?></p>
-<p>Filename: <?php echo $filepath; ?></p>
-<p>Line Number: <?php echo $line; ?></p>
+    <p>Severity: <?php echo $severity; ?></p>
+    <p>Message: <?php echo $message; ?></p>
+    <p>Filename: <?php echo $filepath; ?></p>
+    <p>Line Number: <?php echo $line; ?></p>
 
 </div>
 <?php
@@ -37,7 +37,7 @@ if($_SERVER['REMOTE_ADDR'] !== 'XXXXXXXXX' && gethostname() !== 'sfera') {
     
     $fullMessage[] = '<br/>$_SERVER <pre>' . print_r($_SERVER, true) . '</pre>';
     
-    //mail('debug@h2web.it', 'Errore php CRM', implode('<br/>', $fullMessage), $header);
+    //mail(DEFAULT_EMAIL_SYSTEM, 'Errore php', implode('<br/>', $fullMessage), $header);
 
     $data = array(
             //'channel'     => $channel,

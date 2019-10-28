@@ -44,7 +44,7 @@ class Cron extends MY_Controller
         $cronKey = uniqid();
 
         if (self::ENABLE_TRACKING) {
-            mail('info@h2web.it', "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Data inizio: ' . date('Y-m-d H:i:s'));
+            mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Data inizio: ' . date('Y-m-d H:i:s'));
         }
 
         // Precarico il file di cache per vedere IN QUESTO PUNTO quali cron sono

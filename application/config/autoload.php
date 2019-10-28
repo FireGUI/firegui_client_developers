@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -64,7 +64,7 @@ $autoload['libraries'] = array('session', 'database', 'apilib');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('string' , 'url', 'cookie', 'general_helper', 'language', 'text', 'entity');
+$autoload['helper'] = array('string', 'url', 'cookie', 'general_helper', 'language', 'text', 'entity');
 
 
 /*
@@ -80,7 +80,7 @@ $autoload['helper'] = array('string' , 'url', 'cookie', 'general_helper', 'langu
 |
 */
 
-$autoload['config'] = array('crm_configurations');
+$autoload['config'] = array('enviroment');
 
 
 /*
