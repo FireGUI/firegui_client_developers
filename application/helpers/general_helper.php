@@ -602,7 +602,7 @@ if (!function_exists('crm_exception_handler')) {
         } else {
             // In produzione invece mando una mail
             $h = [
-                'From: Crm Exception Handler <' . (defined('DEFAULT_EMAIL_SYSTEM') ? DEFAULT_EMAIL_SYSTEM : 'info@h2web.it') . '>',
+                'From: Crm Exception Handler <' . (defined('DEFAULT_EMAIL_SYSTEM') ? DEFAULT_EMAIL_SYSTEM : 'no-reply@yourdomain.com') . '>',
                 'MIME-Version: 1.0',
                 'Content-Type: text/html; charset=\"iso-8859-1\"',
                 'Content-Transfer-Encoding: 7bit',
@@ -640,7 +640,7 @@ if (!function_exists('crm_exception_handler')) {
             }
 
             // Vai di mail
-            mail('debug@h2web.it', 'Eccezione non catturata su host ' . $_SERVER['HTTP_HOST'], implode('<hr>', $m), implode(PHP_EOL, $h));
+            mail(DEFAULT_EMAIL_SYSTEM, 'Eccezione non catturata su host ' . $_SERVER['HTTP_HOST'], implode('<hr>', $m), implode(PHP_EOL, $h));
             log_error_slack(implode('<hr>', $m));
         }
 

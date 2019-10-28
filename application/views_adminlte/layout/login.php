@@ -135,7 +135,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
             </div>
 
 
-            <div class="copyright"><?php /* powered by <a href="http://h2web.it" class="text-danger" target="_blank">H2 web</a> */ ?></div>
+            <div class="copyright"><?php /* powered by <a href="http://firegui.com" class="text-danger" target="_blank">FireGUI</a> */ ?></div>
         </div>
 
         <!-- COMMON PLUGINS -->
