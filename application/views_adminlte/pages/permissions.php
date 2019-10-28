@@ -9,155 +9,158 @@ if ($max_input_vars < $stima_campi) {
 }
 
 ?>
-     <section class="content-header">
+<section class="content-header">
 
-        <ol class="breadcrumb">
-            <li> <?php e("Permessi"); ?></li>
-            <li > <small><?php e("imposta permessi per agenti", 0); ?></small></li>
-        </ol>
-    </section>
+    <ol class="breadcrumb">
+        <li> <?php e("Permessi"); ?></li>
+        <li> <small><?php e("Imposta permessi", 0); ?></small></li>
+    </ol>
+</section>
 
-    <section class="content">   
+<section class="content">
 
-        <div class="row">
+    <div class="row">
 
-            <div class="col-md-8">
+        <div class="col-md-8">
 
-                <div class="box box-primary">
-                    <div class="box-header">
+            <div class="box box-primary">
+                <div class="box-header">
 
-                        <i class="fas fa-lock"></i> 
-                        <h5 class="box-title"><?php e("Permessi"); ?></h5>
-                    </div>
-                    <div class="box-body form">
-                        <form id="permissions_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_permissions'); ?>" class="formAjax">
-
-
-                            <div class="form-group">
-                                <label class="col-md-3 control-label"><?php e('agente'); ?></label>
-                                <div class="col-md-9">
-                                    <select class="form-control input-large select2_standard" name="permissions_user_id" onchange="refreshPermissionTable(this.value);">
-                                        <option></option>
-                                        <optgroup label="Gruppi">
-                                            <option value="-1">** Nuovo gruppo **</option>
-                                            <?php foreach ($dati['groups'] as $group): ?>
-                                                <option value="<?php echo $group; ?>"><?php echo $group; ?></option>
-                                            <?php endforeach; ?>
-                                        </optgroup>
-                                        <optgroup label="Utenti">
-                                            <?php foreach ($dati['users'] as $id => $name): ?>
-                                                <option value="<?php echo $id; ?>"><?php echo $name . (empty($dati['userGroupsStatus'][$id]) ? '' : ' - ' . $dati['userGroupsStatus'][$id]) ?></option>
-                                            <?php endforeach; ?>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-
-
-                            <div id="js_permission_table" class="form-group"></div>
-
-                            <div class="form-group"><div id="msg_permissions_form" class="alert"></div></div>
-
-                            <div class="form-actions fluid">
-                                <div class="col-md-12">
-                                    <div class='pull-right'>
-                                        <button id="js-remove-group" type="button" class="btn red" style="display:none">Elimina gruppo</button>
-                                        <button id="js_form_toggler" type="submit" class="btn btn-primary" disabled>Salva permessi</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <i class="fas fa-lock"></i>
+                    <h5 class="box-title"><?php e("Permessi"); ?></h5>
                 </div>
-                <!-- END SAMPLE FORM PORTLET-->
+                <div class="box-body form">
+                    <form id="permissions_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_permissions'); ?>" class="formAjax">
 
-            </div>
-        </div>
-    </section>
-    <section class="content">  
-        <div class="row">
-            <div class="col-md-12">
 
-                <div class="box box-primary">
-                    <div class="box-header">
-                        <div class="caption">
-                            <i class="fas fa-check"></i> 
-                            <h3 class="box-title"><?php e("Impostazioni viste", 0); ?></h3>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label"><?php e('Utenti/Gruppi'); ?></label>
+                            <div class="col-md-9">
+                                <select class="form-control input-large select2_standard" name="permissions_user_id" onchange="refreshPermissionTable(this.value);">
+                                    <option></option>
+                                    <optgroup label="Gruppi">
+                                        <option value="-1">** <?php e('Nuovo gruppo'); ?> **</option>
+                                        <?php foreach ($dati['groups'] as $group) : ?>
+                                            <option value="<?php echo $group; ?>"><?php echo $group; ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                    <optgroup label="Utenti">
+                                        <?php foreach ($dati['users'] as $id => $name) : ?>
+                                            <option value="<?php echo $id; ?>"><?php echo $name . (empty($dati['userGroupsStatus'][$id]) ? '' : ' - ' . $dati['userGroupsStatus'][$id]) ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="clearfix"></div>
                         </div>
-                        <div class="tools"></div>
-                    </div>
-                    <div class="portlet-body form">
 
-                        <form id="views_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_views_permissions'); ?>" class="formAjax">
-                            <div class="form-body">
-                                <div class="table-scrollable table-scrollable-borderless">
-                                    <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover">
-                                        <thead>
+
+                        <div id="js_permission_table" class="form-group"></div>
+
+                        <div class="form-group">
+                            <div id="msg_permissions_form" class="alert"></div>
+                        </div>
+
+                        <div class="form-actions fluid">
+                            <div class="col-md-12">
+                                <div class='pull-right'>
+                                    <button id="js-remove-group" type="button" class="btn red" style="display:none"><?php e('Elimina gruppo'); ?></button>
+                                    <button id="js_form_toggler" type="submit" class="btn btn-primary" disabled><?php e('Salva permessi'); ?></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="box box-primary">
+                <div class="box-header">
+                    <div class="caption">
+                        <i class="fas fa-check"></i>
+                        <h3 class="box-title"><?php e("Impostazioni viste", 0); ?></h3>
+                    </div>
+                    <div class="tools"></div>
+                </div>
+                <div class="portlet-body form">
+
+                    <form id="views_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_views_permissions'); ?>" class="formAjax">
+                        <div class="form-body">
+                            <div class="table-scrollable table-scrollable-borderless">
+                                <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th><?php e('Viste'); ?></th>
+                                            <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
+                                                <th>
+                                                    <label>
+                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Attiva/Disattiva tutti'); ?>" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
+                                                        <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted" style="font-weight:normal">Gruppo</small> ') . $username; ?></strong>
+                                                    </label>
+                                                </th>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php foreach ($dati['layouts'] as $layoutID => $layout) : ?>
                                             <tr>
-                                                <th>VISTE</th>
-                                                <?php foreach ($dati['users_layout'] as $userID => $username): ?>
-                                                    <th>
+                                                <th>
+                                                    <label style="width: 220px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title="<?php echo $layout; ?>">
+                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Attiva/Disattiva tutti'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
+                                                        <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
+                                                    </label>
+                                                </th>
+                                                <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
+                                                    <td>
                                                         <label>
-                                                            <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
-                                                            <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted" style="font-weight:normal">Gruppo</small> ') . $username; ?></strong>
+                                                            <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layoutID; ?>][]" <?php if (!isset($dati['unallowed'][$userID]) || !in_array($layoutID, $dati['unallowed'][$userID])) echo 'checked' ?> />
+                                                            <small class="text-muted"><?php echo $username; ?></small>
                                                         </label>
-                                                    </th>
+                                                    </td>
                                                 <?php endforeach; ?>
                                             </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <?php foreach ($dati['layouts'] as $layoutID => $layout) : ?>
-                                                <tr>
-                                                    <th>
-                                                        <label style="width: 220px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title="<?php echo $layout; ?>">
-                                                            <input type="checkbox" data-toggle="tooltip" title="Attiva/Disattiva Tutti" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
-                                                            <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
-                                                        </label>
-                                                    </th>
-                                                    <?php foreach ($dati['users_layout'] as $userID => $username): ?>
-                                                        <td>
-                                                            <label>
-                                                                <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layoutID; ?>][]" <?php if (!isset($dati['unallowed'][$userID]) || !in_array($layoutID, $dati['unallowed'][$userID])) echo 'checked' ?> />
-                                                                <small class="text-muted"><?php echo $username; ?></small>
-                                                            </label>
-                                                        </td>
-                                                    <?php endforeach; ?>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div class="form-group"><div id="msg_views_form" class="alert"></div></div>
-
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div class="form-actions fluid">
-                                <div class="col-md-12">
-                                    <div class='pull-right'>
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
+                            <div class="form-group">
+                                <div id="msg_views_form" class="alert"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-actions fluid">
+                            <div class="col-md-12">
+                                <div class='pull-right'>
+                                    <button type="submit" class="btn btn-primary"><?php e('Salva'); ?></button>
                                 </div>
                             </div>
-                        </form>
+                        </div>
+                    </form>
 
-                    </div>
                 </div>
-                <!-- END SAMPLE FORM PORTLET-->
             </div>
-
+            <!-- END SAMPLE FORM PORTLET-->
         </div>
-    </section>
+
+    </div>
+</section>
 
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
         var numero_di_campi = $('#views_form :input').length;
         if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
-            alert('Il limite max_input_vars (<?php echo $max_input_vars; ?>) è troppo basso rispetto al numero di campi in questa pagina ('+numero_di_campi+')! Funzionalità disattivata.');
+            alert('Il limite max_input_vars (<?php echo $max_input_vars; ?>) è troppo basso rispetto al numero di campi in questa pagina (' + numero_di_campi + ')! Funzionalità disattivata.');
             $('#views_form button').hide();
         }
     });
@@ -170,18 +173,22 @@ if ($max_input_vars < $stima_campi) {
 
         // Nascondi vista precedente
         $('#js-remove-group').hide().off('click');
-        jqTableContainer.fadeTo('fast', 0, function () {
+        jqTableContainer.fadeTo('fast', 0, function() {
             $.ajax({
                 url: base_url + 'get_ajax/permission_table/',
                 type: 'post',
-                data: {identifier: userId},
-                success: function (view) {
+                data: {
+                    identifier: userId
+                },
+                success: function(view) {
 
                     if (isNaN(parseInt(userId))) {
                         // Ho cliccato un gruppo e posso eliminarlo
-                        $('#js-remove-group').show().on('click', function () {
+                        $('#js-remove-group').show().on('click', function() {
                             if (confirm('Vuoi davvero eliminare il gruppo ' + userId + '? Tutti gli utenti ad esso associati dovranno essere riassegnati manualmente ad un altro gruppo')) {
-                                $.post(base_url + 'db_ajax/delete_permission_group', {group: userId}, function () {
+                                $.post(base_url + 'db_ajax/delete_permission_group', {
+                                    group: userId
+                                }, function() {
                                     window.location.reload();
                                 });
                             }
@@ -204,7 +211,7 @@ if ($max_input_vars < $stima_campi) {
 
 
 
-    var ViewPermissionsTable = function () {
+    var ViewPermissionsTable = function() {
 
         return {
             tableSel: '#views_form table',
@@ -217,9 +224,9 @@ if ($max_input_vars < $stima_campi) {
             checkAllHorizontal: null,
             checkView: null,
 
-            fixCheckboxesOnTop: function () {
+            fixCheckboxesOnTop: function() {
                 var widget = this;
-                widget.checkAll.each(function () {
+                widget.checkAll.each(function() {
                     var checkbox = $(this);
                     var allCheckboxes = widget.getCheckboxByUser(checkbox.attr('data-user'));
 
@@ -230,9 +237,9 @@ if ($max_input_vars < $stima_campi) {
                 });
             },
 
-            fixCheckboxesOnLeft: function () {
+            fixCheckboxesOnLeft: function() {
                 var widget = this;
-                widget.checkAllHorizontal.each(function () {
+                widget.checkAllHorizontal.each(function() {
                     var checkbox = $(this);
                     var allCheckboxes = widget.getCheckboxByLayout(checkbox.attr('data-layout'));
 
@@ -249,46 +256,52 @@ if ($max_input_vars < $stima_campi) {
                 });
             },
 
-            touchCheckbox: function () {
+            touchCheckbox: function() {
                 this.fixCheckboxesOnTop();
                 this.fixCheckboxesOnLeft();
             },
 
-            touchCheckAll: function (userId, isChecked) {
+            touchCheckAll: function(userId, isChecked) {
                 this.getCheckboxByUser(userId).attr('checked', isChecked);
                 this.fixCheckboxesOnTop();
             },
 
-            touchCheckAllHorizontal: function (layoutId, isChecked) {
+            touchCheckAllHorizontal: function(layoutId, isChecked) {
                 this.getCheckboxByLayout(layoutId).attr('checked', isChecked);
                 this.fixCheckboxesOnLeft();
             },
 
-            getCheckboxByUser: function (userId) {
+            getCheckboxByUser: function(userId) {
                 return $(this.checkViewSel + '[data-user="' + userId + '"]');
             },
 
-            getCheckboxByLayout: function (layoutId) {
+            getCheckboxByLayout: function(layoutId) {
                 return $(this.checkViewSel + '[name="view[' + layoutId + '][]"]');
             },
 
-            init: function () {
+            init: function() {
 
                 this.table = $(this.tableSel);
                 this.checkAll = $(this.checkAllSel, this.table);
                 this.checkAllHorizontal = $(this.checkAllSelHorizontal, this.table);
                 this.checkView = $(this.checkViewSel, this.table);
 
-                this.checkView.on('change', {widget: this}, function (event) {
+                this.checkView.on('change', {
+                    widget: this
+                }, function(event) {
                     event.data.widget.touchCheckbox();
                 });
 
-                this.checkAll.on('change', {widget: this}, function (event) {
+                this.checkAll.on('change', {
+                    widget: this
+                }, function(event) {
                     var checkbox = $(this);
                     event.data.widget.touchCheckAll(checkbox.attr('data-user'), checkbox.is(':checked'));
                 });
 
-                this.checkAllHorizontal.on('change', {widget: this}, function (event) {
+                this.checkAllHorizontal.on('change', {
+                    widget: this
+                }, function(event) {
                     var checkbox = $(this);
                     event.data.widget.touchCheckAllHorizontal(checkbox.attr('data-layout'), checkbox.is(':checked'));
                 });
@@ -301,14 +314,13 @@ if ($max_input_vars < $stima_campi) {
 
     }();
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         ViewPermissionsTable.init();
     });
 
 
     // Imposta di default i permessi come fullscreen
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
     });
-
 </script>
