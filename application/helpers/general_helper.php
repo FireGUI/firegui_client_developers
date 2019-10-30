@@ -918,9 +918,7 @@ if (!function_exists('send_telegram_log')) {
         $CI = get_instance();
 
         // Se sono dentro come superadmin non invio messaggi di errore su telegram
-        if ($CI->auth->get('customers_id') == 1) {
-            //return false;
-        }
+
         $ch = curl_init();
         $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
         curl_setopt($ch, CURLOPT_URL, 'https://api.telegram.org/bot627086827:AAFdhz-8khe3OS4sCH7DcqfZ7miih-__h_Q/sendmessage');

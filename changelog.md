@@ -1,3 +1,3 @@
-Changelog version 1.6.9.8
+Changelog version 1.6.9.9
  
-Fixed cron test_now method
+Fixed bug on double field (mysql) and formatted with number_format(2)

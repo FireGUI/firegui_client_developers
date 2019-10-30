@@ -205,7 +205,8 @@ class Crmentity extends CI_Model
                     $fieldsRanges[$field['fields_id']] = $field;
                 }
 
-                if (strtolower($field['fields_type']) === 'float') {
+                //20191030 - MP - Aggiunto double in qunato i field mysql
+                if (strtolower($field['fields_type']) === 'float' || strtolower($field['fields_type']) === 'double') {
                     $fieldsFloat[$field['fields_id']] = $field;
                 }
             }
