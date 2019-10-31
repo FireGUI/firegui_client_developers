@@ -1,3 +1,3 @@
-Changelog version 1.7.0.1
+Changelog version 1.7.0.2
  
-Change Path to extract and install modules in application folder get dynamically
+Updated updateClient function to application folder get dinamically
