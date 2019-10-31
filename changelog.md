@@ -1,3 +1,3 @@
-Changelog version 1.7.0.2
+Changelog version 1.7.1.0
  
-Updated updateClient function to application folder get dinamically
+Modified updateClient method to return the version_code of the installed client
