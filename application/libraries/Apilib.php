@@ -98,7 +98,7 @@ class Apilib
 
         // Aggiungi tracciamento eccezioni non catchate, quantomeno per non
         // bloccare il sistema e che nessuno sappia nulla
-        set_exception_handler('crm_exception_handler');
+        //set_exception_handler('crm_exception_handler');
 
         //Se impostato un tempo di cache diverso prendo quello
         if (defined('CACHE_TIME')) {
