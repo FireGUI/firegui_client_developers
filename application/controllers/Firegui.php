@@ -21,7 +21,7 @@ class Firegui extends MY_Controller
             'controllers', 'models', 'views', 'assets'
         ];
 
-        $modules_path = FCPATH . 'application/modules/';
+        $modules_path = APPPATH . 'modules/';
 
         if (!is_dir($modules_path)) //create the folder if it's not already exists
         {
@@ -41,7 +41,7 @@ class Firegui extends MY_Controller
     public function uninstallModule($identifier)
     {
         // TODO: Pericoloso esporre un metodo del genere
-        unlink(FCPATH . "application/modules/$identifier/");
+        unlink(APPPATH . "modules/$identifier/");
     }
 
     function updateFromGit($command = null, $output = true)
@@ -69,7 +69,7 @@ class Firegui extends MY_Controller
             die('Unauthorized');
         } else {
 
-            $folder = FCPATH . 'application/modules/' . $identifier . '/';
+            $folder = APPPATH . 'modules/' . $identifier . '/';
 
             $destination_file = FCPATH . 'uploads/' . $identifier . '.zip';
 
@@ -104,15 +104,15 @@ class Firegui extends MY_Controller
         $zip = new ZipArchive;
 
         if ($zip->open($_FILES['module_file']['tmp_name']) === TRUE) {
-            $zip->extractTo(FCPATH . "/application/modules/{$identifier}");
+            $zip->extractTo(APPPATH . "modules/{$identifier}");
             $zip->close();
         } else {
             die('Wrong zip archive!');
         }
 
         //Una volta scompresso, eseguo l'eventuale file di install
-        if (file_exists(FCPATH . "/application/modules/{$identifier}/install/install.php")) {
-            include(FCPATH . "/application/modules/{$identifier}/install/install.php");
+        if (file_exists(APPPATH . "modules/{$identifier}/install/install.php")) {
+            include(APPPATH . "modules/{$identifier}/install/install.php");
         }
     }
 
@@ -251,7 +251,7 @@ class Firegui extends MY_Controller
 
     public function executeMigrations($module_identifier, $old_version, $new_version)
     {
-        $migration_dir = FCPATH . "application/modules/$module_identifier/migrations";
+        $migration_dir = APPPATH . "modules/$module_identifier/migrations";
         if (file_exists($migration_dir)) {
             $files = scandir($migration_dir);
 
