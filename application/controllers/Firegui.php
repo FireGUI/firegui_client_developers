@@ -147,12 +147,12 @@ class Firegui extends MY_Controller
 
 
                 // Search update databases file for this version
-                $files = scandir(FCPATH . 'application/migrations');
+                $files = scandir(APPPATH . 'migrations');
 
                 foreach ($files as $file) {
                     if ($file == 'update_db.php') {
                         // Check if exist an update_db file to execute update queries
-                        include(FCPATH . 'application/migrations/update_db.php');
+                        include(APPPATH . 'migrations/update_db.php');
 
                         // Sort array from oldest version to newest
                         uksort($updates, 'my_version_compare');
@@ -168,7 +168,7 @@ class Firegui extends MY_Controller
                         }
                     } elseif ($file == 'update_php_code.php') {
                         // Check if exist an update_db file to execute update queries
-                        include(FCPATH . 'application/migrations/update_php_code.php');
+                        include(APPPATH . 'migrations/update_php_code.php');
 
                         // Sort array from oldest version to newest
                         uksort($updates, 'my_version_compare');
@@ -183,7 +183,7 @@ class Firegui extends MY_Controller
                                     } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
                                         if (is_array($code)) {
                                             foreach ($code as $file_to_include) {
-                                                $file_migration = FCPATH . 'application/migrations/' . $file_to_include;
+                                                $file_migration = APPPATH . 'migrations/' . $file_to_include;
                                                 if (file_exists($file_migration)) {
                                                     include($file_migration);
                                                 } else {
@@ -191,7 +191,7 @@ class Firegui extends MY_Controller
                                                 }
                                             }
                                         } else {
-                                            $file_migration = FCPATH . 'application/migrations/' . $code;
+                                            $file_migration = APPPATH . 'migrations/' . $code;
 
                                             if (file_exists($file_migration)) {
                                                 include($file_migration);
@@ -281,7 +281,7 @@ class Firegui extends MY_Controller
                                             }
                                         }
                                     } else {
-                                        $file_migration = FCPATH . 'application/migrations/' . $code;
+                                        $file_migration = APPPATH . 'migrations/' . $code;
 
                                         if (file_exists($file_migration)) {
                                             include($file_migration);
