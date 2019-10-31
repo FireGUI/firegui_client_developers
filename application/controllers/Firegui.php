@@ -116,7 +116,7 @@ class Firegui extends MY_Controller
         }
     }
 
-    public function updateClient($close = false)
+    public function updateClient($close = false, $version_code = null)
     {
         /*$versionDataJson = $this->input->post('client');
         $version_data = @json_decode($versionDataJson);*/ //DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
@@ -128,8 +128,9 @@ class Firegui extends MY_Controller
 
         $old_version = VERSION;
 
-        $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION;
-        $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
+        $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
+        $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
+        $new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
         $newfile = './tmp_file.zip';
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
@@ -210,7 +211,7 @@ class Firegui extends MY_Controller
                 if ($close) {
                     echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();}, 5000);</script>";
                 } else {
-                    echo 'ok';
+                    echo $new_version_code;
                 }
             }
         }
