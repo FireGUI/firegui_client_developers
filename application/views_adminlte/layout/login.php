@@ -65,11 +65,11 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
             </div>
 
             <div class="login-box-body">
-                <p class="login-box-msg"><?php e('Entra nel tuo profilo'); ?></p>
+                <p class="login-box-msg"><?php e('Enter in your profile'); ?></p>
 
                 <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
                     <div class="form-group has-feedback">
-                        <input type="email" class="form-control" placeholder="<?php e('Indirizzo e-mail'); ?>" name="users_users_email" />
+                        <input type="email" class="form-control" placeholder="<?php e('E-mail address'); ?>" name="users_users_email" />
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
@@ -84,69 +84,58 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"><?php e('Disconnetti dopo'); ?></label>
+                        <label class="control-label"><?php e('Disconnect after'); ?></label>
                         <select name="timeout">
                             <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
-                            <option value="5" class="form-control input-sm select2">5 <?php e('minuti'); ?></option>
-                            <option value="10" class="form-control input-sm select2">10 <?php e('minuti'); ?></option>
-                            <option value="30" class="form-control input-sm select2">30 <?php e('minuti'); ?></option>
-                            <option value="60" class="form-control input-sm select2">1 <?php e('ora'); ?></option>
-                            <option value="120" class="form-control input-sm select2">2 <?php e('ore'); ?></option>
-                            <option value="240" class="form-control input-sm select2" selected="selected">4 <?php e('ore'); ?></option>
-                            <option value="480" class="form-control input-sm select2">8 <?php e('ore'); ?></option>
-                            <option value="720" class="form-control input-sm select2">12 <?php e('ore'); ?></option>
-                            <option value="1440" class="form-control input-sm select2">1 <?php e('giorno'); ?></option>
-                            <option value="10080" class="form-control input-sm select2">7 <?php e('giorni'); ?></option>
-                            <option value="43200" class="form-control input-sm select2">1 <?php e('mese'); ?></option>
-                            <option value="518400" class="form-control input-sm select2"><?php e('Mai'); ?></option>
+                            <option value="5" class="form-control input-sm select2">5 <?php e('minutes'); ?></option>
+                            <option value="10" class="form-control input-sm select2">10 <?php e('minutes'); ?></option>
+                            <option value="30" class="form-control input-sm select2">30 <?php e('minutes'); ?></option>
+                            <option value="60" class="form-control input-sm select2">1 <?php e('hour'); ?></option>
+                            <option value="120" class="form-control input-sm select2">2 <?php e('hours'); ?></option>
+                            <option value="240" class="form-control input-sm select2" selected="selected">4 <?php e('hours'); ?></option>
+                            <option value="480" class="form-control input-sm select2">8 <?php e('hours'); ?></option>
+                            <option value="720" class="form-control input-sm select2">12 <?php e('hours'); ?></option>
+                            <option value="1440" class="form-control input-sm select2">1 <?php e('day'); ?></option>
+                            <option value="10080" class="form-control input-sm select2">7 <?php e('days'); ?></option>
+                            <option value="43200" class="form-control input-sm select2">1 <?php e('month'); ?></option>
+                            <option value="518400" class="form-control input-sm select2"><?php e('Never'); ?></option>
                         </select>
                     </div>
-
-
 
                     <div class="form-actions">
                         <div class="row">
                             <div class="col-xs-8">
                                 <div class="checkbox icheck" style="display:none;">
                                     <label>
-                                        <input name="remember" value="1" type="checkbox"> <?php e('Ricordami'); ?>
+                                        <input name="remember" value="1" type="checkbox"> <?php e('Remember me'); ?>
                                     </label>
                                 </div>
 
                             </div>
                             <!-- /.col -->
                             <div class="col-xs-4">
-                                <button type="submit" class="btn btn-primary btn-block btn-flat"><?php e('Accedi'); ?></button>
+                                <button type="submit" class="btn btn-primary btn-block btn-flat"><?php e('Login'); ?></button>
                             </div>
                             <!-- /.col -->
                         </div>
                     </div>
                 </form>
-
-
                 <!-- /.social-auth-links -->
-
                 <div class="forget-password">
-                    <h5><?php e('Hai dimenticato la tua password?'); ?></h5>
-                    <p><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Clicca qui'); ?></a> <?php e('per resettarla.'); ?></p>
+                    <h5><?php e('Forgot your password?'); ?></h5>
+                    <p><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></p>
                 </div>
-
-
             </div>
-
 
             <div class="copyright"><?php /* powered by <a href="http://firegui.com" class="text-danger" target="_blank">FireGUI</a> */ ?></div>
         </div>
 
         <!-- COMMON PLUGINS -->
-
         <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
         <script src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
-
         <script src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- CUSTOM COMPONENTS -->
         <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
-
 
         <script>
             $(function() {
@@ -157,7 +146,6 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 });
             });
         </script>
-
     </body>
 
     </html>
