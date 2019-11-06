@@ -1,19 +1,14 @@
 <!-- sidebar: style can be found in sidebar.less -->
 <?php $current_page = isset($dati['current_page']) ? $dati['current_page'] : null; ?>
 <section class="sidebar">
-
-
     <!-- Sidebar user panel -->
-
     <?php if (file_exists(__DIR__ . '/custom/sidebar-search.php')) : ?>
         <?php $this->load->view('layout/custom/sidebar-search'); ?>
     <?php else : ?>
         <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
         <form class="sidebar-form" style="border: 0px;" action="<?php echo base_url('main/search'); ?>" method="POST" id="search_form">
-
-
             <div class="input-group">
-                <input tabindex="0" type="text" name="search" placeholder="<?php e("Cerca..."); ?>" value="<?php echo isset($dati['search_string']) ? $dati['search_string'] : ''; ?>" class="form-control"> <span class="input-group-btn">
+                <input tabindex="0" type="text" name="search" placeholder="<?php e("Search..."); ?>" value="<?php echo isset($dati['search_string']) ? $dati['search_string'] : ''; ?>" class="form-control"> <span class="input-group-btn">
                     <button type="submit" name="___search" id="search-btn" class="btn btn-flat" onclick="document.getElementById('search_form').submit();">
                         <i class="fas fa-search"></i>
                     </button>
@@ -21,14 +16,12 @@
                 </span>
             </div>
         </form>
-
     <?php endif; ?>
 
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu" data-widget="tree">
-
         <!-- END RESPONSIVE QUICK SEARCH FORM -->
-        <li class="header"><?php e('SEZIONE PRINCIPALE'); ?></li>
+        <li class="header"><?php e('MAIN SECTION'); ?></li>
         <?php
         $first = true;
         foreach ($this->datab->get_menu('sidebar') as $menu) :

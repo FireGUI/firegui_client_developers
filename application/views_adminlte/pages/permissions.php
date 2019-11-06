@@ -12,8 +12,8 @@ if ($max_input_vars < $stima_campi) {
 <section class="content-header">
 
     <ol class="breadcrumb">
-        <li> <?php e("Permessi"); ?></li>
-        <li> <small><?php e("Imposta permessi", 0); ?></small></li>
+        <li> <?php e('Permissions'); ?></li>
+        <li> <small><?php e("Set permissions", 0); ?></small></li>
     </ol>
 </section>
 
@@ -27,24 +27,24 @@ if ($max_input_vars < $stima_campi) {
                 <div class="box-header">
 
                     <i class="fas fa-lock"></i>
-                    <h5 class="box-title"><?php e("Permessi"); ?></h5>
+                    <h5 class="box-title"><?php e("Permissions"); ?></h5>
                 </div>
                 <div class="box-body form">
                     <form id="permissions_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_permissions'); ?>" class="formAjax">
 
 
                         <div class="form-group">
-                            <label class="col-md-3 control-label"><?php e('Utenti/Gruppi'); ?></label>
+                            <label class="col-md-3 control-label"><?php e('Users/Groups'); ?></label>
                             <div class="col-md-9">
                                 <select class="form-control input-large select2_standard" name="permissions_user_id" onchange="refreshPermissionTable(this.value);">
                                     <option></option>
-                                    <optgroup label="Gruppi">
-                                        <option value="-1">** <?php e('Nuovo gruppo'); ?> **</option>
+                                    <optgroup label="<?php e('Groups'); ?>">
+                                        <option value="-1">** <?php e('New group'); ?> **</option>
                                         <?php foreach ($dati['groups'] as $group) : ?>
                                             <option value="<?php echo $group; ?>"><?php echo $group; ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
-                                    <optgroup label="Utenti">
+                                    <optgroup label="<?php e('Users'); ?>">
                                         <?php foreach ($dati['users'] as $id => $name) : ?>
                                             <option value="<?php echo $id; ?>"><?php echo $name . (empty($dati['userGroupsStatus'][$id]) ? '' : ' - ' . $dati['userGroupsStatus'][$id]) ?></option>
                                         <?php endforeach; ?>
@@ -64,8 +64,8 @@ if ($max_input_vars < $stima_campi) {
                         <div class="form-actions fluid">
                             <div class="col-md-12">
                                 <div class='pull-right'>
-                                    <button id="js-remove-group" type="button" class="btn red" style="display:none"><?php e('Elimina gruppo'); ?></button>
-                                    <button id="js_form_toggler" type="submit" class="btn btn-primary" disabled><?php e('Salva permessi'); ?></button>
+                                    <button id="js-remove-group" type="button" class="btn red" style="display:none"><?php e('Delete group'); ?></button>
+                                    <button id="js_form_toggler" type="submit" class="btn btn-primary" disabled><?php e('Save'); ?></button>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +85,7 @@ if ($max_input_vars < $stima_campi) {
                 <div class="box-header">
                     <div class="caption">
                         <i class="fas fa-check"></i>
-                        <h3 class="box-title"><?php e("Impostazioni viste", 0); ?></h3>
+                        <h3 class="box-title"><?php e("Layouts settings", 0); ?></h3>
                     </div>
                     <div class="tools"></div>
                 </div>
@@ -97,12 +97,12 @@ if ($max_input_vars < $stima_campi) {
                                 <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover">
                                     <thead>
                                         <tr>
-                                            <th><?php e('Viste'); ?></th>
+                                            <th><?php e('Layouts'); ?></th>
                                             <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
                                                 <th>
                                                     <label>
                                                         <input type="checkbox" data-toggle="tooltip" title="<?php e('Attiva/Disattiva tutti'); ?>" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
-                                                        <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted" style="font-weight:normal">Gruppo</small> ') . $username; ?></strong>
+                                                        <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted" style="font-weight:normal">Group</small> ') . $username; ?></strong>
                                                     </label>
                                                 </th>
                                             <?php endforeach; ?>
@@ -114,7 +114,7 @@ if ($max_input_vars < $stima_campi) {
                                             <tr>
                                                 <th>
                                                     <label style="width: 220px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title="<?php echo $layout; ?>">
-                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Attiva/Disattiva tutti'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
+                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
                                                         <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
                                                     </label>
                                                 </th>
@@ -141,7 +141,7 @@ if ($max_input_vars < $stima_campi) {
                         <div class="form-actions fluid">
                             <div class="col-md-12">
                                 <div class='pull-right'>
-                                    <button type="submit" class="btn btn-primary"><?php e('Salva'); ?></button>
+                                    <button type="submit" class="btn btn-primary"><?php e('Save'); ?></button>
                                 </div>
                             </div>
                         </div>
@@ -185,7 +185,7 @@ if ($max_input_vars < $stima_campi) {
                     if (isNaN(parseInt(userId))) {
                         // Ho cliccato un gruppo e posso eliminarlo
                         $('#js-remove-group').show().on('click', function() {
-                            if (confirm('Vuoi davvero eliminare il gruppo ' + userId + '? Tutti gli utenti ad esso associati dovranno essere riassegnati manualmente ad un altro gruppo')) {
+                            if (confirm('<?php e('Are you sure to delete group'); ?> ' + userId + '? <?php e('All users associated with it must be manually reassigned to another group'); ?>')) {
                                 $.post(base_url + 'db_ajax/delete_permission_group', {
                                     group: userId
                                 }, function() {
@@ -202,14 +202,6 @@ if ($max_input_vars < $stima_campi) {
             });
         });
     }
-
-
-
-
-
-
-
-
 
     var ViewPermissionsTable = function() {
 

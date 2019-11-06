@@ -31,12 +31,11 @@ if ($value) {
 <?php echo $help; ?>
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         var map = null;
 
-        $('#<?php echo $map; ?>').on('resize', function () {
+        $('#<?php echo $map; ?>').on('resize', function() {
             if (map !== null) {
                 map.invalidateSize();
             }
@@ -44,7 +43,7 @@ if ($value) {
 
 
 
-        setTimeout(function () {
+        setTimeout(function() {
             var w = $('#<?php echo $map; ?>').width();
             if (w > 0) {
                 $('#<?php echo $map; ?>').height(w);
@@ -69,11 +68,11 @@ if ($value) {
 
 
 
-        $(window).on('resize', function () {
+        $(window).on('resize', function() {
             map.invalidateSize();
         });
 
-        map.on('click', function (e) {
+        map.on('click', function(e) {
             var clickPosition = e.latlng;
             if (map.marker === null) {
                 createMarker(clickPosition);
@@ -102,16 +101,19 @@ if ($value) {
         var searchInput = $('.js_map_search', $('#<?php echo $map; ?>').parent());
         var geocoding = new L.Geocoding({
             providers: {
-                custom: function (arg) {
+                custom: function(arg) {
                     var that = this,
-                            query = arg.query,
-                            cb = arg.cb;
+                        query = arg.query,
+                        cb = arg.cb;
                     $.ajax({
                         url: 'https://nominatim.openstreetmap.org/search',
                         dataType: 'jsonp',
                         jsonp: 'json_callback',
-                        data: {q: query, format: 'json'}
-                    }).done(function (data) {
+                        data: {
+                            q: query,
+                            format: 'json'
+                        }
+                    }).done(function(data) {
                         if (data.length > 0) {
                             var res = data[0];
                             if (map.marker === null) {
@@ -128,12 +130,14 @@ if ($value) {
         });
 
         // Set custom provider default
-        geocoding.setOptions({provider: 'custom'});
+        geocoding.setOptions({
+            provider: 'custom'
+        });
         map.addControl(geocoding);
 
         // Geocoding
 
-        searchInput.on('blur', function () {
+        searchInput.on('blur', function() {
             geocoding.geocode(searchInput.val());
         });
 
@@ -147,9 +151,9 @@ if ($value) {
             if (map !== null) {
                 map.marker = L.marker(latlng, {
                     draggable: true
-                }).on('dragend', function (e) {
+                }).on('dragend', function(e) {
                     updateLatlngInput();
-                }).on('click', function (e) {
+                }).on('click', function(e) {
                     var result = confirm('Rimuovere il marker?');
                     if (result) {
                         destroyMarker();
@@ -157,7 +161,9 @@ if ($value) {
                 }).addTo(map);
 
                 //Center the map on the marker
-                map.setView(latlng, 17, {animate: true});
+                map.setView(latlng, 17, {
+                    animate: true
+                });
                 updateLatlngInput();
             }
         }
@@ -165,7 +171,9 @@ if ($value) {
         function moveMarker(latlng) {
             if (map !== null && map.marker !== null) {
                 map.marker.setLatLng(latlng);
-                map.setView(latlng, 17, {animate: true});
+                map.setView(latlng, 17, {
+                    animate: true
+                });
                 updateLatlngInput();
             }
         }
@@ -178,14 +186,15 @@ if ($value) {
             }
         }
 
-        setTimeout(function() {map.invalidateSize(true)}, 2000);
+        setTimeout(function() {
+            map.invalidateSize(true)
+        }, 2000);
 
-<?php if (isset($lat) && isset($lon)): ?>
-            setTimeout(function () {
+        <?php if (isset($lat) && isset($lon)) : ?>
+            setTimeout(function() {
                 createMarker([<?php echo $lat ?>, <?php echo $lon ?>]);
             }, 1000);
-<?php endif; ?>
+        <?php endif; ?>
 
     });
-
 </script>

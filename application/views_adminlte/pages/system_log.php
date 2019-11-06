@@ -83,13 +83,13 @@ $pprev = $page - 1;
 ?>
 
     <section class="content-header">
-        <h1 class="clearfix"><?php e('Log di sistema'); ?></h1>
+        <h1 class="clearfix"><?php e('System Log'); ?></h1>
     </section>
 
     <section class="content">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <?php e('Filtri'); ?>
+                <?php e('Filters'); ?>
             </div>
 
             <form method="POST">
@@ -97,26 +97,26 @@ $pprev = $page - 1;
                     <div class="row">
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label for="user_radio"><?php e('Visualizza'); ?></label>
+                                <label for="user_radio"><?php e('Show'); ?></label>
 
                                 <div class="radio">
                                     <label>
                                         <input type="radio" id="user_radio" name="user" value="1" <?php echo $filters['user'] == 1 ? 'checked' : ''; ?> />
-                                        <?php e('Utente Rilevato'); ?>
+                                        <?php e('User detected'); ?>
                                     </label>
                                 </div>
 
                                 <div class="radio">
                                     <label>
                                         <input type="radio" id="user_radio" name="user" value="2" <?php echo $filters['user'] == 2 ? 'checked' : ''; ?> />
-                                        <?php e('Utente Non Rilevato'); ?>
+                                        <?php e('User not detected'); ?>
                                     </label>
                                 </div>
 
                                 <div class="radio">
                                     <label>
                                         <input type="radio" id="user_radio" name="user" value="" <?php echo !$filters['user'] ? 'checked' : ''; ?> />
-                                        <?php e('Tutti'); ?>
+                                        <?php e('All'); ?>
                                     </label>
                                 </div>
                             </div>
@@ -131,12 +131,12 @@ $pprev = $page - 1;
                                 <div class="checkbox">
                                     <label>
                                         <input type="checkbox" id="ignore_my_ip" name="ignore_my_ip" value="1" <?php echo $filters['ignore_my_ip'] ? 'checked' : ''; ?> />
-                                        <?php e('Ignora questo IP'); ?>
+                                        <?php e('Ignore this IP'); ?>
                                     </label>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="utente"><?php e('Utente'); ?></label>
+                                <label for="utente"><?php e('User'); ?></label>
                                 <select name="agenzia" id="utente" class="form-control select2me">
                                     <option></option>
                                     <?php foreach ($agenzie as $agenzia) : ?>
@@ -151,6 +151,7 @@ $pprev = $page - 1;
                                 <label for="actions"><?php e('Tipo di azione'); ?></label>
 
                                 <?php
+                                // @todo - Michael E. - 20191106 - Se metto e('') su Apilib::, fa la traduzione ma lato frontend sminchia la visualizzazione..
                                 $tipi = [
                                     Apilib::LOG_LOGIN => 'Login da form',
                                     Apilib::LOG_LOGIN_FAIL => 'Login fallito',
@@ -184,7 +185,7 @@ $pprev = $page - 1;
                     </div>
 
                     <div class="box-footer">
-                        <button class='btn btn-sm btn-primary'>Filtra</button>&nbsp;<button name="reset" value="1" class='btn btn-sm btn-danger'>Reset</button>
+                        <button class='btn btn-sm btn-primary'><?php e('Filter'); ?></button>&nbsp;<button name="reset" value="1" class='btn btn-sm btn-danger'>Reset</button>
                     </div>
                 </div>
             </form>
@@ -195,22 +196,22 @@ $pprev = $page - 1;
                 <h3 class="box-title">Elenco Log</h3>
 
                 <div class="box-tools pull-right">
-                    Pagina <?php echo $page; ?> di <?php echo $pmax; ?>.<br />Mostrati <?php echo $limit; ?> su <?php echo $count; ?>
+                    <?php e('Page'); ?> <?php echo $page; ?> <?php e('of') ?> <?php echo $pmax; ?>.<br /><?php e('Showed'); ?> <?php echo $limit; ?> <?php e('of'); ?> <?php echo $count; ?>
 
                     <nav>
                         <ul class="pagination">
                             <?php if ($pprev) : ?>
                                 <li>
-                                    <a href="?page=<?php echo $pprev ?>" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo; Prev.</span>
+                                    <a href="?page=<?php echo $pprev ?>" aria-label="<?php e('Previous'); ?>">
+                                        <span aria-hidden="true">&laquo; <?php e('Prev.'); ?></span>
                                     </a>
                                 </li>
                             <?php endif; ?>
                             &nbsp;
                             <?php if ($pnext) : ?>
                                 <li>
-                                    <a href="?page=<?php echo $pnext ?>" aria-label="Next">
-                                        <span aria-hidden="true">Next &raquo;</span>
+                                    <a href="?page=<?php echo $pnext ?>" aria-label="<?php e('Next'); ?>">
+                                        <span aria-hidden="true"><?php e('Next'); ?> &raquo;</span>
                                     </a>
                                 </li>
                             <?php endif; ?>
@@ -222,12 +223,12 @@ $pprev = $page - 1;
             <table class="table table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th>Data</th>
-                        <th>Utente</th>
-                        <th>Titolo azione</th>
-                        <th>IP</th>
-                        <th>Extra-Data</th>
-                        <th>Browser</th>
+                        <th><?php e('Date'); ?></th>
+                        <th><?php e('User'); ?></th>
+                        <th><?php e('Action Title'); ?></th>
+                        <th><?php e('IP'); ?></th>
+                        <th><?php e('Extra-data'); ?></th>
+                        <th><?php e('Browser'); ?></th>
                     </tr>
                 </thead>
 
@@ -247,7 +248,7 @@ $pprev = $page - 1;
                             </td>
                             <td>
                                 <?php if (!$log['log_crm_user_id']) : ?>
-                                    <em class="font-red-thunderbird">*** Utente non rilevato ***</em>
+                                    <em class="font-red-thunderbird">*** <?php e('User not detected'); ?> ***</em>
                                 <?php else : ?>
                                     <strong><?php echo $log['log_crm_user_name']; ?></strong>
                                     <!--<small class="text-muted"><?php /*echo $log['users_first_name']; */ ?></small>-->
@@ -278,16 +279,16 @@ $pprev = $page - 1;
                         <ul class="pagination">
                             <?php if ($pprev) : ?>
                                 <li>
-                                    <a href="?page=<?php echo $pprev ?>" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo; Prev</span>
+                                    <a href="?page=<?php echo $pprev ?>" aria-label="<?php e('Previous'); ?>">
+                                        <span aria-hidden="true">&laquo; <?php e('Prev.'); ?></span>
                                     </a>
                                 </li>
                             <?php endif; ?>
 
                             <?php if ($pnext) : ?>
                                 <li>
-                                    <a href="?page=<?php echo $pnext ?>" aria-label="Next">
-                                        <span aria-hidden="true">Next &raquo;</span>
+                                    <a href="?page=<?php echo $pnext ?>" aria-label="<?php e('Next'); ?>">
+                                        <span aria-hidden="true"><?php e('Next'); ?> &raquo;</span>
                                     </a>
                                 </li>
                             <?php endif; ?>
