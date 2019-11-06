@@ -2,8 +2,8 @@
 
         <section class="content-header">
             <h1>
-                <?php e('Ricerca'); ?>
-                <small><?php e('la ricerca della parola "%s" ha prodotto %s risultati', 0, array($dati['search_string'], $dati['count_total'])); ?></small>
+                <?php e('Search'); ?>
+                <small><?php e('The search for "%s" has returned %s results', 0, array($dati['search_string'], $dati['count_total'])); ?></small>
             </h1>
         </section>
         <section class="content">
@@ -84,15 +84,15 @@
         </section>
     <?php elseif ($dati['count_total'] === 0) : ?>
         <div class="col-md-12">
-            <h4 class="box-title"><?php e('Ricerca'); ?> <small><?php e('nessun risultato trovato per la ricerca effettuata: %s', 0, array($dati['search_string'])); ?></small></h4>
+            <h4 class="box-title"><?php e('Ricerca'); ?> <small><?php e('no results for your keyword: %s', 0, array($dati['search_string'])); ?></small></h4>
         </div>
     <?php else : ?>
 
         <div class="callout ">
 
-            <h3><?php e('Ricerca'); ?></h3>
+            <h3><?php e('Search'); ?></h3>
 
-            <p><?php e('La stringa di ricerca deve essere di almeno 3 lettere', 0); ?></p>
+            <p><?php e('Search query must be at least 3 characters', 0); ?></p>
         </div>
 
     <?php endif; ?>

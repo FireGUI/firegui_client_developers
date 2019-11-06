@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
@@ -31,11 +31,11 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVE
 //print_r(pathinfo(FCPATH, PATHINFO_BASENAME));
 
 
-    //$config['base_url'] = '';//$protocol.$_SERVER['HTTP_HOST'].'/'.pathinfo(FCPATH, PATHINFO_BASENAME);
-    $base_url = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
-    $base_url .= "://". @$_SERVER['HTTP_HOST'];
-    $base_url .=     str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
-    $config['base_url'] = $base_url;
+//$config['base_url'] = '';//$protocol.$_SERVER['HTTP_HOST'].'/'.pathinfo(FCPATH, PATHINFO_BASENAME);
+$base_url = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+$base_url .= "://" . @$_SERVER['HTTP_HOST'];
+$base_url .=     str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+$config['base_url'] = $base_url;
 
 
 /*
@@ -65,7 +65,7 @@ $config['index_page'] = 'index.php';
 |
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
-$config['uri_protocol']	= 'REQUEST_URI';
+$config['uri_protocol']    = 'REQUEST_URI';
 
 /*
 |--------------------------------------------------------------------------
@@ -89,7 +89,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'italiano';
+$config['language']    = 'english';
 
 /*
 |--------------------------------------------------------------------------
@@ -295,7 +295,7 @@ $config['log_date_format'] = 'Y-m-d H:i:s';
 | application/views/errors/ directory.  Use a full server path with trailing slash.
 |
 */
-$config['error_views_path'] = realpath(__DIR__).'/../errors/';
+$config['error_views_path'] = realpath(__DIR__) . '/../errors/';
 
 /*
 |--------------------------------------------------------------------------
@@ -337,7 +337,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = md5($_SERVER['HTTP_HOST'].pathinfo(FCPATH, PATHINFO_BASENAME));
+$config['encryption_key'] = md5($_SERVER['HTTP_HOST'] . pathinfo(FCPATH, PATHINFO_BASENAME));
 
 /*
 |--------------------------------------------------------------------------
@@ -420,11 +420,11 @@ $config['sess_regenerate_destroy'] = TRUE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= $config['encryption_key'];
-$config['cookie_domain']	= $_SERVER['SERVER_NAME']; // OLD $_SERVER['HTTP_HOST'];
-$config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+$config['cookie_prefix']    = $config['encryption_key'];
+$config['cookie_domain']    = $_SERVER['SERVER_NAME']; // OLD $_SERVER['HTTP_HOST'];
+$config['cookie_path']        = '/';
+$config['cookie_secure']    = FALSE;
+$config['cookie_httponly']     = FALSE;
 
 
 /*
@@ -470,8 +470,8 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
 $config['csrf_protection'] = FALSE;
-$config['csrf_token_name'] = 'csrf_token_'.$config['encryption_key'];
-$config['csrf_cookie_name'] = 'csrf_cookie_'.$config['encryption_key'];
+$config['csrf_token_name'] = 'csrf_token_' . $config['encryption_key'];
+$config['csrf_cookie_name'] = 'csrf_cookie_' . $config['encryption_key'];
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array();

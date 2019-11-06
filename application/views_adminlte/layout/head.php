@@ -66,7 +66,7 @@ $tsuffix = 'CRM';
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . $this->config->item('version')); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/crm-v2/assets/global/plugins/dropzone/css/dropzone.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('script/global/plugins/dropzone/css/dropzone.css'); ?>" />
 
 <!-- STYLE OVERRIDE -->
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/style.css?v={$this->config->item('version')}"); ?>" />-->
