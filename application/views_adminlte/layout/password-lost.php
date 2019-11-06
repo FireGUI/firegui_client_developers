@@ -8,7 +8,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Password dimenticata?</title>
+    <title><?php e('Password forget?'); ?></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta content="" name="description" />
@@ -31,7 +31,7 @@
         <div class="logo">
             <div class="text-center">
                 <?php if ($this->settings === array()) : ?>
-                    <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
+                    <h2 class="login-logo"><?php e('Your Company'); ?></h2>
                 <?php elseif ($this->settings['settings_company_logo']) : ?>
                     <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
                 <?php else : ?>
@@ -43,20 +43,19 @@
 
         <div class="login-box-body">
             <?php if ($sent) : ?>
-                <h3><?php e("E-mail inviata correttamente"); ?></h3>
+                <h3><?php e("E-mail sent successfully"); ?></h3>
                 <div class="alert alert-success">
-                    <p><?php e("Ti è stata inviata una mail all'indirizzo"); ?> <strong><?php echo $receiver; ?></strong><?php e("contenente il link necessario per effettuare il reset della password."); ?> </p>
+                    <p><?php e("We've sent you and email to"); ?> <strong><?php echo $receiver; ?></strong> <?php e("which contains the link for reset the password."); ?> </p>
                 </div>
             <?php else : ?>
                 <form id="lost" class="forget-form formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate" style="display: block;">
-                    <h4><?php e("Password dimenticata?"); ?></h4>
-                    <p><?php e("Inserisci il tuo indirizzo e-mail per resettare la password."); ?></p>
+                    <h4><?php e("Password lost?"); ?></h4>
+                    <p><?php e("Type your e-mail address to reset the password."); ?></p>
                     <div class="form-group has-feedback">
-
                         <input class="form-control" type="text" autocomplete="off" placeholder="Email" name="email">
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-
                     </div>
+
                     <div class="form-group">
                         <div class="controls">
                             <div id="msg_lost" class="alert alert-danger hide"></div>
@@ -67,12 +66,12 @@
                         <div class="row">
                             <div class="col-xs-6">
                                 <a class="btn btn-primary" href="<?php echo base_url('access/login'); ?>">
-                                    <?php e('Accedi'); ?>
+                                    <?php e('Login'); ?>
                                 </a>
                             </div>
                             <div class="col-xs-6 text-right">
                                 <button type="submit" class="btn btn-success">
-                                    <?php e('Azzera password'); ?>
+                                    <?php e('Reset Password'); ?>
                                 </button>
                             </div>
                         </div>
@@ -95,9 +94,6 @@
     <script src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>"></script>
     <!-- CUSTOM COMPONENTS -->
     <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
-
-
-
 </body>
 
 </html>

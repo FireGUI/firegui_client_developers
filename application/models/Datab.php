@@ -2892,7 +2892,7 @@ class Datab extends CI_Model
         }
 
         if ($img) {
-            $flag = base_url_template('template/crm-v2/assets/global/img/flags/' . strtolower($img) . '.png');
+            $flag = base_url_template('template/common/img/flags/' . strtolower($img) . '.png');
         }
 
         return [

@@ -33,9 +33,9 @@
             <?php if (!empty($this->settings['settings_maintenance_mode']) && $this->settings['settings_maintenance_mode'] == DB_BOOL_TRUE) : ?>
                 <section class="content-header">
                     <div class="callout callout-danger">
-                        <h4><?php e('Aggiornamenti in corso'); ?></h4>
+                        <h4><?php e('Updates in progress'); ?></h4>
 
-                        <p><?php e('Gentile cliente, stiamo effettuando degli aggiornamenti alla tua piattaforma, il servizio potrebbe subire leggere interruzioni, ci scusiamo per il disagio.'); ?></p>
+                        <p><?php e('Dear customer, we are making updates to your platform, the service may be subject to slight interruptions, we apologize for the inconvenience.'); ?></p>
                     </div>
                 </section>
             <?php endif; ?>
