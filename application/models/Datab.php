@@ -1434,10 +1434,10 @@ class Datab extends CI_Model
 
             $controller_method = (($menu['menu_modal'] == DB_BOOL_TRUE) ? 'get_ajax/layout_modal' : 'main/layout');
             $link = base_url("{$controller_method}/{$menu['menu_layout']}") . $menu['menu_link'];
-        } elseif ($menu['menu_link']) {
-            $link = str_replace('{base_url}', base_url(), $menu['menu_link']);
         } elseif ($menu['menu_form']) {
             $link = base_url("get_ajax/modal_form/{$menu['menu_form']}") . $menu['menu_link'];
+        } elseif ($menu['menu_link']) {
+            $link = str_replace('{base_url}', base_url(), $menu['menu_link']);
         }
 
         // Valuto se ho dati su cui fare il replace
