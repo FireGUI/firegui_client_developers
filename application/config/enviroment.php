@@ -94,9 +94,9 @@ define('PASSEPARTOUT', '*********************************');
 /* ============
  * Custom colors
  * ============ */
-define('TOPBAR_COLOR', '#ff4b01');
+define('TOPBAR_COLOR', '#646c9a');
 define('TOPBAR_HOVER', '#851717');
-define('LOGIN_COLOR', '#ff4b01');
+define('LOGIN_COLOR', '#646c9a');
 define('LOGIN_TITLE_COLOR', '#f0f0f0');
 
 /*

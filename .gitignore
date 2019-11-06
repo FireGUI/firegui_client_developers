@@ -24,6 +24,10 @@ application/config/database.php
 modules/*
 custom_views/*
 controllers/custom/*
+views_metronic/*
+views_metronic
+crm-v2/*
+crm-v2
 
 uploads/*
 .idea/*
