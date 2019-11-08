@@ -22,8 +22,6 @@ $error['error_linenumber'] = '';
 $error['error_extra_data'] = json_encode(debug_backtrace());
 
 
-include_once(APPPATH . 'errors/html/module_hook.php');
-
 
 ?>
 <!DOCTYPE html>
