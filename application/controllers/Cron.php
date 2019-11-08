@@ -159,9 +159,9 @@ class Cron extends MY_Controller
         }
     }
 
-
     private function run(array $cron)
     {
+        //debug($cron);
         switch ($cron['crons_type']) {
             case 'mail':
                 $this->cron_email($cron);
@@ -182,7 +182,6 @@ class Cron extends MY_Controller
         }
     }
 
-
     public function cron_php_code($cron)
     {
         eval($cron['crons_text']);
@@ -200,6 +199,7 @@ class Cron extends MY_Controller
 
     public function cron_curl($cron)
     {
+        //debug($cron);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $cron['crons_file']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
