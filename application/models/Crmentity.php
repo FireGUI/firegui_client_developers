@@ -782,12 +782,23 @@ class Crmentity extends CI_Model
             //20170608 - Matteo Puppis - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
-                //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
-                if (stripos($where, $entityCustomActions['soft_delete_flag']) === FALSE) {
-                    if (empty($where)) {
-                        $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
-                    } else {
-                        $where .= " AND ({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+
+                //20191108 - MP - Where can be an array, so it's not correct to check online the where string conditions, but consider it different...
+                if (is_array($where)) {
+                    if (!array_key_exists($entityCustomActions['soft_delete_flag'], $where)) {
+                        if (empty($where)) {
+                            $where = ["({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)"];
+                        } else {
+                            $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                        }
+                    }
+                } else { //If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
+                    if (stripos($where, $entityCustomActions['soft_delete_flag']) === FALSE) {
+                        if (empty($where)) {
+                            $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                        } else {
+                            $where .= " AND ({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                        }
                     }
                 }
             }
