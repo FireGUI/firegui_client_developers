@@ -232,7 +232,10 @@ function initTableAjax(grid) {
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
 
-
+    var where_append = oDataTable.data('where_append');
+    if (typeof (where_append) === 'undefined') {
+        where_append = '';
+    }
 
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
@@ -261,7 +264,7 @@ function initTableAjax(grid) {
         bProcessing: true,
         sServerMethod: "POST",
         bServerSide: true,
-        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters,
+        sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
         aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,

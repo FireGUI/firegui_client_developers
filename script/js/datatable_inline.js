@@ -99,7 +99,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
         $('td', tr).last().append($(this).clone());
     });
     //console.log($('tbody', this.grid));
-    $('tbody', this.grid).append(tr);
+    $('tbody', this.grid).prepend(tr);
 
     initComponents();
 
@@ -308,6 +308,9 @@ function initTable(grid) {
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
 
     var where_append = oDataTable.data('where_append');
+
+
+
     if (typeof (where_append) === 'undefined') {
         where_append = '';
     }
@@ -342,8 +345,10 @@ function initTable(grid) {
         aoColumns.push(coldef);
     });
 
-    //console.log(aoColumns.length);
+    //console.log((no_server_side) ? null : (base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append));
 
+
+    //console.log(where_append);
     var datatable = oDataTable.dataTable({
         stateSave: true,
         bSort: bEnableOrder,
@@ -373,7 +378,7 @@ function startNewDatatableInline() {
         var grid = $(this);
         if (!grid.data('inline_initializated')) {
             grid.data('inline_initializated', true);
-
+            //console.log(grid);
 
             initTable(grid);
             var dtInline = new CrmNewInlineTable(grid);

@@ -1622,6 +1622,7 @@ class Apilib
                 // Se $relation['value'] è vuoto allora anche
                 // $relationFullData sarà vuoto
                 $relationFullData = array_map(function ($value) use ($relationBundle, $savedId) {
+                    //TODO: matteo 20191108 Non è detto che il field_1 sia il saveId, nulla vieta di invertire le due tabella. Sarebbe da fare un check per capire dove va l'id salvato e dove va invece ilvalore della multiselect...
                     return [
                         $relationBundle['relations_field_1'] => $savedId,
                         $relationBundle['relations_field_2'] => $value

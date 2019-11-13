@@ -192,3 +192,8 @@ $lang['ms between requests'] = 'ms between requests';
 $lang['Requests per minute (max)'] = 'Requests per minute (max)';
 $lang['Active'] = 'Active';
 $lang['Cancel'] = 'Cancel';
+$lang['Form %s not found.'] = 'Form %s not found.';
+$lang['Non siamo riusciti a trovare ciò che cerchi.'] = 'Non siamo riusciti a trovare ciò che cerchi.';
+$lang['Nel frattempo, puoi <a href=\"%s\">tornare alla dashboard</a><br />oppure contattare gli amministratori per risolvere il problema'] = 'Nel frattempo, puoi <a href=\"%s\">tornare alla dashboard</a><br />oppure contattare gli amministratori per risolvere il problema';
+$lang['Seleziona file'] = 'Seleziona file';
+$lang['Seleziona file'] = 'Seleziona file';

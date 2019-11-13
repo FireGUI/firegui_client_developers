@@ -742,7 +742,7 @@ class Crmentity extends CI_Model
      * @param int|string $entity
      * @return array
      */
-    private function getEntityFullData($entity)
+    public function getEntityFullData($entity)
     {
         return array(
             'entity' => $this->getEntity($entity),
