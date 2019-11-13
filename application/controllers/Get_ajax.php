@@ -494,6 +494,8 @@ class Get_ajax extends MY_Controller
             $where = '';
         }
 
+
+
         //Matteo: fix da cui sopra per prendere il default order
         //if ($order_col !== null && isset($grid['grids_fields'][$order_col]['fields_name'])) {
         if ($order_col !== null && $order_col !== false) {
@@ -523,7 +525,14 @@ class Get_ajax extends MY_Controller
             $order_by = null;
         }
 
-
+        //20191112 - MP - Added where_append in get ajax
+        if ($where_append = $this->input->get('where_append')) {
+            if ($where) {
+                $where .= ' AND ' . $where_append;
+            } else {
+                $where = $where_append;
+            }
+        }
 
         $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
 
