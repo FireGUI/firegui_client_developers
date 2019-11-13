@@ -3,17 +3,20 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Db_ajax extends MY_Controller {
+class Db_ajax extends MY_Controller
+{
 
-    function __construct() {
-        parent :: __construct();
+    function __construct()
+    {
+        parent::__construct();
 
         // Qualunque chiamata alle apilib da qua dentro è considerata una
         // chiamata in modalità CRM_FORM
         $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
     }
 
-    public function save_form($form_id = null, $edit = false, $value_id = null) {
+    public function save_form($form_id = null, $edit = false, $value_id = null)
+    {
 
         // ==========================
         // Data required
@@ -27,9 +30,9 @@ class Db_ajax extends MY_Controller {
         // ==========================
         $form = $this->db->join('entity', 'forms_entity_id=entity_id', 'left')->get_where('forms', array('forms_id' => $form_id))->row_array();
         $form['fields'] = $this->db->join('fields', 'forms_fields_fields_id=fields_id', 'left')
-                ->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')
-                ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id])
-                ->result_array();
+            ->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')
+            ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id])
+            ->result_array();
 
         // ==========================
         // Check permissions on form
@@ -84,12 +87,12 @@ class Db_ajax extends MY_Controller {
                 } else {
                     //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
                     foreach ($dati as $key => $val) {
-                         if (!in_array($key, $this->input->post('edit_fields'))) {
-                             unset($dati[$key]);
-                         }   
+                        if (!in_array($key, $this->input->post('edit_fields'))) {
+                            unset($dati[$key]);
+                        }
                     }
                     foreach ($value_id as $val) {
-                        
+
                         $savedId = $this->apilib->edit($entity, $val, $dati, false);
                     }
                 }
@@ -154,7 +157,8 @@ class Db_ajax extends MY_Controller {
         }
     }
 
-    public function new_chat_message($gridId = null) {
+    public function new_chat_message($gridId = null)
+    {
 
         $grid = $this->datab->get_grid($gridId);
         if (empty($grid['grids'])) {
@@ -184,7 +188,7 @@ class Db_ajax extends MY_Controller {
         }
 
         if (!empty($output['thumbnail'])) {
-//            $output['thumbnail'] = base_url("uploads/{$output['thumbnail']}");
+            //            $output['thumbnail'] = base_url("uploads/{$output['thumbnail']}");
             $output['thumbnail'] = base_url_uploads("uploads/{$output['thumbnail']}");
         }
 
@@ -195,14 +199,23 @@ class Db_ajax extends MY_Controller {
         echo json_encode($output);
     }
 
-    public function save_session_filter($form_id = NULL) {
+    public function save_session_filter($form_id = NULL)
+    {
         // Recupero il form
         // Ignoro il get_form del datab: a me serve solo la 'filter session key'
         // quindi faccio una query secca tramite il getById di apilib
-        $form_id OR die(json_alert('Form id required'));
+        $form_id or die(json_alert('Form id required'));
 
         $form = $this->apilib->getById('forms', $form_id);
-        $form OR die(json_alert("Form `{$form_id}` not exists"));
+
+        $entity = $this->crmentity->getEntityFullData($form['forms_entity_id']);
+        $_visible_fields = $entity['visible_fields'];
+        $visible_fields = [];
+        foreach ($_visible_fields as $field) {
+            $visible_fields[$field['fields_id']] = $field;
+        }
+
+        $form or die(json_alert("Form `{$form_id}` not exists"));
 
         $filterSessionKey = $form['forms_filter_session_key'];
 
@@ -215,9 +228,41 @@ class Db_ajax extends MY_Controller {
             // Se invece ho fatto un submit normale, valuto le condizioni valide
             // da tenere in sessione
             foreach ($this->input->post('conditions') as $conditional) {
-                if (!empty($conditional['operator']) &&
-                        !empty($conditional['field_id']) &&
-                        !empty($conditional['value'])
+                //debug($conditional);
+                if (!array_key_exists($conditional['field_id'], $visible_fields)) {
+                    throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity_name']}'.");
+                } elseif (!empty($conditional['value']) && $conditional['value']) { //Se ho passato un valore devo verificarne la consistenza
+                    //Check field consistency
+                    $error = false;
+                    switch ($visible_fields[$conditional['field_id']]['fields_type']) {
+                        case 'INT':
+                            $error = !is_int($conditional['value']);
+                            $error_text = ($error) ? "'{$conditional['value']}' is not an integer. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
+                            break;
+                        case 'TIMESTAMP WITHOUT TIME ZONE':
+                            // $dates = explode(' - ', $conditional['value']);
+                            // foreach ($dates as $date) {
+                            //     if ($error) {
+                            //         break;
+                            //     }
+                            //     $error = !strtotime($date);
+                            //     $error_text = ($error) ? "'{$date}' is not a valid timestamp or date. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
+                            // }
+
+                            break;
+                        default:
+                            debug($visible_fields[$conditional['field_id']], true);
+                            break;
+                    }
+                    if ($error) {
+                        throw new Exception($error_text);
+                    }
+                }
+
+                if (
+                    !empty($conditional['operator']) &&
+                    !empty($conditional['field_id']) &&
+                    !empty($conditional['value'])
                 ) {
                     $conditions[$conditional['field_id']] = $conditional;
                 }
@@ -235,7 +280,8 @@ class Db_ajax extends MY_Controller {
         json_refresh();
     }
 
-    public function save_grid_data($form_id = NULL) {
+    public function save_grid_data($form_id = NULL)
+    {
 
         if (!$form_id) {
             die('Form id required');
@@ -246,7 +292,7 @@ class Db_ajax extends MY_Controller {
             die('Grid id required');
         }
 
-        $conditions = array_filter($this->input->post('conditions'), function($condition) {
+        $conditions = array_filter($this->input->post('conditions'), function ($condition) {
             return !empty($condition['operator']) && !empty($condition['field_id']) && !empty($condition['value']);
         });
         $grids_data = $this->session->userdata(SESS_GRIDS_DATA);
@@ -261,7 +307,8 @@ class Db_ajax extends MY_Controller {
         echo json_encode(array('status' => 2));
     }
 
-    public function update_calendar_event($calendar_id = NULL) {
+    public function update_calendar_event($calendar_id = NULL)
+    {
 
         if (!$calendar_id) {
             die();
@@ -286,7 +333,8 @@ class Db_ajax extends MY_Controller {
         }
     }
 
-    public function old_save_permissions() {
+    public function old_save_permissions()
+    {
 
         $this->db->trans_start();
         $user = $this->input->post('permissions_user_id');
@@ -302,7 +350,7 @@ class Db_ajax extends MY_Controller {
             // altrimenti non posso settare l'ultimo utente come admin
             $login_table = LOGIN_ENTITY;
             $valid_administrators = $this->db->where("permissions_user_id IN (SELECT {$login_table}_id FROM {$login_table})")
-                            ->get_where('permissions', array('permissions_user_id <>' => $user, 'permissions_admin' => DB_BOOL_TRUE))->num_rows();
+                ->get_where('permissions', array('permissions_user_id <>' => $user, 'permissions_admin' => DB_BOOL_TRUE))->num_rows();
 
             if ($valid_administrators < 1) {
                 echo json_encode(array('status' => 3, 'txt' => 'Non puoi rimuovere i permessi di amministratore a questo utente'));
@@ -483,7 +531,8 @@ class Db_ajax extends MY_Controller {
      *      permissions_user_id = id_utente
      *      permissions_group   = null
      */
-    public function save_permissions() {
+    public function save_permissions()
+    {
 
         $user = $this->input->post('permissions_user_id');
         $isAdmin = ($this->input->post('permissions_admin') === DB_BOOL_TRUE);
@@ -559,7 +608,8 @@ class Db_ajax extends MY_Controller {
         $this->db->trans_complete();
     }
 
-    public function save_views_permissions() {
+    public function save_views_permissions()
+    {
 
         $inputPostView = $this->input->post('view');
 
@@ -612,7 +662,7 @@ class Db_ajax extends MY_Controller {
             foreach ($users as $user) {
                 $userID = $user[LOGIN_ENTITY . '_id'];
 
-                if (empty($viewsAccess[$layoutID]) OR ! in_array($userID, $viewsAccess[$layoutID])) {
+                if (empty($viewsAccess[$layoutID]) or !in_array($userID, $viewsAccess[$layoutID])) {
                     $batchData[] = ['unallowed_layouts_layout' => $layoutID, 'unallowed_layouts_user' => $userID];
                 }
             }
@@ -628,7 +678,8 @@ class Db_ajax extends MY_Controller {
         echo json_encode(array('status' => 5, 'txt' => 'Impostazioni visibilità layout impostate'));
     }
 
-    public function delete_permission_group() {
+    public function delete_permission_group()
+    {
         $groupName = $this->input->post('group');
         if (is_numeric($groupName)) {
             return;
@@ -645,7 +696,8 @@ class Db_ajax extends MY_Controller {
      * Potrebbe funzionare anche per altre entità,
      * ma è designato per support table
      */
-    public function datatable_inline_edit($entity_name = NULL, $id = NULL) {
+    public function datatable_inline_edit($entity_name = NULL, $id = NULL)
+    {
         try {
             $data = $this->input->post();
             if ($id) {
@@ -653,8 +705,6 @@ class Db_ajax extends MY_Controller {
             } else {
                 $this->apilib->create($entity_name, $data);
             }
-            
-            
         } catch (Exception $ex) {
             set_status_header(400); // Bad-Request se fallisce
             die(json_encode($ex->getMessage()));
@@ -665,7 +715,8 @@ class Db_ajax extends MY_Controller {
      * Inserisci un nuovo record nell'entità
      * Il record viene inserito anche vuoto
      */
-    public function datatable_inline_insert($entity_name = NULL) {
+    public function datatable_inline_insert($entity_name = NULL)
+    {
         try {
             $data = $this->input->post();
             $id = $this->apilib->create($entity_name, $data, false);
@@ -677,7 +728,8 @@ class Db_ajax extends MY_Controller {
         echo json_encode($id);
     }
 
-    public function generic_delete($entity_name = NULL, $id = NULL) {
+    public function generic_delete($entity_name = NULL, $id = NULL)
+    {
 
         /**
          * Controlla permessi di scrittura per utente loggato
@@ -715,7 +767,8 @@ class Db_ajax extends MY_Controller {
      * @param string $entity
      * @param int $id
      */
-    public function update($entity, $id) {
+    public function update($entity, $id)
+    {
 
         if (!$this->datab->can_write_entity($entity)) {
             if ($this->input->is_ajax_request()) {
@@ -743,7 +796,8 @@ class Db_ajax extends MY_Controller {
      * Switch di un field booleano
      * l'utente deve avere i permessi di scrittura per l'entità
      */
-    public function switch_bool($field_identifier, $id) {
+    public function switch_bool($field_identifier, $id)
+    {
 
         $this->db->where('fields_type', DB_BOOL_IDENTIFIER);
         if (is_numeric($field_identifier)) {
@@ -780,7 +834,8 @@ class Db_ajax extends MY_Controller {
         }
     }
 
-    public function change_value($entity_name = NULL, $id = NULL, $field_name = null, $new_value = null) {
+    public function change_value($entity_name = NULL, $id = NULL, $field_name = null, $new_value = null)
+    {
         try {
             $this->apilib->edit($entity_name, $id, [$field_name => $new_value]);
             if ($this->input->is_ajax_request()) {
@@ -795,7 +850,8 @@ class Db_ajax extends MY_Controller {
         }
     }
 
-    public function notify_read($notificationId = null) {
+    public function notify_read($notificationId = null)
+    {
         if ($notificationId && is_numeric($notificationId)) {
             $this->datab->readNotification($notificationId);
         } else {
@@ -803,20 +859,21 @@ class Db_ajax extends MY_Controller {
         }
     }
 
-    public function ck_uploader() {
+    public function ck_uploader()
+    {
         $url = './uploads/' . time() . "_" . strtolower(str_replace(' ', '_', $_FILES['upload']['name']));
         //extensive suitability check before doing anything with the file...
-        if (($_FILES['upload'] == "none") OR ( empty($_FILES['upload']['name']))) {
+        if (($_FILES['upload'] == "none") or (empty($_FILES['upload']['name']))) {
             $message = "No file uploaded.";
         } else if ($_FILES['upload']["size"] == 0) {
             $message = "The file is of zero length.";
-        } else if (($_FILES['upload']["type"] != "image/pjpeg") AND ( $_FILES['upload']["type"] != "image/jpeg") AND ( $_FILES['upload']["type"] != "image/png")) {
+        } else if (($_FILES['upload']["type"] != "image/pjpeg") and ($_FILES['upload']["type"] != "image/jpeg") and ($_FILES['upload']["type"] != "image/png")) {
             $message = "The image must be in either JPG or PNG format. Please upload a JPG or PNG instead.";
         } else if (!is_uploaded_file($_FILES['upload']["tmp_name"])) {
             $message = "You may be attempting to hack our server. We're on to you; expect a knock on the door sometime soon.";
         } else {
             $message = "";
-            $move = @ move_uploaded_file($_FILES['upload']['tmp_name'], $url);
+            $move = @move_uploaded_file($_FILES['upload']['tmp_name'], $url);
             if (!$move) {
                 $message = "Error moving uploaded file. Check the script is granted Read/Write/Modify permissions.";
             }
@@ -827,30 +884,31 @@ class Db_ajax extends MY_Controller {
         echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($funcNum, '$url', '$message');</script>";
     }
 
-    public function multi_upload_async($field_id) {
+    public function multi_upload_async($field_id)
+    {
 
 
         $field = $this->datab->get_field($field_id);
 
-//        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-//        $filename = md5(time() . $_FILES['file']['name']) . '.' . $ext;
-//        $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
+        //        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        //        $filename = md5(time() . $_FILES['file']['name']) . '.' . $ext;
+        //        $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
 
         $old_file_data =  $_FILES['file'];
         unset($_FILES['file']);
         $_FILES[$field['fields_name']] = $old_file_data;
-        
+
         usleep(100);
 
         //A questo punto, devo valutare se il field ha una tabella collegata ed è di tipo INT (forse questo non serve o se invece è di tipo JSON e allora chissene, va bene così (tanto mi salvo il json con tutte le info sul file
 
         if ($field['fields_ref']) { //Se ha una relazione collegata...
             $relations = $this->db->where('relations_name', $field['fields_ref'])->get('relations');
-            
+
             if ($relations->num_rows() == 0) { //Allora il campo non punta a una relazione ma a una tabella diretta
                 //Cerco allora la tabella
                 //$table = $this->db->where('entity_name', $field['fields_ref'])->get('entity');
-                
+
                 $entity_data = $this->datab->get_entity_by_name($field['fields_ref']);
 
                 //Cerco il campo file e lo uso per inserire
@@ -864,13 +922,12 @@ class Db_ajax extends MY_Controller {
                     echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
                     exit;
                 }
-                
+
                 $data = $this->apilib->create($field['fields_ref'], [], true);
-                echo json_encode(['status' => 1, 'file' => $data[$field['fields_ref']].'_id']);
-                
+                echo json_encode(['status' => 1, 'file' => $data[$field['fields_ref']] . '_id']);
             } else {
-                
-            
+
+
                 $relation = $relations->row();
                 //Verifico che effettivamente il campo sia di una tabella presente nella relazione
                 if (!in_array($field['entity_name'], [$relation->relations_table_1, $relation->relations_table_2])) {
@@ -884,18 +941,18 @@ class Db_ajax extends MY_Controller {
 
                 //Cerco il campo file e lo uso per inserire
                 $field_insert = false;
-                
+
                 foreach ($entity_data['fields'] as $_field) {
                     if (in_array($_field['fields_draw_html_type'], ['upload_image', 'upload'])) {
                         $field_insert = $_field;
                     }
                 }
-                
+
                 if (!$field_insert) {
                     echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
                     exit;
                 }
-                
+
                 $id = $this->apilib->create($file_table, [], false);
                 echo json_encode(['status' => 1, 'file' => $id]);
             }
@@ -928,7 +985,7 @@ class Db_ajax extends MY_Controller {
             $this->load->library('upload', array(
                 'upload_path' => FCPATH . 'uploads/' . $localFolder,
                 'allowed_types' => '*',
-                'max_size' => defined('MAX_UPLOAD_SIZE')?MAX_UPLOAD_SIZE:10000,
+                'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
                 'encrypt_name' => false,
                 'file_name' => $filename,
             ));
@@ -949,7 +1006,8 @@ class Db_ajax extends MY_Controller {
         }
     }
 
-    public function removeFileFromRelation($field_support_id, $field_id, $file_id) {
+    public function removeFileFromRelation($field_support_id, $field_id, $file_id)
+    {
 
         $field = $this->datab->get_field($field_id);
         $relation_name = $field['fields_ref'];
@@ -971,7 +1029,8 @@ class Db_ajax extends MY_Controller {
         $this->apilib->delete($entity_name, $file_id);
     }
 
-    public function removeFileFromJson($field_id, $record_id, $key) {
+    public function removeFileFromJson($field_id, $record_id, $key)
+    {
         $field = $this->datab->get_field($field_id);
         $field_name = $field['fields_name'];
         $entity_name = $field['entity_name'];
@@ -989,7 +1048,8 @@ class Db_ajax extends MY_Controller {
         //debug($record);
     }
 
-    public function changeLanguage() {
+    public function changeLanguage()
+    {
         $langKey = $this->input->get_post('language');
         if ($this->datab->changeLanguage($langKey)) {
             echo json_encode(['success' => true, 'lang' => $this->datab->getLanguage()]);
@@ -997,7 +1057,6 @@ class Db_ajax extends MY_Controller {
             echo json_encode(['success' => false, 'lang' => null]);
         }
     }
-
 }
 
 /* End of file welcome.php */
