@@ -161,7 +161,7 @@ class Main extends MY_Controller
     {
         $form = $this->datab->get_form($form_id, $value_id);
         if (!$form) {
-            $this->stampa($this->load->view("box/errors/missing_form", ['form_id' => $form_id],true));
+            $this->stampa($this->load->view("box/errors/missing_form", ['form_id' => $form_id], true));
             return;
         }
         if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {

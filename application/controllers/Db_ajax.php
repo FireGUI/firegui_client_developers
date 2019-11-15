@@ -251,7 +251,7 @@ class Db_ajax extends MY_Controller
 
                             break;
                         default:
-                            debug($visible_fields[$conditional['field_id']], true);
+                            //debug($visible_fields[$conditional['field_id']], true);
                             break;
                     }
                     if ($error) {
