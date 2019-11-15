@@ -784,7 +784,7 @@ class Get_ajax extends MY_Controller
         //$data_entity = $this->datab->getDataEntity($data['calendars']['calendars_entity_id'], $generatedWhere, null, null, null, 1);
         /* $data_entity = $this->datab->get_data_entity($data['calendars']['calendars_entity_id'], 0, $generatedWhere); */
         //debug($data, true);
-        $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 4);
+        $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 3);
 
 
         $previews = array();
@@ -873,6 +873,25 @@ class Get_ajax extends MY_Controller
         }
 
         $notifications = $this->datab->get_notifications(30, 0);
+
+        //Check client version. If old add a notification on top
+        if (checkClientVersion()) {
+            $notifications = array_merge([[
+                'notifications_type' => NOTIFICATION_TYPE_SYSTEM,
+                'notifications_id' => null,
+                'notifications_user_id' => null,
+                'notifications_message' => '[System] New client version available!<br />Update now by click here.',
+                'notifications_read' => DB_BOOL_FALSE,
+                'notifications_date_creation' => date('Y-m-d h:i:s'),
+                'notifications_link' => base_url('firegui/updateClient'),
+                'href' => base_url('firegui/updateClient'),
+                'label' => [
+                    'class' => 'label-info',
+                    'icon' => 'fas fa-globe-americas',
+                ],
+                'datespan' => date('d M')
+            ]], $notifications);
+        }
 
         echo json_encode(array(
             'view' => $this->load->view('box/notification_dropdown_item', array('notifications' => $notifications), true),
