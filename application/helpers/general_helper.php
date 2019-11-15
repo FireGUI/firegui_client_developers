@@ -1024,3 +1024,45 @@ if (!function_exists('scanAllDir')) {
         );
     }
 }
+
+if (!function_exists('checkClientVersion')) {
+    function checkClientVersion()
+    {
+        $CI = &get_instance();
+
+        if (!$CI->auth->is_admin()) {
+            return false;
+        }
+
+        //Check if client is updated
+        $last_check = $CI->session->userdata('last_client_check');
+
+
+        //Check every 10 minutes to avoid unwanted curls...
+        if (!$last_check || $last_check < date('Y-m-d h:i:s', strtotime('-10 minutes'))) {
+            $last_check = date('Y-m-d h:i:s');
+            $CI->session->set_userdata('last_client_check', $last_check);
+
+            //$file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION;
+            $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
+            //$new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION);
+            $CI->session->set_userdata('last_checked_version', $new_version);
+            if ($new_version != VERSION) {
+                return true;
+            } else {
+                //Client already updated to the last version
+                return false;
+            }
+        } else {
+            //Already checked client version in the last few minutes
+            return false;
+        }
+        $last_checked_version = $CI->session->userdata('last_checked_version');
+
+        if ($last_checked_version != VERSION) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
