@@ -283,7 +283,7 @@ class Auth extends CI_Model
                 'expire' => (int) (time() + (31 * 24 * 60 * 60)),
                 //'expire' => time() + ($timeout*60),
                 'domain' => '.' . $_SERVER['HTTP_HOST'],
-                'path' => ($this->config->item('cookie_path')) ?: '/'
+                'path' => '/'
             ));
 
             // Salva il token su db
