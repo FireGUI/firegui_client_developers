@@ -282,7 +282,7 @@ class Auth extends CI_Model
                 'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
                 'expire' => (int) (time() + (31 * 24 * 60 * 60)),
                 //'expire' => time() + ($timeout*60),
-                'domain' => '.' . $_SERVER['HTTP_HOST'],
+                'domain' => $_SERVER['HTTP_HOST'],
                 'path' => '/'
             ));
 
