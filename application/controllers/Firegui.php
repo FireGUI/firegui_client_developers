@@ -48,7 +48,7 @@ class Firegui extends MY_Controller
     {
 
         if ($command == null) {
-            $command = "git pull https://github.com/FireGUI/firegui_client_developers.git master";
+            $command = "git pull";
         }
 
         $result = array();
