@@ -305,6 +305,9 @@ class Firegui extends MY_Controller
             die('ok');
         }
     }
+
+    public function downloadClient()
+    { }
 }
 
 /* End of file welcome.php */

@@ -1194,7 +1194,7 @@ class Apilib
             // Inserisci la regola required per i campi che la richiedono
             // (una password è required solo se sto creando il record per la
             // prima volta)
-            if ($field['fields_required'] === DB_BOOL_TRUE && !$field['fields_default']) {
+            if ($field['fields_required'] === DB_BOOL_TRUE && $field['fields_default'] === '') {
 
                 switch ($field['fields_draw_html_type']) {
                         // Questo perchè l'upload viene giustamente fatto dopo il
@@ -1718,7 +1718,7 @@ class Apilib
         switch ($typeSQL) {
             case 'INT':
                 if (!is_numeric($value) && ((int) $value == $value)) {
-                    if ($value == '' && ($field['fields_required'] === DB_BOOL_FALSE or $field['fields_default'])) {
+                    if ($value == '' && ($field['fields_required'] === DB_BOOL_FALSE or $field['fields_default'] !== '')) {
                         // Se il campo è stato lasciato vuoto e non è richiesto
                         // oppure (se è richiesto), ma ha un default... lo metto
                         // a null in modo che il sistema lo gestisca
