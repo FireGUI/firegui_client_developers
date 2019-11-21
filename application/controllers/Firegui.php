@@ -209,7 +209,7 @@ class Firegui extends MY_Controller
 
                 unlink($newfile);
                 if ($close) {
-                    echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();}, 5000);</script>";
+                    echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();window.history.back();}, 5000);</script>";
                 } else {
                     echo $new_version_code;
                 }
