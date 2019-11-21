@@ -263,7 +263,7 @@ class Db_ajax extends MY_Controller
                 if (
                     !empty($conditional['operator']) &&
                     !empty($conditional['field_id']) &&
-                    $conditional['value'] !== ''
+                    array_key_exists('value', $conditional)
                 ) {
                     $conditions[$conditional['field_id']] = $conditional;
                 }
