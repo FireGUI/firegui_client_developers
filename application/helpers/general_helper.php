@@ -554,7 +554,8 @@ if (!function_exists('is_development')) {
         }
 
         //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
-        return ($ipAddr == gethostbyname('idra.h24hosting.com') or gethostname() === 'idra');
+
+        return (gethostname() === 'idra' or in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1']));
     }
 }
 
@@ -1048,7 +1049,7 @@ if (!function_exists('checkClientVersion')) {
             //$new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION);
             $CI->session->set_userdata('last_checked_version', $new_version);
             if ($new_version != VERSION) {
-                return $new_version;
+                return true;
             } else {
                 //Client already updated to the last version
                 return false;
@@ -1060,7 +1061,7 @@ if (!function_exists('checkClientVersion')) {
         $last_checked_version = $CI->session->userdata('last_checked_version');
 
         if ($last_checked_version != VERSION) {
-            return $last_checked_version;
+            return true;
         } else {
             return false;
         }
