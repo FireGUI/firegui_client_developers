@@ -340,7 +340,23 @@ class Datab extends CI_Model
             $formData = $this->apilib->searchFirst($form['entity_name']);
         } else {
             $formData = ($value_id && !is_array($value_id)) ? $this->apilib->view($form['entity_name'], $value_id, 1) : [];
+
+            foreach ($fields as $field) {
+                //debug($formData, true);
+                if ($field['fields_multilingual'] == DB_BOOL_TRUE) { //If multilanguage, override value with original json
+                    $entity = $this->crmentity->getEntity($field['fields_entity_id']);
+                    //debug($field['fields_name']);
+                    $value_json = $this->db
+                        ->select($field['fields_name'])
+                        ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $value_id])
+                        ->row_array()[$field['fields_name']];
+                    $formData[$field['fields_name']] = $value_json;
+                }
+            }
         }
+
+
+
         $this->apilib->setLanguage($clanguage, $flanguage);
 
         $operators = unserialize(OPERATORS);
@@ -502,6 +518,7 @@ class Datab extends CI_Model
                 $colsize = 12;
             }
             //debug($formData);
+
             $shown[$k] = [
                 'id' => $field['fields_id'],
                 'name' => $field['fields_name'],
@@ -535,6 +552,7 @@ class Datab extends CI_Model
 
     public function get_grids_from_entity($entity_id)
     {
+        debug("TODO: errore!!! Correggere... non so quando viene usata!", true);
         if (!$grid_id)
             die('ERRORE: Entity ID mancante');
 
@@ -2562,6 +2580,9 @@ class Datab extends CI_Model
 
         $output = '';
         $isMultilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == DB_BOOL_TRUE;
+
+
+
         $languages = $isMultilingual ? $this->_languages : [null];
 
         /*
@@ -2594,6 +2615,7 @@ class Datab extends CI_Model
         $class = $field['fields_draw_css_extra'] . ' field_' . $field['fields_id'];
         $name = $field['fields_name'];
         if ($isMultilingual) {
+
             $value = json_decode($value, true);
         }
 
@@ -2622,6 +2644,7 @@ class Datab extends CI_Model
 
                 $langId = $id;
                 $langShow = $this->_currentLanguage == $id && $baseShow;
+
                 $langValue = isset($value[$id]) ? $value[$id] : null;
                 $langAttribute = "data-lang='{$id}'";
             }
