@@ -272,7 +272,7 @@ function initTableAjax(grid) {
             sUrl: base_url_scripts + "script/datatable.transl.json"
         }
     });
-    console.log(datatable);
+    //console.log(datatable);
     return datatable;
 }
 
