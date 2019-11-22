@@ -9,7 +9,7 @@ $is_sub_grid = (empty($is_sub_grid)) ? false : $is_sub_grid; //TODO: usare quest
 
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 ?>
-<a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">Nuovo valore</a>
+<a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
 <div class="clearfix"></div>
 <br />
 
