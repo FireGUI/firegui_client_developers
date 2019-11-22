@@ -99,7 +99,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
         $('td', tr).last().append($(this).clone());
     });
     //console.log($('tbody', this.grid));
-    $('tbody', this.grid).prepend(tr);
+    $('tbody', this.grid).append(tr);
 
     initComponents();
 
