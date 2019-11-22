@@ -554,7 +554,8 @@ if (!function_exists('is_development')) {
         }
 
         //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
-        return ($ipAddr == gethostbyname('idra.h24hosting.com') or gethostname() === 'idra');
+
+        return (gethostname() === 'idra' or in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1']));
     }
 }
 

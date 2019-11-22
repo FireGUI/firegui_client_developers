@@ -231,8 +231,9 @@ class Db_ajax extends MY_Controller
                 //debug($conditional);
                 if (!array_key_exists($conditional['field_id'], $visible_fields)) {
                     throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity_name']}'.");
-                } elseif (!empty($conditional['value']) && $conditional['value']) { //Se ho passato un valore devo verificarne la consistenza
+                } elseif (array_key_exists('value', $conditional) && $conditional['value'] !== '') { //Se ho passato un valore devo verificarne la consistenza
                     //Check field consistency
+
                     $error = false;
                     switch ($visible_fields[$conditional['field_id']]['fields_type']) {
                         case 'INT':
@@ -262,7 +263,7 @@ class Db_ajax extends MY_Controller
                 if (
                     !empty($conditional['operator']) &&
                     !empty($conditional['field_id']) &&
-                    !empty($conditional['value'])
+                    array_key_exists('value', $conditional)
                 ) {
                     $conditions[$conditional['field_id']] = $conditional;
                 }
@@ -274,6 +275,9 @@ class Db_ajax extends MY_Controller
         // rimosse con un array_filter
         $where_data = $this->session->userdata(SESS_WHERE_DATA);
         $where_data[$filterSessionKey] = $conditions;
+
+        //debug($conditions);
+
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
 
         // Mando output
