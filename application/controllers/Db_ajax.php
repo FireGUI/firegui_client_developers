@@ -263,7 +263,7 @@ class Db_ajax extends MY_Controller
                 if (
                     !empty($conditional['operator']) &&
                     !empty($conditional['field_id']) &&
-                    array_key_exists('value', $conditional)
+                    array_key_exists('value', $conditional) && $conditional['value'] != '#'
                 ) {
                     $conditions[$conditional['field_id']] = $conditional;
                 }
@@ -279,7 +279,7 @@ class Db_ajax extends MY_Controller
         //debug($conditions);
 
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
-
+        //debug($this->session->userdata(SESS_WHERE_DATA));
         // Mando output
         json_refresh();
     }
