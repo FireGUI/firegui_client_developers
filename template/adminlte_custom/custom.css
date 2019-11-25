@@ -65,3 +65,10 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
         max-width: 1500px;
     }
 }
+
+.box-body.layout {
+    padding:0px;
+}
+.box-body.layout .content {
+    padding:0px;
+}
