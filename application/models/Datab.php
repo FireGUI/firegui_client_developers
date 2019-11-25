@@ -393,7 +393,8 @@ class Datab extends CI_Model
 
             // A questo punto se il campo è ajax non pesco i dati, ma demando
             // l'onere alla chiamata ajax
-            if ($field['fields_draw_html_type'] == 'select_ajax' or $field['fields_source']) {
+            $type = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
+            if ($type == 'select_ajax' or $field['fields_source']) {
                 continue;
             }
 
@@ -2435,7 +2436,8 @@ class Datab extends CI_Model
                     }
 
                 case 'multi_upload':
-                    if ($field['fields_type'] == 'JSON') {
+
+                    if (in_array($field['fields_type'], ['JSON', 'LONGTEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
                             //debug($item, true);

@@ -552,10 +552,9 @@ if (!function_exists('is_development')) {
         } else {
             $ipAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR') ?: @$_SERVER['REMOTE_ADDR'];
         }
-
+        //die($_SERVER['REMOTE_ADDR']);
         //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
-
-        return (gethostname() === 'idra' or in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1']));
+        return (gethostname() === 'idra' or in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']));
     }
 }
 
