@@ -223,6 +223,7 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 
 
 //MP - 20190206 - Nuove inline table con form
+// Test
 
 
 
@@ -273,6 +274,7 @@ function initTableAjax(grid) {
         }
     });
     //console.log(datatable);
+
     return datatable;
 }
 
