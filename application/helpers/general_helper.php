@@ -1048,7 +1048,7 @@ if (!function_exists('checkClientVersion')) {
             //$new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION);
             $CI->session->set_userdata('last_checked_version', $new_version);
             if ($new_version != VERSION) {
-                return true;
+                return $new_version;
             } else {
                 //Client already updated to the last version
                 return false;
@@ -1060,7 +1060,7 @@ if (!function_exists('checkClientVersion')) {
         $last_checked_version = $CI->session->userdata('last_checked_version');
 
         if ($last_checked_version != VERSION) {
-            return true;
+            return $last_checked_version;
         } else {
             return false;
         }
