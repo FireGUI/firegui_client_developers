@@ -306,6 +306,16 @@ class Datab extends CI_Model
         return $value;
     }
 
+    public function get_form_id_by_identifier($form_identifier)
+    {
+        $form = $this->db->where('forms_identifier', $form_identifier)->get('forms')->row();
+        if ($form) {
+            return $form->forms_id;
+        } else {
+            return false;
+        }
+    }
+
     public function get_form($form_id, $value_id = null)
     {
 
