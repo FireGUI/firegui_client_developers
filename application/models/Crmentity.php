@@ -467,9 +467,13 @@ class Crmentity extends CI_Model
 
         $dati = $this->getEntityFullData($entity_id);
 
+
+
         $this->buildSelect($dati, $options);
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);
+
+
 
         // Mi salvo l'elenco delle entità joinate, in modo da evitare doppi join
         // in futuro non dovrò evitare, ma semplicemente assegnare un alias
@@ -688,7 +692,18 @@ class Crmentity extends CI_Model
                     $this->db->where($key, $value);
                 }
             };
-            $where = array_filter($where);
+
+            //array_filter does not work well. It removes also filters with value 0 or '0'. Ex.: WHERE field=0 will be removed.
+            //so we used a custom function
+            $func_empty = function ($value) {
+                if (empty($value) && $value !== 0 && $value !== '0') {
+                    return false;
+                } else {
+                    return true;
+                }
+            };
+
+            $where = array_filter($where, $func_empty);
             array_walk($where, $func);
         }
     }
