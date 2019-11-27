@@ -237,7 +237,7 @@ class Db_ajax extends MY_Controller
                     $error = false;
                     switch ($visible_fields[$conditional['field_id']]['fields_type']) {
                         case 'INT':
-                            $error = !is_int($conditional['value']);
+                            $error = !is_numeric(trim($conditional['value'], "'")) || (int) $conditional['value'] != (float) $conditional['value'];
                             $error_text = ($error) ? "'{$conditional['value']}' is not an integer. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
                             break;
                         case 'TIMESTAMP WITHOUT TIME ZONE':
@@ -263,7 +263,7 @@ class Db_ajax extends MY_Controller
                 if (
                     !empty($conditional['operator']) &&
                     !empty($conditional['field_id']) &&
-                    array_key_exists('value', $conditional) && $conditional['value'] != '#'
+                    array_key_exists('value', $conditional) && $conditional['value'] !== ''
                 ) {
                     $conditions[$conditional['field_id']] = $conditional;
                 }
