@@ -88,42 +88,8 @@ script  src="<?php echo base_url_scripts("script/global/plugins/datatables/media
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . $this->config->item('version')); ?>"></script>
 
 <!-- LEAFLET-JS -->
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/leaflet.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/marker-cluster/leaflet.markercluster-src.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v={$this->config->item('version')}"); ?>"></script>
 
-<!-- LEAFLET DRAWER -->
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/Leaflet.draw.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/Toolbar.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/Tooltip.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/ext/GeometryUtil.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/ext/LatLngUtil.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/ext/LineUtil.Intersect.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/ext/Polygon.Intersect.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/ext/Polyline.Intersect.js?v={$this->config->item('version')}"); ?>"></script>
-
-
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/DrawToolbar.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.Feature.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.SimpleShape.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.Polyline.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.Circle.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.Marker.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.Polygon.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/draw/handler/Draw.Rectangle.js?v={$this->config->item('version')}"); ?>"></script>
-
-
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/EditToolbar.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/EditToolbar.Edit.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/EditToolbar.Delete.js?v={$this->config->item('version')}"); ?>"></script>
-
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/Control.Draw.js?v={$this->config->item('version')}"); ?>"></script>
-
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/Edit.Poly.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/Edit.SimpleShape.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/Edit.Circle.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/Edit.Rectangle.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-0.7.2/edit/handler/Edit.Marker.js?v={$this->config->item('version')}"); ?>"></script>
 
 <script src="<?php echo base_url_template('script/global/plugins/dropzone/dropzone.js'); ?>"></script>
 <script>
