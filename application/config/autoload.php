@@ -114,3 +114,8 @@ $autoload['model'] = array('auth', 'datab', 'hook', 'emails', 'mail_model', 'lay
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */
+
+//FireGUI extends
+if (file_exists(APPPATH . './config/autoload_custom.php')) {
+    include_once APPPATH . './config/autoload_custom.php';
+}

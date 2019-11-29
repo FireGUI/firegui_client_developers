@@ -209,6 +209,7 @@ class Db_ajax extends MY_Controller
         $form = $this->apilib->getById('forms', $form_id);
 
         $entity = $this->crmentity->getEntityFullData($form['forms_entity_id']);
+        //debug($entity, true);
         $_visible_fields = $entity['visible_fields'];
         $visible_fields = [];
         foreach ($_visible_fields as $field) {
@@ -230,15 +231,17 @@ class Db_ajax extends MY_Controller
             foreach ($this->input->post('conditions') as $conditional) {
                 //debug($conditional);
                 if (!array_key_exists($conditional['field_id'], $visible_fields)) {
-                    throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity_name']}'.");
+                    //TODO Wrong! Field id can be in another left joined table, so get the field information direct from the field_id to check his type... 
+                    //throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity']['entity_name']}'.");
                 } elseif (array_key_exists('value', $conditional) && $conditional['value'] !== '') { //Se ho passato un valore devo verificarne la consistenza
                     //Check field consistency
 
                     $error = false;
                     switch ($visible_fields[$conditional['field_id']]['fields_type']) {
                         case 'INT':
-                            $error = !is_numeric(trim($conditional['value'], "'")) || (int) $conditional['value'] != (float) $conditional['value'];
-                            $error_text = ($error) ? "'{$conditional['value']}' is not an integer. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
+                            //TODO: fix in caso di passaggio di array di int...
+                            // $error = !is_numeric(trim($conditional['value'], "'")) || (int) $conditional['value'] != (float) $conditional['value'];
+                            // $error_text = ($error) ? "'{$conditional['value']}' is not an integer. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
                             break;
                         case 'TIMESTAMP WITHOUT TIME ZONE':
                             // $dates = explode(' - ', $conditional['value']);
