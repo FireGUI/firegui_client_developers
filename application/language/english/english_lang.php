@@ -197,3 +197,5 @@ $lang['Non siamo riusciti a trovare ciò che cerchi.'] = 'Non siamo riusciti a t
 $lang['Nel frattempo, puoi <a href=\"%s\">tornare alla dashboard</a><br />oppure contattare gli amministratori per risolvere il problema'] = 'Nel frattempo, puoi <a href=\"%s\">tornare alla dashboard</a><br />oppure contattare gli amministratori per risolvere il problema';
 $lang['Seleziona file'] = 'Seleziona file';
 $lang['Seleziona file'] = 'Seleziona file';
+$lang['cerca località'] = 'cerca località';
+$lang['cerca località'] = 'cerca località';
