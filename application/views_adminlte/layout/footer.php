@@ -89,7 +89,7 @@ script  src="<?php echo base_url_scripts("script/global/plugins/datatables/media
 
 <!-- LEAFLET-JS -->
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v={$this->config->item('version')}"); ?>"></script>
-
+<script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v={$this->config->item('version')}"); ?>"></script>
 
 <script src="<?php echo base_url_template('script/global/plugins/dropzone/dropzone.js'); ?>"></script>
 <script>
