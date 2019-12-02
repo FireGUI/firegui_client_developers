@@ -9,6 +9,8 @@ $error['error_filename'] = '';
 $error['error_linenumber'] = '';
 $error['error_extra_data'] = json_encode(debug_backtrace());
 
+log_message('error', "*** WARNING *** PHP General Error: " . $error['error_message']);
+
 ?>
 
 <?php

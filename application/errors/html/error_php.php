@@ -31,7 +31,7 @@ $error['error_filename'] = $filepath;
 $error['error_linenumber'] = $line;
 $error['error_extra_data'] = json_encode(debug_backtrace());
 
-
+log_message('error', "*** WARNING *** PHP Error: " . $error['error_message']);
 
 
 
