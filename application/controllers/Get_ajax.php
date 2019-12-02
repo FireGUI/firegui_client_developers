@@ -598,6 +598,10 @@ class Get_ajax extends MY_Controller
         $where = array_filter((array) $this->datab->generate_where("maps", $map_id, $value_id));
 
         $fields = array();
+        $isSearchMode = false;
+        $post_where = (array) $this->input->post('where');
+
+
         $latlng_field = NULL;
         foreach ($data['maps_fields'] as $field) {
             $fields[$field['fields_name']] = $field;
@@ -606,8 +610,10 @@ class Get_ajax extends MY_Controller
             }
         }
 
-        $isSearchMode = false;
-        $post_where = (array) $this->input->post('where');
+
+
+
+
         if (!empty($post_where)) {
             foreach ($post_where as $post_cond) {
                 $field = $post_cond['name'];
@@ -632,15 +638,30 @@ class Get_ajax extends MY_Controller
 
         // Geography data
         $bounds = $this->input->post('bounds');
-        if ($latlng_field !== NULL && $bounds && !$isSearchMode) {
+        if ($this->db->dbdriver == 'postgre') {
+            if ($latlng_field !== NULL && $bounds && !$isSearchMode) {
 
-            $ne_lat = $bounds['ne_lat'];
-            $ne_lng = $bounds['ne_lng'];
-            $sw_lat = $bounds['sw_lat'];
-            $sw_lng = $bounds['sw_lng'];
+                $ne_lat = $bounds['ne_lat'];
+                $ne_lng = $bounds['ne_lng'];
+                $sw_lat = $bounds['sw_lat'];
+                $sw_lng = $bounds['sw_lng'];
 
-            if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
-                $where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
+                if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
+                    $where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
+                }
+            }
+        } else {
+            if ($latlng_field !== NULL && $bounds && !$isSearchMode) {
+
+                $ne_lat = $bounds['ne_lat'];
+                $ne_lng = $bounds['ne_lng'];
+                $sw_lat = $bounds['sw_lat'];
+                $sw_lng = $bounds['sw_lng'];
+
+                if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
+                    //TODO...
+                    //$where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
+                }
             }
         }
 
@@ -665,15 +686,21 @@ class Get_ajax extends MY_Controller
             }
 
             $geography = array();
-            $this->db->select("{$data['maps']['entity_name']}_id as id, ST_Y({$latlng_field}::geometry) AS lat, ST_X({$latlng_field}::geometry) AS lon")
-                ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+            if ($this->db->dbdriver == 'postgre') {
+                $this->db->select("{$data['maps']['entity_name']}_id as id, ST_Y({$latlng_field}::geometry) AS lat, ST_X({$latlng_field}::geometry) AS lon")
+                    ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+            } else {
+                $this->db->select("{$data['maps']['entity_name']}_id as id, substring_index ( $latlng_field,';',1 )  AS lat, substring_index ( $latlng_field,';',-1 )  AS lon")
+                    ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+            }
+
 
             // Indicizzo i risultati per id
             foreach ($this->db->get()->result_array() as $result) {
                 $geography[$result['id']] = array('lat' => $result['lat'], 'lon' => $result['lon']);
             }
 
-
+            //debug($geography, true);
 
 
             foreach ($data_entity as $marker) {
@@ -706,6 +733,7 @@ class Get_ajax extends MY_Controller
                 }
 
                 // Elaboro le coordinate
+                //debug($mark, true);
                 if (!empty($mark['latlng']) && isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
                     $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                     $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
