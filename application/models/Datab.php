@@ -319,7 +319,10 @@ class Datab extends CI_Model
     public function get_form($form_id, $value_id = null)
     {
 
-        $form_id or die('ERRORE: Form ID mancante');
+        if (!$form_id) {
+            log_message('error', "Form id '$form_id' not found");
+            die('ERRORE: Form ID not found');
+        }
         $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
         if (!$form) {
             return false;
@@ -379,7 +382,8 @@ class Datab extends CI_Model
             }
 
             if (!($entity = $this->get_entity_by_name($field['fields_ref']))) {
-                echo "Campo legato ad una relazione inesistente (" . $field['fields_ref'] . ") ";
+                log_message('error', "Relation field does not exist");
+                echo "Relation field does not exists (" . $field['fields_ref'] . ") ";
                 continue;
             }
 
