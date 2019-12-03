@@ -68,6 +68,11 @@ $tsuffix = 'CRM';
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('script/global/plugins/dropzone/css/dropzone.css'); ?>" />
 
+<!-- LEAFLET -->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v={$this->config->item('version')}"); ?>" />
+
+
+
 <!-- STYLE OVERRIDE -->
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/style.css?v={$this->config->item('version')}"); ?>" />-->
 
