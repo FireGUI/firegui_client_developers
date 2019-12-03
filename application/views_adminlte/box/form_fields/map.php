@@ -6,13 +6,18 @@ if ($value) {
     if (is_array($value)) {
         $value_latlon = $value;
     } else {
-        $value_latlon = $this->db->query("SELECT ST_Y('{$value}'::geometry) AS lat, ST_X('{$value}'::geometry) AS lon")->row_array();
-    }
-
-    if (!empty($value_latlon)) {
-        $lat = $value_latlon['lat'];
-        $lon = isset($value_latlon['lon']) ? $value_latlon['lon'] : $value_latlon['lng'];
-        $value = trim($lat . ';' . $lon, ';') ?: null;
+        if ($this->db->dbdriver == 'postgre') {
+            $value_latlon = $this->db->query("SELECT ST_Y('{$value}'::geometry) AS lat, ST_X('{$value}'::geometry) AS lon")->row_array();
+            if (!empty($value_latlon)) {
+                $lat = $value_latlon['lat'];
+                $lon = isset($value_latlon['lon']) ? $value_latlon['lon'] : $value_latlon['lng'];
+                $value = trim($lat . ';' . $lon, ';') ?: null;
+            }
+        } else {
+            $exploded = explode(';', $value);
+            $lat = $exploded[0];
+            $lon = $exploded[1];
+        }
     }
 }
 ?>
