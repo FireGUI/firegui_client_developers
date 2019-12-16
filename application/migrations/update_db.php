@@ -15,3 +15,10 @@ if ($this->db->dbdriver != 'postgres') {
 
 // Updates to 1.5.5
 $updates['1.5.5'] = ["UPDATE entity SET entity_login_entity = '" . DB_BOOL_TRUE . "' WHERE entity_name = '" . LOGIN_ENTITY . "'"];
+
+//Updates to 1.7.3
+$updates['1.7.3'] = [
+    "ALTER TABLE settings ADD COLUMN settings_default_language INT DEFAULT 1;",
+    "ALTER TABLE languages DROP COLUMN languages_default;",
+    "DELETE FROM fields WHERE fields_name = 'languages_default'"
+];

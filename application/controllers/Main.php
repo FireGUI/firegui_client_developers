@@ -34,6 +34,8 @@ class Main extends MY_Controller
             redirect('access');
         }
 
+
+
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
     }
