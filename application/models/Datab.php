@@ -21,6 +21,9 @@ class Datab extends CI_Model
     private $_defaultLanguage;
     private $_languages = [];
 
+    private $_default_language_id;
+    private $_default_language;
+
     function __construct()
     {
         parent::__construct();
@@ -2899,13 +2902,17 @@ class Datab extends CI_Model
         $this->load->helper('text');
         $this->_currentLanguage = $this->session->userdata(self::LANG_SESSION_KEY);
         $this->_languages = [];
-
+        $this->_default_language_id = $this->db->get_where('settings')->row()->settings_default_language;
+        $this->_default_language = $this->db->get_where('languages', ['languages_id' => $this->_default_language_id])->row_array();
+        //debug($language);
         $languages = $this->db->get(LANG_ENTITY)->result_array();
         foreach ($languages as $language) {
             $nlang = $this->normalizeLanguageArray($language);
             $this->_languages[$nlang['id']] = $nlang;
 
-            if ($nlang['default'] or is_null($this->_defaultLanguage)) {
+            //if ($nlang['default'] or is_null($this->_defaultLanguage)) {
+            if (strtolower($language['languages_name']) == strtolower($this->_default_language['languages_name']) or is_null($this->_defaultLanguage)) {
+
                 $this->_defaultLanguage = $nlang['id'];
             }
         }
@@ -2940,7 +2947,7 @@ class Datab extends CI_Model
             'file' => convert_accented_characters(strtolower(str_replace(' ', '_', $language[LANG_NAME_FIELD]))),
             'code' => $code,
             'flag' => $flag,
-            'default' => ($language[LANG_DEFAULT_FIELD] === DB_BOOL_TRUE),
+            //'default' => ($language[LANG_DEFAULT_FIELD] === DB_BOOL_TRUE),
         ];
     }
 
@@ -2962,7 +2969,7 @@ class Datab extends CI_Model
     public function getDefaultLanguage()
     {
         foreach ($this->_languages as $lang) {
-            if ($lang['default']) {
+            if (strtolower($lang['name']) == strtolower($this->_default_language['languages_name'])) {
                 return $lang;
             }
         }
@@ -3049,6 +3056,7 @@ class Datab extends CI_Model
         // Rimuovo le traduzioni caricate in modo da poter ricaricare tutto
         $this->lang->language = [];
         $this->lang->is_loaded = [];
+
         $this->load->language($language, $language);
     }
 }
