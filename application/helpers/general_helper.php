@@ -9,6 +9,27 @@ if (!function_exists('command_exists')) {
     }
 }
 
+if (!function_exists('dd')) {
+    function dd()
+    {
+        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        array_map(function ($x) {
+            dump($x);
+        }, func_get_args());
+        die;
+    }
+}
+
+if (!function_exists('d')) {
+    function d()
+    {
+        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        array_map(function ($x) {
+            dump($x);
+        }, func_get_args());
+    }
+}
+
 if (!function_exists('debug')) {
 
     function debug($var, $die = false, $trace = true, $show_from = true)
