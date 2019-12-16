@@ -34,9 +34,11 @@ $protocol = (!empty($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] !== 'off' || (!empt
 
 //$config['base_url'] = '';//$protocol.$_SERVER['HTTP_HOST'].'/'.pathinfo(FCPATH, PATHINFO_BASENAME);
 $base_url = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
-$base_url .= "://" . (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+$base_url .= "://" . ((!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '');
 $base_url .=     str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 $config['base_url'] = $base_url;
+
+//die($config['base_url']);
 
 
 /*
@@ -90,7 +92,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']    = 'english';
+$config['language']    = 'italiano';
 
 /*
 |--------------------------------------------------------------------------
