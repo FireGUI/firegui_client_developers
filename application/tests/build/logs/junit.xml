@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CodeIgniter Application Test Suite" tests="3" assertions="1" errors="2" warnings="0" failures="0" skipped="0" time="0.002461">
+    <testsuite name="Welcome_test" file="/Volumes/SSD/www/firegui_client_developers/application/tests/controllers/Welcome_test.php" tests="3" assertions="1" errors="2" warnings="0" failures="0" skipped="0" time="0.002461">
+      <testcase name="test_index" class="Welcome_test" classname="Welcome_test" file="/Volumes/SSD/www/firegui_client_developers/application/tests/controllers/Welcome_test.php" line="13" assertions="0" time="0.001305">
+        <error type="RuntimeException">Welcome_test::test_index
+RuntimeException: Undefined index: HTTP_HOST on line 37 in file /Volumes/SSD/www/firegui_client_developers/application/config/config.php
+
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestCase.php:178
+/Volumes/SSD/www/firegui_client_developers/application/config/config.php:37
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/replacing/core/Common.php:324
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/replacing/core/Common.php:313
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/functions.php:97
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/functions.php:32
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestRequest.php:277
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestRequest.php:160
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestCase.php:153
+/Volumes/SSD/www/firegui_client_developers/application/tests/controllers/Welcome_test.php:15
+</error>
+      </testcase>
+      <testcase name="test_method_404" class="Welcome_test" classname="Welcome_test" file="/Volumes/SSD/www/firegui_client_developers/application/tests/controllers/Welcome_test.php" line="19" assertions="0" time="0.000686">
+        <error type="RuntimeException">Welcome_test::test_method_404
+RuntimeException: Undefined index: HTTP_HOST on line 37 in file /Volumes/SSD/www/firegui_client_developers/application/config/config.php
+
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestCase.php:178
+/Volumes/SSD/www/firegui_client_developers/application/config/config.php:37
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/replacing/core/Common.php:324
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/replacing/core/Common.php:313
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/functions.php:97
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/functions.php:32
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestRequest.php:277
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestRequest.php:160
+/Volumes/SSD/www/firegui_client_developers/application/tests/_ci_phpunit_test/CIPHPUnitTestCase.php:153
+/Volumes/SSD/www/firegui_client_developers/application/tests/controllers/Welcome_test.php:21
+</error>
+      </testcase>
+      <testcase name="test_APPPATH" class="Welcome_test" classname="Welcome_test" file="/Volumes/SSD/www/firegui_client_developers/application/tests/controllers/Welcome_test.php" line="25" assertions="1" time="0.000470"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

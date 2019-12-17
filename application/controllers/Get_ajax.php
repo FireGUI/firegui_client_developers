@@ -87,10 +87,14 @@ class Get_ajax extends MY_Controller
      */
     public function modal_form($form_id, $value_id = null)
     {
+        // Check if i have form id or identifier
+        if (!is_int($form_id)) {
+            $form_id = $this->datab->get_form_id_by_identifier($form_id);
+        }
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die('No log in session found');
         }
 
         $modalSize = $this->input->get('_size');
