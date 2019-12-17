@@ -42,4 +42,4 @@ nbproject/*
 .travis.yml
 /TMP/firegui_client_release107/nbproject/private/
 
-#application/tests/*
+application/tests/*
