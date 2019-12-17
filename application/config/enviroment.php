@@ -78,7 +78,7 @@ define('LOGIN_IMG_FIELD',       'users_avatar');
 define('LANG_ENTITY',       'languages');
 define('LANG_CODE_FIELD',   'languages_code');
 define('LANG_NAME_FIELD',   'languages_name');
-define('LANG_DEFAULT_FIELD', 'languages_default');
+//define('LANG_DEFAULT_FIELD', 'languages_default');
 
 define('MIN_SEARCH_CHARS', 3);
 //define('STRICT_SEARCH', false);

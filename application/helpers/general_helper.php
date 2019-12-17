@@ -9,6 +9,27 @@ if (!function_exists('command_exists')) {
     }
 }
 
+if (!function_exists('dd')) {
+    function dd()
+    {
+        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        array_map(function ($x) {
+            dump($x);
+        }, func_get_args());
+        die;
+    }
+}
+
+if (!function_exists('d')) {
+    function d()
+    {
+        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        array_map(function ($x) {
+            dump($x);
+        }, func_get_args());
+    }
+}
+
 if (!function_exists('debug')) {
 
     function debug($var, $die = false, $trace = true, $show_from = true)
@@ -362,21 +383,35 @@ if (!function_exists('t')) {
     function t($string, $ucfirst = false, $params = array())
     {
 
+        //$CI = get_instance();
+        //debug($CI->config->item('language'));
         $translation = lang($string);
+
+
+        //debug($translation);
         if ($translation === false) {
+            $translation = $string;
+        }
+        /*if ($translation === false) {
+
+
 
             $CI = get_instance();
             $lang_array = $CI->datab->getLanguage();
             $language = $lang_array ? $lang_array['file'] : $CI->config->item('language');
+
+
 
             $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
 
             $val = addslashes($string);
             $add = '$lang[\'' . $val . '\'] = \'' . $val . '\';' . PHP_EOL;
 
-            if (is_writable($path) && $val) {
+            if (is_writable($path) && $string) {
+                //sleep(1);
                 include $path;
-                if (!isset($lang) or !array_key_exists($val, $lang)) {
+                if (!isset($lang) or !array_key_exists($string, $lang)) {
+                    
                     file_put_contents($path, $add, FILE_APPEND | LOCK_EX);
                 }
             }
@@ -388,7 +423,7 @@ if (!function_exists('t')) {
 
             // Siccome la traduzione è vuota mantieni l'originale
             $translation = $string;
-        }
+        }*/
 
         // Rimpiazza parametri
         if (is_array($params) && !empty($params)) {
