@@ -589,7 +589,7 @@ if (!function_exists('is_development')) {
         }
         //die($_SERVER['REMOTE_ADDR']);
         //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
-        return (gethostname() === 'idra' or in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']));
+        return (gethostname() === 'idra' or (!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])));
     }
 }
 
@@ -1099,5 +1099,22 @@ if (!function_exists('checkClientVersion')) {
         } else {
             return false;
         }
+    }
+}
+
+if (!function_exists('file_put_contents_and_create_dir')) {
+    function file_put_contents_and_create_dir($filename, $data, $flags = 0, $context = null)
+    {
+        $exploded = explode('/', $filename);
+        $file = array_pop($exploded);
+        $dir = implode('/', $exploded);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, DIR_WRITE_MODE, true);
+        } elseif (!is_writable($dir)) {
+            chmod($dir, DIR_WRITE_MODE);
+        }
+
+        return file_put_contents($filename, $data, $flags, $context);
     }
 }
