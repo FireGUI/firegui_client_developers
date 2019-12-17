@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "kenjis/ci-phpunit-test": "^0.17.0"
+    }
+}
