@@ -340,7 +340,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = md5($_SERVER['HTTP_HOST'] . pathinfo(FCPATH, PATHINFO_BASENAME));
+$config['encryption_key'] = md5((!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . pathinfo(FCPATH, PATHINFO_BASENAME));
 
 /*
 |--------------------------------------------------------------------------
@@ -424,7 +424,7 @@ $config['sess_regenerate_destroy'] = TRUE;
 |
 */
 $config['cookie_prefix']    = $config['encryption_key'];
-$config['cookie_domain']    = $_SERVER['SERVER_NAME']; // OLD $_SERVER['HTTP_HOST'];
+$config['cookie_domain']    = (!empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : ''); // OLD $_SERVER['HTTP_HOST'];
 $config['cookie_path']        = '/';
 $config['cookie_secure']    = FALSE;
 $config['cookie_httponly']     = FALSE;
