@@ -1,1 +1,0 @@
-C:37:"PHPUnit\Runner\DefaultTestResultCache":244:{a:2:{s:7:"defects";a:2:{s:24:"Welcome_test::test_index";i:4;s:29:"Welcome_test::test_method_404";i:4;}s:5:"times";a:3:{s:24:"Welcome_test::test_index";d:0.001;s:29:"Welcome_test::test_method_404";d:0.001;s:26:"Welcome_test::test_APPPATH";d:0;}}}
