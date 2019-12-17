@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CodeIgniter
  *
@@ -35,7 +36,7 @@
  * @since	Version 1.0.0
  * @filesource
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * Config Class
@@ -48,7 +49,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link		https://codeigniter.com/user_guide/libraries/config.html
  */
-class CI_Config {
+class CI_Config
+{
 
 	/**
 	 * List of all loaded config values
@@ -83,27 +85,20 @@ class CI_Config {
 	 */
 	public function __construct()
 	{
-		$this->config =& get_config();
+		$this->config = &get_config();
 
 		// Set the base_url automatically if none was provided
-		if (empty($this->config['base_url']))
-		{
-			if (isset($_SERVER['SERVER_ADDR']))
-			{
-				if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE)
-				{
-					$server_addr = '['.$_SERVER['SERVER_ADDR'].']';
-				}
-				else
-				{
+		if (empty($this->config['base_url'])) {
+			if (isset($_SERVER['SERVER_ADDR'])) {
+				if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE) {
+					$server_addr = '[' . $_SERVER['SERVER_ADDR'] . ']';
+				} else {
 					$server_addr = $_SERVER['SERVER_ADDR'];
 				}
 
-				$base_url = (is_https() ? 'https' : 'http').'://'.$server_addr
-					.substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
-			}
-			else
-			{
+				$base_url = (is_https() ? 'https' : 'http') . '://' . $server_addr
+					. substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
+			} else {
 				$base_url = 'http://localhost/';
 			}
 
@@ -128,61 +123,51 @@ class CI_Config {
 		$file = ($file === '') ? 'config' : str_replace('.php', '', $file);
 		$loaded = FALSE;
 
-		foreach ($this->_config_paths as $path)
-		{
-			foreach (array($file, ENVIRONMENT.DIRECTORY_SEPARATOR.$file) as $location)
-			{
-				$file_path = $path.'config/'.$location.'.php';
-				if (in_array($file_path, $this->is_loaded, TRUE))
-				{
+		foreach ($this->_config_paths as $path) {
+			foreach (array($file, ENVIRONMENT . DIRECTORY_SEPARATOR . $file) as $location) {
+				$file_path = $path . 'config/' . $location . '.php';
+				if (in_array($file_path, $this->is_loaded, TRUE)) {
 					return TRUE;
 				}
 
-				if ( ! file_exists($file_path))
-				{
+				if (!file_exists($file_path)) {
 					continue;
 				}
 
 				include($file_path);
 
-				if ( ! isset($config) OR ! is_array($config))
-				{
-					if ($fail_gracefully === TRUE)
-					{
+				//print_r($config);
+
+				if (!isset($config) or !is_array($config)) {
+					if ($fail_gracefully === TRUE) {
 						return FALSE;
 					}
 
-					show_error('Your '.$file_path.' file does not appear to contain a valid configuration array.');
+					show_error('Your ' . $file_path . ' file does not appear to contain a valid configuration array.');
 				}
 
-				if ($use_sections === TRUE)
-				{
+				if ($use_sections === TRUE) {
 					$this->config[$file] = isset($this->config[$file])
 						? array_merge($this->config[$file], $config)
 						: $config;
-				}
-				else
-				{
+				} else {
 					$this->config = array_merge($this->config, $config);
 				}
 
 				$this->is_loaded[] = $file_path;
 				$config = NULL;
 				$loaded = TRUE;
-				log_message('debug', 'Config file loaded: '.$file_path);
+				log_message('debug', 'Config file loaded: ' . $file_path);
 			}
 		}
 
-		if ($loaded === TRUE)
-		{
+		if ($loaded === TRUE) {
 			return TRUE;
-		}
-		elseif ($fail_gracefully === TRUE)
-		{
+		} elseif ($fail_gracefully === TRUE) {
 			return FALSE;
 		}
 
-		show_error('The configuration file '.$file.'.php does not exist.');
+		show_error('The configuration file ' . $file . '.php does not exist.');
 	}
 
 	// --------------------------------------------------------------------
@@ -196,8 +181,7 @@ class CI_Config {
 	 */
 	public function item($item, $index = '')
 	{
-		if ($index == '')
-		{
+		if ($index == '') {
 			return isset($this->config[$item]) ? $this->config[$item] : NULL;
 		}
 
@@ -214,16 +198,13 @@ class CI_Config {
 	 */
 	public function slash_item($item)
 	{
-		if ( ! isset($this->config[$item]))
-		{
+		if (!isset($this->config[$item])) {
 			return NULL;
-		}
-		elseif (trim($this->config[$item]) === '')
-		{
+		} elseif (trim($this->config[$item]) === '') {
 			return '';
 		}
 
-		return rtrim($this->config[$item], '/').'/';
+		return rtrim($this->config[$item], '/') . '/';
 	}
 
 	// --------------------------------------------------------------------
@@ -243,50 +224,38 @@ class CI_Config {
 	{
 		$base_url = $this->slash_item('base_url');
 
-		if (isset($protocol))
-		{
+		if (isset($protocol)) {
 			// For protocol-relative links
-			if ($protocol === '')
-			{
+			if ($protocol === '') {
 				$base_url = substr($base_url, strpos($base_url, '//'));
-			}
-			else
-			{
-				$base_url = $protocol.substr($base_url, strpos($base_url, '://'));
+			} else {
+				$base_url = $protocol . substr($base_url, strpos($base_url, '://'));
 			}
 		}
 
-		if (empty($uri))
-		{
-			return $base_url.$this->item('index_page');
+		if (empty($uri)) {
+			return $base_url . $this->item('index_page');
 		}
 
 		$uri = $this->_uri_string($uri);
 
-		if ($this->item('enable_query_strings') === FALSE)
-		{
+		if ($this->item('enable_query_strings') === FALSE) {
 			$suffix = isset($this->config['url_suffix']) ? $this->config['url_suffix'] : '';
 
-			if ($suffix !== '')
-			{
-				if (($offset = strpos($uri, '?')) !== FALSE)
-				{
-					$uri = substr($uri, 0, $offset).$suffix.substr($uri, $offset);
-				}
-				else
-				{
+			if ($suffix !== '') {
+				if (($offset = strpos($uri, '?')) !== FALSE) {
+					$uri = substr($uri, 0, $offset) . $suffix . substr($uri, $offset);
+				} else {
 					$uri .= $suffix;
 				}
 			}
 
-			return $base_url.$this->slash_item('index_page').$uri;
-		}
-		elseif (strpos($uri, '?') === FALSE)
-		{
-			$uri = '?'.$uri;
+			return $base_url . $this->slash_item('index_page') . $uri;
+		} elseif (strpos($uri, '?') === FALSE) {
+			$uri = '?' . $uri;
 		}
 
-		return $base_url.$this->item('index_page').$uri;
+		return $base_url . $this->item('index_page') . $uri;
 	}
 
 	// -------------------------------------------------------------
@@ -306,20 +275,16 @@ class CI_Config {
 	{
 		$base_url = $this->slash_item('base_url');
 
-		if (isset($protocol))
-		{
+		if (isset($protocol)) {
 			// For protocol-relative links
-			if ($protocol === '')
-			{
+			if ($protocol === '') {
 				$base_url = substr($base_url, strpos($base_url, '//'));
-			}
-			else
-			{
-				$base_url = $protocol.substr($base_url, strpos($base_url, '://'));
+			} else {
+				$base_url = $protocol . substr($base_url, strpos($base_url, '://'));
 			}
 		}
 
-		return $base_url.$this->_uri_string($uri);
+		return $base_url . $this->_uri_string($uri);
 	}
 
 	// -------------------------------------------------------------
@@ -335,13 +300,10 @@ class CI_Config {
 	 */
 	protected function _uri_string($uri)
 	{
-		if ($this->item('enable_query_strings') === FALSE)
-		{
+		if ($this->item('enable_query_strings') === FALSE) {
 			is_array($uri) && $uri = implode('/', $uri);
 			return ltrim($uri, '/');
-		}
-		elseif (is_array($uri))
-		{
+		} elseif (is_array($uri)) {
 			return http_build_query($uri);
 		}
 
@@ -359,7 +321,7 @@ class CI_Config {
 	public function system_url()
 	{
 		$x = explode('/', preg_replace('|/*(.+?)/*$|', '\\1', BASEPATH));
-		return $this->slash_item('base_url').end($x).'/';
+		return $this->slash_item('base_url') . end($x) . '/';
 	}
 
 	// --------------------------------------------------------------------
@@ -375,5 +337,4 @@ class CI_Config {
 	{
 		$this->config[$item] = $value;
 	}
-
 }
