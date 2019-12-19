@@ -258,6 +258,8 @@ if (!empty($_SERVER['FIREGUI_CLIENT_TEMPLATE'])) {
 	$view_folder = APPPATH . 'views_adminlte';
 }
 
+
+
 // The path to the "views" directory
 if (!isset($view_folder[0]) && is_dir(APPPATH . 'views' . DIRECTORY_SEPARATOR)) {
 	$view_folder = APPPATH . 'views';
