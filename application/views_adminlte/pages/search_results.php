@@ -20,43 +20,43 @@
                             </div>
                             <div class="box-body">
                                 <?php
-                                        // Mostro solo i campi che hanno qualcosa da mostrare...
+                                                        // Mostro solo i campi che hanno qualcosa da mostrare...
 
-                                        $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']);
-                                        usort($entity_result['visible_fields'], function ($f1, $f2) {
-                                            if ($f2['fields_preview'] == DB_BOOL_TRUE) {
-                                                return 1;
-                                            } elseif ($f1['fields_preview'] == DB_BOOL_TRUE) {
-                                                return -1;
-                                            } else {
-                                                return 0;
-                                            }
-                                        });
-                                        $fields = array_values(array_filter($entity_result['visible_fields'], function ($field) {
-                                            //debug($field['fields_type']);
-                                            return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'varchar', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
-                                        }));
-                                        //debug($entity_result['visible_fields']);
-                                        ?>
+                                                        $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']);
+                                                        usort($entity_result['visible_fields'], function ($f1, $f2) {
+                                                            if ($f2['fields_preview'] == DB_BOOL_TRUE) {
+                                                                return 1;
+                                                            } elseif ($f1['fields_preview'] == DB_BOOL_TRUE) {
+                                                                return -1;
+                                                            } else {
+                                                                return 0;
+                                                            }
+                                                        });
+                                                        $fields = array_values(array_filter($entity_result['visible_fields'], function ($field) {
+                                                            //debug($field['fields_type']);
+                                                            return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'varchar', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
+                                                        }));
+                                                        //debug($entity_result['visible_fields']);
+                                ?>
                                 <table class="table table-condensed table-bordered table-hover table-scrollable table-scrollable-borderless js_search_datatable">
                                     <thead>
                                         <tr>
                                             <?php foreach ($fields as $field) : ?>
                                                 <th><?php
-                                                                $label = $field['fields_draw_label'];
-                                                                if ($field['fields_entity_id'] != $entity_result['entity']['entity_id']) {
-                                                                    $ePrefix = ucwords(str_replace('_', ' ', $field['entity_name']));
-                                                                    // Non voglio aggiungere un eventuale
-                                                                    // prefisso alla label se questa è
-                                                                    // già prefissata:
-                                                                    // caso frequente, le support table
-                                                                    if (stripos(trim($label), trim($ePrefix)) !== 0) {
-                                                                        $label = $ePrefix . ' ' . $label;
-                                                                    }
+                                                            $label = $field['fields_draw_label'];
+                                                            if ($field['fields_entity_id'] != $entity_result['entity']['entity_id']) {
+                                                                $ePrefix = ucwords(str_replace('_', ' ', $field['entity_name']));
+                                                                // Non voglio aggiungere un eventuale
+                                                                // prefisso alla label se questa è
+                                                                // già prefissata:
+                                                                // caso frequente, le support table
+                                                                if (stripos(trim($label), trim($ePrefix)) !== 0) {
+                                                                    $label = $ePrefix . ' ' . $label;
                                                                 }
+                                                            }
 
-                                                                echo $label;
-                                                                ?></th>
+                                                            echo $label;
+                                                    ?></th>
                                             <?php endforeach; ?>
                                         </tr>
                                     </thead>
@@ -66,9 +66,9 @@
                                                 <?php foreach ($fields as $i => $field) : ?>
                                                     <td>
                                                         <?php
-                                                                        echo ($link && !$i) ? //Mostro per le prime 4 colonne il link al dettaglio
-                                                                            anchor($link . '/' . $data[$entity_result['entity']['entity_name'] . '_id'], $data[$field['fields_name']]) : $this->datab->build_grid_cell($field, $data);
-                                                                        ?>
+                                                                echo ($link && !$i) ? //Mostro per le prime 4 colonne il link al dettaglio
+                                                                    anchor($link . '/' . $data[$entity_result['entity']['entity_name'] . '_id'], $data[$field['fields_name']]) : $this->datab->build_grid_cell($field, $data);
+                                                        ?>
                                                     </td>
                                                 <?php endforeach; ?>
                                             </tr>
@@ -84,7 +84,7 @@
         </section>
     <?php elseif ($dati['count_total'] === 0) : ?>
         <div class="col-md-12">
-            <h4 class="box-title"><?php e('Ricerca'); ?> <small><?php e('no results for your keyword: %s', 0, array($dati['search_string'])); ?></small></h4>
+            <h4 class="box-title"><?php e('Search'); ?> <small><?php e('no results for your keyword: %s', 0, array($dati['search_string'])); ?></small></h4>
         </div>
     <?php else : ?>
 
