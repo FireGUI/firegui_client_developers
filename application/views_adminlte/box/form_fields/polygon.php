@@ -96,7 +96,7 @@ if ($value) {
             },
             drawError: {
                 color: '#990000', // Color the shape will turn when intersects
-                message: '<strong>Attenzione!<strong> non puoi intersecare le linee!' // Message that will show when intersect
+                message: '<?php e('<strong>Attention!<strong> you can\'t intersect the lines!') ?>' // Message that will show when intersect
             },
             guidelineDistance: 10,
             metric: true,
