@@ -5,8 +5,8 @@
         <h3><i class="fa fa-warning text-yellow"></i><?php e('Form %s not found.', 0, [$form_id]); ?></h3>
 
         <p>
-            <?php e('Non siamo riusciti a trovare ciò che cerchi.'); ?><br />
-            <?php e('Nel frattempo, puoi <a href="%s">tornare alla dashboard</a><br />oppure contattare gli amministratori per risolvere il problema', 0, [base_url()]); ?>
+            <?php e('We don\'t find what your are looking for.'); ?><br />
+            <?php e('In the meantime you can <a href="%s">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem', 0, [base_url()]); ?>
         </p>
     </div>
     <!-- /.error-content -->
