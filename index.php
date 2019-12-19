@@ -251,11 +251,14 @@ if (is_dir($application_folder)) {
 
 define('APPPATH', $application_folder . DIRECTORY_SEPARATOR);
 
-if (in_array($_SERVER['SERVER_NAME'], array("crm.emporioadv.it", "crm.h2web.it", "http://apib.h2-web.com", "crm.apibinfermieribologna.com", "cellulariusati.info", "mybio.biofarma.it", "sevenet.servizivenezia.it", "gestionale.atenapro.it"))) {
-	$view_folder = APPPATH . 'views_metronic';
+
+if (!empty($_SERVER['FIREGUI_CLIENT_TEMPLATE'])) {
+	$view_folder = APPPATH . $_SERVER['FIREGUI_CLIENT_TEMPLATE'];
 } else {
 	$view_folder = APPPATH . 'views_adminlte';
 }
+
+
 
 // The path to the "views" directory
 if (!isset($view_folder[0]) && is_dir(APPPATH . 'views' . DIRECTORY_SEPARATOR)) {
