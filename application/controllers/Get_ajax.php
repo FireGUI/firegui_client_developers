@@ -88,7 +88,7 @@ class Get_ajax extends MY_Controller
     public function modal_form($form_id, $value_id = null)
     {
         // Check if i have form id or identifier
-        if (!is_int($form_id)) {
+        if (!is_numeric($form_id)) {
             $form_id = $this->datab->get_form_id_by_identifier($form_id);
         }
         // Se non sono loggato allora semplicemente uccido la richiesta
