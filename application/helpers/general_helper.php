@@ -9,6 +9,27 @@ if (!function_exists('command_exists')) {
     }
 }
 
+if (!function_exists('dd')) {
+    function dd()
+    {
+        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        array_map(function ($x) {
+            dump($x);
+        }, func_get_args());
+        die;
+    }
+}
+
+if (!function_exists('d')) {
+    function d()
+    {
+        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        array_map(function ($x) {
+            dump($x);
+        }, func_get_args());
+    }
+}
+
 if (!function_exists('debug')) {
 
     function debug($var, $die = false, $trace = true, $show_from = true)
@@ -362,21 +383,35 @@ if (!function_exists('t')) {
     function t($string, $ucfirst = false, $params = array())
     {
 
+        //$CI = get_instance();
+        //debug($CI->config->item('language'));
         $translation = lang($string);
+
+
+        //debug($translation);
         if ($translation === false) {
+            $translation = $string;
+        }
+        /*if ($translation === false) {
+
+
 
             $CI = get_instance();
             $lang_array = $CI->datab->getLanguage();
             $language = $lang_array ? $lang_array['file'] : $CI->config->item('language');
+
+
 
             $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
 
             $val = addslashes($string);
             $add = '$lang[\'' . $val . '\'] = \'' . $val . '\';' . PHP_EOL;
 
-            if (is_writable($path) && $val) {
+            if (is_writable($path) && $string) {
+                //sleep(1);
                 include $path;
-                if (!isset($lang) or !array_key_exists($val, $lang)) {
+                if (!isset($lang) or !array_key_exists($string, $lang)) {
+                    
                     file_put_contents($path, $add, FILE_APPEND | LOCK_EX);
                 }
             }
@@ -388,7 +423,7 @@ if (!function_exists('t')) {
 
             // Siccome la traduzione è vuota mantieni l'originale
             $translation = $string;
-        }
+        }*/
 
         // Rimpiazza parametri
         if (is_array($params) && !empty($params)) {
@@ -554,7 +589,7 @@ if (!function_exists('is_development')) {
         }
         //die($_SERVER['REMOTE_ADDR']);
         //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
-        return (gethostname() === 'idra' or in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']));
+        return (gethostname() === 'idra' or (!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])));
     }
 }
 
@@ -1064,5 +1099,22 @@ if (!function_exists('checkClientVersion')) {
         } else {
             return false;
         }
+    }
+}
+
+if (!function_exists('file_put_contents_and_create_dir')) {
+    function file_put_contents_and_create_dir($filename, $data, $flags = 0, $context = null)
+    {
+        $exploded = explode('/', $filename);
+        $file = array_pop($exploded);
+        $dir = implode('/', $exploded);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, DIR_WRITE_MODE, true);
+        } elseif (!is_writable($dir)) {
+            chmod($dir, DIR_WRITE_MODE);
+        }
+
+        return file_put_contents($filename, $data, $flags, $context);
     }
 }

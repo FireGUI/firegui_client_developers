@@ -227,7 +227,7 @@ class Apilib
         $filename = APPPATH . 'cache/cache-controller';
         $defaultAdapter = array('adapter' => 'file', 'backup' => 'dummy');
         if (!file_exists($filename)) {
-            @file_put_contents($filename, serialize($defaultAdapter), LOCK_EX);
+            @file_put_contents_and_create_dir($filename, serialize($defaultAdapter), LOCK_EX);
             return $defaultAdapter;
         }
 
@@ -2318,4 +2318,5 @@ class Apilib
 }
 
 class ApiException extends Exception
-{ }
+{
+}
