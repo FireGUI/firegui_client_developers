@@ -25,7 +25,8 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                 <?php endif; ?>
 
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
-                    <th data-name="<?php echo $field['fields_name']; ?>"><?php echo $field['grids_fields_column_name']; ?></th>
+                    <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                    <th data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
                 <?php endforeach; ?>
 
                 <th data-prevent-order>&nbsp;</th>
