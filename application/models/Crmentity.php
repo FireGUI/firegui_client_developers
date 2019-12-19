@@ -829,6 +829,7 @@ class Crmentity extends CI_Model
 
                 foreach ($previewFields as $field) {
                     $rawval = array_get($record, $field['fields_name']);
+
                     $val = ($field['fields_multilingual'] === DB_BOOL_TRUE) ? $this->translateValue($rawval) : $rawval;
 
                     // Se non abbiamo nessuna lingua impostata, translateValue
@@ -842,14 +843,15 @@ class Crmentity extends CI_Model
                     // Se vuoto (null o stringa vuota - voglio tenere eventuali 0),
                     // allora lo skippo
                     if (is_null($val) or $val === '') {
+
                         continue;
                     }
 
                     $preview .= "{$val} ";
                 }
 
-                // Metto nei results, mappando per id del record...
-                $result[$id] = trim($preview) ?: "ID #{$id}";
+
+                $result[$id] = (trim($preview) || trim($preview) === '0') ? trim($preview) : "ID #{$id}";
             }
 
             return $result;

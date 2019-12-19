@@ -470,123 +470,124 @@ class Get_ajax extends MY_Controller
     {
 
         if ($this->auth->guest()) {
-            die(json_encode(array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])));
-        }
-
-        /**
-         * Info da datatable
-         */
-        $limit = $this->input->post('iDisplayLength') ?: 10;
-        $offset = $this->input->post('iDisplayStart') ?: 0;
-        $search = $this->input->post('sSearch') ?: null;
-        $s_echo = $this->input->post('sEcho') ?: null;
-
-        //$order_col = $this->input->post('iSortCol_0') ?: null;
-        $order_col = $this->input->post('iSortCol_0');
-        $order_dir = $this->input->post('sSortDir_0') ?: null;
-
-        // Prendo i dati della grid
-        $grid = $this->datab->get_grid($grid_id);
-
-        $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
-
-        $preview_fields = $this->db->get_where('fields', array('fields_entity_id' => $grid['grids']['grids_entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
-
-        $where = $this->datab->search_like($search, array_merge($grid['grids_fields'], $preview_fields));
-
-        if (preg_match('/(\()+(\))+/', $where)) {
-            $where = '';
-        }
-
-
-
-        //Matteo: fix da cui sopra per prendere il default order
-        //if ($order_col !== null && isset($grid['grids_fields'][$order_col]['fields_name'])) {
-        if ($order_col !== null && $order_col !== false) {
-
-            if ($has_bulk) {
-                $order_col -= 1;
-            }
-
-            if (isset($grid['grids_fields'][$order_col]['fields_name'])) {
-                //Se il campo è multilingua, forzo l'ordinamento per chiave lingua corrente
-                if ($grid['grids_fields'][$order_col]['fields_multilingual'] == DB_BOOL_TRUE) {
-                    $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
-                } elseif ($grid['grids_fields'][$order_col]['fields_type'] == 'JSON') {
-                    $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}::TEXT {$order_dir}";
-                } else {
-                    $order_by = "{$grid['grids_fields'][$order_col]['fields_name']} {$order_dir}";
-                }
-            } else {
-                //Se entro qui, verifico se il campo passato per l'ordinamento non sia per caso un eval cachable...
-                if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent') {
-                    $order_by = "{$grid['grids_fields'][$order_col]['grids_fields_eval_cache_data']} {$order_dir}";
-                } else {
-                    $order_by = null;
-                }
-            }
+            echo (json_encode(array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])));
         } else {
-            $order_by = null;
-        }
 
-        //20191112 - MP - Added where_append in get ajax
-        if ($where_append = $this->input->get('where_append')) {
-            if ($where) {
-                $where .= ' AND ' . $where_append;
+            /**
+             * Info da datatable
+             */
+            $limit = $this->input->post('iDisplayLength') ?: 10;
+            $offset = $this->input->post('iDisplayStart') ?: 0;
+            $search = $this->input->post('sSearch') ?: null;
+            $s_echo = $this->input->post('sEcho') ?: null;
+
+            //$order_col = $this->input->post('iSortCol_0') ?: null;
+            $order_col = $this->input->post('iSortCol_0');
+            $order_dir = $this->input->post('sSortDir_0') ?: null;
+
+            // Prendo i dati della grid
+            $grid = $this->datab->get_grid($grid_id);
+
+            $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
+
+            $preview_fields = $this->db->get_where('fields', array('fields_entity_id' => $grid['grids']['grids_entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
+
+            $where = $this->datab->search_like($search, array_merge($grid['grids_fields'], $preview_fields));
+
+            if (preg_match('/(\()+(\))+/', $where)) {
+                $where = '';
+            }
+
+
+
+            //Matteo: fix da cui sopra per prendere il default order
+            //if ($order_col !== null && isset($grid['grids_fields'][$order_col]['fields_name'])) {
+            if ($order_col !== null && $order_col !== false) {
+
+                if ($has_bulk) {
+                    $order_col -= 1;
+                }
+
+                if (isset($grid['grids_fields'][$order_col]['fields_name'])) {
+                    //Se il campo è multilingua, forzo l'ordinamento per chiave lingua corrente
+                    if ($grid['grids_fields'][$order_col]['fields_multilingual'] == DB_BOOL_TRUE) {
+                        $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
+                    } elseif ($grid['grids_fields'][$order_col]['fields_type'] == 'JSON') {
+                        $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}::TEXT {$order_dir}";
+                    } else {
+                        $order_by = "{$grid['grids_fields'][$order_col]['fields_name']} {$order_dir}";
+                    }
+                } else {
+                    //Se entro qui, verifico se il campo passato per l'ordinamento non sia per caso un eval cachable...
+                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent') {
+                        $order_by = "{$grid['grids_fields'][$order_col]['grids_fields_eval_cache_data']} {$order_dir}";
+                    } else {
+                        $order_by = null;
+                    }
+                }
             } else {
-                $where = $where_append;
+                $order_by = null;
             }
+
+            //20191112 - MP - Added where_append in get ajax
+            if ($where_append = $this->input->get('where_append')) {
+                if ($where) {
+                    $where .= ' AND ' . $where_append;
+                } else {
+                    $where = $where_append;
+                }
+            }
+
+            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
+
+
+
+            $out_array = array();
+            foreach ($grid_data as $dato) {
+
+                $tr = array();
+                if ($has_bulk) {
+                    $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
+                }
+                foreach ($grid['grids_fields'] as $field) {
+
+                    //debug($this->datab->build_grid_cell($field, $dato),true);
+
+                    /* $tr[] = $this->load->view('box/grid/td', array('field'=>$field, 'dato'=>$dato), TRUE); */
+                    $tr[] = $this->datab->build_grid_cell($field, $dato);
+                }
+
+                // Controlla se ho delle action da stampare in fondo
+                if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
+                    $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
+                    $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
+                } elseif ($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form') {
+                    $tr[] = $this->load->view('box/grid/inline_form_actions', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
+                } elseif (grid_has_action($grid['grids'])) {
+                    $tr[] = $this->load->view('box/grid/actions', array(
+                        'links' => $grid['grids']['links'],
+                        'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                        'row_data' => $dato,
+                        'grid' => $grid['grids'],
+                    ), TRUE);
+                }
+
+                $out_array[] = $tr;
+            }
+
+            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true);
+            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true);
+
+
+
+
+            echo json_encode(array(
+                'iTotalRecords' => $totalRecords,
+                'iTotalDisplayRecords' => $totalDisplayRecord,
+                'sEcho' => $s_echo,
+                'aaData' => $out_array
+            ));
         }
-
-        $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
-
-
-
-        $out_array = array();
-        foreach ($grid_data as $dato) {
-
-            $tr = array();
-            if ($has_bulk) {
-                $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
-            }
-            foreach ($grid['grids_fields'] as $field) {
-
-                //debug($this->datab->build_grid_cell($field, $dato),true);
-
-                /* $tr[] = $this->load->view('box/grid/td', array('field'=>$field, 'dato'=>$dato), TRUE); */
-                $tr[] = $this->datab->build_grid_cell($field, $dato);
-            }
-
-            // Controlla se ho delle action da stampare in fondo
-            if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
-                $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-                $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-            } elseif ($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form') {
-                $tr[] = $this->load->view('box/grid/inline_form_actions', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-            } elseif (grid_has_action($grid['grids'])) {
-                $tr[] = $this->load->view('box/grid/actions', array(
-                    'links' => $grid['grids']['links'],
-                    'id' => $dato[$grid['grids']['entity_name'] . "_id"],
-                    'row_data' => $dato,
-                    'grid' => $grid['grids'],
-                ), TRUE);
-            }
-
-            $out_array[] = $tr;
-        }
-
-        $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true);
-        $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true);
-
-
-
-
-        echo json_encode(array(
-            'iTotalRecords' => $totalRecords,
-            'iTotalDisplayRecords' => $totalDisplayRecord,
-            'sEcho' => $s_echo,
-            'aaData' => $out_array
-        ));
     }
 
     public function get_map_markers($map_id, $value_id = NULL)

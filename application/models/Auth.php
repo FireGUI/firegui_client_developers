@@ -307,7 +307,12 @@ class Auth extends CI_Model
 
         $user_id = null;
         $cookie = $this->getCookie();
-        $token_string = @json_decode($cookie, true)['token_string'];
+        if ($cookie) {
+            $token_string = @json_decode($cookie, true)['token_string'];
+        } else {
+            $token_string = false;
+        }
+
 
         if ($token_string) {
             $user_token = $this->db->get_where('user_tokens', ['token_string' => $token_string]);
