@@ -2,8 +2,7 @@
     <div class="pull-right hidden-xs">
         <b><?php e('Version'); ?></b> <?php echo VERSION; ?>
     </div>
-    <strong>Copyright &copy; 2015-2019 <a href="<?php echo base_url(); ?>">H2 Web S.n.c.</a>.</strong> All rights
-    reserved.
+    <strong>Copyright &copy; 2015-2019 - Powered by <a href="https://firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
 </footer>
 
 <div id="js_modal_container"></div>
