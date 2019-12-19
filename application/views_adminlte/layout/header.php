@@ -94,7 +94,7 @@
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <?php
-                    $_img = ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) ? base_url_admin("uploads/" . $this->auth->get(LOGIN_IMG_FIELD)) : base_url_admin("imgn/1/100/100/uploads/" . $this->auth->get(LOGIN_IMG_FIELD));
+                                                    $_img = ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) ? base_url_admin("uploads/" . $this->auth->get(LOGIN_IMG_FIELD)) : base_url_admin("imgn/1/100/100/uploads/" . $this->auth->get(LOGIN_IMG_FIELD));
                     ?>
 
                     <img src="<?php echo ($this->auth->get(LOGIN_IMG_FIELD) ? $_img : base_url_admin('images/user.png')); ?>" class="user-image" alt="User Image"> <span class="hidden-xs"><?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?></span>
@@ -138,7 +138,7 @@
                             <div class="row">
                                 <div class="col-xs-12 text-center">
                                     <a href="<?php echo base_url('main/permissions'); ?>"><i class="fas fa-lock"></i>
-                                        Permissions</a>
+                                        <?php e('Permissions'); ?></a>
                                 </div>
                             </div>
 
@@ -149,7 +149,7 @@
                             <div class="row">
                                 <div class="col-xs-12 text-center">
                                     <a href="<?php echo base_url('main/system_log'); ?>"><i class="fas fa-history"></i>
-                                        System Log</a>
+                                        <?php e('System Log'); ?></a>
                                 </div>
                             </div>
                         </li>
@@ -157,8 +157,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('api_manager'); ?>"><i class="fas fa-cubes"></i> Api
-                                        manager</a>
+                                    <a href="<?php echo base_url('api_manager'); ?>"><i class="fas fa-cubes"></i> <?php e('API Manager'); ?></a>
                                 </div>
                             </div>
                         </li>
@@ -167,9 +166,9 @@
                             <div class="row">
                                 <div class="col-xs-12 text-center">
                                     <?php if ($this->apilib->isCacheEnabled()) : ?>
-                                        <a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="fas fa-cogs"></i> Disable cache</a>
+                                        <a href="<?php echo base_url('main/cache_control/off'); ?>"><i class="fas fa-cogs"></i> <?php e('Disable'); ?> cache</a>
                                     <?php else : ?>
-                                        <a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="fas fa-cogs"></i> Enable cache</a>
+                                        <a href="<?php echo base_url('main/cache_control/on'); ?>"><i class="fas fa-cogs"></i> <?php e('Enable'); ?> cache</a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -178,7 +177,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fas fa-trash-alt"></i> Clean cache</a>
+                                    <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fas fa-trash-alt"></i> <?php e('Clean'); ?> cache</a>
                                 </div>
                             </div>
                         </li>
@@ -188,15 +187,15 @@
                     <li class="user-footer">
                         <div class="pull-left">
                             <?php
-                            $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
+                                                                                                                                                                                                                                                $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
 
-                            if ($form_user_default->num_rows() != 0) :
-                                ?>
-                                <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal">Profile</a>
+                                                                                                                                                                                                                                                if ($form_user_default->num_rows() != 0) :
+                            ?>
+                                <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal"><?php e('Profile'); ?></a>
                             <?php endif; ?>
                         </div>
                         <div class="pull-right">
-                            <a href="<?php echo base_url("access/logout"); ?>" class="btn btn-default btn-flat">Sign out</a>
+                            <a href="<?php echo base_url("access/logout"); ?>" class="btn btn-default btn-flat"><?php e('Sign out'); ?></a>
                         </div>
                     </li>
                 </ul>
