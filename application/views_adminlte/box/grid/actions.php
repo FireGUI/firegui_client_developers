@@ -76,7 +76,7 @@
 
                             ?>
                 <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'" : null; ?>>
-                    <a class="js-action_button btn btn-xs btn-primary<?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large'])) echo 'js_open_modal'; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Sei sicuro di voler eliminare questo record?'); ?>" data-toggle="tooltip" <?php endif; ?>>
+                    <a class="js-action_button btn btn-xs btn-primary<?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large'])) echo 'js_open_modal'; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?>>
                         <span class="<?php echo $custom_action['grids_actions_icon']; ?>" style="color:white !important;"></span>
                     </a>
                 </span>
@@ -87,19 +87,19 @@
     <?php endif; ?>
 
     <?php if (isset($links['view']) && $links['view']) : ?>
-        <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-xs <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="<?php e('Visualizza'); ?>">
+        <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-xs <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="<?php e('View'); ?>">
             <span class="fas fa-search-plus" style="color:white !important;"></span>
         </a>
     <?php endif; ?>
 
     <?php if (isset($links['edit']) && $links['edit']) : ?>
-        <a href="<?php echo $links['edit'] . $id; ?>" class="btn bg-purple btn-xs <?php if (!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="<?php e('Modifica'); ?>">
+        <a href="<?php echo $links['edit'] . $id; ?>" class="btn bg-purple btn-xs <?php if (!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="<?php e('Edit'); ?>">
             <span class="fas fa-edit" style="color:white !important;"></span>
         </a>
     <?php endif; ?>
 
     <?php if (isset($links['delete']) && $links['delete']) : ?>
-        <a href="<?php echo $links['delete'] . $id; ?>" data-confirm-text="<?php e("Sei sicuro di voler eliminare questo record?"); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax <?php if (!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="<?php e('Elimina'); ?>">
+        <a href="<?php echo $links['delete'] . $id; ?>" data-confirm-text="<?php e("Are you sure to delete this record?"); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax <?php if (!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" data-toggle="tooltip" title="<?php e('Delete'); ?>">
             <span class="fas fa-times" style="color:white !important;"></span>
         </a>
     <?php endif; ?>
