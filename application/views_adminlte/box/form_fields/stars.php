@@ -15,6 +15,6 @@
         </a>
     </div>
 <?php else: ?>
-    Impossibile mostrare il selettore stelline per il tipo di dato selezionato
+    <?php e('The star selector cannot be shown for the selected data type'); ?>
 <?php endif; ?>
 <?php echo $help; ?>
