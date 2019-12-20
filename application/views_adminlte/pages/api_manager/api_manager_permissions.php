@@ -3,13 +3,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title" id="api_permissions_label"><?php e('Permessi specifici'); ?></h4>
+                <h4 class="modal-title" id="api_permissions_label"><?php e('Specific permissions'); ?></h4>
             </div>
             <form id="form_permessi" role="form" method="post" action="<?php echo base_url("api_manager/set_permissions/{$dati['token']}"); ?>" class="form formAjax" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-md-8 col-sm-6">
-                            <label class="control-label"><strong><?php e('Entit&agrave;'); ?></strong></label>
+                            <label class="control-label"><strong><?php e('Entity'); ?></strong></label>
                             <select class="form-control select2_standard field_101 entity_name" name="entity_name" data-source-field="" data-ref="entity_name" data-val="">
                                 <option></option>
                                 <?php foreach ($this->apilib->tableList() as $entity) : ?>
@@ -19,25 +19,25 @@
                         </div>
 
                         <div class="form-group col-md-4 col-sm-6" style="display:none;">
-                            <label class="control-label"><?php e('Permessi'); ?></label>
+                            <label class="control-label"><?php e('Permissions'); ?></label>
                             <select class="form-control select2_standard entity_permission" name="entity_permission">
-                                <option value=""><?php e('Tutti i permessi'); ?></option>
-                                <option value="0"><?php e('Nessun permesso'); ?></option>
-                                <option value="1">R (<?php e('sola lettura'); ?>)</option>
-                                <option value="2">RW (<?php e('solo update'); ?>)</option>
-                                <option value="3">RW (<?php e('solo insert'); ?>)</option>
-                                <option value="4">RW (<?php e('insert e update'); ?>)</option>
+                                <option value=""><?php e('All permissions'); ?></option>
+                                <option value="0"><?php e('No permissions'); ?></option>
+                                <option value="1">R (<?php e('read only'); ?>)</option>
+                                <option value="2">RW (<?php e('update only'); ?>)</option>
+                                <option value="3">RW (<?php e('insert only'); ?>)</option>
+                                <option value="4">RW (<?php e('insert and update'); ?>)</option>
                             </select>
                         </div>
 
                         <div class="form-group col-sm-12" style="display:none;">
-                            <label class="control-label"><?php e('Where opzionale'); ?></label>
+                            <label class="control-label"><?php e('Optional where'); ?></label>
                             <textarea class="form-control select2_standard entity_where" name="entity_where"></textarea>
 
                         </div>
 
                         <div class="form-group col-sm-12" style="display:none;">
-                            <label class="control-label"><strong><?php e('Permessi sui singoli campi'); ?></strong></label>
+                            <label class="control-label"><strong><?php e('Single fields permissions'); ?></strong></label>
                             <div id="campi">
 
                             </div>
@@ -50,8 +50,8 @@
                 </div>
                 <div class="modal-footer">
                     <div class="form-group col-sm-12">
-                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><?php e('Annulla'); ?></button>
-                        <button type="submit" class="btn btn-sm btn-primary pull-right"><?php e('Salva'); ?></button>
+                        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><?php e('Cancel'); ?></button>
+                        <button type="submit" class="btn btn-sm btn-primary pull-right"><?php e('Save'); ?></button>
                     </div>
                 </div>
             </form>
@@ -96,12 +96,12 @@
                                 <div class="form-group" >
                                     <label class="control-label">` + field.fields_name_friendly + `</label>
                                     <select class="form-control select2_standard" name="` + field.fields_name + `">
-                                        <option value=""><?php e('Tutti i permessi'); ?></option>
-                                        <option value="0"><?php e('Nessun permesso'); ?></option>
-                                        <option value="1">R (<?php e('sola lettura'); ?>)</option>
-                                        <option value="2">RW (<?php e('solo update'); ?>)</option>
-                                        <option value="3">RW (<?php e('solo insert'); ?>)</option>
-                                        <option value="4">RW (<?php e('insert e update'); ?>)</option>
+                                        <option value=""><?php e('All permissions'); ?></option>
+                                        <option value="0"><?php e('No permissions'); ?></option>
+                                        <option value="1">R (<?php e('read only'); ?>)</option>
+                                        <option value="2">RW (<?php e('update only'); ?>)</option>
+                                        <option value="3">RW (<?php e('insert only'); ?>)</option>
+                                        <option value="4">RW (<?php e('insert and update'); ?>)</option>
                                     </select>
                                 </div>
                             </div>
@@ -117,10 +117,6 @@
                             });
                         }
                     });
-
-
-
-
                 }
             });
         });
