@@ -12,11 +12,11 @@
     </div>
     <div>
         <span class="btn btn-default btn-sm btn-file">
-            <span class="fileinput-new">Seleziona immagine</span>
-            <span class="fileinput-exists">Cambia</span>
+            <span class="fileinput-new"><?php e('Select image'); ?></span>
+            <span class="fileinput-exists"><?php e('Change'); ?></span>
             <input type="file" name="<?php echo $field['fields_name']; ?>">
         </span>
-        <a href="javascript:;" class="fileinput-exists " data-dismiss="fileinput"><i class="fas fa-times"></i> Rimuovi</a>
+        <a href="javascript:;" class="fileinput-exists " data-dismiss="fileinput"><i class="fas fa-times"></i> <?php e('Remove'); ?></a>
     </div>
 </div>
 <?php echo $help; ?>
