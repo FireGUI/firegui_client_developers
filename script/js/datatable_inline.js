@@ -242,7 +242,7 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
     //Perchè non postare direttamente alla save_form? Avremmo tutto potenzialmente...
     $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data)
         .success(function () {
-
+            row.remove();
             datatable.fnDraw();
         })
         .error(function () {
