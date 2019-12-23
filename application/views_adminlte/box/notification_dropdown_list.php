@@ -7,9 +7,9 @@
     <ul class="dropdown-menu">
 
         <li class="header">
-            <h5><?php e('Hai'); ?> <span class="js_notification_number bold">0
-                    <!-- ... notification count here ... --></span> <?php e('nuove notifiche'); ?></h5>
-            <a href="#" onclick="CrmNotifier.readAll();return false;" role='button'><?php e('segna come letto'); ?></a>
+            <h5><?php e('You have'); ?> <span class="js_notification_number bold">0
+                    <!-- ... notification count here ... --></span> <?php e('new notifications'); ?></h5>
+            <a href="#" onclick="CrmNotifier.readAll();return false;" role='button'><?php e('mark as read'); ?></a>
         </li>
 
         <li>
@@ -82,7 +82,7 @@
         playNotificationSound: function(notificationSound) {
 
             if (!notificationSound) {
-                alert('Ci sono nuove notifiche');
+                alert('<?php e('There are new notification') ?>');
                 return;
             }
 

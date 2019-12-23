@@ -26,7 +26,7 @@ if ($value) {
 <!--<div style="max-width: 400px;">-->
 <div style="max-width: 100%;">
     <div class="input-group" style="margin-bottom: 3px;">
-        <input type="text" class="form-control js_map_search" placeholder="<?php e('cerca località') ?>" />
+        <input type="text" class="form-control js_map_search" placeholder="<?php e('find localtion') ?>" />
         <span class="input-group-btn">
             <button class="btn btn-default" type="button"><i class="fas fa-search"></i></button>
         </span>
