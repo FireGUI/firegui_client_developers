@@ -357,7 +357,7 @@ class Auth extends CI_Model
      *
      * @return array|false
      */
-    private function getSessionUserdata()
+    public function getSessionUserdata()
     {
         return $this->session->userdata(SESS_LOGIN);
     }
