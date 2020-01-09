@@ -132,20 +132,20 @@ class Cron extends MY_Controller
 
         // ============= SVUOTAMENTO LOGS VARI =============
         if ($this->db->dbdriver != 'postgre') {
-            $this->db->where("log_api_date < now() - interval 30 day", null, false)->delete('log_api');
-            $this->db->where("log_crm_time < now() - interval 30 day", null, false)->delete('log_crm');
+            $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
+            $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
             $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
             //$this->db->query('DELETE FROM ci_sessions WHERE  timestamp < NOW() - INTERVAL 1 MONTH');
             $this->db->query('OPTIMIZE TABLE ci_sessions');
         } else {
             $this->db
-                ->where("log_api_date < NOW() - INTERVAL 1 MONTH", null, false)
+                ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
                 ->delete('log_api');
             $this->db
-                ->where("log_crm_time < NOW() - INTERVAL 1 MONTH", null, false)
+                ->where("log_crm_time < NOW() - INTERVAL '6 MONTH'", null, false)
                 ->delete('log_crm');
             $this->db
-                ->where("from_unixtime(timestamp)  < NOW() - INTERVAL 1 MONTH", null, false)
+                ->where("to_timestamp(timestamp) < NOW() - INTERVAL '1 MONTH'", null, false)
                 ->delete('ci_sessions');
         }
         // ============= SVUOTAMENTO LOGS VARI =============
