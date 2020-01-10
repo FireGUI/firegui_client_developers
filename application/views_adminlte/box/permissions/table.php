@@ -2,7 +2,7 @@
 
 <?php if ($dati['mode'] === 'user') : ?>
 
-    <label class="col-md-3 control-label"><?php e("gruppo"); ?></label>
+    <label class="col-md-3 control-label"><?php e('group'); ?></label>
     <div class="col-md-9">
         <select name="permissions_group" class="form-control input-large js-group">
             <option value=""></option>
@@ -14,14 +14,14 @@
 
 <?php elseif ($dati['mode'] === 'group.create') : ?>
 
-    <label class="col-md-3 control-label"><?php e("nome del gruppo"); ?></label>
+    <label class="col-md-3 control-label"><?php e("name of the group"); ?></label>
     <div class="col-md-9">
         <input type="text" class="form-control input-large" name="permissions_group" value="<?php echo isset($dati['permissions']['permissions_group']) ? $dati['permissions']['permissions_group'] : ''; ?>" />
     </div>
 
 <?php elseif ($dati['mode'] === 'group.edit') : ?>
 
-    <label class="col-md-3 control-label"><?php e("rinomina gruppo"); ?></label>
+    <label class="col-md-3 control-label"><?php e("rename group"); ?></label>
     <div class="col-md-9">
         <input type="text" class="form-control input-large" name="permissions_group_rename" />
     </div>
@@ -42,7 +42,7 @@
         </label>
         <label class="radio-inline">
             <input type="radio" name="permissions_admin" value="<?php echo DB_BOOL_TRUE; ?>" class="toggle permission_toggle" <?php if ($is_administrator) echo 'checked'; ?> />
-            <?php e("si"); ?>
+            <?php e("yes"); ?>
         </label>
     </div>
 
@@ -56,10 +56,10 @@
         <table class="table table-striped table-condensed table-hover">
             <thead>
                 <tr>
-                    <th><?php e('entità'); ?></th>
-                    <th style="width: 15%" class="text-center"><?php e('nessuno'); ?></th>
-                    <th style="width: 15%" class="text-center"><?php e('lettura'); ?></th>
-                    <th style="width: 15%" class="text-center"><?php e('scrittura'); ?></th>
+                    <th><?php e('entity'); ?></th>
+                    <th style="width: 15%" class="text-center"><?php e('none'); ?></th>
+                    <th style="width: 15%" class="text-center"><?php e('read'); ?></th>
+                    <th style="width: 15%" class="text-center"><?php e('write'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -80,9 +80,9 @@
             <table class="table table-striped table-condensed table-hover">
                 <thead>
                     <tr>
-                        <th><?php e('moduli'); ?></th>
-                        <th style="width: 15%" class="text-center"><?php e('nessuno'); ?></th>
-                        <th style="width: 15%" class="text-center"><?php e('accesso'); ?></th>
+                        <th><?php e('modules'); ?></th>
+                        <th style="width: 15%" class="text-center"><?php e('none'); ?></th>
+                        <th style="width: 15%" class="text-center"><?php e('access'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,14 +105,14 @@
 
 
 <?php if ($dati['mode'] === 'user') : ?>
-    <h4><strong><?php e('Imposta limiti'); ?></strong> <small><?php e('Gli utenti con un limite impostato potranno vedere solamente i dati compresi nel sottoinsieme a lui assegnato'); ?></small></h4>
+    <h4><strong><?php e('Set limits'); ?></strong> <small><?php e('Users with a set limit will only be able to see the data included in the subset assigned to them'); ?></small></h4>
     <table id="js_limits" class="table table-striped table-bordered table-condensed table-hover">
         <thead>
             <tr>
-                <th><?php e('Entità'); ?></th>
-                <th><?php e('Campo'); ?></th>
-                <th style="display:none"><?php e('Operatore'); ?></th>
-                <th><?php e('Valori'); ?></th>
+                <th><?php e('Entity'); ?></th>
+                <th><?php e('Field'); ?></th>
+                <th style="display:none"><?php e('Operator'); ?></th>
+                <th><?php e('Values'); ?></th>
                 <th></th>
             </tr>
         </thead>
@@ -151,7 +151,7 @@
         <tfoot>
             <tr>
                 <td colspan="5" class="text-center">
-                    <button type="button" id="js_limit_add" class="btn btn-block btn-link"><?php e('Aggiungi'); ?></button>
+                    <button type="button" id="js_limit_add" class="btn btn-block btn-link"><?php e('Add'); ?></button>
                 </td>
             </tr>
         </tfoot>

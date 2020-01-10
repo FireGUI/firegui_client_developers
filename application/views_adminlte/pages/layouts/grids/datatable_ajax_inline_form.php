@@ -14,7 +14,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 <br />
 
 <div class="___table-scrollable table-scrollable-borderless">
-    <table data-where_append="<?php echo (empty($where)) ? '' : $where; ?>" data-parent_field="<?php echo (empty($parent_field)) ? '' : $parent_field; ?>" data-parent_id="<?php echo (empty($parent_id)) ? '' : $parent_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+    <table data-where_append="<?php echo (empty($where)) ? '' : $where; ?>" data-parent_field="<?php echo (empty($parent_field)) ? '' : $parent_field; ?>" data-parent_id="<?php echo (empty($parent_id)) ? '' : $parent_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable nowrap js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ?> data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
         <thead>
             <tr>
@@ -25,7 +25,8 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                 <?php endif; ?>
 
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
-                    <th data-name="<?php echo $field['fields_name']; ?>"><?php echo $field['grids_fields_column_name']; ?></th>
+                    <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                    <th data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
                 <?php endforeach; ?>
 
                 <th data-prevent-order>&nbsp;</th>
