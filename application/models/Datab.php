@@ -2215,7 +2215,7 @@ class Datab extends CI_Model
     public function loadCustomView($viewName, $data = [], $return = false)
     {
         //return $this->load->view("pages/layouts/custom_views/{$viewName}", $data, $return);
-        if (file_exists(FCPATH . "application/views_adminlte/custom/{$viewName}.php")) {
+        if (file_exists(FCPATH . "application/views_adminlte/custom/{$viewName}.php") || file_exists(FCPATH . "application/views_adminlte/custom/{$viewName}")) {
             return $this->load->view("custom/{$viewName}", $data, $return);
         } else {
             return $this->load->view("pages/layouts/custom_views/{$viewName}", $data, $return);
