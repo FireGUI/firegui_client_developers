@@ -5,4 +5,4 @@
         <i class="fas fa-lock"></i>
     </span>
 </div>
-<?php echo $help ? : '<span class="help-block">Non compilare se non vuoi modificare la password</span>'; ?>
+<?php echo $help ? : e('<span class="help-block">Don\'t compile if you don\'t want to change the password</span>'); ?>
