@@ -1050,12 +1050,12 @@ if (!function_exists('scanAllDir')) {
         $sep = (($dotPos > $commaPos) && $dotPos) ? $dotPos : ((($commaPos > $dotPos) && $commaPos) ? $commaPos : false);
 
         if (!$sep) {
-            return floatval(preg_replace("/[^0-9]/", "", $num));
+            return floatval(preg_replace("/[^0-9\-]/", "", $num));
         }
 
         return floatval(
-            preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
-                preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
+            preg_replace("/[^0-9\-]/", "", substr($num, 0, $sep)) . '.' .
+                preg_replace("/[^0-9\-]/", "", substr($num, $sep + 1, strlen($num)))
         );
     }
 }
@@ -1116,5 +1116,27 @@ if (!function_exists('file_put_contents_and_create_dir')) {
         }
 
         return file_put_contents($filename, $data, $flags, $context);
+    }
+}
+
+
+if (!function_exists('dirToArray')) {
+    function dirToArray($dir)
+    {
+
+        $result = array();
+
+        $cdir = scandir($dir);
+        foreach ($cdir as $key => $value) {
+            if (!in_array($value, array(".", ".."))) {
+                if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
+                    $result[$value] = dirToArray($dir . DIRECTORY_SEPARATOR . $value);
+                } else {
+                    $result[] = $value;
+                }
+            }
+        }
+
+        return $result;
     }
 }
