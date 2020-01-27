@@ -1,5 +1,5 @@
 <?php
-//var_dump(mail('manuel@h2web.it', 'test tecnico', 'da idra...'));
+
 /**
  * CodeIgniter
  *
