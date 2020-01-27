@@ -48,31 +48,48 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
 ?>
 <div class="row">
     <div class="col-lg-2 col-md-3">
-        <?php if ($data['calendars']['calendars_filter_entity_id']): ?>
+        <?php if ($data['calendars']['calendars_filter_entity_id']) : ?>
             <?php $entity = $this->datab->get_entity($data['calendars']['calendars_filter_entity_id']); ?>
             <h3><?php echo ucwords($entity['entity_name']); ?></h3>
 
             <?php
+            $main_entity = $data['calendars']['entity_name'];
+            $where = ($filterWhere) ? "WHERE $filterWhere" : '';
+            foreach ($data['calendars_fields'] as $_field) {
+                if ($_field['calendars_fields_type'] == 'filter') {
+                    $field_filter = $_field['fields_name'];
+                }
+            }
+            if (!empty($field_filter)) {
+                if ($filterWhereFilter) {
+                    $filterWhereFilter .= "AND {$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
+                } else {
+                    $filterWhereFilter = "{$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
+                }
+            }
+            //debug($filterWhereFilter);
             $filter_data = $this->datab->get_entity_preview_by_name($entity['entity_name'], $filterWhereFilter);
+
+
             $detailsLink = $this->datab->get_detail_layout_link($data['calendars']['calendars_filter_entity_id']);
-            
+
             natcasesort($filter_data);
             ?>
-            <?php foreach ($filter_data as $id => $nome): ?>
-                <?php if ($detailsLink): ?>
-            <div  class="checkbox">
-                    <label>
-                        <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
-                        <?php echo anchor($detailsLink.'/'.$id, $nome, ['data-toggle' => 'tooltip', 'title' => 'Visualizza '.$nome]); ?>
-                    </label>
-            </div>
-                <?php else: ?>
-            <div  class="checkbox">
-                    <label >
-                        <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
-                        <?php echo $nome; ?>
-                    </label>
-            </div>
+            <?php foreach ($filter_data as $id => $nome) : ?>
+                <?php if ($detailsLink) : ?>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
+                            <?php echo anchor($detailsLink . '/' . $id, $nome, ['data-toggle' => 'tooltip', 'title' => 'Visualizza ' . $nome]); ?>
+                        </label>
+                    </div>
+                <?php else : ?>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
+                            <?php echo $nome; ?>
+                        </label>
+                    </div>
                 <?php endif; ?>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -90,12 +107,12 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
 
 <script>
     var jqCalendarView;
-    $(function () {
+    $(function() {
 
         var jqCalendar = $('#<?php echo $calendarId; ?>');
         var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>";
-        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time')?:'06:00:00'); ?>;
-        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time')?:'22:00:00'); ?>;
+        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
+        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
         // ============================
 
         var date = new Date();
@@ -112,7 +129,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
             };
         } else {
             jqCalendar.removeClass("mobile");
-            
+
             h = {
                 right: 'title',
                 center: '',
@@ -128,7 +145,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
             disableDragging: false,
             height: 'auto',
             header: h,
-//            locale: 'it',
+            //            locale: 'it',
             lang: 'it',
             timeFormat: 'H:mm',
             axisFormat: 'H:mm',
@@ -144,24 +161,28 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                 day: 'Giorno',
             },
             timeFormat: 'H:mm',
-            columnFormat: {agendaWeek: 'ddd D MMMM'},
+            columnFormat: {
+                agendaWeek: 'ddd D MMMM'
+            },
             axisFormat: 'H:mm',
             minTime: minTime,
             maxTime: maxTime,
             allDayHtml: "<i class='far fa-clock'></i>",
-            eventRender: function (event, element) {
+            eventRender: function(event, element) {
                 element.attr('data-id', event.id).css({
                     'margin-bottom': '1px',
                     'border': '1px solid #aaa'
                 });
             },
             selectHelper: true,
-            select: function (start, end, allDay) {
-                var fStart = formatDate(start.toDate());    // formatted start
-                var fEnd = formatDate(end.toDate());        // formatted end
+            select: function(start, end, allDay) {
+                var fStart = formatDate(start.toDate()); // formatted start
+                var fEnd = formatDate(end.toDate()); // formatted end
                 var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
-                        var data = {<?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "'.DB_BOOL_TRUE.'":"'.DB_BOOL_FALSE.'"' : ''); ?>};
-                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function () {
+                var data = {
+                    <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                };
+                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
                     jqCalendar.fullCalendar('refetchEvents');
                 }, 'get');
 
@@ -170,40 +191,44 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                     end.minutes(end.minutes() - 1);
                 }
             },
-            eventClick: function (event, jsEvent, view) {
-                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + event.id, {}, function () {
+            eventClick: function(event, jsEvent, view) {
+                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + event.id, {}, function() {
                     jqCalendar.fullCalendar('refetchEvents');
                 });
                 return false;
             },
-            eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
+            eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
                 var allDay = isAlldayEvent(event.start, event.end);
-                var fStart = event.start.format('DD/MM/YYYY HH:mm');    // formatted start
+                var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
                 var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
-                        var data = {<?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "'.DB_BOOL_TRUE.'":"'.DB_BOOL_FALSE.'"' : ''); ?>};
+                var data = {
+                    <?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                };
 
                 $.ajax({
                     url: "<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>",
                     type: 'POST',
                     dataType: 'json',
                     data: data,
-                    success: function (data) {
+                    success: function(data) {
                         if (parseInt(data.status) < 1) {
                             revertFunc();
                             alert(data.txt);
                         }
                     },
-                    error: function () {
+                    error: function() {
                         revertFunc();
                         alert('There was an error while saving the event');
                     },
                 });
             },
-            eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
+            eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
                 var allDay = isAlldayEvent(event.start, event.end);
-                var fStart = event.start.format('DD/MM/YYYY HH:mm');    // formatted start
+                var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
                 var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
-                        var data = {<?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "'.DB_BOOL_TRUE.'":"'.DB_BOOL_FALSE.'"' : ''); ?>};
+                var data = {
+                    <?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                };
 
 
                 $.ajax({
@@ -211,39 +236,39 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                     type: 'POST',
                     dataType: 'json',
                     data: data,
-                    success: function (data) {
+                    success: function(data) {
                         if (parseInt(data.status) < 1) {
                             revertFunc();
                             alert(data.txt);
                         }
                     },
-                    error: function () {
+                    error: function() {
                         revertFunc();
                         alert('There was an error while saving the event');
                     },
                 });
             },
-            eventSources: [
-                {
-                    url: sourceUrl,
-                    type: 'POST',
-                    data: function () {
-                        var values = [];
-                        $('.js_check_filter').filter('[type=checkbox]:checked').each(function () {
-                            values.push($(this).val());
-                        });
-                        return {filters: values};
-                    },
-                    error: function (error) {
-                        console.log(error.responseText);
-                    },
-                    loading: function (bool) {
-                        $('#loading').fadeTo(bool ? 1 : 0);
-                    },
-                    color: '#4B8DF8', // a non-ajax option
-                    textColor: 'white' // a non-ajax option
-                }
-            ],
+            eventSources: [{
+                url: sourceUrl,
+                type: 'POST',
+                data: function() {
+                    var values = [];
+                    $('.js_check_filter').filter('[type=checkbox]:checked').each(function() {
+                        values.push($(this).val());
+                    });
+                    return {
+                        filters: values
+                    };
+                },
+                error: function(error) {
+                    console.log(error.responseText);
+                },
+                loading: function(bool) {
+                    $('#loading').fadeTo(bool ? 1 : 0);
+                },
+                color: '#4B8DF8', // a non-ajax option
+                textColor: 'white' // a non-ajax option
+            }],
             viewRender: function(view) {
                 window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
                     view: view.name,
@@ -254,14 +279,14 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
 
 
 
-        $('.js_check_filter').on('change', function () {
+        $('.js_check_filter').on('change', function() {
             jqCalendar.fullCalendar('refetchEvents');
         });
 
 
         // Ripristina sessione
         var sessionStorageKey = jqCalendar.attr('id');
-        
+
         try {
             var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
             jqCalendar.fullCalendar('changeView', calendarSession.view);
@@ -270,6 +295,4 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
             // ... skip ...
         }
     });
-
 </script>
-
