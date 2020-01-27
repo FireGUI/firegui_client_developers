@@ -455,7 +455,7 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
-        //Matteo: rimuovo i campi password passati vuoti...
+        //MP: rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
         //debug($fields,true);
         foreach ($fields as $field) {
@@ -522,7 +522,7 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
-        //Matteo: rimuovo i campi password passati vuoti...
+        //MP: rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
         //debug($fields,true);
         foreach ($fields as $field) {
@@ -709,7 +709,7 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        //20170608 - Matteo Puppis - integrazione soft-delete
+        //20170608 - MP - integrazione soft-delete
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -888,7 +888,7 @@ class Apilib
 
             $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
-            //20170608 - Matteo Puppis - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+            //20170608 - MP - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
                 //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
@@ -940,7 +940,7 @@ class Apilib
     public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1)
     {
         //$out = $this->search($entity, $input, 1);
-        //20151019 - Fix Matteo: aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
+        //20151019 - Fix MP: aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
         $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth);
         return array_shift($out) ?: [];
     }
@@ -1307,7 +1307,7 @@ class Apilib
 
                 $this->form_validation = new $validatorClass;
             }
-            //20180426 - Matteo Puppis - Col passaggio a CI3, non viene più verificato il $_POST dal form validator, ma direttamente il CI->input->method (che nel caso di "change_value" è GET, non POST).
+            //20180426 - MP - Col passaggio a CI3, non viene più verificato il $_POST dal form validator, ma direttamente il CI->input->method (che nel caso di "change_value" è GET, non POST).
             //Fortunatamente hanno previsto la possibilità di dire al form validator che non deve valutare $_POST, ma un array "validation_data" che si può settare con set_data. Ecco il perchè di questa modifica.
             $this->form_validation->set_data($_POST);
             $this->form_validation->set_rules($rules);
@@ -1622,7 +1622,7 @@ class Apilib
                 // Se $relation['value'] è vuoto allora anche
                 // $relationFullData sarà vuoto
                 $relationFullData = array_map(function ($value) use ($relationBundle, $savedId) {
-                    //TODO: matteo 20191108 Non è detto che il field_1 sia il saveId, nulla vieta di invertire le due tabella. Sarebbe da fare un check per capire dove va l'id salvato e dove va invece ilvalore della multiselect...
+                    //TODO: MP 20191108 Non è detto che il field_1 sia il saveId, nulla vieta di invertire le due tabella. Sarebbe da fare un check per capire dove va l'id salvato e dove va invece ilvalore della multiselect...
                     return [
                         $relationBundle['relations_field_1'] => $savedId,
                         $relationBundle['relations_field_2'] => $value

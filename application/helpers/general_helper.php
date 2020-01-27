@@ -589,7 +589,7 @@ if (!function_exists('is_development')) {
         }
         //die($_SERVER['REMOTE_ADDR']);
         //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
-        return (gethostname() === 'idra' or (!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])));
+        return ((!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])));
     }
 }
 
