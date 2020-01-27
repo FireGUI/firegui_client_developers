@@ -155,7 +155,7 @@ class Cron extends MY_Controller
 
         // Report via mail
         if (self::ENABLE_TRACKING) {
-            mail('info@h2web.it', "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
+            mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
         }
     }
 
