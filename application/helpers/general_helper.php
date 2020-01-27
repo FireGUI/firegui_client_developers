@@ -1050,12 +1050,12 @@ if (!function_exists('scanAllDir')) {
         $sep = (($dotPos > $commaPos) && $dotPos) ? $dotPos : ((($commaPos > $dotPos) && $commaPos) ? $commaPos : false);
 
         if (!$sep) {
-            return floatval(preg_replace("/[^0-9]/", "", $num));
+            return floatval(preg_replace("/[^0-9\-]/", "", $num));
         }
 
         return floatval(
-            preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
-                preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
+            preg_replace("/[^0-9\-]/", "", substr($num, 0, $sep)) . '.' .
+                preg_replace("/[^0-9\-]/", "", substr($num, $sep + 1, strlen($num)))
         );
     }
 }
