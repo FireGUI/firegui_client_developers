@@ -182,7 +182,7 @@ class V1 extends MY_Controller
             }
         }
 
-        //20190424 - Matteo - Ho rimesso questo perchè non faceva più il controllo d'accesso all'entità/fields...
+        //20190424 - MP - Ho rimesso questo perchè non faceva più il controllo d'accesso all'entità/fields...
         $this->check_request($method, $params);
 
         // A questo punto posso chiamare

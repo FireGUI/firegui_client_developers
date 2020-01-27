@@ -660,7 +660,7 @@ class CI_Form_validation {
 			}
 			else
 			{
-                            //MATTEO PUPPIS - 20180508 - Ho tolto questa cosa. Creava un mondo di casini coi poligoni e apilib
+                            //MP - 20180508 - Ho tolto questa cosa. Creava un mondo di casini coi poligoni e apilib
                             // If we get an array field, but it's not expected - then it is most likely
 				// somebody messing with the form on the client side, so we'll just consider
 				// it an empty field
