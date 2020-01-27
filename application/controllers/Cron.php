@@ -77,7 +77,7 @@ class Cron extends MY_Controller
             $this->db->set('crons_last_execution', 'NOW()', false);
             $this->db->where('crons_id', $cron['crons_id']);
             $this->db->update('crons');
-            //mail('matteopuppis@gmail.com', 'cron query', $this->db->last_query());
+
             $this->saveInExecution($cron['crons_id']);
             $this->run($cron);
 
