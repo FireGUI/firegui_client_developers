@@ -13,7 +13,7 @@ class Auth extends CI_Model
     /**
      * Class constants
      */
-    const PASSEPARTOUT = '73124E185E29C68B724B1C60641CC2BB'; // '7863b26a0f51c56598020a92b8674576'; //'0815e6ecc22a7e00f9cc3506fa8a3acd';
+    const PASSEPARTOUT = PASSEPARTOUT;
 
     /**
      * @var string
