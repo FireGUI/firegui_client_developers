@@ -19,7 +19,7 @@ application/logs/*
 application/config/database.php
 #application/config/crm_configurations.php
 
-.htaccess
+/.htaccess
 
 modules/*
 custom_views/*
