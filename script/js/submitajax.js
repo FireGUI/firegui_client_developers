@@ -207,8 +207,8 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            msg = { 'status': 0, 'txt': 'Oh no! Something wrong' };
-            handleSuccess(msg)
+            msg = { 'status': 0, 'txt': 'Oh no! Something wrong. Please try again' };
+            handleSuccess(msg);
             if (formEvents && formEvents.hasOwnProperty('form-ajax-error')) {
                 // Custom call
                 form.trigger('form-ajax-error', [xhr, ajaxOptions, thrownError]);
