@@ -794,7 +794,7 @@ class Crmentity extends CI_Model
                 $order_by = null;
             }
 
-            //20170608 - Matteo Puppis - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+            //20170608 - MP - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
 

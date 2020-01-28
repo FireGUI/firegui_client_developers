@@ -81,7 +81,7 @@ class Access extends MY_Controller
 
         $success = $this->auth->login_attempt($data['users_users_email'], $data['users_users_password'], $remember, $timeout);
 
-        //TODO: Matteo: aggiungere gli auto right join in modo che se un utente è associato a un'altra entità (esempio: aziende che fanno login, dipendenti seven, ecc...)
+        //TODO: aggiungere gli auto right join in modo che se un utente è associato a un'altra entità (esempio: aziende che fanno login, dipendenti seven, ecc...)
         //prenda in automatico anche i dati delle entità collegate... Buttare ovviamente anche questi dati in sessione
 
 
