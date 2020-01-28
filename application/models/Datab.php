@@ -699,7 +699,7 @@ class Datab extends CI_Model
         // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
         $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
         foreach ($dati['grids']['links']['custom'] as &$custom_link) {
-            //20170915 - Matteo Puppis - Mantengo questa funzionalità solo se è impostato il custom html
+            //20170915 - MP - Mantengo questa funzionalità solo se è impostato il custom html
             if (!empty($custom_link['grids_actions_html'])) {
                 $html = str_replace('{base_url}', base_url(), $custom_link['grids_actions_html']);
                 $custom_link['grids_actions_html'] = $html;
@@ -1081,7 +1081,7 @@ class Datab extends CI_Model
                             $field->fields_draw_html_type = NULL;
                         } else {
                             // Sto filtrando in un campo dell'entità principale
-                            //Matteo - 201703227 - Metto comunque il nome della tabella come prefisso per evitare il classico errore che il campo compare in più tabelle...
+                            //MP - 201703227 - Metto comunque il nome della tabella come prefisso per evitare il classico errore che il campo compare in più tabelle...
                             $where_prefix = "{$entity['entity_name']}.";
                             $where_suffix = '';
                         }
@@ -1396,7 +1396,7 @@ class Datab extends CI_Model
 
         if ($post_process->num_rows() > 0) {
             foreach ($post_process->result_array() as $function) {
-                //20191001 - Matteo Puppis - Se arrivo qua, potrei avere anche dei fi_events con action non gestita.
+                //20191001 - MP - Se arrivo qua, potrei avere anche dei fi_events con action non gestita.
                 //Es.: i fi_events di tipo custom code, creano anche il relativo pp che continuerà a funzionare senza problemi (è retro compatibile).
                 //Le nuove action però (quindi non i custom code, che continueranno a funzionare con gli eval), devono avere una gestione ad hoc.
 
@@ -2684,12 +2684,12 @@ class Datab extends CI_Model
                 'subform' => $subform
             ];
 
-            //20190610 - Matteo Puppis - if value is a comma separated string of values, explodes...
+            //20190610 - MP - if value is a comma separated string of values, explodes...
             //            if ($field['fields_type'] == 'INT' && count(explode(',',$data['value'])) > 1) {
             //                $data['value'] = explode(',', $data['value']);
             //            }
             //debug($field,true);
-            //20190409 - Matteo Puppis - Aggiungo la preview del value, da usare nelle nuove select_ajax
+            //20190409 - MP - Aggiungo la preview del value, da usare nelle nuove select_ajax
             if (!empty($data['value']) && !is_array($data['value']) && !empty($field['fields_ref']) && $field['forms_fields_override_type'] != 'input_hidden') {
 
                 $preview = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id = '{$data['value']}'", 1);

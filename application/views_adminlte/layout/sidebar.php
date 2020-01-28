@@ -34,7 +34,7 @@
                 $label = ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label']));
 
                 //$classes = [sprintf('menu-%s', $menu['menu_id'])];
-                //20190423 - Matteo - La classe non veniva aggiunta nella sidebar, ma solo nei menu dei layout
+                //20190423 - MP - La classe non veniva aggiunta nella sidebar, ma solo nei menu dei layout
                 $classes = [sprintf('menu-%s', $menu['menu_id']), $menu['menu_css_class']];
                 if ($first) {
                     $classes[] = 'start';

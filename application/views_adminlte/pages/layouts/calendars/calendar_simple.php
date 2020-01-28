@@ -19,8 +19,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
 
 <script>
-
-    $(function () {
+    $(function() {
 
         if (!$.fullCalendar) {
             throw Error('Calendar not loaded');
@@ -28,8 +27,8 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
         var jqCalendar = $('#<?php echo $calendarId; ?>');
         var calendarFetchType = <?php echo json_encode($data['calendars']['calendars_method']); ?>;
-        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time')?:'06:00:00'); ?>;
-        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time')?:'22:00:00'); ?>;
+        var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
+        var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
 
         var date = new Date();
         var d = date.getDate();
@@ -72,17 +71,17 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                     disableDragging: false,
                     header: h,
                     eventSources: [{
-                            url: <?php echo json_encode(base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$data['calendars']['calendars_where']}")) ?>,
-                            type: 'POST',
-                            error: function () {
-                                alert('there was an error while fetching events!');
-                            },
-                            loading: function (bool) {
-                                bool ? $('#loading').show() : $('#loading').hide();
-                            },
-                            color: 'yellow', // a non-ajax option
-                            textColor: 'black' // a non-ajax option
-                        }]
+                        url: <?php echo json_encode(base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}")) ?>,
+                        type: 'POST',
+                        error: function() {
+                            alert('there was an error while fetching events!');
+                        },
+                        loading: function(bool) {
+                            bool ? $('#loading').show() : $('#loading').hide();
+                        },
+                        color: 'yellow', // a non-ajax option
+                        textColor: 'black' // a non-ajax option
+                    }]
                 });
                 break;
 
@@ -102,11 +101,11 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                     minTime: minTime,
                     maxTime: maxTime,
                     events: <?php echo json_encode($data['calendars']['calendars_method_param']); ?>,
-                    eventClick: function (event) {
+                    eventClick: function(event) {
                         window.open(event.url, 'gcalevent', 'width=700,height=600');
                         return false;
                     },
-                    loading: function (bool) {
+                    loading: function(bool) {
                         bool ? $('#loading').show() : $('#loading').hide();
                     }
 
