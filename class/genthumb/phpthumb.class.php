@@ -2936,7 +2936,7 @@ exit;
 		$this->SetOrientationDependantWidthHeight();
 
 		if (phpthumb_functions::version_compare_replacement(phpversion(), '4.2.0', '>=') && function_exists('exif_read_data')) {
-                    //Matteo: tolto, non viene mai usato e dava errore!
+                    //MP: tolto, non viene mai usato e dava errore!
                     //$this->exif_raw_data = @exif_read_data($this->sourceFilename, 0, true);
                     
                     
@@ -2951,7 +2951,7 @@ exit;
 
 			// The parameters width, height and imagetype are available since PHP v4.3.0
 			if (phpthumb_functions::version_compare_replacement(phpversion(), '4.3.0', '>=')) {
-                                //Matteo: tolto perchè credo che non serva e dava errore!
+                                //MP: tolto perchè credo che non serva e dava errore!
 				//$this->exif_thumbnail_data = @exif_thumbnail($this->sourceFilename, $this->exif_thumbnail_width, $this->exif_thumbnail_height, $this->exif_thumbnail_type);
 
 			} else {
