@@ -20,6 +20,7 @@ application/config/database.php
 #application/config/crm_configurations.php
 
 /.htaccess
+.htaccess
 
 modules/*
 custom_views/*
@@ -43,3 +44,4 @@ nbproject/*
 /TMP/firegui_client_release107/nbproject/private/
 
 application/tests/*
+
