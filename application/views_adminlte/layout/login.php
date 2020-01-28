@@ -117,14 +117,23 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
             }
 
             /*add rules to bootstrap-select*/
+            .dropdown-toggle {
+                border-radius: 20px;   
+            }
             .bootstrap-select {
-                width: 30%!important;
+                max-width: 40%!important;
             }
             .bootstrap-select>.dropdown-toggle {
                 background-color: transparent!important;
                 color: #fffffe!important;
             }
             .bootstrap-select>.dropdown-toggle>.bs-caret>.caret{
+                color: #fffffe!important;
+            }
+            .dropdown-menu>.active>a {
+                background-color: #3c8dbc!important;
+            }
+            .dropdown-menu>.active>a>span {
                 color: #fffffe!important;
             }
             /*end boostrap-select customization*/
