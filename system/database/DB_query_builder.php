@@ -1426,10 +1426,6 @@ abstract class CI_DB_query_builder extends CI_DB_driver {
 			$this->qb_cache_orderby = $qb_cache_orderby;
 		}
 
-                if (!$result) {
-                    send_telegram_message('bot731260017:AAFrd1NvOUYO2XeqYrTwh5Tt_1NBFbyZZVQ', '-1001434980685', "MATTEO: ".$this->last_query());
-                }
-                
                 
 		if ($result->num_rows() === 0)
 		{
