@@ -57,11 +57,11 @@ class Mail_model extends CI_Model
      * @param array $additional_headers
      * @return bool
      */
-    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [])
+    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [])
     {
-        if (is_development()) {
+        if (gethostname() === 'idra') {
             $old_to = $to;
-            $to = DEFAULT_EMAIL_SYSTEM;
+            $to = 'matteopuppis@gmail.com';
             $headers_json = json_encode($additional_headers);
         }
 
@@ -79,14 +79,14 @@ class Mail_model extends CI_Model
         $filteredData = array_filter($data, 'is_scalar');
         $subject = str_replace_placeholders($email['emails_subject'],  $filteredData);
         $message = str_replace_placeholders($email['emails_template'], $filteredData);
-        if (is_development()) { //Meglio questo dell'is_development
+        if (gethostname() === 'idra') { //Meglio questo dell'is_development
             $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";
         }
 
         if ($this->isDeferred()) {
-            return $this->queueEmail($to, $headers, $subject, $message);
+            return $this->queueEmail($to, $headers, $subject, $message); // @todo da mettere gli attachments
         } else {
-            return $this->sendEmail($to, $headers, $subject, $message);
+            return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
         }
     }
 
@@ -226,7 +226,7 @@ class Mail_model extends CI_Model
      * @param array $extra_data
      * @return type
      */
-    function sendEmail($to, array $headers, $subject, $message, $isHtml = true, $extra_data = [])
+    function sendEmail($to, array $headers, $subject, $message, $isHtml = true, $extra_data = [], $attachments = [])
     {
 
         // Ensure the email library is loaded
@@ -274,11 +274,21 @@ class Mail_model extends CI_Model
             $this->email->bcc($headers['Bcc']);
         }
 
+        if (isset($attachments) && !empty($attachments)) {
+            foreach ($attachments as $attachment) {
+                $this->email->attach($attachment);
+            }
+        }
+
         // Send and return the result
         $sent = $this->email->send();
         $this->email->clear(true);  // Non c'è ancora modo di allegare file, però intanto lo mettiamo che non si sa mai
 
-        return $sent;
+        if (!$sent) {
+            return $this->email->print_debugger();
+        } else {
+            return $sent;
+        }
     }
 
     /**
