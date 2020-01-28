@@ -64,7 +64,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 width: 100%;
                 height: 100%;
                 /*background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.6)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;*/
-                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url('https://images.unsplash.com/photo-1480497490787-505ec076689f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1349&q=80')!important;
+                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo base_url("images/background.jpg"); ?>)!important;
                 background-position: center!important; 
                 background-repeat: no-repeat!important; 
                 background-size: cover!important;
@@ -91,7 +91,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 background-color: transparent!important;
                 color: #fffffe!important;
                 border: 1px solid #fffffe;
-                /*width: 30%;*/
+                width: 30%;
             }
             .form-group label {
                 margin-right: 10px;
@@ -195,7 +195,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
                         <div class="form-group disconnect">
                             <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
-                            <select name="timeout">
+                            <select name="timeout" class="form-control">
                                 <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
                                 <option value="5" class="form-control input-sm select2">5 <?php e('minutes'); ?></option>
                                 <option value="10" class="form-control input-sm select2">10 <?php e('minutes'); ?></option>
