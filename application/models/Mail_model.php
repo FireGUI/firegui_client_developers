@@ -57,21 +57,22 @@ class Mail_model extends CI_Model
      * @param array $additional_headers
      * @return bool
      */
-    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [])
+    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [])
     {
         if (gethostname() === 'idra') {
             $old_to = $to;
             $to = 'matteopuppis@gmail.com';
             $headers_json = json_encode($additional_headers);
         }
-        
+
         $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
         if (empty($email)) {
             return false;
         }
 
         $headers = array_merge(
-                array_filter(unserialize($email['emails_headers'])), array_filter($additional_headers)
+            array_filter(unserialize($email['emails_headers'])),
+            array_filter($additional_headers)
         );
 
         // Usa come replacement i parametri che non sono array, object e risorse
@@ -81,14 +82,14 @@ class Mail_model extends CI_Model
         if (gethostname() === 'idra') { //Meglio questo dell'is_development
             $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";
         }
-        
+
         if ($this->isDeferred()) {
-            return $this->queueEmail($to, $headers, $subject, $message);
+            return $this->queueEmail($to, $headers, $subject, $message); // @todo da mettere gli attachments
         } else {
-            return $this->sendEmail($to, $headers, $subject, $message);
+            return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
         }
     }
-    
+
     /**
      * Invia e-mail prendendola da un template passato come secondo parametro (un array key=>value con chiavi predefinite)
      * 
@@ -99,14 +100,15 @@ class Mail_model extends CI_Model
      * @param array $additional_headers
      * @return bool
      */
-    public function sendFromData($to = '', $template, array $data = [], array $additional_headers = [] )
+    public function sendFromData($to = '', $template, array $data = [], array $additional_headers = [])
     {
         if (empty($template['subject']) || empty($template['template'])) {
             return false;
         }
-        
+
         $headers = array_merge(
-                array_filter(unserialize($template['headers'])), array_filter($additional_headers)
+            array_filter(unserialize($template['headers'])),
+            array_filter($additional_headers)
         );
 
         // Usa come replacement i parametri che non sono array, object e risorse
@@ -141,7 +143,7 @@ class Mail_model extends CI_Model
         $message = $this->load->view($path, ['data' => $data], true);
 
         if (!$subject) {
-            if (empty($this->subject) OR ! is_string($this->subject)) {
+            if (empty($this->subject) or !is_string($this->subject)) {
                 $subject = str_replace(array('_', '-'), ' ', pathinfo($path, PATHINFO_FILENAME));
             } else {
                 $subject = $this->subject;
@@ -207,7 +209,7 @@ class Mail_model extends CI_Model
             'mail_headers' => json_encode($headers),
             //'mail_log' => ['type' => 'TEXT', 'null' => true],
             'mail_is_html' => ($isHtml) ? DB_BOOL_TRUE : DB_BOOL_FALSE,
-            'mail_user' => $this->auth->get(LOGIN_ENTITY.'_id') ? $this->auth->get(LOGIN_ENTITY.'_id') : null
+            'mail_user' => $this->auth->get(LOGIN_ENTITY . '_id') ? $this->auth->get(LOGIN_ENTITY . '_id') : null
         ];
 
         return $this->db->insert('mail_queue', $email_queue_data);
@@ -224,7 +226,7 @@ class Mail_model extends CI_Model
      * @param array $extra_data
      * @return type
      */
-    function sendEmail($to, array $headers, $subject, $message, $isHtml = true, $extra_data = [])
+    function sendEmail($to, array $headers, $subject, $message, $isHtml = true, $extra_data = [], $attachments = [])
     {
 
         // Ensure the email library is loaded
@@ -248,10 +250,10 @@ class Mail_model extends CI_Model
 
         // Prepend the default headers
         $defaultHeaders = $this->config->item('email_headers');
-        
+
         //debug($this->email,true);
-        
-        $headers = array_merge($defaultHeaders? : [], $headers);
+
+        $headers = array_merge($defaultHeaders ?: [], $headers);
 
         // Setup standard headers
         if (isset($headers['From'])) {
@@ -272,11 +274,21 @@ class Mail_model extends CI_Model
             $this->email->bcc($headers['Bcc']);
         }
 
+        if (isset($attachments) && !empty($attachments)) {
+            foreach ($attachments as $attachment) {
+                $this->email->attach($attachment);
+            }
+        }
+
         // Send and return the result
         $sent = $this->email->send();
         $this->email->clear(true);  // Non c'è ancora modo di allegare file, però intanto lo mettiamo che non si sa mai
-        
-        return $sent;
+
+        if (!$sent) {
+            return $this->email->print_debugger();
+        } else {
+            return $sent;
+        }
     }
 
     /**
@@ -305,7 +317,7 @@ class Mail_model extends CI_Model
         $mail = strtolower(trim($address));
         return compact('mail', 'name');
     }
-    
+
     /**
      * Invia le eventuali e-mail presenti in coda
      */
@@ -320,33 +332,31 @@ class Mail_model extends CI_Model
         if (!$emailsIds) {
             return;
         }
-        
-        
+
+
         // Segno la data di invio della coda in modo tale da proteggermi da
         // invii lenti, se sto tanto ad inviare, al prox cron non verranno 
         // prese le stesse email che sto processando con tutta la mia calma
         $this->db->where_in('mail_id', $emailsIds);
         $this->db->update('mail_queue', ['mail_date_sent' => date('Y-m-d H:i:s')]);
-        
+
         // Ora ciclo tutte le email inviandole una ad una e aggiornando l'email
         // con la vera data di invio
         foreach ($emails as $email) {
-            
+
             $to      = $email['mail_to'];
             $headers = json_decode($email['mail_headers'], true);
             $subject = $email['mail_subject'];
             $body    = $email['mail_body'];
-            $is_html = $email['mail_is_html']==DB_BOOL_TRUE;
-            
+            $is_html = $email['mail_is_html'] == DB_BOOL_TRUE;
+
             $is_sent = $this->sendEmail($to, $headers, $subject, $body, $is_html);
-            
+
             // Salvo sempre la data di tentato invio e il log solo se l'invio è fallito
             $this->db->where('mail_id', $email['mail_id'])->update('mail_queue', [
                 'mail_date_sent' => date('Y-m-d H:i:s'),
                 'mail_log' => $is_sent ? null : $this->email->print_debugger(),
             ]);
-            
         }
     }
-
 }

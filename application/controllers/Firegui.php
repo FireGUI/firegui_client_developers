@@ -181,7 +181,7 @@ class Firegui extends MY_Controller
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
                                         eval($code);
-                                    } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
+                                    } elseif ($key_type == 'include') { //201910070447 - MP - Added possibility to execute a custom code when updating client
                                         if (is_array($code)) {
                                             foreach ($code as $file_to_include) {
                                                 $file_migration = APPPATH . 'migrations/' . $file_to_include;
@@ -231,7 +231,7 @@ class Firegui extends MY_Controller
     //                 foreach ($updates[$version] as $key_type => $code) {
     //                     if ($key_type == 'eval') {
     //                         eval($code);
-    //                     } elseif ($key_type == 'include') { //201910070447 - Matteo Puppis - Added possibility to execute a custom code when updating client
+    //                     } elseif ($key_type == 'include') { //201910070447 - MP - Added possibility to execute a custom code when updating client
     //                         //debug($code, true);
     //                         include(FCPATH . 'application/migrations/' . $code);
     //                     }
@@ -313,6 +313,18 @@ class Firegui extends MY_Controller
     public function getCustomViews()
     {
         echo json_encode(dirToArray(APPPATH . (empty($_SERVER['FIREGUI_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['FIREGUI_CLIENT_TEMPLATE']) . '/custom/'));
+    }
+
+    public function clearCache()
+    {
+        $this->apilib->clearCache();
+        @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+
+        // Pulisco cache frontend se c'è...
+        if (is_dir(APPPATH . '../core/cache/')) {
+            $this->load->helper('file');
+            delete_files(APPPATH . '../core/cache/', false);
+        }
     }
 }
 

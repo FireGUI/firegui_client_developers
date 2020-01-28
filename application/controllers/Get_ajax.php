@@ -500,7 +500,7 @@ class Get_ajax extends MY_Controller
 
 
 
-            //Matteo: fix da cui sopra per prendere il default order
+            //MP: fix da cui sopra per prendere il default order
             //if ($order_col !== null && isset($grid['grids_fields'][$order_col]['fields_name'])) {
             if ($order_col !== null && $order_col !== false) {
 
