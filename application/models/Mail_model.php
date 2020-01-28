@@ -59,6 +59,7 @@ class Mail_model extends CI_Model
      */
     public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [])
     {
+
         if (gethostname() === 'idra') {
             $old_to = $to;
             $to = 'matteopuppis@gmail.com';
@@ -66,7 +67,9 @@ class Mail_model extends CI_Model
         }
 
         $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
+        //debug($email, true);
         if (empty($email)) {
+
             return false;
         }
 
@@ -84,8 +87,10 @@ class Mail_model extends CI_Model
         }
 
         if ($this->isDeferred()) {
+
             return $this->queueEmail($to, $headers, $subject, $message); // @todo da mettere gli attachments
         } else {
+
             return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
         }
     }
@@ -228,7 +233,6 @@ class Mail_model extends CI_Model
      */
     function sendEmail($to, array $headers, $subject, $message, $isHtml = true, $extra_data = [], $attachments = [])
     {
-
         // Ensure the email library is loaded
         $this->load->library('email');
 
@@ -282,10 +286,12 @@ class Mail_model extends CI_Model
 
         // Send and return the result
         $sent = $this->email->send();
-        $this->email->clear(true);  // Non c'è ancora modo di allegare file, però intanto lo mettiamo che non si sa mai
+        $debug = $this->email->print_debugger();
+
+        $this->email->clear(true);
 
         if (!$sent) {
-            return $this->email->print_debugger();
+            return $debug;
         } else {
             return $sent;
         }
