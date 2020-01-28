@@ -77,7 +77,7 @@ class Cron extends MY_Controller
             $this->db->set('crons_last_execution', 'NOW()', false);
             $this->db->where('crons_id', $cron['crons_id']);
             $this->db->update('crons');
-            //mail('matteopuppis@gmail.com', 'cron query', $this->db->last_query());
+
             $this->saveInExecution($cron['crons_id']);
             $this->run($cron);
 
@@ -155,7 +155,7 @@ class Cron extends MY_Controller
 
         // Report via mail
         if (self::ENABLE_TRACKING) {
-            mail('info@h2web.it', "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
+            mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
         }
     }
 
