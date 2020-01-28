@@ -33,6 +33,9 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <!-- Google Font -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+        <!-- Bootstrap-select -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+
         <style>
             <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
             .register-page {
@@ -93,6 +96,10 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 border: 1px solid #fffffe;
                 width: 30%;
             }
+            .transparent{
+                background: transparent!important;
+                color: white!important;
+            }
             .form-group label {
                 margin-right: 10px;
                 color: #fffffe!important;
@@ -108,6 +115,19 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 color: #121417!important;
                 margin-right: 10px;
             }
+
+            /*add rules to bootstrap-select*/
+            .bootstrap-select {
+                width: 30%!important;
+            }
+            .bootstrap-select>.dropdown-toggle {
+                background-color: transparent!important;
+                color: #fffffe!important;
+            }
+            .bootstrap-select>.dropdown-toggle>.bs-caret>.caret{
+                color: #fffffe!important;
+            }
+            /*end boostrap-select customization*/
 
             .forget_password {
                 width: 100%;
@@ -195,20 +215,20 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
                         <div class="form-group disconnect">
                             <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
-                            <select name="timeout" class="form-control">
+                            <select name="timeout" class="selectpicker" data-style="btn-default">
                                 <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
-                                <option value="5" class="form-control input-sm select2">5 <?php e('minutes'); ?></option>
-                                <option value="10" class="form-control input-sm select2">10 <?php e('minutes'); ?></option>
-                                <option value="30" class="form-control input-sm select2">30 <?php e('minutes'); ?></option>
-                                <option value="60" class="form-control input-sm select2">1 <?php e('hour'); ?></option>
-                                <option value="120" class="form-control input-sm select2">2 <?php e('hours'); ?></option>
-                                <option value="240" class="form-control input-sm select2" selected="selected">4 <?php e('hours'); ?></option>
-                                <option value="480" class="form-control input-sm select2">8 <?php e('hours'); ?></option>
-                                <option value="720" class="form-control input-sm select2">12 <?php e('hours'); ?></option>
-                                <option value="1440" class="form-control input-sm select2">1 <?php e('day'); ?></option>
-                                <option value="10080" class="form-control input-sm select2">7 <?php e('days'); ?></option>
-                                <option value="43200" class="form-control input-sm select2">1 <?php e('month'); ?></option>
-                                <option value="518400" class="form-control input-sm select2"><?php e('Never'); ?></option>
+                                <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
+                                <option value="10" class="input-sm option_style">10 <?php e('minutes'); ?></option>
+                                <option value="30" class="input-sm option_style">30 <?php e('minutes'); ?></option>
+                                <option value="60" class="input-sm option_style">1 <?php e('hour'); ?></option>
+                                <option value="120" class="input-sm option_style">2 <?php e('hours'); ?></option>
+                                <option value="240" class="input-sm option_style" selected="selected">4 <?php e('hours'); ?></option>
+                                <option value="480" class="input-sm option_style">8 <?php e('hours'); ?></option>
+                                <option value="720" class="input-sm option_style">12 <?php e('hours'); ?></option>
+                                <option value="1440" class="input-sm option_style">1 <?php e('day'); ?></option>
+                                <option value="10080" class="input-sm option_style">7 <?php e('days'); ?></option>
+                                <option value="43200" class="input-sm option_style">1 <?php e('month'); ?></option>
+                                <option value="518400" class="input-sm option_style"><?php e('Never'); ?></option>
                             </select>
                         </div>
 
@@ -256,6 +276,8 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <script src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- CUSTOM COMPONENTS -->
         <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
+        <!-- Bootstrap-select -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 
         <script>
             $(function() {
