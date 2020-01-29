@@ -1,6 +1,9 @@
-Changelog version 1.7.1.8
+Changelog version 1.7.5
  
-Commented check on int field on filter
-Fixed json value bug in model Datab.php
-Translated "nuovo valore" into "new row"
-Fixed updateFromGit with generic pull
+Password recover stylesheet changed
+Remove names and internal references
+Added configurable passpartout
+Fixed full json sidebar calendar filter
+Removed internal debugging functions
+Fix floatval function preg_replace dash symbol
+Changed single line chart in multiple lines
