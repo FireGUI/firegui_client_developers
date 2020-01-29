@@ -982,14 +982,14 @@ class Crmentity extends CI_Model
 
         if (!is_numeric($id)) {
             if (empty($this->_schemaCache['entity_names'][$id])) {
-                throw new Exception(sprintf("Entità '%s' non esistente", $id));
+                throw new Exception(sprintf("Entity '%s' does not exist", $id));
             }
 
             $id = $this->_schemaCache['entity_names'][$id];
         }
 
         if (empty($this->_schemaCache['entities'][$id])) {
-            throw new Exception(sprintf("Entità '%s' non esistente", $id));
+            throw new Exception(sprintf("Entity '%s' does not exist", $id));
         }
 
         return $this->_schemaCache['entities'][$id];
