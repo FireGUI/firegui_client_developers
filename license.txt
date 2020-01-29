@@ -1,3 +1,64 @@
+Copyright (c) 2015 - 2020, Firegui.com
+All rights reserved.
+
+This license is a legal agreement between you and Firegui.com for the use
+of FireGUI Client Software (the "Software").  By obtaining the Software you
+agree to comply with the terms and conditions of this license.
+
+PERMITTED USE
+You are permitted to use, copy, modify, and distribute the Software and its
+documentation, with or without modification, for any purpose, provided that
+the following conditions are met:
+
+1. A copy of this license agreement must be included with the distribution.
+
+2. Redistributions of source code must retain the above copyright notice in
+   all source code files.
+
+3. Redistributions in binary form must reproduce the above copyright notice
+   in the documentation and/or other materials provided with the distribution.
+
+4. Products derived from the Software must include an acknowledgment that
+   they are derived from FireGUI and/or FireGUI Client in their documentation 
+   and/or other materials provided with the distribution.
+
+5. Products derived from the Software may not be called "FireGUI",
+   nor may "FireGUI" (or abbreviations or similar...) appear in their name, 
+   without prior written permission from Firegui.comp
+
+6. The Software is released under the MIT License
+
+                   ------- MIT LICENSE -------
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+                   ------ MIT LICENSE END ------
+
+COPYRIGHT ADDITIONAL INFORMATION
+This license extends "2008 - 2011 Ellislab, Inc" original license. Read carefully
+the license below before use the Software. FireGUI and FireGUI Client are
+based on CodeIgniter PHP Framework, so you must agree also their terms and
+conditions.
+
+
+----------------- EllisLab - CodeIgniter Original License -----------------
 Copyright (c) 2008 - 2011, EllisLab, Inc.
 All rights reserved.
 
