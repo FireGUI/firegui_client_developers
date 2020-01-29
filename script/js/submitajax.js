@@ -2,7 +2,7 @@ var formAjaxSubmittedFormId = null;
 var formAjaxShownMessage = null;
 
 
-var handleSuccess = function(msg) {
+var handleSuccess = function (msg) {
 
     switch (parseInt(msg.status)) {
         case 0:
@@ -29,22 +29,22 @@ var handleSuccess = function(msg) {
             //Alert e refresh
             alert(msg.txt);
             if (msg.hasOwnProperty('timeout')) {
-                setTimeout(function() {
+                setTimeout(function () {
                     window.location.reload();
                 }, msg.timeout);
             } else {
                 window.location.reload();
             }
             break;
-            
+
         case 5:
             // Success
-            
+
             success(msg.txt);
             break;
         case 6:
             // Success
-            
+
             success(msg.txt);
             break;
         case 9:
@@ -57,13 +57,13 @@ var handleSuccess = function(msg) {
 
 //var iShowCounter = 0;
 function loading(bShow) {
-    if(bShow) {
-//        $('.js_loading_overlay').fadeIn();
+    if (bShow) {
+        //        $('.js_loading_overlay').fadeIn();
         $('.js_loading').fadeIn();
         // Se in 4 secondi non ho ottenuto una risposta, nascondo automaticamente il loader
         setTimeout(loading, 4000, false);
     } else {
-//        $('.js_loading_overlay').fadeOut();
+        //        $('.js_loading_overlay').fadeOut();
         $('.js_loading').fadeOut();
     }
 }
@@ -76,13 +76,13 @@ function loading(bShow) {
 
 
 
-$(document).ready(function() {
-    $('body').on('submit', '.formAjax', function(e) {
+$(document).ready(function () {
+    $('body').on('submit', '.formAjax', function (e) {
         e.preventDefault();
         var form = $(this);
         if (formAjaxShownMessage) {
-            formAjaxShownMessage.fadeOut('fast', function() {
-                formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({'display':'', 'opacity': ''});
+            formAjaxShownMessage.fadeOut('fast', function () {
+                formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ 'display': '', 'opacity': '' });
                 formAjaxShownMessage = null;
                 formAjaxSend(form);
             });
@@ -91,20 +91,20 @@ $(document).ready(function() {
         }
         return false;
     });
-        
-    
-    
-    $('body').on('click', '.js_confirm_button', function(e) {
+
+
+
+    $('body').on('click', '.js_confirm_button', function (e) {
         var text = $(this).data('confirm-text');
-        if( ! confirm(text? text: 'Confermi?')) {
+        if (!confirm(text ? text : 'Confermi?')) {
             e.preventDefault();             // Prevent follow links
             e.stopPropagation();            // Prevent propagation on parent DOM elements
             e.stopImmediatePropagation();   // Prevent other handlers to be fired
             return false;                   // Better sure than sorry :)
         }
     });
-        
-    $('body').on('click', '.js_link_ajax', function(e) {
+
+    $('body').on('click', '.js_link_ajax', function (e) {
         e.preventDefault();             // Prevent follow links
         e.stopPropagation();            // Prevent propagation on parent DOM elements
         e.stopImmediatePropagation();   // Prevent other handlers to be fired
@@ -122,18 +122,18 @@ $(document).ready(function() {
         $.ajax({
             url: url,
             dataType: 'json',
-            complete: function() {
+            complete: function () {
                 loading(false);
             },
-            success: function(msg) {
+            success: function (msg) {
                 handleSuccess(msg);
             },
-            error: function(xhr, ajaxOptions, thrownError) {
+            error: function (xhr, ajaxOptions, thrownError) {
 
                 var errorContainerID = 'ajax-error-container';
                 var errorContainer = $('#' + errorContainerID);
 
-                if(errorContainer.size() === 0) {
+                if (errorContainer.size() === 0) {
                     errorContainer = $('<div/>').attr('id', errorContainerID).css({
                         "z-index": 99999999,
                         "background-color": '#fff'
@@ -160,23 +160,23 @@ function sleep(milliseconds) {
 
 
 function formAjaxSend(form, ajaxOverrideOptions) {
-    
+
     refreshCkeditors();
     if (form instanceof Element || typeof form === 'string') {
         form = $(form);
     }
-    
+
     if (!(form instanceof jQuery)) {
         alert("Si è verificato un errore tecnico inviando il form. Contattare l'amministrazione");
         return false;
     }
-    
+
     formAjaxSubmittedFormId = form.attr('id');
-    
+
     var action = form.attr('action');
     var formEvents = $._data(form[0], 'events');
     var data = new FormData(form[0]);
-    
+
     var ajaxOptions = {
         url: action,
         type: 'POST',
@@ -187,25 +187,28 @@ function formAjaxSend(form, ajaxOverrideOptions) {
         processData: false,
 
         dataType: "json",
-        complete: function() {
+        complete: function () {
             form.trigger('form-ajax-complete');
             loading(false);
         },
-        success: function(msg) {
+        success: function (msg) {
             if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
+
             } else {
                 // Default
                 handleSuccess(msg);
             }
-    
+
             // Eventually close all modals if needed
-            if(typeof msg.close_modals !== 'undefined' && msg.close_modals) {
+            if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
                 closeContainingPopups(form);
             }
         },
-        error: function(xhr, ajaxOptions, thrownError) {
+        error: function (xhr, ajaxOptions, thrownError) {
+            msg = { 'status': 0, 'txt': 'Oh no! Something wrong. Please try again' };
+            handleSuccess(msg);
             if (formEvents && formEvents.hasOwnProperty('form-ajax-error')) {
                 // Custom call
                 form.trigger('form-ajax-error', [xhr, ajaxOptions, thrownError]);
@@ -214,20 +217,20 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 var errorBox = $('#submitajax-error');
                 if (!errorBox.length) {
                     errorBox = $('<div id="submitajax-error">').prependTo($('body'));
-                    errorBox.css({'background-color':'#fff', 'z-index': 999999, 'padding': 15});
+                    errorBox.css({ 'background-color': '#fff', 'z-index': 999999, 'padding': 15 });
                 }
                 errorBox.html("Errore ajax:<br/>" + xhr.responseText);
-                errorBox.append($('<button>').text('Chiudi').on('click', function() {
+                errorBox.append($('<button>').text('Chiudi').on('click', function () {
                     errorBox.remove();
                 }));
             }
         }
     };
-    
+
     if (ajaxOverrideOptions && typeof ajaxOverrideOptions === 'object') {
         $.extend(ajaxOptions, ajaxOverrideOptions);
     }
-    
+
     loading(true);
     $.ajax(ajaxOptions);
 }
@@ -241,14 +244,14 @@ function formAjaxSend(form, ajaxOverrideOptions) {
 function error(txt, idform) {
     console.log(idform);
     if (typeof idform != 'undefined') {
-        
+
         formAjaxShownMessage = $('#msg_' + idform).html(txt);
     } else {
-        
+
         formAjaxShownMessage = $('#msg_' + formAjaxSubmittedFormId).html(txt);
     }
-    
-    
+
+
     // Reset della proprietà css inline display in modo che non interferisca con
     // le classi di bootstrap
     formAjaxShownMessage.css('display', '');
@@ -263,19 +266,19 @@ function error(txt, idform) {
 
 function success(txt) {
     formAjaxShownMessage = $('#msg_' + formAjaxSubmittedFormId).html(txt);
-    
+
     // Reset della proprietà css inline display in modo che non interferisca con
     // le classi di bootstrap
     formAjaxShownMessage.css('display', '');
 
     var current = formAjaxShownMessage;
-    
+
     if (txt) {
         current.removeClass('hide hidden alert-danger').addClass('alert-success');
-        setTimeout(function() {
-            current.fadeOut(function() {
+        setTimeout(function () {
+            current.fadeOut(function () {
                 current.addClass('hide hidden').html('');
-                
+
                 if (current === formAjaxShownMessage) {
                     formAjaxShownMessage = null;
                 }
@@ -290,7 +293,7 @@ function refreshCkeditors() {
     if (typeof CKEDITOR == 'undefined') {
         return;
     }
-    
+
     var id;
     for (id in CKEDITOR.instances) {
         CKEDITOR.instances[id].updateElement();
@@ -304,10 +307,10 @@ function closeContainingPopups(el) {
     if (bsModalParent.size()) {
         try {
             bsModalParent.data('bs.modal').askConfirmationOnClose = false;
-        } catch (e) {}
+        } catch (e) { }
         bsModalParent.modal('hide');
     }
-    
+
     // Try to close fancybox
     var fancyboxParent = el.parents('.fancybox-opened');
     if (fancyboxParent.size()) {

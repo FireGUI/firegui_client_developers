@@ -40,8 +40,7 @@ class Firegui extends MY_Controller
 
     public function uninstallModule($identifier)
     {
-        // TODO: Pericoloso esporre un metodo del genere
-        unlink(APPPATH . "modules/$identifier/");
+        log_message('debug', 'TODO Uninstal module from remote');
     }
 
     function updateFromGit($command = null, $output = true)
@@ -98,7 +97,7 @@ class Firegui extends MY_Controller
         }
     }
 
-
+    // Receive module from Builder
     public function uploadModule($identifier)
     {
         $zip = new ZipArchive;
@@ -208,6 +207,7 @@ class Firegui extends MY_Controller
                 }
 
                 unlink($newfile);
+                $this->clearCache();
                 if ($close) {
                     echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();window.history.back();}, 5000);</script>";
                 } else {
@@ -300,8 +300,10 @@ class Firegui extends MY_Controller
                     }
                 }
             }
+            $this->clearCache();
             die('ok');
         } else {
+            $this->clearCache();
             die('ok');
         }
     }
