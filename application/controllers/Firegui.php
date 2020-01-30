@@ -60,6 +60,7 @@ class Firegui extends MY_Controller
         }
     }
 
+    //Send module to firegui (when creating new module or new release)
     public function downloadModuleFolder($identifier)
     {
         $module = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
@@ -103,6 +104,12 @@ class Firegui extends MY_Controller
         $zip = new ZipArchive;
 
         if ($zip->open($_FILES['module_file']['tmp_name']) === TRUE) {
+            if (!is_dir(APPPATH . "modules")) {
+                mkdir(APPPATH . "modules", DIR_WRITE_MODE, true);
+                if (!is_dir(APPPATH . "modules")) {
+                    log_message("DEBUG", "Cannot create folder '" . APPPATH . "modules'");
+                }
+            }
             $zip->extractTo(APPPATH . "modules/{$identifier}");
             $zip->close();
         } else {
