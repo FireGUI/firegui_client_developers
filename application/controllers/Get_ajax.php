@@ -913,7 +913,7 @@ class Get_ajax extends MY_Controller
                 'notifications_type' => NOTIFICATION_TYPE_SYSTEM,
                 'notifications_id' => null,
                 'notifications_user_id' => null,
-                'notifications_message' => "[System] New client version ('" . VERSION . "' &lt; '{$version}') available!<br />Update now by click here.",
+                'notifications_message' => "[System] There is a new client version available ({$version})!<br />Update now by clicking here.",
                 'notifications_read' => DB_BOOL_FALSE,
                 'notifications_date_creation' => date('Y-m-d h:i:s'),
                 'notifications_link' => base_url('firegui/updateClient/1'),

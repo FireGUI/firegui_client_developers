@@ -13,7 +13,7 @@ class Firegui extends MY_Controller
         $permitted_routes = ['get_client_version'];
         $route = $this->uri->segment(2);
         $unallowed = false;
-        if (!in_array($route, $permitted_routes)) {
+        if (!in_array($route, $permitted_routes) && !$this->auth->check()) {
             if (!$token = $this->input->get('token')) {
                 log_message('DEBUG', "Missing token for Firegui request!");
                 $unallowed = true;
