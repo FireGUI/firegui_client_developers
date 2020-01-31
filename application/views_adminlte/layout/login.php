@@ -45,21 +45,23 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
             <?php if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) : ?>.logo h2 {
                 color: <?php echo LOGIN_TITLE_COLOR; ?>
             }
-            <?php endif; ?><?php endif; ?>
 
-            body {
+            <?php endif; ?><?php endif; ?>body {
                 /*background: #121417!important;*/
-                background: transparent!important;
+                background: transparent !important;
                 /*background-image: linear-gradient(rgba(23, 23, 23, 0.5), rgba(18, 20, 23, 0.5)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;
                 background-position: center!important; 
                 background-repeat: no-repeat!important; 
                 background-size: cover!important;
                 min-height: 100%!important;*/
             }
-            p, h5 {
+
+            p,
+            h5 {
                 /*color: #121417!important;*/
-                color: #fffffe!important;
+                color: #fffffe !important;
             }
+
             .background_img {
                 position: absolute;
                 top: 0;
@@ -67,15 +69,15 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 width: 100%;
                 height: 100%;
                 /*background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.6)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;*/
-                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo base_url("images/background.jpg"); ?>)!important;
-                background-position: center!important; 
-                background-repeat: no-repeat!important; 
-                background-size: cover!important;
-                min-height: 100%!important;
+                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo base_url("images/background.jpg"); ?>) !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+                background-size: cover !important;
+                min-height: 100% !important;
             }
-            
+
             .login-box-body {
-                background: none!important;
+                background: none !important;
                 /*color: #fffffe;*/
             }
 
@@ -86,24 +88,29 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 align-items: baseline;
                 margin-top: 40px;
             }
+
             .disconnect_label {
                 /*width: 50%;*/
             }
-            .form-group select{
-                color: #121417!important;
-                background-color: transparent!important;
-                color: #fffffe!important;
+
+            .form-group select {
+                color: #121417 !important;
+                background-color: transparent !important;
+                color: #fffffe !important;
                 border: 1px solid #fffffe;
                 width: 30%;
             }
-            .transparent{
-                background: transparent!important;
-                color: white!important;
+
+            .transparent {
+                background: transparent !important;
+                color: white !important;
             }
+
             .form-group label {
                 margin-right: 10px;
-                color: #fffffe!important;
+                color: #fffffe !important;
             }
+
             input.form-control {
                 border-radius: 20px;
                 /*background-color: transparent;
@@ -111,31 +118,38 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 border-radius: 30px;
                 color: #2c2c2c;*/
             }
+
             div.form-group span {
-                color: #121417!important;
+                color: #121417 !important;
                 margin-right: 10px;
             }
 
             /*add rules to bootstrap-select*/
             .dropdown-toggle {
-                border-radius: 20px;   
+                border-radius: 20px;
             }
+
             .bootstrap-select {
-                max-width: 40%!important;
+                max-width: 40% !important;
             }
+
             .bootstrap-select>.dropdown-toggle {
-                background-color: transparent!important;
-                color: #fffffe!important;
+                background-color: transparent !important;
+                color: #fffffe !important;
             }
-            .bootstrap-select>.dropdown-toggle>.bs-caret>.caret{
-                color: #fffffe!important;
+
+            .bootstrap-select>.dropdown-toggle>.bs-caret>.caret {
+                color: #fffffe !important;
             }
+
             .dropdown-menu>.active>a {
-                background-color: #3c8dbc!important;
+                background-color: #3c8dbc !important;
             }
+
             .dropdown-menu>.active>a>span {
-                color: #fffffe!important;
+                color: #fffffe !important;
             }
+
             /*end boostrap-select customization*/
 
             .forget_password {
@@ -146,17 +160,17 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 align-items: center;
                 flex-direction: column;
             }
-            .password_title {
-                
-            }
-            .password_reset p a{
-                color: #fffffe!important;
+
+            .password_title {}
+
+            .password_reset p a {
+                color: #fffffe !important;
                 font-weight: 700;
             }
 
             .rounded_btn {
-                width: 100%!important;
-                border-radius: 20px!important;
+                width: 100% !important;
+                border-radius: 20px !important;
                 padding-top: 10px;
                 padding-bottom: 10px;
                 margin: 30px 0px;
@@ -165,6 +179,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 font-size: 16px;*/
                 transition: background-color .45s ease;
             }
+
             /*.rounded_btn:active {
                 background-color: #393e42!important;
             }
@@ -181,7 +196,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 padding: 0;
                 color: #fff;
                 position: absolute;
-                overflow: hidden; 
+                overflow: hidden;
             }
         </style>
     </head>
