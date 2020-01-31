@@ -10,7 +10,7 @@ class Firegui extends MY_Controller
     {
         parent::__construct();
 
-        $permitted_routes = ['get_client_version'];
+        $permitted_routes = ['get_client_version', '_downloadClientZip'];
         $route = $this->uri->segment(2);
         $unallowed = false;
         if (!in_array($route, $permitted_routes) && !$this->auth->check()) {
@@ -356,6 +356,41 @@ class Firegui extends MY_Controller
             $this->load->helper('file');
             delete_files(APPPATH . '../core/cache/', false);
         }
+    }
+
+    //Send module to firegui (when creating new module or new release)
+    public function downloadClientZip()
+    {
+
+
+        $folder = FCPATH;
+
+        $destination_file = './client.zip';
+        if (!file_exists($folder)) {
+            log_message('ERROR', "'$folder' folder does not exists!");
+            die("'$folder' folder does not exists!");
+        }
+
+
+        $success = zip_folder($folder, $destination_file);
+
+        if ($success === TRUE) { //NON TORNA FALSE!!!!!!
+            if (file_exists($destination_file)) {
+                header('Content-Type: application/zip');
+                header('Content-Disposition: attachment; filename="client.zip"');
+                header('Content-Length: ' . filesize($destination_file));
+                //die(filesize($destination_file));
+                //ob_end_clean();
+                readfile($destination_file);
+                //unlink($destination_file);
+            } else {
+                log_message('ERROR', "'$destination_file' file does not exists!");
+                die("'$destination_file' file does not exists!");
+            }
+        } else {
+            die($success);
+        }
+        @unlink($destination_file);
     }
 }
 
