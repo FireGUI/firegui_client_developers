@@ -10,7 +10,29 @@ class Firegui extends MY_Controller
     {
         parent::__construct();
 
+        $permitted_routes = ['get_client_version'];
+        $route = $this->uri->segment(2);
+        $unallowed = false;
+        if (!in_array($route, $permitted_routes)) {
+            if (!$token = $this->input->get('token')) {
+                log_message('DEBUG', "Missing token for Firegui request!");
+                $unallowed = true;
+            } else {
+
+                $token_match = $this->db->where('meta_data_key', 'firegui_token')->where('meta_data_value', $token)->get('meta_data');
+                if ($token_match->num_rows() == 0) {
+                    $unallowed = true;
+                } else {
+                    //Destroy token and proceed...
+                    $this->db->where('meta_data_key', 'firegui_token')->delete('meta_data');
+                }
+            }
+        }
         // TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO FIREGUI DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
+        if ($unallowed) {
+            set_status_header(403);
+            die('Nope... not allowed!');
+        }
     }
 
     public function createModule($identifier)
