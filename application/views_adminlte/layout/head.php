@@ -8,7 +8,7 @@ $title = (empty($this->settings['settings_company_short_name']) ? 'MasterCRM' : 
 $tsuffix = 'CRM';
 ?>
 
-<title><?php echo ucwords(trim(implode(' - ', array_filter([$tprefix, $title, $tsuffix])))); ?></title>
+<title><?php echo ucwords(htmlspecialchars(trim(implode(' - ', array_filter([$tprefix, $title, $tsuffix]))))); ?></title>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
