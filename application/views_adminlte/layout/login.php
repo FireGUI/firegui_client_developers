@@ -234,9 +234,12 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body">
-                                    You can login with the same email and password you used to register in FireGUI.com. After that, you can create new users or change your password directly in your reserved area.
+                                    <?php e('You can login with the same email and password you used to register in FireGUI.com. After that, you can create new users or change your password directly in your reserved area.'); ?>
                                     <br />
-                                    <br /><em>ps.: if you don't want to see this message simply <a href="<?php echo base_url(); ?>">click here</a></em>
+                                    <br />
+                                    <em>
+                                        <?php e('ps.: if you don\'t want to see this message simply'); ?> <a href="<?php echo base_url(); ?>"><?php e('click here'); ?></a>
+                                    </em>
                                 </div>
                                 <!-- /.box-body -->
                             </div>
