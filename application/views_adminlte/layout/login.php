@@ -222,29 +222,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                     <p class="login-box-msg"><?php e('Enter in your profile'); ?></p>
 
                     <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
-                        <?php if ($this->input->get('source') == 'firegui') : ?>
-                            <div class="box box-success box-solid">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title"><?php e('Welcome to your client!'); ?></h3>
 
-                                    <div class="box-tools pull-right">
-                                        <button type="button" class="btn btn-box-tool" data-widget="remove" onclick="location.href='<?php echo base_url(); ?>';"><i class="fa fa-times"></i></button>
-                                    </div>
-                                    <!-- /.box-tools -->
-                                </div>
-                                <!-- /.box-header -->
-                                <div class="box-body">
-                                    <?php e('You can login with the same email and password you used to register in FireGUI.com. After that, you can create new users or change your password directly in your reserved area.'); ?>
-                                    <br />
-                                    <br />
-                                    <em>
-                                        <?php e('ps.: if you don\'t want to see this message simply'); ?> <a href="<?php echo base_url(); ?>"><?php e('click here'); ?></a>
-                                    </em>
-                                </div>
-                                <!-- /.box-body -->
-                            </div>
-
-                        <?php endif; ?>
 
                         <div class="form-group has-feedback">
                             <input type="email" class="form-control" placeholder="<?php e('E-mail address'); ?>" name="users_users_email" />
@@ -311,11 +289,35 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                             <p><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></p>
                         </div>
                     </div>
+                    <?php if ($this->input->get('source') == 'firegui') : ?>
+                        <div class="box box-primary box-solid" style="margin-top:100px;">
+                            <div class="box-header with-border">
+                                <h3 class="box-title"><?php e('Welcome to your client!'); ?></h3>
+
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove" onclick="location.href='<?php echo base_url(); ?>';"><i class="fa fa-times"></i></button>
+                                </div>
+                                <!-- /.box-tools -->
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <?php e('You can login with the same email and password you used to register in FireGUI.com. After that, you can create new users or change your password directly in your reserved area.'); ?>
+                                <br />
+                                <br />
+                                <em>
+                                    <?php e('ps.: if you don\'t want to see this message simply'); ?> <a href="<?php echo base_url(); ?>"><?php e('click here'); ?></a>
+                                </em>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+
+                    <?php endif; ?>
                 </div>
 
                 <div class="copyright"><?php /* powered by <a href="http://firegui.com" class="text-danger" target="_blank">FireGUI</a> */ ?></div>
             </div>
         </div><!-- /.background_img -->
+
 
 
         <!-- COMMON PLUGINS -->
