@@ -179,7 +179,7 @@ function base_url_template($uri)
                 <tr>
                     <td>PHP </td>
                     <td><?php echo " " . ($requirements['php_version'] ? $res_true : $res_false); ?></td>
-                    <td><?php echo " " . ($requirements['php_version'] ? 'Ok!' : 'Your PHP versions is: ' . PHP_VERSION . ', we need at least PHP ' . $php_min_version); ?></td>
+                    <td><?php echo " " . ($requirements['php_version'] ? '' : 'Your PHP versions is: ' . PHP_VERSION . ', we need at least PHP ' . $php_min_version); ?></td>
                 </tr>
                 <tr>
                     <td>Path folder writable </td>
@@ -189,7 +189,7 @@ function base_url_template($uri)
                 <tr>
                     <td>Mysqli PHP Extension </td>
                     <td><?php echo $requirements['mysqli'] ? $res_true : $res_false; ?></td>
-                    <td></td>
+                    <td><?php echo $requirements['mysqli'] ? '' : 'Mysqli is required!'; ?></td>
                 </tr>
                 <tr>
                     <td>OpenSSL PHP Extension </td>
@@ -224,27 +224,27 @@ function base_url_template($uri)
                 <tr>
                     <td>Mcrypt PHP Extension </td>
                     <td><?php echo $requirements['mcrypt_enabled'] ? $res_true : $res_false; ?> </td>
-                    <td></td>
+                    <td><?php echo $requirements['mcrypt_enabled'] ? '' : 'Suggested but not required'; ?></td>
                 </tr>
                 <tr>
                     <td>ImageMagick PHP Extension </td>
                     <td><?php echo $requirements['imagick'] ? $res_true : $res_false; ?></td>
-                    <td></td>
+                    <td><?php echo $requirements['imagick'] ? '' : 'Suggested but not required'; ?></td>
                 </tr>
                 <tr>
                     <td>Curl PHP Extension </td>
                     <td><?php echo $requirements['curl'] ? $res_true : $res_false; ?> </td>
-                    <td></td>
+                    <td><?php echo $requirements['curl'] ? '' : 'Not required, but highly recommended.'; ?></td>
                 </tr>
                 <tr>
                     <td>Zip PHP Extension </td>
                     <td><?php echo $requirements['zip'] ? $res_true : $res_false; ?> </td>
-                    <td></td>
+                    <td><?php echo $requirements['zip'] ? '' : 'Not required, but highly recommended.'; ?></td>
                 </tr>
                 <tr>
                     <td>GD PHP Extension </td>
                     <td><?php echo $requirements['gd'] ? $res_true : $res_false; ?> </td>
-                    <td></td>
+                    <td><?php echo $requirements['gd'] ? '' : 'Not required, but highly recommended.'; ?></td>
                 </tr>
             </table>
 
@@ -300,9 +300,9 @@ function base_url_template($uri)
                     <tr>
                         <td>max_input_vars </td>
                         <td><?php echo ini_get('max_input_vars'); ?></td>
-                        <td><?php echo (ini_get('max_input_vars') < 1200) ? 'We suggest you set this value to at least 1200' : 'Ok!'; ?></td>
+                        <td><?php echo (ini_get('max_input_vars') < 1200) ? 'We suggest you set this value to at least 1200' : ''; ?></td>
                     </tr>
-                    <tr>
+                    <!--<tr>
                         <td>magic_quotes_gpc: </td>
                         <td><?php echo !ini_get('magic_quotes_gpc') ? $res_true : $res_false; ?> (value: <?php echo ini_get('magic_quotes_gpc') ?>)</td>
                         <td><?php echo $permissions['is_writable'] ? '' : 'Your path must be writable!'; ?></td>
@@ -321,21 +321,17 @@ function base_url_template($uri)
                         <td>mbstring.func_overload: </td>
                         <td><?php echo !ini_get('mbstring.func_overload') ? $res_true : $res_false; ?> (value: <?php echo ini_get('mbstring.func_overload') ?>) </td>
                         <td></td>
-                    </tr>
-                    <tr>
-                        <td>max_input_vars: </td>
-                        <td><?php echo (ini_get('max_input_vars') >= 1000) ? $res_true : $res_false; ?> (value: <?php echo ini_get('max_input_vars') ?>, min. 1000) </td>
-                        <td></td>
-                    </tr>
+                    </tr>-->
+
                     <tr>
                         <td>upload_max_filesize: </td>
                         <td><?php echo ini_get('upload_max_filesize') ? $res_true : $res_false; ?> (value: <?php echo ini_get('upload_max_filesize') ?>)</td>
-                        <td></td>
+                        <td><?php echo (ini_get('upload_max_filesize') < 64) ? 'We suggest you set this value to at least 64' : ''; ?></td>
                     </tr>
                     <tr>
                         <td>post_max_size: </td>
                         <td><?php echo ini_get('post_max_size') ? $res_true : $res_false; ?> (value: <?php echo ini_get('post_max_size') ?>) </td>
-                        <td></td>
+                        <td><?php echo (ini_get('post_max_size') < 64) ? 'We suggest you set this value to at least 64' : ''; ?></td>
                     </tr>
                 </table>
 
@@ -384,7 +380,7 @@ function base_url_template($uri)
                         <tr>
                             <td>eval function </td>
                             <td><?php echo check_disabled_function('eval') ? $res_true : $res_false; ?></td>
-                            <td></td>
+                            <td><?php echo check_disabled_function('eval') ? '' : 'Eval function is required!'; ?></td>
                         </tr>
                     </table>
                     <br />
