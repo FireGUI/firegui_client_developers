@@ -10,7 +10,7 @@ class Firegui extends MY_Controller
     {
         parent::__construct();
 
-        $permitted_routes = ['get_client_version', '_downloadClientZip'];
+        $permitted_routes = ['get_client_version'];
         $route = $this->uri->segment(2);
         $unallowed = false;
         if (!in_array($route, $permitted_routes) && !$this->auth->check()) {
