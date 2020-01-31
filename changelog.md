@@ -1,9 +1,7 @@
-Changelog version 1.7.5
+Changelog version 1.7.7
  
-Password recover stylesheet changed
-Remove names and internal references
-Added configurable passpartout
-Fixed full json sidebar calendar filter
-Removed internal debugging functions
-Fix floatval function preg_replace dash symbol
-Changed single line chart in multiple lines
+License updated
+Allowed update client if logged in
+Change notification message in case of new version available
+Added source parameter in login page to show custom messages
+Added downloadClientZip method

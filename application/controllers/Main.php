@@ -28,10 +28,14 @@ class Main extends MY_Controller
                     unset($uri[$k]);
                 }
             }
-
+if ($this->input->get('source')) {
+$append = '?source='.$this->input->get('source');
+} else {
+    $append = '';
+}
             $redirection_url = base_url(implode('/', $uri));
             $this->auth->store_intended_url($redirection_url);
-            redirect('access');
+            redirect('access'.$append);
         }
 
 
