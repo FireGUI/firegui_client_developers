@@ -66,6 +66,7 @@ class Access extends MY_Controller
 
     public function login_start()
     {
+
         /** Servi la richiesta **/
         $data = $this->input->post();
         $remember = true; //!empty($data['remember']);
