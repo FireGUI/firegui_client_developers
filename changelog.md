@@ -1,9 +1,11 @@
-Changelog version 1.7.5
+Changelog version 1.7.6
  
-Password recover stylesheet changed
-Remove names and internal references
-Added configurable passpartout
-Fixed full json sidebar calendar filter
-Removed internal debugging functions
-Fix floatval function preg_replace dash symbol
-Changed single line chart in multiple lines
+New login page
+Fixed submit ajax error handler
+Change default language to english
+Removed old helpers
+Removed unusefull file
+    Edited license.txt
+Edited footer
+Create folder modules if not exists in install module
+Added Firegui token check
