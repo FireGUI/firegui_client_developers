@@ -5,6 +5,9 @@
 !*/cache/index.html
 !*/cache/.htaccess
 
+.settings/
+.vscode/
+
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
@@ -25,10 +28,6 @@ application/config/database.php
 modules/*
 custom_views/*
 controllers/custom/*
-views_metronic/*
-views_metronic
-crm-v2/*
-crm-v2
 
 uploads/*
 .idea/*
