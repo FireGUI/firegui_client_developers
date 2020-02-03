@@ -347,10 +347,17 @@ function initTable(grid) {
     });
 
     //console.log((no_server_side) ? null : (base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append));
+    try {
+        var token = JSON.parse(atob(oDataTable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
 
-    var token = JSON.parse(atob(oDataTable.data('csrf')));
-    var token_name = token.name;
-    var token_hash = token.hash;
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+
 
     //console.log(where_append);
     var datatable = oDataTable.dataTable({

@@ -250,10 +250,16 @@ function initTableAjax(grid) {
 
         aoColumns.push(coldef);
     });
+    try {
+        var token = JSON.parse(atob(oDataTable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
 
-    var token = JSON.parse(atob(oDataTable.data('csrf')));
-    var token_name = token.name;
-    var token_hash = token.hash;
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
 
     var datatable = oDataTable.dataTable({
         stateSave: true,
