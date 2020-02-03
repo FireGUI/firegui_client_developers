@@ -7,7 +7,7 @@ First step:
 - Sign in to www.firegui.com
 - Create a new project
 
-You can use and customize your project in out FireGUI Cloud for free. If you want to install/migrate the project to your personal hosting follow next steps.
+You can use and customize your project in FireGUI Cloud for free. If you want to install/migrate the project to your personal hosting follow next steps.
 
 Full Documentation http://docs.firegui.com
 
