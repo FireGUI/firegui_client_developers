@@ -37,6 +37,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                     <div class="col-xs-12">
 
                         <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="form formAjax" enctype="multipart/form-data" <?php if (!is_array($value_id)) : ?>data-edit-id="<?php echo $value_id; ?>"<?php else : ?>data-edit-id=""<?php endif; ?>>
+                            <?php add_csrf(); ?>
                             <?php if ($bulk_mode) : ?>
                                         <?php foreach ($value_id as $val) : ?>
                                             <input type="hidden" name="value_id[]" value="<?php echo $val; ?>" />
