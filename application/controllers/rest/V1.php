@@ -98,7 +98,7 @@ class V1 extends MY_Controller
                 break;
             case 'help':
             case 'entities':
-
+            case 'describe':
                 break;
             case 'create':
                 $entity = @$params[0];

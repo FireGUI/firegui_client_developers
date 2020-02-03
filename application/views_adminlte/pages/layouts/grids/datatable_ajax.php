@@ -5,11 +5,14 @@ $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
 $has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
 
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
+
 ?>
 
 <div class="___table-scrollable table-scrollable-borderless">
-    <table data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
-                                                                                                                                                                                                                                                                                                                ?> data-value-id="<?php echo $value_id; ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
+    <?php
+    // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+    ?>
+    <table data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>
