@@ -1,9 +1,19 @@
-Changelog version 1.7.7
+Changelog version 1.7.8
  
-License updated
-Allowed update client if logged in
-Change notification message in case of new version available
-Added source parameter in login page to show custom messages
-Added downloadClientZip method
-Bug fixing
-Updated check_requirements.php
+Added security library autoload
+Enabled xsrf protection
+Added security xss_clean in db_ajax (form submissions)
+Added describe method allowed in rest api
+Added function to generate csrf token
+Xsrf fix in actions
+Xsrf fix in login
+Xsrf fix in password lost
+Xsrf fix in sidebar search
+Xsrf fix in api manager
+Xsrf fix in permissions
+Xsrf fix in forms
+Xsrf fix in grids
+Xsrf fix in maps
+Xsrf fix in menu
+Changed javascrips to support csrf protection
+Bugfix for hidden fields in datatable inline edit
