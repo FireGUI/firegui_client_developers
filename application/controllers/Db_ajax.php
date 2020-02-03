@@ -49,6 +49,9 @@ class Db_ajax extends MY_Controller
         // Obtain parameters
         // ==========================
         $dati = $this->input->post() ?: [];
+
+        $dati = $this->security->xss_clean($dati);
+        
         $isOneRecord = $form['forms_one_record'] == DB_BOOL_TRUE;
         $edit = (bool) $edit;
 

@@ -1140,3 +1140,24 @@ if (!function_exists('dirToArray')) {
         return $result;
     }
 }
+
+if (!function_exists('add_csrf')) {
+    function add_csrf()
+    {
+        $csrf = get_csrf();
+        echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
+    }
+}
+
+if (!function_exists('get_csrf')) {
+    function get_csrf()
+    {
+        $CI = get_instance();
+        $csrf = array(
+            'name' => $CI->security->get_csrf_token_name(),
+            'hash' => $CI->security->get_csrf_hash()
+        );
+        return $csrf;
+        //echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
+    }
+}

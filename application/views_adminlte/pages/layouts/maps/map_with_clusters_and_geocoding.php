@@ -1,4 +1,4 @@
-<?php 
+<?php
 $mapFormId = "clusered_map_form_{$data['maps']['maps_id']}";
 $mapGeocodeInput = "clusered_map_geocoding_{$data['maps']['maps_id']}";
 $mapGeocodeToggle = "clusered_map_geocoding_toggle_{$data['maps']['maps_id']}";
@@ -7,8 +7,9 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 <div id="results">
     <div class="row">
         <form <?php echo sprintf('id="%s"', $mapFormId); ?>>
-            <?php foreach($data['maps_fields'] as $map_field): ?>
-                <?php if($map_field['maps_fields_type'] !== 'latlng'): ?>
+            <?php add_csrf(); ?>
+            <?php foreach ($data['maps_fields'] as $map_field) : ?>
+                <?php if ($map_field['maps_fields_type'] !== 'latlng') : ?>
                     <div class="col-md-6">
                         <?php echo $this->datab->build_form_input($map_field); ?>
                     </div>
@@ -20,7 +21,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
             </div>
         </form>
     </div>
-    
+
     <div class="row">
         <div class="col-md-offset-8 col-md-4">
             <div class="input-group">
@@ -31,7 +32,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
             </div>
         </div>
     </div>
-    
+
     <div class="row" style="margin-top: 10px;">
         <div class="col-md-12">
             <div <?php echo sprintf('id="%s"', $mapId); ?> style="height:680px"></div>
@@ -41,139 +42,152 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
 
 <script>
-        
-        $(function() {
-            var markers = null;
-            var searchInput = $('#<?php echo $mapGeocodeInput; ?>');
-            var searchInputToggle = $('#<?php echo $mapGeocodeToggle; ?>');
-            var geocoding = null;
+    $(function() {
+        var markers = null;
+        var searchInput = $('#<?php echo $mapGeocodeInput; ?>');
+        var searchInputToggle = $('#<?php echo $mapGeocodeToggle; ?>');
+        var geocoding = null;
 
-            var map = L.map('<?php echo $mapId; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
-            
-            L.maps[<?php echo json_encode($mapId); ?>] = map;
-            
-            
-            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            $(window).on('resize', function() {
-                map.invalidateSize();
-            });
-            
-            var jqFilterForm = $('#<?php echo $mapFormId; ?>');
-            jqFilterForm.on('submit', function(e) {
-                e.preventDefault();
+        var map = L.map('<?php echo $mapId; ?>', {
+            scrollWheelZoom: false
+        }).setView([42.50, 12.90], 5);
 
-                var aoFormData = $(this).serializeArray();
-                load_marker(aoFormData);
-            });
+        L.maps[<?php echo json_encode($mapId); ?>] = map;
 
 
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        $(window).on('resize', function() {
+            map.invalidateSize();
+        });
 
-            /** Geocoding start **/
-            geocoding = new L.Geocoding({
-                providers : {
-                    custom: function(arg) {
-                        var that = this,
-                            query = arg.query,
-                            cb = arg.cb;
-                            $.ajax({
-                                url : 'https://nominatim.openstreetmap.org/search',
-                                dataType : 'jsonp',
-                                jsonp : 'json_callback',
-                                data : {q: query, format: 'json'}
-                            }).done(function(data){
-                                if (data.length>0) {
-                                    var res=data[0];
-                                    var lat = res.lat,
-                                        lng = res.lon;
-                                    map.setView(new L.LatLng(res.lat, res.lon), 13);
-                                }
-                            });
-                    }
-                }
-            });
+        var jqFilterForm = $('#<?php echo $mapFormId; ?>');
+        jqFilterForm.on('submit', function(e) {
+            e.preventDefault();
 
-            // Set custom provider default
-            geocoding.setOptions({provider:'custom'});
-            map.addControl(geocoding);
-
-            // Geocoding
-            searchInput.on('blur', function() {
-                geocoding.geocode(searchInput.val());
-            });
-
-            searchInputToggle.on('click', function() {
-                geocoding.geocode(searchInput.val());
-            });
-            /** geocoding end **/
+            var aoFormData = $(this).serializeArray();
+            load_marker(aoFormData);
+        });
 
 
 
-            function load_marker(where) {
-                /***
-                 * CARICO I MARKER VIA AJAX
-                 */
-                if( ! where) {
-                    where = {};
-                }
-
-                if(markers !== null) {
-                    map.removeLayer(markers);
-                }
-
-
-                $.ajax({
-                    type: "POST",
-                    data: where,
-                    dataType: "json",
-                    url: '<?php echo base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}"); ?>/<?php if(isset($value_id)) echo $value_id; ?>',
-                    success: function(data) {
-                        // Ciclo i Marker
-                        var group = new Array();
-                        var zoom = map.getZoom();
-                        if(zoom<13) {
-                            markers = L.markerClusterGroup({maxClusterRadius: 25});
-                        } else {
-                            markers = L.layerGroup();
+        /** Geocoding start **/
+        geocoding = new L.Geocoding({
+            providers: {
+                custom: function(arg) {
+                    var that = this,
+                        query = arg.query,
+                        cb = arg.cb;
+                    $.ajax({
+                        url: 'https://nominatim.openstreetmap.org/search',
+                        dataType: 'jsonp',
+                        jsonp: 'json_callback',
+                        data: {
+                            q: query,
+                            format: 'json'
                         }
-
-
-                        $.each(data, function(i, val) {
-
-                            var html = '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '">Visualizza Dettagli</a>';
-                            var icon;
-                            if(val.marker) {
-                                icon = L.icon({ iconUrl: base_url_admin + 'images/markers/'+val.marker, iconSize: [32,32], iconAnchor: [16,32] });
-                            } else {
-                                icon = new L.Icon.Default();
-                            }
-
-
-                            var marker = L.marker([val.lat, val.lon], { icon: icon }).bindPopup(html);
-                            markers.addLayer(marker);
-
-                            var coor = L.latLng(val.lat, val.lon);
-                            group.push(coor);
-                        });
-
-                        map.addLayer(markers);
-                        if(searchInput.val()) {
-                            geocoding.geocode(searchInput.val());
-                        } else {
-                            map.fitBounds(group);
+                    }).done(function(data) {
+                        if (data.length > 0) {
+                            var res = data[0];
+                            var lat = res.lat,
+                                lng = res.lon;
+                            map.setView(new L.LatLng(res.lat, res.lon), 13);
                         }
+                    });
+                }
+            }
+        });
 
-                    },
-                    error: function(data) {
-                        console.log('Errore nel caricamento dei marker...');
-                        console.log(data);
-                    }
-                });
+        // Set custom provider default
+        geocoding.setOptions({
+            provider: 'custom'
+        });
+        map.addControl(geocoding);
+
+        // Geocoding
+        searchInput.on('blur', function() {
+            geocoding.geocode(searchInput.val());
+        });
+
+        searchInputToggle.on('click', function() {
+            geocoding.geocode(searchInput.val());
+        });
+        /** geocoding end **/
+
+
+
+        function load_marker(where) {
+            /***
+             * CARICO I MARKER VIA AJAX
+             */
+            if (!where) {
+                where = {};
+            }
+
+            if (markers !== null) {
+                map.removeLayer(markers);
             }
 
 
-            load_marker();
-        });
-    
+            $.ajax({
+                type: "POST",
+                data: where,
+                dataType: "json",
+                url: '<?php echo base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}"); ?>/<?php if (isset($value_id)) echo $value_id; ?>',
+                success: function(data) {
+                    // Ciclo i Marker
+                    var group = new Array();
+                    var zoom = map.getZoom();
+                    if (zoom < 13) {
+                        markers = L.markerClusterGroup({
+                            maxClusterRadius: 25
+                        });
+                    } else {
+                        markers = L.layerGroup();
+                    }
+
+
+                    $.each(data, function(i, val) {
+
+                        var html = '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '">Visualizza Dettagli</a>';
+                        var icon;
+                        if (val.marker) {
+                            icon = L.icon({
+                                iconUrl: base_url_admin + 'images/markers/' + val.marker,
+                                iconSize: [32, 32],
+                                iconAnchor: [16, 32]
+                            });
+                        } else {
+                            icon = new L.Icon.Default();
+                        }
+
+
+                        var marker = L.marker([val.lat, val.lon], {
+                            icon: icon
+                        }).bindPopup(html);
+                        markers.addLayer(marker);
+
+                        var coor = L.latLng(val.lat, val.lon);
+                        group.push(coor);
+                    });
+
+                    map.addLayer(markers);
+                    if (searchInput.val()) {
+                        geocoding.geocode(searchInput.val());
+                    } else {
+                        map.fitBounds(group);
+                    }
+
+                },
+                error: function(data) {
+                    console.log('Errore nel caricamento dei marker...');
+                    console.log(data);
+                }
+            });
+        }
+
+
+        load_marker();
+    });
 </script>

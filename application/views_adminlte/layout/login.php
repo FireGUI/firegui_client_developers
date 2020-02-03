@@ -222,7 +222,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                     <p class="login-box-msg"><?php e('Enter in your profile'); ?></p>
 
                     <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
-
+                        <?php add_csrf(); ?>
 
                         <div class="form-group has-feedback">
                             <input type="email" class="form-control" placeholder="<?php e('E-mail address'); ?>" name="users_users_email" />

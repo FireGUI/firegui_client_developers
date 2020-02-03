@@ -93,6 +93,7 @@ $pprev = $page - 1;
         </div>
 
         <form method="POST">
+            <?php add_csrf(); ?>
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-2">
