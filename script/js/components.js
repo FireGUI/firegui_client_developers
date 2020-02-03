@@ -655,9 +655,18 @@ $(function () {
         e.preventDefault();
         e.stopPropagation();
         var sUrl = $(this).attr('href');
-        var token = JSON.parse(atob($(this).data('csrf')));
-        var token_name = token.name;
-        var token_hash = token.hash;
+
+
+        try {
+            var token = JSON.parse(atob($(this).data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        } catch (e) {
+
+            var token = JSON.parse(atob($('body').data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        }
 
         if (sUrl) {
             loadModal(sUrl, { [token_name]: token_hash });
