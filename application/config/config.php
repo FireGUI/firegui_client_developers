@@ -479,7 +479,8 @@ $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array(
     //'rest/v1/[a-z0-9_\/]+',
-    'rest/v1/.*?'
+    'rest/v1/.*?',
+    'db_ajax/multi_upload_async/.*?'
 );
 
 /*

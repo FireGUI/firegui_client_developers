@@ -441,10 +441,21 @@ function initComponents() {
 var mAjaxCall = null, mArgs = null;
 
 function loadModal(url, data, callbackSuccess, method) {
+    try {
+        var token = JSON.parse(atob($(this).data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
 
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
     var modalContainer = $('#js_modal_container');
     if (typeof data === 'undefined') {
-        data = {};
+        data = {
+            [token_name]: token_hash
+        };
     }
 
     /*** La modale è già aperta? */
@@ -500,6 +511,7 @@ function loadModal(url, data, callbackSuccess, method) {
                     // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
                     if ($('.modal', modalContainer).is(e.target)) {
                         var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
+                        console.log(askConfirmationOnClose);
                         if (askConfirmationOnClose && !confirm('Are you sure?')) {
                             // Stop hiding the modal
                             $('.modal', modalContainer).data('bs.modal').isShown = false;
