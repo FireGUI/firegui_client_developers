@@ -500,7 +500,7 @@ function loadModal(url, data, callbackSuccess, method) {
                     // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
                     if ($('.modal', modalContainer).is(e.target)) {
                         var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
-                        if (askConfirmationOnClose && !confirm('Ci sono dati non salvati, uscendo ogni modifica sarà persa. Vuoi uscire comunque?')) {
+                        if (askConfirmationOnClose && !confirm('Are you sure?')) {
                             // Stop hiding the modal
                             $('.modal', modalContainer).data('bs.modal').isShown = false;
                         } else {
