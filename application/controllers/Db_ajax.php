@@ -51,7 +51,7 @@ class Db_ajax extends MY_Controller
         $dati = $this->input->post() ?: [];
 
         $dati = $this->security->xss_clean($dati);
-        
+
         $isOneRecord = $form['forms_one_record'] == DB_BOOL_TRUE;
         $edit = (bool) $edit;
 
@@ -710,6 +710,7 @@ class Db_ajax extends MY_Controller
     {
         try {
             $data = $this->input->post();
+            $data = $this->security->xss_clean($data);
             if ($id) {
                 $this->apilib->edit($entity_name, $id, $data);
             } else {
@@ -729,6 +730,7 @@ class Db_ajax extends MY_Controller
     {
         try {
             $data = $this->input->post();
+            $data = $this->security->xss_clean($data);
             $id = $this->apilib->create($entity_name, $data, false);
         } catch (Exception $ex) {
             set_status_header(400); // Bad-Request se fallisce
@@ -965,7 +967,7 @@ class Db_ajax extends MY_Controller
                 //Change key of files to be inserted in the other entity
                 unset($_FILES[$field['fields_name']]);
                 $_FILES[$field_insert['fields_name']] = $old_file_data;
-                
+
                 $id = $this->apilib->create($file_table, [], false);
                 echo json_encode(['status' => 1, 'file' => $id]);
             }
