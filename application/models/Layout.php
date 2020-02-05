@@ -160,4 +160,21 @@ class Layout extends CI_Model
 
         return $boxes;
     }
+
+    public function moduleAssets($module_identifier, $file)
+    {
+        $path = base_url("modulesbridge/loadAssetFile/{$module_identifier}?file=$file");
+        return $path;
+    }
+
+    public function addModuleStylesheet($module_identifier, $file)
+    {
+        $path = $this->moduleAssets($module_identifier, $file);
+        echo '<link rel="stylesheet" type="text/css" href="' . $path . '&v=' . VERSION . '" />';
+    }
+    public function addModuleJavascript($module_identifier, $file)
+    {
+        $path = $this->moduleAssets($module_identifier, $file);
+        echo '<script src="' . $path . '&v=' . VERSION . '" ></script>';
+    }
 }
