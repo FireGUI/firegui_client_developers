@@ -26,78 +26,81 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
     <style>
-            <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
-            .register-page {
-                background: <?php echo LOGIN_COLOR; ?>;
-            }
+        <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
+        .register-page {
+            background: <?php echo LOGIN_COLOR; ?>;
+        }
 
-            <?php if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) : ?>.logo h2 {
-                color: <?php echo LOGIN_TITLE_COLOR; ?>
-            }
-            <?php endif; ?><?php endif; ?>
+        <?php if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) : ?>.logo h2 {
+            color: <?php echo LOGIN_TITLE_COLOR; ?>
+        }
 
-            body {
-                /*background: #121417!important;*/
-                background: transparent!important;
-                /*background-image: linear-gradient(rgba(23, 23, 23, 0.5), rgba(18, 20, 23, 0.5)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;
+        <?php endif; ?><?php endif; ?>body {
+            /*background: #121417!important;*/
+            background: transparent !important;
+            /*background-image: linear-gradient(rgba(23, 23, 23, 0.5), rgba(18, 20, 23, 0.5)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;
                 background-position: center!important; 
                 background-repeat: no-repeat!important; 
                 background-size: cover!important;
                 min-height: 100%!important;*/
-            }
-            p{
-                /*color: #121417!important;*/
-                color: #fffffe!important;
-            }
-            .background_img {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                /*background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.6)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;*/
-                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo base_url("images/background.jpg"); ?>)!important;
-                background-position: center!important; 
-                background-repeat: no-repeat!important; 
-                background-size: cover!important;
-                min-height: 100%!important;
-            }
-            
-            .login-box-body {
-                background: none!important;
-                /*color: #fffffe;*/
-            }
+        }
 
-            .title {
-                color: #fffffe!important;
-                text-align: center;
-                padding: 0 20px 20px 20px;
-            }
+        p {
+            /*color: #121417!important;*/
+            color: #fffffe !important;
+        }
 
-            input.form-control {
-                border-radius: 20px;
-                /*background-color: transparent;
+        .background_img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /*background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.6)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;*/
+            background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo base_url("images/background.jpg"); ?>) !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-size: cover !important;
+            min-height: 100% !important;
+        }
+
+        .login-box-body {
+            background: none !important;
+            /*color: #fffffe;*/
+        }
+
+        .title {
+            color: #fffffe !important;
+            text-align: center;
+            padding: 0 20px 20px 20px;
+        }
+
+        input.form-control {
+            border-radius: 20px;
+            /*background-color: transparent;
                 border: 1px solid #e3e3e3;
                 border-radius: 30px;
                 color: #2c2c2c;*/
-            }
-            div.form-group span {
-                color: #121417!important;
-                margin-right: 10px;
-            }
+        }
 
-            .rounded_btn {
-                width: 100%!important;
-                border-radius: 20px!important;
-                padding-top: 10px;
-                padding-bottom: 10px;
-                margin: 10px 0px;
-                /*background-color: #24292e;
+        div.form-group span {
+            color: #121417 !important;
+            margin-right: 10px;
+        }
+
+        .rounded_btn {
+            width: 100% !important;
+            border-radius: 20px !important;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin: 10px 0px;
+            /*background-color: #24292e;
                 border-color: #24292e!important;
                 font-size: 16px;*/
-                transition: background-color .45s ease;
-            }
-            /*.rounded_btn:active {
+            transition: background-color .45s ease;
+        }
+
+        /*.rounded_btn:active {
                 background-color: #393e42!important;
             }
             .rounded_btn:hover {
@@ -105,17 +108,17 @@
                 border-color: #393e42!important;
             }*/
 
-            .background_img {
-                min-height: 100vh;
-                max-height: 100%;
-                top: 0;
-                left: 0;
-                padding: 0;
-                color: #fff;
-                position: absolute;
-                overflow: hidden; 
-            }
-        </style>
+        .background_img {
+            min-height: 100vh;
+            max-height: 100%;
+            top: 0;
+            left: 0;
+            padding: 0;
+            color: #fff;
+            position: absolute;
+            overflow: hidden;
+        }
+    </style>
 </head>
 
 <body class="hold-transition login-page">
@@ -142,6 +145,7 @@
                     </div>
                 <?php else : ?>
                     <form id="lost" class="forget-form formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate" style="display: block;">
+                        <?php add_csrf(); ?>
                         <h4 class="title"><?php e("Password lost?"); ?></h4>
                         <p><?php e("Type your e-mail address to reset the password."); ?></p>
                         <div class="form-group has-feedback">

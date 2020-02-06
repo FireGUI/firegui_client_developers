@@ -45,9 +45,9 @@ function initComponents() {
                 end = aDates[1];
             }
         }
-        
+
         //console.log(start);
-        
+
         jqDateRange.daterangepicker({
             format: 'DD/MM/YYYY',
             separator: ' to ',
@@ -70,7 +70,7 @@ function initComponents() {
             $('input', this.element).val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
         });
     });
-    $('.js_form_colorpicker').colorpicker({format: 'hex'});
+    $('.js_form_colorpicker').colorpicker({ format: 'hex' });
 
 
     /*
@@ -99,19 +99,19 @@ function initComponents() {
         $('.js_multiselect:not(.select2-offscreen):not(.select2-container)').each(function () {
             var that = $(this);
             var minInput = that.data('minimum-input-length');
-            that.select2({allowClear: true, minimumInputLength: minInput ? minInput : 0});
+            that.select2({ allowClear: true, minimumInputLength: minInput ? minInput : 0 });
         });
-        $('.select2me').select2({allowClear: true});
+        $('.select2me').select2({ allowClear: true });
     } catch (e) {
     }
-    
+
     $('.select2_standard').select2();
 
     var fieldsSources = [];
     $('[data-source-field]:not([data-source-field=""])').each(function () {
-        
+
         console.log($(this).attr('name'));
-        
+
         // Prendo il form dell'elemento
         var jsMultiselect = $(this);
         var jqForm = jsMultiselect.parents('form');
@@ -120,26 +120,26 @@ function initComponents() {
 
         // Prendo il campo da osservare
         var jqField = $('[name="' + sSourceField + '"]', jqForm);
-        
-        
+
+
         console.log(sSourceField);
-        
+
         jqField.on('change', function () {
-            
-            
+
+
             console.log($(this));
-            
+
             var previousValue = jsMultiselect.attr('data-val').split(',');
             jsMultiselect.select2('val', '');
 
             //se ho una select semplice devo saperlo perché così so come gestire il valore settato
             var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
-            
+
             $('option', jsMultiselect).remove();
             loading(true);
             $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
                 type: 'POST',
-                data: {field_name_to: jsMultiselect.attr('name'), field_ref: sFieldRef, field_from_val: jqField.val()},
+                data: { field_name_to: jsMultiselect.attr('name'), field_ref: sFieldRef, field_from_val: jqField.val() },
                 dataType: 'json',
                 complete: function () {
                     loading(false);
@@ -158,14 +158,14 @@ function initComponents() {
                         jsMultiselect.append(jqOption);
                     });
 
-                    
+
                     if (previousValueFound) {
                         if (isNormalSelect) {
-                            
+
                             jsMultiselect.val(previousValue[0]);  // Solo UN valore
                             jsMultiselect.select2('val', previousValue);
                         } else {
-                            
+
                             jsMultiselect.select2('val', previousValue);
                         }
                     }
@@ -184,9 +184,9 @@ function initComponents() {
         //console.log(selector);
         //alert(field.val());
         if (field.val() !== '') {
-            
+
             field.trigger('change');
-            
+
         }
     });
 
@@ -214,7 +214,7 @@ function initComponents() {
                         referer = input.attr('name');
                     }
 
-                    return {q: term, limit: 100, table: input.attr('data-ref'), referer: referer};
+                    return { q: term, limit: 100, table: input.attr('data-ref'), referer: referer };
                 },
                 processResults: function (data) {
                     return {
@@ -226,25 +226,25 @@ function initComponents() {
                         })
                     };
                 },
-                
-//                processResults: function (data, params) {
-//                    
-//                    
-//                    // parse the results into the format expected by Select2
-//                    // since we are using custom formatting functions we do not need to
-//                    // alter the remote JSON data, except to indicate that infinite
-//                    // scrolling can be used
-//                    params.page = params.page || 1;
-//
-//                    return {
-//                        results: data,
-//                        pagination: {
-//                            more: (params.page * 30) < data.total_count
-//                        }
-//                    };
-//                },
-                
-                
+
+                //                processResults: function (data, params) {
+                //                    
+                //                    
+                //                    // parse the results into the format expected by Select2
+                //                    // since we are using custom formatting functions we do not need to
+                //                    // alter the remote JSON data, except to indicate that infinite
+                //                    // scrolling can be used
+                //                    params.page = params.page || 1;
+                //
+                //                    return {
+                //                        results: data,
+                //                        pagination: {
+                //                            more: (params.page * 30) < data.total_count
+                //                        }
+                //                    };
+                //                },
+
+
                 cache: false
             },
             placeholder: 'Ricerca...',
@@ -259,9 +259,9 @@ function initComponents() {
     });
 
     function formatRepo(repo) {
-        
+
         console.log(repo);
-        
+
         if (repo.loading) {
             return repo.text;
         }
@@ -270,15 +270,15 @@ function initComponents() {
         select2 - result - repository
         clearfix
         ">" +
-        "<div class="
+            "<div class="
         select2 - result - repository__avatar
         "><img src="
         " + repo.owner.avatar_url + "
         " /></div>" +
-        "<div class="
+            "<div class="
         select2 - result - repository__meta
         ">" +
-        "<div class="
+            "<div class="
         select2 - result - repository__title
         ">" + repo.name + "</div>";
 
@@ -321,10 +321,10 @@ function initComponents() {
                         referer = input.attr('name');
                     }
 
-                    return {q: term, limit: 100, table: input.attr('data-ref'), referer: referer};
+                    return { q: term, limit: 100, table: input.attr('data-ref'), referer: referer };
                 },
                 results: function (data, page) {
-                    return {results: data};
+                    return { results: data };
                 }
             },
             initSelection: function (element, callback) {
@@ -333,7 +333,7 @@ function initComponents() {
                     $.ajax(base_url + 'get_ajax/select_ajax_search', {
                         type: 'POST',
                         dataType: "json",
-                        data: {table: element.attr('data-ref'), id: id}
+                        data: { table: element.attr('data-ref'), id: id }
                     }).done(function (data) {
                         callback(data);
                     });
@@ -360,10 +360,10 @@ function initComponents() {
                 dataType: 'json',
                 type: 'POST',
                 data: function (term, page) {
-                    return {q: term, limit: 50, field: $(this).attr('data-field-id')};
+                    return { q: term, limit: 50, field: $(this).attr('data-field-id') };
                 },
                 results: function (data, page) {
-                    return {results: data};
+                    return { results: data };
                 }
             },
             initSelection: function (element, callback) {
@@ -441,10 +441,21 @@ function initComponents() {
 var mAjaxCall = null, mArgs = null;
 
 function loadModal(url, data, callbackSuccess, method) {
+    try {
+        var token = JSON.parse(atob($(this).data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
 
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
     var modalContainer = $('#js_modal_container');
     if (typeof data === 'undefined') {
-        data = {};
+        data = {
+            [token_name]: token_hash
+        };
     }
 
     /*** La modale è già aperta? */
@@ -497,30 +508,31 @@ function loadModal(url, data, callbackSuccess, method) {
                     }
 
                 }).on('hide.bs.modal', function (e) {
-                // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
-                if ($('.modal', modalContainer).is(e.target)) {
-                    var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
-                    if (askConfirmationOnClose && !confirm('Ci sono dati non salvati, uscendo ogni modifica sarà persa. Vuoi uscire comunque?')) {
-                        // Stop hiding the modal
-                        $('.modal', modalContainer).data('bs.modal').isShown = false;
-                    } else {
-                        $('.modal', modalContainer).data('bs.modal').isShown = true;
+                    // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
+                    if ($('.modal', modalContainer).is(e.target)) {
+                        var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
+                        console.log(askConfirmationOnClose);
+                        if (askConfirmationOnClose && !confirm('Are you sure?')) {
+                            // Stop hiding the modal
+                            $('.modal', modalContainer).data('bs.modal').isShown = false;
+                        } else {
+                            $('.modal', modalContainer).data('bs.modal').isShown = true;
+                        }
                     }
-                }
-            }).on('hidden.bs.modal', function (e) {
+                }).on('hidden.bs.modal', function (e) {
 
-                mArgs = oldModalArgs;
-                if (typeof callbackSuccess === 'function') {
-                    callbackSuccess();
-                }
+                    mArgs = oldModalArgs;
+                    if (typeof callbackSuccess === 'function') {
+                        callbackSuccess();
+                    }
 
-                // Se c'erano degli mArgs allora significa che ho chiuso una
-                // modale per riaprirne una nuova... quiiiiindi richiama
-                // loadModals
-//                if (mArgs) {
-//                    loadModal(mArgs.url, mArgs.data, mArgs.fn, mArgs.verb);
-//                }
-            });
+                    // Se c'erano degli mArgs allora significa che ho chiuso una
+                    // modale per riaprirne una nuova... quiiiiindi richiama
+                    // loadModals
+                    //                if (mArgs) {
+                    //                    loadModal(mArgs.url, mArgs.data, mArgs.fn, mArgs.verb);
+                    //                }
+                });
             mAjaxCall = null;
         },
         error: function () {
@@ -599,7 +611,7 @@ function changeStarsStatus(el) {
 
 
 function changeLanguage(langId) {
-    $.post(base_url + 'db_ajax/changeLanguage', {language: langId}, function (out) {
+    $.post(base_url + 'db_ajax/changeLanguage', { language: langId }, function (out) {
         if (out.success) {
             changeLanguageTemplate(langId);
         } else {
@@ -618,7 +630,7 @@ function changeLanguageTemplate(langId) {
 
 function openCreationForm(formId, entity, onSuccess) {
     //var whnd = window.open(base_url + 'main/form/'+formId, '_blank', 'height=400,width=600,menubar=no,status=no');
-    $.getJSON(base_url + 'get_ajax/getLastRecord', {entity: entity}, function (json) {
+    $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
 
         var currentLastId = json.data.id;
 
@@ -629,7 +641,7 @@ function openCreationForm(formId, entity, onSuccess) {
             type: 'ajax',
             href: base_url + 'main/form/' + formId,
             ajax: {
-                data: {_raw: 1}
+                data: { _raw: 1 }
             },
             beforeShow: function () {
                 initComponents();
@@ -638,7 +650,7 @@ function openCreationForm(formId, entity, onSuccess) {
                 initComponents();
             },
             beforeClose: function () {
-                $.getJSON(base_url + 'get_ajax/getLastRecord', {entity: entity}, function (json) {
+                $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
                     if (json.status === 0 && json.data.id && currentLastId != json.data.id) {
                         onSuccess(json.data.id, json.data.preview);
                     }
@@ -655,8 +667,21 @@ $(function () {
         e.preventDefault();
         e.stopPropagation();
         var sUrl = $(this).attr('href');
+
+
+        try {
+            var token = JSON.parse(atob($(this).data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        } catch (e) {
+
+            var token = JSON.parse(atob($('body').data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        }
+
         if (sUrl) {
-            loadModal(sUrl, {});
+            loadModal(sUrl, { [token_name]: token_hash });
         }
     });
 
@@ -670,7 +695,7 @@ $(function () {
         $(window).trigger('resize');
     });
 
-    $('body').tooltip({selector: '[data-toggle=tooltip]', container: 'body'});
+    $('body').tooltip({ selector: '[data-toggle=tooltip]', container: 'body' });
 
 
     var list = $('<ul class="language-switch pull-right list-inline">');
@@ -723,6 +748,6 @@ $(function () {
     });
 
     //jQuery in automatico appende ?_={timestamp} su tutti i js caricati da jquery.plugin. Così non lo fa...
-    $.ajaxSetup({cache: true});
+    $.ajaxSetup({ cache: true });
 });
 

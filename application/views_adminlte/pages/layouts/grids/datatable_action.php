@@ -2,8 +2,10 @@
     <p>Nessun dato disponibile</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
-        <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap js_datatable <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
-                                                                                                                                                                                                                                                                                                ?>>
+        <?php
+        // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+        ?>
+        <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap js_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
@@ -24,11 +26,11 @@
                         <?php if (grid_has_action($grid['grids'])) : ?>
 
                             <td><?php $this->load->view('box/grid/actions', array(
-                                                                                                                                                                                                                                                                                                            'links' => $grid['grids']['links'],
-                                                                                                                                                                                                                                                                                                            'id' => $dato[$grid['grids']['entity_name'] . "_id"],
-                                                                                                                                                                                                                                                                                                            'row_data' => $dato,
-                                                                                                                                                                                                                                                                                                            'grid' => $grid['grids'],
-                                                                                                                                                                                                                                                                                                        )); ?></td>
+                                    'links' => $grid['grids']['links'],
+                                    'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                                    'row_data' => $dato,
+                                    'grid' => $grid['grids'],
+                                )); ?></td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>

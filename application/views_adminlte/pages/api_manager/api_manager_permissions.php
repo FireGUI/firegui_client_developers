@@ -6,6 +6,7 @@
                 <h4 class="modal-title" id="api_permissions_label"><?php e('Specific permissions'); ?></h4>
             </div>
             <form id="form_permessi" role="form" method="post" action="<?php echo base_url("api_manager/set_permissions/{$dati['token']}"); ?>" class="form formAjax" enctype="multipart/form-data">
+                <?php add_csrf(); ?>
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-md-8 col-sm-6">

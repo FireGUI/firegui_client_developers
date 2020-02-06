@@ -13,7 +13,7 @@
 <!-- END HEAD -->
 <!-- BEGIN BODY -->
 
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-blue sidebar-mini" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
     <div class="wrapper">
 
         <header class="main-header">

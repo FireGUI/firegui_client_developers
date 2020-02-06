@@ -7,6 +7,7 @@
     <?php else : ?>
         <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
         <form class="sidebar-form" style="border: 0px;" action="<?php echo base_url('main/search'); ?>" method="POST" id="search_form">
+            <?php add_csrf(); ?>
             <div class="input-group">
                 <input tabindex="0" type="text" name="search" placeholder="<?php e("Search..."); ?>" value="<?php echo isset($dati['search_string']) ? $dati['search_string'] : ''; ?>" class="form-control"> <span class="input-group-btn">
                     <button type="submit" name="___search" id="search-btn" class="btn btn-flat" onclick="document.getElementById('search_form').submit();">
@@ -25,28 +26,28 @@
         <?php
         $first = true;
         foreach ($this->datab->get_menu('sidebar') as $menu) :
-            ?>
+        ?>
             <?php
-                $link = $this->datab->generate_menu_link($menu);
-                $hasSubmenu = count($menu['submenu']) > 0;
-                $isLinkOrContainer = ($link or $hasSubmenu);
-                $isCurrent = in_array($current_page, $menu['pages_names']);
-                $label = ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label']));
+            $link = $this->datab->generate_menu_link($menu);
+            $hasSubmenu = count($menu['submenu']) > 0;
+            $isLinkOrContainer = ($link or $hasSubmenu);
+            $isCurrent = in_array($current_page, $menu['pages_names']);
+            $label = ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label']));
 
-                //$classes = [sprintf('menu-%s', $menu['menu_id'])];
-                //20190423 - MP - La classe non veniva aggiunta nella sidebar, ma solo nei menu dei layout
-                $classes = [sprintf('menu-%s', $menu['menu_id']), $menu['menu_css_class']];
-                if ($first) {
-                    $classes[] = 'start';
-                }
+            //$classes = [sprintf('menu-%s', $menu['menu_id'])];
+            //20190423 - MP - La classe non veniva aggiunta nella sidebar, ma solo nei menu dei layout
+            $classes = [sprintf('menu-%s', $menu['menu_id']), $menu['menu_css_class']];
+            if ($first) {
+                $classes[] = 'start';
+            }
 
-                if ($isCurrent) {
-                    $classes[] = 'active';
-                }
-                if ($hasSubmenu && !$link) {
-                    $classes[] = 'treeview';
-                }
-                ?>
+            if ($isCurrent) {
+                $classes[] = 'active';
+            }
+            if ($hasSubmenu && !$link) {
+                $classes[] = 'treeview';
+            }
+            ?>
 
             <?php if ($isLinkOrContainer) : ?>
                 <li class="<?php echo implode(' ', $classes); ?>">
@@ -60,11 +61,11 @@
                         <ul class="treeview-menu">
                             <?php foreach ($menu['submenu'] as $sub_menu) : ?>
                                 <?php
-                                                $classes = [sprintf('menu-%s', $sub_menu['menu_id'])];
-                                                if (in_array($current_page, $sub_menu['pages_names'])) {
-                                                    $classes[] = 'active';
-                                                }
-                                                ?>
+                                $classes = [sprintf('menu-%s', $sub_menu['menu_id'])];
+                                if (in_array($current_page, $sub_menu['pages_names'])) {
+                                    $classes[] = 'active';
+                                }
+                                ?>
                                 <li class="<?php echo implode(' ', $classes); ?>">
                                     <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php echo ($sub_menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?>>
                                         <i class="<?php echo $sub_menu['menu_icon_class'] ?: 'fas fa-empty'; ?>"></i>

@@ -27,7 +27,7 @@
             <tbody>
               <?php foreach ($dati['tokens'] as $token) : ?>
                 <?php //debug($token, true); 
-                  ?>
+                ?>
                 <tr class="odd gradeX" data-id="<?php echo $token['api_manager_tokens_id']; ?>">
                   <td><span class='hide'><?php echo $token['api_manager_tokens_creation_date']; ?></span><?php echo dateFormat($token['api_manager_tokens_creation_date']); ?></td>
                   <td><?php echo $token[LOGIN_NAME_FIELD]; ?> <?php echo $token[LOGIN_SURNAME_FIELD]; ?></td>
@@ -39,10 +39,10 @@
                   <td><?php echo ($token['api_manager_tokens_active'] == DB_BOOL_TRUE) ? 'Yes' : 'No'; ?></td>
                   <td>
                     <div class="action-list">
-                      <a href="<?php echo base_url("api_manager/permissions/{$token['api_manager_tokens_id']}"); ?>" class="btn btn-xs btn-success js_open_modal">
+                      <a href="<?php echo base_url("api_manager/permissions/{$token['api_manager_tokens_id']}"); ?>" class="btn btn-xs btn-success js_open_modal" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
                         <span class="fas fa-external-link-alt"></span>
                       </a>
-                      <a href="<?php echo base_url('api_manager/delete_token/' . $token['api_manager_tokens_id']); ?>" data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax " data-toggle="tooltip" title="<?php e('Delete'); ?>">
+                      <a href="<?php echo base_url('api_manager/delete_token/' . $token['api_manager_tokens_id']); ?>" data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax " data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-toggle="tooltip" title="<?php e('Delete'); ?>">
                         <span class="fas fa-times"></span>
                       </a>
                     </div>
@@ -63,6 +63,7 @@
 
         <div class="box-body">
           <form id='form_token' role="form" method="post" action="<?php echo base_url("api_manager/add_token"); ?>" class="formAjax" enctype="multipart/form-data">
+            <?php add_csrf(); ?>
             <div class="form-body">
 
               <div class="row">
