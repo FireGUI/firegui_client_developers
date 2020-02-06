@@ -8,24 +8,24 @@ $rowCol = 0;
     <?php add_csrf(); ?>
     <!-- FORM HIDDEN DATA -->
     <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
-    
+
     <div class="box-body">
-        <?php foreach ($form['forms_fields'] as $k => $field): ?>
-            <?php 
+        <?php foreach ($form['forms_fields'] as $k => $field) : ?>
+            <?php
             // Stampa la prima row
-            echo $rowCol? '': $rowStart;
-            $col = $field['size'] ? : 6;
+            echo $rowCol ? '' : $rowStart;
+            $col = $field['size'] ?: 6;
             $rowCol += $col;
-            
+
             if ($rowCol > 12) {
                 $rowCol = $col;
                 echo $rowEnd, $rowStart;
             }
             ?>
-        
+
             <div class="<?php echo sprintf('col-lg-%d', $col); ?>"><?php echo $field['html']; ?></div>
         <?php endforeach; ?>
-        <?php echo $rowCol? $rowEnd: ''; ?>
+        <?php echo $rowCol ? $rowEnd : ''; ?>
 
         <div class="row">
             <div class="col-md-12">
@@ -35,7 +35,7 @@ $rowCol = 0;
     </div>
 
     <div class="form-actions pull-right">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Annulla'); ?></button>
-        <button type="submit" class="btn btn-primary"><?php e('Salva'); ?></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Cancel'); ?></button>
+        <button type="submit" class="btn btn-primary"><?php e('Save'); ?></button>
     </div>
 </form>
