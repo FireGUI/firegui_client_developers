@@ -396,7 +396,7 @@ $config['encryption_key'] = md5((!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_
 $config['sess_driver'] = 'database';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200; // 5 days
-$config['sess_save_path'] = NULL;
+$config['sess_save_path'] = 'ci_sessions';
 $config['sess_expire_on_close'] = FALSE;
 $config['sess_encrypt_cookie'] = FALSE;
 $config['sess_use_database'] = true;
@@ -479,7 +479,9 @@ $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array(
     //'rest/v1/[a-z0-9_\/]+',
-    'rest/v1/.*?'
+    'rest/v1/.*?',
+    'firegui/.*?',
+    'db_ajax/multi_upload_async/.*?'
 );
 
 /*
