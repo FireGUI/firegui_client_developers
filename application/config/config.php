@@ -404,8 +404,6 @@ $config['sess_table_name'] = 'ci_sessions';
 $config['sess_match_ip'] = FALSE;
 $config['sess_match_useragent'] = FALSE;
 $config['sess_time_to_update'] = 43200;
-//20181107 - MP - Ho messo a TRUE dopo essermi accorto che era questo il parametro che faceva fallire su firegui il cambio progetto. 
-//Penso siano riconducibili a questo parametro tutti gli errori che abbiamo sempre avuto con le sessioni codeigniter (login che scadevano principalmente, ma non solo...)
 $config['sess_regenerate_destroy'] = TRUE;
 
 /*
