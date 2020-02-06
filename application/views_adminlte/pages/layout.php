@@ -36,37 +36,37 @@ $portletBgColorMap = [];
             <?php foreach ($row as $layout) : ?>
 
                 <?php
-                        // =============================================================
-                        // Calcolo se andare alla prossima riga
-                        $max_col += $layout['layouts_boxes_cols'];
-                        if ($max_col > 12) {
-                            $max_col = $layout['layouts_boxes_cols'];
-                            echo '</div><div class="row">';
-                        }
+                // =============================================================
+                // Calcolo se andare alla prossima riga
+                $max_col += $layout['layouts_boxes_cols'];
+                if ($max_col > 12) {
+                    $max_col = $layout['layouts_boxes_cols'];
+                    echo '</div><div class="row">';
+                }
 
-                        // =============================================================
-                        // Calcolo classi e colori
-                        $titleColor = '';
-                        $baseClasses = [$layout['layouts_boxes_content_type']];
-                        $userClasses = array_filter(explode(' ', $layout['layouts_boxes_css']));
-                        $isLight = in_array('light', $userClasses);
-                        $isGren = in_array('gren', $userClasses);
-                        $isBox = in_array('box', $userClasses);
+                // =============================================================
+                // Calcolo classi e colori
+                $titleColor = '';
+                $baseClasses = [$layout['layouts_boxes_content_type']];
+                $userClasses = array_filter(explode(' ', $layout['layouts_boxes_css']));
+                $isLight = in_array('light', $userClasses);
+                $isGren = in_array('gren', $userClasses);
+                $isBox = in_array('box', $userClasses);
 
-                        if ($isLight or $isGren) {
-                            // Devo colorare il titolo
-                            $titleColor = $layout['layouts_boxes_color'];
-                        } else {
-                            // Devo colorare il portlet
-                            $userClasses[] = $layout['layouts_boxes_color'];
-                        }
+                if ($isLight or $isGren) {
+                    // Devo colorare il titolo
+                    $titleColor = $layout['layouts_boxes_color'];
+                } else {
+                    // Devo colorare il portlet
+                    $userClasses[] = $layout['layouts_boxes_color'];
+                }
 
-                        if ($isLight or $isGren or $isBox) {
-                            $baseClasses[] = 'portlet';
-                        }
+                if ($isLight or $isGren or $isBox) {
+                    $baseClasses[] = 'portlet';
+                }
 
-                        $classes = array_unique(array_merge($baseClasses, $userClasses));
-                        ?>
+                $classes = array_unique(array_merge($baseClasses, $userClasses));
+                ?>
                 <div class="<?php echo sprintf('col-md-%s', $layout['layouts_boxes_cols']); ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>">
 
                     <div class="<?php if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) : ?>box<?php endif; ?> <?php echo $layout['layouts_boxes_css'] . " " . $layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
@@ -93,7 +93,6 @@ $portletBgColorMap = [];
 
                         <div class="box-body <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>">
                             <?php echo $layout['content'] ?>
-
                         </div>
                     </div>
 

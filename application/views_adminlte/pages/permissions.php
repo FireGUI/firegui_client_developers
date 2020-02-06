@@ -31,7 +31,7 @@ if ($max_input_vars < $stima_campi) {
                 </div>
                 <div class="box-body form">
                     <form id="permissions_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_permissions'); ?>" class="formAjax">
-
+                        <?php add_csrf(); ?>
 
                         <div class="form-group">
                             <label class="col-md-3 control-label"><?php e('Users/Groups'); ?></label>
@@ -92,6 +92,7 @@ if ($max_input_vars < $stima_campi) {
                 <div class="portlet-body form">
 
                     <form id="views_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_views_permissions'); ?>" class="formAjax">
+                        <?php add_csrf(); ?>
                         <div class="form-body">
                             <div class="table-scrollable table-scrollable-borderless">
                                 <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover">

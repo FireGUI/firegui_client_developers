@@ -20,17 +20,18 @@ $_fields_type_to_skip = array(
 <a data-toggle="collapse" href="#<?php echo $_collapser_id; ?>">Filtra dati</a>
 <div <?php echo "id='{$_collapser_id}'"; ?> class="<?php echo (empty($_filter_data[$grid['grids']['grids_id']]) ? 'collapse' : 'in'); ?>">
     <form action="<?php echo base_url(uri_string()); ?>" method="POST" class="filter_form">
+        <?php add_csrf(); ?>
         <div class="row">
             <?php $i = 0; ?>
             <?php foreach ($grid['grids_fields'] as $k => $field) : ?>
                 <?php if (in_array($field['fields_draw_html_type'], $_fields_type_to_skip)) continue; ?>
                 <div class="col-md-6">
                     <?php
-                                                        // non ha senso filtrare su upload vari e textarea
-                                                        $value = $_filter_data[$grid['grids']['grids_id']][$field['fields_name']];
-                                                        $field['fields_name'] = "{$_filter_prefix}[{$field['fields_name']}]";
-                                                        $field['support_data'] = $this->datab->get_support_data($field['fields_ref']);
-                                                        $this->load->view("box/form_fields/{$field['fields_draw_html_type']}", array('field' => $field, 'value' => $value));
+                    // non ha senso filtrare su upload vari e textarea
+                    $value = $_filter_data[$grid['grids']['grids_id']][$field['fields_name']];
+                    $field['fields_name'] = "{$_filter_prefix}[{$field['fields_name']}]";
+                    $field['support_data'] = $this->datab->get_support_data($field['fields_ref']);
+                    $this->load->view("box/form_fields/{$field['fields_draw_html_type']}", array('field' => $field, 'value' => $value));
                     ?>
                 </div>
                 <?php if ($i++ % 2) echo "<div class='clearfix'></div>" ?>
@@ -51,7 +52,7 @@ $_fields_type_to_skip = array(
 <?php if (empty($grid_data['data'])) : ?>
     <p>Nessun dato disponibile</p>
 <?php else : ?>
-    <table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover nowrap js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>">
+    <table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover nowrap js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
         <thead>
             <tr>
                 <?php foreach ($grid['grids_fields'] as $field) : ?>

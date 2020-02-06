@@ -250,8 +250,16 @@ function initTableAjax(grid) {
 
         aoColumns.push(coldef);
     });
+    try {
+        var token = JSON.parse(atob(oDataTable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
 
-
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
 
     var datatable = oDataTable.dataTable({
         stateSave: true,
@@ -271,7 +279,11 @@ function initTableAjax(grid) {
         //bLengthChange: false,
         oLanguage: {
             sUrl: base_url_scripts + "script/datatable.transl.json"
+        },
+        fnServerParams: function (aoData) {
+            aoData.push({ "name": token_name, "value": token_hash });
         }
+
     });
     //console.log(datatable);
 
