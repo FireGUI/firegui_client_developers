@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-actions pull-right">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Annulla'); ?></button>
-        <button type="submit" class="btn btn-primary"><?php e('Salva'); ?></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Cancel'); ?></button>
+        <button type="submit" class="btn btn-primary"><?php e('Save'); ?></button>
     </div>
 </form>

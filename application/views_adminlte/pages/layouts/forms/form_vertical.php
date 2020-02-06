@@ -21,7 +21,7 @@
 
     <div class="form-actions">
 
-        <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
-        <button type="submit" class="btn btn-primary">Salva</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Cancel'); ?></button>
+        <button type="submit" class="btn btn-primary"><?php e('Save'); ?></button>
     </div>
 </form>
