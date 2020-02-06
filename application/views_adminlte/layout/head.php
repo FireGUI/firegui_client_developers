@@ -8,7 +8,7 @@ $title = (empty($this->settings['settings_company_short_name']) ? 'MasterCRM' : 
 $tsuffix = 'CRM';
 ?>
 
-<title><?php echo ucwords(trim(implode(' - ', array_filter([$tprefix, $title, $tsuffix])))); ?></title>
+<title><?php echo ucwords(htmlspecialchars(trim(implode(' - ', array_filter([$tprefix, $title, $tsuffix]))))); ?></title>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -34,8 +34,6 @@ $tsuffix = 'CRM';
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v={$this->config->item('version')}"); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css?v={$this->config->item('version')}"); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
-
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
 
 <!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>"/>-->
 
@@ -70,6 +68,9 @@ $tsuffix = 'CRM';
 
 <!-- LEAFLET -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v={$this->config->item('version')}"); ?>" />
+
+<!-- CUSTOM CSS -->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
 
 
 

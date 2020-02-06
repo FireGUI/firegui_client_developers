@@ -10,7 +10,29 @@ class Firegui extends MY_Controller
     {
         parent::__construct();
 
+        $permitted_routes = ['get_client_version'];
+        $route = $this->uri->segment(2);
+        $unallowed = false;
+        if (!in_array($route, $permitted_routes) && !$this->auth->check()) {
+            if (!$token = $this->input->get('token')) {
+                log_message('DEBUG', "Missing token for Firegui request!");
+                $unallowed = true;
+            } else {
+
+                $token_match = $this->db->where('meta_data_key', 'firegui_token')->where('meta_data_value', $token)->get('meta_data');
+                if ($token_match->num_rows() == 0) {
+                    $unallowed = true;
+                } else {
+                    //Destroy token and proceed...
+                    $this->db->where('meta_data_key', 'firegui_token')->delete('meta_data');
+                }
+            }
+        }
         // TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO FIREGUI DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
+        if ($unallowed) {
+            set_status_header(403);
+            die('Nope... not allowed!');
+        }
     }
 
     public function createModule($identifier)
@@ -40,8 +62,7 @@ class Firegui extends MY_Controller
 
     public function uninstallModule($identifier)
     {
-        // TODO: Pericoloso esporre un metodo del genere
-        unlink(APPPATH . "modules/$identifier/");
+        log_message('debug', 'TODO Uninstal module from remote');
     }
 
     function updateFromGit($command = null, $output = true)
@@ -61,6 +82,7 @@ class Firegui extends MY_Controller
         }
     }
 
+    //Send module to firegui (when creating new module or new release)
     public function downloadModuleFolder($identifier)
     {
         $module = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
@@ -98,12 +120,18 @@ class Firegui extends MY_Controller
         }
     }
 
-
+    // Receive module from Builder
     public function uploadModule($identifier)
     {
         $zip = new ZipArchive;
 
         if ($zip->open($_FILES['module_file']['tmp_name']) === TRUE) {
+            if (!is_dir(APPPATH . "modules")) {
+                mkdir(APPPATH . "modules", DIR_WRITE_MODE, true);
+                if (!is_dir(APPPATH . "modules")) {
+                    log_message("DEBUG", "Cannot create folder '" . APPPATH . "modules'");
+                }
+            }
             $zip->extractTo(APPPATH . "modules/{$identifier}");
             $zip->close();
         } else {
@@ -208,6 +236,7 @@ class Firegui extends MY_Controller
                 }
 
                 unlink($newfile);
+                $this->clearCache();
                 if ($close) {
                     echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();window.history.back();}, 5000);</script>";
                 } else {
@@ -300,8 +329,10 @@ class Firegui extends MY_Controller
                     }
                 }
             }
+            $this->clearCache();
             die('ok');
         } else {
+            $this->clearCache();
             die('ok');
         }
     }
@@ -325,6 +356,41 @@ class Firegui extends MY_Controller
             $this->load->helper('file');
             delete_files(APPPATH . '../core/cache/', false);
         }
+    }
+
+    //Send module to firegui (when creating new module or new release)
+    public function downloadClientZip()
+    {
+
+
+        $folder = FCPATH;
+
+        $destination_file = './client.zip';
+        if (!file_exists($folder)) {
+            log_message('ERROR', "'$folder' folder does not exists!");
+            die("'$folder' folder does not exists!");
+        }
+
+
+        $success = zip_folder($folder, $destination_file);
+
+        if ($success === TRUE) { //NON TORNA FALSE!!!!!!
+            if (file_exists($destination_file)) {
+                header('Content-Type: application/zip');
+                header('Content-Disposition: attachment; filename="client.zip"');
+                header('Content-Length: ' . filesize($destination_file));
+                //die(filesize($destination_file));
+                //ob_end_clean();
+                readfile($destination_file);
+                //unlink($destination_file);
+            } else {
+                log_message('ERROR', "'$destination_file' file does not exists!");
+                die("'$destination_file' file does not exists!");
+            }
+        } else {
+            die($success);
+        }
+        @unlink($destination_file);
     }
 }
 

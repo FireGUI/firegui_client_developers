@@ -5,12 +5,12 @@
     <?php if (empty($this->settings['settings_company_logo'])) : ?>
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini">
-            <?php echo empty($this->settings['settings_company_short_name']) ? 'Companny' : $this->settings['settings_company_short_name']; ?>
+            <?php echo empty($this->settings['settings_company_short_name']) ? 'Companny' : htmlspecialchars($this->settings['settings_company_short_name']); ?>
 
         </span>
         <!-- logo for regular state and mobile devices -->
         <span class="logo-lg">
-            <?php echo empty($this->settings['settings_company_name']) ? 'Company Name' : $this->settings['settings_company_name']; ?>
+            <?php echo empty($this->settings['settings_company_name']) ? 'Company Name' : htmlspecialchars($this->settings['settings_company_name']); ?>
 
         </span>
 
@@ -94,7 +94,7 @@
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <?php
-                                                    $_img = ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) ? base_url_admin("uploads/" . $this->auth->get(LOGIN_IMG_FIELD)) : base_url_admin("imgn/1/100/100/uploads/" . $this->auth->get(LOGIN_IMG_FIELD));
+                    $_img = ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) ? base_url_admin("uploads/" . $this->auth->get(LOGIN_IMG_FIELD)) : base_url_admin("imgn/1/100/100/uploads/" . $this->auth->get(LOGIN_IMG_FIELD));
                     ?>
 
                     <img src="<?php echo ($this->auth->get(LOGIN_IMG_FIELD) ? $_img : base_url_admin('images/user.png')); ?>" class="user-image" alt="User Image"> <span class="hidden-xs"><?php echo $this->auth->get(LOGIN_NAME_FIELD); ?> <?php echo $this->auth->get(LOGIN_SURNAME_FIELD); ?></span>
@@ -187,9 +187,9 @@
                     <li class="user-footer">
                         <div class="pull-left">
                             <?php
-                                                                                                                                                                                                                                                $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
+                            $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
 
-                                                                                                                                                                                                                                                if ($form_user_default->num_rows() != 0) :
+                            if ($form_user_default->num_rows() != 0) :
                             ?>
                                 <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal"><?php e('Profile'); ?></a>
                             <?php endif; ?>

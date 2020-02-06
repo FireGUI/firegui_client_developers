@@ -12,10 +12,11 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
 <div class="clearfix"></div>
 <br />
-
+<?php
+// if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+?>
 <div class="___table-scrollable table-scrollable-borderless">
-    <table data-where_append="<?php echo (empty($where)) ? '' : $where; ?>" data-parent_field="<?php echo (empty($parent_field)) ? '' : $parent_field; ?>" data-parent_id="<?php echo (empty($parent_id)) ? '' : $parent_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable nowrap js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" <?php // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ?> data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
+    <table data-where_append="<?php echo (empty($where)) ? '' : $where; ?>" data-parent_field="<?php echo (empty($parent_field)) ? '' : $parent_field; ?>" data-parent_id="<?php echo (empty($parent_id)) ? '' : $parent_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable nowrap js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>

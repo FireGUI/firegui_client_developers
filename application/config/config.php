@@ -396,7 +396,7 @@ $config['encryption_key'] = md5((!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_
 $config['sess_driver'] = 'database';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200; // 5 days
-$config['sess_save_path'] = NULL;
+$config['sess_save_path'] = 'ci_sessions';
 $config['sess_expire_on_close'] = FALSE;
 $config['sess_encrypt_cookie'] = FALSE;
 $config['sess_use_database'] = true;
@@ -404,8 +404,6 @@ $config['sess_table_name'] = 'ci_sessions';
 $config['sess_match_ip'] = FALSE;
 $config['sess_match_useragent'] = FALSE;
 $config['sess_time_to_update'] = 43200;
-//20181107 - MP - Ho messo a TRUE dopo essermi accorto che era questo il parametro che faceva fallire su firegui il cambio progetto. 
-//Penso siano riconducibili a questo parametro tutti gli errori che abbiamo sempre avuto con le sessioni codeigniter (login che scadevano principalmente, ma non solo...)
 $config['sess_regenerate_destroy'] = TRUE;
 
 /*
@@ -472,12 +470,17 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection'] = FALSE;
+$config['csrf_protection'] = true;
 $config['csrf_token_name'] = 'csrf_token_' . $config['encryption_key'];
 $config['csrf_cookie_name'] = 'csrf_cookie_' . $config['encryption_key'];
 $config['csrf_expire'] = 7200;
-$config['csrf_regenerate'] = TRUE;
-$config['csrf_exclude_uris'] = array();
+$config['csrf_regenerate'] = FALSE;
+$config['csrf_exclude_uris'] = array(
+    //'rest/v1/[a-z0-9_\/]+',
+    'rest/v1/.*?',
+    'firegui/.*?',
+    'db_ajax/multi_upload_async/.*?'
+);
 
 /*
 |--------------------------------------------------------------------------
