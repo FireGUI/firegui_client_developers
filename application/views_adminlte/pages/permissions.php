@@ -158,6 +158,9 @@ if ($max_input_vars < $stima_campi) {
 
 
 <script>
+    var token = JSON.parse(atob($('body').data('csrf')));
+    var token_name = token.name;
+    var token_hash = token.hash;
     $(document).ready(function() {
         var numero_di_campi = $('#views_form :input').length;
         if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
@@ -179,7 +182,8 @@ if ($max_input_vars < $stima_campi) {
                 url: base_url + 'get_ajax/permission_table/',
                 type: 'post',
                 data: {
-                    identifier: userId
+                    identifier: userId,
+                    [token_name]: token_hash
                 },
                 success: function(view) {
 
