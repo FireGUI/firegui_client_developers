@@ -157,6 +157,18 @@ CrmInlineTable.prototype.saveRow = function () {
         }
     });
 
+    try {
+        var token = JSON.parse(atob(datatable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    data[token_name] = token_hash;
+
     // Save data
     $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data).success(function () {
         var max = jqInputs.size();
@@ -181,6 +193,8 @@ CrmInlineTable.prototype.createRow = function () {
     var jqThs = $('tr th', this.grid);
     var datatable = this.getDatatableHandler();
 
+
+
     // Creo dei dati vuoti da inserire
     var data = {};
     jqThs.each(function () {
@@ -189,6 +203,18 @@ CrmInlineTable.prototype.createRow = function () {
             data[name] = '';
         }
     });
+    try {
+        var token = JSON.parse(atob(this.grid.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    data[token_name] = token_hash;
+
 
     $.ajax(base_url + 'db_ajax/datatable_inline_insert/' + sEntityName, {
         data: data,

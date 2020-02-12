@@ -2,6 +2,12 @@
 L.maps = {};
 
 
+
+var token = JSON.parse(atob($('body').data('csrf')));
+var token_name = token.name;
+var token_hash = token.hash;
+
+
 function initComponents() {
     /*
      * Form dates
@@ -139,7 +145,11 @@ function initComponents() {
             loading(true);
             $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
                 type: 'POST',
-                data: { field_name_to: jsMultiselect.attr('name'), field_ref: sFieldRef, field_from_val: jqField.val() },
+                data: {
+                    field_name_to: jsMultiselect.attr('name'), field_ref: sFieldRef,
+                    field_from_val: jqField.val(),
+                    [token_name]: token_hash
+                },
                 dataType: 'json',
                 complete: function () {
                     loading(false);
@@ -214,7 +224,10 @@ function initComponents() {
                         referer = input.attr('name');
                     }
 
-                    return { q: term, limit: 100, table: input.attr('data-ref'), referer: referer };
+                    return {
+                        q: term, limit: 100, table: input.attr('data-ref'), referer: referer,
+                        [token_name]: token_hash
+                    };
                 },
                 processResults: function (data) {
                     return {
@@ -321,7 +334,13 @@ function initComponents() {
                         referer = input.attr('name');
                     }
 
-                    return { q: term, limit: 100, table: input.attr('data-ref'), referer: referer };
+                    return {
+                        q: term,
+                        limit: 100,
+                        table: input.attr('data-ref'),
+                        referer: referer,
+                        [token_name]: token_hash
+                    };
                 },
                 results: function (data, page) {
                     return { results: data };
@@ -333,7 +352,10 @@ function initComponents() {
                     $.ajax(base_url + 'get_ajax/select_ajax_search', {
                         type: 'POST',
                         dataType: "json",
-                        data: { table: element.attr('data-ref'), id: id }
+                        data: {
+                            table: element.attr('data-ref'), id: id,
+                            [token_name]: token_hash
+                        }
                     }).done(function (data) {
                         callback(data);
                     });
@@ -360,7 +382,10 @@ function initComponents() {
                 dataType: 'json',
                 type: 'POST',
                 data: function (term, page) {
-                    return { q: term, limit: 50, field: $(this).attr('data-field-id') };
+                    return {
+                        q: term, limit: 50, field: $(this).attr('data-field-id'),
+                        [token_name]: token_hash
+                    };
                 },
                 results: function (data, page) {
                     return { results: data };
@@ -376,7 +401,8 @@ function initComponents() {
                             limit: 50,
                             field: $(element).attr('data-field-id'),
                             table: $(element).attr('data-ref'),
-                            id: id
+                            id: id,
+                            [token_name]: token_hash
                         }
                     }).done(function (data) {
                         callback(data);
@@ -456,6 +482,8 @@ function loadModal(url, data, callbackSuccess, method) {
         data = {
             [token_name]: token_hash
         };
+    } else {
+        data[token_name] = token_hash;
     }
 
     /*** La modale è già aperta? */
@@ -511,7 +539,7 @@ function loadModal(url, data, callbackSuccess, method) {
                     // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
                     if ($('.modal', modalContainer).is(e.target)) {
                         var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
-                        console.log(askConfirmationOnClose);
+
                         if (askConfirmationOnClose && !confirm('Are you sure?')) {
                             // Stop hiding the modal
                             $('.modal', modalContainer).data('bs.modal').isShown = false;
