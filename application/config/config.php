@@ -479,6 +479,7 @@ $config['csrf_exclude_uris'] = array(
     //'rest/v1/[a-z0-9_\/]+',
     'rest/v1/.*?',
     'firegui/.*?',
+    'custom/.*?',
     'db_ajax/multi_upload_async/.*?'
 );
 
