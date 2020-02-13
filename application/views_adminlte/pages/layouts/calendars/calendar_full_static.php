@@ -29,6 +29,10 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
         var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
         var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
 
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+
         var date = new Date();
         var d = date.getDate();
         var m = date.getMonth();
@@ -73,6 +77,9 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                     eventSources: [{
                         url: <?php echo json_encode(base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}")) ?>,
                         type: 'POST',
+                        data: {
+                            [token_name]: token_hash,
+                        },
                         error: function() {
                             alert('there was an error while fetching events!');
                         },
