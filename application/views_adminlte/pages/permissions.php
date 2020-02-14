@@ -192,7 +192,8 @@ if ($max_input_vars < $stima_campi) {
                         $('#js-remove-group').show().on('click', function() {
                             if (confirm('<?php e('Are you sure to delete group'); ?> ' + userId + '? <?php e('All users associated with it must be manually reassigned to another group'); ?>')) {
                                 $.post(base_url + 'db_ajax/delete_permission_group', {
-                                    group: userId
+                                    group: userId,
+                                    [token_name]: token_hash
                                 }, function() {
                                     window.location.reload();
                                 });
