@@ -1,12 +1,8 @@
-Changelog version 1.8.0
+Changelog version 1.8.1
  
-Removed old css files
-Multiupload csrf fix
-Prevent window close when uploading with dropzone
-Loadmodal csrf fix
-Datatable inline edit csrf fix
-Added modulebridge controller
-Added functions to include external assets in modules
-Bugfix warning sess_save_path
-Fixed translations
-Removed unusefull comments
+German translations
+French translations
+Spanish translations
+Removed views_metronic folder
+Fix csrf in calendars
+Fix csrf in permissions
