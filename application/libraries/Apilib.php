@@ -225,7 +225,7 @@ class Apilib
     public function getCacheAdapter()
     {
         $filename = APPPATH . 'cache/cache-controller';
-        $defaultAdapter = array('adapter' => 'file', 'backup' => 'dummy');
+        $defaultAdapter = array('adapter' => 'dummy'); //Default adapter dummy to disable cache by default
         if (!file_exists($filename)) {
             @file_put_contents_and_create_dir($filename, serialize($defaultAdapter), LOCK_EX);
             return $defaultAdapter;
