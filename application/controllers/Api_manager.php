@@ -216,7 +216,7 @@ class Api_manager extends MY_Controller
                 break;
 
             default:
-                throw new ApiException("Permesso non riconosciuto");
+                throw new ApiException(t('Permission not recognized'));
                 break;
         }
 
