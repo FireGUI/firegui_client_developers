@@ -134,3 +134,4 @@ $lang['Record creation'] = 'Creazione record';
 $lang['Record creation (bulk)'] = 'Creazione record (massivo)';
 $lang['Record editing'] = 'Modifica record';
 $lang['Record deletion'] = 'Eliminazione record';
+$lang['Permissions successfully saved!'] = 'Permessi salvati correttamente!';
