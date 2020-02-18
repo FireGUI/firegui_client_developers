@@ -44,26 +44,26 @@ class Apilib
     private $error = 0;
     private $errorMessage = '';
     private $errorMessages = [
-        self::ERR_INVALID_API_CALL => 'Chiamata alle API non valida',
-        self::ERR_NO_DATA_SENT => 'No input data',
-        self::ERR_REDIRECT_FAILED => 'Per effetturare il redirect alla pagina desiderata è necessario passare $_GET[url] - [dati salvati correttamente]',
-        self::ERR_ENTITY_NOT_EXISTS => 'Entità specificata non esistente',
-        self::ERR_VALIDATION_FAILED => 'Validazione fallita',
-        self::ERR_UPLOAD_FAILED => 'Upload fallito',
-        self::ERR_INTERNAL_DB => 'Si è verificato un errore di database',
-        self::ERR_POST_PROCESS => 'Errore in post process',
-        self::ERR_GENERIC => 'Si è verificato un errore nel server. Riprovare più tardi.',
+        self::ERR_INVALID_API_CALL => t('Invalid API call'),
+        self::ERR_NO_DATA_SENT => t('No input data'),
+        self::ERR_REDIRECT_FAILED => t('To make redirect to desired page is necessary to pass $_GET[url] - [data sucessfully saved]'),
+        self::ERR_ENTITY_NOT_EXISTS => t('Specified entity not existent'),
+        self::ERR_VALIDATION_FAILED => t('Validation failed'),
+        self::ERR_UPLOAD_FAILED => t('Upload failed'),
+        self::ERR_INTERNAL_DB => t('A database error has occurred'),
+        self::ERR_POST_PROCESS => t('Post process error'),
+        self::ERR_GENERIC => t('A server error has occurred. Please try again later.'),
     ];
 
     private $logTitlePatterns = [
-        self::LOG_LOGIN       => "L'utente {log_crm_user_name} ha fatto login",
-        self::LOG_LOGIN_FAIL  => "L'utente {log_crm_user_name} ha fatto login",
-        self::LOG_LOGOUT      => "L'utente {log_crm_user_name} ha fatto logout",
-        self::LOG_ACCESS      => "L'utente {log_crm_user_name} ha eseguito l'accesso",
-        self::LOG_CREATE      => "Nuovo record ({log_crm_extra id}) sull'entità {log_crm_extra entity}",
-        self::LOG_CREATE_MANY => "Creazione bulk di nuovi record sull'entità {log_crm_extra entity}",
-        self::LOG_EDIT        => "Record modificato ({log_crm_extra id}) sull'entità {log_crm_extra entity}",
-        self::LOG_DELETE      => "Record cancellato ({log_crm_extra id}) sull'entità {log_crm_extra entity}",
+        self::LOG_LOGIN       => t("User {log_crm_user_name} has logged in"),
+        self::LOG_LOGIN_FAIL  => t("User {log_crm_user_name} has logged in"),
+        self::LOG_LOGOUT      => t("User {log_crm_user_name} has logged out"),
+        self::LOG_ACCESS      => t("L'utente {log_crm_user_name} ha eseguito l'accesso"),
+        self::LOG_CREATE      => t("New record ({log_crm_extra id}) on entity {log_crm_extra entity}"),
+        self::LOG_CREATE_MANY => t("New bulk record creation on entity {log_crm_extra entity}"),
+        self::LOG_EDIT        => t("Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}"),
+        self::LOG_DELETE      => t("Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}"),
     ];
 
     private $originalPost = null;
@@ -152,7 +152,7 @@ class Apilib
     {
 
         if (!in_array($mode, array(self::MODE_API_CALL, self::MODE_DIRECT, self::MODE_CRM_FORM))) {
-            die('Modalità post-process non valida. Chiamare setProcessingMode con parametri Apilib::MODE_API_CALL, Apilib::MODE_DIRECT o Apilib::MODE_CRM_FORM');
+            die(t('Post-process method not valid. Call setProcessingMode with parameters Apilib::MODE_API_CALL, Apilib::MODE_DIRECT o Apilib::MODE_CRM_FORM'));
         }
 
         $this->processMode = $mode;
@@ -395,7 +395,7 @@ class Apilib
             return $query->row_array();
         }
 
-        throw new Exception(sprintf('Impossibile estrarre il record %s da entità %s', $id, $entity));
+        throw new Exception(t('Unable to extract record %s from entity %s', 0, [$id, $entity]));
     }
 
     /**
@@ -418,7 +418,7 @@ class Apilib
             return $query->result_array();
         }
 
-        throw new Exception(sprintf('Impossibile estrarre i record da entità %s', $entity));
+        throw new Exception(t('Unable to extract records from entity %s', 0, [$entity]));
     }
 
     /**
@@ -1030,7 +1030,7 @@ class Apilib
             // Condizione anomala: questo non capiterà mai, in quanto ogni
             // codice errore ha il suo messaggio, però la teniamo per debuggare
             // eventuali dimenticanze future
-            $this->errorMessage = sprintf('Errore imprevisto: impossibile recuperare messaggio per errore cod: %d', $this->error);
+            $this->errorMessage = t('Unexpected error: unable to recover error code message for %s', 0, [$this->error]);
         }
 
         // Creo l'oggetto eccezione
@@ -1478,7 +1478,7 @@ class Apilib
 
             if (isset($dati[$before]) && isset($dati[$after]) && strtotime($dati[$after]) <= strtotime($dati[$before])) {
                 $this->error = self::ERR_VALIDATION_FAILED;
-                $this->errorMessage = $message ?: "La data di inizio dev'essere antecedente alla data di fine";
+                $this->errorMessage = $message ?: t("Start date must be antecedent as of end date");
                 return false;
             }
         }
@@ -1520,7 +1520,7 @@ class Apilib
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
                 $this->error = self::ERR_VALIDATION_FAILED;
-                $this->errorMessage = sprintf("I campi %s non sono accettati", implode(', ', $invalidFields));
+                $this->errorMessage = t("Fields %s aI campi %s non sono accettati", 0, [implode(', ', $invalidFields)]);
                 return false;
             }
 

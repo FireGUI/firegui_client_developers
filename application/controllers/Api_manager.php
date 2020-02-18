@@ -221,7 +221,7 @@ class Api_manager extends MY_Controller
                 break;
 
             default:
-                throw new ApiException("Permesso non riconosciuto");
+                throw new ApiException(t('Permission not recognized'));
                 break;
         }
 
@@ -244,7 +244,7 @@ class Api_manager extends MY_Controller
         }
 
 
-        $this->showOutput("Permessi salvati correttamente!", 5);
+        $this->showOutput(t('Permissions successfully saved!'), 5);
     }
 
     protected function generate_public_token($token_data)
