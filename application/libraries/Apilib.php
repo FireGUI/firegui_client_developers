@@ -44,26 +44,26 @@ class Apilib
     private $error = 0;
     private $errorMessage = '';
     private $errorMessages = [
-        self::ERR_INVALID_API_CALL => t('Invalid API call'),
-        self::ERR_NO_DATA_SENT => t('No input data'),
-        self::ERR_REDIRECT_FAILED => t('To make redirect to desired page is necessary to pass $_GET[url] - [data sucessfully saved]'),
-        self::ERR_ENTITY_NOT_EXISTS => t('Specified entity not existent'),
-        self::ERR_VALIDATION_FAILED => t('Validation failed'),
-        self::ERR_UPLOAD_FAILED => t('Upload failed'),
-        self::ERR_INTERNAL_DB => t('A database error has occurred'),
-        self::ERR_POST_PROCESS => t('Post process error'),
-        self::ERR_GENERIC => t('A server error has occurred. Please try again later.'),
+        self::ERR_INVALID_API_CALL => 'Invalid API call',
+        self::ERR_NO_DATA_SENT => 'No input data',
+        self::ERR_REDIRECT_FAILED => 'To make redirect to desired page is necessary to pass $_GET[url] - [data sucessfully saved]',
+        self::ERR_ENTITY_NOT_EXISTS => 'Specified entity not existent',
+        self::ERR_VALIDATION_FAILED => 'Validation failed',
+        self::ERR_UPLOAD_FAILED => 'Upload failed',
+        self::ERR_INTERNAL_DB => 'A database error has occurred',
+        self::ERR_POST_PROCESS => 'Post process error',
+        self::ERR_GENERIC => 'A server error has occurred. Please try again later.',
     ];
 
     private $logTitlePatterns = [
-        self::LOG_LOGIN       => t("User {log_crm_user_name} has logged in"),
-        self::LOG_LOGIN_FAIL  => t("User {log_crm_user_name} has logged in"),
-        self::LOG_LOGOUT      => t("User {log_crm_user_name} has logged out"),
-        self::LOG_ACCESS      => t("L'utente {log_crm_user_name} ha eseguito l'accesso"),
-        self::LOG_CREATE      => t("New record ({log_crm_extra id}) on entity {log_crm_extra entity}"),
-        self::LOG_CREATE_MANY => t("New bulk record creation on entity {log_crm_extra entity}"),
-        self::LOG_EDIT        => t("Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}"),
-        self::LOG_DELETE      => t("Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}"),
+        self::LOG_LOGIN       => "User {log_crm_user_name} has logged in",
+        self::LOG_LOGIN_FAIL  => "User {log_crm_user_name} has logged in",
+        self::LOG_LOGOUT      => "User {log_crm_user_name} has logged out",
+        self::LOG_ACCESS      => "L'utente {log_crm_user_name} ha eseguito l'accesso",
+        self::LOG_CREATE      => "New record ({log_crm_extra id}) on entity {log_crm_extra entity}",
+        self::LOG_CREATE_MANY => "New bulk record creation on entity {log_crm_extra entity}",
+        self::LOG_EDIT        => "Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}",
+        self::LOG_DELETE      => "Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}",
     ];
 
     private $originalPost = null;
@@ -1023,7 +1023,7 @@ class Apilib
          * il codice d'errore corrente - sempre se esiste
          */
         if (empty($this->errorMessage) && isset($this->errorMessages[$this->error])) {
-            $this->errorMessage = $this->errorMessages[$this->error];
+            $this->errorMessage = t($this->errorMessages[$this->error]);
         }
 
         if (!$this->errorMessage) {
@@ -2246,11 +2246,11 @@ class Apilib
 
         // Il tipo è valido?
         if (!isset($this->logTitlePatterns[$type])) {
-            throw new UnexpectedValueException("Tipo '{$type}' non valido");
+            throw new UnexpectedValueException(t("Type '%s' not valid", 0, [$type]));
         }
 
         // Siamo ok, possiamo inserire
-        $this->addLogEntry($type, $this->logTitlePatterns[$type], true, $extra);
+        $this->addLogEntry($type, t($this->logTitlePatterns[$type]), true, $extra);
     }
 
     /**
