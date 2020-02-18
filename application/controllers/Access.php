@@ -75,7 +75,7 @@ class Access extends MY_Controller
         $data = $this->apilib->runDataProcessing(LOGIN_ENTITY, 'pre-login', $data);
 
         if (empty($data['users_users_email']) || empty($data['users_users_password'])) {
-            echo json_encode(array('status' => 0, 'txt' => 'Inserisci indirizzo e-mail e password'));
+            echo json_encode(array('status' => 0, 'txt' => t('Insert a valid email and/or password')));
             die();
         }
 
@@ -108,9 +108,9 @@ class Access extends MY_Controller
             // Imposta il log di login
             $this->apilib->logSystemAction(Apilib::LOG_LOGIN_FAIL, ['get' => $_GET, 'post' => $_POST]);
             if ($this->input->is_ajax_request()) {
-                echo json_encode(array('status' => 0, 'txt' => 'E-mail o password non corrispondenti'));
+                echo json_encode(array('status' => 0, 'txt' => t('Mail or password mismatch')));
             } else {
-                echo 'E-mail o password non corrispondenti';
+                echo t('Mail or password mismatch');
             }
         }
     }
@@ -121,13 +121,13 @@ class Access extends MY_Controller
         $email = $this->input->post('email');
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            die(json_encode(array('status' => 0, 'txt' => 'Inserisci un indirizzo e-mail valido.')));
+            die(json_encode(array('status' => 0, 'txt' => t('Insert a valid e-mail address'))));
         }
 
         $user = $this->db->get_where(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $email])->row_array();
 
         if (empty($user)) {
-            die(json_encode(array('status' => 0, 'txt' => 'Spiacenti, l\'indirizzo inserito non è registrato.')));
+            die(json_encode(array('status' => 0, 'txt' => t('We\'re sorry. It seems that this e-mail address you have inserted does not exist'))));
         }
 
         $senderName = DEFAULT_EMAIL_SENDER;
@@ -141,9 +141,9 @@ class Access extends MY_Controller
         $this->load->library('email');
         $this->email->subject('Recupero password')->to($email)->from($senderMail, $senderName);
         $msg = [
-            "Ciao {$user[LOGIN_NAME_FIELD]},",
-            "questa mail ti è stata inviata perché hai richiesto un reset della tua password su {$senderName}.",
-            "Se non hai richiesto un reset della password ignora questa e-mail, altrimenti clicca sul link sottostante",
+            t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
+            t("this email was sent to you because you requested a reset of your password on %s.", 0, [$senderName]),
+            t("If you have not requested a password reset, ignore this email, otherwise click on the link below"),
             base_url("access/reset_password/{$userID}/{$hash}")
         ];
 
@@ -153,7 +153,7 @@ class Access extends MY_Controller
 
 
         if (!$success) {
-            die(json_encode(array('status' => 0, 'txt' => 'Si è verificato un errore inviando la mail. Riprovare più tardi o contattare l\'amministrazione.')));
+            die(json_encode(array('status' => 0, 'txt' => t('An error occurred sending the email. Try again later or contact the administration.'))));
         }
 
         $checkHash = md5($email . self::SALT);
@@ -166,7 +166,7 @@ class Access extends MY_Controller
     {
 
         if ($hash !== md5($id . self::SALT)) {
-            show_error('Impossibile proseguire: codice di controllo non valido');
+            show_error(t('Unable to continue: invalid control code'));
         }
 
         $newPassword = generateRandomPassword();
@@ -178,11 +178,11 @@ class Access extends MY_Controller
         $senderMail = DEFAULT_EMAIL_SYSTEM;
 
         $this->load->library('email');
-        $this->email->subject('Password cambiata')->to($email)->from($senderMail, $senderName);
+        $this->email->subject(t('Password changed'))->to($email)->from($senderMail, $senderName);
         $msg = array(
-            "Ciao {$user[LOGIN_NAME_FIELD]},",
-            "la tua password su {$senderName} è stata cambiata.",
-            "La tua nuova password è {$newPassword}"
+            t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
+            t("your password on %s has been changed", 0, [$senderName]),
+            t("Your new password is %s ", 0, [$newPassword])
         );
 
         $this->email->message(implode(PHP_EOL, $msg));
