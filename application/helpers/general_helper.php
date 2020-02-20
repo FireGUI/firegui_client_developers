@@ -29,13 +29,19 @@ if (!function_exists('d')) {
         }, func_get_args());
     }
 }
+if (!function_exists('is_maintenance')) {
+    function is_maintenance()
+    {
+        $CI = get_instance();
 
+        return $CI->db->query("SELECT settings_maintenance_mode FROM settings")->row()->settings_maintenance_mode == DB_BOOL_TRUE;
+    }
+}
 if (!function_exists('debug')) {
 
     function debug($var, $die = false, $trace = true, $show_from = true)
     {
-        if (!is_development()) {
-
+        if (!is_development() && !is_maintenance()) {
             return;
         }
         echo '</select>';
