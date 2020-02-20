@@ -30,7 +30,7 @@
 
         <div class="content-wrapper">
 
-            <?php if (!empty($this->settings['settings_maintenance_mode']) && $this->settings['settings_maintenance_mode'] == DB_BOOL_TRUE) : ?>
+            <?php if (is_maintenance()) : ?>
                 <section class="content-header">
                     <div class="callout callout-danger">
                         <h4><?php e('Updates in progress'); ?></h4>
