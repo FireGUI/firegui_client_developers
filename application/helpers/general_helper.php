@@ -13,9 +13,47 @@ if (!function_exists('dd')) {
     function dd()
     {
         include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        
+        $stack = '';
+        $i = 1;
+        $trace = debug_backtrace();
+        array_shift($trace);
+
+        foreach ($trace as $node) {
+            if (isset($node['file']) && ($node['line'])) {
+                $stack .= "#$i " . $node['file'] . "(" . $node['line'] . "): ";
+            }
+            if (isset($node['class'])) {
+                $stack .= $node['class'] . "->";
+            }
+            $stack .= $node['function'] . "()" . PHP_EOL;
+            $i++;
+        }
+
+        $out[] = '<pre style="background-color:#CCCCCC">';
+        
+        $calledFrom = debug_backtrace();
+        
+        $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>:'.$calledFrom[0]['line'];
+        
+        if (is_object($var)) {
+            $out[] = '-------- Class methods --------';
+            $out[] = print_r(get_class_methods(get_class($var)), true);
+        }
+
+        if ($trace) {
+            $out[] = '-------- Backtrace --------';
+            $out[] = $stack;
+        }
+
+        $out[] = '</pre>';
+        
+        echo implode(PHP_EOL, $out);
+
         array_map(function ($x) {
             dump($x);
         }, func_get_args());
+        
         die;
     }
 }
@@ -24,11 +62,49 @@ if (!function_exists('d')) {
     function d()
     {
         include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        
+        $stack = '';
+        $i = 1;
+        $trace = debug_backtrace();
+        array_shift($trace);
+
+        foreach ($trace as $node) {
+            if (isset($node['file']) && ($node['line'])) {
+                $stack .= "#$i " . $node['file'] . "(" . $node['line'] . "): ";
+            }
+            if (isset($node['class'])) {
+                $stack .= $node['class'] . "->";
+            }
+            $stack .= $node['function'] . "()" . PHP_EOL;
+            $i++;
+        }
+
+        $out[] = '<pre style="background-color:#CCCCCC">';
+        
+        $calledFrom = debug_backtrace();
+        
+        $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>:'.$calledFrom[0]['line'];
+        
+        if (is_object($var)) {
+            $out[] = '-------- Class methods --------';
+            $out[] = print_r(get_class_methods(get_class($var)), true);
+        }
+
+        if ($trace) {
+            $out[] = '-------- Backtrace --------';
+            $out[] = $stack;
+        }
+
+        $out[] = '</pre>';
+        
+        echo implode(PHP_EOL, $out);
+
         array_map(function ($x) {
             dump($x);
         }, func_get_args());
     }
 }
+
 if (!function_exists('is_maintenance')) {
     function is_maintenance()
     {
