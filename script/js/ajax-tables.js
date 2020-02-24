@@ -157,6 +157,18 @@ CrmInlineTable.prototype.saveRow = function () {
         }
     });
 
+    try {
+        var token = JSON.parse(atob(datatable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    data[token_name] = token_hash;
+
     // Save data
     $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data).success(function () {
         var max = jqInputs.size();
@@ -181,6 +193,8 @@ CrmInlineTable.prototype.createRow = function () {
     var jqThs = $('tr th', this.grid);
     var datatable = this.getDatatableHandler();
 
+
+
     // Creo dei dati vuoti da inserire
     var data = {};
     jqThs.each(function () {
@@ -189,6 +203,18 @@ CrmInlineTable.prototype.createRow = function () {
             data[name] = '';
         }
     });
+    try {
+        var token = JSON.parse(atob(this.grid.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    data[token_name] = token_hash;
+
 
     $.ajax(base_url + 'db_ajax/datatable_inline_insert/' + sEntityName, {
         data: data,
@@ -240,6 +266,11 @@ function initTableAjax(grid) {
 
     var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
+    var totalable = oDataTable.data('totalable');
+    if (typeof (totalable) === 'undefined') {
+        totalable = 0;
+    }
+
     //console.log('limite2:' + defaultLimit);
     var aoColumns = [];
     $('> thead > tr > th', oDataTable).each(function () {
@@ -282,7 +313,46 @@ function initTableAjax(grid) {
         },
         fnServerParams: function (aoData) {
             aoData.push({ "name": token_name, "value": token_hash });
-        }
+        },
+        "footerCallback": function (row, data, start, end, display) {
+
+            if (totalable == 1) {
+
+                var api = this.api(), data;
+                $(api.column(0).footer()).html('Totals:');
+                // converting to interger to find total
+                var floatVal = function (i) {
+
+                    i = i.replace(/[^\d.-]/g, '');
+
+                    return parseFloat(i);
+                };
+
+                api.columns().every(function () {
+                    var values = this.data();
+                    var footer = this.footer();
+                    if ($(footer).data('totalable') == 1) {
+                        var total = 0;
+                        for (var i = 0; i < values.length; i++) {
+                            total += floatVal(values[i]);
+                        }
+
+                        $(footer).html(total.toFixed(2));
+                    }
+                });
+
+            }
+
+        },
+        // "rowCallback": function (row, data, index) {
+
+        //     var api = this.api();
+        //     //console.log(data);
+        //     sum += parseFloat(data[5]);
+        //     console.log(sum);
+        //     //DO WHAT YOU WANT
+        //     $(api.column(5).header()).html('Total: ' + sum);
+        // }
 
     });
     //console.log(datatable);
