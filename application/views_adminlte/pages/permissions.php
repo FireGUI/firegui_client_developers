@@ -158,6 +158,9 @@ if ($max_input_vars < $stima_campi) {
 
 
 <script>
+    var token = JSON.parse(atob($('body').data('csrf')));
+    var token_name = token.name;
+    var token_hash = token.hash;
     $(document).ready(function() {
         var numero_di_campi = $('#views_form :input').length;
         if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
@@ -179,7 +182,8 @@ if ($max_input_vars < $stima_campi) {
                 url: base_url + 'get_ajax/permission_table/',
                 type: 'post',
                 data: {
-                    identifier: userId
+                    identifier: userId,
+                    [token_name]: token_hash
                 },
                 success: function(view) {
 
@@ -188,7 +192,8 @@ if ($max_input_vars < $stima_campi) {
                         $('#js-remove-group').show().on('click', function() {
                             if (confirm('<?php e('Are you sure to delete group'); ?> ' + userId + '? <?php e('All users associated with it must be manually reassigned to another group'); ?>')) {
                                 $.post(base_url + 'db_ajax/delete_permission_group', {
-                                    group: userId
+                                    group: userId,
+                                    [token_name]: token_hash
                                 }, function() {
                                     window.location.reload();
                                 });

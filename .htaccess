@@ -5,7 +5,6 @@
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
-
     RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5/$6/$7/$8&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]
     RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5/$6&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]
     RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]

@@ -152,7 +152,14 @@ $append = '?source='.$this->input->get('source');
     protected function stampa($pagina)
     {
         $this->template['head'] = $this->load->view('layout/head', array(), true);
-        $this->template['header'] = $this->load->view('layout/header', array(), true);
+        
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/header.php")) {
+            $this->template['header'] = $this->load->view('custom/layout/header', array(), true);
+        } else {
+            $this->template['header'] = $this->load->view('layout/header', array(), true);
+        }
+        
+        
         $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
         $this->template['page'] = $pagina;
         $this->template['footer'] = $this->load->view('layout/footer', null, true);
