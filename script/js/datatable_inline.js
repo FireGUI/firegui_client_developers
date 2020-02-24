@@ -25,9 +25,9 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     var datatable = this.getDatatableHandler();
 
     var tr = $('<tr data-id="' + id + '"></tr>');
-    //console.log(jqThs.length);
+    //console.log(tr);
     var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
-    //console.log(form_container);
+    console.log(form_container);
     var form = $('form', form_container);
 
 
@@ -65,8 +65,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
                     var cloned_field = field.clone();
 
-                    // console.log(cloned_field.attr('name'));
-                    // console.log(cloned_field.val());
+
 
                     //cloned_field.attr('placeholder', name);
                     cloned_field.attr('placeholder', $(this).html());
@@ -94,16 +93,13 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
     //Aggiungo comunque gli hidden
     $('[type="hidden"]', form).each(function () {
-        console.log($(this).attr('name'));
-        console.log($(this).val());
-        //console.log(parent_field);
         if ($(this).attr('name') == parent_field) {
             $(this).val(parent_id);
         }
         $('td', tr).last().append($(this).clone());
     });
-    //console.log($('tbody', this.grid));
-    $('tbody', this.grid).append(tr);
+
+    $('> tbody', this.grid).append(tr);
 
     initComponents();
 
@@ -153,14 +149,17 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                                 //Nel dubbio assegno anche l'attributo selected...
                                 $('option[value=' + valore + ']', $(this)).attr('selected', 'selected');
                                 //console.log($(this).attr('name')+': '+valore);
+
+
                             } else {
-                                if (data.data[$(this).attr('name')]) {
-                                    $(this).val(data.data[$(this).attr('name')]).trigger('change');
-                                }
+                                $(this).val(data.data[$(this).attr('name')]).trigger('change');
                             }
+
                         }
                     }
+
                 }
+
             });
             //Adesso è il momento di triggerare il change sulle select
             for (i in selects_vals) {
@@ -347,16 +346,6 @@ function initTable(grid) {
     });
 
     //console.log((no_server_side) ? null : (base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append));
-    try {
-        var token = JSON.parse(atob(oDataTable.data('csrf')));
-        var token_name = token.name;
-        var token_hash = token.hash;
-    } catch (e) {
-
-        var token = JSON.parse(atob($('body').data('csrf')));
-        var token_name = token.name;
-        var token_hash = token.hash;
-    }
 
 
     //console.log(where_append);
@@ -378,9 +367,6 @@ function initTable(grid) {
         //bLengthChange: false,
         oLanguage: {
             sUrl: base_url_scripts + "script/datatable.transl.json"
-        },
-        fnServerParams: function (aoData) {
-            aoData.push({ "name": token_name, "value": token_hash });
         }
     });
 

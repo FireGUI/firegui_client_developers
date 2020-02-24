@@ -6,13 +6,20 @@ $has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
 
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
+$has_totalable = false;
+foreach ($grid['grids_fields'] as $field) {
+    if ($field['grids_fields_totalable'] == DB_BOOL_TRUE) {
+        $has_totalable = true;
+        break;
+    }
+}
 ?>
 
 <div class="___table-scrollable table-scrollable-borderless">
     <?php
     // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
     ?>
-    <table data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
+    <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>
@@ -30,6 +37,26 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
             </tr>
         </thead>
         <tbody></tbody>
+        <?php if ($has_totalable) : ?>
+            <tfoot>
+                <tr>
+                    <?php if ($has_bulk) : ?>
+                        <th data-prevent-order data-name="_foo">
+                            <input type="checkbox" class="js-bulk-select-all" />
+                        </th>
+                    <?php endif; ?>
+
+                    <?php foreach ($grid['grids_fields'] as $field) : ?>
+                        <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                        <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?>>
+                        </th>
+                    <?php endforeach; ?>
+
+                    <th data-prevent-order>&nbsp;</th>
+
+                </tr>
+            </tfoot>
+        <?php endif; ?>
     </table>
 
     <?php if ($has_bulk or $has_exportable) : ?>

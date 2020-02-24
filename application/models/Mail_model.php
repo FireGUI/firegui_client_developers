@@ -60,9 +60,9 @@ class Mail_model extends CI_Model
     public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [])
     {
 
-        if (gethostname() === 'idra') {
+        if (is_development()) {
             $old_to = $to;
-            $to = 'matteopuppis@gmail.com';
+            $to = '*******@gmail.com';
             $headers_json = json_encode($additional_headers);
         }
 
