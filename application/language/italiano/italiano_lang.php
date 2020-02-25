@@ -172,3 +172,4 @@ $lang['%s is not a valid date'] = '%s non è una data valida';
 $lang['%s field must be an integer'] = "Il campo %s dev'essere un intero";
 $lang['%s field must be inserted without special characters (ex. `,` and `.`)'] = "Il campo %s dev'essere inserito senza caratteri speciali (ad es. `,` e `.`)";
 $lang['Type \'%s\' not valid'] = "Tipo '%s' non valido.";
+$lang['New row'] = 'Nuova riga';
