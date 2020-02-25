@@ -319,7 +319,7 @@ function initTableAjax(grid) {
             if (totalable == 1) {
 
                 var api = this.api(), data;
-                $(api.column(0).footer()).html('Totals:');
+                $(api.column(0).footer()).html('Total:');
                 // converting to interger to find total
                 var floatVal = function (i) {
 
