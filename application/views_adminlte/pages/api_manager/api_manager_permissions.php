@@ -33,7 +33,7 @@
 
                         <div class="form-group col-sm-12" style="display:none;">
                             <label class="control-label"><?php e('Optional where'); ?></label>
-                            <textarea class="form-control select2_standard entity_where" name="entity_where"></textarea>
+                            <textarea class="form-control __select2_standard entity_where" name="entity_where"></textarea>
 
                         </div>
 
