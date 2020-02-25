@@ -21,9 +21,9 @@
 </a>
 <style>
     <?php if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) : ?>.navbar-static-top,
-    .logo,
-    .user-header {
+    .logo {
         background-color: <?php echo TOPBAR_COLOR; ?> !important;
+        box-shadow: 0 4px 2px 0 rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.35);
     }
 
     <?php if (defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)) : ?>.sidebar-toggle:hover {
@@ -42,6 +42,28 @@
     }
 
     <?php endif; ?>
+
+    .navbar-custom-menu {
+        font-size: 16px;
+    }
+    .dropdown-menu {
+        border: none !important;
+        box-shadow: 0 4px 2px 0 rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.35);
+    }
+     .dropdown-menu > .user-header {
+         background-color: #222d32 !important;
+     }
+     .dropdown-menu > .user-body:hover {
+        background: #26546f;
+        transition: all .25s ease-in;
+     }
+     .navbar-nav > .user-menu > .dropdown-menu > .user-body:hover a {
+        color: #fff !important;
+        transition: color .25s ease-in;
+     }
+    .navbar-nav > .notifications-menu > .dropdown-toggle >  i {
+        margin-right: 5px !important;
+    }
 </style>
 <nav class="navbar navbar-static-top">
 
