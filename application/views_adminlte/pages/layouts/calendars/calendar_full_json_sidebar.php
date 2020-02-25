@@ -115,6 +115,10 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
         var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
         // ============================
 
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+
         var date = new Date();
         var d = date.getDate();
         var m = date.getMonth();
@@ -180,6 +184,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                 var fEnd = formatDate(end.toDate()); // formatted end
                 var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
                 var data = {
+                    [token_name]: token_hash,
                     <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
                 };
                 loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
@@ -202,6 +207,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                 var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
                 var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
                 var data = {
+                    [token_name]: token_hash,
                     <?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
                 };
 
@@ -227,6 +233,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                 var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
                 var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
                 var data = {
+                    [token_name]: token_hash,
                     <?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
                 };
 
@@ -257,7 +264,8 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
                         values.push($(this).val());
                     });
                     return {
-                        filters: values
+                        filters: values,
+                        [token_name]: token_hash
                     };
                 },
                 error: function(error) {
