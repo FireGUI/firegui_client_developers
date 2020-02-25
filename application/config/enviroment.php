@@ -79,8 +79,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     /* ============
  * Custom colors
  * ============ */
-    define('TOPBAR_COLOR', '#b22222');
-    define('TOPBAR_HOVER', '#851717');
+    define('TOPBAR_COLOR', '#222d32');
+    define('TOPBAR_HOVER', '#222d32');
     define('LOGIN_COLOR', '#b22222');
     define('LOGIN_TITLE_COLOR', '#FFFFFF');
 

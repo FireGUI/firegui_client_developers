@@ -1,3 +1,31 @@
+<style>
+.sidebar-menu > li {
+    /*border-bottom: 1px solid #26546f;*/
+    border-bottom: 1px solid #222d32;
+}
+.skin-blue .sidebar-menu > li > a {
+   color: #fff;
+}
+/*hover effect on sidebar elements*/
+.skin-blue .sidebar-menu > li:hover > a, .skin-blue .sidebar-menu > li.active > a, .skin-blue .sidebar-menu > li.menu-open > a {
+    color: #fff;
+    background: #26546f;
+    transition: all .25s ease-in;
+}
+/*space between icon and text*/
+.skin-blue .sidebar-menu > li > a > i, .skin-blue .sidebar-menu > li.active > a > i, .skin-blue .sidebar-menu > li.menu-open > a > i {
+   width: 30px;
+}
+.skin-blue .sidebar-menu > li:hover > a > i, .skin-blue .sidebar-menu > li.active > a > i, .skin-blue .sidebar-menu > li.menu-open > a > i {
+   width: 40px;
+   transition: all 0.35s ease-in;
+}
+.skin-blue .sidebar-menu > li.header {
+    color: #fff;
+    font-weight: 500;
+}
+</style>
+
 <!-- sidebar: style can be found in sidebar.less -->
 <?php $current_page = isset($dati['current_page']) ? $dati['current_page'] : null; ?>
 <section class="sidebar">
