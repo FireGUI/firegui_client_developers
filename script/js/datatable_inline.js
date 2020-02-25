@@ -116,6 +116,9 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     this.createRow(id);
 
     var row_with_form = $('tr:last', this.grid);
+    var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
+    console.log(form_container);
+    var form = $('form', form_container);
 
     //    console.log(row_with_form);
     //    return;
@@ -178,6 +181,11 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
 
             //Forzo l'elemento id nel form per fare in modo che poi il sistema capisca che è una edit al saveRow... (vd sotto)
             $('td', row_with_form).first().append('<input type="hidden" name="' + entityName + '_id" value="' + data.data[entityName + '_id'] + '" />');
+
+            //Hidden fields must be always cloned (ex.: csrf field...)
+            $('[type="hidden"]', form).each(function () {
+                $('td', row_with_form).first().append($(this).clone());
+            });
         }
     });
 
