@@ -64,7 +64,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
 
                     var cloned_field = field.clone();
-
+cloned_field.attr('autocomplete',"off");
 
 
                     //cloned_field.attr('placeholder', name);
