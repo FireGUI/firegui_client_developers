@@ -173,3 +173,5 @@ $lang['%s field must be an integer'] = "Il campo %s dev'essere un intero";
 $lang['%s field must be inserted without special characters (ex. `,` and `.`)'] = "Il campo %s dev'essere inserito senza caratteri speciali (ad es. `,` e `.`)";
 $lang['Type \'%s\' not valid'] = "Tipo '%s' non valido.";
 $lang['New row'] = 'Nuova riga';
+$lang['Updates in progress'] = 'Aggiornamenti in corso';
+$lang['Dear customer, we are making updates to your platform, the service may be subject to slight interruptions, we apologize for the inconvenience.'] = 'Gentile cliente, stiamo effettuando degli aggiornamenti alla tua piattaforma, il servizio potrebbe subire leggere interruzioni, ci scusiamo per il disagio.';
