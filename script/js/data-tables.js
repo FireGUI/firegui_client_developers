@@ -1,12 +1,14 @@
 function startDataTables() {
-    
-    $('.js_datatable:not(.dataTable)').each(function() {
-        var bEnableOrder = typeof($(this).attr('data-prevent-order')) === 'undefined';
+
+    $('.js_datatable:not(.dataTable)').each(function () {
+        var lengthMenu = (typeof ($(this).attr('data-lengthmenu')) === 'undefined') ? [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'Tutti']] : JSON.parse($(this).attr('data-lengthmenu'))
+
+        var bEnableOrder = typeof ($(this).attr('data-prevent-order')) === 'undefined';
         $(this).dataTable({
             bSort: bEnableOrder,
             aaSorting: [],
             stateSave: true,
-            aLengthMenu: [10, 50, 100, 200, 500,  1000, 'Tutti'],
+            aLengthMenu: lengthMenu,
             "oLanguage": {
                 "sUrl": base_url_scripts + "script/datatable.transl.json"
             }
@@ -16,19 +18,19 @@ function startDataTables() {
         $(id + ' .dataTables_length select').addClass("form-control input-xsmall"); // modify table per page dropdown
         $(id + ' .dataTables_info').css({ "margin-top": '20px', position: 'static' });
     });
-    
-    
-    
+
+
+
     /*
      * Datatables
      */
-    $('.js_datatable_slim:not(.dataTable)').each(function() {
-        
+    $('.js_datatable_slim:not(.dataTable)').each(function () {
+
         var oDataTable = $(this);
-        
-        var bEnableOrder = typeof(oDataTable.attr('data-prevent-order')) === 'undefined';
+
+        var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
         var aoColumns = [];
-        $('> thead > tr > th', oDataTable).each(function() {
+        $('> thead > tr > th', oDataTable).each(function () {
             var coldef = null;
             coldef = {
                 bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined')
@@ -36,10 +38,10 @@ function startDataTables() {
 
             aoColumns.push(coldef);
         });
-        
+
         oDataTable.dataTable({
             bSort: bEnableOrder,
-            
+
             aaSorting: [],
             aoColumns: aoColumns,
             iDisplayLength: 5,
@@ -47,18 +49,18 @@ function startDataTables() {
             stateSave: true,
             bLengthChange: false,
             oLanguage: { sUrl: base_url_scripts + "script/datatable.transl.json" }
-        }).on('init', function(e) {
+        }).on('init', function (e) {
             var wrapper = e.target.parent;
             $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
             $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
             $('.dataTables_processing', wrapper).addClass("col-md-6"); // modify table per page dropdown
-            
+
             $('.dataTables_info', wrapper).css({ "margin-top": '20px', position: 'static' });
             $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
             $('.dataTables_length', wrapper).parent().parent().height(0);
         });
     });
-    
-    
+
+
 }
 
