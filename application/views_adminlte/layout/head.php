@@ -19,66 +19,58 @@ $tsuffix = 'CRM';
 
 <!-- CORE LEVEL STYLES -->
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/@fortawesome/fontawesome-free/css/all.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/@fortawesome/fontawesome-free/css/all.min.css?v=" . VERSION); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v=" . VERSION); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/jvectormap/jquery-jvectormap.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/jvectormap/jquery-jvectormap.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v=" . VERSION); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v=" . VERSION); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v=" . VERSION); ?>" />
 
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>"/>-->
-
-
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("template/adminlte/bower_components/select2/dist/css/select2.css?v={$this->config->item('version')}"); ?>" />
+<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v=" . VERSION); ?>"/>-->
 
 
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/jquery-multi-select/css/multi-select.css?v={$this->config->item('version')}"); ?>"/>-->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("template/adminlte/bower_components/select2/dist/css/select2.css?v=" . VERSION); ?>" />
 
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css.map?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/timeline/build/css/timeline.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/fullcalendar/fullcalendar.min.css?v={$this->config->item('version')}"); ?>" />
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css?v={$this->config->item('version')}"); ?>"/>-->
 
+<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/jquery-multi-select/css/multi-select.css?v=" . VERSION); ?>"/>-->
+
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css.map?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/timeline/build/css/timeline.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/fullcalendar/fullcalendar.min.css?v=" . VERSION); ?>" />
+<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css?v=" . VERSION); ?>"/>-->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.css"); ?>" />
-
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>" />
-
-
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/skins/_all-skins.min.css?v={$this->config->item('version')}"); ?>" />
-
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css?v={$this->config->item('version')}"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css"); ?>" />
-
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . $this->config->item('version')); ?>" />
-
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('script/global/plugins/dropzone/css/dropzone.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/skins/_all-skins.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/dropzone/css/dropzone.css?v=" . VERSION); ?>" />
 
 <!-- LEAFLET -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v=" . VERSION); ?>" />
 
 <!-- CUSTOM CSS -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" />
 
 
 
 <!-- STYLE OVERRIDE -->
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/style.css?v={$this->config->item('version')}"); ?>" />-->
+<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/style.css?v=" . VERSION); ?>" />-->
 
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v={$this->config->item('version')}"); ?>" />
+    <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" />
 <?php endif; ?>
 
 <link rel="shortcut icon" href="<?php echo base_url('/favicon.ico'); ?>" />
@@ -135,11 +127,11 @@ $tsuffix = 'CRM';
 </script>
 
 <!-- HIGHCHARTS -->
-<script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v={$this->config->item('version')}"); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v={$this->config->item('version')}"); ?>"></script>
+<script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v=" . VERSION); ?>"></script>
 
 <script>
     $(function() {
