@@ -15,7 +15,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
     <p>Nessun dato disponibile</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
-        <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered nowrap table-hover table-hover <?php echo $grid['grids']['grids_append_class']; ?>">
+        <table data-lengthmenu='[[20, 100, 200, 400, 1000, -1], [10, 50, 100, 200, 500, "Tutti"]]' <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered nowrap table-hover table-hover <?php echo $grid['grids']['grids_append_class']; ?>">
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
