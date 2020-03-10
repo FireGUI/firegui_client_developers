@@ -1,8 +1,4 @@
 $(document).ready(function () {
-    var csrf_token = JSON.parse(atob($('body').data('csrf')));
-    var csrf_token_name = csrf_token.name;
-    var csrf_token_hash = csrf_token.hash;
-
     $('.js-bulk-action > option[value=""]').attr('selected', 'selected').trigger('change');
     $("input:checkbox.js_bulk_check,.js-bulk-select-all").removeAttr('checked').trigger('change');
     $.uniform.update();
@@ -66,11 +62,13 @@ $(document).ready(function () {
                 var r = confirm("Confermi di voler eliminare " + chkbx_ids.length + " righe?");
                 if (r == true) {
                     var url = base_url + 'db_ajax/generic_delete/' + $(this).data('entity-name');
-                    var data = { [token_name]: token_hash, "ids": chkbx_ids };
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'ids', "value": chkbx_ids });
                     $.ajax({
                         url: url,
                         type: 'POST',
-                        data: data,
+                        data: data_post,
                         success: function (json) {
                             location.reload();
                         }
