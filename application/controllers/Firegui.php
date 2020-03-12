@@ -365,7 +365,7 @@ class Firegui extends MY_Controller
 
         $folder = FCPATH;
 
-        $destination_file = './client.zip';
+        $destination_file = './uploads/client.zip';
         if (!file_exists($folder)) {
             log_message('ERROR', "'$folder' folder does not exists!");
             die("'$folder' folder does not exists!");
