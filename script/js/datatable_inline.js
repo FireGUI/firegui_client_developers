@@ -64,7 +64,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
 
                     var cloned_field = field.clone();
-cloned_field.attr('autocomplete',"off");
+                    cloned_field.attr('autocomplete', "off");
 
 
                     //cloned_field.attr('placeholder', name);
@@ -357,6 +357,8 @@ function initTable(grid) {
 
 
     //console.log(where_append);
+    var lengthMenu = (typeof (oDataTable.attr('data-lengthmenu')) === 'undefined') ? [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'Tutti']] : JSON.parse(oDataTable.attr('data-lengthmenu'))
+
     var datatable = oDataTable.dataTable({
         stateSave: true,
         bSort: bEnableOrder,
@@ -369,7 +371,7 @@ function initTable(grid) {
         sServerMethod: "POST",
         bServerSide: !no_server_side,
         sAjaxSource: (no_server_side) ? null : (base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append),
-        aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
+        aLengthMenu: lengthMenu,
         iDisplayLength: defaultLimit,
         autoWidth: false,
         //bLengthChange: false,

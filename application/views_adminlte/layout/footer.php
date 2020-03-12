@@ -105,3 +105,5 @@ script  src="<?php echo base_url_scripts("script/global/plugins/datatables/media
 <script src="<?php echo base_url_scripts("script/js/data-tables.js?v=" . VERSION); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_scripts("script/js/bulk-grid.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/components.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/js/IE.missing.functions.js?v=" . VERSION); ?>"></script>
