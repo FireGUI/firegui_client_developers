@@ -143,13 +143,15 @@ function initComponents() {
 
             $('option', jsMultiselect).remove();
             loading(true);
+            var data_post = [];
+            data_post.push({ "name": token_name, "value": token_hash });
+            data_post.push({ "name": 'field_name_to', "value": jsMultiselect.attr('name') });
+            data_post.push({ "name": 'field_ref', "value": sFieldRef });
+            data_post.push({ "name": 'field_from_val', "value": jqField.val() });
+            data_post.push({ "name": 'field_from_val', "value": jqField.val() });
             $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
                 type: 'POST',
-                data: {
-                    field_name_to: jsMultiselect.attr('name'), field_ref: sFieldRef,
-                    field_from_val: jqField.val(),
-                    [token_name]: token_hash
-                },
+                data: data_post,
                 dataType: 'json',
                 complete: function () {
                     loading(false);
@@ -224,10 +226,14 @@ function initComponents() {
                         referer = input.attr('name');
                     }
 
-                    return {
-                        q: term, limit: 100, table: input.attr('data-ref'), referer: referer,
-                        [token_name]: token_hash
-                    };
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'q', "value": term });
+                    data_post.push({ "name": 'limit', "value": 100 });
+                    data_post.push({ "name": 'table', "value": input.attr('data-ref') });
+                    data_post.push({ "name": 'referer', "value": referer });
+
+                    return data_post;
                 },
                 processResults: function (data) {
                     return {
@@ -333,14 +339,13 @@ function initComponents() {
                     if (!referer) {
                         referer = input.attr('name');
                     }
-
-                    return {
-                        q: term,
-                        limit: 100,
-                        table: input.attr('data-ref'),
-                        referer: referer,
-                        [token_name]: token_hash
-                    };
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'q', "value": term });
+                    data_post.push({ "name": 'limit', "value": 100 });
+                    data_post.push({ "name": 'table', "value": input.attr('data-ref') });
+                    data_post.push({ "name": 'referer', "value": referer });
+                    return data_post;
                 },
                 results: function (data, page) {
                     return { results: data };
@@ -349,13 +354,15 @@ function initComponents() {
             initSelection: function (element, callback) {
                 var id = element.val();
                 if (id !== "") {
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'table', "value": element.attr('data-ref') });
+                    data_post.push({ "name": 'id', "value": id });
+
                     $.ajax(base_url + 'get_ajax/select_ajax_search', {
                         type: 'POST',
                         dataType: "json",
-                        data: {
-                            table: element.attr('data-ref'), id: id,
-                            [token_name]: token_hash
-                        }
+                        data: data_post
                     }).done(function (data) {
                         callback(data);
                     });
@@ -373,6 +380,9 @@ function initComponents() {
     });
 
     $('.js_select_ajax_distinct').each(function () {
+
+
+
         $(this).select2({
             allowClear: true,
             placeholder: 'Cerca',
@@ -382,10 +392,12 @@ function initComponents() {
                 dataType: 'json',
                 type: 'POST',
                 data: function (term, page) {
-                    return {
-                        q: term, limit: 50, field: $(this).attr('data-field-id'),
-                        [token_name]: token_hash
-                    };
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'q', "value": term });
+                    data_post.push({ "name": 'limit', "value": 50 });
+                    data_post.push({ "name": 'field', "value": $(this).attr('data-field-id') });
+                    return data_post;
                 },
                 results: function (data, page) {
                     return { results: data };
@@ -394,16 +406,17 @@ function initComponents() {
             initSelection: function (element, callback) {
                 var id = $(element).val();
                 if (id !== "") {
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+
+                    data_post.push({ "name": 'limit', "value": 50 });
+                    data_post.push({ "name": 'field', "value": $(element).attr('data-field-id') });
+                    data_post.push({ "name": 'table', "value": $(element).attr('data-ref') });
+                    data_post.push({ "name": 'id', "value": id });
                     $.ajax(base_url + 'get_ajax/get_distinct_values', {
                         type: 'POST',
                         dataType: "json",
-                        data: {
-                            limit: 50,
-                            field: $(element).attr('data-field-id'),
-                            table: $(element).attr('data-ref'),
-                            id: id,
-                            [token_name]: token_hash
-                        }
+                        data: data_post
                     }).done(function (data) {
                         callback(data);
                     });
@@ -479,11 +492,11 @@ function loadModal(url, data, callbackSuccess, method) {
     }
     var modalContainer = $('#js_modal_container');
     if (typeof data === 'undefined') {
-        data = {
-            [token_name]: token_hash
-        };
+        var data_post = [];
+        data_post.push({ "name": token_name, "value": token_hash });
+        data = data_post;
     } else {
-        data[token_name] = token_hash;
+        data.push({ "name": token_name, "value": token_hash });
     }
 
     /*** La modale è già aperta? */
@@ -709,7 +722,10 @@ $(function () {
         }
 
         if (sUrl) {
-            loadModal(sUrl, { [token_name]: token_hash });
+            var data_post = [];
+            data_post.push({ "name": token_name, "value": token_hash });
+
+            loadModal(sUrl, data_post);
         }
     });
 

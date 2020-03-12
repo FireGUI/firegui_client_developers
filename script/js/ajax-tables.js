@@ -305,7 +305,7 @@ function initTableAjax(grid) {
         sServerMethod: "POST",
         bServerSide: true,
         sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
-        aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
+        aLengthMenu: [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'Tutti']],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
         oLanguage: {
