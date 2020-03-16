@@ -69,6 +69,8 @@ class Cron extends MY_Controller
             // all'avvio del cron runner
             if ((isset($cron['crons_active']) && $cron['crons_active'] === DB_BOOL_FALSE) or in_array($cron['crons_id'], $inExecution)) {
                 $skipped[] = $cron['crons_id'];
+                //Remove to avoid infinite pending cron
+                $this->noMoreInExecution($cron['crons_id']);
                 continue;
             }
 
