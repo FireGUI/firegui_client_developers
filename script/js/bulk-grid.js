@@ -55,9 +55,11 @@ $(document).ready(function () {
             }).get();
 
             if ($(this).val() == 'bulk_edit') {
-
+                var data_post = [];
+                data_post.push({ "name": token_name, "value": token_hash });
+                data_post.push({ "name": "ids", "value": chkbx_ids });
                 var form_id = $(this).find(":selected").data('form_id');
-                loadModal(base_url + 'get_ajax/modal_form/' + form_id, { [token_name]: token_hash, "ids": chkbx_ids }, null, 'POST');
+                loadModal(base_url + 'get_ajax/modal_form/' + form_id, data_post, null, 'POST');
             } else if ($(this).val() == 'bulk_delete') {
                 var r = confirm("Confermi di voler eliminare " + chkbx_ids.length + " righe?");
                 if (r == true) {
