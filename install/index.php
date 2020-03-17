@@ -232,12 +232,22 @@
                             <div id="check-requirements" class="">
                                 <?php
                                     $error_level = 0;
+                                    $error_req = [];
         
-                                    foreach($requirements as $req)
+                                    foreach($requirements as $key => $req)
                                     {
-                                        if (!$req) {
-                                            print_r($req, true);
-                                            $error_level + 1;
+                                        if (!in_array($key, ['mcrypt_enabled', 'imagick'])) {
+                                            if(!$req){
+                                                $error_req[] = $key;
+                                                $error_level += 1;
+                                            }
+                                        }
+                                    }
+                                    
+                                    foreach ($permissions as $key => $permission) {
+                                        if (!$permission) {
+                                            $error_req[] = $key;
+                                            $error_level += 1;
                                         }
                                     }
                                     
@@ -248,6 +258,7 @@
                                     <button class="btn btn-success pull-right" id="next-btn" type="button">Next <i
                                                 class="fas fa-chevron-right"></i></button>
                                 </div>
+                                
                                 <?php endif; ?>
 
                                 <hr/>
