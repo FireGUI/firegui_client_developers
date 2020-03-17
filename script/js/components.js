@@ -491,11 +491,13 @@ function loadModal(url, data, callbackSuccess, method) {
         var token_hash = token.hash;
     }
     var modalContainer = $('#js_modal_container');
+
     if (typeof data === 'undefined') {
         var data_post = [];
         data_post.push({ "name": token_name, "value": token_hash });
         data = data_post;
     } else {
+        data = Object.entries(data);
         data.push({ "name": token_name, "value": token_hash });
     }
 
@@ -511,11 +513,12 @@ function loadModal(url, data, callbackSuccess, method) {
         return;
     }
 
-
     if (mAjaxCall !== null) {
         mAjaxCall.abort();
     }
     loading(true);
+
+    //console.log(data);
 
     mAjaxCall = $.ajax({
         url: url,
