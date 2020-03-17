@@ -61,17 +61,26 @@ $(document).ready(function () {
                 var form_id = $(this).find(":selected").data('form_id');
                 loadModal(base_url + 'get_ajax/modal_form/' + form_id, data_post, null, 'POST');
             } else if ($(this).val() == 'bulk_delete') {
+
+                //console.log(chkbx_ids);
+
                 var r = confirm("Confermi di voler eliminare " + chkbx_ids.length + " righe?");
                 if (r == true) {
                     var url = base_url + 'db_ajax/generic_delete/' + $(this).data('entity-name');
                     var data_post = [];
                     data_post.push({ "name": token_name, "value": token_hash });
-                    data_post.push({ "name": 'ids', "value": chkbx_ids });
+                    for (var i in chkbx_ids) {
+                        data_post.push({ "name": 'ids[]', "value": chkbx_ids[i] });
+                    }
+
+                    //console.log(data_post);
+
                     $.ajax({
                         url: url,
                         type: 'POST',
                         data: data_post,
                         success: function (json) {
+                            //console.log(json);
                             location.reload();
                         }
                     });
