@@ -15,15 +15,28 @@
             array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
         
         if (!empty($_POST['dbImport']) && $_POST['dbImport'] == 1) {
-            if (!file_exists('../firegui_client.sql')) {
+            if (!file_exists('../dump_file.sql')) {
                 die(json_encode(['status' => 0, 'txt' => 'Unable to find sql database file']));
             }
             
-            $sqlFile = file_get_contents('../firegui_client.sql');
+            $sqlFile = file_get_contents('../dump_file.sql');
             
             $result = $db->exec($sqlFile);
             
             if (!$result) {
+                $dbconf = __DIR__.'/../../application/config/database.php';
+
+                if (file_exists($dbconf)) {
+                    $str = file_get_contents($dbconf);
+    
+                    $str = str_replace('server1.firegui.com', $dbHost,$str);
+                    $str = str_replace('<dbname>', $dbName,$str);
+                    $str = str_replace('<dbuser>', $dbUser,$str);
+                    $str = str_replace('<dbpassword>', $dbPass,$str);
+    
+                    file_put_contents($dbconf, $str);
+                }
+                
                 die(json_encode(['status' => 1, 'txt' => 'Db imported successfully']));
             } else {
                 die(json_encode(['status' => 0, 'txt' => 'Db import failed: <b>' . $db->errorInfo() . '</b>']));

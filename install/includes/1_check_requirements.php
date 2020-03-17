@@ -1,5 +1,8 @@
 <?php if ($error_level > 0): ?>
-<div class="alert alert-danger">Please resolve all requirements before continue</div>
+<div class="alert alert-danger">
+    Please resolve all requirements before continue<br/>
+    <?php foreach($error_req as $error) echo '- ', $error, "<br>"; ?>
+</div>
 <?php endif; ?>
 
 <div class="page-header">
@@ -121,7 +124,11 @@
         <td></td>
     </tr>
     -->
-    
+    <tr>
+        <td>mod_rewrite</td>
+        <td><?php echo $requirements['mod_rewrite_enabled'] ? $res_true : $res_false; ?></td>
+        <td></td>
+    </tr>
     <tr>
         <td>upload_max_filesize:</td>
         <td><?php echo ini_get('upload_max_filesize') ? $res_true : $res_false; ?>
