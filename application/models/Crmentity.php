@@ -895,7 +895,33 @@ class Crmentity extends CI_Model
         $this->cache->file->delete(self::SCHEMA_CACHE_KEY);
         $this->buildSchemaCacheIfNotValid();
     }
+    public function getCacheAdapter()
+    {
+        $filename = APPPATH . 'cache/cache-controller';
+        $defaultAdapter = array('adapter' => 'dummy'); //Default adapter dummy to disable cache by default
+        if (!file_exists($filename)) {
+            @file_put_contents_and_create_dir($filename, serialize($defaultAdapter), LOCK_EX);
+            return $defaultAdapter;
+        }
 
+        $controllerFileContents = file_get_contents($filename);
+        $adapter = @unserialize($controllerFileContents);
+
+        if (!is_array($adapter) or !array_key_exists('adapter', $adapter)) {
+            return $defaultAdapter;
+        }
+
+        return $adapter;
+    }
+    /**
+     * Check cache abilitata o meno
+     * @return type
+     */
+    public function isCacheEnabled()
+    {
+        $adapter = $this->getCacheAdapter();
+        return ($adapter['adapter'] !== 'dummy');
+    }
     protected function buildSchemaCacheIfNotValid()
     {
 
@@ -903,7 +929,8 @@ class Crmentity extends CI_Model
 
         //echo('INTERVENIRE QUI PER LA CACHE');
 
-        if ($this->_schemaCache) {
+        if ($this->_schemaCache && $this->isCacheEnabled()) {
+            //die('test');
             return;
         }
         //echo 'test';
