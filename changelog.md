@@ -1,11 +1,6 @@
-Changelog version 1.8.6
+Changelog version 1.8.7
  
-Speed up download zip project
-Bugfix cron noMoreInExecution
-Datatable inline form layout prevent order by on eval columns
-Javascript fixes for IE
-New Installer for automatic remote migration
-Added mod_rewrite check
-Added Db config file placeholders replace
-Display what requiremets are not fullfilled
-Bugfix bulk-delete in grids inline
+Code well-formatted
+Multilanguage support for calendars
+Bugfix for crm.schema cache when cache is disabled
+Added modal extra large for fullscreen modals
