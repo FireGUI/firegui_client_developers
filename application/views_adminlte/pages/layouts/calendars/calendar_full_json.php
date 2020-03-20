@@ -11,6 +11,9 @@ if (!isset($calendar_map['id']) || !$calendar_map['id']) {
 
 $element_id = (isset($value_id) ? $value_id : NULL);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
+
+$settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
+//debug($settings, true);
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 <script>
@@ -51,29 +54,33 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
         }
 
         jqCalendar.fullCalendar('destroy'); // destroy the calendar
+
+
+
+
         jqCalendar.fullCalendar({
             defaultView: 'agendaWeek',
             editable: true,
             selectable: true,
             disableDragging: false,
             header: h,
-            lang: 'it',
+            lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
             selectHelper: true,
             minTime: minTime,
             maxTime: maxTime,
             timeFormat: 'H:mm',
             axisFormat: 'H:mm',
-            monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-            monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-            dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
-            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
-            firstDay: 1,
-            buttonText: {
-                today: 'Mostra oggi',
-                month: 'Mese',
-                week: 'Sett.',
-                day: 'Giorno'
-            },
+            // monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+            // monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+            // dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+            // dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
+            // firstDay: 1,
+            // buttonText: {
+            //     today: 'Mostra oggi',
+            //     month: 'Mese',
+            //     week: 'Sett.',
+            //     day: 'Giorno'
+            // },
 
             select: function(start, end) {
                 var fStart = formatDate(start.toDate()); // formatted start
