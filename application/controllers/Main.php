@@ -28,17 +28,17 @@ class Main extends MY_Controller
                     unset($uri[$k]);
                 }
             }
-if ($this->input->get('source')) {
-$append = '?source='.$this->input->get('source');
-} else {
-    $append = '';
-}
+            if ($this->input->get('source')) {
+                $append = '?source=' . $this->input->get('source');
+            } else {
+                $append = '';
+            }
             $redirection_url = base_url(implode('/', $uri));
             $this->auth->store_intended_url($redirection_url);
-            redirect('access'.$append);
+            redirect('access' . $append);
         }
 
-
+        
 
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
@@ -152,14 +152,14 @@ $append = '?source='.$this->input->get('source');
     protected function stampa($pagina)
     {
         $this->template['head'] = $this->load->view('layout/head', array(), true);
-        
+
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/header.php")) {
             $this->template['header'] = $this->load->view('custom/layout/header', array(), true);
         } else {
             $this->template['header'] = $this->load->view('layout/header', array(), true);
         }
-        
-        
+
+
         $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
         $this->template['page'] = $pagina;
         $this->template['footer'] = $this->load->view('layout/footer', null, true);
@@ -388,32 +388,25 @@ $append = '?source='.$this->input->get('source');
                 break;
 
             case 'off':
+                $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
+                $this->apilib->clearCache();
+                file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
+
+                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+
+                
                 $this->apilib->toggleCachingSystem(false);
 
-                //Oltre a disattivare il driver di cache, vado a cancellarla perchè altrimenti continua a usarla...
-                //                $this->apilib->clearCache();
-                //                @unlink(APPPATH . 'cache/'.Crmentity::SCHEMA_CACHE_KEY);
-                //
-                //                // Pulisco cache frontend se c'è...
-                //                if (is_dir(APPPATH . '../core/cache/')) {
-                //                    $this->load->helper('file');
-                //                    delete_files(APPPATH . '../core/cache/', false);
-                //                }
+                           
                 break;
 
             case 'clear':
                 // 20200310 - Michael E. - Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
-                $cache_controller = file_get_contents(APPPATH.'cache/cache-controller');
+                $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
                 $this->apilib->clearCache();
-                file_put_contents(APPPATH.'cache/cache-controller', $cache_controller);
-                
-                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+                file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
 
-                // Pulisco cache frontend se c'è...
-                if (is_dir(APPPATH . '../core/cache/')) {
-                    $this->load->helper('file');
-                    delete_files(APPPATH . '../core/cache/', false);
-                }
+                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
                 break;
 

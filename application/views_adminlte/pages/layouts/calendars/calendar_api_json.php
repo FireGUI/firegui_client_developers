@@ -15,6 +15,7 @@ if (isset($calendar_map['date_range'])) {
 }
 $element_id = (isset($value_id) ? $value_id : NULL);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
+$settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 <script>
@@ -69,20 +70,20 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
             header: h,
             minTime: minTime,
             maxTime: maxTime,
-
-            monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-            monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-            dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
-            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
-            firstDay: 1,
-            timeFormat: 'H:mm',
-            axisFormat: 'H:mm',
-            buttonText: {
-                today: 'Mostra oggi',
-                month: 'Mese',
-                week: 'Sett.',
-                day: 'Giorno'
-            },
+            lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
+            // monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+            // monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+            // dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+            // dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
+            // firstDay: 1,
+            // timeFormat: 'H:mm',
+            // axisFormat: 'H:mm',
+            // buttonText: {
+            //     today: 'Mostra oggi',
+            //     month: 'Mese',
+            //     week: 'Sett.',
+            //     day: 'Giorno'
+            // },
 
             selectHelper: true,
             select: function(start, end, allDay) {
