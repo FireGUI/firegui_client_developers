@@ -14,6 +14,7 @@ if ($data['calendars']['calendars_method'] === 'static') {
     }
 }
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
+$settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 
@@ -74,6 +75,7 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
                     header: h,
                     minTime: minTime,
                     maxTime: maxTime,
+                    lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
                     eventSources: [{
                         url: <?php echo json_encode(base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}")) ?>,
                         type: 'POST',

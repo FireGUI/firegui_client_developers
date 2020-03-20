@@ -44,7 +44,7 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
         $filterWhereFilter .= ' AND ' . $add_where;
     }
 }
-
+$settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 ?>
 <div class="row">
     <div class="col-lg-2 col-md-3">
@@ -150,20 +150,20 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
             height: 'auto',
             header: h,
             //            locale: 'it',
-            lang: 'it',
+            lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
             timeFormat: 'H:mm',
             axisFormat: 'H:mm',
-            monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-            monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-            dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
-            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
-            firstDay: 1,
-            buttonText: {
-                today: 'Mostra oggi',
-                month: 'Mese',
-                week: 'Sett.',
-                day: 'Giorno',
-            },
+            // monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+            // monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+            // dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+            // dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
+            // firstDay: 1,
+            // buttonText: {
+            //     today: 'Mostra oggi',
+            //     month: 'Mese',
+            //     week: 'Sett.',
+            //     day: 'Giorno',
+            // },
             timeFormat: 'H:mm',
             columnFormat: {
                 agendaWeek: 'ddd D MMMM'
