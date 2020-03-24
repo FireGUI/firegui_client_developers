@@ -76,7 +76,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                             <div class="form-actions">
                                                 <?php if ($show_delete_button) : ?>
                                                     <div class="pull-left">
-                                                        <a href="<?php echo base_url("db_ajax/generic_delete/{$form['forms']['entity_name']}/$value_id"); ?>" data-confirm-text="are you sure you want to delete this record?" class="btn btn-danger js_confirm_button js_link_ajax " data-toggle="tooltip" title="" data-original-title="Elimina">
+                                                        <a href="<?php echo base_url("db_ajax/generic_delete/{$form['forms']['entity_name']}/$value_id"); ?>" data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" class="btn btn-danger js_confirm_button js_link_ajax " data-toggle="tooltip" title="" data-original-title="Elimina">
                                                             <?php e('Delete'); ?>
                                                         </a>
 
