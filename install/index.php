@@ -280,7 +280,7 @@ function base_url_template($uri)
                             <h4 class="text-center" style="margin-top: 50px;">Click below button to continue</h4>
 
                             <div class="text-center">
-                                <a href="http://<?php echo $_SERVER['HTTP_HOST']; ?>" class="btn btn-success btn-lg" style=" margin: auto;margin-top: 25px;">Open <b>Fire</b>GUI Client</a>
+                                <a href="./../" class="btn btn-success btn-lg" style=" margin: auto;margin-top: 25px;">Open <b>Fire</b>GUI Client</a>
                             </div>
                         </div>
                     </div>
