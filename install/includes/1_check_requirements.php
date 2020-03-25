@@ -1,8 +1,8 @@
-<?php if ($error_level > 0): ?>
-<div class="alert alert-danger">
-    Please resolve all requirements before continue<br/>
-    <?php foreach($error_req as $error) echo '- ', $error, "<br>"; ?>
-</div>
+<?php if ($error_level > 0) : ?>
+    <div class="alert alert-danger">
+        Please resolve all requirements before continue<br />
+        <?php foreach ($error_req as $error) echo '- ', $error, "<br>"; ?>
+    </div>
 <?php endif; ?>
 
 <div class="page-header">
@@ -102,7 +102,7 @@
         <td><?php echo ini_get('max_input_vars'); ?></td>
         <td><?php echo (ini_get('max_input_vars') < 1200) ? 'We suggest you set this value to at least 1200' : ''; ?></td>
     </tr>
-    <!--
+    <?php /*
     <tr>
         <td>magic_quotes_gpc: </td>
         <td><?php echo !ini_get('magic_quotes_gpc') ? $res_true : $res_false; ?> (value: <?php echo ini_get('magic_quotes_gpc') ?>)</td>
@@ -123,7 +123,7 @@
         <td><?php echo !ini_get('mbstring.func_overload') ? $res_true : $res_false; ?> (value: <?php echo ini_get('mbstring.func_overload') ?>) </td>
         <td></td>
     </tr>
-    -->
+    */ ?>
     <tr>
         <td>mod_rewrite</td>
         <td><?php echo $requirements['mod_rewrite_enabled'] ? $res_true : $res_false; ?></td>
