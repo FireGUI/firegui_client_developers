@@ -308,7 +308,13 @@ class Apilib
         }
         
         return $cleared;*/
+        // 20200310 - Michael E. - Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
+                
+        $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
         $this->cache->clean();
+        file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
+
+        @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
     }
 
     public function clearCacheKey($key = null)
@@ -492,8 +498,8 @@ class Apilib
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
 
-            $this->cache->clean();
-
+            //$this->cache->clean();
+$this->clearCache();
             // Prima di uscire voglio ripristinare il post precedentemente modificato
             $_POST = $this->originalPost;
 
@@ -575,7 +581,7 @@ class Apilib
                 'value_id' => $id
             ]);
 
-            $this->cache->clean();
+           $this->clearCache();
 
             $_POST = $this->originalPost;
 
@@ -651,7 +657,7 @@ class Apilib
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $record));
         }
 
-        $this->cache->clean();
+        $this->clearCache();
 
         // Prima di uscire voglio ripristinare il post precedentemente modificato
         $_POST = $this->originalPost;
@@ -733,10 +739,15 @@ class Apilib
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
-
-        $this->cache->clean();
+        //$this->cache->clean();
+        $this->clearCache();
     }
-
+    /**
+     * Alias function
+    */
+    public function cleanCache() {
+        $this->clearCache();
+    }
 
     /**
      * Ritorna in json i campi di un'entità
