@@ -18,7 +18,7 @@ function initComponents() {
         format: 'dd/mm/yyyy',
         todayHighlight: true,
         weekStart: 1,
-        language: 'it'
+        language: lang_short_code
     });
     $('.js_form_timepicker').timepicker({
         autoclose: true,
@@ -36,7 +36,7 @@ function initComponents() {
         forceParse: false,
         todayHighlight: true,
         weekStart: 1,
-        language: 'it'
+        language: lang_short_code
     });
 
     $('.js_form_daterangepicker').each(function () {

@@ -6,6 +6,7 @@
 $tprefix = empty($dati['title_prefix']) ? '' : $dati['title_prefix'];
 $title = (empty($this->settings['settings_company_short_name']) ? 'MasterCRM' : $this->settings['settings_company_short_name']);
 $tsuffix = 'CRM';
+$lang = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 ?>
 
 <title><?php echo ucwords(htmlspecialchars(trim(implode(' - ', array_filter([$tprefix, $title, $tsuffix]))))); ?></title>
@@ -124,6 +125,8 @@ $tsuffix = 'CRM';
     var base_url_template = <?php echo json_encode(base_url_template()); ?>;
     var base_url_scripts = <?php echo json_encode(base_url_scripts()); ?>;
     var base_url_uploads = <?php echo json_encode(base_url_uploads()); ?>;
+    var lang_code = '<?php echo (!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN'; ?>';
+    var lang_short_code = '<?php echo (!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en'; ?>';
 </script>
 
 <!-- HIGHCHARTS -->
