@@ -401,13 +401,9 @@ class Main extends MY_Controller
                 break;
 
             case 'clear':
-                // 20200310 - Michael E. - Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
-                $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
+                
                 $this->apilib->clearCache();
-                file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
-
-                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-
+                
                 break;
 
             default:

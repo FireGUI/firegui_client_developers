@@ -617,6 +617,10 @@ class Get_ajax extends MY_Controller
             $fields[$field['fields_name']] = $field;
             if ($field['maps_fields_type'] == 'latlng') {
                 $latlng_field = $field['fields_name'];
+            } elseif ($field['maps_fields_type'] == 'lat') {
+                $latfield = $field['fields_name'];
+            } elseif ($field['maps_fields_type'] == 'lon') {
+                $lonfield = $field['fields_name'];
             }
         }
 
@@ -700,8 +704,13 @@ class Get_ajax extends MY_Controller
                 $this->db->select("{$data['maps']['entity_name']}_id as id, ST_Y({$latlng_field}::geometry) AS lat, ST_X({$latlng_field}::geometry) AS lon")
                     ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
             } else {
-                $this->db->select("{$data['maps']['entity_name']}_id as id, substring_index ( $latlng_field,';',1 )  AS lat, substring_index ( $latlng_field,';',-1 )  AS lon")
-                    ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+                if ($latlng_field) {
+                    $this->db->select("{$data['maps']['entity_name']}_id as id, substring_index ( $latlng_field,';',1 )  AS lat, substring_index ( $latlng_field,';',-1 )  AS lon")
+                        ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+                } else {
+                    $this->db->select("{$data['maps']['entity_name']}_id as id, $latfield  AS lat, $lonfield  AS lon")
+                        ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+                }
             }
 
 
@@ -744,7 +753,8 @@ class Get_ajax extends MY_Controller
 
                 // Elaboro le coordinate
                 //debug($mark, true);
-                if (!empty($mark['latlng']) && isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
+                if ((!empty($mark['latlng']) || !empty($mark['lat'])) && isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
+
                     $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                     $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     $mark['link'] = ($link ? $link . '/' . $mark['id'] : '');
