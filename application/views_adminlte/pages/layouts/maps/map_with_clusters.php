@@ -29,6 +29,9 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
 
 <script>
+    var token = JSON.parse(atob($('body').data('csrf')));
+    var token_name = token.name;
+    var token_hash = token.hash;
     $(function() {
 
         var markers = null;
@@ -60,7 +63,14 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
              * CARICO I MARKER VIA AJAX
              */
             if (!where) {
-                where = {};
+                where = {
+                    [token_name]: token_hash
+                };
+            } else {
+                where.push({
+                    "name": token_name,
+                    "value": token_hash
+                });
             }
 
             if (markers !== null) {
@@ -72,6 +82,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                 type: "POST",
                 data: where,
                 dataType: "json",
+
                 url: '<?php echo base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}"); ?>/<?php if (isset($value_id)) echo $value_id; ?>',
                 success: function(data) {
                     // Ciclo i Marker
