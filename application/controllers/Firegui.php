@@ -330,6 +330,23 @@ class Firegui extends MY_Controller
         echo json_encode(dirToArray(APPPATH . (empty($_SERVER['FIREGUI_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['FIREGUI_CLIENT_TEMPLATE']) . '/custom/'));
     }
 
+    public function getModulesCustomViews()
+    {
+        $modules_views = [];
+
+        $modules = dirToArray(APPPATH . '/modules');
+
+        if ($modules[0] == '.DS_Store') {
+            unset($modules[0]);
+        }
+
+        foreach ($modules as $module_key => $module_value) {
+            $modules_views[$module_key] = $module_value['views'];
+        }
+
+        echo json_encode($modules_views);
+    }
+
     public function clearCache()
     {
         $this->apilib->clearCache();
