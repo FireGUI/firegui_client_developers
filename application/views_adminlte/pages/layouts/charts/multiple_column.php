@@ -2,15 +2,15 @@
 $chartId = "container_chartjs_{$chart['charts_id']}";
 // --- Series
 $series = ['labels' => [], 'datasets' => []];
-$colors = ['blue', 'red', 'green', 'yellow', 'black', 'orange', 'grey'];
-//debug($chart_data);
+$colors = ['blue', 'red', 'green', 'yellowgreen', 'black', 'orange', 'grey'];
+
 //Column uniform
 foreach ($chart_data as $x => $chart_element_data) {
     foreach ($chart_element_data['data'] as $dato) {
         $xes[$dato['x']] = $dato['x'];
     }
 }
-
+//Fill empty columns for each chart's element
 foreach ($chart_data as $x => $chart_element_data) {
     if (!array_key_exists('series', $chart_element_data)) {
         $chart_element_data['series'][$chart_element_data['element']['charts_elements_label']] = [];
@@ -28,11 +28,7 @@ foreach ($chart_data as $x => $chart_element_data) {
 }
 
 
-
 foreach ($chart_data as $x => $chart_element_data) {
-
-    // ksort($chart_element_data['series'], SORT_STRING);
-    // debug($chart_element_data['series'], true);
 
     foreach ($chart_element_data['series'] as $name => $data) {
         ksort($data);
