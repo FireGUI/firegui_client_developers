@@ -15,3 +15,7 @@ $updates['1.6.9.7'] = [
 $updates['1.6.7.5'] = [
     'include' => ['1.6.7.5_custom_views_migration.php'],
 ];
+
+$updates['1.8.9'] = [
+    'include' => ['1.8.9_grids_action_migration.php'],
+];
