@@ -132,9 +132,13 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <!-- HIGHCHARTS -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v=" . VERSION); ?>"></script>
+
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/chart.js-2.9.3/dist/Chart.js?v=" . VERSION); ?>"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/chart.js-2.9.3/dist/Chart.css?v=" . VERSION); ?>" />
 
 <script>
     $(function() {

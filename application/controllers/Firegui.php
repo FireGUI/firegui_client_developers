@@ -245,30 +245,14 @@ class Firegui extends MY_Controller
             }
         }
     }
-    // public function test_update_php_code($version)
-    // {
-    //     $files = scandir(FCPATH . 'application/migrations');
-
-
-    //     foreach ($files as $file) {
-    //         if ($file == 'update_php_code.php') {
-    //             // Check if exist an update_db file to execute update queries
-    //             include(FCPATH . 'application/migrations/update_php_code.php');
-
-    //             if (array_key_exists($version, $updates)) {
-    //                 //debug($updates[$version], true);
-    //                 foreach ($updates[$version] as $key_type => $code) {
-    //                     if ($key_type == 'eval') {
-    //                         eval($code);
-    //                     } elseif ($key_type == 'include') { //201910070447 - MP - Added possibility to execute a custom code when updating client
-    //                         //debug($code, true);
-    //                         include(FCPATH . 'application/migrations/' . $code);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    public function test_migration($migration_file)
+    {
+        if ($this->auth->is_admin()) {
+            include(FCPATH . 'application/migrations/' . $migration_file . '.php');
+        } else {
+            die('Must be logged in');
+        }
+    }
     public function get_client_version()
     {
         $check = $this->db->where('meta_data_key', 'db_version')->get('meta_data')->row_array();
