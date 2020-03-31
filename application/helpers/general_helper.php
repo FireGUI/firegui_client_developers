@@ -840,6 +840,10 @@ if (!function_exists('send_telegram_message')) {
     function send_telegram_message($botid, $chatid, $text)
     {
         $ch = curl_init();
+        //Bot id must start with "bot".
+        if (strpos($botid, 'bot') !== 0) {
+            $botid = 'bot' . $botid;
+        }
         $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
         curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/$botid/sendmessage");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -856,7 +860,6 @@ if (!function_exists('log_error_slack')) {
     function log_error_slack($message, $channel = '#log_crm')
     {
         return false;
-        
     }
 }
 
@@ -1018,7 +1021,6 @@ if (!function_exists('send_telegram_log')) {
     function send_telegram_log($chatid, $text)
     {
         return false;
-        
     }
 }
 if (!function_exists('my_version_compare')) {
