@@ -1,12 +1,10 @@
-Changelog version 1.8.9
+Changelog version 1.9.0
  
-Added getModulesCustomViews method in Firegui controller
-Added test migrations function
-Added migration file for grids delete function
-Added chart.js library
-Multiple column chart changed with chart.js
-Code commented and formatted
-Generazione zip in corso...
-Pubblicazione release in corso su FireGUI Clients Releases...
-Commit e push della repository
-Removed .gitignore from js libraries
+Css fix for sidebar tree menu with active element
+Translated system messages
+Added code comments
+Bugfix for filter form with write permissions disabled
+Converted multiple column to apexcharts
+Added moment.js library
+Added apexcharts library
+Added apexchars customizable chart
