@@ -81,3 +81,6 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
     padding-left:10px;
     padding-bottom:10px;
 }
+.sidebar-menu.tree > li.active > a > span.selected {
+    visibility: hidden;
+}
