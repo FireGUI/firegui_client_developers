@@ -168,7 +168,7 @@ class Main extends MY_Controller
     }
 
     /**
-     * Esegue il render di un form
+     * Form rendering
      */
     public function form($form_id, $value_id = null)
     {
@@ -193,8 +193,8 @@ class Main extends MY_Controller
             // ...
             $content = $preFormHtml . $formHtml . $postFormHtml;
         } else {
-            // Non posso scrivere sull'entità
-            $content = str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+            // Cannot write to entity
+            $content = str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
         }
 
         if ($this->input->get('_raw')) {
