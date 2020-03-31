@@ -2779,12 +2779,12 @@ class Datab extends CI_Model
                 // Ci sono problemi se inizializzo una datatable senza colonne!!
                 if (empty($grid['grids_fields'])) {
                     //debug($grid);
-                    return sprintf('*** Grid `%s` senza campi ***', $contentRef);
+                    return sprintf(t('*** Grid `%s` without fields ***'), $contentRef);
                 }
 
                 // Controllo i permessi per questa grid
                 if (!$this->can_read_entity($grid['grids']['grids_entity_id'])) {
-                    return 'Non disponi dei permessi sufficienti per leggere i dati.';
+                    return t('You are not allowed to do read data from this entity.');
                 }
 
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
@@ -2794,7 +2794,7 @@ class Datab extends CI_Model
                 }
 
                 /*                 * *********************************************************
-                 * Se c'è una subentity aggiungo l'eventuale data aggiuntiva
+                 * If there's a subentity, load subentity data also
                  */
                 $sub_grid = null;
                 if ($grid['grids']['grids_sub_grid_id']) {
@@ -2824,9 +2824,10 @@ class Datab extends CI_Model
                 $form_id = $contentRef;
                 $form = $this->get_form($form_id, $value_id);
                 if ($form) {
-                    // Controllo i permessi per questa grid
-                    if (!$this->can_write_entity($form['forms']['forms_entity_id'])) {
-                        return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+
+                    // Check permissions for this form
+                    if (!in_array($form['forms']['forms_layout'], ['filter_select']) && !$this->can_write_entity($form['forms']['forms_entity_id'])) {
+                        return str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
                     }
 
                     return $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", array('form' => $form, 'ref_id' => $contentRef, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
