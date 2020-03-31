@@ -835,7 +835,7 @@ if (!function_exists('array_diff_assoc_recursive')) {
 }
 
 
-if (!function_exists('log_error_slack')) {
+if (!function_exists('send_telegram_message')) {
 
     function send_telegram_message($botid, $chatid, $text)
     {
@@ -856,22 +856,7 @@ if (!function_exists('log_error_slack')) {
     function log_error_slack($message, $channel = '#log_crm')
     {
         return false;
-        //debug($message,true);
-        $ch = curl_init("https://slack.com/api/chat.postMessage");
-        $data = http_build_query([
-            "token" => "xoxp-7208707362-236202706322-314190044708-27aaf1b9d35c6f12210277526d741c46",
-            "channel" => $channel, //"#mychannel",
-            "text" => $message, //"Hello, Foo-Bar channel message.",
-            "username" => "MySlackBot",
-        ]);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result;
+        
     }
 }
 
@@ -1032,22 +1017,8 @@ if (!function_exists('send_telegram_log')) {
 
     function send_telegram_log($chatid, $text)
     {
-        $CI = get_instance();
-
-        // Se sono dentro come superadmin non invio messaggi di errore su telegram
-
-        $ch = curl_init();
-        $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
-        curl_setopt($ch, CURLOPT_URL, 'https://api.telegram.org/bot627086827:AAFdhz-8khe3OS4sCH7DcqfZ7miih-__h_Q/sendmessage');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        $result = curl_exec($ch);
-
-        //die($result);
-
-        curl_close($ch);
-        return $result;
+        return false;
+        
     }
 }
 if (!function_exists('my_version_compare')) {
