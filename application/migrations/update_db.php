@@ -22,3 +22,7 @@ $updates['1.7.3'] = [
     "ALTER TABLE languages DROP COLUMN languages_default;",
     "DELETE FROM fields WHERE fields_name = 'languages_default'"
 ];
+//Updates to 1.9.1
+$updates['1.9.1'] = [
+    "UPDATE entity SET entity_type = 1 WHERE entity_name = 'users'"
+];

@@ -159,6 +159,10 @@ class Firegui extends MY_Controller
         $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
         $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
         $new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
+
+        //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
+        log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
+        //die("Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
         $newfile = './tmp_file.zip';
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
