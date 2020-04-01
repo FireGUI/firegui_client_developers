@@ -1,22 +1,30 @@
+<style>
+    .list-group-item>span {
+        color: #3c8dbc !important;
+    }
 
-<?php if (isset($grid_data['data'])): ?>
-    <?php foreach ($grid_data['data'] as $dato): ?>
-        
-            <dl <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>" class="dl-horizontal dl-horizontal-compact static-vertical-grid <?php echo $grid['grids']['grids_append_class']; ?>" >
-                <?php foreach ($grid['grids_fields'] as $field): ?>
-                    <?php if(($_field = trim($this->datab->build_grid_cell($field, $dato)))): ?>
-                        <dt class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $field['grids_fields_column_name']; ?>:</dt>
-                        <dd class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $_field; ?></dd>
-                        <hr>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-                <?php if (grid_has_action($grid['grids'])): ?>
-                    <dt class="dl-actions-label">Azioni disponibili</dt>
-                    <dd class="dl-actions">
-                        <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
-                    </dd>
+    .list-group-item>a {
+        font-weight: bold !important;
+    }
+</style>
+<?php if (isset($grid_data['data'])) : ?>
+    <?php foreach ($grid_data['data'] as $dato) : ?>
+        <ul class="list-group <?php echo $grid['grids']['grids_append_class']; ?>" <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
+            <?php foreach ($grid['grids_fields'] as $field) : ?>
+                <?php if (($_field = trim($this->datab->build_grid_cell($field, $dato)))) : ?>
+                    <li class="list-group-item">
+                        <b class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $field['grids_fields_column_name']; ?></b>
+                        <span class="pull-right <?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $_field; ?></span>
+                    </li>
                 <?php endif; ?>
-            </dl>
-        
+            <?php endforeach; ?>
+
+            <?php if (grid_has_action($grid['grids'])) : ?>
+                <li class="list-group-item">
+                    <b class="dl-actions"><?php e('Actions'); ?></b>
+                    <span class="pull-right dl-actions-label" style="word-wrap: break-word !important"><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></span>
+                </li>
+            <?php endif; ?>
+        </ul>
     <?php endforeach; ?>
 <?php endif; ?>
