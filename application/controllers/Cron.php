@@ -16,8 +16,8 @@ class Cron extends MY_Controller
     public function test_now($id, $rollback = 0)
     {
 
-        if ($this->auth->guest()) {
-            die('Devi essere amministratore per eseguire cron');
+        if (!$this->auth->is_admin()) {
+            e('You must be logged in as admin to run cronjobs.');
         }
 
         $cron = $this->db->get_where('crons', ['crons_id' => $id])->row_array();
@@ -91,9 +91,9 @@ class Cron extends MY_Controller
         $allCrons = $this->db->get('crons')->result_array();
         $idxCrons = array_combine(array_key_map($allCrons, 'crons_id'), array_key_map($allCrons, 'crons_title'));
 
-        //ob_start();
+        ob_start();
         // =============== OUTPUT ===============
-        /*echo '<pre>';
+        echo '<pre>';
         echo 'Data fine: ', date('Y-m-d H:i:s');
         echo PHP_EOL, PHP_EOL, 'Attivi alla partenza', PHP_EOL;
         print_r(array_map(function ($c) use ($idxCrons) {
@@ -109,7 +109,7 @@ class Cron extends MY_Controller
         print_r(array_map(function ($c) use ($idxCrons) {
             return sprintf('(%s) %s', $c, $idxCrons[$c]);
         }, $skipped));
-        echo '</pre>';*/
+        echo '</pre>';
         // =============== OUTPUT ===============
         //
         // ============= Start MAIL_QUEUE =============
@@ -132,32 +132,39 @@ class Cron extends MY_Controller
         // ============= End MAIL_QUEUE =============
 
         // ============= Start Delete logs =============
-        if ($this->db->dbdriver != 'postgre') {
-            $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
-            $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
-            $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
+        //Execute only on time a day
+        if (date('H') == 11) {
+            if ($this->db->dbdriver != 'postgre') {
+                $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
+                $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
+                $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
 
-            //$this->db->query('OPTIMIZE TABLE ci_sessions'); // Warning!! If you enable this line you will reduce server performance
+                //$this->db->query('OPTIMIZE TABLE ci_sessions'); // Warning!! If you enable this line you will reduce server performance
 
-        } else {
-            $this->db
-                ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
-                ->delete('log_api');
-            $this->db
-                ->where("log_crm_time < NOW() - INTERVAL '6 MONTH'", null, false)
-                ->delete('log_crm');
-            $this->db
-                ->where("to_timestamp(timestamp) < NOW() - INTERVAL '1 MONTH'", null, false)
-                ->delete('ci_sessions');
+            } else {
+                $this->db
+                    ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
+                    ->delete('log_api');
+                $this->db
+                    ->where("log_crm_time < NOW() - INTERVAL '6 MONTH'", null, false)
+                    ->delete('log_crm');
+                $this->db
+                    ->where("to_timestamp(timestamp) < NOW() - INTERVAL '1 MONTH'", null, false)
+                    ->delete('ci_sessions');
+            }
         }
         // ============= End Delete logs =============
 
-        //$out = ob_get_clean();
+        $out = ob_get_clean();
         //echo $out;
 
-        // Report via mail
+        // Send output mail
         if (self::ENABLE_TRACKING) {
             mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
+        }
+        //Send output to the browser if running cron check from client (not cli) and user is logged in as admin
+        if ($this->auth->is_admin()) {
+            echo $out;
         }
     }
 
@@ -179,11 +186,11 @@ class Cron extends MY_Controller
                 $this->cron_php_code($cron);
                 break;
             default:
-                echo "Type: " . $cron['crons_type'] . " Non gestito";
+                echo "Type: " . $cron['crons_type'] . " unknown";
                 break;
         }
     }
-
+    //TODO: should be private?
     public function cron_php_code($cron)
     {
         eval($cron['crons_text']);
