@@ -91,10 +91,9 @@ class Cron extends MY_Controller
         $allCrons = $this->db->get('crons')->result_array();
         $idxCrons = array_combine(array_key_map($allCrons, 'crons_id'), array_key_map($allCrons, 'crons_title'));
 
-        ob_start();
-
+        //ob_start();
         // =============== OUTPUT ===============
-        echo '<pre>';
+        /*echo '<pre>';
         echo 'Data fine: ', date('Y-m-d H:i:s');
         echo PHP_EOL, PHP_EOL, 'Attivi alla partenza', PHP_EOL;
         print_r(array_map(function ($c) use ($idxCrons) {
@@ -110,10 +109,10 @@ class Cron extends MY_Controller
         print_r(array_map(function ($c) use ($idxCrons) {
             return sprintf('(%s) %s', $c, $idxCrons[$c]);
         }, $skipped));
-        echo '</pre>';
+        echo '</pre>';*/
         // =============== OUTPUT ===============
         //
-        // ============= MAIL_QUEUE =============
+        // ============= Start MAIL_QUEUE =============
         $model = $this->config->item('crm_name') . '_mail_model';
         if (file_exists(APPPATH . "models/$model.php")) {
 
@@ -130,15 +129,16 @@ class Cron extends MY_Controller
         } else {
             $this->mail_model->flushEmails();
         }
-        // ============= MAIL_QUEUE =============
+        // ============= End MAIL_QUEUE =============
 
-        // ============= SVUOTAMENTO LOGS VARI =============
+        // ============= Start Delete logs =============
         if ($this->db->dbdriver != 'postgre') {
             $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
             $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
             $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
-            //$this->db->query('DELETE FROM ci_sessions WHERE  timestamp < NOW() - INTERVAL 1 MONTH');
-            $this->db->query('OPTIMIZE TABLE ci_sessions');
+
+            //$this->db->query('OPTIMIZE TABLE ci_sessions'); // Warning!! If you enable this line you will reduce server performance
+
         } else {
             $this->db
                 ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
@@ -150,10 +150,10 @@ class Cron extends MY_Controller
                 ->where("to_timestamp(timestamp) < NOW() - INTERVAL '1 MONTH'", null, false)
                 ->delete('ci_sessions');
         }
-        // ============= SVUOTAMENTO LOGS VARI =============
+        // ============= End Delete logs =============
 
-        $out = ob_get_clean();
-        echo $out;
+        //$out = ob_get_clean();
+        //echo $out;
 
         // Report via mail
         if (self::ENABLE_TRACKING) {
