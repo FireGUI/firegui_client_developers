@@ -55,7 +55,11 @@
                         }
                     } elseif (!empty($custom_action['grids_actions_type']) && 'delete' == $custom_action['grids_actions_type']) {
                         $confirm = true;
-                        $url = "{base_url}db_ajax/generic_delete/{$grid['entity_name']}/$id";
+                        if (!empty($grid['grids']['entity_name'])) {
+                            $url = "{base_url}db_ajax/generic_delete/{$grid['grids']['entity_name']}/$id";
+                        } else {
+                            $url = "{base_url}db_ajax/generic_delete/{$grid['entity_name']}/$id";
+                        }
                     } elseif (!empty($custom_action['grids_actions_type']) && 'edit_form' == $custom_action['grids_actions_type']) {
                         $url = "{base_url}main/form/{$custom_action['grids_actions_form']}/$id";
                         if ('modal' == $custom_action['grids_actions_mode']) {

@@ -497,8 +497,9 @@ function loadModal(url, data, callbackSuccess, method) {
         data_post.push({ "name": token_name, "value": token_hash });
         data = data_post;
     } else {
-        data = Object.entries(data);
+        //data = Object.entries(data);
         data.push({ "name": token_name, "value": token_hash });
+
     }
 
     /*** La modale è già aperta? */
