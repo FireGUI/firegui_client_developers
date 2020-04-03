@@ -1,9 +1,10 @@
-Changelog version 1.9.1
+Changelog version 1.9.0
  
-New static vertical styles
-Updated cron check method. Now runs one a day
-Added log_message for updateClient
-Migration: changed users from system to default entity type
-Code commented
-Cron check optimize
-Auto-append “bot” to botid for telegram if missing
+Css fix for sidebar tree menu with active element
+Translated system messages
+Added code comments
+Bugfix for filter form with write permissions disabled
+Converted multiple column to apexcharts
+Added moment.js library
+Added apexcharts library
+Added apexchars customizable chart
