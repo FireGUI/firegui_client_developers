@@ -41,7 +41,6 @@ $(document).ready(function () {
             $('.js-bulk-first-option', grid_container).html('');
             $('.js-bulk-action option', grid_container).attr('disabled', 'disabled');
         } else {
-            console.log("UAI?");
             $('.js-bulk-first-option', grid_container).html(chkbx_ids.length + ' selected');
             $('.js-bulk-action option', grid_container).removeAttr('disabled');
         }
@@ -54,11 +53,16 @@ $(document).ready(function () {
                 return $(this).val();
             }).get();
 
+
             if ($(this).val() == 'bulk_edit') {
                 var data_post = [];
-                data_post.push({ "name": token_name, "value": token_hash });
-                data_post.push({ "name": "ids", "value": chkbx_ids });
+                //Already pushed by loadModal function
+                //data_post.push({ "name": token_name, "value": token_hash });
+                for (var i in chkbx_ids) {
+                    data_post.push({ "name": 'ids[]', "value": chkbx_ids[i] });
+                }
                 var form_id = $(this).find(":selected").data('form_id');
+
                 loadModal(base_url + 'get_ajax/modal_form/' + form_id, data_post, null, 'POST');
             } else if ($(this).val() == 'bulk_delete') {
 
