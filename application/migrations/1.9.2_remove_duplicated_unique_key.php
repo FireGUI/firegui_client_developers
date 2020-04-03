@@ -1,0 +1,1 @@
+tabelle: hooks e api_manager_permissions
