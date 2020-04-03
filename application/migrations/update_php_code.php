@@ -19,6 +19,3 @@ $updates['1.6.7.5'] = [
 $updates['1.8.9'] = [
     'include' => ['1.8.9_grids_action_migration.php'],
 ];
-$updates['1.9.2'] = [
-    'include' => ['1.9.2_remove_duplicated_unique_key.php'],
-];
