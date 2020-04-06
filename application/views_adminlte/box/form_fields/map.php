@@ -57,7 +57,7 @@ if ($value) {
 
 
         map = L.map('<?php echo $map; ?>', {
-            center: new L.LatLng(46.0649520, 13.2374247),
+            center: new L.LatLng(40.725249, -74.140363),
             zoom: 14,
             layers: [
                 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
