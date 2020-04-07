@@ -309,7 +309,7 @@ function initTableAjax(grid) {
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
         oLanguage: {
-            sUrl: base_url_scripts + "script/datatable.transl.json"
+            sUrl: base_url_scripts + "script/dt_translations/datatable." + lang_short_code + ".json"
         },
         fnServerParams: function (aoData) {
             aoData.push({ "name": token_name, "value": token_hash });
