@@ -185,3 +185,5 @@ $lang['No'] = 'No';
 $lang['si'] = 'yes';
 $lang['no'] = 'no';
 $lang['Remove selection'] = 'Rimuovi selezione';
+$lang['Remove marker?'] = 'Rimuovere il marker?';
+$lang['View details'] = 'Visualizza dettagli';
