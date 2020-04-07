@@ -143,7 +143,11 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
                     $.each(data, function(i, val) {
 
-                        var html = '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '" target="_blank">Visualizza Dettagli</a>';
+                        var html = '<b>' + val.title + '</b><br />';
+                    if (typeof val.description !== "undefined") {
+                        html += val.description
+                    }
+                    html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
                         var icon;
                         if (val.marker) {
                             icon = L.icon({

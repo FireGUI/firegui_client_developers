@@ -146,12 +146,6 @@ if ($value) {
             geocoding.geocode(searchInput.val());
         });
 
-
-
-
-
-
-
         function createMarker(latlng) {
             if (map !== null) {
                 map.marker = L.marker(latlng, {
@@ -159,7 +153,7 @@ if ($value) {
                 }).on('dragend', function(e) {
                     updateLatlngInput();
                 }).on('click', function(e) {
-                    var result = confirm('Rimuovere il marker?');
+                    var result = confirm(<?php e('Remove marker?'); ?>);
                     if (result) {
                         destroyMarker();
                     }
