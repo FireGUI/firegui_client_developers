@@ -661,6 +661,7 @@ class Get_ajax extends MY_Controller
                 $sw_lng = $bounds['sw_lng'];
 
                 if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
+
                     $where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
                 }
             }
@@ -673,8 +674,8 @@ class Get_ajax extends MY_Controller
                 $sw_lng = $bounds['sw_lng'];
 
                 if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
-                    //TODO...
-                    //$where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
+                    //TODO: check mariadb lat/long inversion
+                    $where[] = "ST_Intersects(ST_GeomCollFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
                 }
             }
         }
