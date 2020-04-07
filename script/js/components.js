@@ -273,7 +273,7 @@ function initComponents() {
             minimumInputLength: 1,
             //templateResult: formatRepo,
             templateSelection: formatRepoSelection,
-            language: "it"
+            language: lang_short_code
         });
     });
 
