@@ -309,7 +309,7 @@ class Apilib
         
         return $cleared;*/
         // 20200310 - Michael E. - Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
-                
+
         $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
         $this->cache->clean();
         file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
@@ -499,7 +499,7 @@ class Apilib
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
 
             //$this->cache->clean();
-$this->clearCache();
+            $this->clearCache();
             // Prima di uscire voglio ripristinare il post precedentemente modificato
             $_POST = $this->originalPost;
 
@@ -581,7 +581,7 @@ $this->clearCache();
                 'value_id' => $id
             ]);
 
-           $this->clearCache();
+            $this->clearCache();
 
             $_POST = $this->originalPost;
 
@@ -744,8 +744,9 @@ $this->clearCache();
     }
     /**
      * Alias function
-    */
-    public function cleanCache() {
+     */
+    public function cleanCache()
+    {
         $this->clearCache();
     }
 
@@ -1874,7 +1875,11 @@ $this->clearCache();
         }
 
         if (isset($exp[0]) && isset($exp[1]) && $exp[0] !== '' && $exp[1] !== '') {
-            return $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
+            if ($this->db->dbdriver == 'postgre') {
+                return $this->db->query("SELECT ST_GeographyFromText('POINT({$exp[1]} {$exp[0]})') AS geography")->row()->geography;
+            } else {
+                return $this->db->query("SELECT ST_GeomCollFromText('POINT({$exp[0]} {$exp[1]})') AS geography")->row()->geography;
+            }
         } else {
             // Ultima spiaggia: potrei aver passato una geography già pronta:
             // una geography non è una stringa numerica..
@@ -1937,7 +1942,11 @@ $this->clearCache();
                         $center = $circle_expl[0];
                         $radius = $circle_expl[1];
                         //Creo la geometry polygon che rappresenta il cerchio
-                        $points = json_decode($this->db->query("SELECT ST_AsGeoJSON(ST_Buffer(ST_GeographyFromText('POINT($center)'), $radius)) as circle")->row()->circle, true)['coordinates'];
+                        if ($this->db->dbdriver == 'postgre') {
+                            $points = json_decode($this->db->query("SELECT ST_AsGeoJSON(ST_Buffer(ST_GeographyFromText('POINT($center)'), $radius)) as circle")->row()->circle, true)['coordinates'];
+                        } else {
+                            $points = json_decode($this->db->query("SELECT ST_AsGeoJSON(ST_Buffer(ST_GeomCollFromText('POINT($center)'), $radius)) as circle")->row()->circle, true)['coordinates'];
+                        }
                         //debug($points,true);
                         $points_space_imploded = [];
                         foreach ($points[0] as $point) {
