@@ -1,10 +1,16 @@
-Changelog version 1.9.0
+Changelog version 1.9.2
  
-Css fix for sidebar tree menu with active element
-Translated system messages
-Added code comments
-Bugfix for filter form with write permissions disabled
-Converted multiple column to apexcharts
-Added moment.js library
-Added apexcharts library
-Added apexchars customizable chart
+Bugfix crm initialization if language default is not defined
+Polygon field introduced in beta
+Bugfix for mail headers when no header is passed
+Added Leaflet 1.7 libraries
+Added {base_url} placeholder in mail template
+Fixed datatables translations json
+Started compatibility from postgis to mygis
+Fix translations
+Fix undefined in maps tooltips
+Default map position centered in New York
+Bugfix actions
+Bugfix bulk grid
+Bugfix components
+New static verticals
