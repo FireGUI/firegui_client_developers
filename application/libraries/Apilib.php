@@ -1705,9 +1705,6 @@ class Apilib
 
 
             case 'polygon':
-                // Lancia l'utility per filtrare input di tipo geography
-                $value = $this->filterInputPolygon($value);
-                break;
             case 'polygon_multi':
                 // Lancia l'utility per filtrare input di tipo geography
                 $value = $this->filterInputPolygonMulti($value);
@@ -1977,7 +1974,13 @@ class Apilib
                 // V3
                 $debug = $this->db->db_debug;
                 $this->db->db_debug = false;
-                $query = $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_CollectionExtract(ST_GeographyFromText('$multipolygon')::geometry, 3))))::geography AS geography");
+                if ($this->db->dbdriver == 'postgre') {
+                    $query = $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_CollectionExtract(ST_GeographyFromText('$multipolygon')::geometry, 3))))::geography AS geography");
+                } else {
+                    $query = $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_CollectionExtract(ST_GeographyFromText('$multipolygon')::geometry, 3))))::geography AS geography");
+                    //debug($this->db->last_query());
+                }
+
 
                 if (!$query) {
                     //return null;  // Decommentare per task di importazione, poi ripristinare

@@ -90,6 +90,45 @@ script  src="<?php echo base_url_scripts("script/global/plugins/datatables/media
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
 
+<!-- LEAFLET-DRAW-LIBRARY-JS !-->
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Leaflet.draw.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Leaflet.Draw.Event.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Toolbar.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Tooltip.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/ext/GeometryUtil.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/ext/LatLngUtil.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/ext/LineUtil.Intersect.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/ext/Polygon.Intersect.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/ext/Polyline.Intersect.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/ext/TouchEvents.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/DrawToolbar.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.Feature.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.SimpleShape.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.Polyline.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.Marker.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.Circle.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.CircleMarker.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.Polygon.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/draw/handler/Draw.Rectangle.js?v=" . VERSION); ?>"></script>
+
+
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/EditToolbar.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/EditToolbar.Edit.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/EditToolbar.Delete.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Control.Draw.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.Poly.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.SimpleShape.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.Rectangle.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.Marker.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.CircleMarker.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.Circle.js?v=" . VERSION); ?>"></script>
+
+
 <script src="<?php echo base_url_template('script/global/plugins/dropzone/dropzone.js'); ?>"></script>
 <script>
     Dropzone.autoDiscover = false;

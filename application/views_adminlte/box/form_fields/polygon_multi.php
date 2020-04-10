@@ -7,7 +7,7 @@ if ($value) {
     $json_data = $this->db->query("SELECT ST_AsGeoJSON('{$value}'::geography) AS json_data")->row()->json_data;
 
     $multipolygon = json_decode($json_data, true)['coordinates'];
-//debug($multipolygon,true);
+    //debug($multipolygon,true);
     $polygons = $circles = [];
     foreach ($multipolygon as $polygon) {
         //debug($polygon,true);
@@ -27,8 +27,8 @@ if ($value) {
             }, $polygon);
             //debug($points,true);
             $polygon_postgis_str = 'POLYGON((' . implode(',', array_map(function ($point) {
-                                return implode(' ', $point);
-                            }, $points)) . '))';
+                return implode(' ', $point);
+            }, $points)) . '))';
             $centroid = $this->db->query("SELECT ST_Centroid(ST_GeographyFromText('$polygon_postgis_str')::geometry) as centroid")->row()->centroid;
 
             foreach ($points as $point) {
@@ -66,13 +66,12 @@ if ($value) {
             <button class="btn btn-default" type="button"><i class="fas fa-search"></i></button>
         </span>
     </div>
-    <br/>
+    <br />
     <div style="max-width: 100%; height: 300px; max-height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
 <?php echo $help; ?>
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
         function savePolygons() {
 
             var bounds = [];
@@ -125,13 +124,13 @@ if ($value) {
 
         var map = null;
 
-        $('#<?php echo $map; ?>').on('resize', function () {
+        $('#<?php echo $map; ?>').on('resize', function() {
             if (map !== null) {
                 map.invalidateSize();
             }
         });
 
-        setTimeout(function () {
+        setTimeout(function() {
             var w = $('#<?php echo $map; ?>').width();
             if (w > 0) {
                 $('#<?php echo $map; ?>').height(w);
@@ -157,21 +156,21 @@ if ($value) {
             allowIntersection: false,
             shapeOptions: {
                 color: '#0000FF',
-//                weight: 10,
-//                smoothFactor: 1,
-//                noClip: false,
-//                stroke: true,
-//                opacity: 0.5,
-//                fill:true,
-//                fillColor: '#000099',
-//                fillOpacity: 0.5,
-//                fillRule: 'nonzero', //evenodd
-//                dashArray: null, //
-//                lineCap: null,
-//                lineJoin: null,
-//                clickable: true,
-//                pointerEvents: null,
-//                className: '',
+                //                weight: 10,
+                //                smoothFactor: 1,
+                //                noClip: false,
+                //                stroke: true,
+                //                opacity: 0.5,
+                //                fill:true,
+                //                fillColor: '#000099',
+                //                fillOpacity: 0.5,
+                //                fillRule: 'nonzero', //evenodd
+                //                dashArray: null, //
+                //                lineCap: null,
+                //                lineJoin: null,
+                //                clickable: true,
+                //                pointerEvents: null,
+                //                className: '',
             },
             drawError: {
                 color: '#990000', // Color the shape will turn when intersects
@@ -179,7 +178,7 @@ if ($value) {
             },
             guidelineDistance: 10,
             metric: true,
-//            repeatMode: false,
+            //            repeatMode: false,
             selectedPathOptions: {
                 maintainColor: true,
                 opacity: 0.3,
@@ -209,77 +208,84 @@ if ($value) {
             }
         }));
 
-        map.on('draw:created', function (event) {
+        map.on('draw:created', function(event) {
             var layer = event.layer;
             drawnItems.addLayer(layer);
             savePolygons();
         });
-        map.on('draw:edited', function (event) {
+        map.on('draw:edited', function(event) {
             savePolygons();
         });
 
-        map.on('draw:deleted', function () {
+        map.on('draw:deleted', function() {
             savePolygons();
         });
 
-<?php if ($value) : ?>
-    <?php foreach ($polygons as $polygon) : ?>
-        <?php if ($polygon['type'] == 'polygon') : ?>
+        <?php if ($value) : ?>
+            <?php foreach ($polygons as $polygon) : ?>
+                <?php if ($polygon['type'] == 'polygon') : ?>
                     var saved_polygon = L.polygon(<?php echo json_encode($polygon['points']); ?>, polygonOpt);
                     drawnItems.addLayer(saved_polygon);
                     map.addLayer(saved_polygon);
-        <?php elseif ($polygon['type'] == 'circle') : ?>
+                <?php elseif ($polygon['type'] == 'circle') : ?>
                     var saved_circle = L.circle(L.latLng(<?php echo $polygon['center']; ?>), <?php echo $polygon['radius']; ?>, polygonOpt);
                     drawnItems.addLayer(saved_circle);
                     map.addLayer(saved_circle);
-        <?php endif; ?>
-    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
             savePolygons();
-<?php endif; ?>
+        <?php endif; ?>
 
-        $(window).on('resize', function () {
+        $(window).on('resize', function() {
             map.invalidateSize();
             savePolygons();
         });
-        
-        
+
+
         /*
          * Geocoding
          */
         var searchInput = $('.js_map_search', $('#<?php echo $map; ?>').parent());
         var geocoding = new L.Geocoding({
             providers: {
-                custom: function (arg) {
+                custom: function(arg) {
                     var that = this,
-                            query = arg.query,
-                            cb = arg.cb;
+                        query = arg.query,
+                        cb = arg.cb;
                     $.ajax({
                         url: 'https://nominatim.openstreetmap.org/search',
                         dataType: 'jsonp',
                         jsonp: 'json_callback',
-                        data: {q: query, format: 'json'}
-                    }).done(function (data) {
+                        data: {
+                            q: query,
+                            format: 'json'
+                        }
+                    }).done(function(data) {
                         if (data.length > 0) {
                             var res = data[0];
-                            map.setView(new L.LatLng(res.lat, res.lon), 12, {animate: true});
-                        } 
+                            map.setView(new L.LatLng(res.lat, res.lon), 12, {
+                                animate: true
+                            });
+                        }
                     });
                 }
             }
         });
 
         // Set custom provider default
-        geocoding.setOptions({provider: 'custom'});
+        geocoding.setOptions({
+            provider: 'custom'
+        });
         map.addControl(geocoding);
 
         // Geocoding
 
-        searchInput.on('blur', function () {
+        searchInput.on('blur', function() {
             geocoding.geocode(searchInput.val());
         });
         // disabilito l'enter
-        searchInput.on('keypress', function (e) {
-            if(e.keyCode == 13){
+        searchInput.on('keypress', function(e) {
+            if (e.keyCode == 13) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -287,9 +293,8 @@ if ($value) {
             }
         });
 
-        
-        
-        
-    });
 
+
+
+    });
 </script>
