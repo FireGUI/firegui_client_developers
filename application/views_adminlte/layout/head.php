@@ -62,6 +62,8 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <!-- LEAFLET -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v=" . VERSION); ?>" />
 
+<link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/leaflet.draw.css?v=" . VERSION); ?>" />
+
 <!-- CUSTOM CSS -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" />
 

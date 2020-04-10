@@ -107,14 +107,19 @@ class Mail_model extends CI_Model
      */
     public function sendFromData($to = '', $template, array $data = [], array $additional_headers = [])
     {
+
         if (empty($template['subject']) || empty($template['template'])) {
             return false;
         }
+        if (!empty($template['headers'])) {
+            $headers = array_merge(
+                array_filter(unserialize($template['headers'])),
+                array_filter($additional_headers)
+            );
+        } else {
+            $headers =                 array_filter($additional_headers);
+        }
 
-        $headers = array_merge(
-            array_filter(unserialize($template['headers'])),
-            array_filter($additional_headers)
-        );
 
         // Usa come replacement i parametri che non sono array, object e risorse
         $filteredData = array_filter($data, 'is_scalar');
@@ -122,8 +127,10 @@ class Mail_model extends CI_Model
         $message = str_replace_placeholders($template['template'], $filteredData);
 
         if ($this->isDeferred()) {
+
             return $this->queueEmail($to, $headers, $subject, $message);
         } else {
+
             return $this->sendEmail($to, $headers, $subject, $message);
         }
     }

@@ -174,8 +174,14 @@ class Crmentity extends CI_Model
 
 
                     // Indicizzo i risultati per id
-                    $this->db->select("{$entity_name}_id as id, ST_Y($casted_field) AS lat, ST_X($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
+                    if ($this->db->dbdriver == 'postgre') {
+                        $this->db->select("{$entity_name}_id as id, ST_Y($casted_field) AS lat, ST_X($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
+                    } else {
+                            $this->db->select("{$entity_name}_id as id, ST_X($casted_field) AS lat, ST_Y($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
+                    }
+                    
                     foreach ($this->db->get($entity_name)->result_array() as $result) {
+                        //debug($result);
                         $geographyValues[$result['id']] = ['lat' => $result['lat'], 'lng' => $result['lng']];
                     }
 
