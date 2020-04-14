@@ -2,6 +2,14 @@
     <a href="#" class="js_edit btn bg-purple btn-xs" data-id="<?php echo $id; ?>">
         <span class="fas fa-edit" style="color:white !important;"></span>
     </a>
+
+
+    <!-- 20200414 - Michael E. - Commented this action to avoid duplicated button because now VB itself creates a "Delete" button in grids -->
+    <!-- <a href="#" class="js_delete btn btn-danger btn-xs" data-id="<?php //echo $id; 
+                                                                        ?>">
+        <span class="fas fa-times" style="color:white !important;"></span>
+    </a> -->
+
     <?php if (isset($links['custom']) && $links['custom']) : ?>
         <?php
         // Filtra tutti i valori array e oggetto dall'array dati
@@ -30,6 +38,7 @@
             <?php else : ?>
 
                 <?php
+
                 $confirm = false;
                 if (empty($custom_action['grids_actions_link'])) {
                     if (!empty($custom_action['grids_actions_type']) && in_array($custom_action['grids_actions_type'], ['detail', 'edit_layout'])) {
