@@ -57,7 +57,6 @@ $form_id = $field['forms_fields_forms_id'];
     $(document).ready(function() {
         var modalContainer = $('#js_modal_container');
 
-
         var campo = $('[data-name="<?php echo $field['fields_name']; ?>"]');
         var files<?php echo $unique; ?> = [];
         var myDropzone<?php echo $unique; ?> = new Dropzone(document.querySelector('.my_dropzone<?php echo $unique; ?>'), {
@@ -71,13 +70,18 @@ $form_id = $field['forms_fields_forms_id'];
 
 
             success: function(file, response) {
+
                 var drop_obj = this;
-                var cansubmit = (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
-                if (cansubmit) {
-                    $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
-                } else {
-                    $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
+
+                if (typeof $('.modal', modalContainer).data('bs.modal') != 'undefined') {
+                    var cansubmit = (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
+                    if (cansubmit) {
+                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
+                    } else {
+                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
+                    }
                 }
+
                 $(form_selector).on('submit', function() {
                     return (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
                 });
