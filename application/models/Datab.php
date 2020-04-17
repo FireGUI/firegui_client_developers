@@ -2117,6 +2117,7 @@ class Datab extends CI_Model
         if (!($dati = $this->cache->get($cache_key))) {
 
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
+
                 return null;
             }
 
@@ -2143,6 +2144,7 @@ class Datab extends CI_Model
             }
 
             if (is_null($layout_data_detail) && $dati['layout_container']['layouts_is_entity_detail'] === DB_BOOL_TRUE) {
+                //die('test');
                 $this->layout->removeLastLayout($layout_id);
                 return null;
             }
@@ -2269,7 +2271,7 @@ class Datab extends CI_Model
     /**
      * Build della cella
      */
-    public function build_grid_cell($field, $dato, $escape_date = true)
+    public function build_grid_cell($field, $dato, $escape_date = true, $crop = true)
     {
 
         // Valuta eventuali grid fields eval e placeholder
@@ -2284,11 +2286,11 @@ class Datab extends CI_Model
 
             case 'field':
             default:
-                return $this->buildFieldGridCell($field, $dato, true, $escape_date);
+                return $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop);
         }
     }
 
-    private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true)
+    private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true)
     {
 
         // =====================================================================
@@ -2497,7 +2499,7 @@ class Datab extends CI_Model
                     $value = preg_replace(array('#<script(.*?)>(.*?)</script>#is', '/<img[^>]+\>/i'), '', $value);
                     //$value = $this->security->xss_clean($value);
 
-                    if (strlen($stripped) > 150) {
+                    if (strlen($stripped) > 150 && $crop) {
 
                         $textContainerID = md5($value);
                         $javascript = "event.preventDefault();$(this).parent().hide(); $('.text_{$textContainerID}').show();";
