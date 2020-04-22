@@ -121,6 +121,7 @@ if (!function_exists('debug')) {
             return;
         }
         echo '</select>';
+        echo '</script>';
         switch (DEBUG_LEVEL) {
             case "DEVELOP":
 

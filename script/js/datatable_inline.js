@@ -27,7 +27,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     var tr = $('<tr data-id="' + id + '"></tr>');
     //console.log(tr);
     var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
-    console.log(form_container);
+    //console.log(form_container);
     var form = $('form', form_container);
 
 
@@ -62,15 +62,14 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
                     //console.log(field_container);
 
-
                     var cloned_field = field.clone();
-                    cloned_field.attr('autocomplete', "off");
-
-
+                    cloned_field.removeClass('select2-hidden-accessible');
+                    cloned_field.removeAttr('aria-hidden');
+                    cloned_field.removeAttr('data-select2-id');
+                    cloned_field.find("span").remove();
+                    //cloned_field.attr('autocomplete', "off");
                     //cloned_field.attr('placeholder', name);
                     cloned_field.attr('placeholder', $(this).html());
-
-                    cloned_field.removeClass('select2-hidden-accessible');
 
                     if (field_container.hasClass('js_form_datetimepicker')) {
                         field_html += field_container.prop('outerHTML');
@@ -78,8 +77,6 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                         field_html += cloned_field.prop('outerHTML');
                     }
                 }
-
-                //console.log(field_html);
 
                 tr.append($('<td>' + field_html + '</td>'));
             }
@@ -101,7 +98,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 
     $('> tbody', this.grid).append(tr);
 
-    initComponents();
+    initComponents(tr);
 
 };
 

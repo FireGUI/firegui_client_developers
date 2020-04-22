@@ -8,26 +8,29 @@ var token_name = token.name;
 var token_hash = token.hash;
 
 
-function initComponents() {
+function initComponents(container) {
     /*
      * Form dates
      */
-
-    $('.js_form_datepicker').datepicker({
+    //console.log(container);
+    if (typeof container === 'undefined') {
+        container = $('body');
+    }
+    $('.js_form_datepicker', container).datepicker({
         todayBtn: 'linked',
         format: 'dd/mm/yyyy',
         todayHighlight: true,
         weekStart: 1,
         language: lang_short_code
     });
-    $('.js_form_timepicker').timepicker({
+    $('.js_form_timepicker', container).timepicker({
         autoclose: true,
         modalBackdrop: false,
         showMeridian: false,
         format: 'hh:ii',
         minuteStep: 5
     });
-    $('.js_form_datetimepicker').datetimepicker({
+    $('.js_form_datetimepicker', container).datetimepicker({
         todayBtn: 'linked',
         format: 'dd/mm/yyyy hh:ii',
         minuteStep: 5,
@@ -39,7 +42,7 @@ function initComponents() {
         language: lang_short_code
     });
 
-    $('.js_form_daterangepicker').each(function () {
+    $('.js_form_daterangepicker', container).each(function () {
         var jqDateRange = $(this);
         var sDate = $('input', jqDateRange).val();
 
@@ -76,13 +79,13 @@ function initComponents() {
             $('input', this.element).val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
         });
     });
-    $('.js_form_colorpicker').colorpicker({ format: 'hex' });
+    $('.js_form_colorpicker', container).colorpicker({ format: 'hex' });
 
 
     /*
      * Grid-filtering forms
      */
-    var forms = $('.js_filter_form');
+    var forms = $('.js_filter_form', container);
     forms.each(function () {
         var form = $(this);
         var btn = $('.js_filter_form_add_row', form).on('click', function () {
@@ -102,21 +105,21 @@ function initComponents() {
      * Select, Multiselect e AjaxSelect
      */
     try {
-        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)').each(function () {
+        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)', container).each(function () {
             var that = $(this);
             var minInput = that.data('minimum-input-length');
             that.select2({ allowClear: true, minimumInputLength: minInput ? minInput : 0 });
         });
-        $('.select2me').select2({ allowClear: true });
+        $('.select2me', container).select2({ allowClear: true });
     } catch (e) {
     }
 
-    $('.select2_standard').select2();
+    $('.select2_standard', container).select2();
 
     var fieldsSources = [];
-    $('[data-source-field]:not([data-source-field=""])').each(function () {
+    $('[data-source-field]:not([data-source-field=""])', container).each(function () {
 
-        console.log($(this).attr('name'));
+        //console.log($(this).attr('name'));
 
         // Prendo il form dell'elemento
         var jsMultiselect = $(this);
@@ -128,12 +131,12 @@ function initComponents() {
         var jqField = $('[name="' + sSourceField + '"]', jqForm);
 
 
-        console.log(sSourceField);
+        //console.log(sSourceField);
 
         jqField.on('change', function () {
 
 
-            console.log($(this));
+            //console.log($(this));
 
             var previousValue = jsMultiselect.attr('data-val').split(',');
             jsMultiselect.select2('val', '');
@@ -208,7 +211,7 @@ function initComponents() {
      */
 
 
-    $('.js_select_ajax_new').each(function () {
+    $('.js_select_ajax_new', container).each(function () {
         var input = $(this);
 
         input.select2({
