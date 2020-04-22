@@ -334,7 +334,11 @@ function initTableAjax(grid) {
                     if ($(footer).data('totalable') == 1) {
                         var total = 0;
                         for (var i = 0; i < values.length; i++) {
-                            total += floatVal(values[i]);
+                            if ($(values[i]).data('totalablevalue')) {
+                                total += $(values[i]).data('totalablevalue');
+                            } else {
+                                total += floatVal(values[i]);
+                            }
                         }
 
                         $(footer).html(total.toFixed(2));
