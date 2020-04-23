@@ -1,16 +1,14 @@
-Changelog version 1.9.2
+Changelog version 1.9.3
  
-Bugfix crm initialization if language default is not defined
-Polygon field introduced in beta
-Bugfix for mail headers when no header is passed
-Added Leaflet 1.7 libraries
-Added {base_url} placeholder in mail template
-Fixed datatables translations json
-Started compatibility from postgis to mygis
-Fix translations
-Fix undefined in maps tooltips
-Default map position centered in New York
-Bugfix actions
-Bugfix bulk grid
-Bugfix components
-New static verticals
+New barcodes vertical grid
+Autoload composer
+Added in debug function automatically script tag closure
+Optimized code for datab build form
+Added totalablevalue attributes for totalable fields
+initComponents function now accepts container parameter
+select2 on inline edit forms
+Added jquery.populate.js
+UI fixes to static_vertical3
+Added $crop param to build_grid_cell and buildFieldGridCell
+Fix undefined askConfirmationOnClose if multiupload not in modal form
+Removed old “delete” button
