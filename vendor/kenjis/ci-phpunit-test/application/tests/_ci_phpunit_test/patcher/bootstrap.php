@@ -10,7 +10,11 @@
 
 // If you use Composer
 if (class_exists('PhpParser\Autoloader')) {
-	if (method_exists('PhpParser\Node\Name','set')) {
+	if (class_exists('PhpParser\Node\Identifier')) {
+		// PHP-Parser 4.x
+		require __DIR__ . '/4.x/MonkeyPatchManager.php';
+	}
+	elseif (method_exists('PhpParser\Node\Name','set')) {
 		// PHP-Parser 2.x
 		require __DIR__ . '/2.x/MonkeyPatchManager.php';
 	} else {
@@ -22,7 +26,7 @@ if (class_exists('PhpParser\Autoloader')) {
 else {
 	if (version_compare(PHP_VERSION, '5.5.0', '>=')) {
 		// Use PHP-Parser 3.x
-		require __DIR__ . '/third_party/PHP-Parser-3.0.3/lib/bootstrap.php';
+		require __DIR__ . '/third_party/PHP-Parser-3.1.5/lib/bootstrap.php';
 		require __DIR__ . '/3.x/MonkeyPatchManager.php';
 	} else {
 		// Use PHP-Parser 2.x
@@ -50,7 +54,7 @@ class_alias('Kenjis\MonkeyPatch\MonkeyPatchManager', 'MonkeyPatchManager');
 //	// Project root directory
 //	'root_dir' => APPPATH . '../',
 //	// Cache directory
-//	'cache_dir' => TESTPATH . '_ci_phpunit_test/tmp/cache',
+//	'cache_dir' => CI_PHPUNIT_TESTPATH . 'tmp/cache',
 //	// Directories to patch on source files
 //	'include_paths' => [
 //		APPPATH,

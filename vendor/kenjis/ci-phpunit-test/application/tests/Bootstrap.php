@@ -232,7 +232,7 @@ switch (ENVIRONMENT)
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
 	// Path to the test directory containing all the test files.
-	define('TESTPATH', __dir__.DIRECTORY_SEPARATOR);  // Should be the folder this `Bootstrap.php` file is in.
+	define('TESTPATH', __DIR__.DIRECTORY_SEPARATOR);  // Should be the folder this `Bootstrap.php` file is in.
 
 	// Path to the system directory
 	define('BASEPATH', $system_path);
@@ -313,34 +313,48 @@ switch (ENVIRONMENT)
 
 	define('VIEWPATH', $view_folder.DIRECTORY_SEPARATOR);
 
+	// Path to the ci-phpunit-test directory
+	if (is_file(TESTPATH . '_ci_phpunit_test' . DIRECTORY_SEPARATOR . 'CIPHPUnitTest.php'))
+	{
+		define('CI_PHPUNIT_TESTPATH', TESTPATH . '_ci_phpunit_test' . DIRECTORY_SEPARATOR);
+	}
+	else
+	{
+		// Assume Composer with a vendor directory parallel to the application directory
+		define('CI_PHPUNIT_TESTPATH', implode(
+			DIRECTORY_SEPARATOR,
+			[dirname(APPPATH), 'vendor', 'kenjis', 'ci-phpunit-test', 'application', 'tests', '_ci_phpunit_test']
+		).DIRECTORY_SEPARATOR);
+	}
+
 /*
  * -------------------------------------------------------------------
  *  Enabling Monkey Patching
  * -------------------------------------------------------------------
- * 
+ *
  * If you want to use monkey patching, uncomment below code and configure
  * for your application.
  */
 /*
-require __DIR__ . '/_ci_phpunit_test/patcher/bootstrap.php';
+require CI_PHPUNIT_TESTPATH . 'patcher/bootstrap.php';
 MonkeyPatchManager::init([
 	// If you want debug log, set `debug` true, and optionally you can set the log file path
 	'debug' => true,
 	'log_file' => '/tmp/monkey-patch-debug.log',
 	// PHP Parser: PREFER_PHP7, PREFER_PHP5, ONLY_PHP7, ONLY_PHP5
 	'php_parser' => 'PREFER_PHP5',
-	'cache_dir' => TESTPATH . '_ci_phpunit_test/tmp/cache',
+	'cache_dir' => CI_PHPUNIT_TESTPATH . 'tmp/cache',
 	// Directories to patch source files
 	'include_paths' => [
 		APPPATH,
 		BASEPATH,
-		TESTPATH . '_ci_phpunit_test/replacing/',
+		CI_PHPUNIT_TESTPATH . 'replacing/',
 	],
 	// Excluding directories to patch
 	// If you want to patch files inside paths below, you must add the directory starting with '-'
 	'exclude_paths' => [
 		TESTPATH,
-		'-' . TESTPATH . '_ci_phpunit_test/replacing/',
+		'-' . CI_PHPUNIT_TESTPATH . 'replacing/',
 	],
 	// All patchers you use.
 	'patcher_list' => [
@@ -363,12 +377,7 @@ MonkeyPatchManager::init([
  * -------------------------------------------------------------------
  */
 
-// If you want to change the path of tests directory, set TESTPATH
-/*
-define('TESTPATH', APPPATH.'tests'.DIRECTORY_SEPARATOR);
-*/
-
-require __DIR__ . '/_ci_phpunit_test/CIPHPUnitTest.php';
+require CI_PHPUNIT_TESTPATH . '/CIPHPUnitTest.php';
 
 CIPHPUnitTest::init();
 // Or you can set directories for autoloading
