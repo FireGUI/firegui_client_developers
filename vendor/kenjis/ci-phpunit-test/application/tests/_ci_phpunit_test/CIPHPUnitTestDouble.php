@@ -34,7 +34,7 @@ class CIPHPUnitTestDouble
 	 * @param  array  $params             [method_name => return_value]
 	 * @param  mixed  $constructor_params false: disable construntor, array: construntor params
 	 * 
-	 * @return object PHPUnit mock object
+	 * @return mixed PHPUnit mock object
 	 */
 	public function getDouble($classname, $params, $constructor_params = false)
 	{
@@ -57,7 +57,7 @@ class CIPHPUnitTestDouble
 
 		foreach ($params as $method => $return)
 		{
-			if (is_object($return) && $return instanceof PHPUnit_Framework_MockObject_Stub) {
+			if (is_object($return) && ($return instanceof PHPUnit_Framework_MockObject_Stub || $return instanceof PHPUnit\Framework\MockObject\Stub)) {
 				$mock->expects($this->testCase->any())->method($method)
 					->will($return);
 			} elseif (is_object($return) && $return instanceof Closure) {
@@ -106,7 +106,7 @@ class CIPHPUnitTestDouble
 	 * 	]
 	 * );
 	 *
-	 * @param object $mock   PHPUnit mock object
+	 * @param mixed  $mock   PHPUnit mock object
 	 * @param string $method
 	 * @param int    $times
 	 * @param array  $params arguments
@@ -121,7 +121,7 @@ class CIPHPUnitTestDouble
 	/**
 	 * Verifies a method was invoked at least once
 	 *
-	 * @param object $mock   PHPUnit mock object
+	 * @param mixed  $mock   PHPUnit mock object
 	 * @param string $method
 	 * @param array  $params arguments
 	 */
@@ -135,7 +135,7 @@ class CIPHPUnitTestDouble
 	/**
 	 * Verifies that method was invoked only once
 	 *
-	 * @param object $mock   PHPUnit mock object
+	 * @param mixed  $mock   PHPUnit mock object
 	 * @param string $method
 	 * @param array  $params arguments
 	 */
@@ -149,7 +149,7 @@ class CIPHPUnitTestDouble
 	/**
 	 * Verifies that method was not called
 	 *
-	 * @param object $mock   PHPUnit mock object
+	 * @param mixed  $mock   PHPUnit mock object
 	 * @param string $method
 	 * @param array  $params arguments
 	 */

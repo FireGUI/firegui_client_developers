@@ -26,17 +26,36 @@ class Foo extends MY_Controller
         //Load custom model foo (you can call both with custom/ prefix or without it)
         //$this->load->model('custom/foomodel');
         $this->load->model('foomodel');
-        debug($this->foomodel->foo());
+        // debug($this->foomodel->foo());
 
         // //Load custom library foo (you can call both with custom/ prefix or without it)
         //$this->load->library('custom/foolibrary');
         $this->load->library('foolibrary');
         $foo = new Foolibrary();
-        debug($foo->foo());
+        // debug($foo->foo());
+
+
+        d($foo->foo());
+
+
+        $array = array(
+            "1" => "PHP code tester Sandbox Online",
+            "foo" => "bar",
+            5 => [
+                "case" => "Random Stuff: " . rand(100, 999),
+                "PHP Version" => phpversion()
+            ],
+            52 => 89009,
+
+        );
+        d($array);
+        d($foo->foo());
+
 
         //Load custom helper foo (you can call both with custom/ prefix or without it)
         //$this->load->helper('custom/foo_helper');
-        $this->load->helper('foo_helper');
-        debug(foo());
+        // $this->load->helper('foo_helper');
+        // debug(foo());
+        // d(foo());
     }
 }
