@@ -1,5 +1,8 @@
 {
     "require-dev": {
         "kenjis/ci-phpunit-test": "^0.17.0"
+    },
+    "require": {
+        "picqer/php-barcode-generator": "^2.0"
     }
 }

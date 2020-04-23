@@ -166,7 +166,11 @@ class Main extends MY_Controller
 
         echo $this->load->view('layout/main', $this->template, true);
     }
-
+    public function print_barcode($type) {
+        $val = $this->input->get('val');
+        $val = base64_decode($val);
+        $this->load->view('layout/barcode_print', compact('type', 'val'));
+    }
     /**
      * Form rendering
      */
