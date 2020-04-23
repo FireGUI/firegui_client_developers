@@ -18,11 +18,21 @@ class CIPHPUnitTest
 	 * Initialize CIPHPUnitTest
 	 *
 	 * @param array $autoload_dirs directories to search class file for autoloader
+	 *
+	 * Exclude from code coverage:  This is test suite bootstrap code, so we
+	 * know it's executed, but because it's bootstrap code, it runs outside of
+	 * any coverage tracking.
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function init(array $autoload_dirs = null)
 	{
 		if (! defined('TESTPATH')) {
 			define('TESTPATH', APPPATH.'tests'.DIRECTORY_SEPARATOR);
+		}
+		// Current Bootstrap.php should define this, but in case it doesn't:
+		if (! defined('CI_PHPUNIT_TESTPATH')) {
+			define('CI_PHPUNIT_TESTPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
 		}
 
 		// Fix CLI args
@@ -74,6 +84,9 @@ class CIPHPUnitTest
 		// Change current directory
 		chdir(FCPATH);
 
+	// Replace helpers before loading CI (which could auto load helpers)
+		self::replaceHelpers();
+
 		/*
 		 * --------------------------------------------------------------------
 		 * LOAD THE BOOTSTRAP FILE
@@ -82,8 +95,6 @@ class CIPHPUnitTest
 		 * And away we go...
 		 */
 		require __DIR__ . '/replacing/core/CodeIgniter.php';
-
-		self::replaceHelpers();
 
 		// Create CodeIgniter instance
 		if (! self::wiredesignzHmvcInstalled())
@@ -206,7 +217,7 @@ class CIPHPUnitTest
 	{
 		if ($dir === null)
 		{
-			$dir = TESTPATH . '_ci_phpunit_test/tmp/cache';
+			$dir = CI_PHPUNIT_TESTPATH . 'tmp/cache';
 		}
 
 		MonkeyPatchManager::setCacheDir(
