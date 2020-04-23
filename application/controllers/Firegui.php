@@ -102,7 +102,7 @@ class Firegui extends MY_Controller
 
             $success = zip_folder($folder, $destination_file);
 
-            if ($success === TRUE) { //NON TORNA FALSE!!!!!!
+            if ($success === TRUE) {
                 if (file_exists($destination_file)) {
                     header('Content-Type: application/zip');
                     header('Content-Disposition: attachment; filename="' . $identifier . '.zip"');
@@ -379,7 +379,7 @@ class Firegui extends MY_Controller
 
         $success = zip_folder($folder, $destination_file);
 
-        if ($success === TRUE) { //NON TORNA FALSE!!!!!!
+        if ($success === TRUE) {
             if (file_exists($destination_file)) {
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="client.zip"');
