@@ -84,7 +84,7 @@
 
                 ?>
                 <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'" : null; ?>>
-                    <a class="js-action_button btn btn-xs btn-primary<?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
+                    <a class="js-action_button btn btn-grid-action-s <?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
                         <span class="<?php echo $custom_action['grids_actions_icon']; ?>" style="color:white !important;"></span>
                     </a>
                 </span>
@@ -95,19 +95,19 @@
     <?php endif; ?>
 
     <?php if (isset($links['view']) && $links['view']) : ?>
-        <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-xs <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['view_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('View'); ?>">
+        <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-grid-action-s <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['view_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('View'); ?>">
             <span class="fas fa-search-plus" style="color:white !important;"></span>
         </a>
     <?php endif; ?>
 
     <?php if (isset($links['edit']) && $links['edit']) : ?>
-        <a href="<?php echo $links['edit'] . $id; ?>" class="btn bg-purple btn-xs <?php if (!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['edit_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Edit'); ?>">
+        <a href="<?php echo $links['edit'] . $id; ?>" class="btn bg-purple btn-grid-action-s <?php if (!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['edit_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Edit'); ?>">
             <span class="fas fa-edit" style="color:white !important;"></span>
         </a>
     <?php endif; ?>
 
     <?php if (isset($links['delete']) && $links['delete']) : ?>
-        <a href="<?php echo $links['delete'] . $id; ?>" data-confirm-text="<?php e("Are you sure to delete this record?"); ?>" class="btn btn-danger btn-xs js_confirm_button js_link_ajax <?php if (!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['delete_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Delete'); ?>">
+        <a href="<?php echo $links['delete'] . $id; ?>" data-confirm-text="<?php e("Are you sure to delete this record?"); ?>" class="btn btn-danger btn-grid-action-s js_confirm_button js_link_ajax <?php if (!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['delete_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Delete'); ?>">
             <span class="fas fa-times" style="color:white !important;"></span>
         </a>
     <?php endif; ?>

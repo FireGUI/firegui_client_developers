@@ -26,13 +26,13 @@
                             continue;
                         }
                         ?>
-                        <div>
+                        <div class="text-center" style="margin-bottom:56px;">
 
-                            <div class="text-center"><strong><?php echo $type; ?></strong></div>
-                            <div class="text-center"><label><?php echo $field_label; ?></label></div>
+                            <div><strong><?php echo $type; ?></strong></div>
+                            <div><label><?php echo $field_label; ?></label></div>
 
-                            <div class="text-center"><img src="data:image/png;base64,<?php echo (base64_encode($generator->getBarcode($value, $type))); ?>" /><br /></div>
-                            <div class="text-center"><small><?php echo $value; ?></small></div>
+                            <div><img src="data:image/png;base64,<?php echo (base64_encode($generator->getBarcode($value, $type))); ?>" /><br /></div>
+                            <div><small><?php echo $value; ?></small></div>
                             <a class="btn btn-default" href="<?php echo base_url('main/print_barcode/' . $type . '/?val=' . base64_encode($value)); ?>" target="_blank"><?php e('Print'); ?></a>
                         </div>
                     <?php endforeach; ?>
