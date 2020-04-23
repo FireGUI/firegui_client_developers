@@ -1,5 +1,8 @@
 <?php
+
 $all_sub_data = [];
+$has_bulk = !empty($grid['grids']['grids_bulk_mode']);
+$has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
 if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
     $relation_field = $sub_grid['grid_relation_field'];
     foreach ($grid_data['sub_grid_data'] as $sub_record) {
@@ -27,7 +30,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
             <tbody>
                 <?php foreach ($grid_data['data'] as $key => $dato) : ?>
                     <?php $sub_data = isset($all_sub_data[$dato[$grid['grids']['entity_name'] . "_id"]]) ? $all_sub_data[$dato[$grid['grids']['entity_name'] . "_id"]] : []; ?>
-                    <tr class="odd gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
+                    <tr class="__odd __gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
                         <?php foreach ($grid['grids_fields'] as $field) : ?>
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
@@ -42,9 +45,9 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                             ));
                             ?>
                             <?php if ($sub_data) : ?>
-                                <br>
-                                <a class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
-                                    espandi <span data-toggle="tooltip" class="caret"></span>
+
+                                <a style="margin-top: 5px;" onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
+                                    <?php e('expand'); ?> <span data-toggle="tooltip" class="caret"></span>
                                 </a>
                             <?php endif; ?>
                         </td>
@@ -52,11 +55,11 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
                     <?php /* INIZIO SUB ENTITY */ ?>
                     <?php if ($sub_data) : ?>
-                        <tr>
-                            <td <?php echo 'colspan="' . count($grid['grids_fields']) . '"'; ?> style="padding: 0;border: none;">
-                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse">
+                        <tr style="background-color:#DDD!important;">
+                            <td <?php echo 'colspan="' . (count($grid['grids_fields']) + 1) . '"'; ?> style="padding: 0;border: none;">
+                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse" style="margin-top:10px;padding: 5px;">
                                     <?php if (!$sub_grid['grids']['grids_layout']) : ?>
-                                        <table class="table table-bordered table-full-width" style="margin-bottom: 0!important;">
+                                        <table class="table table-bordered table-full-width" style="margin-bottom: 0!important">
                                             <thead>
                                                 <tr>
                                                     <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
