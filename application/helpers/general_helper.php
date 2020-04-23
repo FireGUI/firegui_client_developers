@@ -10,9 +10,13 @@ if (!function_exists('command_exists')) {
 }
 
 if (!function_exists('dd')) {
-    function dd()
+    function dd($var)
     {
-        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        if (!is_development() && !is_maintenance()) {
+            return;
+        }
+        echo '</select>';
+        echo '</script>';
 
         $stack = '';
         $i = 1;
@@ -59,9 +63,13 @@ if (!function_exists('dd')) {
 }
 
 if (!function_exists('d')) {
-    function d()
+    function d($var)
     {
-        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
+        if (!is_development() && !is_maintenance()) {
+            return;
+        }
+        echo '</select>';
+        echo '</script>';
 
         $stack = '';
         $i = 1;

@@ -10,10 +10,29 @@
 
 class Seeder
 {
+	/**
+	 * @var CI_Controller
+	 */
 	private $CI;
+
+	/**
+	 * @var CI_DB_query_builder
+	 */
 	protected $db;
+
+	/**
+	 * @var CI_DB_forge
+	 */
 	protected $dbforge;
+
+	/**
+	 * @var string
+	 */
 	protected $seedPath;
+
+	/**
+	 * @var array
+	 */
 	protected $depends = [];
 
 	public function __construct()

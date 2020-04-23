@@ -1,5 +1,40 @@
 # Change Log for ci-phpunit-test
 
+## v0.17.3 (2020/02/05)
+
+### Fixed
+
+* Fix buggy tearDown() with MySQL. See [#321](https://github.com/kenjis/ci-phpunit-test/pull/321).
+
+### Others
+
+* Add and fix PHPDoc
+
+## v0.17.2 (2020/01/28)
+
+### Fixed
+
+* Fix bug when you enable exit patcher only, it causes errors. See [#320](https://github.com/kenjis/ci-phpunit-test/pull/320).
+* Fix bug that Monkey Patch causes errors on PHP 7.4. See [#318](https://github.com/kenjis/ci-phpunit-test/pull/318).
+
+## v0.17.1 (2020/01/22)
+
+### Fixed
+
+* Fix bug that CIPHPUnitTestDbTestCase reconnects DB on every assertions. See [#301](https://github.com/kenjis/ci-phpunit-test/pull/301).
+* Fix typo in CIPHPUnitTestDbTestCase. See [#299](https://github.com/kenjis/ci-phpunit-test/pull/299).
+* Fix bug that `PHPUnit\Framework\MockObject\Stub` does not work. See [#307](https://github.com/kenjis/ci-phpunit-test/pull/307).
+* Fix bug that modified helpers are not loaded. See [#310](https://github.com/kenjis/ci-phpunit-test/pull/310).
+
+### Added
+
+* Now you can use `_ci_phpunit_test` directly from vendor path. See [#274](https://github.com/kenjis/ci-phpunit-test/pull/274).
+
+### Others
+
+* Update nikic/PHP-Parser to v3.1.5
+* Add nikic/PHP-Parser 4.2 as a Composer dependency
+
 ## v0.17.0 (2019/04/28)
 
 ### Fixed
@@ -307,8 +342,8 @@
 
 ### Removed
 
-* 4th param `$callable` of `$this->request()` and `$this->ajaxRequest()` (deprecated since v0.3.0)  
-  Use `$this->request->setCallable()` method instead. See [Function/Class Reference](https://github.com/kenjis/ci-phpunit-test/blob/v0.3.0/docs/FunctionAndClassReference.md#testcaserequestmethod-argv-params---callable--null).
+* 4th param `$callable` of `$this->request()` and `$this->ajaxRequest()` (deprecated since v0.3.0)
+  * Use `$this->request->setCallable()` method instead. See [Function/Class Reference](https://github.com/kenjis/ci-phpunit-test/blob/v0.3.0/docs/FunctionAndClassReference.md#testcaserequestmethod-argv-params---callable--null).
 
 ### Others
 
