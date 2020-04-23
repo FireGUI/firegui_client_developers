@@ -16,7 +16,7 @@
                         switch ($type) {
                             case $generator::TYPE_EAN_13:
                                 $value = preg_replace('/\D/', '', $dato[$field['fields_name']]);
-                                dd($generator);
+                                //dd($generator);
                                 break;
                             default:
                                 $value = $dato[$field['fields_name']];
