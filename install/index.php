@@ -172,6 +172,19 @@ function base_url_template($uri)
             max-width: 35% !important;
             margin: 0 auto;
         }
+
+        .sw-theme-default>ul.step-anchor>li.active>a {
+            color: #8ab4f8 !important;
+        }
+
+        .sw-theme-default>ul.step-anchor>li>a,
+        .sw-theme-default>ul.step-anchor>li>a:hover {
+            color: white !important;
+        }
+
+        .sw-theme-default>ul.step-anchor>li.done>a {
+            color: #6ebf6e !important;
+        }
     </style>
 
     <script type="text/javascript">
@@ -217,7 +230,7 @@ function base_url_template($uri)
         <div class="row">
             <div class="col-sm-12">
                 <div id="smartwizard" style="border-top:3px solid #005977 ;border-radius:3px;">
-                    <ul>
+                    <ul style="background: #005977 !important;">
                         <li style="width:33%!important;"><a href="#check-requirements">Check<br />Requirements</a></li>
                         <li style="width:33%!important;"><a href="#db-setup">Setup<br />Database</a></li>
                         <li style="width:33%!important;"><a href="#done">Done<br /><small>Install complete</small></a></li>
