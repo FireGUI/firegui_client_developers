@@ -528,6 +528,8 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
+
+
         //MP: rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
         //debug($fields,true);
@@ -558,6 +560,8 @@ class Apilib
         if ($this->processData($entity, $_data, true, $id)) {
             $oldData = $this->getById($entity, $id);
             //debug($id,true);
+
+
             if (!$this->updateById($entity, $id, $_data)) {
                 $this->showError(self::ERR_GENERIC);
             }
@@ -1169,6 +1173,7 @@ class Apilib
 
 
         $originalData = $dati;
+
         if ($editMode) {
 
             if (is_array($value_id)) {
@@ -1178,6 +1183,7 @@ class Apilib
                 $value_id = $dataDb[$entity . '_id'];
             } else {
                 // Pre-fetch dei dati sennò fallisce la validazione
+                //TODO: if db table has columns not present in fields, this will cause an error later... suggestion: use build_select to get only columns present in fields
                 $dataDb = $this->db->get_where($entity, array($entity . '_id' => $value_id))->row_array();
             }
 
@@ -1188,6 +1194,9 @@ class Apilib
 
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
         //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
+
+
+        //debug($dati, true);
 
         // Recupera dati di validazione
         foreach ($fields as $k => $field) {
@@ -1532,7 +1541,7 @@ class Apilib
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
                 $this->error = self::ERR_VALIDATION_FAILED;
-                $this->errorMessage = t("Fields %s aI campi %s non sono accettati", 0, [implode(', ', $invalidFields)]);
+                $this->errorMessage = t("Fields %s are not accepted in entity '$entity'", 0, [implode(', ', $invalidFields)]);
                 return false;
             }
 
