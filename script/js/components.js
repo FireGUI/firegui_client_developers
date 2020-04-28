@@ -189,7 +189,7 @@ function initComponents(container) {
                             jsMultiselect.select2('val', previousValue);
                         } else {
 
-                            jsMultiselect.select2('val', previousValue);
+                            jsMultiselect.select2('data', previousValue);
                         }
                     }
                 }
