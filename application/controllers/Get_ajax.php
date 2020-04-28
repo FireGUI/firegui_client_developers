@@ -1214,15 +1214,51 @@ class Get_ajax extends MY_Controller
             // Devo sostituire i campi
             // $entity_id 
             // Altrimenti lui prova a pescarmi i campi della tabella pivot
-            $relatedEntity = $this->crmentity->getEntity($relation->relations_table_2);
-            $entity_name = $relatedEntity['entity_name'];
-            $entity_id = $relatedEntity['entity_id'];
+            $relatedEntityFrom = $this->crmentity->getEntity($field_from['fields_ref']);
+
+
+            if ($relatedEntityFrom['entity_type'] == ENTITY_TYPE_RELATION) {
+                $relation_sub = $this->db->get_where('relations', ['relations_name' => $field_from['fields_ref']])->row_array();
+                $relatedEntityFromSub = $this->crmentity->getEntity($relation_sub['relations_table_2']);
+                $fields_entity = $this->crmentity->getEntity($relation->relations_table_2);
+                $field_filter = $this->db->get_where('fields', [
+                    'fields_ref' => $relatedEntityFromSub['entity_name'],
+                    'fields_entity_id' => $fields_entity['entity_id']
+                ])->row_array();
+                $entity_name = $relation->relations_table_2;
+                $entity_id = $fields_entity['entity_id'];
+                //     debug($field_filter);
+                // debug($relatedEntityFromSub['entity_name']); // regioni
+                // debug($relation->relations_table_2); //province
+                // debug($relatedEntityFrom); //rel_riparatori_regioni
+                // debug($entity); //rel_riparatori_province
+                // debug($field_from['fields_ref']); //rel_riparatori_regioni
+                // debug($field_from, true); //riparatori_regione
+            } else {
+                $entity_name = $relatedEntityFrom['entity_name'];
+                $entity_id = $relatedEntityFrom['entity_id'];
+                $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+            }
+
+            //debug($field_from, true);
+
+
+            $field_name_filter = $field_filter['fields_name'];
+        } else {
+            //debug($field_from, true);
+
+            $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+            $field_name_filter = $field_filter['fields_name'];
         }
-        $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
-        $field_name_filter = $field_filter['fields_name'];
+
+
 
         $where_referer = [];
-        $where_referer[] = "{$field_name_filter} = '{$from_val}'";
+        if (is_array($from_val)) {
+            $where_referer[] = "{$field_name_filter} IN ('" . implode("','", $from_val) . "')";
+        } else {
+            $where_referer[] = "{$field_name_filter} = '{$from_val}'";
+        }
         if (!empty($field_to['fields_select_where'])) {
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
