@@ -128,10 +128,10 @@ function initComponents(container) {
         var sFieldRef = jsMultiselect.attr('data-ref');
 
         // Prendo il campo da osservare
-        var jqField = $('[name="' + sSourceField + '"]', jqForm);
+        var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"]', jqForm);
 
 
-        //console.log(sSourceField);
+        //console.log(jqField);
 
         jqField.on('change', function () {
 
@@ -150,8 +150,16 @@ function initComponents(container) {
             data_post.push({ "name": token_name, "value": token_hash });
             data_post.push({ "name": 'field_name_to', "value": jsMultiselect.attr('name') });
             data_post.push({ "name": 'field_ref', "value": sFieldRef });
-            data_post.push({ "name": 'field_from_val', "value": jqField.val() });
-            data_post.push({ "name": 'field_from_val', "value": jqField.val() });
+            if (isNormalSelect) {
+                data_post.push({ "name": 'field_from_val', "value": jqField.val() });
+            } else {
+
+                var val_array = jqField.val();
+                for (var i in val_array) {
+                    data_post.push({ "name": 'field_from_val[]', "value": val_array[i] });
+                }
+
+            }
             $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
                 type: 'POST',
                 data: data_post,
@@ -196,8 +204,8 @@ function initComponents(container) {
 
     $.each(fieldsSources, function (k, selector) {
         var field = selector;//$(selector);
-        //console.log(selector);
-        //alert(field.val());
+        console.log(selector);
+
         if (field.val() !== '') {
 
             field.trigger('change');
