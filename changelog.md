@@ -1,14 +1,15 @@
-Changelog version 1.9.3
+Changelog version 1.9.4
  
-New barcodes vertical grid
-Autoload composer
-Added in debug function automatically script tag closure
-Optimized code for datab build form
-Added totalablevalue attributes for totalable fields
-initComponents function now accepts container parameter
-select2 on inline edit forms
-Added jquery.populate.js
-UI fixes to static_vertical3
-Added $crop param to build_grid_cell and buildFieldGridCell
-Fix undefined askConfirmationOnClose if multiupload not in modal form
-Removed old “delete” button
+Updatedb for grids actions icons
+Bugfix for totalable columns selector
+Fix select2 multiselect data with array
+Extended multiselect with source field
+Translations in apilib
+Multiselect works on filter forms
+Commented log_message unusefull
+UI.X wizard upgrade
+Stylized grid type static vertical 2
+Larger action icons
+UI fixes on datatable_with_subentity
+Moved var-dumper package to global composer vendor
+Fixed undefined variable $var in d() & dd() functions
