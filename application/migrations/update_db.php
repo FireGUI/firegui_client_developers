@@ -26,3 +26,8 @@ $updates['1.7.3'] = [
 $updates['1.9.1'] = [
     "UPDATE entity SET entity_type = 1 WHERE entity_name = 'users'"
 ];
+
+//Updates to 1.9.4 - Change custom action style to uniform with native ones
+$updates['1.9.4'] = [
+    "UPDATE grids_actions SET grids_actions_html = REPLACE(grids_actions_html, 'btn-xs', 'js-action_button btn-grid-action-s')"
+];

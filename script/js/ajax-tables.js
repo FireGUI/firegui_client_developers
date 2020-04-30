@@ -252,6 +252,19 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 // Test
 
 
+jQuery.extend({
+    isValidSelector: function (selector) {
+        if (typeof (selector) !== 'string') {
+            return false;
+        }
+        try {
+            $(selector);
+        } catch (error) {
+            return false;
+        }
+        return true;
+    }
+});
 
 function initTableAjax(grid) {
 
@@ -334,7 +347,8 @@ function initTableAjax(grid) {
                     if ($(footer).data('totalable') == 1) {
                         var total = 0;
                         for (var i = 0; i < values.length; i++) {
-                            if ($(values[i]).data('totalablevalue')) {
+                            if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue')) {
+
                                 total += $(values[i]).data('totalablevalue');
                             } else {
                                 total += floatVal(values[i]);
