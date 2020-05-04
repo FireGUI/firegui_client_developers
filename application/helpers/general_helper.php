@@ -903,7 +903,7 @@ if (!function_exists('mese_testuale')) {
 
 if (!function_exists('zip_folder')) {
 
-    function zip_folder($source, $destination)
+    function zip_folder($source, $destination, $exclude_dirs = [])
     {
 
         if (!extension_loaded('zip')) {
@@ -946,10 +946,22 @@ if (!function_exists('zip_folder')) {
                 $file = realpath($file);
 
                 if (is_dir($file) === true) {
+                    //Ignore folders excluded
+                    if (in_array(str_replace($source . '/', '', $file), $exclude_dirs)) {
+                        continue;
+                    }
                     if (!$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'))) {
                         //die('Error adding folder '.$file);
                     }
                 } else if (is_file($file) === true) {
+                    $dir_container = explode('/', str_replace($source . '/', '', $file));
+                    array_pop($dir_container);
+                    $dir_container = implode('/', $dir_container);
+                    //debug($dir_container);
+                    if (in_array($dir_container, $exclude_dirs)) {
+                        //die(str_replace($source . '/', '', $file));
+                        continue;
+                    }
                     if (!$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file))) {
                         //die('Error adding file '.$file);
                     }
