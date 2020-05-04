@@ -377,7 +377,7 @@ class Firegui extends MY_Controller
         }
 
 
-        $success = zip_folder($folder, $destination_file);
+        $success = zip_folder($folder, $destination_file, ['application/logs']);
 
         if ($success === TRUE) {
             if (file_exists($destination_file)) {
