@@ -1,15 +1,14 @@
-Changelog version 1.9.4
+Changelog version 1.9.5
  
-Updatedb for grids actions icons
-Bugfix for totalable columns selector
-Fix select2 multiselect data with array
-Extended multiselect with source field
-Translations in apilib
-Multiselect works on filter forms
-Commented log_message unusefull
-UI.X wizard upgrade
-Stylized grid type static vertical 2
-Larger action icons
-UI fixes on datatable_with_subentity
-Moved var-dumper package to global composer vendor
-Fixed undefined variable $var in d() & dd() functions
+Fix css table vertical align
+Excluded logs folder from backups
+zip_folder now support exclude_dirs parameter
+Check admin session on Firegui controller
+Bugfix for totalable fields
+Added exclude_dirs parameters in zip function
+Added barcode_print layout
+Added totalables in datatable_slim and simple_table
+Print barcode grid now accepts dimension parameters
+Reinit components after redraw a grid
+Vertical align middle in grid’s rows
+Table sorting columns now are blue
