@@ -327,6 +327,9 @@ function initTableAjax(grid) {
         fnServerParams: function (aoData) {
             aoData.push({ "name": token_name, "value": token_hash });
         },
+        "drawCallback": function (settings) {
+            initComponents(oDataTable);
+        },
         "footerCallback": function (row, data, start, end, display) {
 
             if (totalable == 1) {

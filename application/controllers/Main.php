@@ -168,8 +168,13 @@ class Main extends MY_Controller
     }
     public function print_barcode($type) {
         $val = $this->input->get('val');
+        $w = $this->input->get('w');
+        $h = $this->input->get('h');
+        $left = $this->input->get('left');
+        $top = $this->input->get('top');
         $val = base64_decode($val);
-        $this->load->view('layout/barcode_print', compact('type', 'val'));
+        $this->load->view('box/grid/barcode_print', compact('type', 'val', 'w', 'h', 'left', 'top'));
+        
     }
     /**
      * Form rendering
