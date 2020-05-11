@@ -519,7 +519,7 @@ class Get_ajax extends MY_Controller
                     }
                 } else {
                     //Se entro qui, verifico se il campo passato per l'ordinamento non sia per caso un eval cachable...
-                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent') {
+                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent' || !empty($grid['grids_fields'][$order_col]['grids_fields_eval_cache_data'])) {
                         $order_by = "{$grid['grids_fields'][$order_col]['grids_fields_eval_cache_data']} {$order_dir}";
                     } else {
                         $order_by = null;
