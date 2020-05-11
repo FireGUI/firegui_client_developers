@@ -28,6 +28,11 @@ function startDataTables() {
 
         var oDataTable = $(this);
 
+        var totalable = oDataTable.data('totalable');
+        if (typeof (totalable) === 'undefined') {
+            totalable = 0;
+        }
+
         var bEnableOrder = typeof (oDataTable.attr('data-prevent-order')) === 'undefined';
         var aoColumns = [];
         $('> thead > tr > th', oDataTable).each(function () {
@@ -39,6 +44,7 @@ function startDataTables() {
             aoColumns.push(coldef);
         });
 
+
         oDataTable.dataTable({
             bSort: bEnableOrder,
 
@@ -48,7 +54,42 @@ function startDataTables() {
             bFilter: false,
             stateSave: true,
             bLengthChange: false,
-            oLanguage: { sUrl: base_url_scripts + "script/datatable.transl.json" }
+            oLanguage: { sUrl: base_url_scripts + "script/datatable.transl.json" },
+            "footerCallback": function (row, data, start, end, display) {
+
+                if (totalable == 1) {
+
+                    var api = this.api(), data;
+                    $(api.column(0).footer()).html('Total:');
+                    // converting to interger to find total
+                    var floatVal = function (i) {
+
+                        i = i.replace(/[^\d.-]/g, '');
+
+                        return parseFloat(i);
+                    };
+
+                    api.columns().every(function () {
+                        var values = this.data();
+                        var footer = this.footer();
+                        if ($(footer).data('totalable') == 1) {
+                            var total = 0;
+                            for (var i = 0; i < values.length; i++) {
+                                if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue')) {
+
+                                    total += $(values[i]).data('totalablevalue');
+                                } else {
+                                    total += floatVal(values[i]);
+                                }
+                            }
+
+                            $(footer).html(total.toFixed(2));
+                        }
+                    });
+
+                }
+
+            }
         }).on('init', function (e) {
             var wrapper = e.target.parent;
             $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input

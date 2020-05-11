@@ -954,13 +954,15 @@ if (!function_exists('zip_folder')) {
                         //die('Error adding folder '.$file);
                     }
                 } else if (is_file($file) === true) {
-                    $dir_container = explode('/', str_replace($source . '/', '', $file));
-                    array_pop($dir_container);
-                    $dir_container = implode('/', $dir_container);
-                    //debug($dir_container);
-                    if (in_array($dir_container, $exclude_dirs)) {
-                        //die(str_replace($source . '/', '', $file));
-                        continue;
+                    if ($exclude_dirs) {
+                        $dir_container = explode('/', str_replace($source . '/', '', $file));
+                        array_pop($dir_container);
+                        $dir_container = implode('/', $dir_container);
+
+                        if (in_array($dir_container, $exclude_dirs)) {
+                            //die(str_replace($source . '/', '', $file));
+                            continue;
+                        }
                     }
                     if (!$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file))) {
                         //die('Error adding file '.$file);
