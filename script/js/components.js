@@ -504,13 +504,11 @@ function loadModal(url, data, callbackSuccess, method) {
     var modalContainer = $('#js_modal_container');
 
     if (typeof data === 'undefined') {
-        var data_post = [];
-        data_post.push({ "name": token_name, "value": token_hash });
-        data = data_post;
+        data = {
+            [token_name]: token_hash
+        };
     } else {
-        //data = Object.entries(data);
-        data.push({ "name": token_name, "value": token_hash });
-
+        data[token_name] = token_hash;
     }
 
     /*** La modale è già aperta? */
