@@ -157,7 +157,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             <?php else : ?>
                                 <?php
                                 $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array());
-
+                                //debug("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}");
                                 ?>
                                 <?php if ($field['type'] == 'multiselect') : ?>
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
@@ -165,7 +165,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
 
                                         <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row) : ?>
-                                            <option value="<?php echo $row['valore']; ?>" <?php echo (in_array($row['valore'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $row['valore']; ?></option>
+                                            <?php if ($row['valore']) : ?>
+                                                <option value="<?php echo $row['valore']; ?>" <?php echo (in_array($row['valore'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $row['valore']; ?></option>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
 
                                     </select>
