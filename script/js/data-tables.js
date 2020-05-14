@@ -1,7 +1,7 @@
 function startDataTables() {
 
     $('.js_datatable:not(.dataTable)').each(function () {
-        var lengthMenu = (typeof ($(this).attr('data-lengthmenu')) === 'undefined') ? [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'Tutti']] : JSON.parse($(this).attr('data-lengthmenu'))
+        var lengthMenu = (typeof ($(this).attr('data-lengthmenu')) === 'undefined') ? [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'All']] : JSON.parse($(this).attr('data-lengthmenu'))
 
         var bEnableOrder = typeof ($(this).attr('data-prevent-order')) === 'undefined';
         $(this).dataTable({
@@ -60,7 +60,7 @@ function startDataTables() {
                 if (totalable == 1) {
 
                     var api = this.api(), data;
-                    $(api.column(0).footer()).html('Total:');
+                    $(api.column(0).footer()).html('Totals:');
                     // converting to interger to find total
                     var floatVal = function (i) {
 
