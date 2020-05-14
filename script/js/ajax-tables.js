@@ -318,7 +318,7 @@ function initTableAjax(grid) {
         sServerMethod: "POST",
         bServerSide: true,
         sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
-        aLengthMenu: [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'Tutti']],
+        aLengthMenu: [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'All']],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
         oLanguage: {
@@ -335,7 +335,7 @@ function initTableAjax(grid) {
             if (totalable == 1) {
 
                 var api = this.api(), data;
-                $(api.column(0).footer()).html('Total:');
+                $(api.column(0).footer()).html('Totals:');
                 // converting to interger to find total
                 var floatVal = function (i) {
 
@@ -350,12 +350,13 @@ function initTableAjax(grid) {
                     if ($(footer).data('totalable') == 1) {
                         var total = 0;
                         for (var i = 0; i < values.length; i++) {
-                            if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue')) {
+                            if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue') !== null) {
 
                                 total += $(values[i]).data('totalablevalue');
                             } else {
                                 total += floatVal(values[i]);
                             }
+                            //console.log(total);
                         }
 
                         $(footer).html(total.toFixed(2));

@@ -42,8 +42,8 @@ foreach ($grid['grids_fields'] as $field) {
                         <?php foreach ($grid['grids_fields'] as $field) : ?>
                             <?php
                             if ($field['grids_fields_totalable'] == DB_BOOL_TRUE) {
-                                if (!empty($dato[$field['grids_fields_eval_cache_data']])) {
-                                    @$sums[$field['grids_fields_id']] += (float) ($dato[$field['grids_fields_eval_cache_data']]);
+                                if (!empty($this->datab->build_grid_cell($field, $dato))) {
+                                    @$sums[$field['grids_fields_id']] += (float) ($this->datab->build_grid_cell($field, $dato));
                                 }
                             }
                             ?>
