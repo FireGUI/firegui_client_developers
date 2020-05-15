@@ -62,7 +62,10 @@ class Firegui extends MY_Controller
 
     public function uninstallModule($identifier)
     {
-        log_message('debug', 'TODO Uninstal module from remote');
+        $module = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
+        if ($module) {
+            $this->deleteDir(APPPATH . "modules/{$identifier}");
+        }
     }
 
     function updateFromGit($command = null, $output = true)
@@ -397,7 +400,16 @@ class Firegui extends MY_Controller
         }
         @unlink($destination_file);
     }
+
+    private function deleteDir($path)
+    {
+        return is_file($path) ?
+            @unlink($path) :
+            array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
+    }
 }
+}
+
 
 /* End of file welcome.php */
 /* Location: ./application/controllers/welcome.php */
