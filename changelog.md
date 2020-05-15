@@ -1,14 +1,17 @@
-Changelog version 1.9.5
+Changelog version 1.9.6
  
-Fix css table vertical align
-Excluded logs folder from backups
-zip_folder now support exclude_dirs parameter
-Check admin session on Firegui controller
-Bugfix for totalable fields
-Added exclude_dirs parameters in zip function
-Added barcode_print layout
-Added totalables in datatable_slim and simple_table
-Print barcode grid now accepts dimension parameters
-Reinit components after redraw a grid
-Vertical align middle in grid’s rows
-Table sorting columns now are blue
+Added field_source in filters
+Bugfix in components.js for select2 fields
+Uninstall module with delete dir
+New group by parameter in grids
+Bug fix for LOWER LIKE search
+Bugfix undefined constants PASSEPARTOUT
+Removed skebby class
+Updated genthumb
+Bugfix in actions.php for type not recognized
+Bugfix for empty filter multiselect
+Eval field totalable now works in simple tables
+Static vertical barcodes improved
+English translations
+Custom style for orderable columns
+Fix data.push is not a function on loadModal function in components.js

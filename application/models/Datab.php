@@ -180,7 +180,7 @@ class Datab extends CI_Model
         $entity = $this->crmentity->getEntity($entity_id);
 
         if ($count) {
-            
+
             return $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
         } else {
 
@@ -360,7 +360,7 @@ class Datab extends CI_Model
         } else {
             $formData = ($value_id && !is_array($value_id)) ? $this->apilib->view($form['entity_name'], $value_id, 1) : [];
 
-            
+
 
             foreach ($fields as $field) {
                 //debug($formData, true);
@@ -458,6 +458,7 @@ class Datab extends CI_Model
                 'type' => $type,
                 'datatype' => $field['fields_type'],
                 'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
+                'fields_source' =>$field['fields_source'], // Computo il ref field da usare nel caso di form
                 'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null)
             ];
         }
@@ -560,6 +561,8 @@ class Datab extends CI_Model
         $order_by = NULL;
 
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $order_by);
+
+        
 
         //debug($field['support_data'] , true);
         return $field;
@@ -2717,6 +2720,9 @@ class Datab extends CI_Model
             if ($baseType == 'multi_upload') {
                 //debug($data);
             }
+
+            
+
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
             if ($baseType !== 'input_hidden') {
                 $wrapAttributes = implode(' ', array_filter([$style, $langAttribute]));
@@ -2725,6 +2731,8 @@ class Datab extends CI_Model
 
             $output .= $view;
         }
+
+
 
         return $output;
     }
