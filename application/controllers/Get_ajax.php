@@ -529,6 +529,8 @@ class Get_ajax extends MY_Controller
                 $order_by = null;
             }
 
+            $group_by = ($grid['grids']['grids_group_by']) ?: null;
+
             //20191112 - MP - Added where_append in get ajax
             if ($where_append = $this->input->get('where_append')) {
                 if ($where) {
@@ -538,7 +540,7 @@ class Get_ajax extends MY_Controller
                 }
             }
 
-            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
+            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by, false, ['group_by' => $group_by]);
 
 
 
@@ -580,10 +582,8 @@ class Get_ajax extends MY_Controller
                 $out_array[] = $tr;
             }
 
-            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true);
-            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true);
-
-
+            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => null]);
+            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => null]);
 
 
             echo json_encode(array(
@@ -686,7 +686,7 @@ class Get_ajax extends MY_Controller
 
         $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : NULL;
         //$data_entity = $this->datab->get_data_entity($data['maps']['maps_entity_id'], 0, implode(' AND ', array_filter($where)), NULL, NULL, $order_by);
-        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), NULL, NULL, $order_by, 1);
+        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), NULL, NULL, $order_by, 1, false, [], ['group_by' => null]);
 
 
         $markers = array();
