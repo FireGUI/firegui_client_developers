@@ -116,107 +116,9 @@ function initComponents(container) {
 
     $('.select2_standard', container).select2();
 
-    var fieldsSources = [];
-    $('[data-source-field]:not([data-source-field=""])', container).each(function () {
-
-        //console.log($(this).attr('name'));
-
-        // Prendo il form dell'elemento
-        var jsMultiselect = $(this);
-        var jqForm = jsMultiselect.parents('form');
-        var sSourceField = jsMultiselect.attr('data-source-field');
-        var sFieldRef = jsMultiselect.attr('data-ref');
-
-        // Prendo il campo da osservare
-        var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"]', jqForm);
-
-
-        //console.log(jqField);
-
-        jqField.on('change', function () {
-
-
-            //console.log($(this));
-
-            var previousValue = jsMultiselect.attr('data-val').split(',');
-            jsMultiselect.select2('val', '');
-
-            //se ho una select semplice devo saperlo perché così so come gestire il valore settato
-            var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
-
-            $('option', jsMultiselect).remove();
-            loading(true);
-            var data_post = [];
-            data_post.push({ "name": token_name, "value": token_hash });
-            data_post.push({ "name": 'field_name_to', "value": jsMultiselect.attr('name') });
-            data_post.push({ "name": 'field_ref', "value": sFieldRef });
-            if (isNormalSelect) {
-                data_post.push({ "name": 'field_from_val', "value": jqField.val() });
-            } else {
-
-                var val_array = jqField.val();
-                for (var i in val_array) {
-                    data_post.push({ "name": 'field_from_val[]', "value": val_array[i] });
-                }
-
-            }
-            $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
-                type: 'POST',
-                data: data_post,
-                dataType: 'json',
-                complete: function () {
-                    loading(false);
-                },
-                success: function (data) {
-                    $('option', jsMultiselect).remove();
-                    $('<option></option>').appendTo(jsMultiselect);
-                    var previousValueFound = false;
-                    $.each(data, function (k, v) {
-                        var jqOption = $('<option></option>').val(k).text(v);
-
-                        if ($.inArray(k, previousValue) > -1) {
-                            previousValueFound = true;
-                        }
-
-                        jsMultiselect.append(jqOption);
-                    });
-
-
-                    if (previousValueFound) {
-                        if (isNormalSelect) {
-
-                            jsMultiselect.val(previousValue[0]);  // Solo UN valore
-                            jsMultiselect.select2('val', previousValue);
-                        } else {
-
-                            jsMultiselect.select2('data', previousValue);
-                        }
-                    }
-                }
-            });
-        });
-
-        if ($.inArray(jqField, fieldsSources) === -1) {
-            //console.log(jqField);
-            fieldsSources.push(jqField);
-        }
-    });
-
-    $.each(fieldsSources, function (k, selector) {
-        var field = selector;//$(selector);
-        console.log(selector);
-
-        if (field.val() !== '') {
-
-            field.trigger('change');
-
-        }
-    });
-
-
     /*
-     * Select ajax
-     */
+         * Select ajax
+         */
 
 
     $('.js_select_ajax_new', container).each(function () {
@@ -287,6 +189,113 @@ function initComponents(container) {
             language: lang_short_code
         });
     });
+
+
+    var fieldsSources = [];
+    $('[data-source-field]:not([data-source-field=""])', container).each(function () {
+
+        //console.log($(this).attr('name'));
+
+
+
+        // Prendo il form dell'elemento
+        var jsMultiselect = $(this);
+        var jqForm = jsMultiselect.parents('form');
+        var sSourceField = jsMultiselect.attr('data-source-field');
+        var sFieldRef = jsMultiselect.attr('data-ref');
+
+        // Prendo il campo da osservare
+        var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"],[data-field_name="' + sSourceField + '"]', jqForm);
+
+        console.log(sSourceField);
+
+        jqField.on('change', function () {
+
+            console.log('test');
+            //console.log($(this));
+
+            var previousValue = jsMultiselect.attr('data-val').split(',');
+            jsMultiselect.select2('val', '');
+
+            //se ho una select semplice devo saperlo perché così so come gestire il valore settato
+            var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
+
+            var field_name_to = jsMultiselect.attr('name');
+            if (field_name_to.indexOf('conditions[') !== -1) {
+                field_name_to = jsMultiselect.data('field_name');
+            }
+
+            $('option', jsMultiselect).remove();
+            loading(true);
+            var data_post = [];
+            data_post.push({ "name": token_name, "value": token_hash });
+            data_post.push({ "name": 'field_name_to', "value": field_name_to });
+            data_post.push({ "name": 'field_ref', "value": sFieldRef });
+            if (isNormalSelect) {
+                data_post.push({ "name": 'field_from_val', "value": jqField.val() });
+            } else {
+
+                var val_array = jqField.val();
+                for (var i in val_array) {
+                    data_post.push({ "name": 'field_from_val[]', "value": val_array[i] });
+                }
+
+            }
+            $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
+                type: 'POST',
+                data: data_post,
+                dataType: 'json',
+                complete: function () {
+                    loading(false);
+                },
+                success: function (data) {
+                    $('option', jsMultiselect).remove();
+                    $('<option></option>').appendTo(jsMultiselect);
+                    var previousValueFound = false;
+                    $.each(data, function (k, v) {
+                        var jqOption = $('<option></option>').val(k).text(v);
+
+                        if ($.inArray(k, previousValue) > -1) {
+                            previousValueFound = true;
+                        }
+
+                        jsMultiselect.append(jqOption);
+                    });
+
+
+                    if (previousValueFound) {
+                        if (isNormalSelect) {
+
+                            jsMultiselect.val(previousValue[0]);  // Solo UN valore
+                            jsMultiselect.select2('val', previousValue);
+                        } else {
+
+                            jsMultiselect.select2('data', previousValue);
+                        }
+                    }
+                }
+            });
+        });
+
+        if ($.inArray(jqField, fieldsSources) === -1) {
+            //console.log(jqField);
+            fieldsSources.push(jqField);
+        }
+    });
+
+    $.each(fieldsSources, function (k, selector) {
+        var field = selector;//$(selector);
+        //console.log(selector);
+
+        if (field.val() !== '') {
+
+            field.trigger('change');
+
+        }
+    });
+
+
+
 
     function formatRepo(repo) {
 
