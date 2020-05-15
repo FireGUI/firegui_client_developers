@@ -117,9 +117,9 @@ class Datab extends CI_Model
      * @param array $eval_cachable_fields Eventuale array degli eval fields della grid cachabili. Servono per buildare correttamente il where e l'order by
      * @return array
      */
-    public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE, $eval_cachable_fields = [])
+    public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE, $eval_cachable_fields = [], $additional_parameters = [])
     {
-
+        $group_by = array_get($additional_parameters, 'group_by', null);
         // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
         // entità
         $visibleFields = $this->crmentity->getFields($entity_id);
@@ -174,14 +174,17 @@ class Datab extends CI_Model
             $where[] = "({$field} IS NULL OR {$field} {$sql_op} {$value})";
         }
 
+
+
         // Ok, where pronto, mi resta solo da fare il dispatch ad apilib
         $entity = $this->crmentity->getEntity($entity_id);
 
         if ($count) {
-            return $this->apilib->count($entity['entity_name'], $where);
+            
+            return $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
         } else {
 
-            return $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields);
+            return $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
         }
     }
 
@@ -357,6 +360,8 @@ class Datab extends CI_Model
         } else {
             $formData = ($value_id && !is_array($value_id)) ? $this->apilib->view($form['entity_name'], $value_id, 1) : [];
 
+            
+
             foreach ($fields as $field) {
                 //debug($formData, true);
                 if ($field['fields_multilingual'] == DB_BOOL_TRUE) { //If multilanguage, override value with original json
@@ -378,7 +383,7 @@ class Datab extends CI_Model
         $operators = unserialize(OPERATORS);
         foreach ($fields as $key => $field) {
 
-            $fields[$key] = $this->processFieldMapping($field,$form);
+            $fields[$key] = $this->processFieldMapping($field, $form);
         }
         unset($field);
 
@@ -460,104 +465,105 @@ class Datab extends CI_Model
 
         return ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
     }
-public function processFieldMapping($field, $form) {
-    // Il ref è il nome della tabella/entità di supporto/da joinare
-            // quindi estraggo i valori da proporre
-            if (!$field['fields_ref']) {
-                return $field;
-            }
-
-            if (!($entity = $this->get_entity_by_name($field['fields_ref']))) {
-                log_message('error', "Relation field does not exist");
-                echo "Relation field does not exists (" . $field['fields_ref'] . ") ";
-                return $field;
-            }
-
-            // Verifico se il ref si riferisce ad una eventuale relations oppure ad una tabella di supporto, in modo da gestirlo diversamente
-            // Chiaramente x funzionare non ci devono essere 2 relazioni con lo stesso nome
-            //$relations = $this->db->query("SELECT * FROM relations WHERE relations_name = ?", [$entity['entity_name']])->row_array();
-            $relations = $this->crmentity->getRelationByName($entity['entity_name']);
-
-            if (count($relations) > 0) {
-
-                // Se ho relazione A_B e il form inserisce A, allora voglio prendere la tabella B...
-                $nField = ($relations['relations_table_2'] == $form['entity_name']) ? 1 : 2;
-
-                $entity = $this->get_entity_by_name($relations["relations_table_{$nField}"]);
-                $support_relation_table = $relations["relations_table_{$nField}"];
-                $field['field_support_id'] = $relations["relations_field_{$nField}"];   // Dichiara il campo id da utilizzare nel form
-            } else {
-                $support_relation_table = $field['fields_ref'];
-                $field['field_support_id'] = $entity['entity_name'] . "_id";    // Dichiara il campo id da utilizzare nel form
-            }
-
-            // A questo punto se il campo è ajax non pesco i dati, ma demando
-            // l'onere alla chiamata ajax
-            $type = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
-            if ($type == 'select_ajax' or $field['fields_source']) {
-                return $field;
-            }
-
-            // Applico limiti permessi
-            $field_limits = $this->getUserLimits($support_relation_table);
-            $wheres = [];
-
-            foreach ($field_limits as $field_limit) {
-                $fieldLimitName = $field_limit['fields_name'];
-                $op = $field_limit['limits_operator'];
-                $value = $field_limit['limits_value'];
-
-                if (array_key_exists($op, $operators)) {
-                    $sql_op = $operators[$op]['sql'];
-
-                    switch ($op) {
-                        case 'in':
-                            $value = "('" . implode("','", explode(',', $value)) . "')";
-                            break;
-
-                        case 'like':
-                            $value = "'%{$value}%'";
-                            break;
-                    }
-
-                    $wheres[] = "{$fieldLimitName} {$sql_op} {$value}";
-                }
-            }
-
-            // Prendo la field select where
-            if (($fieldWhere = trim($field['fields_select_where']))) {
-                $wheres[] = $this->replace_superglobal_data($fieldWhere);
-            }
-
-            $where = $wheres ? '(' . implode(' AND ', $wheres) . ')' : '';
-
-            // Se attualmente ci sono dei filtri E se il campo ha una
-            // corrispondenza nei dati del form (in modifica), allora voglio
-            // assicurarmi che il valore/i valori vengano preselezionati, a
-            // prescindere dai filtri
-            if ($where && isset($formData[$field['fields_name']])) {
-
-                $lvalue = $field['field_support_id'];
-                $oper = '=';
-                $rvalue = $formData[$field['fields_name']];
-
-                // è una relazione, quindi nelle chiavi ci sono gli id
-                if (is_array($rvalue)) {
-                    $oper = 'IN';
-                    $rvalue = '(' . implode(',', array_keys($rvalue)) . ')';
-                }
-
-                $where .= (($where ? ' OR ' : '') . '(' . $lvalue . ' ' . $oper . ' ' . $rvalue . ')');
-            }
-            // TODO Calcoare l'order by
-
-            $order_by = NULL;
-
-            $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $order_by);
-
-            //debug($field['support_data'] , true);
+    public function processFieldMapping($field, $form)
+    {
+        // Il ref è il nome della tabella/entità di supporto/da joinare
+        // quindi estraggo i valori da proporre
+        if (!$field['fields_ref']) {
             return $field;
-}
+        }
+
+        if (!($entity = $this->get_entity_by_name($field['fields_ref']))) {
+            log_message('error', "Relation field does not exist");
+            echo "Relation field does not exists (" . $field['fields_ref'] . ") ";
+            return $field;
+        }
+
+        // Verifico se il ref si riferisce ad una eventuale relations oppure ad una tabella di supporto, in modo da gestirlo diversamente
+        // Chiaramente x funzionare non ci devono essere 2 relazioni con lo stesso nome
+        //$relations = $this->db->query("SELECT * FROM relations WHERE relations_name = ?", [$entity['entity_name']])->row_array();
+        $relations = $this->crmentity->getRelationByName($entity['entity_name']);
+
+        if (count($relations) > 0) {
+
+            // Se ho relazione A_B e il form inserisce A, allora voglio prendere la tabella B...
+            $nField = ($relations['relations_table_2'] == $form['entity_name']) ? 1 : 2;
+
+            $entity = $this->get_entity_by_name($relations["relations_table_{$nField}"]);
+            $support_relation_table = $relations["relations_table_{$nField}"];
+            $field['field_support_id'] = $relations["relations_field_{$nField}"];   // Dichiara il campo id da utilizzare nel form
+        } else {
+            $support_relation_table = $field['fields_ref'];
+            $field['field_support_id'] = $entity['entity_name'] . "_id";    // Dichiara il campo id da utilizzare nel form
+        }
+
+        // A questo punto se il campo è ajax non pesco i dati, ma demando
+        // l'onere alla chiamata ajax
+        $type = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
+        if ($type == 'select_ajax' or $field['fields_source']) {
+            return $field;
+        }
+
+        // Applico limiti permessi
+        $field_limits = $this->getUserLimits($support_relation_table);
+        $wheres = [];
+
+        foreach ($field_limits as $field_limit) {
+            $fieldLimitName = $field_limit['fields_name'];
+            $op = $field_limit['limits_operator'];
+            $value = $field_limit['limits_value'];
+
+            if (array_key_exists($op, $operators)) {
+                $sql_op = $operators[$op]['sql'];
+
+                switch ($op) {
+                    case 'in':
+                        $value = "('" . implode("','", explode(',', $value)) . "')";
+                        break;
+
+                    case 'like':
+                        $value = "'%{$value}%'";
+                        break;
+                }
+
+                $wheres[] = "{$fieldLimitName} {$sql_op} {$value}";
+            }
+        }
+
+        // Prendo la field select where
+        if (($fieldWhere = trim($field['fields_select_where']))) {
+            $wheres[] = $this->replace_superglobal_data($fieldWhere);
+        }
+
+        $where = $wheres ? '(' . implode(' AND ', $wheres) . ')' : '';
+
+        // Se attualmente ci sono dei filtri E se il campo ha una
+        // corrispondenza nei dati del form (in modifica), allora voglio
+        // assicurarmi che il valore/i valori vengano preselezionati, a
+        // prescindere dai filtri
+        if ($where && isset($formData[$field['fields_name']])) {
+
+            $lvalue = $field['field_support_id'];
+            $oper = '=';
+            $rvalue = $formData[$field['fields_name']];
+
+            // è una relazione, quindi nelle chiavi ci sono gli id
+            if (is_array($rvalue)) {
+                $oper = 'IN';
+                $rvalue = '(' . implode(',', array_keys($rvalue)) . ')';
+            }
+
+            $where .= (($where ? ' OR ' : '') . '(' . $lvalue . ' ' . $oper . ' ' . $rvalue . ')');
+        }
+        // TODO Calcoare l'order by
+
+        $order_by = NULL;
+
+        $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $order_by);
+
+        //debug($field['support_data'] , true);
+        return $field;
+    }
     /**
      * Grids
      */
@@ -582,8 +588,9 @@ public function processFieldMapping($field, $form) {
         return $dati;
     }
 
-    public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE)
+    public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $additional_parameters = [])
     {
+        $group_by = array_get($additional_parameters, 'group_by', null);
         //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
         $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
             return ($field['grids_fields_replace_type'] == 'eval' && $field['grids_fields_eval_cache_type'] && $field['grids_fields_eval_cache_type'] != 'no_cache');
@@ -598,9 +605,14 @@ public function processFieldMapping($field, $form) {
             $additional_data = array();
         }
 
-        /** Valuta order_by * */
+        /** Grid order_by * */
         if (is_null($order_by) && !empty($grid['grids']['grids_order_by']) && !$count) {
             $order_by = $grid['grids']['grids_order_by'];
+        }
+
+        /** Grid group_by * */
+        if (is_null($group_by) && !empty($grid['grids']['grids_group_by'])) {
+            $group_by = $grid['grids']['grids_group_by'];
         }
 
         //20190327 Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
@@ -611,7 +623,7 @@ public function processFieldMapping($field, $form) {
 
         $has_bulk = !empty($grid['grids_bulk_mode']);
         $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, is_array($where) ? implode(' AND ', $where) : $where, $additional_data);
-
+        //debug($where);
         //20170530 - Verifico che non sia impostato un campo order by di default nell'entità, qualora non specificato un order by specifico della grid
 
         if (empty($order_by)) {
@@ -641,7 +653,9 @@ public function processFieldMapping($field, $form) {
 
         $this->apilib->setLanguage();
 
-        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, 2, $count, $eval_cachable_fields);
+
+
+        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, 2, $count, $eval_cachable_fields, ['group_by' => $group_by]);
 
         // Riabilita sistema traduzioni
         $this->apilib->setLanguage($clanguage, $flanguage);
@@ -1978,7 +1992,7 @@ public function processFieldMapping($field, $form) {
                 $where = $this->search_like($search, $fields);
 
                 //Calcola risultato e consideralo sse ha dati effettivi
-                $result = $this->getDataEntity($entity['entity_id'], $where, null, null, null, 1);
+                $result = $this->getDataEntity($entity['entity_id'], $where, null, null, null, null, 1, false, [], ['group_by' => $group_by]);
                 if ($result) {
                     $results[] = [
                         'entity' => $entity,
@@ -2065,7 +2079,7 @@ public function processFieldMapping($field, $form) {
                             case 'TEXT':
                                 if ($this->db->dbdriver != 'postgre') {
                                     $chunk = strtolower($chunk);
-                                    $inner_where[] = "LOWER({$field['fields_name']} LIKE '%{$chunk}%')";
+                                    $inner_where[] = "LOWER({$field['fields_name']}) LIKE '%{$chunk}%'";
                                 } else {
                                     $inner_where[] = "({$field['fields_name']}::TEXT ILIKE '%{$chunk}%')";
                                 }
@@ -2090,7 +2104,7 @@ public function processFieldMapping($field, $form) {
                         if (!empty($field['grids_fields_eval_cache_data'])) {
                             if ($this->db->dbdriver != 'postgre') {
                                 $chunk = strtolower($chunk);
-                                $inner_where[] = "LOWER({$field['grids_fields_eval_cache_data']} LIKE '%{$chunk}%')";
+                                $inner_where[] = "LOWER({$field['grids_fields_eval_cache_data']}) LIKE '%{$chunk}%'";
                             } else {
 
                                 $inner_where[] = "({$field['grids_fields_eval_cache_data']}::TEXT ILIKE '%{$chunk}%')";
@@ -2700,9 +2714,9 @@ public function processFieldMapping($field, $form) {
                 $preview = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id = '{$data['value']}'", 1);
                 $data['value_preview'] = array_pop($preview);
             }
-if ($baseType == 'multi_upload') {
-//debug($data);
-}
+            if ($baseType == 'multi_upload') {
+                //debug($data);
+            }
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
             if ($baseType !== 'input_hidden') {
                 $wrapAttributes = implode(' ', array_filter([$style, $langAttribute]));

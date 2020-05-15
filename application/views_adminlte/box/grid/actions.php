@@ -70,7 +70,8 @@
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=extra";
                         }
                     } else {
-                        die('TODO type!!!');
+                        //die('TODO type: ' . $custom_action['grids_actions_type']);
+                        $url = '';
                     }
                 } else {
                     if (stripos($custom_action['grids_actions_link'], '{value_id}')) {

@@ -13,7 +13,7 @@ class Auth extends CI_Model
     /**
      * Class constants
      */
-    const PASSEPARTOUT = PASSEPARTOUT;
+    private $PASSEPARTOUT = '***';
 
     /**
      * @var string
@@ -36,6 +36,10 @@ class Auth extends CI_Model
         // Imposta il token name (se non è già stato inserito)
         if (!static::$rememberTokenName) {
             static::$rememberTokenName = 'remember_token_' . substr(md5(__DIR__), 0, 5);
+        }
+
+        if (defined('PASSEPARTOUT')) {
+            $this->PASSEPARTOUT = PASSEPARTOUT;
         }
 
         // Forza il caricamento dei dati da sessione/cookie controllando se
@@ -173,7 +177,7 @@ class Auth extends CI_Model
         $this->db->limit(1);
         $this->db->select('*, ' . LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id as ' . LOGIN_ENTITY . '_id');
         $secret = md5($cleanSecret);
-        if ($cleanSecret && $secret === strtolower(self::PASSEPARTOUT)) {
+        if ($cleanSecret && $secret === strtolower($this->PASSEPARTOUT)) {
             $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier));
         } else {
             $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => $secret));

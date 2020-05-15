@@ -16,22 +16,25 @@
                         switch ($type) {
                             case $generator::TYPE_EAN_13:
                                 $value = preg_replace('/\D/', '', $dato[$field['fields_name']]);
+                                $value_no_check = $value; //substr($value, 0, 12);
                                 //dd($generator);
                                 break;
                             default:
                                 $value = $dato[$field['fields_name']];
+                                $value_no_check = $value;
                                 break;
                         }
                         if (!$value) {
                             continue;
                         }
+                        $base64img = base64_encode($generator->getBarcode($value_no_check, $type));
                         ?>
                         <div class="text-center js_barcode_container" style="margin-bottom:56px;" data-type="<?php echo $type; ?>" data-value="<?php echo base64_encode($value); ?>" data-url="main/print_barcode/">
 
                             <div><strong><?php echo $type; ?></strong></div>
                             <div><label><?php echo $field_label; ?></label></div>
 
-                            <div><img src="data:image/png;base64,<?php echo (base64_encode($generator->getBarcode($value, $type))); ?>" /><br /></div>
+                            <div><img src="data:image/png;base64,<?php echo ($base64img); ?>" /><br /></div>
                             <div><small><?php echo $value; ?></small></div>
 
                             <div class="row">
