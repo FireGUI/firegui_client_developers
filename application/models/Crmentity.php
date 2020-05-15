@@ -85,6 +85,7 @@ class Crmentity extends CI_Model
      */
     public function get_data_full($id, $maxDepthLevel = 2)
     {
+        //debug("{$this->entity_name}.{$this->entity_name}_id = '{$id}'");
         $arr = $this->get_data_full_list($this->entity_id, null, "{$this->entity_name}.{$this->entity_name}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
         return array_get($arr, 0, []);
     }
@@ -110,8 +111,9 @@ class Crmentity extends CI_Model
      * 
      * @throws Exception
      */
-    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2, $eval_cachable_fields = [])
+    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2, $eval_cachable_fields = [], $additional_parameters = [])
     {
+
         if (!$entity_id) {
             if (!$this->entity_id) {
                 throw new Exception("Impossibile eseguire la query: entità non specificata.");
@@ -119,7 +121,7 @@ class Crmentity extends CI_Model
 
             $entity_id = $this->entity_id;
         }
-
+        $group_by = array_get($additional_parameters, 'group_by', null);
         // Entity name è da deprecare...
         $entity_name = $this->getEntity($entity_id)['entity_name'];
         $_cache_key = md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
@@ -128,13 +130,13 @@ class Crmentity extends CI_Model
             return [];
         }
 
-        return $this->getFromCache($_cache_key, function () use ($entity_id, $entity_name, $where, $limit, $offset, $order_by, $count, $depth, $eval_cachable_fields) {
+        return $this->getFromCache($_cache_key, function () use ($entity_id, $entity_name, $where, $limit, $offset, $order_by, $group_by, $count, $depth, $eval_cachable_fields) {
 
             $extra_data = true;
             //die('depth:'.$depth);
 
 
-            $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
+            $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'group_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
 
             //debug($data,true);
 
@@ -177,9 +179,9 @@ class Crmentity extends CI_Model
                     if ($this->db->dbdriver == 'postgre') {
                         $this->db->select("{$entity_name}_id as id, ST_Y($casted_field) AS lat, ST_X($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
                     } else {
-                            $this->db->select("{$entity_name}_id as id, ST_X($casted_field) AS lat, ST_Y($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
+                        $this->db->select("{$entity_name}_id as id, ST_X($casted_field) AS lat, ST_Y($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
                     }
-                    
+
                     foreach ($this->db->get($entity_name)->result_array() as $result) {
                         //debug($result);
                         $geographyValues[$result['id']] = ['lat' => $result['lat'], 'lng' => $result['lng']];
@@ -288,7 +290,7 @@ class Crmentity extends CI_Model
 
                 $referersKeys[$refererEntity] = [];
 
-                $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
+                $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, null, false, $depth);
                 if (!empty($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
@@ -428,7 +430,7 @@ class Crmentity extends CI_Model
                     $_data[$name] = array_intersect_key($fullData, array_flip($_data[$name]));
                 }
             }
-            //debug($data);
+
             return $data['data'];
         });
     }
@@ -467,29 +469,23 @@ class Crmentity extends CI_Model
         $depth = array_get($options, 'depth', 2);
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
-
-
         // =================
-
         $dati = $this->getEntityFullData($entity_id);
-
-
 
         $this->buildSelect($dati, $options);
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);
+        $this->buildGroupBy($options);
 
-
-
-        // Mi salvo l'elenco delle entità joinate, in modo da evitare doppi join
-        // in futuro non dovrò evitare, ma semplicemente assegnare un alias
+        // Save list of joined entity, to avoid double joins...
         $this->db->from($dati['entity']['entity_name']);
         $joined = array($dati['entity']['entity_name']);
         $to_join_later = [];
 
-        // Aggiungo in automatico i join SUPPONENDO che il campo da joinare, nella tabella sarà nometabella_id ********
+
         $permission_entities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti
 
+        //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
             $leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
 
@@ -613,7 +609,6 @@ class Crmentity extends CI_Model
 
         $entityName = $entityFullData['entity']['entity_name'];
 
-        //debug($entityFullData,true);
 
         if (!$visible_fields) {
 
@@ -650,8 +645,6 @@ class Crmentity extends CI_Model
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
         //array_unshift($visible_fields, sprintf('%s_id', $entityName));
-
-        //debug(array_unique($visible_fields));
 
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
         $this->db->select(array_unique($visible_fields));
@@ -713,7 +706,16 @@ class Crmentity extends CI_Model
             array_walk($where, $func);
         }
     }
+    private function buildGroupBy(array $options)
+    {
+        $group_by = array_get($options, 'group_by', null);
 
+        if ($group_by !== NULL) {
+            $this->db->_protect_identifiers = FALSE;
+            $this->db->group_by($group_by);
+            $this->db->_protect_identifiers = TRUE;
+        }
+    }
     /**
      * Compila la sezione LIMIT-OFFSET e ORDER BY della query
      * @param array $options
