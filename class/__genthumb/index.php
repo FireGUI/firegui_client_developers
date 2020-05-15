@@ -8,3 +8,4 @@ if (!file_exists('phpThumb.config.php')) {
 	exit;
 }
 header('Location: ./demo/');
+?>
