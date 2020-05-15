@@ -144,8 +144,10 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                         $where = null;
                                     }
 
+                                    //debug($field);
+
                                     ?>
-                                    <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
+                                    <select data-field_name="<?php echo $field['name']; ?>" class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['filterref'])) ? $field['filterref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                         <option value="">---</option>
 
                                         <?php foreach ($this->crmentity->getEntityPreview($field['filterref'], $where) as $id => $name) : ?>
