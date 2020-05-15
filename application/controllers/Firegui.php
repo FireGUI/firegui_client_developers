@@ -408,7 +408,6 @@ class Firegui extends MY_Controller
             array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
     }
 }
-}
 
 
 /* End of file welcome.php */
