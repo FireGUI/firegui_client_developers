@@ -353,7 +353,7 @@ class Apilib
 
         $cache_key = "apilib.list.{$entity}";
         if (!($out = $this->cache->get($cache_key))) {
-            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, FALSE, $depth);
+            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, null, FALSE, $depth);
             $this->cache->save($cache_key, $out, $this->CACHE_TIME);
         }
 
@@ -851,8 +851,9 @@ class Apilib
 
 
 
-    public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2)
+    public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC',  $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
     {
+
         //die('test');
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -861,10 +862,9 @@ class Apilib
         if (!is_array($input)) {
             $input = $input ? [$input] : [];
         }
-
+        $group_by = array_get($additional_parameters, 'group_by', null);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
-        $cache_key = "apilib.search.{$entity}." . md5(serialize($input))
-            . ($limit ? '.' . $limit : '') . ($offset ? '.' . $offset : '') . ($orderBy ? '.' . md5(serialize($orderBy)) . '.' . md5(serialize($orderDir)) : '');
+        $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
 
 
@@ -941,7 +941,8 @@ class Apilib
             //$order = $orderBy? $orderBy.' '.($orderDir==='ASC'? $orderDir: 'DESC'): null;
 
             try {
-                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth);
+
+                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
                 $this->cache->save($cache_key, $out, $this->CACHE_TIME);
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
@@ -953,23 +954,24 @@ class Apilib
     }
 
 
-    public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1)
+    public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1, $additional_parameters = [])
     {
+        //$group_by = array_get($additional_parameters, 'group_by', null);
         //$out = $this->search($entity, $input, 1);
         //20151019 - Fix MP: aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
-        $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth);
+        $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth, [], $additional_parameters);
         return array_shift($out) ?: [];
     }
 
 
 
-    public function count($entity = null, $input = [])
+    public function count($entity = null, $input = [], $additional_parameters = [])
     {
 
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
-
+        $group_by = array_get($additional_parameters, 'group_by', null);
         if (is_string($input)) {
             $input = array($input);
         }
