@@ -1790,7 +1790,10 @@ class Datab extends CI_Model
 
         // Recupera permessi del gruppo
         $permissions = $this->getPermission($groupName);
-        $permissionsEntities = $this->db->get_where('permissions_entities', array('permissions_entities_permissions_id' => $permissions['permissions_id']))->result_array();
+        $permissionsEntities = $this->db->where('permissions_entities_entity_id IN (SELECT entity_id FROM entity)', null, false)->get_where('permissions_entities', array(
+            'permissions_entities_permissions_id' => $permissions['permissions_id'],
+
+        ))->result_array();
         $permissionsModules = $this->db->get_where('permissions_modules', array('permissions_modules_permissions_id' => $permissions['permissions_id']))->result_array();
 
         $this->db->trans_start();
