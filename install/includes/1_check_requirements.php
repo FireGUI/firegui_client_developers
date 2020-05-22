@@ -18,7 +18,7 @@
     <tr>
         <td>PHP</td>
         <td><?php echo " " . ($requirements['php_version'] ? $res_true : $res_false); ?></td>
-        <td><?php echo " " . ($requirements['php_version'] ? '' : 'Your PHP versions is: ' . PHP_VERSION . ', we need at least PHP ' . $php_min_version); ?></td>
+        <td><?php echo " " . ($requirements['php_version'] ? 'Your PHP versions is: ' . PHP_VERSION : 'Your PHP versions is: ' . PHP_VERSION . ', we need at least PHP ' . $php_min_version); ?></td>
     </tr>
     <tr>
         <td>Path folder writable</td>
@@ -68,22 +68,22 @@
     <tr>
         <td>ImageMagick PHP Extension</td>
         <td><?php echo $requirements['imagick'] ? $res_true : $res_false; ?></td>
-        <td><?php echo $requirements['imagick'] ? '' : 'Suggested but not required'; ?></td>
+        <td><?php echo $requirements['php-imagick'] ? '' : 'Suggested but not required'; ?></td>
     </tr>
     <tr>
         <td>Curl PHP Extension</td>
-        <td><?php echo $requirements['curl'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['curl'] ? '' : 'Not required, but highly recommended.'; ?></td>
+        <td><?php echo $requirements['php-curl'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo $requirements['php-curl'] ? '' : 'Not required, but highly recommended.'; ?></td>
     </tr>
     <tr>
         <td>Zip PHP Extension</td>
-        <td><?php echo $requirements['zip'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['zip'] ? '' : 'Not required, but highly recommended.'; ?></td>
+        <td><?php echo $requirements['php-zip'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo $requirements['php-zip'] ? '' : 'Php-zip extension is required'; ?></td>
     </tr>
     <tr>
         <td>GD PHP Extension</td>
-        <td><?php echo $requirements['gd'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['gd'] ? '' : 'Not required, but highly recommended.'; ?></td>
+        <td><?php echo $requirements['php-gd'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo $requirements['php-gd'] ? '' : 'Not required, but highly recommended.'; ?></td>
     </tr>
 </table>
 

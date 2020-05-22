@@ -27,16 +27,33 @@ $requirements['xml_enabled'] = extension_loaded("xml");
 $requirements['ctype_enabled'] = extension_loaded("ctype");
 // JSON PHP Extension
 $requirements['json_enabled'] = extension_loaded("json");
-// Mcrypt
+// php-Mcrypt
 $requirements['mcrypt_enabled'] = extension_loaded("mcrypt_encrypt");
-// ImageMagick
-$requirements['imagick'] = extension_loaded("imagick");
-// Curl
-$requirements['curl'] = extension_loaded("curl");
-// Zip
-$requirements['zip'] = extension_loaded("zip");
-// GD2
-$requirements['gd'] = extension_loaded("gd");
+// php-ImageMagick
+$requirements['php-imagick'] = extension_loaded("imagick");
+// php-Curl
+$requirements['php-curl'] = extension_loaded("curl");
+// php-Zip
+$requirements['php-zip'] = extension_loaded("zip");
+// php-GD2
+$requirements['php-gd'] = extension_loaded("gd");
+// // zip
+// $requirements['zip'] = checkShellCommand('zip');
+// // unzip
+// $requirements['unzip'] = checkShellCommand('unzip');
+// // curl
+// $requirements['curl'] = checkShellCommand('curl --help');
+
+
+// function checkShellCommand($command)
+// {
+//     $returnValue = shell_exec("$command");
+//     if (empty($returnValue)) {
+//         return false;
+//     } else {
+//         return true;
+//     }
+// }
 
 // mod_rewrite
 $requirements['mod_rewrite_enabled'] = null;
@@ -243,7 +260,7 @@ function base_url_template($uri)
                             $error_req = [];
 
                             foreach ($requirements as $key => $req) {
-                                if (!in_array($key, ['mcrypt_enabled', 'imagick'])) {
+                                if (!in_array($key, ['mcrypt_enabled', 'php-imagick'])) {
                                     if (!$req) {
                                         $error_req[] = $key;
                                         $error_level += 1;

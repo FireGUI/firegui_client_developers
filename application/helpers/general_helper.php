@@ -1207,6 +1207,7 @@ if (!function_exists('dirToArray')) {
         $cdir = scandir($dir);
         foreach ($cdir as $key => $value) {
             if (!in_array($value, array(".", ".."))) {
+                if (stripos($value, '.') === 0) continue;
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
                     $result[$value] = dirToArray($dir . DIRECTORY_SEPARATOR . $value);
                 } else {
