@@ -8,7 +8,7 @@
                 <hr style="margin-top: 0.5% !important; margin-bottom: 0.5% !important;">
             <?php endforeach; ?>
             <?php if (grid_has_action($grid['grids'])) : ?>
-                <dt class="dl-actions-label">Azioni disponibili</dt>
+                <dt class="dl-actions-label"><?php e('Actions'); ?></dt>
                 <dd class="dl-actions">
                     <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
                 </dd>

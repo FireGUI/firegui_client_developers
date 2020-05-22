@@ -33,7 +33,7 @@
 
             <?php if (grid_has_action($grid['grids'])) : ?>
                 <li class="list-group-item">
-                    <h4 class="list-group-item-heading <?php echo "js-grid-field-{$field['fields_id']}" ?>" style="font-weight: bold !important;"><?php echo $field['grids_fields_column_name']; ?></h4>
+                    <h4 class="list-group-item-heading <?php echo "js-grid-field-{$field['fields_id']}" ?>" style="font-weight: bold !important;"><?php e('Actions'); ?></h4>
                     <p class="list-group-item-text <?php echo "js-grid-field-{$field['fields_id']}" ?>">
                         <?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?>
                     </p>
