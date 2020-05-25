@@ -359,7 +359,7 @@ function initTableAjax(grid) {
                             //console.log(total);
                         }
 
-                        $(footer).html(total.toFixed(2));
+                        $(footer).html(parseFloat(total).toFixed(2));
                     }
                 });
 

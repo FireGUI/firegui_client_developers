@@ -15,7 +15,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                 <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 6); ?>">
                     <?php
                     //debug($where_data,true);
-                    $value = empty($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
+                    $value = (empty($where_data[$field['id']]) || !array_key_exists('value', $where_data[$field['id']]))  ? NULL : $where_data[$field['id']]['value'];
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];
                     } else {
@@ -42,6 +42,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 </span>
                             </div>
                         <?php elseif ($field['datatype'] == DB_BOOL_IDENTIFIER) : ?>
+                            <?php //debug($value); 
+                            ?>
                             <button type="button" class="btn-link" onclick="$('.field_<?php echo $field['id']; ?>', $('#<?php echo "form_{$form['forms']['forms_id']}" ?>')).attr('checked', false)" data-toggle="tooltip" title="<?php e('Remove selection'); ?>">
                                 <small><i class="fas fa-times"></i></small>
                             </button>
