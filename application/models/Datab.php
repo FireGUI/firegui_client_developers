@@ -458,7 +458,7 @@ class Datab extends CI_Model
                 'type' => $type,
                 'datatype' => $field['fields_type'],
                 'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
-                'fields_source' =>$field['fields_source'], // Computo il ref field da usare nel caso di form
+                'fields_source' => $field['fields_source'], // Computo il ref field da usare nel caso di form
                 'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null)
             ];
         }
@@ -562,7 +562,7 @@ class Datab extends CI_Model
 
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $order_by);
 
-        
+
 
         //debug($field['support_data'] , true);
         return $field;
@@ -701,6 +701,7 @@ class Datab extends CI_Model
             }
         }
 
+        //TODO: will be deprecated as soon as new actions features will become stable
         $dati['grids']['links'] = array(
             'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
             'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
@@ -1789,7 +1790,10 @@ class Datab extends CI_Model
 
         // Recupera permessi del gruppo
         $permissions = $this->getPermission($groupName);
-        $permissionsEntities = $this->db->get_where('permissions_entities', array('permissions_entities_permissions_id' => $permissions['permissions_id']))->result_array();
+        $permissionsEntities = $this->db->where('permissions_entities_entity_id IN (SELECT entity_id FROM entity)', null, false)->get_where('permissions_entities', array(
+            'permissions_entities_permissions_id' => $permissions['permissions_id'],
+
+        ))->result_array();
         $permissionsModules = $this->db->get_where('permissions_modules', array('permissions_modules_permissions_id' => $permissions['permissions_id']))->result_array();
 
         $this->db->trans_start();
@@ -2721,7 +2725,7 @@ class Datab extends CI_Model
                 //debug($data);
             }
 
-            
+
 
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
             if ($baseType !== 'input_hidden') {

@@ -107,10 +107,4 @@
         </a>
     <?php endif; ?>
 
-    <?php if (isset($links['delete']) && $links['delete']) : ?>
-        <a href="<?php echo $links['delete'] . $id; ?>" data-confirm-text="<?php e("Are you sure to delete this record?"); ?>" class="btn btn-danger btn-grid-action-s js_confirm_button js_link_ajax <?php if (!empty($links['delete_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['delete_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Delete'); ?>">
-            <span class="fas fa-times" style="color:white !important;"></span>
-        </a>
-    <?php endif; ?>
-
 </div>
