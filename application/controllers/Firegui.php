@@ -343,10 +343,6 @@ class Firegui extends MY_Controller
 
         $modules = dirToArray(APPPATH . '/modules');
 
-        if ($modules[0] == '.DS_Store') {
-            unset($modules[0]);
-        }
-
         foreach ($modules as $module_key => $module_value) {
             $modules_views[$module_key] = $module_value['views'];
         }

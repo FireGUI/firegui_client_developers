@@ -35,7 +35,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
 
-                        <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?>>
+                        <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?> style="vertical-align:top!important;">
                             <?php
                             $this->load->view('box/grid/actions', array(
                                 'links' => $grid['grids']['links'],
@@ -57,7 +57,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                     <?php if ($sub_data) : ?>
                         <tr style="background-color:#DDD!important;">
                             <td <?php echo 'colspan="' . (count($grid['grids_fields']) + 1) . '"'; ?> style="padding: 0;border: none;">
-                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse" style="margin-top:10px;padding: 5px;">
+                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse" style="margin-top:25px;padding: 5px;">
                                     <?php if (!$sub_grid['grids']['grids_layout']) : ?>
                                         <table class="table table-bordered table-full-width" style="margin-bottom: 0!important">
                                             <thead>
@@ -65,6 +65,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                                                     <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
                                                         <th style="background-color: #dcdcdc; color: #000"><?php echo $field['grids_fields_column_name']; ?></th>
                                                     <?php endforeach; ?>
+                                                    <th><?php e('Action'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -73,7 +74,16 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                                                         <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
                                                             <td><?php echo $this->datab->build_grid_cell($field, $sub_dato); ?></td>
                                                         <?php endforeach; ?>
-
+                                                        <td class="text-right">
+                                                            <?php
+                                                            $this->load->view('box/grid/actions', array(
+                                                                'links' => $sub_grid['grids']['links'],
+                                                                'id' => $sub_dato[$sub_grid['grids']['entity_name'] . "_id"],
+                                                                'row_data' => $sub_dato,
+                                                                'grid' => $sub_grid['grids']
+                                                            ));
+                                                            ?>
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
