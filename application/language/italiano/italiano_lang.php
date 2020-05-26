@@ -1,11 +1,13 @@
 <?php
 $lang = [];
+$lang['New'] = 'Inserisci';
 $lang['Your company'] = 'La tua azienda';
 $lang['Enter in your profile'] = 'Entra nel tuo profilo';
 $lang['Disconnect after'] = 'Disconnetti dopo';
 $lang['E-mail address'] = 'Indirizzo e-mail';
 $lang['Password'] = 'Password';
 $lang['minutes'] = 'minuti';
+$lang['list'] = 'Elenco';
 $lang['hour'] = 'ora';
 $lang['hours'] = 'ore';
 $lang['day'] = 'giorno';
@@ -45,6 +47,7 @@ $lang['Last access'] = 'Ultimo accesso';
 $lang['Requests'] = 'Richieste';
 $lang['Errors'] = 'Errori';
 $lang['Active'] = 'Attivo';
+$lang['Action'] = 'Azione';
 $lang['Actions'] = 'Azioni';
 $lang['Public token'] = 'Token pubblico';
 $lang['ms between requests'] = 'ms tra richieste';
