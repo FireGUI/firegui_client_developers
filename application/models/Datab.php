@@ -594,6 +594,7 @@ class Datab extends CI_Model
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $additional_parameters = [])
     {
         $group_by = array_get($additional_parameters, 'group_by', null);
+
         //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
         $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
             return ($field['grids_fields_replace_type'] == 'eval' && $field['grids_fields_eval_cache_type'] && $field['grids_fields_eval_cache_type'] != 'no_cache');
@@ -617,6 +618,12 @@ class Datab extends CI_Model
         if (is_null($group_by) && !empty($grid['grids']['grids_group_by'])) {
             $group_by = $grid['grids']['grids_group_by'];
         }
+
+        /** Grid depth * */
+
+        $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
+
+        //debug($depth);
 
         //20190327 Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
         if (is_null($order_by) && !$count) {
@@ -658,7 +665,7 @@ class Datab extends CI_Model
 
 
 
-        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, 2, $count, $eval_cachable_fields, ['group_by' => $group_by]);
+        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
 
         // Riabilita sistema traduzioni
         $this->apilib->setLanguage($clanguage, $flanguage);
@@ -2568,7 +2575,10 @@ class Datab extends CI_Model
                 case 'checkbox':
 
                     return (($field['fields_type'] == DB_BOOL_IDENTIFIER) ? (($value == DB_BOOL_TRUE) ? 'Si' : 'No') : $value);
-
+                case 'color':
+                case 'color_palette':
+                    
+                    return "<div style=\"background-color:{$value};width:20px;height:20px;\"></div>";
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
                         // Formato daterange 
@@ -2647,6 +2657,7 @@ class Datab extends CI_Model
          * field) 
          * -- Messa una chiocciola 
          */
+        //debug($field);
         $baseLabel = $field['forms_fields_override_label'] ?: $field['fields_draw_label'];
         $baseType = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
         $basePlaceholder = $field['forms_fields_override_placeholder'] ?: $field['fields_draw_placeholder'];
@@ -2823,7 +2834,7 @@ class Datab extends CI_Model
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
                 if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline'])) {
-                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
+                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
                 }
 
                 /*                 * *********************************************************

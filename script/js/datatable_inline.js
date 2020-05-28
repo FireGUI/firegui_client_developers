@@ -266,7 +266,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
         inlineTable.saveRow($(this));
     });
 
-
+    //console.log('Click on new ' + gridID);
     // Create empty record
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
 
@@ -307,7 +307,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
 };
 
 function initTable(grid) {
-    //console.log(grid);
+    grid.data('ajaxTableInitialized', true);
     var oDataTable = grid;//$('#grid_' + gridID);
     var valueID = oDataTable.attr('data-value-id');
     var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
