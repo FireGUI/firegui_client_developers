@@ -78,6 +78,7 @@ CrmInlineTable.prototype.registerEvents = function () {
     });
 
     // Create empty record
+    //console.log('Click on ' + gridID);
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
         e.preventDefault();
         inlineTable.createRow();
@@ -389,25 +390,33 @@ function startAjaxTables() {
     $('.js_ajax_datatable:not(.dataTable)').each(function () {
         var gridID = $(this).attr('data-grid-id');
         var grid = $(this);
-        initTableAjax(grid).on('init', function (e) {
-            var wrapper = e.target.parent;
-            $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
-            $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
-            $('.dataTables_processing', wrapper).addClass("col-md-6"); // modify table per page dropdown
+        //console.log(grid.data('ajaxTableInitialized'));
+        if (grid.data('ajaxTableInitialized') != true) {
+            initTableAjax(grid).on('init', function (e) {
+                var wrapper = e.target.parent;
+                $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
+                $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
+                $('.dataTables_processing', wrapper).addClass("col-md-6"); // modify table per page dropdown
 
-            $('.dataTables_info', wrapper).css({ "margin-top": '20px', position: 'static' });
-            $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
-            $('.dataTables_length', wrapper).parent().parent().height(0);
-        });
+                $('.dataTables_info', wrapper).css({ "margin-top": '20px', position: 'static' });
+                $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
+                $('.dataTables_length', wrapper).parent().parent().height(0);
+            });
+        }
     });
 
 
     $('.js_datatable_inline').each(function () {
         var grid = $(this);
-        initTable(grid);
+        //console.log(grid.data('ajaxTableInitialized'));
+        if (grid.data('ajaxTableInitialized') != true) {
+            initTable(grid);
 
-        var dtInline = new CrmInlineTable(grid);
-        dtInline.registerEvents();
+            var dtInline = new CrmInlineTable(grid);
+            dtInline.registerEvents();
+        }
+
+
     });
 
 

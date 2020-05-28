@@ -138,10 +138,10 @@ function initComponents(container) {
                     if (!referer) {
                         referer = input.attr('name');
                     }
-
+                    //console.log(term);
                     var data_post = [];
                     data_post.push({ "name": token_name, "value": token_hash });
-                    data_post.push({ "name": 'q', "value": term });
+                    data_post.push({ "name": 'q', "value": term.term });
                     data_post.push({ "name": 'limit', "value": 100 });
                     data_post.push({ "name": 'table', "value": input.attr('data-ref') });
                     data_post.push({ "name": 'referer', "value": referer });
