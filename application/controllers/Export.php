@@ -82,37 +82,46 @@ class Export extends MY_Controller
 
         $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '', 'A1');
 
-        // Imposto le colonne numeriche (per permettere a formule e altro di funzionare correttamente)
+        $numeric_cells = [];
+        $cells = [];
         foreach ($fields as $key => $field) {
             if ($field['grids_fields_totalable']) {
                 $numeric_cells[$key] = $field['grids_fields_column_name'];
+            } else {
+                $cells[$key] = $field['grids_fields_column_name'];
             }
         }
 
-        //Per gli eval, devo passarmi tutti i dati per capire se qualche cella è anch'essa un numero (ricordarsi che number format torna una stringa e non un numero, quindi crea problemi con le formule excell dopo...)
-        foreach (array_slice($data, 0, 10) as $key => $dato) {
-            foreach ($dato as $column => $value) {
-                if (!in_array($column, $numeric_cells)) { //Se già non è tra le numeric cells, skippo...
-                    continue;
-                }
+        if (!empty($numeric_cells)) {
+            foreach (array_slice($data, 0, 10) as $key => $dato) {
+                foreach ($dato as $column => $value) {
+                    if (!in_array($column, $numeric_cells)) { // If is already in numeric array, skip
+                        continue;
+                    }
 
-                $numberize = preg_replace("/[^0-9.]/", '', $value);
+                    $numberize = preg_replace("/[^0-9.]/", '', $value);
 
-                //Provo a castarlo a numero, se no, tolgo questa colonna tra quelle numeriche
-                $possible_number = filter_var($numberize, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION);
+                    // Try casing as number type, else remove it.
+                    $possible_number = filter_var($numberize, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION);
 
-                if ($possible_number === '') {
-                    $numeric_cells = array_diff($numeric_cells, [$column]);
-                } elseif ((float) $possible_number !== (float) $numberize) {
-                    $numeric_cells = array_diff($numeric_cells, [$column]);
+                    if ($possible_number === '') {
+                        $numeric_cells = array_diff($numeric_cells, [$column]);
+                    } elseif ((float) $possible_number !== (float) $numberize) {
+                        $numeric_cells = array_diff($numeric_cells, [$column]);
+                    }
                 }
             }
         }
 
+        $cells = array_merge($cells, $numeric_cells);
 
         foreach ($data as $key => $dato) {
-            foreach ($numeric_cells as $col_pos => $numeric_cell) {
-                $data[$key][$numeric_cell] = (float) tofloat($dato[$numeric_cell]);
+            foreach ($cells as $col_pos => $cell) {
+                if (ctype_digit($dato[$cell])) {
+                    $data[$key][$cell] = (float) tofloat($dato[$cell]);
+                } else {
+                    $data[$key][$cell] = $dato[$cell];
+                }
             }
         }
 
