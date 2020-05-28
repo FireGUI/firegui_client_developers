@@ -15,7 +15,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                 <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 6); ?>">
                     <?php
                     //debug($where_data,true);
-                    $value = (empty($where_data[$field['id']]) || !array_key_exists('value', $where_data[$field['id']]))  ? NULL : $where_data[$field['id']]['value'];
+                    $value = empty($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];
                     } else {
@@ -42,8 +42,6 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 </span>
                             </div>
                         <?php elseif ($field['datatype'] == DB_BOOL_IDENTIFIER) : ?>
-                            <?php //debug($value); 
-                            ?>
                             <button type="button" class="btn-link" onclick="$('.field_<?php echo $field['id']; ?>', $('#<?php echo "form_{$form['forms']['forms_id']}" ?>')).attr('checked', false)" data-toggle="tooltip" title="<?php e('Remove selection'); ?>">
                                 <small><i class="fas fa-times"></i></small>
                             </button>
@@ -129,7 +127,6 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
                                     </select>
                                 <?php else : ?>
-
                                     <!--<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo $field['filterref']; ?>" data-referer="<?php echo $field['name']; ?>" class="form-control  __js_select_ajax field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />-->
                                     <?php
                                     $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
@@ -145,11 +142,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     if ($where === '1') {
                                         $where = null;
                                     }
-
-                                    //debug($field);
-
+                                    //debug($where);
                                     ?>
-                                    <select data-field_name="<?php echo $field['name']; ?>" class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['filterref'])) ? $field['filterref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
+                                    <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                         <option value="">---</option>
 
                                         <?php foreach ($this->crmentity->getEntityPreview($field['filterref'], $where) as $id => $name) : ?>
@@ -159,9 +154,11 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 <?php endif; ?>
 
                             <?php else : ?>
+                                <!--<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-field-id="<?php echo $field['id']; ?>" class="form-control js_select_ajax_distinct field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />-->
                                 <?php
                                 $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array());
-                                //debug("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}");
+                                //debug($field);
+
                                 ?>
                                 <?php if ($field['type'] == 'multiselect') : ?>
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
@@ -176,8 +173,6 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
                                     </select>
                                 <?php else : ?>
-                                    <!--<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-field-id="<?php echo $field['id']; ?>" class="form-control js_select_ajax_distinct field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />-->
-
                                     <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                         <option value="">---</option>
 
