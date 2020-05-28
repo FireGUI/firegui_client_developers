@@ -172,6 +172,7 @@ class Get_ajax extends MY_Controller
 
         // Non ho l'entity id quindi l'entità non esiste
         if (empty($entity['entity_id'])) {
+
             echo json_encode(array());
             return;
         }
@@ -254,16 +255,19 @@ class Get_ajax extends MY_Controller
             } else {
                 //Devo prendere tutti i campi [preview (edit 14/10/2014)] dell'entità per poter creare il where su cui effettuare la ricerca
                 $fields = $this->db->get_where('fields', array('fields_entity_id' => $entity['entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
+                //debug($search);
                 $where = $this->datab->search_like($search, $fields);
                 if ($where && $where_limit) {
                     $where .= " AND ({$where_limit})";
                 } elseif ($where_limit) {
                     $where = $where_limit;
                 }
-
+                //debug($where);
                 if ($where_referer) {
                     $where = ($where ? "{$where} AND ({$where_referer})" : $where_referer);
                 }
+
+
 
                 // 17/11/2015 - Voglio i filtri su ricerca apilib. Quelli dei
                 // post-process quindi prima mi prendo tutti gli id facendo un
