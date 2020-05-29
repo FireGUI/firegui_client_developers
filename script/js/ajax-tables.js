@@ -348,16 +348,18 @@ function initTableAjax(grid) {
                 api.columns().every(function () {
                     var values = this.data();
                     var footer = this.footer();
+
                     if ($(footer).data('totalable') == 1) {
+                        //console.log(values);
                         var total = 0;
                         for (var i = 0; i < values.length; i++) {
-                            if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue') !== null) {
-
+                            if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue') !== null && typeof ($(values[i]).data('totalablevalue')) !== 'undefined') {
                                 total += $(values[i]).data('totalablevalue');
                             } else {
+
                                 total += floatVal(values[i]);
                             }
-                            //console.log(total);
+
                         }
 
                         $(footer).html(parseFloat(total).toFixed(2));
