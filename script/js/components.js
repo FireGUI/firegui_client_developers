@@ -269,7 +269,7 @@ function initComponents(container) {
                             jsMultiselect.val(previousValue[0]);  // Solo UN valore
                             jsMultiselect.select2('val', previousValue);
                         } else {
-
+                            jsMultiselect.val(previousValue).trigger('change');
                             jsMultiselect.select2('data', previousValue);
                         }
                     }
