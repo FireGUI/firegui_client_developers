@@ -7,10 +7,10 @@ class Get_ajax extends MY_Controller
 {
 
     /**
-     * Render di un layout in modale
-     * @param int $layout_id
-     * @param int $value_id
-     */
+                 * Render di un layout in modale
+                 * @param int $layout_id
+                 * @param int $value_id
+                 */
     public function modal_layout($layout_id, $value_id = null)
     {
         // Se non sono loggato allora semplicemente uccido la richiesta
@@ -1360,5 +1360,38 @@ class Get_ajax extends MY_Controller
             'status' => 0,
             'data' => $record
         ]);
+    }
+
+    public function get_log_api_item($id = null)
+    {
+
+        $out = array();
+
+        if ($id) {
+
+            $out = $this->db->get_where('log_api', array('log_api_id' => $id))->row_array();
+
+            if (@unserialize($out['log_api_params'])) {
+                $params = @unserialize($out['log_api_params']);
+                $post = @unserialize($out['log_api_post']);
+                $get = @unserialize($out['log_api_get']);
+                $files = @unserialize($out['log_api_files']);
+                $output = @unserialize($out['log_api_output']);
+            } else {
+                $params = json_decode($out['log_api_params']);
+                $post = json_decode($out['log_api_post']);
+                $get = json_decode($out['log_api_get']);
+                $files = json_decode($out['log_api_files']);
+                $output = json_decode($out['log_api_output']);
+            }
+
+            $out['log_api_params'] = $params ? print_r($params, true) : '';
+            $out['log_api_post'] = $post ? print_r($post, true) : '';
+            $out['log_api_get'] = $get ? print_r($get, true) : '';
+            $out['log_api_files'] = $files ? print_r($files, true) : '';
+            $out['log_api_output'] = $output ? print_r($output, true) : '';
+        }
+
+        echo json_encode($out);
     }
 }
