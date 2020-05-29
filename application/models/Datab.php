@@ -2577,7 +2577,7 @@ class Datab extends CI_Model
                     return (($field['fields_type'] == DB_BOOL_IDENTIFIER) ? (($value == DB_BOOL_TRUE) ? 'Si' : 'No') : $value);
                 case 'color':
                 case 'color_palette':
-                    
+
                     return "<div style=\"background-color:{$value};width:20px;height:20px;\"></div>";
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
