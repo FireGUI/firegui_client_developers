@@ -60,7 +60,7 @@ $_fields_type_to_skip = array(
                 <?php endforeach; ?>
 
                 <?php if (grid_has_action($grid['grids'])) : ?>
-                    <th data-prevent-order><?php e('Action'); ?></th>
+                    <th data-prevent-order><?php e('Actions'); ?></th>
                 <?php endif; ?>
             </tr>
         </thead>
