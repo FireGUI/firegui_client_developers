@@ -18,6 +18,8 @@
         border: 1px solid #ddd !important;
     }
 </style>
+<?php //debug($grid_data); 
+?>
 <?php if (isset($grid_data['data'])) : ?>
     <?php foreach ($grid_data['data'] as $dato) : ?>
         <ul class="list-group <?php echo $grid['grids']['grids_append_class']; ?>" <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
