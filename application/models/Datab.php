@@ -179,6 +179,8 @@ class Datab extends CI_Model
         // Ok, where pronto, mi resta solo da fare il dispatch ad apilib
         $entity = $this->crmentity->getEntity($entity_id);
 
+        //debug($count,true);
+
         if ($count) {
 
             return $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
@@ -593,6 +595,7 @@ class Datab extends CI_Model
 
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $additional_parameters = [])
     {
+
         $group_by = array_get($additional_parameters, 'group_by', null);
 
         //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
@@ -2834,7 +2837,9 @@ class Datab extends CI_Model
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
                 if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline'])) {
-                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
+
+                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], [], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
+                    //debug($grid_data['data']);
                 }
 
                 /*                 * *********************************************************
@@ -2860,6 +2865,8 @@ class Datab extends CI_Model
                         }
                     }
                 }
+
+
 
                 $grid_layout = $grid['grids']['grids_layout'] ?: DEFAULT_LAYOUT_GRID;
                 return $this->load->view("pages/layouts/grids/{$grid_layout}", array('grid' => $grid, 'sub_grid' => $sub_grid, 'grid_data' => $grid_data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
