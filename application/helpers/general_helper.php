@@ -1,5 +1,7 @@
 <?php
 
+
+
 if (!function_exists('command_exists')) {
 
     function command_exists($cmd)
