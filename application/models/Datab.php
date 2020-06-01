@@ -1533,6 +1533,7 @@ class Datab extends CI_Model
     {
         if ($user_id === NULL || $user_id == $this->auth->get(LOGIN_ENTITY . "_id")) {
             // Sto controllando me stesso
+
             return $this->auth->is_admin();
         } else {
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
@@ -1626,6 +1627,7 @@ class Datab extends CI_Model
     {
 
         if ($this->is_admin()) {
+
             return TRUE;
         } else {
             // Resolve the entity id
@@ -1636,6 +1638,7 @@ class Datab extends CI_Model
                 ->join('permissions_entities', 'permissions_entities_permissions_id = permissions_id', 'left')
                 ->where(array('permissions_user_id' => $user_id, 'permissions_entities_entity_id' => $entity_id))
                 ->get()->row();
+
             return empty($permissions) || ($permissions->permissions_entities_value == PERMISSION_WRITE);
         }
     }
