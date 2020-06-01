@@ -38,7 +38,7 @@ class Main extends MY_Controller
             redirect('access' . $append);
         }
 
-        
+
 
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
@@ -166,7 +166,8 @@ class Main extends MY_Controller
 
         echo $this->load->view('layout/main', $this->template, true);
     }
-    public function print_barcode($type) {
+    public function print_barcode($type)
+    {
         $val = $this->input->get('val');
         $w = $this->input->get('w');
         $h = $this->input->get('h');
@@ -174,7 +175,6 @@ class Main extends MY_Controller
         $top = $this->input->get('top');
         $val = base64_decode($val);
         $this->load->view('box/grid/barcode_print', compact('type', 'val', 'w', 'h', 'left', 'top'));
-        
     }
     /**
      * Form rendering
@@ -186,6 +186,7 @@ class Main extends MY_Controller
             $this->stampa($this->load->view("box/errors/missing_form", ['form_id' => $form_id], true));
             return;
         }
+
         if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
             // Get form view
             $formHtml = $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", [
@@ -403,16 +404,16 @@ class Main extends MY_Controller
 
                 @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
-                
+
                 $this->apilib->toggleCachingSystem(false);
 
-                           
+
                 break;
 
             case 'clear':
-                
+
                 $this->apilib->clearCache();
-                
+
                 break;
 
             default:

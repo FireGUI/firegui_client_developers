@@ -76,6 +76,9 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     //MD5 Passepartout for login password (example: if you want to login with every user email using the string 'your-secret-password', you should copy&paste the md5 of 'your-secret-password' here.)
     define('PASSEPARTOUT', '*********************************');
 
+    //If true, when no user is admin, every user is considered as admin. If one user is admin, this parameter will have no effetc.
+    define('PROMOTE_ADMIN', false);
+
     /* ============
  * Custom colors
  * ============ */
