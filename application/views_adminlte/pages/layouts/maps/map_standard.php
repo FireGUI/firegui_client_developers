@@ -16,7 +16,7 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
         var markers = null;
         var map = L.map('<?php echo $id; ?>', {
             scrollWheelZoom: false
-        }).setView([42.50, 12.90], 5);
+        }).setView([40.730610, -73.935242], <?php echo ($data['maps']['maps_init_zoom']) ?: 5; ?>);
 
         L.maps[<?php echo json_encode($id); ?>] = map;
 
@@ -52,10 +52,10 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                     var group = new Array();
                     $.each(data, function(i, val) {
                         var html = '<b>' + val.title + '</b><br />';
-                    if (typeof val.description !== "undefined") {
-                        html += val.description
-                    }
-                    html +='<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
+                        if (typeof val.description !== "undefined") {
+                            html += val.description
+                        }
+                        html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
                         var icon;
                         if (val.marker) {
                             icon = L.icon({
@@ -79,9 +79,15 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                         map.addLayer(markers);
                     }
 
+
                     if (group.length > 0) {
                         map.fitBounds(group);
+                        <?php if ($data['maps']['maps_init_zoom']) : ?>
+                            map.setZoom(<?php echo $data['maps']['maps_init_zoom']; ?>);
+                            console.log(map.getZoom());
+                        <?php endif; ?>
                     }
+
 
                     map.invalidateSize();
                 },

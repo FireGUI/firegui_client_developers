@@ -2492,8 +2492,9 @@ class Datab extends CI_Model
                     }
 
                 case 'multi_upload':
-
-                    if (in_array($field['fields_type'], ['JSON', 'LONGTEXT'])) {
+                case 'multi_upload_no_preview':
+                    //debug($field['fields_type']);
+                    if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
                             //debug($item, true);
