@@ -106,22 +106,33 @@ class Get_ajax extends MY_Controller
         if (empty($value_id) && !(empty($post_ids))) {
             $value_id = $this->input->post('ids');
         }
-
-        if (!$this->datab->get_form($form_id)) {
+        $form = $this->datab->get_form($form_id, $value_id);
+        if (!$form) {
             $this->load->view("box/errors/missing_form", ['form_id' => $form_id]);
             return;
         }
 
-        $viewData = array(
-            'size' => $modalSize,
-            'value_id' => $value_id,
-            'form' => $this->datab->get_form($form_id, $value_id),
-            'data' => $this->input->post()
-        );
+        if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
 
-        echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
-        $this->load->view('pages/layouts/forms/form_modal', $viewData);
-        echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+            $viewData = array(
+                'size' => $modalSize,
+                'value_id' => $value_id,
+                'form' => $form,
+                'data' => $this->input->post()
+            );
+
+            echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
+            $this->load->view('pages/layouts/forms/form_modal', $viewData);
+            echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+        } else {
+            //$this->load->view('pages/layout_unaccessible');
+            $content = '<div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">';
+            $content .= str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
+            $content .= '</div></div></div>';
+            echo $content;
+        }
     }
 
     /**

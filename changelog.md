@@ -1,12 +1,11 @@
-Changelog version 1.9.7
+Changelog version 1.9.8
  
-Bugfix addUserGroup for deleted entities
-Bugfix for radio input filters with value 0
-Subentity grid now can include custom actions
-Removed old delete link from custom action
-Added parseFloat to totalable fields for better compatibiliy
-Removed deprecated PHPExcel
-Added new PHPSPREADSHEET
-Updated Export.php controller to PHPSPREADSHEET library
-Fixed phpthumb debug
-Bugfixing firegui controller
+Add getCurrentLayoutIdentifier function
+Bugfix totalable NaN value
+Added api logs table in api manager page
+Bugfix multiselect with sourcefield
+Bugfix multiselect trigger change
+New grid’s depth parameter
+Bugfix with term search in select_ajax grids
+InitTable js function now check if already initialized
+Fix numeric_cells error
