@@ -5,7 +5,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
 ?>
 
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
         <table id="<?php echo $grid_id; ?>" class="table table-striped table-condensed">

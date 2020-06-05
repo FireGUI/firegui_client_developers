@@ -1,5 +1,5 @@
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <table class="table table-condensed table-striped nowrap table-bordered table-hover <?php echo $grid['grids']['grids_append_class']; ?>">
         <thead>

@@ -2507,8 +2507,8 @@ class Datab extends CI_Model
             switch ($field['fields_draw_html_type']) {
                 case 'upload':
                     if ($value) {
-                        //                        return anchor(base_url("uploads/$value"), 'Scarica file', array('target' => '_blank'));
-                        return anchor(base_url_uploads("uploads/$value"), 'Scarica file', array('target' => '_blank'));
+                        //                        return anchor(base_url("uploads/$value"), 'Downhload file', array('target' => '_blank'));
+                        return anchor(base_url_uploads("uploads/$value"), 'Downhload file', array('target' => '_blank'));
                     }
                     break;
 
