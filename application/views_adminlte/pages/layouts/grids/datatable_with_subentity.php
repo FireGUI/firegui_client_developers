@@ -36,14 +36,18 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                         <?php endforeach; ?>
 
                         <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?> style="vertical-align:top!important;">
-                            <?php
-                            $this->load->view('box/grid/actions', array(
-                                'links' => $grid['grids']['links'],
-                                'id' => $dato[$grid['grids']['entity_name'] . "_id"],
-                                'row_data' => $dato,
-                                'grid' => $grid['grids']
-                            ));
-                            ?>
+                            <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                                <?php
+
+                                $this->load->view('box/grid/actions', array(
+                                    'links' => $grid['grids']['links'],
+                                    'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                                    'row_data' => $dato,
+                                    'grid' => $grid['grids']
+                                ));
+
+                                ?>
+                            <?php endif; ?>
                             <?php if ($sub_data) : ?>
 
                                 <a style="margin-top: 5px;" onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
@@ -51,6 +55,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                                 </a>
                             <?php endif; ?>
                         </td>
+
                     </tr>
 
                     <?php /* INIZIO SUB ENTITY */ ?>
