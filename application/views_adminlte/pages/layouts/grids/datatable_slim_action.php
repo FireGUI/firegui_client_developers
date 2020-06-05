@@ -34,7 +34,9 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
                         <?php foreach ($grid['grids_fields'] as $field) : ?>
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
-                        <td><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></td>
+                        <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                            <td><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

@@ -7,10 +7,10 @@ class Get_ajax extends MY_Controller
 {
 
     /**
-                 * Render di un layout in modale
-                 * @param int $layout_id
-                 * @param int $value_id
-                 */
+     * Render di un layout in modale
+     * @param int $layout_id
+     * @param int $value_id
+     */
     public function modal_layout($layout_id, $value_id = null)
     {
         // Se non sono loggato allora semplicemente uccido la richiesta
@@ -585,7 +585,7 @@ class Get_ajax extends MY_Controller
                         'row_data' => $dato,
                         'grid' => $grid['grids']
                     ), TRUE);
-                } elseif (grid_has_action($grid['grids'])) {
+                } elseif (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/actions', array(
                         'links' => $grid['grids']['links'],
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
