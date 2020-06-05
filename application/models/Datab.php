@@ -2332,13 +2332,25 @@ class Datab extends CI_Model
     }
     private function buildInlineActions($field, $dato)
     {
-        $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
+        //TODO: if field_ref not empty, grab default grid of that entity, then grab those actions...
+
+        if (!empty($field['fields_ref']) && $grid_db = $this->crmentity->getDefaultGrid($field['fields_ref'])) {
+
+            $id_record = $dato[$field['fields_name']];
+            $grid_id = $grid_db['grids_id'];
+            $grid = $this->datab->get_grid($grid_id);
+        } else {
+            $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
+            $id_record = $dato[$grid['grids']['entity_name'] . "_id"];
+        }
+
         $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
             'links' => $grid['grids']['links'],
-            'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+            'id' => $id_record,
             'row_data' => $dato,
             'grid' => $grid['grids'],
         ], TRUE) : '';
+
         return $return;
     }
     private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true)
