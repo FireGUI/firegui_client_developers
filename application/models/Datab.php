@@ -2496,12 +2496,18 @@ class Datab extends CI_Model
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
             }
         } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
+            //$field_detail = $this->crmentity->getField($field['grids_fields_fields_id']);
+
             $link = $value ? $this->get_detail_layout_link($field['fields_entity_id']) : false;
             $entity = $this->get_entity($field['fields_entity_id']);
             $idKey = $entity['entity_name'] . '_id';
             $text = $value;
 
-            return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
+            if (array_key_exists($idKey, $dato)) {
+                return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
+            } else {
+                return $text;
+            }
         } else {
             // Posso stampare il campo in base al tipo
             switch ($field['fields_draw_html_type']) {
