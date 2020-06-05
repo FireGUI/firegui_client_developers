@@ -84,7 +84,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                         map.fitBounds(group);
                         <?php if ($data['maps']['maps_init_zoom']) : ?>
                             map.setZoom(<?php echo $data['maps']['maps_init_zoom']; ?>);
-                            console.log(map.getZoom());
                         <?php endif; ?>
                     }
 

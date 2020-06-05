@@ -146,3 +146,5 @@ script  src="<?php echo base_url_scripts("script/global/plugins/datatables/media
 <script src="<?php echo base_url_scripts("script/js/components.js?v=" . VERSION); ?>"></script>
 
 <script src="<?php echo base_url_scripts("script/js/IE.missing.functions.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/js/inline_actions.js?v=" . VERSION); ?>"></script>

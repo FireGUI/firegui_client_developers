@@ -2316,17 +2316,31 @@ class Datab extends CI_Model
 
         switch ($type) {
             case 'placeholder':
-                return $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+                $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+                break;
 
             case 'eval':
-                return $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
-
+                $return = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
+                break;
             case 'field':
             default:
-                return $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop);
+                $return =  $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop);
+                break;
         }
+        $inline_actions = $this->buildInlineActions($field, $dato);
+        return $return . $inline_actions;
     }
-
+    private function buildInlineActions($field, $dato)
+    {
+        $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
+        $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
+            'links' => $grid['grids']['links'],
+            'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+            'row_data' => $dato,
+            'grid' => $grid['grids'],
+        ], TRUE) : '';
+        return $return;
+    }
     private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true)
     {
 
@@ -2336,6 +2350,9 @@ class Datab extends CI_Model
         // una dopo l'altra
         $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == DB_BOOL_TRUE;
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
+
+
+
 
         if ($processMultilingual && $multilingual) {
             if (!$value) {
@@ -2466,6 +2483,13 @@ class Datab extends CI_Model
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
             }
+        } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
+            $link = $value ? $this->get_detail_layout_link($field['fields_entity_id']) : false;
+            $entity = $this->get_entity($field['fields_entity_id']);
+            $idKey = $entity['entity_name'] . '_id';
+            $text = $value;
+
+            return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
         } else {
             // Posso stampare il campo in base al tipo
             switch ($field['fields_draw_html_type']) {
