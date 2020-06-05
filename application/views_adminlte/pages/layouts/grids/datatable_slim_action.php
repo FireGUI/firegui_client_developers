@@ -5,7 +5,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
 ?>
 
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
         <table id="<?php echo $grid_id; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered table-condensed table-hover nowrap js_datatable_slim <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
