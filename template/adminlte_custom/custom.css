@@ -98,3 +98,7 @@ table th.sorting, table th.sorting_desc, table th.sorting_asc {
 table tr td {
      vertical-align:middle!important;
 }
+
+.action_inline {
+    visibility:hidden;
+}
