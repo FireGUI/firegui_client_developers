@@ -126,7 +126,7 @@ class Db_ajax extends MY_Controller
         // Finalization
         // ==========================
         $status = is_numeric($form['forms_success_status']) ? $form['forms_success_status'] : 5;
-        $message = (empty($form['forms_success_message']) ? ($edit ? 'Modifiche salvate correttamente' : 'Salvataggio effettuato con successo') : $form['forms_success_message']);
+        $message = (empty($form['forms_success_message']) ? ($edit ? t('Changes saved successfully') : t('Successfully saved')) : $form['forms_success_message']);
 
         if ($edit && isset($form['forms_success_status_edit'])) {
             // In edit ho delle condizioni ancora diverse
