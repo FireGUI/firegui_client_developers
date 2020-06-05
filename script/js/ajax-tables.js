@@ -306,7 +306,13 @@ function initTableAjax(grid) {
         var token_hash = token.hash;
     }
 
-    var datatable = oDataTable.dataTable({
+    var datatable = oDataTable.on('error.dt', function (e, settings, techNote, message) {
+        // console.log(e);
+        // console.log(settings);
+        // console.log(techNote);
+        console.log(message);
+        $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p></div>');
+    }).dataTable({
         stateSave: true,
 
         bSort: bEnableOrder,
@@ -325,6 +331,7 @@ function initTableAjax(grid) {
         oLanguage: {
             sUrl: base_url_scripts + "script/dt_translations/datatable." + lang_short_code + ".json"
         },
+
         fnServerParams: function (aoData) {
             aoData.push({ "name": token_name, "value": token_hash });
         },
@@ -424,3 +431,4 @@ function startAjaxTables() {
 
 }
 
+$.fn.dataTable.ext.errMode = 'none';

@@ -179,6 +179,8 @@ class Datab extends CI_Model
         // Ok, where pronto, mi resta solo da fare il dispatch ad apilib
         $entity = $this->crmentity->getEntity($entity_id);
 
+        //debug($count,true);
+
         if ($count) {
 
             return $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
@@ -593,6 +595,7 @@ class Datab extends CI_Model
 
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $additional_parameters = [])
     {
+
         $group_by = array_get($additional_parameters, 'group_by', null);
 
         //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
@@ -1530,6 +1533,7 @@ class Datab extends CI_Model
     {
         if ($user_id === NULL || $user_id == $this->auth->get(LOGIN_ENTITY . "_id")) {
             // Sto controllando me stesso
+
             return $this->auth->is_admin();
         } else {
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
@@ -1623,6 +1627,7 @@ class Datab extends CI_Model
     {
 
         if ($this->is_admin()) {
+
             return TRUE;
         } else {
             // Resolve the entity id
@@ -1633,6 +1638,7 @@ class Datab extends CI_Model
                 ->join('permissions_entities', 'permissions_entities_permissions_id = permissions_id', 'left')
                 ->where(array('permissions_user_id' => $user_id, 'permissions_entities_entity_id' => $entity_id))
                 ->get()->row();
+
             return empty($permissions) || ($permissions->permissions_entities_value == PERMISSION_WRITE);
         }
     }
@@ -2310,17 +2316,31 @@ class Datab extends CI_Model
 
         switch ($type) {
             case 'placeholder':
-                return $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+                $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+                break;
 
             case 'eval':
-                return $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
-
+                $return = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
+                break;
             case 'field':
             default:
-                return $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop);
+                $return =  $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop);
+                break;
         }
+        $inline_actions = $this->buildInlineActions($field, $dato);
+        return $return . $inline_actions;
     }
-
+    private function buildInlineActions($field, $dato)
+    {
+        $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
+        $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
+            'links' => $grid['grids']['links'],
+            'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+            'row_data' => $dato,
+            'grid' => $grid['grids'],
+        ], TRUE) : '';
+        return $return;
+    }
     private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true)
     {
 
@@ -2330,6 +2350,9 @@ class Datab extends CI_Model
         // una dopo l'altra
         $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == DB_BOOL_TRUE;
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
+
+
+
 
         if ($processMultilingual && $multilingual) {
             if (!$value) {
@@ -2460,6 +2483,13 @@ class Datab extends CI_Model
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
             }
+        } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
+            $link = $value ? $this->get_detail_layout_link($field['fields_entity_id']) : false;
+            $entity = $this->get_entity($field['fields_entity_id']);
+            $idKey = $entity['entity_name'] . '_id';
+            $text = $value;
+
+            return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
         } else {
             // Posso stampare il campo in base al tipo
             switch ($field['fields_draw_html_type']) {
@@ -2486,8 +2516,9 @@ class Datab extends CI_Model
                     }
 
                 case 'multi_upload':
-
-                    if (in_array($field['fields_type'], ['JSON', 'LONGTEXT'])) {
+                case 'multi_upload_no_preview':
+                    //debug($field['fields_type']);
+                    if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
                             //debug($item, true);
@@ -2834,7 +2865,9 @@ class Datab extends CI_Model
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
                 if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline'])) {
-                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
+
+                    $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], [], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
+                    //debug($grid_data['data']);
                 }
 
                 /*                 * *********************************************************
@@ -2860,6 +2893,8 @@ class Datab extends CI_Model
                         }
                     }
                 }
+
+
 
                 $grid_layout = $grid['grids']['grids_layout'] ?: DEFAULT_LAYOUT_GRID;
                 return $this->load->view("pages/layouts/grids/{$grid_layout}", array('grid' => $grid, 'sub_grid' => $sub_grid, 'grid_data' => $grid_data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
