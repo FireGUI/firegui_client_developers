@@ -1,5 +1,5 @@
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
         <?php
