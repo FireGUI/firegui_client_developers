@@ -2623,7 +2623,7 @@ class Datab extends CI_Model
                 case 'radio':
                 case 'checkbox':
 
-                    return (($field['fields_type'] == DB_BOOL_IDENTIFIER) ? (($value == DB_BOOL_TRUE) ? 'Si' : 'No') : $value);
+                    return (($field['fields_type'] == DB_BOOL_IDENTIFIER) ? (($value == DB_BOOL_TRUE) ? t('Yes') : t('No')) : $value);
                 case 'color':
                 case 'color_palette':
 
