@@ -17,7 +17,7 @@ if (isset($grid_data['data'])) {
             }
 
             $item = array(
-                'thumb' => empty($dato[$grid['replaces']['thumbnail']['fields_name']]) ? 'assets/img/avatar1.jpg' : base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
+                'thumb' => empty($dato[$grid['replaces']['thumbnail']['fields_name']]) ? '/images/user.png' : base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
                 'username' => isset($grid['replaces']['username']) ?
                     (
                         ($dato[$grid['replaces']['username']['fields_name']] != null) ?
