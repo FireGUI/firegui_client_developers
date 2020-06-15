@@ -1,0 +1,316 @@
+<?php
+?>
+/*
+* ========================================================
+* Planner 1
+* ========================================================
+*/
+
+
+
+#planner-container {
+overflow-x: auto;
+position:relative;
+}
+
+#planner-container .nav-tabs,
+#planner-container .nav-pills {
+margin-bottom: 0;
+}
+
+#planner-container .column {
+width: 320px;
+display: table-cell;
+border-right: 1px solid #999;
+padding-left: 10px;
+padding-right: 10px;
+}
+#planner-container .column .user-avatar {
+border-radius: 50%;
+width:40px;
+}
+
+
+#planner-container .column:first-child {
+border-left: 1px solid #999;
+}
+
+#planner-container .planner-header {
+display: table;
+table-layout: fixed;
+width: 100%;
+}
+
+#planner-container .planner-body {
+display: table;
+table-layout: fixed;
+width: 100%;
+}
+
+#planner-container .planner-header .column {
+color: #ffffff;
+text-align: center;
+background: #1f1f1f;
+border-top: 1px solid #999;
+padding:10px;
+}
+.column h5 {
+font-weight:bold;
+}
+#planner-container .column .add_new_task {
+width: 100%;
+border: dotted 4px #cccc;
+text-align: center;
+height: 45px;
+line-height: 37px;
+vertical-align: middle;
+background-color: #f4f4f4;
+}
+#planner-container .planner-header .column .add_new_task:hover {
+background-color: #eeeeee;
+}
+#planner-container .planner-header .column.blue {background: #4B8DF8;color:#fff}
+#planner-container .planner-header .column.purple {background: #852B99;}
+#planner-container .planner-header .column.yellow {background: #FFB848;color:#fff}
+#planner-container .planner-header .column.green {background: #35AA47;color:#fff}
+#planner-container .planner-header .column * {margin: 5px 0;color:#ffffff}
+#planner-container .planner-body .column {
+background: #efefef;
+padding-top: 10px;
+padding-bottom: 150px;
+border-bottom: 1px solid #999;
+vertical-align: top
+}
+
+#planner-container .sortable-box-placeholder.round-all {border-color: #000;}
+#planner-container .sortable .task-box {cursor:move}
+
+
+
+
+/** Grafica task-box **/
+.task-box {
+margin-bottom: 10px;
+border:1px solid #e4e4e4;
+}
+
+.task-box.blue {background: #4B8DF8}
+.task-box.purple {background: #852B99}
+.task-box.yellow {background: #FFB848}
+.task-box.green {background: #35AA47}
+.task-box.grey {background: #555555}
+.task-box.red {background: #FF0000}
+
+.task-box > .task-inner {
+padding: 6px 8px;
+margin-left:10px;
+background: #fff;
+overflow:hidden;
+font-size: 12px;
+}
+
+.task-box > .task-inner .left {width:85%}
+.task-box > .task-inner .right {width:15%}
+
+.task-box .task-head, .task-box .task-body {margin-bottom:10px}
+.task-box .task-head .task-title {font-size: 15px}
+.task-box.blue .task-head .task-title {color: #4B8DF8}
+.task-box.purple .task-head .task-title {color: #852B99}
+.task-box.yellow .task-head .task-title {color: #FFB848}
+.task-box.green .task-head .task-title {color: #35AA47}
+.task-box.grey .task-head .task-title {color: #555555}
+.task-box.red .task-head .task-title {color: #FF0000}
+
+.task-box .task-head .task-title * {
+display:block;
+color:inherit;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.task-box .task-head .project {
+color: #777;
+text-decoration:none
+}
+
+.task-box .task-head .project:hover {color: #1f1f1f}
+.task-box .task-body .text {
+overflow:hidden;
+height:33px;
+cursor:pointer;
+font-size:10px
+}
+
+.task-box .task-foot {overflow:hidden}
+.task-box .task-foot .dates .expired {color:#E43538}
+.task-box .task-foot .dates {float: left}
+.task-box .task-foot .actions {
+float: right;
+
+}
+
+
+.task-box .photos {
+float:right;
+width:40px;
+text-align: right
+}
+
+.task-box .photos img {margin-bottom:5px}
+.warning-icon {width: 15px;margin-top: -3px;margin-left: 10px;}
+
+
+/** Show all */
+#planner-container.limited {
+max-height:1500px;
+overflow-y:hidden;
+}
+
+#planner-container.limited .show-all {
+    display: block;
+}
+#planner-container.limited.planner-boards {
+    max-height: none!important;
+    overflow-y: auto!important;
+}
+#planner-container .show-all {
+display: none;
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+text-align: center;
+font-size: 20px;
+padding: 55px 0 55px;
+border-top: 1px solid #e4e4e4;
+border-bottom: 1px solid #e4e4e4;
+background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), #FFF )
+}
+
+#planner-container .show-all:hover {
+color: #4B8DF8;
+cursor: pointer;
+border: 1px solid #e4e4e4;
+background: rgba(255, 255, 255, 0.89);
+}
+
+/** Grafica a portlet **/
+#planner-container .portlet-title {padding: 5px 10px;}
+#planner-container .portlet-title .caption {margin:0;font-size: 15px;}
+#planner-container .portlet-title .caption small {font-size: 70%;}
+#planner-container .portlet-title .actions {margin-top: 0;}
+#planner-container .portlet.solid {padding:0;}
+#planner-container .portlet.solid .portlet-title {margin-bottom: 1px;}
+#planner-container .portlet.solid .portlet-body {padding: 10px;}
+#planner-container .portlet .portlet-body {cursor:pointer}
+#planner-container .portlet .portlet-body:hover {background:#EEEEEE}
+
+/*
+* ========================================================
+* Planner settimanale
+* ========================================================
+*/
+
+/* Table structure */
+.table-week-plan th {
+background-color: #1f1f1f;
+color: #fff;
+font-size: 13px!important;
+font-weight: normal!important;
+text-align: center
+}
+
+.table-week-plan td {
+background-color: #EFEFEF;
+border-right: 1px solid #999;
+border-left: 1px solid #a4a4a4;
+border-bottom: 1px solid #999;
+border-top: 1px solid #a4a4a4;
+width: 290px
+}
+
+.table-week-plan tr > td:first-child,
+.table-week-plan .avatar {
+width: 65px;
+}
+
+.table-week-plan tr > td:first-child {
+vertical-align: middle;
+background-color: #fff;
+border-left: none;
+}
+
+.table-week-plan .tasks-column {
+width: 275px;
+margin: 0 auto;
+min-height: 150px;
+}
+
+
+/* Task Box */
+.table-week-plan .task-item {
+background-color: #fff;
+border: 1px solid #e4e4e4;
+margin-bottom: 8px;
+}
+
+.table-week-plan .task-item.blue {background-color: #4B8DF8}
+.table-week-plan .task-item.purple {background-color: #852B99}
+.table-week-plan .task-item.yellow {background-color: #FFB848}
+.table-week-plan .task-item.green {background-color: #35AA47}
+.table-week-plan .task-item.grey {background-color: #555555}
+.table-week-plan .task-item.red {background-color: #FF0000}
+
+.table-week-plan .task-item > .task-inner {
+padding: 5px 8px;
+margin-left:5px;
+background: #fff;
+overflow:hidden;
+}
+
+
+.table-week-plan .task-item .task-title {
+font-size: 120%;
+float: left;
+}
+
+.table-week-plan .task-item.blue .task-title {color: #4B8DF8}
+.table-week-plan .task-item.purple .task-title {color: #852B99}
+.table-week-plan .task-item.yellow .task-title {color: #FFB848}
+.table-week-plan .task-item.green .task-title {color: #35AA47}
+.table-week-plan .task-item.grey .task-title {color: #555555}
+.table-week-plan .task-item .task-title a {
+display:block;
+color:inherit;
+text-decoration: none;
+}
+
+.table-week-plan .task-item .task-title a:hover {
+text-decoration: underline
+}
+
+
+.table-week-plan .task-item .project {
+font-size: 105%;
+color: #777;
+text-decoration:none
+}
+.table-week-plan .task-item .project:hover {
+color: #1f1f1f
+}
+
+.table-week-plan .task-item .actions a {
+font-size: 85%;
+text-decoration: none;
+width: 21px;
+height: 19px;
+margin: 1px 0;
+}
+
+
+
+/* Sortable */
+.portlet-sortable-placeholder {border-color: #bbb}
+.table-week-plan .portlet-sortable-placeholder.round-all {border-color: #000;}
+.table-week-plan .ui-sortable .task-item {cursor:move}
