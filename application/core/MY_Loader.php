@@ -15,10 +15,16 @@ class MY_Loader extends MX_Loader
         $file = APPPATH . 'modules/' . $folder . '/' . $_ci_file;
 
         if (!file_exists($file)) {
+            $content = '<div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                View ' . $file . ' doesn\'t exist
+              </div>';
+
             if ($return) {
-                return "*** View '{$file}' doesn't exist ***";
+                return $content;
             } else {
-                echo "*** View '{$file}' doesn't exist ***";
+                echo $content;
             }
         } else {
             return $this->_ci_load(array(

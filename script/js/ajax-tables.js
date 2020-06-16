@@ -346,7 +346,7 @@ function initTableAjax(grid) {
                 $(api.column(0).footer()).html('Totals:');
                 // converting to interger to find total
                 var floatVal = function (i) {
-
+                    i = i.toString();
                     i = i.replace(/[^\d.-]/g, '');
 
                     return parseFloat(i);
@@ -361,7 +361,7 @@ function initTableAjax(grid) {
                         var total = 0;
                         for (var i = 0; i < values.length; i++) {
                             if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue') !== null && typeof ($(values[i]).data('totalablevalue')) !== 'undefined') {
-                                total += $(values[i]).data('totalablevalue');
+                                total += floatVal($(values[i]).data('totalablevalue'));
                             } else {
 
                                 total += floatVal(values[i]);

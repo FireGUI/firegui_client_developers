@@ -1242,3 +1242,9 @@ if (!function_exists('get_csrf')) {
         //echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
     }
 }
+if (!function_exists('e_json')) {
+    function e_json($data) {
+        echo json_encode($data);
+    }
+
+}
