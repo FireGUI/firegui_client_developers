@@ -2335,16 +2335,18 @@ class Datab extends CI_Model
         //TODO: if field_ref not empty, grab default grid of that entity, then grab those actions...
 
         if (!empty($field['fields_ref']) && $grid_db = $this->crmentity->getDefaultGrid($field['fields_ref'])) {
-
+            $skip_delete = true;
             $id_record = $dato[$field['fields_name']];
             $grid_id = $grid_db['grids_id'];
             $grid = $this->datab->get_grid($grid_id);
         } else {
             $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
             $id_record = $dato[$grid['grids']['entity_name'] . "_id"];
+            $skip_delete = false;
         }
 
         $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
+            'skip_delete' => $skip_delete,
             'links' => $grid['grids']['links'],
             'id' => $id_record,
             'row_data' => $dato,

@@ -15,7 +15,7 @@
         $replace_from[] = '{value_id}';
         $replace_to[] = $id;
         ?>
-        <?php foreach ($links['custom'] as $custom_action) : ?>
+        <?php foreach ($links['custom'] as $key => $custom_action) : ?>
             <?php if (!empty($custom_action['grids_actions_html']) && (empty($custom_action['grids_actions_type']) || 'custom' == $custom_action['grids_actions_type'])) : ?>
                 <?php
                 ob_start();
@@ -25,6 +25,8 @@
                     continue;
                 }
                 ?>
+                <?php if ($key != 0) : ?> | <?php endif; ?>
+
                 <?php echo $action; ?>
             <?php else : ?>
 
@@ -54,11 +56,15 @@
                             $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_size=extra";
                         }
                     } elseif (!empty($custom_action['grids_actions_type']) && 'delete' == $custom_action['grids_actions_type']) {
-                        $confirm = true;
-                        if (!empty($grid['grids']['entity_name'])) {
-                            $url = "{base_url}db_ajax/generic_delete/{$grid['grids']['entity_name']}/$id";
+                        if ($skip_delete) {
+                            continue;
                         } else {
-                            $url = "{base_url}db_ajax/generic_delete/{$grid['entity_name']}/$id";
+                            $confirm = true;
+                            if (!empty($grid['grids']['entity_name'])) {
+                                $url = "{base_url}db_ajax/generic_delete/{$grid['grids']['entity_name']}/$id";
+                            } else {
+                                $url = "{base_url}db_ajax/generic_delete/{$grid['entity_name']}/$id";
+                            }
                         }
                     } elseif (!empty($custom_action['grids_actions_type']) && 'edit_form' == $custom_action['grids_actions_type']) {
                         $url = "{base_url}main/form/{$custom_action['grids_actions_form']}/$id";
@@ -84,6 +90,7 @@
                 $url = str_replace('{base_url}', base_url(), $url);
 
                 ?>
+                <?php if ($key != 0) : ?> | <?php endif; ?>
 
                 <a class="<?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
                     <?php echo $custom_action['grids_actions_name']; ?>
@@ -95,16 +102,5 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if (isset($links['view']) && $links['view']) : ?>
-        <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-grid-action-s <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['view_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('View'); ?>">
-            <span class="fas fa-search-plus" style="color:white !important;"></span>
-        </a>
-    <?php endif; ?>
-
-    <?php if (isset($links['edit']) && $links['edit']) : ?>
-        <a href="<?php echo $links['edit'] . $id; ?>" class="btn bg-purple btn-grid-action-s <?php if (!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['edit_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Edit'); ?>">
-            <span class="fas fa-edit" style="color:white !important;"></span>
-        </a>
-    <?php endif; ?>
 
 </div>
