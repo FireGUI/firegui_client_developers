@@ -1096,11 +1096,11 @@ class Get_ajax extends MY_Controller
         if ($field['fields_type'] === DB_BOOL_IDENTIFIER) {
             $ids = explode(',', trim($id));
             if (!$id || in_array(DB_BOOL_TRUE, $ids)) {
-                $return[] = array('id' => DB_BOOL_TRUE, 'name' => 'Si');
+                $return[] = array('id' => DB_BOOL_TRUE, 'name' => t('Yes'));
             }
 
             if (!$id || in_array(DB_BOOL_FALSE, $ids)) {
-                $return[] = array('id' => DB_BOOL_FALSE, 'name' => 'No');
+                $return[] = array('id' => DB_BOOL_FALSE, 'name' => t('No'));
             }
         } else {
             // Se ho un id lo devo preparare per utilizzarlo nel
