@@ -31,3 +31,12 @@ $updates['1.9.1'] = [
 $updates['1.9.4'] = [
     "UPDATE grids_actions SET grids_actions_html = REPLACE(grids_actions_html, 'btn-xs', 'js-action_button btn-grid-action-s')"
 ];
+
+// Updates to 2.0.0
+if ($this->db->dbdriver != 'postgres') {
+    //mysql
+    $updates['2.0.0'] = ["ALTER TABLE menu ADD COLUMN menu_html_attr VARCHAR(250) NULL;"];
+} else {
+    //Pg
+    $updates['2.0.0'] = ["ALTER TABLE menu ADD COLUMN menu_html_attr VARCHAR NULL;"];
+}

@@ -1,29 +1,40 @@
 <style>
-.sidebar-menu > li {
-    /*border-bottom: 1px solid #26546f;*/
-    border-bottom: 1px solid #222d32;
-}
-.skin-blue .sidebar-menu > li > a {
-   color: #fff;
-}
-/*hover effect on sidebar elements*/
-.skin-blue .sidebar-menu > li:hover > a, .skin-blue .sidebar-menu > li.active > a, .skin-blue .sidebar-menu > li.menu-open > a {
-    color: #fff;
-    background: #26546f;
-    transition: all .25s ease-in;
-}
-/*space between icon and text*/
-.skin-blue .sidebar-menu > li > a > i, .skin-blue .sidebar-menu > li.active > a > i, .skin-blue .sidebar-menu > li.menu-open > a > i {
-   width: 30px;
-}
-.skin-blue .sidebar-menu > li:hover > a > i, .skin-blue .sidebar-menu > li.active > a > i, .skin-blue .sidebar-menu > li.menu-open > a > i {
-   width: 40px;
-   transition: all 0.35s ease-in;
-}
-.skin-blue .sidebar-menu > li.header {
-    color: #fff;
-    font-weight: 500;
-}
+    .sidebar-menu>li {
+        /*border-bottom: 1px solid #26546f;*/
+        border-bottom: 1px solid #222d32;
+    }
+
+    .skin-blue .sidebar-menu>li>a {
+        color: #fff;
+    }
+
+    /*hover effect on sidebar elements*/
+    .skin-blue .sidebar-menu>li:hover>a,
+    .skin-blue .sidebar-menu>li.active>a,
+    .skin-blue .sidebar-menu>li.menu-open>a {
+        color: #fff;
+        background: #26546f;
+        transition: all .25s ease-in;
+    }
+
+    /*space between icon and text*/
+    .skin-blue .sidebar-menu>li>a>i,
+    .skin-blue .sidebar-menu>li.active>a>i,
+    .skin-blue .sidebar-menu>li.menu-open>a>i {
+        width: 30px;
+    }
+
+    .skin-blue .sidebar-menu>li:hover>a>i,
+    .skin-blue .sidebar-menu>li.active>a>i,
+    .skin-blue .sidebar-menu>li.menu-open>a>i {
+        width: 40px;
+        transition: all 0.35s ease-in;
+    }
+
+    .skin-blue .sidebar-menu>li.header {
+        color: #fff;
+        font-weight: 500;
+    }
 </style>
 
 <!-- sidebar: style can be found in sidebar.less -->
@@ -78,8 +89,9 @@
             ?>
 
             <?php if ($isLinkOrContainer) : ?>
-                <li class="<?php echo implode(' ', $classes); ?>">
-                    <a href="<?php echo $link ?: 'javascript:;'; ?>" <?php echo ($menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?>>
+                <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
+                    <a href="<?php echo $link ?: 'javascript:;'; ?>" <?php //echo ($menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
+                                                                        ?>>
                         <i class="<?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i> <span class="title"><?php echo $label; ?></span>
                         <?php if ($isCurrent) : ?><span class="selected"></span><?php endif; ?>
                         <?php if ($hasSubmenu) : ?><span class="pull-right-container"><i class="fas fa-angle-left pull-right"></i></span><?php endif; ?>
@@ -94,8 +106,9 @@
                                     $classes[] = 'active';
                                 }
                                 ?>
-                                <li class="<?php echo implode(' ', $classes); ?>">
-                                    <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php echo ($sub_menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?>>
+                                <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
+                                    <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php //echo ($sub_menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
+                                                                                                            ?>>
                                         <i class="<?php echo $sub_menu['menu_icon_class'] ?: 'fas fa-empty'; ?>"></i>
                                         <?php echo ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])); ?>
                                     </a>
