@@ -38,5 +38,5 @@ if ($this->db->dbdriver != 'postgres') {
     $updates['2.0.0'] = ["ALTER TABLE menu ADD COLUMN menu_html_attr VARCHAR(250) NULL;"];
 } else {
     //Pg
-    $updates['2.0.0'] = ["ALTER TABLE menu ADD COLUMN menu_html_attr VARCHAR NULL;"];
+    $updates['2.0.0'] = ["ALTER TABLE menu ADD COLUMN menu_html_attr VARCHAR;"];
 }
