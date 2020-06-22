@@ -1493,7 +1493,7 @@ class Apilib
             }
         }
 
-        // Controllo delle regole custom di validazione
+        // Check custom validation rules
         foreach ($rules_date_before as $rule) {
             $before = $rule['before'];
             $after = $rule['after'];
@@ -1507,24 +1507,22 @@ class Apilib
         }
 
         /**
-         * Eseguo il process di pre-action
+         * Run pre-action process
          */
         $processed_data_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-{$mode}", ['post' => $dati, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-process specifico
         $processed_data_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-save', $processed_data_1);                             // Pre-process generico
         if (isset($processed_data_2['post'])) {
-            // Metto i dati processati nell'array da inserire su db
+            // Put data to be inserted into database
             $dati = $processed_data_2['post'];
         }
 
-        // Unsetta id entità per sicurezza:
+        // Unset entity id for security issue:
         unset($dati[$entity . '_id']);
 
-        // Autocalcola timestamp creazione se settato, se in creazione e se NON è stato passato manualmente
+        // Set creation date and/or edit date
         if (isset($entityCustomActions['create_time']) && !$editMode && empty($dati[$entityCustomActions['create_time']])) {
             $dati[$entityCustomActions['create_time']] = date('Y-m-d H:i:s');
         }
-
-        // Autocalcola timestamp modifica se settato e se NON è stato passato manualmente
         if (isset($entityCustomActions['update_time']) && empty($originalData[$entityCustomActions['update_time']])) {
             $dati[$entityCustomActions['update_time']] = $editMode ? date('Y-m-d H:i:s') : null;
         }

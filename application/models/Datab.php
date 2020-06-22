@@ -2012,7 +2012,7 @@ class Datab extends CI_Model
                 $where = $this->search_like($search, $fields);
 
                 //Calcola risultato e consideralo sse ha dati effettivi
-                $result = $this->getDataEntity($entity['entity_id'], $where, null, null, null, null, 1, false, [], ['group_by' => $group_by]);
+                $result = $this->getDataEntity($entity['entity_id'], $where, null, 0, null, 1, false, [], ['group_by' => null]);
                 if ($result) {
                     $results[] = [
                         'entity' => $entity,
@@ -2339,10 +2339,13 @@ class Datab extends CI_Model
             $id_record = $dato[$field['fields_name']];
             $grid_id = $grid_db['grids_id'];
             $grid = $this->datab->get_grid($grid_id);
-        } else {
+        } elseif (array_key_exists('grids_fields_grids_id', $field)) {
+            //debug($field);
             $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
             $id_record = $dato[$grid['grids']['entity_name'] . "_id"];
             $skip_delete = false;
+        } else {
+            return '';
         }
 
         $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
@@ -2594,6 +2597,7 @@ class Datab extends CI_Model
                     }
 
                 case 'date':
+                    
                     if ($escape_date && $value) {
                         $append = "<span class='hide'>{$value}</span>";
                     } else {
@@ -2636,11 +2640,11 @@ class Datab extends CI_Model
                         $dates = dateRange_to_dates($value);
                         switch (count($dates)) {
                             case 2:
-                                return 'Dal ' . dateFormat($dates[0]) . ' al ' . dateFormat($dates[1]);
+                                return t('From ') . dateFormat($dates[0]) . t(' to ') . dateFormat($dates[1]);
                             case 0:
                                 return '';
                             default:
-                                return '<small>[Formato daterange errato]</small>';
+                                return '<small>[Wrong daterange format]</small>';
                         }
                     } elseif ($field['fields_type'] === 'GEOGRAPHY') {
                         return $value['geo'] ? sprintf('<small>Lat:</small>%s, <small>Lon:</small>%s', $value['lat'], $value['lng']) : '';

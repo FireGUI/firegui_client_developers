@@ -297,16 +297,28 @@ if (!function_exists('dateRange_to_dates')) {
 
 if (!function_exists('dateFormat')) {
 
-    function dateFormat($date, $format = 'd/m/Y')
+    function dateFormat($date, $format = null)
     {
+        if ($format == null && defined('DEFAULT_DATE_FORMAT')) {
+            $format = DEFAULT_DATE_FORMAT;
+        } elseif ($format == null) {
+            $format = 'd/m/Y';
+        }
         return ($timestamp = strtotime($date)) ? date($format, $timestamp) : $date;
     }
 }
 
 if (!function_exists('dateTimeFormat')) {
 
-    function dateTimeFormat($date, $format = 'd/m/Y H:i:s')
+    function dateTimeFormat($date, $format = null)
     {
+
+        if ($format == null && defined('DEFAULT_DATETIME_FORMAT')) {
+            $format = DEFAULT_DATETIME_FORMAT;
+        } elseif ($format == null) {
+            $format = 'd/m/Y H:i:s';
+        }
+
         return dateFormat($date, $format);
     }
 }
@@ -317,11 +329,11 @@ if (!function_exists('date_toDbFormat')) {
     {
         $normalized_date = normalize_date($date);
         if (is_null($normalized_date)) {
-            // Data non normalizzabile
+            //Null date
             return null;
         }
 
-        // Data normalizzata === date-time in formato PostgreSQL
+        // Postgres date format
         return DateTime::createFromFormat('Y-m-d H:i:s', $normalized_date)->format('Y-m-d');
     }
 }
@@ -332,11 +344,11 @@ if (!function_exists('dateTime_toDbFormat')) {
     {
         $normalized_date = normalize_date($date);
         if (is_null($normalized_date)) {
-            // Data non normalizzabile
+            //Null date
             return null;
         }
 
-        // Data normalizzata === date-time in formato PostgreSQL
+        // Postgres datetime format
         return $normalized_date;
     }
 }
@@ -345,16 +357,15 @@ if (!function_exists('normalize_date')) {
 
     function normalize_date($date)
     {
-        // Scansiona i formati di data accettati e ritorna una stringa
-        // rappresentante una data in formato US
+        // Scan for date time format known
         $validFormats = array(
+            'Y-m-d H:i:s', // (US) Datetime
+            'Y-m-d H:i:s.u', // (--) PostgreSQL datetime
+            'Y-m-d H:i', // (US) Datetime (no secondi)
+            'Y-m-d', // (US) Date
             'd/m/Y H:i:s', // (IT) Datetime
             'd/m/Y H:i', // (IT) Datetime (no secondi)
             'd/m/Y', // (IT) Date
-            'Y-m-d H:i:s.u', // (--) PostgreSQL datetime
-            'Y-m-d H:i:s', // (US) Datetime
-            'Y-m-d H:i', // (US) Datetime (no secondi)
-            'Y-m-d', // (US) Date
         );
         foreach ($validFormats as $format) {
             $dateObject = DateTime::createFromFormat($format, $date);
@@ -363,7 +374,7 @@ if (!function_exists('normalize_date')) {
             }
         }
 
-        // Ultimo controllo disperato sulla data - strtotime
+        // Nothing before works... :( Try with strtotime
         if (($timestamp = strtotime($date)) >= 0) {
             return date('Y-m-d H:i:s', $timestamp);
         }
@@ -1243,8 +1254,8 @@ if (!function_exists('get_csrf')) {
     }
 }
 if (!function_exists('e_json')) {
-    function e_json($data) {
+    function e_json($data)
+    {
         echo json_encode($data);
     }
-
 }

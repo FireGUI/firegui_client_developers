@@ -17,7 +17,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('CUSTOM_FAVICON', null);
 
-
+    define('DEFAULT_DATE_FORMAT', 'Y-m-d');
+    define('DEFAULT_DATETIME_FORMAT', 'Y-m-d H:i:s');
     /*
  * ============================================================
  * E-mail system
