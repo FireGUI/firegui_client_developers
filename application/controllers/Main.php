@@ -125,14 +125,28 @@ class Main extends MY_Controller
         if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
             $content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
 
-            // Load and render the pdf
-            require_once('./class/html2pdf/html2pdf.class.php');
-            $html2pdf = new HTML2PDF($this->input->get('orientation') ?: 'P', 'A4', 'it');
-            $html2pdf->pdf->SetDisplayMode('fullpage');
-            $html2pdf->WriteHTML($content);
+            $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
 
-            $name = url_title($dati['layout_container']['layouts_title'], '-', true) . '.pdf';
-            $html2pdf->Output($name, 'I'); // stampa il pdf nel browser
+            $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
+
+            $contents = file_get_contents($pdfFile, true);
+            $pdf_b64 = base64_encode($contents);
+
+            $file_name = url_title($dati['layout_container']['layouts_title'], '-', true) . '_';
+
+            header('Content-Type: application/pdf');
+            header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
+
+            echo base64_decode($pdf_b64);
+
+            // // Load and render the pdf
+            // require_once('./class/html2pdf/html2pdf.class.php');
+            // $html2pdf = new HTML2PDF($this->input->get('orientation') ?: 'P', 'A4', 'it');
+            // $html2pdf->pdf->SetDisplayMode('fullpage');
+            // $html2pdf->WriteHTML($content);
+
+            // $name = url_title($dati['layout_container']['layouts_title'], '-', true) . '.pdf';
+            // $html2pdf->Output($name, 'I'); // stampa il pdf nel browser
         } else {
             $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
             $dati['current_page'] = "layout_{$layout_id}";
