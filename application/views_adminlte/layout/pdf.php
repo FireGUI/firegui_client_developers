@@ -18,6 +18,10 @@
             border: none;
         }
 
+        .list-group-item {
+            border: 2px solid #ddd !important;
+        }
+
         body {
             font-size: 1.5em;
         }
