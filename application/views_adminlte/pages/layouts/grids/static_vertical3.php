@@ -15,7 +15,6 @@
         padding: 10px 15px !important;
         margin-bottom: -1px !important;
         background-color: #fff !important;
-        border: 1px solid #ddd !important;
     }
 </style>
 <?php //debug($grid_data); 
