@@ -1,14 +1,20 @@
-Changelog version 1.9.9
+Changelog version 2.0.0
  
-Preview fields now has automatically link to the detail layout
-Possibility to hide actions column
-Added getDefaultGrid function
-New inline actions for field columns
-Translations fixes
-MY_Loader class manage module views unknown
-New inline actions
-Bugfix buildGridCell for multiupload
-New multiupload without preview
-Change default lat/long for maps
-Added customizable zoom level
-Removed alert error for datatable ajax
+Converted layout pdfable from html2pdf to native wkhtmltopdf
+Added 2 constants: DEFAULT_DATE_FORMAT and DEFAULT_DATETIME_FORMAT
+Fixed dateFormat function to use a default date format from enviroments
+Code comments and translations
+Bugfix search with group by parameter
+Bugfix inline actions
+Javascript bugfix for empty tabs
+Added custom sidebar menu attributes
+Managed missing module view file
+Added e_json function
+Remove delete action for inline actions on joined entity
+Added “|” pipe separator to inline actions
+Removed old detail and edit actions
+Javascript bugfix for totalable columns
+Inline actions now shown on tr:hover
+Fixed chat
+Fixed chat grid
+Fixed radio translation
