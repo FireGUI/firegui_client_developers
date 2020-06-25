@@ -2513,6 +2513,10 @@ class Datab extends CI_Model
             } else {
                 return $text;
             }
+        } elseif ($field['grids_fields_switch_inline']) {
+            $entity = $this->get_entity($field['fields_entity_id']);
+            $idKey = $entity['entity_name'] . '_id';
+            return $this->load->view('box/grid/switch_bool', ['field' => $field, 'value' => $value, 'row_id' => $dato[$idKey]], true);
         } else {
             // Posso stampare il campo in base al tipo
             switch ($field['fields_draw_html_type']) {
@@ -2597,7 +2601,7 @@ class Datab extends CI_Model
                     }
 
                 case 'date':
-                    
+
                     if ($escape_date && $value) {
                         $append = "<span class='hide'>{$value}</span>";
                     } else {
