@@ -290,7 +290,7 @@ class Crmentity extends CI_Model
 
                 $referersKeys[$refererEntity] = [];
 
-                $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, null, false, $depth);
+                $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
                 if (!empty($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
