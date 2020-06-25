@@ -2,6 +2,24 @@
 if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
     $this->load->view('custom/layout/login');
 } else {
+    $giorno = date('d');
+    $mese = date('n');
+
+    $background = '';
+
+    if ($mese < 3 || $mese == 3 && $giorno < 21 || $mese == 12 && $giorno >= 22) {
+        $stagione = "Winter";
+        $background = 'winter';
+    } elseif ($mese < 6 || $mese == 6 && $giorno <= 20) {
+        $stagione = "Spring";
+        $background = 'spring';
+    } elseif ($mese < 9 || $mese == 9 && $giorno <= 22) {
+        $stagione = "Summer";
+        $background = 'summer';
+    } else {
+        $stagione = "Autumn";
+        $background = 'autumn';
+    }
 ?>
     <!DOCTYPE html>
     <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
@@ -68,7 +86,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo base_url("images/winter.jpg"); ?>) !important;
+                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo (!empty($background)) ? base_url("images/{$background}.jpg") : ''; ?>) !important;
                 background-position: center !important;
                 background-repeat: no-repeat !important;
                 background-size: cover !important;
