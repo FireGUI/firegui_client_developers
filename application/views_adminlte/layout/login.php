@@ -7,7 +7,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
     $background = '';
 
-    if ($mese <= 3 && $giorno < 21 || $mese == 12 && $giorno >= 22) {
+    if (($mese <= 3 && $giorno < 21) || ($mese == 12 && $giorno >= 22)) {
         $stagione = "Winter";
         $background = 'winter';
     } elseif ($mese <= 6 && $giorno <= 20) {
