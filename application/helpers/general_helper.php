@@ -1,5 +1,7 @@
 <?php
 
+
+
 if (!function_exists('command_exists')) {
 
     function command_exists($cmd)
@@ -10,10 +12,14 @@ if (!function_exists('command_exists')) {
 }
 
 if (!function_exists('dd')) {
-    function dd()
+    function dd($var)
     {
-        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
-        
+        if (!is_development() && !is_maintenance()) {
+            return;
+        }
+        echo '</select>';
+        echo '</script>';
+
         $stack = '';
         $i = 1;
         $trace = debug_backtrace();
@@ -31,11 +37,11 @@ if (!function_exists('dd')) {
         }
 
         $out[] = '<pre style="background-color:#CCCCCC">';
-        
+
         $calledFrom = debug_backtrace();
-        
-        $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>:'.$calledFrom[0]['line'];
-        
+
+        $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>:' . $calledFrom[0]['line'];
+
         if (is_object($var)) {
             $out[] = '-------- Class methods --------';
             $out[] = print_r(get_class_methods(get_class($var)), true);
@@ -47,22 +53,26 @@ if (!function_exists('dd')) {
         }
 
         $out[] = '</pre>';
-        
+
         echo implode(PHP_EOL, $out);
 
         array_map(function ($x) {
             dump($x);
         }, func_get_args());
-        
+
         die;
     }
 }
 
 if (!function_exists('d')) {
-    function d()
+    function d($var)
     {
-        include_once __DIR__ . '/../third_party/var-dumper/vendor/autoload.php';
-        
+        if (!is_development() && !is_maintenance()) {
+            return;
+        }
+        echo '</select>';
+        echo '</script>';
+
         $stack = '';
         $i = 1;
         $trace = debug_backtrace();
@@ -80,11 +90,11 @@ if (!function_exists('d')) {
         }
 
         $out[] = '<pre style="background-color:#CCCCCC">';
-        
+
         $calledFrom = debug_backtrace();
-        
-        $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>:'.$calledFrom[0]['line'];
-        
+
+        $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>:' . $calledFrom[0]['line'];
+
         if (is_object($var)) {
             $out[] = '-------- Class methods --------';
             $out[] = print_r(get_class_methods(get_class($var)), true);
@@ -96,7 +106,7 @@ if (!function_exists('d')) {
         }
 
         $out[] = '</pre>';
-        
+
         echo implode(PHP_EOL, $out);
 
         array_map(function ($x) {
@@ -121,6 +131,7 @@ if (!function_exists('debug')) {
             return;
         }
         echo '</select>';
+        echo '</script>';
         switch (DEBUG_LEVEL) {
             case "DEVELOP":
 
@@ -286,16 +297,28 @@ if (!function_exists('dateRange_to_dates')) {
 
 if (!function_exists('dateFormat')) {
 
-    function dateFormat($date, $format = 'd/m/Y')
+    function dateFormat($date, $format = null)
     {
+        if ($format == null && defined('DEFAULT_DATE_FORMAT')) {
+            $format = DEFAULT_DATE_FORMAT;
+        } elseif ($format == null) {
+            $format = 'd/m/Y';
+        }
         return ($timestamp = strtotime($date)) ? date($format, $timestamp) : $date;
     }
 }
 
 if (!function_exists('dateTimeFormat')) {
 
-    function dateTimeFormat($date, $format = 'd/m/Y H:i:s')
+    function dateTimeFormat($date, $format = null)
     {
+
+        if ($format == null && defined('DEFAULT_DATETIME_FORMAT')) {
+            $format = DEFAULT_DATETIME_FORMAT;
+        } elseif ($format == null) {
+            $format = 'd/m/Y H:i:s';
+        }
+
         return dateFormat($date, $format);
     }
 }
@@ -306,11 +329,11 @@ if (!function_exists('date_toDbFormat')) {
     {
         $normalized_date = normalize_date($date);
         if (is_null($normalized_date)) {
-            // Data non normalizzabile
+            //Null date
             return null;
         }
 
-        // Data normalizzata === date-time in formato PostgreSQL
+        // Postgres date format
         return DateTime::createFromFormat('Y-m-d H:i:s', $normalized_date)->format('Y-m-d');
     }
 }
@@ -321,11 +344,11 @@ if (!function_exists('dateTime_toDbFormat')) {
     {
         $normalized_date = normalize_date($date);
         if (is_null($normalized_date)) {
-            // Data non normalizzabile
+            //Null date
             return null;
         }
 
-        // Data normalizzata === date-time in formato PostgreSQL
+        // Postgres datetime format
         return $normalized_date;
     }
 }
@@ -334,16 +357,15 @@ if (!function_exists('normalize_date')) {
 
     function normalize_date($date)
     {
-        // Scansiona i formati di data accettati e ritorna una stringa
-        // rappresentante una data in formato US
+        // Scan for date time format known
         $validFormats = array(
+            'Y-m-d H:i:s', // (US) Datetime
+            'Y-m-d H:i:s.u', // (--) PostgreSQL datetime
+            'Y-m-d H:i', // (US) Datetime (no secondi)
+            'Y-m-d', // (US) Date
             'd/m/Y H:i:s', // (IT) Datetime
             'd/m/Y H:i', // (IT) Datetime (no secondi)
             'd/m/Y', // (IT) Date
-            'Y-m-d H:i:s.u', // (--) PostgreSQL datetime
-            'Y-m-d H:i:s', // (US) Datetime
-            'Y-m-d H:i', // (US) Datetime (no secondi)
-            'Y-m-d', // (US) Date
         );
         foreach ($validFormats as $format) {
             $dateObject = DateTime::createFromFormat($format, $date);
@@ -352,7 +374,7 @@ if (!function_exists('normalize_date')) {
             }
         }
 
-        // Ultimo controllo disperato sulla data - strtotime
+        // Nothing before works... :( Try with strtotime
         if (($timestamp = strtotime($date)) >= 0) {
             return date('Y-m-d H:i:s', $timestamp);
         }
@@ -835,11 +857,15 @@ if (!function_exists('array_diff_assoc_recursive')) {
 }
 
 
-if (!function_exists('log_error_slack')) {
+if (!function_exists('send_telegram_message')) {
 
     function send_telegram_message($botid, $chatid, $text)
     {
         $ch = curl_init();
+        //Bot id must start with "bot".
+        if (strpos($botid, 'bot') !== 0) {
+            $botid = 'bot' . $botid;
+        }
         $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
         curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/$botid/sendmessage");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -856,22 +882,6 @@ if (!function_exists('log_error_slack')) {
     function log_error_slack($message, $channel = '#log_crm')
     {
         return false;
-        //debug($message,true);
-        $ch = curl_init("https://slack.com/api/chat.postMessage");
-        $data = http_build_query([
-            "token" => "xoxp-7208707362-236202706322-314190044708-27aaf1b9d35c6f12210277526d741c46",
-            "channel" => $channel, //"#mychannel",
-            "text" => $message, //"Hello, Foo-Bar channel message.",
-            "username" => "MySlackBot",
-        ]);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result;
     }
 }
 
@@ -906,7 +916,7 @@ if (!function_exists('mese_testuale')) {
 
 if (!function_exists('zip_folder')) {
 
-    function zip_folder($source, $destination)
+    function zip_folder($source, $destination, $exclude_dirs = [])
     {
 
         if (!extension_loaded('zip')) {
@@ -949,10 +959,24 @@ if (!function_exists('zip_folder')) {
                 $file = realpath($file);
 
                 if (is_dir($file) === true) {
+                    //Ignore folders excluded
+                    if (in_array(str_replace($source . '/', '', $file), $exclude_dirs)) {
+                        continue;
+                    }
                     if (!$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'))) {
                         //die('Error adding folder '.$file);
                     }
                 } else if (is_file($file) === true) {
+                    if ($exclude_dirs) {
+                        $dir_container = explode('/', str_replace($source . '/', '', $file));
+                        array_pop($dir_container);
+                        $dir_container = implode('/', $dir_container);
+
+                        if (in_array($dir_container, $exclude_dirs)) {
+                            //die(str_replace($source . '/', '', $file));
+                            continue;
+                        }
+                    }
                     if (!$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file))) {
                         //die('Error adding file '.$file);
                     }
@@ -1032,22 +1056,7 @@ if (!function_exists('send_telegram_log')) {
 
     function send_telegram_log($chatid, $text)
     {
-        $CI = get_instance();
-
-        // Se sono dentro come superadmin non invio messaggi di errore su telegram
-
-        $ch = curl_init();
-        $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
-        curl_setopt($ch, CURLOPT_URL, 'https://api.telegram.org/bot627086827:AAFdhz-8khe3OS4sCH7DcqfZ7miih-__h_Q/sendmessage');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        $result = curl_exec($ch);
-
-        //die($result);
-
-        curl_close($ch);
-        return $result;
+        return false;
     }
 }
 if (!function_exists('my_version_compare')) {
@@ -1211,6 +1220,7 @@ if (!function_exists('dirToArray')) {
         $cdir = scandir($dir);
         foreach ($cdir as $key => $value) {
             if (!in_array($value, array(".", ".."))) {
+                if (stripos($value, '.') === 0) continue;
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
                     $result[$value] = dirToArray($dir . DIRECTORY_SEPARATOR . $value);
                 } else {
@@ -1241,5 +1251,11 @@ if (!function_exists('get_csrf')) {
         );
         return $csrf;
         //echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
+    }
+}
+if (!function_exists('e_json')) {
+    function e_json($data)
+    {
+        echo json_encode($data);
     }
 }

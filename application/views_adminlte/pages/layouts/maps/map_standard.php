@@ -1,4 +1,4 @@
-<?php 
+<?php
 $id = "map_standard{$data['maps']['maps_id']}";
 $passedId = isset($value_id) ? $value_id : null;
 $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passedId}");
@@ -8,14 +8,18 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
 
 
 <script>
-    
+    var token = JSON.parse(atob($('body').data('csrf')));
+    var token_name = token.name;
+    var token_hash = token.hash;
     $(function() {
         var url = '<?php echo $ajaxURL; ?>';
         var markers = null;
-        var map = L.map('<?php echo $id; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
-        
+        var map = L.map('<?php echo $id; ?>', {
+            scrollWheelZoom: false
+        }).setView([40.730610, -73.935242], <?php echo ($data['maps']['maps_init_zoom']) ?: 5; ?>);
+
         L.maps[<?php echo json_encode($id); ?>] = map;
-        
+
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -30,11 +34,14 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
             $.ajax({
                 type: "POST",
                 dataType: "json",
+                data: {
+                    [token_name]: token_hash
+                },
                 url: url,
                 success: function(data) {
 
                     // Rimuovo i vecchi marker
-                    if(markers !== null) {
+                    if (markers !== null) {
                         map.removeLayer(markers);
                         markers = null;
                     }
@@ -44,8 +51,11 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                     // Ciclo i Marker
                     var group = new Array();
                     $.each(data, function(i, val) {
-                        var html =
-                                '<b>' + val.title + '</b><br />' + val.description + '<br /><a href="' + val.link + '">Visualizza Dettagli</a>';
+                        var html = '<b>' + val.title + '</b><br />';
+                        if (typeof val.description !== "undefined") {
+                            html += val.description
+                        }
+                        html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
                         var icon;
                         if (val.marker) {
                             icon = L.icon({
@@ -64,15 +74,20 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                         var coor = L.latLng(val.lat, val.lon);
                         group.push(coor);
                     });
-                    
+
                     if (markers.getLayers().length > 0) {
                         map.addLayer(markers);
                     }
-                    
+
+
                     if (group.length > 0) {
                         map.fitBounds(group);
+                        <?php if ($data['maps']['maps_init_zoom']) : ?>
+                            map.setZoom(<?php echo $data['maps']['maps_init_zoom']; ?>);
+                        <?php endif; ?>
                     }
-                    
+
+
                     map.invalidateSize();
                 },
                 error: function(data) {
@@ -83,6 +98,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
 
 
         setTimeout(load_marker, 500);
-        
+
     });
 </script>

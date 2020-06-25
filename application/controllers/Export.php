@@ -3,29 +3,9 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-require_once APPPATH . 'third_party/PHPExcel.php';
-class PHPExcel_Cell_MyColumnValueBinder extends PHPExcel_Cell_DefaultValueBinder implements PHPExcel_Cell_IValueBinder
-{
-    protected $stringColumns = [];
-
-    public function __construct(array $stringColumnList = [])
-    {
-        // Accept a list of columns that will always be set as strings
-        $this->stringColumns = $stringColumnList;
-    }
-
-    public function bindValue(PHPExcel_Cell $cell, $value = null)
-    {
-        // If the cell is one of our columns to set as a string...
-        if (in_array($cell->getColumn(), $this->stringColumns) || $this->stringColumns == []) {
-            // ... then we cast it to a string and explicitly set it as a string
-            $cell->setValueExplicit((string) $value, PHPExcel_Cell_DataType::TYPE_STRING);
-            return true;
-        }
-        // Otherwise, use the default behaviour
-        return parent::bindValue($cell, $value);
-    }
-}
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Export extends MY_Controller
 {
@@ -45,10 +25,9 @@ class Export extends MY_Controller
         $grid = $this->datab->get_grid($grid_id);
 
         $grid_data = $this->datab->get_grid_data($grid, $value_id, '', NULL, 0, null);
-        //$this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData]);
+
         $out_array = array();
         foreach ($grid_data as $dato) {
-            //debug($dato,true);
             $tr = array();
 
             foreach ($grid['grids_fields'] as $field) {
@@ -59,26 +38,16 @@ class Export extends MY_Controller
         }
 
         $columns_names = [];
+
         //Rimpiazzo i nomi delle colonne
         foreach ($grid['grids_fields'] as $key => $field) {
             $columns_names[$key . $field['fields_name']] = $field['grids_fields_column_name'];
         }
 
-        //debug($columns_names,true);
         array_walk($out_array, function ($value, $key) use ($columns_names, &$out_array) {
-            //            debug($columns_names);
-            //            debug($value);
             $out_array[$key] = array_combine($columns_names, $value);
         });
-        //        foreach ($data as $key1 => $row) {
-        //            foreach ($row as $key => $val) {
-        //                if (is_array($val)) {
-        //                    $data[$key1][$key] = implode(';', $val);
-        //                }
-        //            }
-        //        }
-        //debug($out_array,true);
-        //debug($columns_names,true);
+
         return $out_array;
     }
 
@@ -96,6 +65,7 @@ class Export extends MY_Controller
         echo $csv;
         exit;
     }
+
     public function download_excel($grid_id, $value_id = null)
     {
         error_reporting(E_ALL);
@@ -106,72 +76,61 @@ class Export extends MY_Controller
         $grid = $this->datab->get_grid($grid_id);
         $fields = $grid['grids_fields'];
 
-
         $data = $this->prepareData($grid_id, $value_id);
 
-        // Instantiate our custom binder, with a list of columns, and tell PHPExcel to use it
-        //PHPExcel_Cell::setValueBinder(new PHPExcel_Cell_MyColumnValueBinder([]));
-
-        $objPHPExcel = new PHPExcel();
+        $objPHPExcel = new Spreadsheet();
 
         $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '', 'A1');
 
-        //Imposto le colonne numeriche (per permettere a formule e altro di funzionare correttamente)
+        $numeric_cells = [];
+        $cells = [];
         foreach ($fields as $key => $field) {
-            //if (in_array(strtoupper($field['fields_type']), ['FLOAT','DOUBLE','INT','INTEGER']) ) {
-            $numeric_cells[$key] = $field['grids_fields_column_name'];
-            //}
+            if ($field['grids_fields_totalable']) {
+                $numeric_cells[$key] = $field['grids_fields_column_name'];
+            } else {
+                $cells[$key] = $field['grids_fields_column_name'];
+            }
         }
-        //Per gli eval, devo passarmi tutti i dati per capire se qualche cella è anch'essa un numero (ricordarsi che number format torna una stringa e non un numero, quindi crea problemi con le formule excell dopo...)
-        foreach (array_slice($data, 0, 10) as $key => $dato) {
-            foreach ($dato as $column => $value) {
 
-                if (!in_array($column, $numeric_cells)) { //Se già non è tra le numeric cells, skippo...
-                    continue;
-                }
+        if (!empty($numeric_cells)) {
+            foreach (array_slice($data, 0, 10) as $key => $dato) {
+                foreach ($dato as $column => $value) {
+                    if (!in_array($column, $numeric_cells)) { // If is already in numeric array, skip
+                        continue;
+                    }
 
-                //Provo a castarlo a numero, se no, tolgo questa colonna tra quelle numeriche
-                $possible_number = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION);
+                    $numberize = preg_replace("/[^0-9.]/", '', $value);
 
-                if ($possible_number === '') {
+                    // Try casing as number type, else remove it.
+                    $possible_number = filter_var($numberize, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION);
 
-                    $numeric_cells = array_diff($numeric_cells, [$column]);
-                } elseif ((float) $possible_number !== (float) $value) {
-                    $numeric_cells = array_diff($numeric_cells, [$column]);
+                    if ($possible_number === '') {
+                        $numeric_cells = array_diff($numeric_cells, [$column]);
+                    } elseif ((float) $possible_number !== (float) $numberize) {
+                        $numeric_cells = array_diff($numeric_cells, [$column]);
+                    }
                 }
             }
         }
-        //die('test');
+
+        $cells = array_merge($cells, $numeric_cells);
+
         foreach ($data as $key => $dato) {
-            //            foreach ($numeric_cells as $col_pos => $numeric_cell) {
-            //                $data[$key][$numeric_cell] = str_replace('.', ',', $dato[$numeric_cell]);
-            //            }
-            foreach ($numeric_cells as $col_pos => $numeric_cell) {
-                //debug($dato[$numeric_cell]);
-                //$data[$key][$numeric_cell] = (float) str_ireplace('.', '', filter_var($dato[$numeric_cell], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_FRACTION));
-                $data[$key][$numeric_cell] = (float) tofloat($dato[$numeric_cell]);
-                //var_dump($data[$key][$numeric_cell]);
+            foreach ($cells as $col_pos => $cell) {
+                if (ctype_digit($dato[$cell])) {
+                    $data[$key][$cell] = (float) tofloat($dato[$cell]);
+                } else {
+                    $data[$key][$cell] = $dato[$cell];
+                }
             }
         }
-        //debug($data, true);
-        //debug($numeric_cells,true);
 
-        //        foreach ($numeric_cells as $col_pos => $numeric_cell) {
-        //            $col_letter = PHPExcel_Cell::stringFromColumnIndex($col_pos);
-        //            for ($i=2;$i<=count($data)+1;$i++) {
-        //debug($col_letter.$i);
-        //                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_000);
-        //                $objPHPExcel->getActiveSheet()->getStyle($col_letter.$i)->setQuotePrefix(false);
-        //            }
-
-        //        }
-        //debug($data,true);
-        //debug(var_dump($data),true);
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=\"grid{$grid_id}.xlsx\"");
         header('Cache-Control: max-age=0');
+
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
 
@@ -181,9 +140,8 @@ class Export extends MY_Controller
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter = IOFactory::createWriter($objPHPExcel, 'Xlsx');
         $objWriter->setPreCalculateFormulas(true);
-
         $objWriter->save('php://output');
     }
 
@@ -204,10 +162,6 @@ class Export extends MY_Controller
 
 
         foreach ($data as $row) {
-            //            debug($row);
-            //            debug($delim);
-            //            debug($enclosure);
-
             if (fputcsv($tmp, $row, $delim, $enclosure) === false) {
                 show_error('Impossibile scrivere sul file temporaneo');
             }

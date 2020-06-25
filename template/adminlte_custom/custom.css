@@ -3,14 +3,15 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
-/* 
-    Created on : 18-apr-2018, 15.07.50
-    Author     : h2snc
-*/
+
 
 #search_form input[name="search"] {
     margin: 5px 0;
     
+}
+
+table {
+    vertical-align:middle;
 }
 
 /*
@@ -80,4 +81,24 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
 .box .box-body {
     padding-left:10px;
     padding-bottom:10px;
+}
+.sidebar-menu.tree > li.active > a > span.selected {
+    visibility: hidden;
+}
+
+.btn-grid-action-s {
+    padding: 2px 6px;
+    font-size: 15px;
+    line-height: 1.5;
+    border-radius: 4px;
+}
+table th.sorting, table th.sorting_desc, table th.sorting_asc {
+    color: #3c8dbc!important;
+}
+table tr td {
+     vertical-align:middle!important;
+}
+
+.action_inline {
+    visibility:hidden;
 }

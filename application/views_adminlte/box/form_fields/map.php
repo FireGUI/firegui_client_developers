@@ -4,7 +4,11 @@ $input = "js_map_container_{$field['fields_id']}_input" . ($lang ? "_{$lang}" : 
 
 if ($value) {
     if (is_array($value)) {
+
         $value_latlon = $value;
+        $lat = $value_latlon['lat'];
+        $lon = isset($value_latlon['lon']) ? $value_latlon['lon'] : $value_latlon['lng'];
+        $value = trim($lat . ';' . $lon, ';') ?: null;
     } else {
         if ($this->db->dbdriver == 'postgre') {
             $value_latlon = $this->db->query("SELECT ST_Y('{$value}'::geometry) AS lat, ST_X('{$value}'::geometry) AS lon")->row_array();
@@ -22,6 +26,9 @@ if ($value) {
 }
 ?>
 <?php echo $label; ?>
+
+<?php //debug($value); 
+?>
 <input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" />
 <!--<div style="max-width: 400px;">-->
 <div style="max-width: 100%;">
@@ -57,7 +64,7 @@ if ($value) {
 
 
         map = L.map('<?php echo $map; ?>', {
-            center: new L.LatLng(46.0649520, 13.2374247),
+            center: new L.LatLng(40.725249, -74.140363),
             zoom: 14,
             layers: [
                 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -146,12 +153,6 @@ if ($value) {
             geocoding.geocode(searchInput.val());
         });
 
-
-
-
-
-
-
         function createMarker(latlng) {
             if (map !== null) {
                 map.marker = L.marker(latlng, {
@@ -159,7 +160,7 @@ if ($value) {
                 }).on('dragend', function(e) {
                     updateLatlngInput();
                 }).on('click', function(e) {
-                    var result = confirm('Rimuovere il marker?');
+                    var result = confirm('<?php e('Remove marker?'); ?>');
                     if (result) {
                         destroyMarker();
                     }

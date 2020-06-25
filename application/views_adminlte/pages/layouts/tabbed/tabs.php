@@ -56,10 +56,15 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
             //            });
             //            $.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
             //            $.fn.dataTable.tables( { visible: true, api: true } ).draw(); //Prima c'era il destroy cghe metteva a posto le cose. Il problema è che col destroy toglie la riga col cerca e col visualizza n elementi...
-            $.fn.dataTable.tables({
+            var tablenode = $.fn.dataTable.tables({
                 visible: true,
                 api: true
-            }).table().node().style.width = '';
+            }).table().node();
+            if (typeof tablenode !== 'undefined') {
+                tablenode
+                    .style
+                    .width = '';
+            }
             $.fn.dataTable.tables({
                 visible: true,
                 api: true

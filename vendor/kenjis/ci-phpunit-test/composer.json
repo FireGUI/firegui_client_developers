@@ -1,0 +1,31 @@
+{
+    "name": "kenjis/ci-phpunit-test",
+    "description": "An easier way to use PHPUnit with CodeIgniter 3.x",
+    "keywords": [
+        "phpunit",
+        "unit testing",
+        "test",
+        "codeigniter",
+        "monkey patch"
+    ],
+    "homepage": "http://kenjis.github.io/ci-phpunit-test/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kenji Suzuki",
+            "homepage": "https://github.com/kenjis"
+        }
+    ],
+    "support": {
+        "forum": "http://forum.codeigniter.com/thread-61725.html"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "nikic/php-parser": "^2.1|^3.0|^4.2"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

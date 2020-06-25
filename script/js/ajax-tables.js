@@ -78,6 +78,7 @@ CrmInlineTable.prototype.registerEvents = function () {
     });
 
     // Create empty record
+    //console.log('Click on ' + gridID);
     $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
         e.preventDefault();
         inlineTable.createRow();
@@ -252,6 +253,19 @@ CrmInlineTable.prototype.deleteRow = function (nRow) {
 // Test
 
 
+jQuery.extend({
+    isValidSelector: function (selector) {
+        if (typeof (selector) !== 'string') {
+            return false;
+        }
+        try {
+            $(selector);
+        } catch (error) {
+            return false;
+        }
+        return true;
+    }
+});
 
 function initTableAjax(grid) {
 
@@ -292,7 +306,13 @@ function initTableAjax(grid) {
         var token_hash = token.hash;
     }
 
-    var datatable = oDataTable.dataTable({
+    var datatable = oDataTable.on('error.dt', function (e, settings, techNote, message) {
+        // console.log(e);
+        // console.log(settings);
+        // console.log(techNote);
+        console.log(message);
+        $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p></div>');
+    }).dataTable({
         stateSave: true,
 
         bSort: bEnableOrder,
@@ -305,24 +325,28 @@ function initTableAjax(grid) {
         sServerMethod: "POST",
         bServerSide: true,
         sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
-        aLengthMenu: [10, 50, 100, 200, 500, 1000, 'Tutti'],
+        aLengthMenu: [[10, 50, 100, 200, 500, -1], [10, 50, 100, 200, 500, 'All']],
         iDisplayLength: defaultLimit,
         //bLengthChange: false,
         oLanguage: {
-            sUrl: base_url_scripts + "script/datatable.transl.json"
+            sUrl: base_url_scripts + "script/dt_translations/datatable." + lang_short_code + ".json"
         },
+
         fnServerParams: function (aoData) {
             aoData.push({ "name": token_name, "value": token_hash });
+        },
+        "drawCallback": function (settings) {
+            initComponents(oDataTable);
         },
         "footerCallback": function (row, data, start, end, display) {
 
             if (totalable == 1) {
 
                 var api = this.api(), data;
-                $(api.column(0).footer()).html('Total:');
+                $(api.column(0).footer()).html('Totals:');
                 // converting to interger to find total
                 var floatVal = function (i) {
-
+                    i = i.toString();
                     i = i.replace(/[^\d.-]/g, '');
 
                     return parseFloat(i);
@@ -331,13 +355,21 @@ function initTableAjax(grid) {
                 api.columns().every(function () {
                     var values = this.data();
                     var footer = this.footer();
+
                     if ($(footer).data('totalable') == 1) {
+                        //console.log(values);
                         var total = 0;
                         for (var i = 0; i < values.length; i++) {
-                            total += floatVal(values[i]);
+                            if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue') !== null && typeof ($(values[i]).data('totalablevalue')) !== 'undefined') {
+                                total += floatVal($(values[i]).data('totalablevalue'));
+                            } else {
+
+                                total += floatVal(values[i]);
+                            }
+
                         }
 
-                        $(footer).html(total.toFixed(2));
+                        $(footer).html(parseFloat(total).toFixed(2));
                     }
                 });
 
@@ -367,27 +399,36 @@ function startAjaxTables() {
     $('.js_ajax_datatable:not(.dataTable)').each(function () {
         var gridID = $(this).attr('data-grid-id');
         var grid = $(this);
-        initTableAjax(grid).on('init', function (e) {
-            var wrapper = e.target.parent;
-            $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
-            $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
-            $('.dataTables_processing', wrapper).addClass("col-md-6"); // modify table per page dropdown
+        //console.log(grid.data('ajaxTableInitialized'));
+        if (grid.data('ajaxTableInitialized') != true) {
+            initTableAjax(grid).on('init', function (e) {
+                var wrapper = e.target.parent;
+                $('.dataTables_filter input', wrapper).addClass("form-control input-small"); // modify table search input
+                $('.dataTables_length select', wrapper).addClass("form-control input-xsmall input-sm"); // modify table per page dropdown
+                $('.dataTables_processing', wrapper).addClass("col-md-6"); // modify table per page dropdown
 
-            $('.dataTables_info', wrapper).css({ "margin-top": '20px', position: 'static' });
-            $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
-            $('.dataTables_length', wrapper).parent().parent().height(0);
-        });
+                $('.dataTables_info', wrapper).css({ "margin-top": '20px', position: 'static' });
+                $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
+                $('.dataTables_length', wrapper).parent().parent().height(0);
+            });
+        }
     });
 
 
     $('.js_datatable_inline').each(function () {
         var grid = $(this);
-        initTable(grid);
+        //console.log(grid.data('ajaxTableInitialized'));
+        if (grid.data('ajaxTableInitialized') != true) {
+            initTable(grid);
 
-        var dtInline = new CrmInlineTable(grid);
-        dtInline.registerEvents();
+            var dtInline = new CrmInlineTable(grid);
+            dtInline.registerEvents();
+        }
+
+
     });
 
 
 }
 
+$.fn.dataTable.ext.errMode = 'none';

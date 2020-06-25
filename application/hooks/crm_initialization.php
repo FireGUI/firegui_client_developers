@@ -23,7 +23,12 @@ class Init_hook
             //$language = $this->ci->config->item('language');
             $default_language_id = $this->ci->db->get_where('settings')->row()->settings_default_language;
             $default_language = $this->ci->db->get_where('languages', ['languages_id' => $default_language_id])->row_array();
-            $language = strtolower($default_language['languages_name']);
+            if (!empty($default_language)) {
+                $language = strtolower($default_language['languages_name']);
+            } else {
+                $language = 'english';
+            }
+
             $this->ci->session->set_userdata('language', $language);
         }
 

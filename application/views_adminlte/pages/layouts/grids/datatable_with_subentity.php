@@ -1,5 +1,8 @@
 <?php
+
 $all_sub_data = [];
+$has_bulk = !empty($grid['grids']['grids_bulk_mode']);
+$has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
 if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
     $relation_field = $sub_grid['grid_relation_field'];
     foreach ($grid_data['sub_grid_data'] as $sub_record) {
@@ -12,10 +15,10 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 //debug($sub_grid,true);
 ?>
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
-        <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered nowrap table-hover table-hover <?php echo $grid['grids']['grids_append_class']; ?>">
+        <table data-lengthmenu='[[20, 100, 200, 400, 1000, -1], [10, 50, 100, 200, 500, "Tutti"]]' <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered nowrap table-hover table-hover <?php echo $grid['grids']['grids_append_class']; ?>">
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
@@ -27,41 +30,47 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
             <tbody>
                 <?php foreach ($grid_data['data'] as $key => $dato) : ?>
                     <?php $sub_data = isset($all_sub_data[$dato[$grid['grids']['entity_name'] . "_id"]]) ? $all_sub_data[$dato[$grid['grids']['entity_name'] . "_id"]] : []; ?>
-                    <tr class="odd gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
+                    <tr class="__odd __gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
                         <?php foreach ($grid['grids_fields'] as $field) : ?>
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
 
-                        <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?>>
-                            <?php
-                            $this->load->view('box/grid/actions', array(
-                                'links' => $grid['grids']['links'],
-                                'id' => $dato[$grid['grids']['entity_name'] . "_id"],
-                                'row_data' => $dato,
-                                'grid' => $grid['grids']
-                            ));
-                            ?>
+                        <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?> style="vertical-align:top!important;">
+                            <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                                <?php
+
+                                $this->load->view('box/grid/actions', array(
+                                    'links' => $grid['grids']['links'],
+                                    'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                                    'row_data' => $dato,
+                                    'grid' => $grid['grids']
+                                ));
+
+                                ?>
+                            <?php endif; ?>
                             <?php if ($sub_data) : ?>
-                                <br>
-                                <a class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
-                                    espandi <span data-toggle="tooltip" class="caret"></span>
+
+                                <a style="margin-top: 5px;" onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
+                                    <?php e('expand'); ?> <span data-toggle="tooltip" class="caret"></span>
                                 </a>
                             <?php endif; ?>
                         </td>
+
                     </tr>
 
                     <?php /* INIZIO SUB ENTITY */ ?>
                     <?php if ($sub_data) : ?>
-                        <tr>
-                            <td <?php echo 'colspan="' . count($grid['grids_fields']) . '"'; ?> style="padding: 0;border: none;">
-                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse">
+                        <tr style="background-color:#DDD!important;">
+                            <td <?php echo 'colspan="' . (count($grid['grids_fields']) + 1) . '"'; ?> style="padding: 0;border: none;">
+                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse" style="margin-top:25px;padding: 5px;">
                                     <?php if (!$sub_grid['grids']['grids_layout']) : ?>
-                                        <table class="table table-bordered table-full-width" style="margin-bottom: 0!important;">
+                                        <table class="table table-bordered table-full-width" style="margin-bottom: 0!important">
                                             <thead>
                                                 <tr>
                                                     <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
                                                         <th style="background-color: #dcdcdc; color: #000"><?php echo $field['grids_fields_column_name']; ?></th>
                                                     <?php endforeach; ?>
+                                                    <th><?php e('Actions'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -70,7 +79,16 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                                                         <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
                                                             <td><?php echo $this->datab->build_grid_cell($field, $sub_dato); ?></td>
                                                         <?php endforeach; ?>
-
+                                                        <td class="text-right">
+                                                            <?php
+                                                            $this->load->view('box/grid/actions', array(
+                                                                'links' => $sub_grid['grids']['links'],
+                                                                'id' => $sub_dato[$sub_grid['grids']['entity_name'] . "_id"],
+                                                                'row_data' => $sub_dato,
+                                                                'grid' => $sub_grid['grids']
+                                                            ));
+                                                            ?>
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>

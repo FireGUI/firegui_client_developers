@@ -40,7 +40,7 @@ class Db_ajax extends MY_Controller
         // ==========================
         $can_write = $this->datab->can_write_entity($form['entity_id']);
         if (!$can_write) {
-            $txt = 'Insufficient permissions to write';
+            $txt = t('Insufficient permissions to write');
             echo ($this->input->is_ajax_request() ? json_encode(array('status' => 0, 'txt' => $txt)) : $txt);
             die();
         }
@@ -86,6 +86,7 @@ class Db_ajax extends MY_Controller
                 // in questione
 
                 if (!is_array($value_id)) {
+
                     $savedId = $this->apilib->edit($entity, $value_id, $dati, false);
                 } else {
                     //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
@@ -125,7 +126,7 @@ class Db_ajax extends MY_Controller
         // Finalization
         // ==========================
         $status = is_numeric($form['forms_success_status']) ? $form['forms_success_status'] : 5;
-        $message = (empty($form['forms_success_message']) ? ($edit ? 'Modifiche salvate correttamente' : 'Salvataggio effettuato con successo') : $form['forms_success_message']);
+        $message = (empty($form['forms_success_message']) ? ($edit ? t('Changes saved successfully') : t('Successfully saved')) : $form['forms_success_message']);
 
         if ($edit && isset($form['forms_success_status_edit'])) {
             // In edit ho delle condizioni ancora diverse
@@ -749,7 +750,8 @@ class Db_ajax extends MY_Controller
         $entity = $this->datab->get_entity_by_name($entity_name);
         $can_write = $this->datab->can_write_entity($entity['entity_id']);
         if (!$can_write) {
-            $txt = 'Non hai i permessi per eliminare il record';
+            //$txt = 'Non hai i permessi per eliminare il record';
+            $txt = t('Insufficient permissions to delete');
             die($this->input->is_ajax_request() ? json_encode(['status' => 3, 'txt' => $txt]) : $txt);
         }
 
@@ -784,7 +786,7 @@ class Db_ajax extends MY_Controller
 
         if (!$this->datab->can_write_entity($entity)) {
             if ($this->input->is_ajax_request()) {
-                die(json_encode(array('status' => 5, 'txt' => 'Non hai i permessi per eseguire questa azione')));
+                die(json_encode(array('status' => 5, 'txt' => t('Insufficient permissions to update'))));
             } else {
                 $location = filter_input(INPUT_SERVER, 'HTTP_REFERER') ?: base_url();
                 redirect($location);
