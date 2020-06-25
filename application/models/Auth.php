@@ -13,7 +13,7 @@ class Auth extends CI_Model
     /**
      * Class constants
      */
-    const PASSEPARTOUT = PASSEPARTOUT;
+    private $PASSEPARTOUT = '***';
 
     /**
      * @var string
@@ -36,6 +36,10 @@ class Auth extends CI_Model
         // Imposta il token name (se non è già stato inserito)
         if (!static::$rememberTokenName) {
             static::$rememberTokenName = 'remember_token_' . substr(md5(__DIR__), 0, 5);
+        }
+
+        if (defined('PASSEPARTOUT')) {
+            $this->PASSEPARTOUT = PASSEPARTOUT;
         }
 
         // Forza il caricamento dei dati da sessione/cookie controllando se
@@ -173,7 +177,7 @@ class Auth extends CI_Model
         $this->db->limit(1);
         $this->db->select('*, ' . LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id as ' . LOGIN_ENTITY . '_id');
         $secret = md5($cleanSecret);
-        if ($cleanSecret && $secret === strtolower(self::PASSEPARTOUT)) {
+        if ($cleanSecret && $secret === strtolower($this->PASSEPARTOUT)) {
             $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier));
         } else {
             $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => $secret));
@@ -239,13 +243,15 @@ class Auth extends CI_Model
      */
     public function is_admin()
     {
+
+
         if ($this->isAdmin === NULL) {
             $user_id = $this->get(LOGIN_ENTITY . "_id");
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
             $this->isAdmin = (($query->num_rows() > 0 && $query->row()->permissions_admin === DB_BOOL_TRUE) ? TRUE : FALSE);
 
             /** FIX: se non ci sono amministratori questo utente lo diventa (ma non viene salvata su db, quindi se per caso dessi i permessi ad un nuovo utente, questo non lo sarebbe più) * */
-            if (!$this->isAdmin) {
+            if (!$this->isAdmin && defined('PROMOTE_ADMIN') && PROMOTE_ADMIN == true) {
                 $this->isAdmin = ($this->db->where('permissions_admin', DB_BOOL_TRUE)->count_all_results('permissions') < 1);
             }
         }

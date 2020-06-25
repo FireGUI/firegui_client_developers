@@ -1,18 +1,20 @@
-Changelog version 1.8.2
+Changelog version 2.0.0
  
-Fix csrf calendars
-Fix csrf in permision delete
-Forced default dummy cache driver
-Mail model send for development purpose
-Translated apilib library
-Added custom actions in datatable inline edit with form
-Fixed where api permissions field
-Added check entity exists in set_permission api
-Added possibility to override header layout
-Added rewriteCond in htaccess for bearer token
-Bugfix datatable_inline tbody selector
-new function is_maintenance
-debug function now works if maintenance is true
-Optimized code in main.php layout
-Added more informations to D and DD functions
-Datatable now supports totals in footer
+Converted layout pdfable from html2pdf to native wkhtmltopdf
+Added 2 constants: DEFAULT_DATE_FORMAT and DEFAULT_DATETIME_FORMAT
+Fixed dateFormat function to use a default date format from enviroments
+Code comments and translations
+Bugfix search with group by parameter
+Bugfix inline actions
+Javascript bugfix for empty tabs
+Added custom sidebar menu attributes
+Managed missing module view file
+Added e_json function
+Remove delete action for inline actions on joined entity
+Added “|” pipe separator to inline actions
+Removed old detail and edit actions
+Javascript bugfix for totalable columns
+Inline actions now shown on tr:hover
+Fixed chat
+Fixed chat grid
+Fixed radio translation

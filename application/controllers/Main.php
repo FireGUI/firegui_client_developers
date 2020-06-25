@@ -28,14 +28,14 @@ class Main extends MY_Controller
                     unset($uri[$k]);
                 }
             }
-if ($this->input->get('source')) {
-$append = '?source='.$this->input->get('source');
-} else {
-    $append = '';
-}
+            if ($this->input->get('source')) {
+                $append = '?source=' . $this->input->get('source');
+            } else {
+                $append = '';
+            }
             $redirection_url = base_url(implode('/', $uri));
             $this->auth->store_intended_url($redirection_url);
-            redirect('access'.$append);
+            redirect('access' . $append);
         }
 
 
@@ -125,14 +125,28 @@ $append = '?source='.$this->input->get('source');
         if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
             $content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
 
-            // Load and render the pdf
-            require_once('./class/html2pdf/html2pdf.class.php');
-            $html2pdf = new HTML2PDF($this->input->get('orientation') ?: 'P', 'A4', 'it');
-            $html2pdf->pdf->SetDisplayMode('fullpage');
-            $html2pdf->WriteHTML($content);
+            $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
 
-            $name = url_title($dati['layout_container']['layouts_title'], '-', true) . '.pdf';
-            $html2pdf->Output($name, 'I'); // stampa il pdf nel browser
+            $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
+
+            $contents = file_get_contents($pdfFile, true);
+            $pdf_b64 = base64_encode($contents);
+
+            $file_name = url_title($dati['layout_container']['layouts_title'], '-', true) . '_';
+
+            header('Content-Type: application/pdf');
+            header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
+
+            echo base64_decode($pdf_b64);
+
+            // // Load and render the pdf
+            // require_once('./class/html2pdf/html2pdf.class.php');
+            // $html2pdf = new HTML2PDF($this->input->get('orientation') ?: 'P', 'A4', 'it');
+            // $html2pdf->pdf->SetDisplayMode('fullpage');
+            // $html2pdf->WriteHTML($content);
+
+            // $name = url_title($dati['layout_container']['layouts_title'], '-', true) . '.pdf';
+            // $html2pdf->Output($name, 'I'); // stampa il pdf nel browser
         } else {
             $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
             $dati['current_page'] = "layout_{$layout_id}";
@@ -152,23 +166,32 @@ $append = '?source='.$this->input->get('source');
     protected function stampa($pagina)
     {
         $this->template['head'] = $this->load->view('layout/head', array(), true);
-        
+
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/header.php")) {
             $this->template['header'] = $this->load->view('custom/layout/header', array(), true);
         } else {
             $this->template['header'] = $this->load->view('layout/header', array(), true);
         }
-        
-        
+
+
         $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
         $this->template['page'] = $pagina;
         $this->template['footer'] = $this->load->view('layout/footer', null, true);
 
         echo $this->load->view('layout/main', $this->template, true);
     }
-
+    public function print_barcode($type)
+    {
+        $val = $this->input->get('val');
+        $w = $this->input->get('w');
+        $h = $this->input->get('h');
+        $left = $this->input->get('left');
+        $top = $this->input->get('top');
+        $val = base64_decode($val);
+        $this->load->view('box/grid/barcode_print', compact('type', 'val', 'w', 'h', 'left', 'top'));
+    }
     /**
-     * Esegue il render di un form
+     * Form rendering
      */
     public function form($form_id, $value_id = null)
     {
@@ -177,6 +200,7 @@ $append = '?source='.$this->input->get('source');
             $this->stampa($this->load->view("box/errors/missing_form", ['form_id' => $form_id], true));
             return;
         }
+
         if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
             // Get form view
             $formHtml = $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", [
@@ -193,8 +217,8 @@ $append = '?source='.$this->input->get('source');
             // ...
             $content = $preFormHtml . $formHtml . $postFormHtml;
         } else {
-            // Non posso scrivere sull'entità
-            $content = str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+            // Cannot write to entity
+            $content = str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
         }
 
         if ($this->input->get('_raw')) {
@@ -388,28 +412,21 @@ $append = '?source='.$this->input->get('source');
                 break;
 
             case 'off':
+                $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
+                $this->apilib->clearCache();
+                file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
+
+                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+
+
                 $this->apilib->toggleCachingSystem(false);
 
-                //Oltre a disattivare il driver di cache, vado a cancellarla perchè altrimenti continua a usarla...
-                //                $this->apilib->clearCache();
-                //                @unlink(APPPATH . 'cache/'.Crmentity::SCHEMA_CACHE_KEY);
-                //
-                //                // Pulisco cache frontend se c'è...
-                //                if (is_dir(APPPATH . '../core/cache/')) {
-                //                    $this->load->helper('file');
-                //                    delete_files(APPPATH . '../core/cache/', false);
-                //                }
+
                 break;
 
             case 'clear':
-                $this->apilib->clearCache();
-                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
-                // Pulisco cache frontend se c'è...
-                if (is_dir(APPPATH . '../core/cache/')) {
-                    $this->load->helper('file');
-                    delete_files(APPPATH . '../core/cache/', false);
-                }
+                $this->apilib->clearCache();
 
                 break;
 

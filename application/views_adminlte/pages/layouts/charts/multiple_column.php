@@ -1,53 +1,137 @@
 <?php
-$chartId = "container_hightcharts_{$chart['charts_id']}";
+$chartId = "container_chartjs_{$chart['charts_id']}";
 // --- Series
-$series = [];
+$series = ['yaxis' => [], 'series' => []];
 
+
+//Column uniform
 foreach ($chart_data as $x => $chart_element_data) {
-    if (!empty($chart_element_data['series'])) {
-        foreach ($chart_element_data['series'] as $name => $data) {
-            $series[] = ['name' => $name, 'data' => array_values(array_map('floatval', $data))];
+    foreach ($chart_element_data['data'] as $dato) {
+        $xes[$dato['x']] = $dato['x'];
+    }
+}
+//Fill empty columns for each chart's element
+foreach ($chart_data as $x => $chart_element_data) {
+    if (!array_key_exists('series', $chart_element_data)) {
+        $chart_element_data['series'][$chart_element_data['element']['charts_elements_label']] = [];
+        $chart_data[$x] = $chart_element_data;
+    }
+    foreach ($chart_element_data['series'] as $key => $dato) {
+
+        foreach ($xes as $column) {
+
+            if (!array_key_exists($column, $dato)) {
+                $chart_data[$x]['series'][$key][$column] = 0;
+            }
         }
     }
 }
+/*series: [
+  {
+    data: [1.4, 2, 2.5, 1.5, 2.5, 2.8, 3.8, 4.6]
+  },
+  {
+    data: [20, 29, 37, 36, 44, 45, 50, 58]
+  }
+],
+yaxis: [
+  {
+    title: {
+      text: "Series A"
+    },
+  },
+  {
+    opposite: true,
+    title: {
+      text: "Series B"
+    }
+  }
+],*/
+
+foreach ($chart_data as $x => $chart_element_data) {
+
+    foreach ($chart_element_data['series'] as $name => $data) {
+        ksort($data);
+        $elements_data = [
+            'name' => $name,
+            // 'backgroundColor' => $colors[$x % 6],
+            'data' => [],
+            //'type' => 'line'
+        ];
+        foreach ($data as $key => $value) {
+
+
+            $elements_data['data'][] = floatVal($value);
+        }
+        $series['series'][] = $elements_data;
+    }
+}
+
+//debug($xes, true);
 ?>
-<div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
-
+<div class="row">
+    <div id="<?php echo $chartId; ?>"></div>
+</div>
 <script>
-    $(function () {
-
-        var title = <?php echo json_encode($chart['charts_title']); ?>;
-        var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
-        var categories = <?php echo json_encode(array_values($chart_data[0]['x'])); ?>;
-        var label2 = <?php echo json_encode($chart_data[0]['element']['charts_elements_label2']); ?>;
-        var series = <?php echo json_encode($series); ?>;
-
-        $('#<?php echo $chartId; ?>').highcharts({
-            chart: {type: 'column'},
-            title: {text: title},
-            subtitle: {text: subtitle},
-            xAxis: {categories: categories},
-            yAxis: {
-                min: 0,
-                title: {text: label2},
+    var series<?php echo $chartId; ?> = JSON.parse('<?php echo json_encode($series); ?>');
+    //console.log(series<?php echo $chartId; ?>.yaxis);
+    var options<?php echo $chartId; ?> = {
+        chart: {
+            type: 'bar',
+            zoom: {
+                type: 'x',
+                enabled: true,
+                autoScaleYaxis: true
             },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
+        },
+
+        dataLabels: {
+            enabled: false,
+            enabledOnSeries: true,
+            position: 'center',
+            maxItems: 100,
+            hideOverflowingLabels: true,
+            orientation: 'vertical'
+        },
+
+        legend: {
+            show: true
+        },
+        series: series<?php echo $chartId; ?>.series,
+        xaxis: {
+            categories: ['<?php echo implode("','", $xes); ?>'],
+            labels: {
+                formatter: function(value, timestamp, index) {
+
+                    if (moment(value)) {
+                        return moment(value).format("DD MMM YYYY")
+                    } else {
+                        return value;
+                    }
+
+
+                },
+
+            }
+        },
+        yaxis: series<?php echo $chartId; ?>.yaxis,
+        tooltip: {
+            shared: true,
+            intersect: false,
+            y: {
+                formatter: function(y) {
+
+                    return y;
+
                 }
-            },
-            series: series
-        });
-    });
+            }
+        }
 
 
+
+    }
+
+    var chart<?php echo $chartId; ?> = new ApexCharts(document.querySelector("#<?php echo $chartId; ?>"), options<?php echo $chartId; ?>);
+
+    chart<?php echo $chartId; ?>.render();
 </script>

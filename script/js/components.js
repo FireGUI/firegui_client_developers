@@ -8,26 +8,29 @@ var token_name = token.name;
 var token_hash = token.hash;
 
 
-function initComponents() {
+function initComponents(container) {
     /*
      * Form dates
      */
-
-    $('.js_form_datepicker').datepicker({
+    //console.log(container);
+    if (typeof container === 'undefined') {
+        container = $('body');
+    }
+    $('.js_form_datepicker', container).datepicker({
         todayBtn: 'linked',
         format: 'dd/mm/yyyy',
         todayHighlight: true,
         weekStart: 1,
-        language: 'it'
+        language: lang_short_code
     });
-    $('.js_form_timepicker').timepicker({
+    $('.js_form_timepicker', container).timepicker({
         autoclose: true,
         modalBackdrop: false,
         showMeridian: false,
         format: 'hh:ii',
         minuteStep: 5
     });
-    $('.js_form_datetimepicker').datetimepicker({
+    $('.js_form_datetimepicker', container).datetimepicker({
         todayBtn: 'linked',
         format: 'dd/mm/yyyy hh:ii',
         minuteStep: 5,
@@ -36,10 +39,10 @@ function initComponents() {
         forceParse: false,
         todayHighlight: true,
         weekStart: 1,
-        language: 'it'
+        language: lang_short_code
     });
 
-    $('.js_form_daterangepicker').each(function () {
+    $('.js_form_daterangepicker', container).each(function () {
         var jqDateRange = $(this);
         var sDate = $('input', jqDateRange).val();
 
@@ -76,13 +79,13 @@ function initComponents() {
             $('input', this.element).val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
         });
     });
-    $('.js_form_colorpicker').colorpicker({ format: 'hex' });
+    $('.js_form_colorpicker', container).colorpicker({ format: 'hex' });
 
 
     /*
      * Grid-filtering forms
      */
-    var forms = $('.js_filter_form');
+    var forms = $('.js_filter_form', container);
     forms.each(function () {
         var form = $(this);
         var btn = $('.js_filter_form_add_row', form).on('click', function () {
@@ -102,111 +105,23 @@ function initComponents() {
      * Select, Multiselect e AjaxSelect
      */
     try {
-        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)').each(function () {
+        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)', container).each(function () {
             var that = $(this);
             var minInput = that.data('minimum-input-length');
             that.select2({ allowClear: true, minimumInputLength: minInput ? minInput : 0 });
         });
-        $('.select2me').select2({ allowClear: true });
+        $('.select2me', container).select2({ allowClear: true });
     } catch (e) {
     }
 
-    $('.select2_standard').select2();
-
-    var fieldsSources = [];
-    $('[data-source-field]:not([data-source-field=""])').each(function () {
-
-        console.log($(this).attr('name'));
-
-        // Prendo il form dell'elemento
-        var jsMultiselect = $(this);
-        var jqForm = jsMultiselect.parents('form');
-        var sSourceField = jsMultiselect.attr('data-source-field');
-        var sFieldRef = jsMultiselect.attr('data-ref');
-
-        // Prendo il campo da osservare
-        var jqField = $('[name="' + sSourceField + '"]', jqForm);
-
-
-        console.log(sSourceField);
-
-        jqField.on('change', function () {
-
-
-            console.log($(this));
-
-            var previousValue = jsMultiselect.attr('data-val').split(',');
-            jsMultiselect.select2('val', '');
-
-            //se ho una select semplice devo saperlo perché così so come gestire il valore settato
-            var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
-
-            $('option', jsMultiselect).remove();
-            loading(true);
-            $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
-                type: 'POST',
-                data: {
-                    field_name_to: jsMultiselect.attr('name'), field_ref: sFieldRef,
-                    field_from_val: jqField.val(),
-                    [token_name]: token_hash
-                },
-                dataType: 'json',
-                complete: function () {
-                    loading(false);
-                },
-                success: function (data) {
-                    $('option', jsMultiselect).remove();
-                    $('<option></option>').appendTo(jsMultiselect);
-                    var previousValueFound = false;
-                    $.each(data, function (k, v) {
-                        var jqOption = $('<option></option>').val(k).text(v);
-
-                        if ($.inArray(k, previousValue) > -1) {
-                            previousValueFound = true;
-                        }
-
-                        jsMultiselect.append(jqOption);
-                    });
-
-
-                    if (previousValueFound) {
-                        if (isNormalSelect) {
-
-                            jsMultiselect.val(previousValue[0]);  // Solo UN valore
-                            jsMultiselect.select2('val', previousValue);
-                        } else {
-
-                            jsMultiselect.select2('val', previousValue);
-                        }
-                    }
-                }
-            });
-        });
-
-        if ($.inArray(jqField, fieldsSources) === -1) {
-            //console.log(jqField);
-            fieldsSources.push(jqField);
-        }
-    });
-
-    $.each(fieldsSources, function (k, selector) {
-        var field = selector;//$(selector);
-        //console.log(selector);
-        //alert(field.val());
-        if (field.val() !== '') {
-
-            field.trigger('change');
-
-        }
-    });
-
+    $('.select2_standard', container).select2();
 
     /*
-     * Select ajax
-     */
+         * Select ajax
+         */
 
 
-    $('.js_select_ajax_new').each(function () {
+    $('.js_select_ajax_new', container).each(function () {
         var input = $(this);
 
         input.select2({
@@ -223,11 +138,15 @@ function initComponents() {
                     if (!referer) {
                         referer = input.attr('name');
                     }
+                    //console.log(term);
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'q', "value": term.term });
+                    data_post.push({ "name": 'limit', "value": 100 });
+                    data_post.push({ "name": 'table', "value": input.attr('data-ref') });
+                    data_post.push({ "name": 'referer', "value": referer });
 
-                    return {
-                        q: term, limit: 100, table: input.attr('data-ref'), referer: referer,
-                        [token_name]: token_hash
-                    };
+                    return data_post;
                 },
                 processResults: function (data) {
                     return {
@@ -267,9 +186,116 @@ function initComponents() {
             minimumInputLength: 1,
             //templateResult: formatRepo,
             templateSelection: formatRepoSelection,
-            language: "it"
+            language: lang_short_code
         });
     });
+
+
+    var fieldsSources = [];
+    $('[data-source-field]:not([data-source-field=""])', container).each(function () {
+
+        //console.log($(this).attr('name'));
+
+
+
+        // Prendo il form dell'elemento
+        var jsMultiselect = $(this);
+        var jqForm = jsMultiselect.parents('form');
+        var sSourceField = jsMultiselect.attr('data-source-field');
+        var sFieldRef = jsMultiselect.attr('data-ref');
+
+        // Prendo il campo da osservare
+        var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"],[data-field_name="' + sSourceField + '"]', jqForm);
+
+        console.log(sSourceField);
+
+        jqField.on('change', function () {
+
+            console.log('test');
+            //console.log($(this));
+
+            var previousValue = jsMultiselect.attr('data-val').split(',');
+            jsMultiselect.select2('val', '');
+
+            //se ho una select semplice devo saperlo perché così so come gestire il valore settato
+            var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
+
+            var field_name_to = jsMultiselect.attr('name');
+            if (field_name_to.indexOf('conditions[') !== -1) {
+                field_name_to = jsMultiselect.data('field_name');
+            }
+
+            $('option', jsMultiselect).remove();
+            loading(true);
+            var data_post = [];
+            data_post.push({ "name": token_name, "value": token_hash });
+            data_post.push({ "name": 'field_name_to', "value": field_name_to });
+            data_post.push({ "name": 'field_ref', "value": sFieldRef });
+            if (isNormalSelect) {
+                data_post.push({ "name": 'field_from_val', "value": jqField.val() });
+            } else {
+
+                var val_array = jqField.val();
+                for (var i in val_array) {
+                    data_post.push({ "name": 'field_from_val[]', "value": val_array[i] });
+                }
+
+            }
+            $.ajax(base_url + 'get_ajax/filter_multiselect_data', {
+                type: 'POST',
+                data: data_post,
+                dataType: 'json',
+                complete: function () {
+                    loading(false);
+                },
+                success: function (data) {
+                    $('option', jsMultiselect).remove();
+                    $('<option></option>').appendTo(jsMultiselect);
+                    var previousValueFound = false;
+                    $.each(data, function (k, v) {
+                        var jqOption = $('<option></option>').val(k).text(v);
+
+                        if ($.inArray(k, previousValue) > -1) {
+                            previousValueFound = true;
+                        }
+
+                        jsMultiselect.append(jqOption);
+                    });
+
+
+                    if (previousValueFound) {
+                        if (isNormalSelect) {
+
+                            jsMultiselect.val(previousValue[0]);  // Solo UN valore
+                            jsMultiselect.select2('val', previousValue);
+                        } else {
+                            jsMultiselect.val(previousValue).trigger('change');
+                            jsMultiselect.select2('data', previousValue);
+                        }
+                    }
+                }
+            });
+        });
+
+        if ($.inArray(jqField, fieldsSources) === -1) {
+            //console.log(jqField);
+            fieldsSources.push(jqField);
+        }
+    });
+
+    $.each(fieldsSources, function (k, selector) {
+        var field = selector;//$(selector);
+        //console.log(selector);
+
+        if (field.val() !== '') {
+
+            field.trigger('change');
+
+        }
+    });
+
+
+
 
     function formatRepo(repo) {
 
@@ -333,14 +359,13 @@ function initComponents() {
                     if (!referer) {
                         referer = input.attr('name');
                     }
-
-                    return {
-                        q: term,
-                        limit: 100,
-                        table: input.attr('data-ref'),
-                        referer: referer,
-                        [token_name]: token_hash
-                    };
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'q', "value": term });
+                    data_post.push({ "name": 'limit', "value": 100 });
+                    data_post.push({ "name": 'table', "value": input.attr('data-ref') });
+                    data_post.push({ "name": 'referer', "value": referer });
+                    return data_post;
                 },
                 results: function (data, page) {
                     return { results: data };
@@ -349,13 +374,15 @@ function initComponents() {
             initSelection: function (element, callback) {
                 var id = element.val();
                 if (id !== "") {
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'table', "value": element.attr('data-ref') });
+                    data_post.push({ "name": 'id', "value": id });
+
                     $.ajax(base_url + 'get_ajax/select_ajax_search', {
                         type: 'POST',
                         dataType: "json",
-                        data: {
-                            table: element.attr('data-ref'), id: id,
-                            [token_name]: token_hash
-                        }
+                        data: data_post
                     }).done(function (data) {
                         callback(data);
                     });
@@ -373,6 +400,9 @@ function initComponents() {
     });
 
     $('.js_select_ajax_distinct').each(function () {
+
+
+
         $(this).select2({
             allowClear: true,
             placeholder: 'Cerca',
@@ -382,10 +412,12 @@ function initComponents() {
                 dataType: 'json',
                 type: 'POST',
                 data: function (term, page) {
-                    return {
-                        q: term, limit: 50, field: $(this).attr('data-field-id'),
-                        [token_name]: token_hash
-                    };
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+                    data_post.push({ "name": 'q', "value": term });
+                    data_post.push({ "name": 'limit', "value": 50 });
+                    data_post.push({ "name": 'field', "value": $(this).attr('data-field-id') });
+                    return data_post;
                 },
                 results: function (data, page) {
                     return { results: data };
@@ -394,16 +426,17 @@ function initComponents() {
             initSelection: function (element, callback) {
                 var id = $(element).val();
                 if (id !== "") {
+                    var data_post = [];
+                    data_post.push({ "name": token_name, "value": token_hash });
+
+                    data_post.push({ "name": 'limit', "value": 50 });
+                    data_post.push({ "name": 'field', "value": $(element).attr('data-field-id') });
+                    data_post.push({ "name": 'table', "value": $(element).attr('data-ref') });
+                    data_post.push({ "name": 'id', "value": id });
                     $.ajax(base_url + 'get_ajax/get_distinct_values', {
                         type: 'POST',
                         dataType: "json",
-                        data: {
-                            limit: 50,
-                            field: $(element).attr('data-field-id'),
-                            table: $(element).attr('data-ref'),
-                            id: id,
-                            [token_name]: token_hash
-                        }
+                        data: data_post
                     }).done(function (data) {
                         callback(data);
                     });
@@ -478,6 +511,7 @@ function loadModal(url, data, callbackSuccess, method) {
         var token_hash = token.hash;
     }
     var modalContainer = $('#js_modal_container');
+
     if (typeof data === 'undefined') {
         data = {
             [token_name]: token_hash
@@ -498,11 +532,12 @@ function loadModal(url, data, callbackSuccess, method) {
         return;
     }
 
-
     if (mAjaxCall !== null) {
         mAjaxCall.abort();
     }
     loading(true);
+
+    //console.log(data);
 
     mAjaxCall = $.ajax({
         url: url,
@@ -709,7 +744,10 @@ $(function () {
         }
 
         if (sUrl) {
-            loadModal(sUrl, { [token_name]: token_hash });
+            var data_post = [];
+            data_post.push({ "name": token_name, "value": token_hash });
+
+            loadModal(sUrl, data_post);
         }
     });
 

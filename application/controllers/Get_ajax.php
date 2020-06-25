@@ -106,22 +106,33 @@ class Get_ajax extends MY_Controller
         if (empty($value_id) && !(empty($post_ids))) {
             $value_id = $this->input->post('ids');
         }
-
-        if (!$this->datab->get_form($form_id)) {
+        $form = $this->datab->get_form($form_id, $value_id);
+        if (!$form) {
             $this->load->view("box/errors/missing_form", ['form_id' => $form_id]);
             return;
         }
 
-        $viewData = array(
-            'size' => $modalSize,
-            'value_id' => $value_id,
-            'form' => $this->datab->get_form($form_id, $value_id),
-            'data' => $this->input->post()
-        );
+        if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
 
-        echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
-        $this->load->view('pages/layouts/forms/form_modal', $viewData);
-        echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+            $viewData = array(
+                'size' => $modalSize,
+                'value_id' => $value_id,
+                'form' => $form,
+                'data' => $this->input->post()
+            );
+
+            echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
+            $this->load->view('pages/layouts/forms/form_modal', $viewData);
+            echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+        } else {
+            //$this->load->view('pages/layout_unaccessible');
+            $content = '<div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">';
+            $content .= str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
+            $content .= '</div></div></div>';
+            echo $content;
+        }
     }
 
     /**
@@ -172,6 +183,7 @@ class Get_ajax extends MY_Controller
 
         // Non ho l'entity id quindi l'entità non esiste
         if (empty($entity['entity_id'])) {
+
             echo json_encode(array());
             return;
         }
@@ -254,16 +266,19 @@ class Get_ajax extends MY_Controller
             } else {
                 //Devo prendere tutti i campi [preview (edit 14/10/2014)] dell'entità per poter creare il where su cui effettuare la ricerca
                 $fields = $this->db->get_where('fields', array('fields_entity_id' => $entity['entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
+                //debug($search);
                 $where = $this->datab->search_like($search, $fields);
                 if ($where && $where_limit) {
                     $where .= " AND ({$where_limit})";
                 } elseif ($where_limit) {
                     $where = $where_limit;
                 }
-
+                //debug($where);
                 if ($where_referer) {
                     $where = ($where ? "{$where} AND ({$where_referer})" : $where_referer);
                 }
+
+
 
                 // 17/11/2015 - Voglio i filtri su ricerca apilib. Quelli dei
                 // post-process quindi prima mi prendo tutti gli id facendo un
@@ -519,7 +534,7 @@ class Get_ajax extends MY_Controller
                     }
                 } else {
                     //Se entro qui, verifico se il campo passato per l'ordinamento non sia per caso un eval cachable...
-                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent') {
+                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent' || !empty($grid['grids_fields'][$order_col]['grids_fields_eval_cache_data'])) {
                         $order_by = "{$grid['grids_fields'][$order_col]['grids_fields_eval_cache_data']} {$order_dir}";
                     } else {
                         $order_by = null;
@@ -528,6 +543,8 @@ class Get_ajax extends MY_Controller
             } else {
                 $order_by = null;
             }
+
+            $group_by = ($grid['grids']['grids_group_by']) ?: null;
 
             //20191112 - MP - Added where_append in get ajax
             if ($where_append = $this->input->get('where_append')) {
@@ -538,13 +555,13 @@ class Get_ajax extends MY_Controller
                 }
             }
 
-            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by);
+            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by, false, ['group_by' => $group_by]);
 
 
 
             $out_array = array();
             foreach ($grid_data as $dato) {
-
+                
                 $tr = array();
                 if ($has_bulk) {
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
@@ -568,7 +585,7 @@ class Get_ajax extends MY_Controller
                         'row_data' => $dato,
                         'grid' => $grid['grids']
                     ), TRUE);
-                } elseif (grid_has_action($grid['grids'])) {
+                } elseif (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/actions', array(
                         'links' => $grid['grids']['links'],
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
@@ -580,10 +597,8 @@ class Get_ajax extends MY_Controller
                 $out_array[] = $tr;
             }
 
-            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true);
-            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true);
-
-
+            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => null]);
+            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => null]);
 
 
             echo json_encode(array(
@@ -617,6 +632,10 @@ class Get_ajax extends MY_Controller
             $fields[$field['fields_name']] = $field;
             if ($field['maps_fields_type'] == 'latlng') {
                 $latlng_field = $field['fields_name'];
+            } elseif ($field['maps_fields_type'] == 'lat') {
+                $latfield = $field['fields_name'];
+            } elseif ($field['maps_fields_type'] == 'lon') {
+                $lonfield = $field['fields_name'];
             }
         }
 
@@ -657,6 +676,7 @@ class Get_ajax extends MY_Controller
                 $sw_lng = $bounds['sw_lng'];
 
                 if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
+
                     $where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
                 }
             }
@@ -669,8 +689,8 @@ class Get_ajax extends MY_Controller
                 $sw_lng = $bounds['sw_lng'];
 
                 if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
-                    //TODO...
-                    //$where[] = "ST_Intersects(ST_GeographyFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
+                    //TODO: check mariadb lat/long inversion
+                    $where[] = "ST_Intersects(ST_GeomCollFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
                 }
             }
         }
@@ -681,7 +701,7 @@ class Get_ajax extends MY_Controller
 
         $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : NULL;
         //$data_entity = $this->datab->get_data_entity($data['maps']['maps_entity_id'], 0, implode(' AND ', array_filter($where)), NULL, NULL, $order_by);
-        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), NULL, NULL, $order_by, 1);
+        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), NULL, NULL, $order_by, 1, false, [], ['group_by' => null]);
 
 
         $markers = array();
@@ -700,8 +720,13 @@ class Get_ajax extends MY_Controller
                 $this->db->select("{$data['maps']['entity_name']}_id as id, ST_Y({$latlng_field}::geometry) AS lat, ST_X({$latlng_field}::geometry) AS lon")
                     ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
             } else {
-                $this->db->select("{$data['maps']['entity_name']}_id as id, substring_index ( $latlng_field,';',1 )  AS lat, substring_index ( $latlng_field,';',-1 )  AS lon")
-                    ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+                if ($latlng_field) {
+                    $this->db->select("{$data['maps']['entity_name']}_id as id, substring_index ( $latlng_field,';',1 )  AS lat, substring_index ( $latlng_field,';',-1 )  AS lon")
+                        ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+                } else {
+                    $this->db->select("{$data['maps']['entity_name']}_id as id, $latfield  AS lat, $lonfield  AS lon")
+                        ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
+                }
             }
 
 
@@ -744,7 +769,8 @@ class Get_ajax extends MY_Controller
 
                 // Elaboro le coordinate
                 //debug($mark, true);
-                if (!empty($mark['latlng']) && isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
+                if ((!empty($mark['latlng']) || !empty($mark['lat'])) && isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
+
                     $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                     $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     $mark['link'] = ($link ? $link . '/' . $mark['id'] : '');
@@ -1070,11 +1096,11 @@ class Get_ajax extends MY_Controller
         if ($field['fields_type'] === DB_BOOL_IDENTIFIER) {
             $ids = explode(',', trim($id));
             if (!$id || in_array(DB_BOOL_TRUE, $ids)) {
-                $return[] = array('id' => DB_BOOL_TRUE, 'name' => 'Si');
+                $return[] = array('id' => DB_BOOL_TRUE, 'name' => t('Yes'));
             }
 
             if (!$id || in_array(DB_BOOL_FALSE, $ids)) {
-                $return[] = array('id' => DB_BOOL_FALSE, 'name' => 'No');
+                $return[] = array('id' => DB_BOOL_FALSE, 'name' => t('No'));
             }
         } else {
             // Se ho un id lo devo preparare per utilizzarlo nel
@@ -1203,15 +1229,51 @@ class Get_ajax extends MY_Controller
             // Devo sostituire i campi
             // $entity_id 
             // Altrimenti lui prova a pescarmi i campi della tabella pivot
-            $relatedEntity = $this->crmentity->getEntity($relation->relations_table_2);
-            $entity_name = $relatedEntity['entity_name'];
-            $entity_id = $relatedEntity['entity_id'];
+            $relatedEntityFrom = $this->crmentity->getEntity($field_from['fields_ref']);
+
+
+            if ($relatedEntityFrom['entity_type'] == ENTITY_TYPE_RELATION) {
+                $relation_sub = $this->db->get_where('relations', ['relations_name' => $field_from['fields_ref']])->row_array();
+                $relatedEntityFromSub = $this->crmentity->getEntity($relation_sub['relations_table_2']);
+                $fields_entity = $this->crmentity->getEntity($relation->relations_table_2);
+                $field_filter = $this->db->get_where('fields', [
+                    'fields_ref' => $relatedEntityFromSub['entity_name'],
+                    'fields_entity_id' => $fields_entity['entity_id']
+                ])->row_array();
+                $entity_name = $relation->relations_table_2;
+                $entity_id = $fields_entity['entity_id'];
+                //     debug($field_filter);
+                // debug($relatedEntityFromSub['entity_name']); // regioni
+                // debug($relation->relations_table_2); //province
+                // debug($relatedEntityFrom); //rel_riparatori_regioni
+                // debug($entity); //rel_riparatori_province
+                // debug($field_from['fields_ref']); //rel_riparatori_regioni
+                // debug($field_from, true); //riparatori_regione
+            } else {
+                $entity_name = $relatedEntityFrom['entity_name'];
+                $entity_id = $relatedEntityFrom['entity_id'];
+                $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+            }
+
+            //debug($field_from, true);
+
+
+            $field_name_filter = $field_filter['fields_name'];
+        } else {
+            //debug($field_from, true);
+
+            $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+            $field_name_filter = $field_filter['fields_name'];
         }
-        $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
-        $field_name_filter = $field_filter['fields_name'];
+
+
 
         $where_referer = [];
-        $where_referer[] = "{$field_name_filter} = '{$from_val}'";
+        if (is_array($from_val)) {
+            $where_referer[] = "{$field_name_filter} IN ('" . implode("','", $from_val) . "')";
+        } else {
+            $where_referer[] = "{$field_name_filter} = '{$from_val}'";
+        }
         if (!empty($field_to['fields_select_where'])) {
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
@@ -1309,5 +1371,38 @@ class Get_ajax extends MY_Controller
             'status' => 0,
             'data' => $record
         ]);
+    }
+
+    public function get_log_api_item($id = null)
+    {
+
+        $out = array();
+
+        if ($id) {
+
+            $out = $this->db->get_where('log_api', array('log_api_id' => $id))->row_array();
+
+            if (@unserialize($out['log_api_params'])) {
+                $params = @unserialize($out['log_api_params']);
+                $post = @unserialize($out['log_api_post']);
+                $get = @unserialize($out['log_api_get']);
+                $files = @unserialize($out['log_api_files']);
+                $output = @unserialize($out['log_api_output']);
+            } else {
+                $params = json_decode($out['log_api_params']);
+                $post = json_decode($out['log_api_post']);
+                $get = json_decode($out['log_api_get']);
+                $files = json_decode($out['log_api_files']);
+                $output = json_decode($out['log_api_output']);
+            }
+
+            $out['log_api_params'] = $params ? print_r($params, true) : '';
+            $out['log_api_post'] = $post ? print_r($post, true) : '';
+            $out['log_api_get'] = $get ? print_r($get, true) : '';
+            $out['log_api_files'] = $files ? print_r($files, true) : '';
+            $out['log_api_output'] = $output ? print_r($output, true) : '';
+        }
+
+        echo json_encode($out);
     }
 }

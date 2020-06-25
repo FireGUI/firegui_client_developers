@@ -13,7 +13,7 @@ class Firegui extends MY_Controller
         $permitted_routes = ['get_client_version'];
         $route = $this->uri->segment(2);
         $unallowed = false;
-        if (!in_array($route, $permitted_routes) && !$this->auth->check()) {
+        if (!in_array($route, $permitted_routes) && (!$this->auth->check() || !$this->auth->is_admin())) {
             if (!$token = $this->input->get('token')) {
                 log_message('DEBUG', "Missing token for Firegui request!");
                 $unallowed = true;
@@ -62,7 +62,10 @@ class Firegui extends MY_Controller
 
     public function uninstallModule($identifier)
     {
-        log_message('debug', 'TODO Uninstal module from remote');
+        $module = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
+        if ($module) {
+            $this->deleteDir(APPPATH . "modules/{$identifier}");
+        }
     }
 
     function updateFromGit($command = null, $output = true)
@@ -102,7 +105,7 @@ class Firegui extends MY_Controller
 
             $success = zip_folder($folder, $destination_file);
 
-            if ($success === TRUE) { //NON TORNA FALSE!!!!!!
+            if ($success === TRUE) {
                 if (file_exists($destination_file)) {
                     header('Content-Type: application/zip');
                     header('Content-Disposition: attachment; filename="' . $identifier . '.zip"');
@@ -159,6 +162,10 @@ class Firegui extends MY_Controller
         $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
         $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
         $new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
+
+        //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
+        log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
+        //die("Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
         $newfile = './tmp_file.zip';
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
@@ -245,30 +252,14 @@ class Firegui extends MY_Controller
             }
         }
     }
-    // public function test_update_php_code($version)
-    // {
-    //     $files = scandir(FCPATH . 'application/migrations');
-
-
-    //     foreach ($files as $file) {
-    //         if ($file == 'update_php_code.php') {
-    //             // Check if exist an update_db file to execute update queries
-    //             include(FCPATH . 'application/migrations/update_php_code.php');
-
-    //             if (array_key_exists($version, $updates)) {
-    //                 //debug($updates[$version], true);
-    //                 foreach ($updates[$version] as $key_type => $code) {
-    //                     if ($key_type == 'eval') {
-    //                         eval($code);
-    //                     } elseif ($key_type == 'include') { //201910070447 - MP - Added possibility to execute a custom code when updating client
-    //                         //debug($code, true);
-    //                         include(FCPATH . 'application/migrations/' . $code);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    public function test_migration($migration_file)
+    {
+        if ($this->auth->is_admin()) {
+            include(FCPATH . 'application/migrations/' . $migration_file . '.php');
+        } else {
+            die('Must be logged in');
+        }
+    }
     public function get_client_version()
     {
         $check = $this->db->where('meta_data_key', 'db_version')->get('meta_data')->row_array();
@@ -346,6 +337,19 @@ class Firegui extends MY_Controller
         echo json_encode(dirToArray(APPPATH . (empty($_SERVER['FIREGUI_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['FIREGUI_CLIENT_TEMPLATE']) . '/custom/'));
     }
 
+    public function getModulesCustomViews()
+    {
+        $modules_views = [];
+
+        $modules = dirToArray(APPPATH . '/modules');
+
+        foreach ($modules as $module_key => $module_value) {
+            $modules_views[$module_key] = $module_value['views'];
+        }
+
+        echo json_encode($modules_views);
+    }
+
     public function clearCache()
     {
         $this->apilib->clearCache();
@@ -365,16 +369,16 @@ class Firegui extends MY_Controller
 
         $folder = FCPATH;
 
-        $destination_file = './client.zip';
+        $destination_file = './uploads/client.zip';
         if (!file_exists($folder)) {
             log_message('ERROR', "'$folder' folder does not exists!");
             die("'$folder' folder does not exists!");
         }
 
 
-        $success = zip_folder($folder, $destination_file);
+        $success = zip_folder($folder, $destination_file, ['application/logs']);
 
-        if ($success === TRUE) { //NON TORNA FALSE!!!!!!
+        if ($success === TRUE) {
             if (file_exists($destination_file)) {
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="client.zip"');
@@ -392,7 +396,15 @@ class Firegui extends MY_Controller
         }
         @unlink($destination_file);
     }
+
+    private function deleteDir($path)
+    {
+        return is_file($path) ?
+            @unlink($path) :
+            array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
+    }
 }
+
 
 /* End of file welcome.php */
 /* Location: ./application/controllers/welcome.php */

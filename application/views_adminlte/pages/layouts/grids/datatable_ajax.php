@@ -28,11 +28,11 @@ foreach ($grid['grids_fields'] as $field) {
                     </th>
                 <?php endif; ?>
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
-                    <th <?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache')) ? 'data-prevent-order' : ''; ?> <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
+                    <th <?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?> <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php e($field['grids_fields_column_name']); ?></th>
                 <?php endforeach; ?>
 
-                <?php if (grid_has_action($grid['grids'])) : ?>
-                    <th data-prevent-order><?php e('Action'); ?></th>
+                <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                    <th data-prevent-order><?php e('Actions'); ?></th>
                 <?php endif; ?>
             </tr>
         </thead>
