@@ -538,18 +538,4 @@ class Main extends MY_Controller
             fpassthru($fp);
         }
     }
-
-
-    //    public function testLoop() {
-    //        for ($i=0; $i < 1000; $i++) {
-    //            $cliente = $this->apilib->searchFirst('clienti');
-    //            $this->apilib->edit('clienti', $cliente['clienti_id'],['clienti_nome' => 'test']);
-    //            echo_flush(' . ');
-    //        }
-    //    }
-
-    //    public function test_load_view() {
-    //        echo $this->load->module_view('documents/views', 'elfinder', [], true);
-    //    }
-
 }
