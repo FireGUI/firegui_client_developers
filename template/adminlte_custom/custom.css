@@ -149,3 +149,23 @@ table tr td {
     background: inherit;
     left: 20px;
 }
+
+/*Download button in dropzone*/
+
+.dz-download {
+    background-image: linear-gradient(to bottom, #0A0, #666);
+-webkit-border-radius: 2px;
+border-radius: 2px;
+border: 1px solid #eee;
+text-decoration: none;
+display: block;
+padding: 4px 5px;
+text-align: center;
+color: #FFF;
+
+}
+.dz-download:hover {
+    color:#FFF;
+    cursor:pointer;
+}
+.dz-remove:hover {cursor:pointer;}
