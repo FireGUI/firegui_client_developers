@@ -7,13 +7,13 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
     $background = '';
 
-    if ($mese < 3 || $mese == 3 && $giorno < 21 || $mese == 12 && $giorno >= 22) {
+    if ($mese <= 3 && $giorno < 21 || $mese == 12 && $giorno >= 22) {
         $stagione = "Winter";
         $background = 'winter';
-    } elseif ($mese < 6 || $mese == 6 && $giorno <= 20) {
+    } elseif ($mese <= 6 && $giorno <= 20) {
         $stagione = "Spring";
         $background = 'spring';
-    } elseif ($mese < 9 || $mese == 9 && $giorno <= 22) {
+    } elseif ($mese <= 9 && $giorno >= 22) {
         $stagione = "Summer";
         $background = 'summer';
     } else {
