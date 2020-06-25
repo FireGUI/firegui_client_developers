@@ -44,6 +44,20 @@ class Layout extends CI_Model
     }
 
     /**
+     * @return string|null
+     */
+    public function getCurrentLayoutIdentifier()
+    {
+        $layout_id = $this->getCurrentLayout();
+        $layout = $this->db->query("SELECT * FROM layouts WHERE layouts_id = '$layout_id'")->row_array();
+        if (!empty($layout)) {
+            return $layout['layouts_identifier'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @return int|null
      */
     public function getMainLayout()
@@ -51,6 +65,7 @@ class Layout extends CI_Model
         $layouts = array_values($this->structure);
         return array_shift($layouts);
     }
+
 
     public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false)
     {

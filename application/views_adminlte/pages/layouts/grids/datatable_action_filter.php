@@ -50,7 +50,7 @@ $_fields_type_to_skip = array(
 
 
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover nowrap js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
         <thead>
@@ -59,8 +59,8 @@ $_fields_type_to_skip = array(
                     <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name'];  ?></th>
                 <?php endforeach; ?>
 
-                <?php if (grid_has_action($grid['grids'])) : ?>
-                    <th data-prevent-order><?php e('Action'); ?></th>
+                <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                    <th data-prevent-order><?php e('Actions'); ?></th>
                 <?php endif; ?>
             </tr>
         </thead>
@@ -70,8 +70,13 @@ $_fields_type_to_skip = array(
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
                         <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                     <?php endforeach; ?>
-                    <?php if (grid_has_action($grid['grids'])) : ?>
-                        <td><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></td>
+                    <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                        <td>
+                            <?php $this->load->view('box/grid/actions', array(
+                                'links' => $grid['grids']['links'],
+                                'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                                'row_data' => $dato
+                            )); ?></td>
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>

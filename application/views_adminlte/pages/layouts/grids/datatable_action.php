@@ -1,5 +1,5 @@
 <?php if (empty($grid_data['data'])) : ?>
-    <p>Nessun dato disponibile</p>
+    <p>No records found</p>
 <?php else : ?>
     <div class="table-scrollable table-scrollable-borderless">
         <?php
@@ -11,8 +11,8 @@
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
                         <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
                     <?php endforeach; ?>
-                    <?php if (grid_has_action($grid['grids'])) : ?>
-                        <th data-prevent-order><?php e('Action'); ?></th>
+                    <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                        <th data-prevent-order><?php e('Actions'); ?></th>
                     <?php endif; ?>
                 </tr>
             </thead>
@@ -23,7 +23,7 @@
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
 
-                        <?php if (grid_has_action($grid['grids'])) : ?>
+                        <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
 
                             <td><?php $this->load->view('box/grid/actions', array(
                                     'links' => $grid['grids']['links'],

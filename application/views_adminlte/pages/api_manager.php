@@ -128,10 +128,149 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-6 logs_table">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><?php e('API Logs'); ?></h3>
+        </div>
+        <div class="box-body">
+          <table id='api_logs' class="table table-striped table-condensed table-bordered js_datatable">
+            <thead>
+              <tr>
+                <th style="display:none">ID</th>
+                <th><?php e('Date'); ?></th>
+                <th><?php e('IP'); ?></th>
+                <th><?php e('Method'); ?></th>
+                <th><?php e('Params'); ?></th>
+                <th width="50"><?php e('Details'); ?></th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <?php foreach ($dati['logs'] as $item) : ?>
+                <tr>
+                  <td style="display:none"><?php echo $item['log_api_id']; ?></td>
+                  <td><?php echo $item['log_api_date']; ?></td>
+                  <td><?php echo $item['log_api_ip_addr']; ?></td>
+                  <td><?php echo $item['log_api_method']; ?></td>
+                  <td>
+                    <?php echo @implode('/', unserialize($item['log_api_params'])); ?>
+                    <?php echo @implode('/', json_decode($item['log_api_params'])); ?>
+                  </td>
+                  <td class="text-center">
+                    <a href="<?php echo base_url("get_ajax/get_log_api_item/{$item['log_api_id']}"); ?>" class="js_load_log_api_item btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <script>
+        $(document).ready(function() {
+          $('.js_load_log_api_item').on('click', function() {
+            $('.response').show();
+          });
+        });
+      </script>
+    </div>
+
+    <div class="col-md-6 response" style="display:none;">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><?php e('Log Details'); ?></h3>
+          <div class="box-tools pull-right">
+            <style>
+              .nav>li>a {
+                padding-top: 5px;
+                padding-bottom: 5px;
+              }
+            </style>
+            <ul class="nav nav-pills nav-pills-xs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#kt_tabs_params" role="tab">
+                  <?php e('Params'); ?>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#kt_tabs_get" role="tab">
+                  GET
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#kt_tabs_post" role="tab">
+                  POST
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#kt_tabs_files" role="tab">
+                  FILES
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#kt_tabs_output" role="tab">
+                  OUTPUT
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="kt_tabs_params" role="tabpanel">
+              <pre id="api-params"></pre>
+            </div>
+            <div class="tab-pane" id="kt_tabs_get" role="tabpanel">
+              <pre id="api-get"></pre>
+            </div>
+            <div class="tab-pane " id="kt_tabs_post" role="tabpanel">
+              <pre id="api-post"></pre>
+            </div>
+            <div class="tab-pane " id="kt_tabs_files" role="tabpanel">
+              <pre id="api-files"></pre>
+            </div>
+            <div class="tab-pane " id="kt_tabs_output" role="tabpanel">
+              <pre id="api-output"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <script>
   $(document).ready(function() {
     $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
+  });
+
+  $(document).ready(function() {
+    $('.js_load_log_api_item').on('click', function(e) {
+      e.preventDefault();
+
+      var tr = $(this).parents('tr').filter(':first');
+
+      var table = $(this).parents('table').filter(':first');
+
+      $('tr', table).removeClass('danger');
+      $(tr).addClass('danger');
+
+      $.ajax($(this).attr('href'), {
+        dataType: 'json',
+        success: function(item) {
+          if (item) {
+            $('#api-params').html(item.log_api_params);
+            $('#api-get').html(item.log_api_get);
+            $('#api-post').html(item.log_api_post);
+            $('#api-files').html(item.log_api_files);
+            $('#api-output').html(item.log_api_output);
+            console.log(item);
+          }
+        }
+      });
+    });
   });
 </script>
