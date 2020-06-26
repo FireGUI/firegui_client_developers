@@ -124,6 +124,13 @@ function initComponents(container) {
     $('.js_select_ajax_new', container).each(function () {
         var input = $(this);
 
+        var $allow_clear = false;
+        var field_required = $(this).data('required');
+
+        if (field_required == 0) {
+            $allow_clear = true;
+        }
+
         input.select2({
             ajax: {
                 url: base_url + 'get_ajax/select_ajax_search',
@@ -186,7 +193,8 @@ function initComponents(container) {
             minimumInputLength: 1,
             //templateResult: formatRepo,
             templateSelection: formatRepoSelection,
-            language: lang_short_code
+            language: lang_short_code,
+            allowClear: $allow_clear
         });
     });
 
