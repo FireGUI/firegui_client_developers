@@ -19,7 +19,7 @@
     </script>
 <?php endif; ?>
 
-<select class="js_select_ajax_new form-control <?php echo $class ?>" name="<?php echo $field['fields_name']; ?>" value="<?php echo $value; ?>" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>">
+<select class="js_select_ajax_new form-control <?php echo $class ?>" name="<?php echo $field['fields_name']; ?>" value="<?php echo $value; ?>" data-required="<?php echo $field['fields_required'] ?>" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>">
     <?php if (isset($field['support_data'])) : ?>
         <?php foreach ((array) $field['support_data'] as $id => $name) : ?>
             <?php if ($id != $value) {
