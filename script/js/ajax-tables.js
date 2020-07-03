@@ -311,7 +311,7 @@ function initTableAjax(grid) {
         // console.log(settings);
         // console.log(techNote);
         console.log(message);
-        $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p></div>');
+        $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><code>' + message + '</code></div>');
     }).dataTable({
         stateSave: true,
 
@@ -348,8 +348,11 @@ function initTableAjax(grid) {
                 var floatVal = function (i) {
                     i = i.toString();
                     i = i.replace(/[^\d.-]/g, '');
-
-                    return parseFloat(i);
+                    if (i != '') {
+                        return parseFloat(i);
+                    } else {
+                        return 0;
+                    }
                 };
 
                 api.columns().every(function () {

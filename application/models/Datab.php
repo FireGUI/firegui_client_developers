@@ -24,6 +24,8 @@ class Datab extends CI_Model
     private $_default_language_id;
     private $_default_language;
 
+    private $_grids_data = [];
+
     function __construct()
     {
         parent::__construct();
@@ -678,7 +680,10 @@ class Datab extends CI_Model
 
     public function get_grid($grid_id)
     {
-        if (!$grid_id) {
+        if (array_key_exists($grid_id, $this->_grids_data)) {
+            return $this->_grids_data[$grid_id];
+        } else { 
+if (!$grid_id) {
             die('ERRORE: grid ID mancante');
         }
 
@@ -729,6 +734,7 @@ class Datab extends CI_Model
 
         // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
         $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
+        //debug('dentro '.$grid_id);
         foreach ($dati['grids']['links']['custom'] as &$custom_link) {
             //20170915 - MP - Mantengo questa funzionalità solo se è impostato il custom html
             if (!empty($custom_link['grids_actions_html'])) {
@@ -756,8 +762,12 @@ class Datab extends CI_Model
                 $dati['replaces'][$gridField['grids_fields_replace']] = $gridField;
             }
         }
-
+        $this->_grids_data[$grid_id] = $dati;
         return $dati;
+        }
+
+
+        
     }
 
     /**
