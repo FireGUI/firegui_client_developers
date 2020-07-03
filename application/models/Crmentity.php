@@ -22,6 +22,8 @@ class Crmentity extends CI_Model
     private $table;
     private $languages;
 
+    private $_default_grids = [];
+
     /**
      * Class constructor
      * @param string $entity_name
@@ -1236,11 +1238,18 @@ class Crmentity extends CI_Model
 
     public function getDefaultGrid($entity)
     {
-        $entity_id = $this->getEntity($entity)['entity_id'];
-        $query = $this->db->get_where('grids', array(
-            'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE
-        ));
+        if (!array_key_exists($entity, $this->_default_grids)) {
+            $entity_id = $this->getEntity($entity)['entity_id'];
+            $query = $this->db->get_where('grids', array(
+                'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE
+            ));
         //debug($query->row_array(),true);
-        return $query->row_array();
+        
+        $this->_default_grids[$entity] = $query->row_array();
+        return $this->_default_grids[$entity];
+        } else {
+            return $this->_default_grids[$entity];
+        }
+        
     }
 }

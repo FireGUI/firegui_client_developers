@@ -15,7 +15,8 @@ if (isset($grid_data['data'])) {
             if ($item) {
                 $items[] = $item;
             }
-
+            // debug($dato);
+            // debug($grid['replaces']);
             $item = array(
                 'thumb' => empty($dato[$grid['replaces']['thumbnail']['fields_name']]) ? '/images/user.png' : base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
                 'username' => isset($grid['replaces']['username']) ?
@@ -63,7 +64,9 @@ if (isset($grid_data['data'])) {
             <input type="hidden" name="user" value="<?php echo $this->auth->get('id'); ?>" />
 
             <?php if (isset($grid['replaces']['value_id'])) : ?>
-                <input type="hidden" name="value_id" value="<?php echo $value_id; ?>" />
+                <?php //debug($layout_data_detail);
+                ?>
+                <input type="hidden" name="value_id" value="<?php echo (array_key_exists($grid['replaces']['value_id']['fields_name'], $layout_data_detail)) ? $layout_data_detail[$grid['replaces']['value_id']['fields_name']] : $value_id; ?>" />
             <?php endif; ?>
             <div class="input-group">
                 <input class="form-control" name="text" placeholder="Scrivi un messaggio...">
