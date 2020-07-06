@@ -2,24 +2,33 @@
 if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
     $this->load->view('custom/layout/login');
 } else {
-    $giorno = date('d');
-    $mese = date('n');
+    // What is today's date - number
+    $day = date("z");
 
-    $background = '';
+    //  Days of spring
+    $spring_starts = date("z", strtotime("March 21"));
+    $spring_ends   = date("z", strtotime("June 20"));
 
-    if (($mese <= 3 && $giorno < 21) || ($mese == 12 && $giorno >= 22)) {
-        $stagione = "Winter";
-        $background = 'winter';
-    } elseif ($mese <= 6 && $giorno <= 20) {
-        $stagione = "Spring";
-        $background = 'spring';
-    } elseif ($mese <= 9 && $giorno >= 22) {
-        $stagione = "Summer";
-        $background = 'summer';
-    } else {
-        $stagione = "Autumn";
-        $background = 'autumn';
-    }
+    //  Days of summer
+    $summer_starts = date("z", strtotime("June 21"));
+    $summer_ends   = date("z", strtotime("September 22"));
+
+    //  Days of autumn
+    $autumn_starts = date("z", strtotime("September 23"));
+    $autumn_ends   = date("z", strtotime("December 20"));
+
+    //  If $day is between the days of spring, summer, autumn, and winter
+    if ($day >= $spring_starts && $day <= $spring_ends) :
+        $season = "spring";
+    elseif ($day >= $summer_starts && $day <= $summer_ends) :
+        $season = "summer";
+    elseif ($day >= $autumn_starts && $day <= $autumn_ends) :
+        $season = "autumn";
+    else :
+        $season = "winter";
+    endif;
+
+
 ?>
     <!DOCTYPE html>
     <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
@@ -86,7 +95,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo (!empty($background)) ? base_url("images/{$background}.jpg") : ''; ?>) !important;
+                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo (!empty($season)) ? base_url("images/{$season}.jpg") : ''; ?>) !important;
                 background-position: center !important;
                 background-repeat: no-repeat !important;
                 background-size: cover !important;
