@@ -1197,7 +1197,6 @@ class Apilib
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
         //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
 
-
         //debug($dati, true);
 
         // Recupera dati di validazione
@@ -1217,8 +1216,7 @@ class Apilib
             // Inserisci la regola required per i campi che la richiedono
             // (una password è required solo se sto creando il record per la
             // prima volta)
-            if ($field['fields_required'] === DB_BOOL_TRUE && $field['fields_default'] === '') {
-
+            if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
                 switch ($field['fields_draw_html_type']) {
                         // Questo perchè l'upload viene giustamente fatto dopo il
                         // controllo delle regole di validazione
@@ -1238,7 +1236,7 @@ class Apilib
                         }
                         break;
 
-                        // Di default avanti tutta!! Il campo sarà required
+                        // By default field will be required
                     default:
                         $rule[] = 'required';
                         break;
