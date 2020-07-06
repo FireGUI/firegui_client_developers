@@ -1206,20 +1206,19 @@ class Apilib
         }
 
         /**
-         * Validazione
+         * Validation
          */
         $rules = [];
         $rules_date_before = [];
         foreach ($fields as $field) {
             $rule = [];
 
-            // Inserisci la regola required per i campi che la richiedono
-            // (una password è required solo se sto creando il record per la
-            // prima volta)
+            // Enter the required rule for the fields that require it
+            // (a password is required only if creating the record for the
+            // first time)
             if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
                 switch ($field['fields_draw_html_type']) {
-                        // Questo perchè l'upload viene giustamente fatto dopo il
-                        // controllo delle regole di validazione
+                        // this because upload is made after validation rules
                     case 'upload':
                     case 'upload_image':
                         if (!array_key_exists($field['fields_name'], $_FILES)) {
@@ -1227,9 +1226,8 @@ class Apilib
                         }
                         break;
 
-                        // Una password va valutata come required sse sono in
-                        // creazione perché in edit non è detto che con una modifica
-                        // voglia cambiarla
+                        // password is valuated as required only if not in edit mode,
+                        //because in edit it doesnt mean that i want to change it
                     case 'input_password':
                         if (!$editMode) {
                             $rule[] = 'required';
