@@ -1241,6 +1241,7 @@ class Apilib
                         // Di default avanti tutta!! Il campo sarà required
                     default:
                         $rule[] = 'required';
+                        break;
                 }
             }
 
