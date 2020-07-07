@@ -524,7 +524,11 @@ function loadModal(url, data, callbackSuccess, method) {
         data = {
             [token_name]: token_hash
         };
+    } else if (Array.isArray(data)) {
+
+        data.push({ "name": token_name, "value": token_hash });
     } else {
+
         data[token_name] = token_hash;
     }
 

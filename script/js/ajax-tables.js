@@ -310,7 +310,7 @@ function initTableAjax(grid) {
         // console.log(e);
         // console.log(settings);
         // console.log(techNote);
-        console.log(message);
+        // console.log(message);
         $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><code>' + message + '</code></div>');
     }).dataTable({
         stateSave: true,
@@ -338,6 +338,7 @@ function initTableAjax(grid) {
         "drawCallback": function (settings) {
             initComponents(oDataTable);
         },
+
         "footerCallback": function (row, data, start, end, display) {
 
             if (totalable == 1) {
@@ -379,6 +380,20 @@ function initTableAjax(grid) {
             }
 
         },
+        "fnServerData": function (sSource, aoData, fnCallback) {
+            $.ajax({
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": aoData,
+                "success": fnCallback,
+                "error": function (request, error) {
+                    // console.log(request.responseText);
+                    $('.callout.callout-warning').remove();
+                    $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
+                }
+            });
+        }
         // "rowCallback": function (row, data, index) {
 
         //     var api = this.api();

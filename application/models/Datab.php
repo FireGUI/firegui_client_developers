@@ -682,13 +682,13 @@ class Datab extends CI_Model
     {
         if (array_key_exists($grid_id, $this->_grids_data)) {
             return $this->_grids_data[$grid_id];
-        } else { 
-if (!$grid_id) {
-            die('ERRORE: grid ID mancante');
-        }
+        } else {
+            if (!$grid_id) {
+                die('ERRORE: grid ID mancante');
+            }
 
-        $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
-        $dati['grids_fields'] = $this->db->query("
+            $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
+            $dati['grids_fields'] = $this->db->query("
                     SELECT *
                     FROM grids_fields
                         LEFT JOIN grids ON grids.grids_id = grids_fields.grids_fields_grids_id
@@ -698,76 +698,73 @@ if (!$grid_id) {
                     ORDER BY grids_fields_order ASC
                 ", [$grid_id])->result_array();
 
-        // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
-        // CON ENTITA PER ORA
-        foreach ($dati['grids_fields'] as $key => $field) {
+            // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
+            // CON ENTITA PER ORA
+            foreach ($dati['grids_fields'] as $key => $field) {
 
-            // Preparo il nome colonna
-            $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name'] : $field['fields_draw_label'];
-            $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
+                // Preparo il nome colonna
+                $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name'] : $field['fields_draw_label'];
+                $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
 
-            if ($field['fields_ref']) {
-                $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
-                    $this->crmentity->getFields($field['fields_ref']),
-                    function ($field) {
-                        return $field['fields_preview'] == DB_BOOL_TRUE;
-                    }
-                ));
+                if ($field['fields_ref']) {
+                    $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
+                        $this->crmentity->getFields($field['fields_ref']),
+                        function ($field) {
+                            return $field['fields_preview'] == DB_BOOL_TRUE;
+                        }
+                    ));
+                }
             }
-        }
 
-        //TODO: will be deprecated as soon as new actions features will become stable
-        $dati['grids']['links'] = array(
-            'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
-            'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
-            'delete' => ($dati['grids']['grids_delete_link'] ? str_replace('{base_url}', base_url(), $dati['grids']['grids_delete_link']) : base_url("db_ajax/generic_delete/{$dati['grids']['entity_name']}"))
-        );
+            //TODO: will be deprecated as soon as new actions features will become stable
+            $dati['grids']['links'] = array(
+                'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
+                'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
+                'delete' => ($dati['grids']['grids_delete_link'] ? str_replace('{base_url}', base_url(), $dati['grids']['grids_delete_link']) : base_url("db_ajax/generic_delete/{$dati['grids']['entity_name']}"))
+            );
 
-        if (!filter_var($dati['grids']['links']['delete'], FILTER_VALIDATE_URL)) {
-            unset($dati['grids']['links']['delete']);
-        }
-
-        $can_write = $this->can_write_entity($dati['grids']['entity_id']);
-        if (!$can_write) {
-            unset($dati['grids']['links']['edit'], $dati['grids']['links']['delete']);
-        }
-
-        // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
-        $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
-        //debug('dentro '.$grid_id);
-        foreach ($dati['grids']['links']['custom'] as &$custom_link) {
-            //20170915 - MP - Mantengo questa funzionalità solo se è impostato il custom html
-            if (!empty($custom_link['grids_actions_html'])) {
-                $html = str_replace('{base_url}', base_url(), $custom_link['grids_actions_html']);
-                $custom_link['grids_actions_html'] = $html;
-                $custom_link['grids_actions_name'] = addslashes($custom_link['grids_actions_name']);
-            } else {
-                //debug($custom_link, true);
+            if (!filter_var($dati['grids']['links']['delete'], FILTER_VALIDATE_URL)) {
+                unset($dati['grids']['links']['delete']);
             }
-        }
 
-        // Mi assicuro che ogni link esistente termini con '/' e valuto se è da aprire con modale
-        foreach ($dati['grids']['links'] as $type => $link) {
-            if ($link && is_string($link)) {
-                $dati['grids']['links'][$type] = rtrim($link, '/') . '/';
-                //$dati['grids']['links'][$type . '_modal'] = (strpos($link, base_url('get_ajax/layout_modal')) === 0);
-                $dati['grids']['links'][$type . '_modal'] = (strpos($link, 'modal') !== false);
+            $can_write = $this->can_write_entity($dati['grids']['entity_id']);
+            if (!$can_write) {
+                unset($dati['grids']['links']['edit'], $dati['grids']['links']['delete']);
             }
-        }
 
-        $dati['replaces'] = [];
-        foreach ($dati['grids_fields'] as $gridField) {
-            $isValidType = (empty($dati['grids_fields_replace_type']) or $dati['grids_fields_replace_type'] === 'field');
-            if ($isValidType && $gridField['grids_fields_replace']) {
-                $dati['replaces'][$gridField['grids_fields_replace']] = $gridField;
+            // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
+            $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
+            //debug('dentro '.$grid_id);
+            foreach ($dati['grids']['links']['custom'] as &$custom_link) {
+                //20170915 - MP - Mantengo questa funzionalità solo se è impostato il custom html
+                if (!empty($custom_link['grids_actions_html'])) {
+                    $html = str_replace('{base_url}', base_url(), $custom_link['grids_actions_html']);
+                    $custom_link['grids_actions_html'] = $html;
+                    $custom_link['grids_actions_name'] = addslashes($custom_link['grids_actions_name']);
+                } else {
+                    //debug($custom_link, true);
+                }
             }
-        }
-        $this->_grids_data[$grid_id] = $dati;
-        return $dati;
-        }
 
+            // Mi assicuro che ogni link esistente termini con '/' e valuto se è da aprire con modale
+            foreach ($dati['grids']['links'] as $type => $link) {
+                if ($link && is_string($link)) {
+                    $dati['grids']['links'][$type] = rtrim($link, '/') . '/';
+                    //$dati['grids']['links'][$type . '_modal'] = (strpos($link, base_url('get_ajax/layout_modal')) === 0);
+                    $dati['grids']['links'][$type . '_modal'] = (strpos($link, 'modal') !== false);
+                }
+            }
 
-        
+            $dati['replaces'] = [];
+            foreach ($dati['grids_fields'] as $gridField) {
+                $isValidType = (empty($dati['grids_fields_replace_type']) or $dati['grids_fields_replace_type'] === 'field');
+                if ($isValidType && $gridField['grids_fields_replace']) {
+                    $dati['replaces'][$gridField['grids_fields_replace']] = $gridField;
+                }
+            }
+            $this->_grids_data[$grid_id] = $dati;
+            return $dati;
+        }
     }
 
     /**
@@ -2523,7 +2520,7 @@ if (!$grid_id) {
             } else {
                 return $text;
             }
-        } elseif ($field['grids_fields_switch_inline']) {
+        } elseif ($field['grids_fields_switch_inline'] == DB_BOOL_TRUE) {
             $entity = $this->get_entity($field['fields_entity_id']);
             $idKey = $entity['entity_name'] . '_id';
             return $this->load->view('box/grid/switch_bool', ['field' => $field, 'value' => $value, 'row_id' => $dato[$idKey]], true);
