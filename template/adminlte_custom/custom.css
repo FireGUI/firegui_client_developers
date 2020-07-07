@@ -169,3 +169,9 @@ color: #FFF;
     cursor:pointer;
 }
 .dz-remove:hover {cursor:pointer;}
+
+
+.select2-container .select2-selection--multiple {
+   
+    min-height: 36px;
+}
