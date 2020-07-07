@@ -2355,7 +2355,7 @@ class Datab extends CI_Model
             return '';
         }
 
-        $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
+        $return = (!empty($field['grids_fields_with_actions']) && $field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
             'skip_delete' => $skip_delete,
             'links' => $grid['grids']['links'],
             'id' => $id_record,
