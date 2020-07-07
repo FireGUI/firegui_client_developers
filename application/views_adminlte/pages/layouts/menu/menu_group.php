@@ -21,7 +21,7 @@
             </div>
 
         <?php elseif (($href = $this->datab->generate_menu_link($link, $value_id, $layout_data_detail))) : ?>
-            <a href="<?php echo $href; ?>" <?php echo ($link['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?> class=" btn  <?php echo ($link['menu_css_class']) ? $link['menu_css_class'] : 'btn-default'; ?> 
+            <a href="<?php echo $href; ?>" <?php echo ($link['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?> <?php echo $link['menu_html_attr'] ? $link['menu_html_attr'] : ''; ?> class=" btn  <?php echo ($link['menu_css_class']) ? $link['menu_css_class'] : 'btn-default'; ?> 
                <?php if ($link['menu_modal'] == DB_BOOL_TRUE) echo 'js_open_modal'; ?> menu-<?php echo $link['menu_id'] ?>" <?php if ($link['menu_modal'] == DB_BOOL_TRUE) : ?>data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
                 <?php echo $link['menu_icon_class'] ? sprintf('<i class="%s"></i>', $link['menu_icon_class']) : ''; ?>
                 <?php echo $link['menu_label']; ?>
