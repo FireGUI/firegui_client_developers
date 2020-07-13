@@ -2432,7 +2432,7 @@ class Datab extends CI_Model
 
                 if ($lnk) {
                     foreach ($value as $id => $name) {
-                        $value[$id] = anchor("{$lnk}/{$id}", $name);
+                        $value[$id] = anchor("{$lnk}/{$id}", $name?:t('view'));
                     }
                 }
                 return implode('<br/>', $value);
