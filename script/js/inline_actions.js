@@ -1,19 +1,20 @@
 $(document).ready(function () {
 
-    $('table').on('mouseenter', 'tr', function () {
+    $('body').on('mouseenter', 'table tr', function () {
 
         var inline_actions_container = $('.js_action_inline', $(this));
+        //console.log(inline_actions_container);
         if (inline_actions_container.length > 0) {
             inline_actions_container.css('visibility', 'visible');
         }
     });
 
-    $('table').on('mouseleave', 'tr', function () {
+    $('body').on('mouseleave', 'table tr', function () {
 
         $('.js_action_inline', $(this)).css('visibility', 'hidden');
 
     });
-    $('table').on('change', '.js_switch_bool', function () {
+    $('body').on('change', 'table .js_switch_bool', function () {
 
         // if ($(this).is(':checked')) {
         //     console.log('attivo');
