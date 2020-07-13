@@ -210,7 +210,8 @@ class Cron extends MY_Controller
     {
         //debug($cron);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $cron['crons_file']);
+        $url = str_ireplace('{base_url}', base_url(), $cron['crons_file']);
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
         curl_close($ch);
