@@ -219,14 +219,12 @@ function initComponents(container) {
 
         jqField.on('change', function () {
 
-            console.log('test');
-            //console.log($(this));
-
             var previousValue = jsMultiselect.attr('data-val').split(',');
             jsMultiselect.select2('val', '');
 
             //se ho una select semplice devo saperlo perché così so come gestire il valore settato
-            var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
+            //var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
+            var isNormalSelect = (jsMultiselect.is('select') && !$(this).attr('multiple'));
 
             var field_name_to = jsMultiselect.attr('name');
             if (field_name_to.indexOf('conditions[') !== -1) {
