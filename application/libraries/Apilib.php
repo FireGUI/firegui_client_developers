@@ -1514,7 +1514,9 @@ class Apilib
         }
 
         // Unset entity id for security issue:
-        unset($dati[$entity . '_id']);
+        if ($this->processMode !== self::MODE_DIRECT) {
+            unset($dati[$entity . '_id']);
+        }
 
         // Set creation date and/or edit date
         if (isset($entityCustomActions['create_time']) && !$editMode && empty($dati[$entityCustomActions['create_time']])) {
@@ -1535,6 +1537,9 @@ class Apilib
          * rimuovo semplicemente i campi in più
          */
         $invalidFields = array_diff(array_keys($dati), array_key_map($fields, 'fields_name'));
+        if (($key = array_search($entity . '_id', $invalidFields)) !== false) {
+            unset($invalidFields[$key]);
+        }
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
                 $this->error = self::ERR_VALIDATION_FAILED;

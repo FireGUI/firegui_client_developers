@@ -19,7 +19,7 @@ foreach ($grid['grids_fields'] as $field) {
     <?php
     // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
     ?>
-    <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
+    <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>
@@ -52,7 +52,9 @@ foreach ($grid['grids_fields'] as $field) {
                         </th>
                     <?php endforeach; ?>
 
-                    <th data-prevent-order>&nbsp;</th>
+                    <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                        <th data-prevent-order>&nbsp;</th>
+                    <?php endif; ?>
 
                 </tr>
             </tfoot>
