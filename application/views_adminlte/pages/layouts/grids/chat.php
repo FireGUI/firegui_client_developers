@@ -7,7 +7,6 @@ $items = array();
 if (isset($grid_data['data'])) {
     $item = array();
     foreach ($grid_data['data'] as $x => $dato) {
-
         $thisUser = $userField ? $dato[$userField] : null;
         $thisDate = $dateField ? strtotime($dato[$dateField]) : null;
 
@@ -18,17 +17,17 @@ if (isset($grid_data['data'])) {
             // debug($dato);
             // debug($grid['replaces']);
             $item = array(
-                'thumb' => empty($dato[$grid['replaces']['thumbnail']['fields_name']]) ? '/images/user.png' : base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
+                'thumb' => empty($dato[$grid['replaces']['thumbnail']['fields_name']]) ? base_url('/images/user.png') : base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
                 'username' => isset($grid['replaces']['username']) ?
                     (
                         ($dato[$grid['replaces']['username']['fields_name']] != null) ?
                         $this->datab->build_grid_cell($grid['replaces']['username'], $dato) :
-                        '<strong>Cliente</strong>') :
+                        '<strong>User</strong>') :
                     null,
                 'date' => $thisDate,
                 'body' => '',
                 'user' => $thisUser,
-                'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'out' : 'right') : (($x % 2 == 0) ? 'right' : 'out')
+                'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right')
             );
         }
 
@@ -69,7 +68,7 @@ if (isset($grid_data['data'])) {
                 <input type="hidden" name="value_id" value="<?php echo (array_key_exists($grid['replaces']['value_id']['fields_name'], $layout_data_detail)) ? $layout_data_detail[$grid['replaces']['value_id']['fields_name']] : $value_id; ?>" />
             <?php endif; ?>
             <div class="input-group">
-                <input class="form-control" name="text" placeholder="Scrivi un messaggio...">
+                <input class="form-control" name="text" placeholder="<?php e('Write a message...') ?>">
 
                 <div class="input-group-btn">
                     <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i></button>
@@ -110,7 +109,7 @@ if (isset($grid_data['data'])) {
             appendMessage: function(message) {
                 var chatContainer = $('.chats', this.element);
                 //var thisClass = ($('li:last-child', chatContainer).hasClass('in')? 'out': 'in');
-                var thisClass = 'direct-chat-msg out'; // I miei messaggi sono sempre a dx...
+                var thisClass = 'direct-chat-msg right'; // I miei messaggi sono sempre a dx...
                 var listItem = $('<li/>').addClass(thisClass);
                 listItem.append(
                     $('<div/>').addClass('direct-chat-primary clearfix').append(
