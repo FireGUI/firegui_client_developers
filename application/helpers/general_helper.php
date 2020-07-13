@@ -574,14 +574,26 @@ if (!function_exists('normalize_path')) {
         return implode('/', $parts);
     }
 }
-
 if (!function_exists('echo_flush')) {
 
     function echo_flush($str)
     {
-        echo str_pad($str, 2048, ' ');
-        flush();
-        ob_flush();
+        $CI = get_instance();
+        if (!$CI->input->is_cli_request()) {
+            echo str_pad($str, 2048, ' ');
+            flush();
+            ob_flush();
+        } else {
+            $newlineTags = array(
+                '<br>',
+                '<br/>',
+                '<br />',
+            );
+            $str = str_ireplace($newlineTags, PHP_EOL, $str);
+            echo $str;
+            flush();
+            ob_flush();
+        }
     }
 }
 
