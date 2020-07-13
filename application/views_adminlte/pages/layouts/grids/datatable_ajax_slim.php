@@ -51,8 +51,9 @@ foreach ($grid['grids_fields'] as $field) {
                         <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?>>
                         </th>
                     <?php endforeach; ?>
-
-                    <th data-prevent-order>&nbsp;</th>
+                    <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                        <th data-prevent-order>&nbsp;</th>
+                    <?php endif; ?>
 
                 </tr>
             </tfoot>
