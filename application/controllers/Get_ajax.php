@@ -561,7 +561,7 @@ class Get_ajax extends MY_Controller
 
             $out_array = array();
             foreach ($grid_data as $dato) {
-                
+
                 $tr = array();
                 if ($has_bulk) {
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
@@ -1250,9 +1250,22 @@ class Get_ajax extends MY_Controller
                 // debug($field_from['fields_ref']); //rel_riparatori_regioni
                 // debug($field_from, true); //riparatori_regione
             } else {
-                $entity_name = $relatedEntityFrom['entity_name'];
-                $entity_id = $relatedEntityFrom['entity_id'];
-                $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+                //debug($relatedEntityFrom);
+                $field_to_ref = $field_to['fields_ref'];
+                //Check if ref field to is also a relation
+                $relation_to_sub = $this->db->get_where('relations', ['relations_name' => $field_to_ref])->row_array();
+                if ($relation_to_sub) {
+                    $entity_relation_to = $this->crmentity->getEntity($relation_to_sub['relations_table_2']);
+                    $entity_name = $relation_to_sub['relations_table_2'];
+
+                    $entity_id = $entity_relation_to['entity_id'];
+                    //debug($entity_relation_to);
+                    $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+                } else {
+                    $entity_name = $relatedEntityFrom['entity_name'];
+                    $entity_id = $relatedEntityFrom['entity_id'];
+                    $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+                }
             }
 
             //debug($field_from, true);
