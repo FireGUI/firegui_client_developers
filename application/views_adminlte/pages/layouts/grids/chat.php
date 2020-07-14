@@ -17,7 +17,6 @@ if (isset($grid_data['data'])) {
             // debug($dato);
             // debug($grid['replaces']);
             $item = array(
-                'thumb' => empty($dato[$grid['replaces']['thumbnail']['fields_name']]) ? base_url('/images/user.png') : base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]),
                 'username' => isset($grid['replaces']['username']) ?
                     (
                         ($dato[$grid['replaces']['username']['fields_name']] != null) ?
@@ -29,6 +28,14 @@ if (isset($grid_data['data'])) {
                 'user' => $thisUser,
                 'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right')
             );
+
+            if (isset($grid['replaces']['thumbnail'])) {
+                if (!empty($dato[$grid['replaces']['thumbnail']['fields_name']])) {
+                    $item['thumb'] = base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]);
+                } else {
+                    base_url('/images/user.png');
+                }
+            }
         }
 
         $item['body'] .= (isset($grid['replaces']['text']) ? $this->datab->build_grid_cell($grid['replaces']['text'], $dato) : '') .
@@ -50,7 +57,7 @@ if (isset($grid_data['data'])) {
                         <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
                         <span class="direct-chat-timestamp pull-right datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
                     </div>
-                    <img class="direct-chat-img avatar" src="<?php echo $item['thumb']; ?>" alt="message user image">
+                    <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
                     <div class="direct-chat-text body">
                         <?php echo $item['body']; ?>
                     </div>
@@ -77,6 +84,18 @@ if (isset($grid_data['data'])) {
         </form>
     </div>
 </div>
+
+<style>
+    <?php if (!isset($grid['replaces']['thumbnail'])) : ?>.right .direct-chat-text {
+        margin-right: 1px !important;
+    }
+
+    .direct-chat-text {
+        margin-left: 1px !important;
+    }
+
+    <?php endif; ?>
+</style>
 
 <script>
     var ChatWidget = function() {
@@ -116,12 +135,13 @@ if (isset($grid_data['data'])) {
                         $('<a/>').addClass('direct-chat-name pull-left name').attr('href', '#').html(message.username),
                         $('<span/>').addClass('direct-chat-timestamp pull-right datetime').html(message.date),
                     ),
-                    $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive'),
+                    (typeof value !== "undefined" ? $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive') : ''),
                     $('<div/>').addClass('direct-chat-text body').append(
                         //$('<span/>').addClass('arrow'),
                         $('<span/>').html(message.text)
                     )
                 ).appendTo(chatContainer);
+
                 this.scrollChat();
             },
 
