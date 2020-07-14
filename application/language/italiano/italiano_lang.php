@@ -193,3 +193,4 @@ $lang['Method'] = 'Metodo';
 $lang['Params'] = 'Params';
 $lang['API Logs'] = 'Logs API';
 $lang['Log Details'] = 'Dettagli Log';
+$lang['Write a message...'] = 'Scrivi un messaggio...';
