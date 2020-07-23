@@ -650,7 +650,7 @@ if (!function_exists('str_replace_placeholders')) {
         }
 
         $keys = array_map(function ($k) {
-            return "{{$k}}";
+            return '{' . $k . '}';
         }, array_keys($smoothreplaces));
         $vals = array_values($smoothreplaces);
 

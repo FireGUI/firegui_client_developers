@@ -30,8 +30,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
  */
     define('DEFAULT_EMAIL_SYSTEM', 'no-reply@yourdomain.com');
     define('DEFAULT_EMAIL_SENDER', 'FireGUI');
-    define('DEFAULT_EMAIL_FROM', 'From: No Reply <no-reply@yourdomain.com>');
-    define('DEFAULT_EMAIL_REPLY', 'Reply-To: No Reply <no-reply@yourdomain.com>');
+    define('DEFAULT_EMAIL_FROM', 'Example Inc. <no-reply@yourdomain.com>');
+    define('DEFAULT_EMAIL_REPLY', 'Example Inc. <no-reply@yourdomain.com>');
 
     /*
  
