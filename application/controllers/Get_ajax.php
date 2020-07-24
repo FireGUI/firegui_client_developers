@@ -596,9 +596,9 @@ class Get_ajax extends MY_Controller
 
                 $out_array[] = $tr;
             }
-
-            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => null]);
-            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => null]);
+            //debug($grid['grids']['grids_group_by']);
+            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
+            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
 
 
             echo json_encode(array(
