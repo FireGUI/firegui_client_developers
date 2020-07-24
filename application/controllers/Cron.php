@@ -91,11 +91,20 @@ class Cron extends MY_Controller
         $allCrons = $this->db->get('crons')->result_array();
         $idxCrons = array_combine(array_key_map($allCrons, 'crons_id'), array_key_map($allCrons, 'crons_title'));
 
+
+
         ob_start();
         // =============== OUTPUT ===============
         echo '<pre>';
         echo 'Data fine: ', date('Y-m-d H:i:s');
+
         echo PHP_EOL, PHP_EOL, 'Attivi alla partenza', PHP_EOL;
+        print_r(array_map(function ($c) use ($idxCrons) {
+            //debug($idxCrons);
+            return sprintf('(%s) %s', $c, $idxCrons[$c]);
+        }, array_keys($idxCrons)));
+
+        echo PHP_EOL, PHP_EOL, 'In esecuzione alla partenza', PHP_EOL;
         print_r(array_map(function ($c) use ($idxCrons) {
             return sprintf('(%s) %s', $c, $idxCrons[$c]);
         }, $inExecution));
@@ -264,6 +273,7 @@ class Cron extends MY_Controller
         // Usiamo la cache per ricordare quali cron sono in esecuzione
         $this->load->driver('cache');
         $inExecution = $this->cache->file->get($this->getKey());
+
         return is_array($inExecution) ? $inExecution : [];
     }
 
@@ -272,6 +282,7 @@ class Cron extends MY_Controller
         $inExecution = $this->getInExecution();
         $inExecution[] = $cronId;
         $this->cache->file->save($this->getKey(), $inExecution, 240);
+
         return $inExecution;
     }
 

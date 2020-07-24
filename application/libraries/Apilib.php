@@ -1005,7 +1005,7 @@ class Apilib
                 }
             }
 
-            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true);
+            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
             $this->cache->save($cache_key, $out, $this->CACHE_TIME);
         }
 

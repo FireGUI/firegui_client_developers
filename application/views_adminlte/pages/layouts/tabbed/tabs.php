@@ -65,6 +65,15 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
                     .style
                     .width = '';
             }
+            //console.log($.fn.dataTable.tables());
+            // $.each($.fn.dataTable.tables({
+            //     visible: true,
+            //     api: true
+            // }), function() {
+            //     if ($(this).parents('.active').length > 0) {
+            //         $(this).columns.adjust().draw();
+            //     }
+            // });
             $.fn.dataTable.tables({
                 visible: true,
                 api: true

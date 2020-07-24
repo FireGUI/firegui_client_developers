@@ -114,7 +114,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <?php else : ?>
 
                             <?php if ($field['filterref']) : ?>
-                                <?php //debug($field); 
+                                <?php //debug($field);
                                 ?>
                                 <?php if ($field['type'] == 'multiselect') : ?>
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
@@ -142,12 +142,19 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     if ($where === '1') {
                                         $where = null;
                                     }
-                                    //debug($where);
+
+                                    if ($referenced = $this->crmentity->getReferencedEntity($field['name'])) {
+                                        $entity = $referenced['entity_name'];
+                                    } else {
+                                        $entity = $field['filterref'];
+                                    }
                                     ?>
                                     <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
                                         <option value="">---</option>
 
-                                        <?php foreach ($this->crmentity->getEntityPreview($field['filterref'], $where) as $id => $name) : ?>
+                                        <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name) : ?>
+                                            <?php //debug($field['filterref'], true); 
+                                            ?>
                                             <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                         <?php endforeach; ?>
                                     </select>
