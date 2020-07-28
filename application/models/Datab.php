@@ -2582,13 +2582,23 @@ class Datab extends CI_Model
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
-                            //debug($item, true);
-                            if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
-                                $_url = base_url_uploads("uploads/{$item['path_local']}");
+                            
+                            if (in_array($item['file_type'], ['image/jpeg','image/png'])) {
+                                if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
+                                    $_url = base_url_uploads("uploads/{$item['path_local']}");
+                                } else {
+                                    $_url = base_url_admin("imgn/1/50/50/uploads/{$item['path_local']}");
+                                }
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                             } else {
-                                $_url = base_url_admin("imgn/1/50/50/uploads/{$item['path_local']}");
+                                if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
+                                    $_url = base_url_uploads("uploads/{$item['path_local']}");
+                                } else {
+                                    $_url = base_url_admin("uploads/{$item['path_local']}");
+                                }
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<a href='" . $_url . "' target=\"_blank\"><img src=\"".base_url('images/document.png')."\" style='width: 50px;'/></a>", array('style' => 'width:50px'));
                             }
-                            return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
+                            
                         }, $value);
                     } else { //Se arrivo qua i file sono scritti su un altra tabella, quindi mi arriva già l'array bello pulito con i file...
                         $value = array_map(function ($item) {
@@ -3112,6 +3122,7 @@ class Datab extends CI_Model
     {
         foreach ($this->_languages as $lang) {
             if (strtolower($lang['name']) == strtolower($this->_default_language['languages_name'])) {
+                
                 return $lang;
             }
         }
