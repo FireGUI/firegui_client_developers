@@ -3,7 +3,7 @@
 
         <dl <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>" class="dl-horizontal static-vertical-grid <?php echo $grid['grids']['grids_append_class']; ?>">
             <?php foreach ($grid['grids_fields'] as $field) : ?>
-                <dt class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $field['grids_fields_column_name']; ?>:</dt>
+                <dt class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php e($field['grids_fields_column_name']);  ?>:</dt>
                 <dd class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $this->datab->build_grid_cell($field, $dato); ?></dd>
                 <hr style="margin-top: 0.5% !important; margin-bottom: 0.5% !important;">
             <?php endforeach; ?>

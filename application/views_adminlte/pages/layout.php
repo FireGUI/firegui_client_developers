@@ -17,12 +17,12 @@ $portletBgColorMap = [];
 
     <section class="content-header page-title">
         <h1>
-            <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?>
-            <small><?php echo $dati['layout_container']['layouts_subtitle']; ?></small>
+            <?php e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?>
+            <small><?php e($dati['layout_container']['layouts_subtitle']); ?></small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="<?php echo base_url('main/layout/1'); ?>"><i class="fas fa-tachometer-alt"></i> Home</a></li>
-            <li class="active"> <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?></li>
+            <li class="active"> <?php e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?></li>
         </ol>
     </section>
 
@@ -78,7 +78,7 @@ $portletBgColorMap = [];
                                 <div class="box-title">
                                     <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
                                     <span class="<?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
-                                        <?php echo ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])); ?>
+                                        <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title']))); ?>
                                     </span>
                                 </div>
 

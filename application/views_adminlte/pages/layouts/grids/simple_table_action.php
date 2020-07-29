@@ -17,7 +17,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
                         </th>
                     <?php endif; ?>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <th><?php echo $field['grids_fields_column_name'];  ?></th>
+                        <th><?php e($field['grids_fields_column_name']);  ?></th>
                     <?php endforeach; ?>
                     <th>Action</th>
                 </tr>
@@ -49,10 +49,10 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
                 <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                 <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
-                    <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
+                    <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled"><?php e('Edit'); ?></option>
                 <?php endif; ?>
                 <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
-                    <option value="bulk_delete" disabled="disabled">Delete</option>
+                    <option value="bulk_delete" disabled="disabled"><?php e('Delete'); ?></option>
                 <?php endif; ?>
             </select>
 
