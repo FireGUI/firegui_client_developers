@@ -110,8 +110,13 @@ class Main extends MY_Controller
             die();
         }
 
-        // Costruisco il layout, e se ritorna null allora mostro layout non
-        // accessibile
+        //If layout is module dependent, preload translations
+        $layout = $this->layout->getLayout($layout_id);
+        if ($layout['layouts_module']) {
+            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], array_values($this->lang->is_loaded)[0]));
+        }
+
+        // Build layout, if null then layout is not accessible due to user permissions
         $dati = $this->datab->build_layout($layout_id, $value_id);
         if (is_null($dati)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);

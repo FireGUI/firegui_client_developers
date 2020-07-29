@@ -19,7 +19,7 @@ foreach ($grid['grids_fields'] as $field) {
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
+                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
                     <?php endforeach; ?>
                 </tr>
             </thead>

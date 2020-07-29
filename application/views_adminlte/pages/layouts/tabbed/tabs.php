@@ -16,7 +16,7 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
 <div class="<?php echo $tabs_id; ?> tabbable-custom">
     <ul class="nav nav-tabs">
         <?php foreach ($tabs as $key => $tab) : ?>
-            <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php echo $tab['title']; ?></a></li>
+            <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php e($tab['title']); ?></a></li>
         <?php endforeach; ?>
     </ul>
     <div class="tab-content" style="padding-top:20px">

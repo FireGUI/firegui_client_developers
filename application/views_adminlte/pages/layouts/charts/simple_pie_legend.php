@@ -5,11 +5,12 @@ $series = [];
 foreach ($chart_data[0]['series'] as $name => $data) {
     $pdata = [];
     foreach ($data as $x => $y) {
-        $pdata[] = ['name' => $x, 'y' => (float) $y];
+        $pdata[] = ['name' => $x, 'y' => (float)number_format($y,2,'.','')];
     }
 
     $series[] = ['name' => $name, 'data' => $pdata];
 }
+
 ?>
 <div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
 

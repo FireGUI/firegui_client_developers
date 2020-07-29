@@ -22,7 +22,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <th><?php echo $field['grids_fields_column_name']; ?></th>
+                        <th><?php e($field['grids_fields_column_name']);  ?></th>
                     <?php endforeach; ?>
                     <th>Action</th>
                 </tr>
@@ -68,7 +68,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                                             <thead>
                                                 <tr>
                                                     <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
-                                                        <th style="background-color: #dcdcdc; color: #000"><?php echo $field['grids_fields_column_name']; ?></th>
+                                                        <th style="background-color: #dcdcdc; color: #000"><?php e($field['grids_fields_column_name']);  ?></th>
                                                     <?php endforeach; ?>
                                                     <th><?php e('Actions'); ?></th>
                                                 </tr>

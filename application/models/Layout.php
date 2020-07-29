@@ -133,7 +133,10 @@ class Layout extends CI_Model
 
         return $pdfFile;
     }
-
+    public function getLayout($layoutId) {
+        $layout = $this->db->get_where('layouts', array('layouts_id' => $layoutId))->row_array();
+        return $layout;
+    }
 
     public function getBoxes($layoutId)
     {
