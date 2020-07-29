@@ -110,7 +110,7 @@
                                     <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php //echo ($sub_menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
                                                                                                             ?>>
                                         <i class="<?php echo $sub_menu['menu_icon_class'] ?: 'fas fa-empty'; ?>"></i>
-                                        <?php echo ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])); ?>
+                                        <?php e(ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label']))); ?>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -119,7 +119,7 @@
                 </li>
             <?php else : ?>
                 <li class="heading menu-<?php echo $menu['menu_id'] ?>">
-                    <h3 class="uppercase"><?php echo $label; ?></h3>
+                    <h3 class="uppercase"><?php e($label); ?></h3>
                 </li>
             <?php endif; ?>
         <?php

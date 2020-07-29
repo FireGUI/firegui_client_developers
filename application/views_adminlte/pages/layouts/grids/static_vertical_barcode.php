@@ -32,7 +32,7 @@
                         <div class="text-center js_barcode_container" style="margin-bottom:56px;" data-type="<?php echo $type; ?>" data-value="<?php echo base64_encode($value); ?>" data-url="main/print_barcode/">
 
                             <div><strong><?php echo $type; ?></strong></div>
-                            <div><label><?php echo $field_label; ?></label></div>
+                            <div><label><?php e($field_label); ?></label></div>
 
                             <div><img src="data:image/png;base64,<?php echo ($base64img); ?>" /><br /></div>
                             <div><small><?php echo $value; ?></small></div>

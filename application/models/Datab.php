@@ -2198,10 +2198,10 @@ class Datab extends CI_Model
 
 
             // ========================================
-            // Inizio Build Layout
+            // Start Build Layout
             // ========================================
             $this->layout->addLayout($layout_id);
-            $dati['layout_container'] = $this->db->get_where('layouts', array('layouts_id' => $layout_id))->row_array();
+            $dati['layout_container'] = $this->layout->getLayout($layout_id);
             if (empty($dati['layout_container'])) {
                 show_404();
             }
