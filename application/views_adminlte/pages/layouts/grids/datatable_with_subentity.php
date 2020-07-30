@@ -35,7 +35,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
 
-                        <td class="text-right" <?php echo $sub_data ? ' rowspan="2"' : '' ?> style="vertical-align:top!important;">
+                        <td class="text-right firegui_verticalaligntop" <?php echo $sub_data ? ' rowspan="2"' : '' ?>>
                             <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
                                 <?php
 
@@ -125,7 +125,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
             <div class="row">
                 <?php if ($has_bulk) : ?>
                     <div class="col-md-<?php echo $cols; ?>">
-                        <select class="form-control js-bulk-action" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>" style="width: auto;">
+                        <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
                             <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                             <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>

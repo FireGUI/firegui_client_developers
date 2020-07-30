@@ -11,7 +11,7 @@ foreach ($chart_data[0]['series'] as $name => $data) {
     $series[] = ['name' => $name, 'data' => $pdata];
 }
 ?>
-<div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
+<div <?php echo sprintf('id="%s"', $chartId); ?> class="container_hightcharts"></div>
 
 <script>
     $(function () {

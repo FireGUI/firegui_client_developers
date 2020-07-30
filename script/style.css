@@ -22,8 +22,7 @@
 }
 
 .page-header.navbar .page-logo .logo-default {
-    margin: 0;
-    height: 36px;
+    height:100%;margin: 0 auto
 }
 
 /*
