@@ -491,43 +491,68 @@ if (!function_exists('t')) {
         //debug($CI->config->item('language'));
         $translation = lang($string);
 
-
-        //debug($translation);
         if ($translation === false) {
-            $translation = $string;
-        }
-        /*if ($translation === false) {
-
-
 
             $CI = get_instance();
             $lang_array = $CI->datab->getLanguage();
             $language = $lang_array ? $lang_array['file'] : $CI->config->item('language');
 
+            $traces = debug_backtrace();
+            array_shift($traces);
+
+            $module_name = array_get($params, 'module_name', $CI->layout->getLayoutModule());
+            
+            foreach ($traces as $trace) {
+                if (stripos($trace['file'], 'application/modules')) {
+                    $module_name = explode('application/modules/',$trace['file'])[1];
+                    $module_name = explode('/', $module_name)[0];
+                    break;
+                }
+            }
+            
+            
+            if ($module_name) {
+                $path = sprintf('%smodules/%s/language/%s/%s_lang.php', APPPATH, $module_name, $language, $language);
+            } else {
+                
+                $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
+            }
 
 
-            $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
 
             $val = addslashes($string);
             $add = '$lang[\'' . $val . '\'] = \'' . $val . '\';' . PHP_EOL;
 
-            if (is_writable($path) && $string) {
-                //sleep(1);
-                include $path;
-                if (!isset($lang) or !array_key_exists($string, $lang)) {
-                    
-                    file_put_contents($path, $add, FILE_APPEND | LOCK_EX);
+            
+                if (file_exists($path)) {
+                    include $path;
                 }
-            }
+                
+                
+                if (!isset($lang) or !array_key_exists($string, $lang)) {
+                    if (is_writable($path) && $string) {
+                     $fp = fopen($path, "a+");
 
-            // Ricarica file traduzioni
-            if ($lang_array) {
-                $CI->datab->changeLanguage($lang_array['id']);
+                     if (flock($fp, LOCK_EX)) {  // acquire an exclusive lock
+                         
+                         fwrite($fp, $add);
+                         fflush($fp);            // flush output before releasing the lock
+                         flock($fp, LOCK_UN);
+                         
+                         $CI->lang->language = array_merge($CI->lang->language, [$val => $val]);
+        
+                     } else {
+                         //echo "Couldn't get the lock!";
+                     }
+
+
+                    //file_put_contents($path, $add, FILE_APPEND | LOCK_EX);
+                }
             }
 
             // Siccome la traduzione è vuota mantieni l'originale
             $translation = $string;
-        }*/
+        }
 
         // Rimpiazza parametri
         if (is_array($params) && !empty($params)) {

@@ -9,7 +9,8 @@ class Module extends CI_Model {
     
     public function loadTranslations($name, $language = null) {
         if ($language === null) {
-            debug('FIND CURRENT LANGUAGE', true);
+            
+            $language = $this->session->userdata('language');
         }
         $module_name = explode('/',$name)[0];
         $language_file = APPPATH . 'modules/' . $module_name . '/language/'.$language.'/' . $language.'_lang.php';
