@@ -8,6 +8,7 @@ class Layout extends CI_Model
      * @var array
      */
     private $structure = [];
+    public $current_module_identifier = false;
 
     /**
      * @param int $layoutId
@@ -136,6 +137,13 @@ class Layout extends CI_Model
     public function getLayout($layoutId) {
         $layout = $this->db->get_where('layouts', array('layouts_id' => $layoutId))->row_array();
         return $layout;
+    }
+
+    public function setLayoutModule($current_module_identifier = false) {
+        $this->current_module_identifier = $current_module_identifier;
+    }
+    public function getLayoutModule() {
+        return $this->current_module_identifier;
     }
 
     public function getBoxes($layoutId)

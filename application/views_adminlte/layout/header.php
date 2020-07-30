@@ -15,7 +15,7 @@
         </span>
 
     <?php else : ?>
-        <img class="logo-default img-responsive" src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" style="height:100%;margin: 0 auto">
+        <img class="logo-default img-responsive" src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>">
     <?php endif; ?>
 
 </a>

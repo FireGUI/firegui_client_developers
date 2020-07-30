@@ -19,7 +19,7 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
             <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php e($tab['title']); ?></a></li>
         <?php endforeach; ?>
     </ul>
-    <div class="tab-content" style="padding-top:20px">
+    <div class="tab-content">
         <?php foreach ($tabs as $key => $tab) : ?>
             <div class="tab-pane <?php echo $active === $key ? 'active' : ''; ?>" <?php echo sprintf('id="%s"', $key); ?>><?php echo $tab['content']; ?></div>
         <?php endforeach; ?>

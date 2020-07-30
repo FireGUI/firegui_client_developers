@@ -82,7 +82,7 @@ foreach ($grid['grids_fields'] as $field) {
 
         <?php if ($has_bulk) : ?>
 
-            <select class="form-control js-bulk-action" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>" style="width: auto;">
+            <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
                 <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                 <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>

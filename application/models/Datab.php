@@ -2179,6 +2179,9 @@ class Datab extends CI_Model
     {
         return $this->db->get_where('layouts', array('layouts_id' => $layout_id, 'layouts_cachable' => DB_BOOL_TRUE))->num_rows() == 1;
     }
+
+
+    
     /**
      * Layout builder
      */
@@ -2196,12 +2199,12 @@ class Datab extends CI_Model
                 $layout_id = $this->_forwardedLayouts[$layout_id];
             }
 
-
             // ========================================
             // Start Build Layout
             // ========================================
             $this->layout->addLayout($layout_id);
             $dati['layout_container'] = $this->layout->getLayout($layout_id);
+            
             if (empty($dati['layout_container'])) {
                 show_404();
             }
@@ -2217,6 +2220,7 @@ class Datab extends CI_Model
             if (is_null($layout_data_detail) && $dati['layout_container']['layouts_is_entity_detail'] === DB_BOOL_TRUE) {
                 //die('test');
                 $this->layout->removeLastLayout($layout_id);
+                
                 return null;
             }
 
@@ -2239,7 +2243,6 @@ class Datab extends CI_Model
                 // punto, ma per motivi di dimensione e complessità della procedura
                 // è stata spostata in un metodo a se `getBoxContent`
                 $layout['content'] = $this->getBoxContent($layout, $value_id, $layout_data_detail);
-
 
                 // Fa il wrap degli hook pre e post che devono esistere per ogni
                 // componente ad eccezione di custom views e custom php code
@@ -2275,6 +2278,7 @@ class Datab extends CI_Model
             // ========================================
             $this->layout->removeLastLayout($layout_id);
         }
+        
         return $dati;
     }
 
@@ -2569,6 +2573,7 @@ class Datab extends CI_Model
                         } else {
                             $_url = base_url_admin("imgn/1/50/50/uploads/{$value}");
                         }
+                        //die('test');
                         return anchor(base_url_uploads("uploads/{$value}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                     } else {
                         //                        $path = base_url('images/no-image-50x50.gif');
@@ -2810,7 +2815,7 @@ class Datab extends CI_Model
 
 
             $style = $langShow ? '' : 'style="display:none"';
-            $label = $baseShowLabel ? '<label class="control-label">' . $langLabel . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk" style="font-size: 85%"></small>' : '') : '';
+            $label = $baseShowLabel ? '<label class="control-label">' . t($langLabel) . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk firegui_fontsize85"></small>' : '') : '';
 
             $data = [
                 'lang' => $langId,
@@ -2838,9 +2843,8 @@ class Datab extends CI_Model
             if ($baseType == 'multi_upload') {
                 //debug($data);
             }
-
-
-
+            
+            
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
             if ($baseType !== 'input_hidden') {
                 $wrapAttributes = implode(' ', array_filter([$style, $langAttribute]));

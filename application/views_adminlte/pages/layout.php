@@ -78,7 +78,8 @@ $portletBgColorMap = [];
                                 <div class="box-title">
                                     <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
                                     <span class="<?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
-                                        <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title']))); ?>
+                                        
+                                        <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])),true,['module_name' => $layout['layouts_module']]); ?>
                                     </span>
                                 </div>
 

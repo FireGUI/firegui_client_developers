@@ -181,3 +181,43 @@ table tr td {
 .select2-container .select2-selection--multiple {
   min-height: 36px;
 }
+
+.firegui_notification {
+  height: 450px;
+}
+.firegui_sidebar-form {
+  border: 0px;
+}
+.firegui_width50 {
+  width:50px;
+}
+.tab-content {
+  padding-top:20px
+}
+.firegui_fontsize85 {
+  font-size: 85%;
+}
+.firegui_fontsize10 {
+  font-size:10px;
+}
+.firegui_margintop5 {
+  margin-top: 5px;
+}
+.firegui_margin20_0 {
+  margin: 20px 0px;
+}
+.firegui_widthauto {
+  width:auto;
+}
+.container_hightcharts {
+  min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden;
+}
+.firegui_colorinput {
+  min-width:95px;
+}
+.firegui_radio-list {
+  margin-left: 6px;
+}
+.firegui_verticalaligntop {
+  vertical-align:top!important;
+}

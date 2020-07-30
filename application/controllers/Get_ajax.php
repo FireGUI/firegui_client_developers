@@ -32,6 +32,13 @@ class Get_ajax extends MY_Controller
             }
         }
 
+        //If layout is module dependent, preload translations
+        $layout = $this->layout->getLayout($layout_id);
+        if ($layout['layouts_module']) {
+            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], array_values($this->lang->is_loaded)[0]));
+            $this->layout->setLayoutModule($layout['layouts_module']);
+        }
+
         // La richiesta non è ajax? Rimando al main/layout standard
         if (!$this->input->is_ajax_request()) {
 
@@ -53,6 +60,7 @@ class Get_ajax extends MY_Controller
 
 
         if (!$this->datab->can_access_layout($layout_id)) {
+            $this->layout->setLayoutModule();
             show_404();
         }
 
@@ -78,6 +86,7 @@ class Get_ajax extends MY_Controller
             'content' => $pagina,
             'footer' => NULL
         ));
+        $this->layout->setLayoutModule();
     }
 
     /**
@@ -96,21 +105,29 @@ class Get_ajax extends MY_Controller
             set_status_header(401); // Unauthorized
             die('No log in session found');
         }
-
+        
         $modalSize = $this->input->get('_size');
         if (!in_array($modalSize, ['small', 'large', 'extra'])) {
             $modalSize = null;
         }
-
+        
         $post_ids = $this->input->post('ids');
         if (empty($value_id) && !(empty($post_ids))) {
             $value_id = $this->input->post('ids');
         }
+        if ($form_entity_module = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON (forms_entity_id = entity_id) WHERE forms_id = '{$form_id}'")->row()->entity_module) {
+            
+            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($form_entity_module, array_values($this->lang->is_loaded)[0]));
+            $this->layout->setLayoutModule($form_entity_module);
+        }
         $form = $this->datab->get_form($form_id, $value_id);
+        
         if (!$form) {
             $this->load->view("box/errors/missing_form", ['form_id' => $form_id]);
             return;
         }
+        
+        
 
         if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
 
@@ -124,6 +141,7 @@ class Get_ajax extends MY_Controller
             echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
             $this->load->view('pages/layouts/forms/form_modal', $viewData);
             echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+            $this->layout->setLayoutModule();
         } else {
             //$this->load->view('pages/layout_unaccessible');
             $content = '<div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -132,6 +150,7 @@ class Get_ajax extends MY_Controller
             $content .= str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
             $content .= '</div></div></div>';
             echo $content;
+            $this->layout->setLayoutModule();
         }
     }
 
