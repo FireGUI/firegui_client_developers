@@ -125,8 +125,8 @@ CrmInlineTable.prototype.editRow = function (nRow) {
         jqTds[i].innerHTML = '<input type="text" class="form-control input-small" name="' + $(jqThs[i]).attr('data-name') + '" value="' + (aData[i] ? aData[i] : '') + '">';
     }
 
-    jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Salva</a>';
-    jqTds[max - 1].innerHTML = '<a class="js_cancel" href="">Annulla</a>';
+    jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Save</a>';
+    jqTds[max - 1].innerHTML = '<a class="js_cancel" href="">Undo</a>';
 
     this.nEditing = nRow;
 };
