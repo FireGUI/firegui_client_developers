@@ -64,6 +64,7 @@ if (!function_exists('lang')) {
 	function lang($line, $for = '', $attributes = array())
 	{
 
+		// Todo if english pass FALSE as second parameter
 		$line = get_instance()->lang->line($line);
 
 		if ($for !== '') {
