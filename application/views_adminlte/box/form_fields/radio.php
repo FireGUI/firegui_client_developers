@@ -15,7 +15,7 @@ $inline = true; //count($choiches) < 3;
 <?php echo $label; ?>
 <!--<div class="col-xs-12">-->
 <div>
-    <div class="radio-list" style="margin-left: 6px;">
+    <div class="radio-list firegui_radio-list">
         <?php foreach ($choiches as $id => $name) : ?>
             <label class="<?php echo $inline ? 'radio-inline' : 'radio' ?>">
                 <input class="<?php echo $class ?>" type="radio" value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'checked' : ''; ?> name="<?php echo $field['fields_name']; ?>" <?php echo $onclick; ?> />

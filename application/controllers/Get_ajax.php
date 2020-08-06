@@ -32,6 +32,13 @@ class Get_ajax extends MY_Controller
             }
         }
 
+        //If layout is module dependent, preload translations
+        $layout = $this->layout->getLayout($layout_id);
+        if ($layout['layouts_module']) {
+            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], array_values($this->lang->is_loaded)[0]));
+            $this->layout->setLayoutModule($layout['layouts_module']);
+        }
+
         // La richiesta non è ajax? Rimando al main/layout standard
         if (!$this->input->is_ajax_request()) {
 
@@ -53,6 +60,7 @@ class Get_ajax extends MY_Controller
 
 
         if (!$this->datab->can_access_layout($layout_id)) {
+            $this->layout->setLayoutModule();
             show_404();
         }
 
@@ -78,6 +86,7 @@ class Get_ajax extends MY_Controller
             'content' => $pagina,
             'footer' => NULL
         ));
+        $this->layout->setLayoutModule();
     }
 
     /**
@@ -96,21 +105,29 @@ class Get_ajax extends MY_Controller
             set_status_header(401); // Unauthorized
             die('No log in session found');
         }
-
+        
         $modalSize = $this->input->get('_size');
         if (!in_array($modalSize, ['small', 'large', 'extra'])) {
             $modalSize = null;
         }
-
+        
         $post_ids = $this->input->post('ids');
         if (empty($value_id) && !(empty($post_ids))) {
             $value_id = $this->input->post('ids');
         }
+        if ($form_entity_module = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON (forms_entity_id = entity_id) WHERE forms_id = '{$form_id}'")->row()->entity_module) {
+            
+            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($form_entity_module, array_values($this->lang->is_loaded)[0]));
+            $this->layout->setLayoutModule($form_entity_module);
+        }
         $form = $this->datab->get_form($form_id, $value_id);
+        
         if (!$form) {
             $this->load->view("box/errors/missing_form", ['form_id' => $form_id]);
             return;
         }
+        
+        
 
         if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
 
@@ -124,6 +141,7 @@ class Get_ajax extends MY_Controller
             echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
             $this->load->view('pages/layouts/forms/form_modal', $viewData);
             echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+            $this->layout->setLayoutModule();
         } else {
             //$this->load->view('pages/layout_unaccessible');
             $content = '<div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -132,6 +150,7 @@ class Get_ajax extends MY_Controller
             $content .= str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
             $content .= '</div></div></div>';
             echo $content;
+            $this->layout->setLayoutModule();
         }
     }
 
@@ -561,7 +580,7 @@ class Get_ajax extends MY_Controller
 
             $out_array = array();
             foreach ($grid_data as $dato) {
-                
+
                 $tr = array();
                 if ($has_bulk) {
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
@@ -596,9 +615,9 @@ class Get_ajax extends MY_Controller
 
                 $out_array[] = $tr;
             }
-
-            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => null]);
-            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => null]);
+            //debug($grid['grids']['grids_group_by']);
+            $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
+            $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
 
 
             echo json_encode(array(
@@ -1250,9 +1269,22 @@ class Get_ajax extends MY_Controller
                 // debug($field_from['fields_ref']); //rel_riparatori_regioni
                 // debug($field_from, true); //riparatori_regione
             } else {
-                $entity_name = $relatedEntityFrom['entity_name'];
-                $entity_id = $relatedEntityFrom['entity_id'];
-                $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+                //debug($relatedEntityFrom);
+                $field_to_ref = $field_to['fields_ref'];
+                //Check if ref field to is also a relation
+                $relation_to_sub = $this->db->get_where('relations', ['relations_name' => $field_to_ref])->row_array();
+                if ($relation_to_sub) {
+                    $entity_relation_to = $this->crmentity->getEntity($relation_to_sub['relations_table_2']);
+                    $entity_name = $relation_to_sub['relations_table_2'];
+
+                    $entity_id = $entity_relation_to['entity_id'];
+                    //debug($entity_relation_to);
+                    $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+                } else {
+                    $entity_name = $relatedEntityFrom['entity_name'];
+                    $entity_id = $relatedEntityFrom['entity_id'];
+                    $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+                }
             }
 
             //debug($field_from, true);

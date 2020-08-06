@@ -125,8 +125,8 @@ CrmInlineTable.prototype.editRow = function (nRow) {
         jqTds[i].innerHTML = '<input type="text" class="form-control input-small" name="' + $(jqThs[i]).attr('data-name') + '" value="' + (aData[i] ? aData[i] : '') + '">';
     }
 
-    jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Salva</a>';
-    jqTds[max - 1].innerHTML = '<a class="js_cancel" href="">Annulla</a>';
+    jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Save</a>';
+    jqTds[max - 1].innerHTML = '<a class="js_cancel" href="">Undo</a>';
 
     this.nEditing = nRow;
 };
@@ -310,8 +310,8 @@ function initTableAjax(grid) {
         // console.log(e);
         // console.log(settings);
         // console.log(techNote);
-        console.log(message);
-        $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p></div>');
+        // console.log(message);
+        $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><code>' + message + '</code></div>');
     }).dataTable({
         stateSave: true,
 
@@ -338,6 +338,7 @@ function initTableAjax(grid) {
         "drawCallback": function (settings) {
             initComponents(oDataTable);
         },
+
         "footerCallback": function (row, data, start, end, display) {
 
             if (totalable == 1) {
@@ -348,8 +349,11 @@ function initTableAjax(grid) {
                 var floatVal = function (i) {
                     i = i.toString();
                     i = i.replace(/[^\d.-]/g, '');
-
-                    return parseFloat(i);
+                    if (i != '') {
+                        return parseFloat(i);
+                    } else {
+                        return 0;
+                    }
                 };
 
                 api.columns().every(function () {
@@ -376,6 +380,20 @@ function initTableAjax(grid) {
             }
 
         },
+        "fnServerData": function (sSource, aoData, fnCallback) {
+            $.ajax({
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": aoData,
+                "success": fnCallback,
+                "error": function (request, error) {
+                    // console.log(request.responseText);
+                    $('.callout.callout-warning').remove();
+                    $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
+                }
+            });
+        }
         // "rowCallback": function (row, data, index) {
 
         //     var api = this.api();

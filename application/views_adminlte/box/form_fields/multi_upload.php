@@ -86,46 +86,45 @@ $form_id = $field['forms_fields_forms_id'];
                     return (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
                 });
 
-                //console.log(file);
-                response = JSON.parse(response);
-                //console.log(response);
-                if (!response.status) {
+                if (response!=null) {
+                    response = JSON.parse(response);
+                    //console.log(response);
+                    if (!response.status) {
 
-                    error(response.txt, 'form_<?php echo $form_id; ?>');
-
-                } else {
-
-                    files<?php echo $unique; ?>.push(response.file);
-
-                    if (Number.isInteger(response.file)) {
-                        $(form_selector).append(campo.clone().attr('name', campo.data('name') + '[]').val(response.file));
+                        error(response.txt, 'form_<?php echo $form_id; ?>');
 
                     } else {
-                        if (!$('[name="<?php echo $field['fields_name']; ?>"]').length) {
-                            //console.log(typeof campo.attr('name'));
-                            campo.attr('name', campo.data('name'));
-                            campo.val(JSON.stringify(files<?php echo $unique; ?>));
+
+                        files<?php echo $unique; ?>.push(response.file);
+
+                        if (Number.isInteger(response.file)) {
+                            $(form_selector).append(campo.clone().attr('name', campo.data('name') + '[]').val(response.file));
+
                         } else {
-                            $('[name="<?php echo $field['fields_name']; ?>"]').val(JSON.stringify(files<?php echo $unique; ?>));
+                            if (!$('[name="<?php echo $field['fields_name']; ?>"]').length) {
+                                //console.log(typeof campo.attr('name'));
+                                campo.attr('name', campo.data('name'));
+                                campo.val(JSON.stringify(files<?php echo $unique; ?>));
+                            } else {
+                                $('[name="<?php echo $field['fields_name']; ?>"]').val(JSON.stringify(files<?php echo $unique; ?>));
+                            }
+
+
+
                         }
 
-
-
+                        
                     }
-
-                    //console.log(files<?php echo $unique; ?>.length);
-                    //                        //console.log(files);
-                    //                        if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
-                    //                            campo.val(JSON.stringify(files));
-                    //                            //console.log('invio form (<?php echo $unique; ?>)');
-                    //                            $(form_selector+' [type="submit"]').trigger('click');
-                    //                            //$(form_selector).trigger('submit');
-                    //                            loading(false);
-                    //                        } else {
-                    //                            loading(true);
-                    //                            $(form_selector+' [type="submit"]').trigger('click');
-                    //                        }
                 }
+                
+//<a class="dz-remove" href="javascript:undefined;" data-dz-remove="">Remove file</a>
+                
+                var a = document.createElement('a');
+                a.setAttribute('href',file.url);
+                a.setAttribute('class', 'dz-download');
+                a.innerHTML = "<?php e('Download'); ?>";
+                file.previewTemplate.appendChild(a);
+            
             },
             removedfile: function(file) {
                 x = confirm('Do you want to delete?');
@@ -215,6 +214,7 @@ $form_id = $field['forms_fields_forms_id'];
 
                 // And optionally show the thumbnail of the file:
                 myDropzone<?php echo $unique; ?>.emit("thumbnail", mockFile, "<?php echo base_url_uploads(($file->is_image) ? "uploads/{$file->path_local}" : 'no-image.png'); ?>");
+                myDropzone<?php echo $unique; ?>.emit("success", mockFile, null);
 
             <?php endforeach;
         } else {

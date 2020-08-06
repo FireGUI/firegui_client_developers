@@ -45,7 +45,7 @@
         <?php $this->load->view('layout/custom/sidebar-search'); ?>
     <?php else : ?>
         <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
-        <form class="sidebar-form" style="border: 0px;" action="<?php echo base_url('main/search'); ?>" method="POST" id="search_form">
+        <form class="sidebar-form firegui_sidebar-form" action="<?php echo base_url('main/search'); ?>" method="POST" id="search_form">
             <?php add_csrf(); ?>
             <div class="input-group">
                 <input tabindex="0" type="text" name="search" placeholder="<?php e("Search..."); ?>" value="<?php echo isset($dati['search_string']) ? $dati['search_string'] : ''; ?>" class="form-control"> <span class="input-group-btn">
@@ -92,7 +92,7 @@
                 <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
                     <a href="<?php echo $link ?: 'javascript:;'; ?>" <?php //echo ($menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
                                                                         ?>>
-                        <i class="<?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i> <span class="title"><?php echo $label; ?></span>
+                        <i class="<?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i> <span class="title"><?php e($label,true,['module_name' => $menu['menu_module']]); ?></span>
                         <?php if ($isCurrent) : ?><span class="selected"></span><?php endif; ?>
                         <?php if ($hasSubmenu) : ?><span class="pull-right-container"><i class="fas fa-angle-left pull-right"></i></span><?php endif; ?>
                     </a>
@@ -110,7 +110,7 @@
                                     <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php //echo ($sub_menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
                                                                                                             ?>>
                                         <i class="<?php echo $sub_menu['menu_icon_class'] ?: 'fas fa-empty'; ?>"></i>
-                                        <?php echo ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])); ?>
+                                        <?php e(ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])), true, ['module_name' => $sub_menu['menu_module']]); ?>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -119,7 +119,7 @@
                 </li>
             <?php else : ?>
                 <li class="heading menu-<?php echo $menu['menu_id'] ?>">
-                    <h3 class="uppercase"><?php echo $label; ?></h3>
+                    <h3 class="uppercase"><?php e($label,true,['module_name' => $sub_menu['menu_module']]); ?></h3>
                 </li>
             <?php endif; ?>
         <?php

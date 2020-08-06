@@ -160,8 +160,9 @@ foreach ($chart_data as $x => $chart_element_data) {
             categories: ['<?php echo implode("','", $xes); ?>'],
             labels: {
                 formatter: function(value, timestamp, index) {
+                    //console.log(moment(value));
+                    if (moment(value).isValid()) {
 
-                    if (moment(value)) {
                         return moment(value).format("DD MMM YYYY")
                     } else {
                         return value;

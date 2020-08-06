@@ -14,7 +14,7 @@
 
         <li>
             <!-- inner menu: contains the actual data -->
-            <ul class=" menu js_notification_dropdown_list dropdown-menu-list scroller" style="height: 450px">
+            <ul class=" menu js_notification_dropdown_list dropdown-menu-list scroller firegui_notification">
                 <li>
                     <!--                                <a href="#">
                                                 <i class="fas fa-users text-aqua"></i> 5 new members joined today

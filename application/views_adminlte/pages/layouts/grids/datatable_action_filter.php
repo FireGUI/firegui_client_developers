@@ -50,13 +50,13 @@ $_fields_type_to_skip = array(
 
 
 <?php if (empty($grid_data['data'])) : ?>
-    <p>No records found</p>
+    <p><?php e('No records found'); ?></p>
 <?php else : ?>
     <table <?php echo "id='grid_{$grid['grids']['grids_id']}'" ?> class="table table-striped table-bordered table-hover nowrap js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
         <thead>
             <tr>
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
-                    <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name'];  ?></th>
+                    <th  <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
                 <?php endforeach; ?>
 
                 <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
