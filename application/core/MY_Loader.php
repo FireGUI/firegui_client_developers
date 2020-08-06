@@ -7,7 +7,10 @@ class MY_Loader extends MX_Loader
 {
     function module_view($folder, $view, $vars = array(), $return = FALSE)
     {
-        //debug($vars);
+        $CI = get_instance();
+        
+        $CI->lang->language = array_merge($CI->lang->language, $CI->module->loadTranslations($folder, @array_values($CI->lang->is_loaded)[0]));
+        
         $this->_ci_view_paths = array_merge($this->_ci_view_paths, array(APPPATH . 'modules/' . $folder . '/' => TRUE));
         $vars = (is_object($vars)) ? get_object_vars($vars) : $vars;
         $_ci_ext = pathinfo($view, PATHINFO_EXTENSION);

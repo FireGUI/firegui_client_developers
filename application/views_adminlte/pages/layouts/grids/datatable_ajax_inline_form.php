@@ -34,7 +34,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
                     <?php $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
-                    <th data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && !$field['grids_fields_eval_cache_data']) ? ' data-prevent-order ' : ''; ?>><?php echo $field['grids_fields_column_name']; ?></th>
+                    <th data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && !$field['grids_fields_eval_cache_data']) ? ' data-prevent-order ' : ''; ?>><?php e($field['grids_fields_column_name']);  ?></th>
 
                 <?php endforeach; ?>
 
@@ -54,7 +54,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
                         <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
-                        <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?>>
+                        <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
                         </th>
                     <?php endforeach; ?>
 
@@ -69,7 +69,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
         <div class="row">
             <?php if ($has_bulk) : ?>
                 <div class="col-md-<?php echo $cols; ?>">
-                    <select class="form-control js-bulk-action" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>" style="width: auto;">
+                    <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
                         <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                         <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>

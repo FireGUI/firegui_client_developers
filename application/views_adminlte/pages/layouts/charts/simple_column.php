@@ -13,7 +13,7 @@ foreach ($chart_data as $x => $chart_element_data) {
     }
 }
 ?>
-<div <?php echo sprintf('id="%s"', $chartId); ?> style="min-width: 310px; height: 400px; width: 100%; margin: 0 auto;overflow: hidden"></div>
+<div <?php echo sprintf('id="%s"', $chartId); ?> class="container_hightcharts"></div>
 
 <script>
     $(function() {

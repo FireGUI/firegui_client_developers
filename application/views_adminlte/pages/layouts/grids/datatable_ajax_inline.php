@@ -8,7 +8,7 @@
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field) : ?>
-                <th data-name="<?php echo $field['fields_name']; ?>"><?php echo $field['grids_fields_column_name']; ?></th>
+                <th data-name="<?php echo $field['fields_name']; ?>"><?php e($field['grids_fields_column_name']);  ?></th>
             <?php endforeach; ?>
 
             <th data-prevent-order>&nbsp;</th>

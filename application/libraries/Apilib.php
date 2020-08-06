@@ -1005,7 +1005,7 @@ class Apilib
                 }
             }
 
-            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true);
+            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
             $this->cache->save($cache_key, $out, $this->CACHE_TIME);
         }
 
@@ -1197,7 +1197,6 @@ class Apilib
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
         //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
 
-
         //debug($dati, true);
 
         // Recupera dati di validazione
@@ -1207,21 +1206,19 @@ class Apilib
         }
 
         /**
-         * Validazione
+         * Validation
          */
         $rules = [];
         $rules_date_before = [];
         foreach ($fields as $field) {
             $rule = [];
 
-            // Inserisci la regola required per i campi che la richiedono
-            // (una password è required solo se sto creando il record per la
-            // prima volta)
-            if ($field['fields_required'] === DB_BOOL_TRUE && $field['fields_default'] === '') {
-
+            // Enter the required rule for the fields that require it
+            // (a password is required only if creating the record for the
+            // first time)
+            if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
                 switch ($field['fields_draw_html_type']) {
-                        // Questo perchè l'upload viene giustamente fatto dopo il
-                        // controllo delle regole di validazione
+                        // this because upload is made after validation rules
                     case 'upload':
                     case 'upload_image':
                         if (!array_key_exists($field['fields_name'], $_FILES)) {
@@ -1229,18 +1226,18 @@ class Apilib
                         }
                         break;
 
-                        // Una password va valutata come required sse sono in
-                        // creazione perché in edit non è detto che con una modifica
-                        // voglia cambiarla
+                        // password is valuated as required only if not in edit mode,
+                        //because in edit it doesnt mean that i want to change it
                     case 'input_password':
                         if (!$editMode) {
                             $rule[] = 'required';
                         }
                         break;
 
-                        // Di default avanti tutta!! Il campo sarà required
+                        // By default field will be required
                     default:
                         $rule[] = 'required';
+                        break;
                 }
             }
 
@@ -1517,7 +1514,9 @@ class Apilib
         }
 
         // Unset entity id for security issue:
-        unset($dati[$entity . '_id']);
+        if ($this->processMode !== self::MODE_DIRECT) {
+            unset($dati[$entity . '_id']);
+        }
 
         // Set creation date and/or edit date
         if (isset($entityCustomActions['create_time']) && !$editMode && empty($dati[$entityCustomActions['create_time']])) {
@@ -1538,6 +1537,9 @@ class Apilib
          * rimuovo semplicemente i campi in più
          */
         $invalidFields = array_diff(array_keys($dati), array_key_map($fields, 'fields_name'));
+        if (($key = array_search($entity . '_id', $invalidFields)) !== false) {
+            unset($invalidFields[$key]);
+        }
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
                 $this->error = self::ERR_VALIDATION_FAILED;
@@ -1763,6 +1765,7 @@ class Apilib
                 break;
 
             case 'FLOAT':
+            case 'DOUBLE':
                 $float = str_replace(',', '.', $value);
                 $value = (float) filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
                 break;

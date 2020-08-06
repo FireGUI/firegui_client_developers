@@ -2,7 +2,7 @@
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field): ?>
-                <th><?php echo $field['grids_fields_column_name'];  ?></th>
+                <th><?php e($field['grids_fields_column_name']);  ?></th>
             <?php endforeach; ?>
         </tr>
     </thead>

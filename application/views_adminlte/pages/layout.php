@@ -17,12 +17,12 @@ $portletBgColorMap = [];
 
     <section class="content-header page-title">
         <h1>
-            <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?>
-            <small><?php echo $dati['layout_container']['layouts_subtitle']; ?></small>
+            <?php e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?>
+            <small><?php e($dati['layout_container']['layouts_subtitle']); ?></small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="<?php echo base_url('main/layout/1'); ?>"><i class="fas fa-tachometer-alt"></i> Home</a></li>
-            <li class="active"> <?php echo ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])) ?></li>
+            <li class="active"> <?php e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?></li>
         </ol>
     </section>
 
@@ -78,13 +78,14 @@ $portletBgColorMap = [];
                                 <div class="box-title">
                                     <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
                                     <span class="<?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
-                                        <?php echo ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])); ?>
+                                        
+                                        <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])),true,['module_name' => $layout['layouts_module']]); ?>
                                     </span>
                                 </div>
 
                                 <div class="box-tools">
 
-                                    <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fas fa-minus"></i></button><?php endif; ?>
+                                    <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fas <?php if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) : ?>fa-plus<?php else : ?>fa-minus<?php endif; ?>"></i></button><?php endif; ?>
                                     <?php if ($layout['layouts_boxes_discardable'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fas fa-times"></i></button><?php endif; ?>
                                     <?php if ($layout['layouts_boxes_reloadable'] === DB_BOOL_TRUE) : ?><a href="javascript:;" class="reload"></a><?php endif; ?>
                                 </div>
