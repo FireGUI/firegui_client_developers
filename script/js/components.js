@@ -124,6 +124,13 @@ function initComponents(container) {
     $('.js_select_ajax_new', container).each(function () {
         var input = $(this);
 
+        var $allow_clear = false;
+        var field_required = $(this).data('required');
+
+        if (field_required == 0) {
+            $allow_clear = true;
+        }
+
         input.select2({
             ajax: {
                 url: base_url + 'get_ajax/select_ajax_search',
@@ -186,7 +193,8 @@ function initComponents(container) {
             minimumInputLength: 1,
             //templateResult: formatRepo,
             templateSelection: formatRepoSelection,
-            language: lang_short_code
+            language: lang_short_code,
+            allowClear: $allow_clear
         });
     });
 
@@ -211,14 +219,12 @@ function initComponents(container) {
 
         jqField.on('change', function () {
 
-            console.log('test');
-            //console.log($(this));
-
             var previousValue = jsMultiselect.attr('data-val').split(',');
             jsMultiselect.select2('val', '');
 
             //se ho una select semplice devo saperlo perché così so come gestire il valore settato
-            var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
+            //var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
+            var isNormalSelect = (jsMultiselect.is('select') && !$(this).attr('multiple'));
 
             var field_name_to = jsMultiselect.attr('name');
             if (field_name_to.indexOf('conditions[') !== -1) {
@@ -516,7 +522,11 @@ function loadModal(url, data, callbackSuccess, method) {
         data = {
             [token_name]: token_hash
         };
+    } else if (Array.isArray(data)) {
+
+        data.push({ "name": token_name, "value": token_hash });
     } else {
+
         data[token_name] = token_hash;
     }
 

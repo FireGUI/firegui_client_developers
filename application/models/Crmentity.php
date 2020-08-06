@@ -22,6 +22,8 @@ class Crmentity extends CI_Model
     private $table;
     private $languages;
 
+    private $_default_grids = [];
+
     /**
      * Class constructor
      * @param string $entity_name
@@ -290,7 +292,7 @@ class Crmentity extends CI_Model
 
                 $referersKeys[$refererEntity] = [];
 
-                $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, null, false, $depth);
+                $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
                 if (!empty($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
@@ -859,9 +861,10 @@ class Crmentity extends CI_Model
                 }
 
 
+
                 $result[$id] = (trim($preview) || trim($preview) === '0') ? trim($preview) : "ID #{$id}";
             }
-
+            //debug($result, true);
             return $result;
         });
     }
@@ -1195,14 +1198,15 @@ class Crmentity extends CI_Model
     {
         // Step 1: Risolvo il field - entità di appartenenza e referenziata
         if (is_numeric($field)) {
-            $field = $this->db->query("SELECT * FROM fields WHERE fields_id = ?", [$field])->result_array();
+            $field = $this->db->query("SELECT * FROM fields WHERE fields_id = ?", [$field])->row_array();
         } elseif (is_string($field)) {
-            $field = $this->db->query("SELECT * FROM fields WHERE fields_name = ?", [$field])->result_array();
+            $field = $this->db->query("SELECT * FROM fields WHERE fields_name = ?", [$field])->row_array();
         } elseif (!is_array($field) or !array_key_exists('fields_ref', $field) or !array_key_exists('fields_entity_id', $field)) {
             throw new InvalidArgumentException("Impossibile riconoscere il campo specificato");
         }
 
         // Step 2: Risolvo l'eventuale entità referenziata
+        //debug($field);
         if (!$field['fields_ref']) {
             // nessun'entità referenziata
             return [];
@@ -1236,11 +1240,17 @@ class Crmentity extends CI_Model
 
     public function getDefaultGrid($entity)
     {
-        $entity_id = $this->getEntity($entity)['entity_id'];
-        $query = $this->db->get_where('grids', array(
-            'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE
-        ));
-        //debug($query->row_array(),true);
-        return $query->row_array();
+        if (!array_key_exists($entity, $this->_default_grids)) {
+            $entity_id = $this->getEntity($entity)['entity_id'];
+            $query = $this->db->get_where('grids', array(
+                'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE
+            ));
+            //debug($query->row_array(),true);
+
+            $this->_default_grids[$entity] = $query->row_array();
+            return $this->_default_grids[$entity];
+        } else {
+            return $this->_default_grids[$entity];
+        }
     }
 }

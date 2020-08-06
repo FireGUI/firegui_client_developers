@@ -18,7 +18,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
                         </th>
                     <?php endif; ?>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
+                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
                     <?php endforeach; ?>
                     <th data-prevent-order></th>
                 </tr>
@@ -44,7 +44,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
 
         <?php if ($has_bulk) : ?>
 
-            <select class="form-control js-bulk-action" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>" style="width: auto;">
+            <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
                 <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                 <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>

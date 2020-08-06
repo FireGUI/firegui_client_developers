@@ -16,10 +16,10 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
 <div class="<?php echo $tabs_id; ?> tabbable-custom">
     <ul class="nav nav-tabs">
         <?php foreach ($tabs as $key => $tab) : ?>
-            <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php echo $tab['title']; ?></a></li>
+            <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php e($tab['title']); ?></a></li>
         <?php endforeach; ?>
     </ul>
-    <div class="tab-content" style="padding-top:20px">
+    <div class="tab-content">
         <?php foreach ($tabs as $key => $tab) : ?>
             <div class="tab-pane <?php echo $active === $key ? 'active' : ''; ?>" <?php echo sprintf('id="%s"', $key); ?>><?php echo $tab['content']; ?></div>
         <?php endforeach; ?>
@@ -65,6 +65,15 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
                     .style
                     .width = '';
             }
+            //console.log($.fn.dataTable.tables());
+            // $.each($.fn.dataTable.tables({
+            //     visible: true,
+            //     api: true
+            // }), function() {
+            //     if ($(this).parents('.active').length > 0) {
+            //         $(this).columns.adjust().draw();
+            //     }
+            // });
             $.fn.dataTable.tables({
                 visible: true,
                 api: true

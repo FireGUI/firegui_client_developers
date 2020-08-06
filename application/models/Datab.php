@@ -24,6 +24,8 @@ class Datab extends CI_Model
     private $_default_language_id;
     private $_default_language;
 
+    private $_grids_data = [];
+
     function __construct()
     {
         parent::__construct();
@@ -36,7 +38,10 @@ class Datab extends CI_Model
     {
         $userId = (int) $this->auth->get('id');
 
-        $accessibleLayouts = $this->db->query("
+        $cache_key = "datab.build_layout.accessible.{$userId}." . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
+        if (!($dati = $this->cache->get($cache_key))) {
+            $dati['accessibleLayouts'] = $dati['accessibleEntityLayouts'] = $dati['forwardedLayouts'] = [];
+            $accessibleLayouts = $this->db->query("
                 SELECT layouts_id, layouts_is_entity_detail, layouts_entity_id
                 FROM layouts
                 WHERE (
@@ -63,27 +68,33 @@ class Datab extends CI_Model
                 )
                 ORDER BY layouts_id
             ", [$userId, $userId, $userId, $userId, PERMISSION_NONE])->result_array();
-        $this->_accessibleLayouts = array_combine(array_key_map($accessibleLayouts, 'layouts_id'), $accessibleLayouts);
+            $dati['accessibleLayouts'] = array_combine(array_key_map($accessibleLayouts, 'layouts_id'), $accessibleLayouts);
 
-        foreach ($this->_accessibleLayouts as $id => $linfo) {
-            if ($linfo['layouts_is_entity_detail'] === DB_BOOL_TRUE && !isset($this->_accessibleEntityLayouts[$linfo['layouts_entity_id']])) {
-                $this->_accessibleEntityLayouts[$linfo['layouts_entity_id']] = $id;
-            }
-        }
-
-
-        if ($this->_accessibleLayouts) {
-            $allEntitiesDetails = $this->db->join('entity', 'layouts_entity_id = entity_id')
-                ->where_not_in('layouts_id', array_keys($this->_accessibleLayouts))
-                ->get_where('layouts', ['layouts_is_entity_detail' => DB_BOOL_TRUE])
-                ->result_array();
-
-            foreach ($allEntitiesDetails as $layout) {
-                if (isset($this->_accessibleEntityLayouts[$layout['layouts_entity_id']])) {
-                    $this->_forwardedLayouts[$layout['layouts_id']] = $this->_accessibleEntityLayouts[$layout['layouts_entity_id']];
+            foreach ($dati['accessibleLayouts'] as $id => $linfo) {
+                if ($linfo['layouts_is_entity_detail'] === DB_BOOL_TRUE && !isset($dati['accessibleEntityLayouts'][$linfo['layouts_entity_id']])) {
+                    $dati['accessibleEntityLayouts'][$linfo['layouts_entity_id']] = $id;
                 }
             }
+
+
+            if ($dati['accessibleLayouts']) {
+                $allEntitiesDetails = $this->db->join('entity', 'layouts_entity_id = entity_id')
+                    ->where_not_in('layouts_id', array_keys($dati['accessibleLayouts']))
+                    ->get_where('layouts', ['layouts_is_entity_detail' => DB_BOOL_TRUE])
+                    ->result_array();
+
+                foreach ($allEntitiesDetails as $layout) {
+                    if (isset($dati['accessibleEntityLayouts'][$layout['layouts_entity_id']])) {
+                        $dati['forwardedLayouts'][$layout['layouts_id']] = $dati['accessibleEntityLayouts'][$layout['layouts_entity_id']];
+                    }
+                }
+            }
+
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
         }
+        $this->_accessibleLayouts =  $dati['accessibleLayouts'];
+        $this->_accessibleEntityLayouts = $dati['accessibleEntityLayouts'];
+        $this->_forwardedLayouts = $dati['forwardedLayouts'];
     }
 
     /**
@@ -119,75 +130,81 @@ class Datab extends CI_Model
      */
     public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE, $eval_cachable_fields = [], $additional_parameters = [])
     {
-        $group_by = array_get($additional_parameters, 'group_by', null);
-        // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
-        // entità
-        $visibleFields = $this->crmentity->getFields($entity_id);
 
-        // Estraggo i campi visibili anche di eventuali tabelle da joinare per
-        // calcolarne i permessi
-        $permissionEntities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti dei permessi
+        $cache_key = "datab.getDataEntity.{$entity_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
+        if (!($dati = $this->cache->get($cache_key))) {
+            $group_by = array_get($additional_parameters, 'group_by', null);
+            // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
+            // entità
+            $visibleFields = $this->crmentity->getFields($entity_id);
 
-        foreach ($visibleFields as $k => $campo) {
-            if ($campo['fields_ref']) {
-                $joinEnt = $this->crmentity->getEntity($campo['fields_ref']);
-                $visibleFields = array_merge($visibleFields, $this->crmentity->getFields($joinEnt['entity_id']));
-                in_array($joinEnt['entity_id'], $permissionEntities) or array_push($permissionEntities, $joinEnt['entity_id']);
-            }
-        }
+            // Estraggo i campi visibili anche di eventuali tabelle da joinare per
+            // calcolarne i permessi
+            $permissionEntities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti dei permessi
 
-        // Preparo il where: accetto sia stringa che array, però dopo questo
-        // punto dovrà essere per forza un array di condizioni in AND
-        if ($where && !is_array($where)) {
-            $where = [$where];
-        }
-
-        // Applico limiti permessi sul where appena preparato
-        $userId = (int) $this->auth->get(LOGIN_ENTITY . '_id');
-        $operators = unserialize(OPERATORS);
-        $field_limits = $this->db->join('fields', 'limits_fields_id = fields_id')
-            ->where_in('fields_entity_id', $permissionEntities)
-            ->where_in('limits_operator', array_keys($operators))
-            ->get_where('limits', ['limits_user_id' => $userId])
-            ->result_array();
-
-        foreach ($field_limits as $flimit) {
-            $field = $flimit['fields_name'];
-            $op = $flimit['limits_operator'];
-            $value = trim($flimit['limits_value']);
-            $sql_op = $operators[$op]['sql'];
-
-            // Modifico i value in alcuni casi particolari
-            switch ($op) {
-                case 'in':
-                    $value = "('" . implode("','", explode(',', $value)) . "')";
-                    break;
-
-                case 'like':
-                    $value = "'%{$value}%'";
-                    break;
+            foreach ($visibleFields as $k => $campo) {
+                if ($campo['fields_ref']) {
+                    $joinEnt = $this->crmentity->getEntity($campo['fields_ref']);
+                    $visibleFields = array_merge($visibleFields, $this->crmentity->getFields($joinEnt['entity_id']));
+                    in_array($joinEnt['entity_id'], $permissionEntities) or array_push($permissionEntities, $joinEnt['entity_id']);
+                }
             }
 
-            // Costruisco il where - se non metto l'accettazione dei valori null
-            // allora mi è impossibile prendere i valori nulli se viene
-            // attivato questo where
-            $where[] = "({$field} IS NULL OR {$field} {$sql_op} {$value})";
+            // Preparo il where: accetto sia stringa che array, però dopo questo
+            // punto dovrà essere per forza un array di condizioni in AND
+            if ($where && !is_array($where)) {
+                $where = [$where];
+            }
+
+            // Applico limiti permessi sul where appena preparato
+            $userId = (int) $this->auth->get(LOGIN_ENTITY . '_id');
+            $operators = unserialize(OPERATORS);
+            $field_limits = $this->db->join('fields', 'limits_fields_id = fields_id')
+                ->where_in('fields_entity_id', $permissionEntities)
+                ->where_in('limits_operator', array_keys($operators))
+                ->get_where('limits', ['limits_user_id' => $userId])
+                ->result_array();
+
+            foreach ($field_limits as $flimit) {
+                $field = $flimit['fields_name'];
+                $op = $flimit['limits_operator'];
+                $value = trim($flimit['limits_value']);
+                $sql_op = $operators[$op]['sql'];
+
+                // Modifico i value in alcuni casi particolari
+                switch ($op) {
+                    case 'in':
+                        $value = "('" . implode("','", explode(',', $value)) . "')";
+                        break;
+
+                    case 'like':
+                        $value = "'%{$value}%'";
+                        break;
+                }
+
+                // Costruisco il where - se non metto l'accettazione dei valori null
+                // allora mi è impossibile prendere i valori nulli se viene
+                // attivato questo where
+                $where[] = "({$field} IS NULL OR {$field} {$sql_op} {$value})";
+            }
+
+
+
+            // Ok, where pronto, mi resta solo da fare il dispatch ad apilib
+            $entity = $this->crmentity->getEntity($entity_id);
+
+            //debug($count,true);
+
+            if ($count) {
+
+                $dati =  $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
+            } else {
+
+                $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
+            }
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
         }
-
-
-
-        // Ok, where pronto, mi resta solo da fare il dispatch ad apilib
-        $entity = $this->crmentity->getEntity($entity_id);
-
-        //debug($count,true);
-
-        if ($count) {
-
-            return $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
-        } else {
-
-            return $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
-        }
+        return $dati;
     }
 
     public function get_visible_fields($entity_id = NULL)
@@ -327,79 +344,82 @@ class Datab extends CI_Model
     public function get_form($form_id, $value_id = null)
     {
 
-        if (!$form_id) {
-            log_message('error', "Form id '$form_id' not found");
-            die('ERROR: Form ID not found');
-        }
-        $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
-        if (!$form) {
-            return false;
-            //die(sprintf('Form %s non esistente', $form));
-        }
+        $cache_key = "datab.get_form.{$form_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
+        if (!($dati = $this->cache->get($cache_key))) {
+            if (!$form_id) {
+                log_message('error', "Form id '$form_id' not found");
+                die('ERROR: Form ID not found');
+            }
+            $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
+            if (!$form) {
+                $dati = false;
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                return $dati;
+            }
 
-        $fields = $this->db
-            ->join('fields', 'fields_id = forms_fields_fields_id')
-            ->join('fields_draw', 'forms_fields_fields_id = fields_draw_fields_id')
-            ->order_by('forms_fields_order')
-            ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id, 'fields_visible' => DB_BOOL_TRUE])->result_array();
-        if (is_array($value_id)) {
-            $form['action_url'] = base_url("db_ajax/save_form/{$form_id}/true");
-        } else {
-            $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}" : ''));
-        }
+            $fields = $this->db
+                ->join('fields', 'fields_id = forms_fields_fields_id')
+                ->join('fields_draw', 'forms_fields_fields_id = fields_draw_fields_id')
+                ->order_by('forms_fields_order')
+                ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id, 'fields_visible' => DB_BOOL_TRUE])->result_array();
+            if (is_array($value_id)) {
+                $form['action_url'] = base_url("db_ajax/save_form/{$form_id}/true");
+            } else {
+                $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}" : ''));
+            }
 
-        /*
+            /*
          * Per far funzionare correttamente i form non posso recuperare i valori
          * già tradotti, quindi devo resettare il sistema lingue dell'apilib,
          * fare la chiamata e poi ripristinarlo
          */
-        $clanguage = $this->apilib->getLanguage();          // Current Language
-        $flanguage = $this->apilib->getFallbackLanguage();  // Fallback Language
+            $clanguage = $this->apilib->getLanguage();          // Current Language
+            $flanguage = $this->apilib->getFallbackLanguage();  // Fallback Language
 
-        $this->apilib->setLanguage();
-        if ($form['forms_one_record'] == DB_BOOL_TRUE) {
-            $formData = $this->apilib->searchFirst($form['entity_name']);
-        } else {
-            $formData = ($value_id && !is_array($value_id)) ? $this->apilib->view($form['entity_name'], $value_id, 1) : [];
+            $this->apilib->setLanguage();
+            if ($form['forms_one_record'] == DB_BOOL_TRUE) {
+                $formData = $this->apilib->searchFirst($form['entity_name']);
+            } else {
+                $formData = ($value_id && !is_array($value_id)) ? $this->apilib->view($form['entity_name'], $value_id, 1) : [];
 
 
 
-            foreach ($fields as $field) {
-                //debug($formData, true);
-                if ($field['fields_multilingual'] == DB_BOOL_TRUE) { //If multilanguage, override value with original json
-                    $entity = $this->crmentity->getEntity($field['fields_entity_id']);
-                    //debug($field['fields_name']);
-                    $value_json = $this->db
-                        ->select($field['fields_name'])
-                        ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $value_id])
-                        ->row_array()[$field['fields_name']];
-                    $formData[$field['fields_name']] = $value_json;
+                foreach ($fields as $field) {
+                    //debug($formData, true);
+                    if ($field['fields_multilingual'] == DB_BOOL_TRUE) { //If multilanguage, override value with original json
+                        $entity = $this->crmentity->getEntity($field['fields_entity_id']);
+                        //debug($field['fields_name']);
+                        $value_json = $this->db
+                            ->select($field['fields_name'])
+                            ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $value_id])
+                            ->row_array()[$field['fields_name']];
+                        $formData[$field['fields_name']] = $value_json;
+                    }
                 }
             }
-        }
 
 
 
-        $this->apilib->setLanguage($clanguage, $flanguage);
+            $this->apilib->setLanguage($clanguage, $flanguage);
 
-        $operators = unserialize(OPERATORS);
-        foreach ($fields as $key => $field) {
+            $operators = unserialize(OPERATORS);
+            foreach ($fields as $key => $field) {
 
-            $fields[$key] = $this->processFieldMapping($field, $form);
-        }
-        unset($field);
+                $fields[$key] = $this->processFieldMapping($field, $form);
+            }
+            unset($field);
 
-        /*
+            /*
          * Combino i form data col get per fare il render dei fields
          */
 
 
 
-        $formData = array_merge($formData, $this->input->get() ?: [], array_filter($formData, function ($val) {
-            return is_null($val) or $val === '';
-        }));
+            $formData = array_merge($formData, $this->input->get() ?: [], array_filter($formData, function ($val) {
+                return is_null($val) or $val === '';
+            }));
 
-        /*
+            /*
          * Splitto i fields in due categorie:
          *  - form_fields: che funzionano come tutti quelli già inseriti
          *  - hidden_fields: che vengono inseriti all'inizio del form
@@ -407,66 +427,69 @@ class Datab extends CI_Model
          * NB: Faccio qua il pre-render dei fields in modo da poter unsettare i
          *     dati e liberare memoria
          */
-        $hidden = $shown = [];
-        foreach ($fields as $field) {
-            $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type'] : $field['fields_draw_html_type'];
-            if ($type === 'input_hidden') {
-                $hidden[] = $field;
-            } else {
-                $shown[] = $field;
+            $hidden = $shown = [];
+            foreach ($fields as $field) {
+                $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type'] : $field['fields_draw_html_type'];
+                if ($type === 'input_hidden') {
+                    $hidden[] = $field;
+                } else {
+                    $shown[] = $field;
+                }
             }
-        }
 
 
-        /* $hidden = array_values(array_filter($fields, function($field) {
+            /* $hidden = array_values(array_filter($fields, function($field) {
           $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type']: $field['fields_draw_html_type'];
           return $type === 'input_hidden';
           })); */
 
-        foreach ($hidden as $k => $field) {
+            foreach ($hidden as $k => $field) {
 
 
 
-            $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null);
-        }
-        /* $shown = array_values(array_filter($fields, function($field) {
+                $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null);
+            }
+            /* $shown = array_values(array_filter($fields, function($field) {
           $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type']: $field['fields_draw_html_type'];
           return $type !== 'input_hidden';
           })); */
 
-        foreach ($shown as $k => $field) {
+            foreach ($shown as $k => $field) {
 
-            // Dimensione del field:
-            //  - cerca prima un valore valido in `forms_fields_override_colsize`
-            //  - altrimenti controlla se è un wysiwyg e impostala a 12
-            //      - per controllare se è un wysiwyg prima controllo nel campo
-            //        `forms_fields_override_type`
-            //      - se questo è VUOTO allora prendo il `fields_draw_html_type`
-            //  - altrimenti metti null
-            $colsize = empty($field['forms_fields_override_colsize']) ? null : $field['forms_fields_override_colsize'];
-            $type = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
-            if (!$colsize && $type === 'wysiwyg') {
-                $colsize = 12;
+                // Dimensione del field:
+                //  - cerca prima un valore valido in `forms_fields_override_colsize`
+                //  - altrimenti controlla se è un wysiwyg e impostala a 12
+                //      - per controllare se è un wysiwyg prima controllo nel campo
+                //        `forms_fields_override_type`
+                //      - se questo è VUOTO allora prendo il `fields_draw_html_type`
+                //  - altrimenti metti null
+                $colsize = empty($field['forms_fields_override_colsize']) ? null : $field['forms_fields_override_colsize'];
+                $type = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
+                if (!$colsize && $type === 'wysiwyg') {
+                    $colsize = 12;
+                }
+                //debug($formData);
+
+                $shown[$k] = [
+                    'id' => $field['fields_id'],
+                    'name' => $field['fields_name'],
+                    'label' => $field['forms_fields_override_label'] ?: $field['fields_draw_label'],
+                    'size' => $colsize,
+                    'min' => $field['forms_fields_min'],
+                    'max' => $field['forms_fields_max'],
+                    'type' => $type,
+                    'datatype' => $field['fields_type'],
+                    'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
+                    'fields_source' => $field['fields_source'], // Computo il ref field da usare nel caso di form
+                    'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null)
+                ];
             }
-            //debug($formData);
 
-            $shown[$k] = [
-                'id' => $field['fields_id'],
-                'name' => $field['fields_name'],
-                'label' => $field['forms_fields_override_label'] ?: $field['fields_draw_label'],
-                'size' => $colsize,
-                'min' => $field['forms_fields_min'],
-                'max' => $field['forms_fields_max'],
-                'type' => $type,
-                'datatype' => $field['fields_type'],
-                'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
-                'fields_source' => $field['fields_source'], // Computo il ref field da usare nel caso di form
-                'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null)
-            ];
+
+            $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
         }
-
-
-        return ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
+        return $dati;
     }
     public function processFieldMapping($field, $form)
     {
@@ -595,95 +618,104 @@ class Datab extends CI_Model
 
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $additional_parameters = [])
     {
+        $cache_key = "datab.get_grid_data." . md5(serialize($grid)) . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
+        if (!($dati = $this->cache->get($cache_key))) {
+            $group_by = array_get($additional_parameters, 'group_by', null);
 
-        $group_by = array_get($additional_parameters, 'group_by', null);
+            //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
+            $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
+                return ($field['grids_fields_replace_type'] == 'eval' && $field['grids_fields_eval_cache_type'] && $field['grids_fields_eval_cache_type'] != 'no_cache');
+            });
 
-        //TODO: 20190513 - MP - Intervenire su questa funzione per estrarre eventuali eval cachable
-        $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
-            return ($field['grids_fields_replace_type'] == 'eval' && $field['grids_fields_eval_cache_type'] && $field['grids_fields_eval_cache_type'] != 'no_cache');
-        });
+            //debug($eval_cachable_fields,true);
 
-        //debug($eval_cachable_fields,true);
-
-        if (is_array($value_id)) {
-            $additional_data = isset($value_id['additional_data']) ? $value_id['additional_data'] : array();
-            $value_id = isset($value_id['value_id']) ? $value_id['value_id'] : null;
-        } else {
-            $additional_data = array();
-        }
-
-        /** Grid order_by * */
-        if (is_null($order_by) && !empty($grid['grids']['grids_order_by']) && !$count) {
-            $order_by = $grid['grids']['grids_order_by'];
-        }
-
-        /** Grid group_by * */
-        if (is_null($group_by) && !empty($grid['grids']['grids_group_by'])) {
-            $group_by = $grid['grids']['grids_group_by'];
-        }
-
-        /** Grid depth * */
-
-        $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
-
-        //debug($depth);
-
-        //20190327 Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
-        if (is_null($order_by) && !$count) {
-
-            $order_by = $grid['grids']['entity_name'] . '.' . $grid['grids']['entity_name'] . '_id DESC';
-        }
-
-        $has_bulk = !empty($grid['grids_bulk_mode']);
-        $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, is_array($where) ? implode(' AND ', $where) : $where, $additional_data);
-        //debug($where);
-        //20170530 - Verifico che non sia impostato un campo order by di default nell'entità, qualora non specificato un order by specifico della grid
-
-        if (empty($order_by)) {
-            // Recupero i dati dell'entità
-            try {
-                $this->load->model('crmentity');
-                $entity_data = $this->crmentity->getEntity($grid['grids']['grids_entity_id']);
-            } catch (Exception $ex) {
-                $this->error = self::ERR_VALIDATION_FAILED;
-                $this->errorMessage = $ex->getMessage();
-                return false;
+            if (is_array($value_id)) {
+                $additional_data = isset($value_id['additional_data']) ? $value_id['additional_data'] : array();
+                $value_id = isset($value_id['value_id']) ? $value_id['value_id'] : null;
+            } else {
+                $additional_data = array();
             }
 
-            $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
-
-            if (isset($entityCustomActions['order_by_asc'])) {
-                $order_by = $entityCustomActions['order_by_asc'] . ' ASC';
-            } elseif (isset($entityCustomActions['order_by_desc'])) {
-                $order_by = $entityCustomActions['order_by_desc'] . ' DESC';
+            /** Grid order_by * */
+            if (is_null($order_by) && !empty($grid['grids']['grids_order_by']) && !$count) {
+                $order_by = $grid['grids']['grids_order_by'];
             }
+
+            /** Grid group_by * */
+            if (is_null($group_by) && !empty($grid['grids']['grids_group_by'])) {
+                $group_by = $grid['grids']['grids_group_by'];
+            }
+
+            /** Grid depth * */
+
+            $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
+
+            //debug($depth);
+
+            //20190327 Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
+            if (is_null($order_by) && !$count) {
+
+                $order_by = $grid['grids']['entity_name'] . '.' . $grid['grids']['entity_name'] . '_id DESC';
+            }
+
+            $has_bulk = !empty($grid['grids_bulk_mode']);
+            $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, is_array($where) ? implode(' AND ', $where) : $where, $additional_data);
+            //debug($where);
+            //20170530 - Verifico che non sia impostato un campo order by di default nell'entità, qualora non specificato un order by specifico della grid
+
+            if (empty($order_by)) {
+                // Recupero i dati dell'entità
+                try {
+                    $this->load->model('crmentity');
+                    $entity_data = $this->crmentity->getEntity($grid['grids']['grids_entity_id']);
+                } catch (Exception $ex) {
+                    $this->error = self::ERR_VALIDATION_FAILED;
+                    $this->errorMessage = $ex->getMessage();
+                    $dati = false;
+                    $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                    return $dati;
+                }
+
+                $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
+
+                if (isset($entityCustomActions['order_by_asc'])) {
+                    $order_by = $entityCustomActions['order_by_asc'] . ' ASC';
+                } elseif (isset($entityCustomActions['order_by_desc'])) {
+                    $order_by = $entityCustomActions['order_by_desc'] . ' DESC';
+                }
+            }
+
+            // Disabilita temporaneamente sistema di traduzioni in modo da pescare
+            // i dati completi
+            $clanguage = $this->apilib->getLanguage();          // Current Language
+            $flanguage = $this->apilib->getFallbackLanguage();  // Fallback Language
+
+            $this->apilib->setLanguage();
+
+
+
+            $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
+
+            // Riabilita sistema traduzioni
+            $this->apilib->setLanguage($clanguage, $flanguage);
+
+            $dati = $data;
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
         }
-
-        // Disabilita temporaneamente sistema di traduzioni in modo da pescare
-        // i dati completi
-        $clanguage = $this->apilib->getLanguage();          // Current Language
-        $flanguage = $this->apilib->getFallbackLanguage();  // Fallback Language
-
-        $this->apilib->setLanguage();
-
-
-
-        $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
-
-        // Riabilita sistema traduzioni
-        $this->apilib->setLanguage($clanguage, $flanguage);
-
-        return $data;
+        return $dati;
     }
 
     public function get_grid($grid_id)
     {
-        if (!$grid_id) {
-            die('ERRORE: grid ID mancante');
-        }
+        if (array_key_exists($grid_id, $this->_grids_data)) {
+            return $this->_grids_data[$grid_id];
+        } else {
+            if (!$grid_id) {
+                die('ERRORE: grid ID mancante');
+            }
 
-        $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
-        $dati['grids_fields'] = $this->db->query("
+            $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
+            $dati['grids_fields'] = $this->db->query("
                     SELECT *
                     FROM grids_fields
                         LEFT JOIN grids ON grids.grids_id = grids_fields.grids_fields_grids_id
@@ -693,71 +725,73 @@ class Datab extends CI_Model
                     ORDER BY grids_fields_order ASC
                 ", [$grid_id])->result_array();
 
-        // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
-        // CON ENTITA PER ORA
-        foreach ($dati['grids_fields'] as $key => $field) {
+            // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
+            // CON ENTITA PER ORA
+            foreach ($dati['grids_fields'] as $key => $field) {
 
-            // Preparo il nome colonna
-            $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name'] : $field['fields_draw_label'];
-            $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
+                // Preparo il nome colonna
+                $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name'] : $field['fields_draw_label'];
+                $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
 
-            if ($field['fields_ref']) {
-                $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
-                    $this->crmentity->getFields($field['fields_ref']),
-                    function ($field) {
-                        return $field['fields_preview'] == DB_BOOL_TRUE;
-                    }
-                ));
+                if ($field['fields_ref']) {
+                    $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
+                        $this->crmentity->getFields($field['fields_ref']),
+                        function ($field) {
+                            return $field['fields_preview'] == DB_BOOL_TRUE;
+                        }
+                    ));
+                }
             }
-        }
 
-        //TODO: will be deprecated as soon as new actions features will become stable
-        $dati['grids']['links'] = array(
-            'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
-            'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
-            'delete' => ($dati['grids']['grids_delete_link'] ? str_replace('{base_url}', base_url(), $dati['grids']['grids_delete_link']) : base_url("db_ajax/generic_delete/{$dati['grids']['entity_name']}"))
-        );
+            //TODO: will be deprecated as soon as new actions features will become stable
+            $dati['grids']['links'] = array(
+                'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
+                'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
+                'delete' => ($dati['grids']['grids_delete_link'] ? str_replace('{base_url}', base_url(), $dati['grids']['grids_delete_link']) : base_url("db_ajax/generic_delete/{$dati['grids']['entity_name']}"))
+            );
 
-        if (!filter_var($dati['grids']['links']['delete'], FILTER_VALIDATE_URL)) {
-            unset($dati['grids']['links']['delete']);
-        }
-
-        $can_write = $this->can_write_entity($dati['grids']['entity_id']);
-        if (!$can_write) {
-            unset($dati['grids']['links']['edit'], $dati['grids']['links']['delete']);
-        }
-
-        // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
-        $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
-        foreach ($dati['grids']['links']['custom'] as &$custom_link) {
-            //20170915 - MP - Mantengo questa funzionalità solo se è impostato il custom html
-            if (!empty($custom_link['grids_actions_html'])) {
-                $html = str_replace('{base_url}', base_url(), $custom_link['grids_actions_html']);
-                $custom_link['grids_actions_html'] = $html;
-                $custom_link['grids_actions_name'] = addslashes($custom_link['grids_actions_name']);
-            } else {
-                //debug($custom_link, true);
+            if (!filter_var($dati['grids']['links']['delete'], FILTER_VALIDATE_URL)) {
+                unset($dati['grids']['links']['delete']);
             }
-        }
 
-        // Mi assicuro che ogni link esistente termini con '/' e valuto se è da aprire con modale
-        foreach ($dati['grids']['links'] as $type => $link) {
-            if ($link && is_string($link)) {
-                $dati['grids']['links'][$type] = rtrim($link, '/') . '/';
-                //$dati['grids']['links'][$type . '_modal'] = (strpos($link, base_url('get_ajax/layout_modal')) === 0);
-                $dati['grids']['links'][$type . '_modal'] = (strpos($link, 'modal') !== false);
+            $can_write = $this->can_write_entity($dati['grids']['entity_id']);
+            if (!$can_write) {
+                unset($dati['grids']['links']['edit'], $dati['grids']['links']['delete']);
             }
-        }
 
-        $dati['replaces'] = [];
-        foreach ($dati['grids_fields'] as $gridField) {
-            $isValidType = (empty($dati['grids_fields_replace_type']) or $dati['grids_fields_replace_type'] === 'field');
-            if ($isValidType && $gridField['grids_fields_replace']) {
-                $dati['replaces'][$gridField['grids_fields_replace']] = $gridField;
+            // Infine aggiungo le custom actions - attenzione! non posso valutare i permessi sulle custom actions
+            $dati['grids']['links']['custom'] = $this->db->order_by('grids_actions_order', 'ASC')->get_where('grids_actions', array('grids_actions_grids_id' => $grid_id))->result_array();
+            //debug('dentro '.$grid_id);
+            foreach ($dati['grids']['links']['custom'] as &$custom_link) {
+                //20170915 - MP - Mantengo questa funzionalità solo se è impostato il custom html
+                if (!empty($custom_link['grids_actions_html'])) {
+                    $html = str_replace('{base_url}', base_url(), $custom_link['grids_actions_html']);
+                    $custom_link['grids_actions_html'] = $html;
+                    $custom_link['grids_actions_name'] = addslashes($custom_link['grids_actions_name']);
+                } else {
+                    //debug($custom_link, true);
+                }
             }
-        }
 
-        return $dati;
+            // Mi assicuro che ogni link esistente termini con '/' e valuto se è da aprire con modale
+            foreach ($dati['grids']['links'] as $type => $link) {
+                if ($link && is_string($link)) {
+                    $dati['grids']['links'][$type] = rtrim($link, '/') . '/';
+                    //$dati['grids']['links'][$type . '_modal'] = (strpos($link, base_url('get_ajax/layout_modal')) === 0);
+                    $dati['grids']['links'][$type . '_modal'] = (strpos($link, 'modal') !== false);
+                }
+            }
+
+            $dati['replaces'] = [];
+            foreach ($dati['grids_fields'] as $gridField) {
+                $isValidType = (empty($dati['grids_fields_replace_type']) or $dati['grids_fields_replace_type'] === 'field');
+                if ($isValidType && $gridField['grids_fields_replace']) {
+                    $dati['replaces'][$gridField['grids_fields_replace']] = $gridField;
+                }
+            }
+            $this->_grids_data[$grid_id] = $dati;
+            return $dati;
+        }
     }
 
     /**
@@ -2145,6 +2179,9 @@ class Datab extends CI_Model
     {
         return $this->db->get_where('layouts', array('layouts_id' => $layout_id, 'layouts_cachable' => DB_BOOL_TRUE))->num_rows() == 1;
     }
+
+
+    
     /**
      * Layout builder
      */
@@ -2162,12 +2199,12 @@ class Datab extends CI_Model
                 $layout_id = $this->_forwardedLayouts[$layout_id];
             }
 
-
             // ========================================
-            // Inizio Build Layout
+            // Start Build Layout
             // ========================================
             $this->layout->addLayout($layout_id);
-            $dati['layout_container'] = $this->db->get_where('layouts', array('layouts_id' => $layout_id))->row_array();
+            $dati['layout_container'] = $this->layout->getLayout($layout_id);
+            
             if (empty($dati['layout_container'])) {
                 show_404();
             }
@@ -2183,6 +2220,7 @@ class Datab extends CI_Model
             if (is_null($layout_data_detail) && $dati['layout_container']['layouts_is_entity_detail'] === DB_BOOL_TRUE) {
                 //die('test');
                 $this->layout->removeLastLayout($layout_id);
+                
                 return null;
             }
 
@@ -2205,7 +2243,6 @@ class Datab extends CI_Model
                 // punto, ma per motivi di dimensione e complessità della procedura
                 // è stata spostata in un metodo a se `getBoxContent`
                 $layout['content'] = $this->getBoxContent($layout, $value_id, $layout_data_detail);
-
 
                 // Fa il wrap degli hook pre e post che devono esistere per ogni
                 // componente ad eccezione di custom views e custom php code
@@ -2241,6 +2278,7 @@ class Datab extends CI_Model
             // ========================================
             $this->layout->removeLastLayout($layout_id);
         }
+        
         return $dati;
     }
 
@@ -2348,7 +2386,7 @@ class Datab extends CI_Model
             return '';
         }
 
-        $return = ($field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
+        $return = (!empty($field['grids_fields_with_actions']) && $field['grids_fields_with_actions'] == DB_BOOL_TRUE) ? $this->load->view('box/grid/inline_actions', [
             'skip_delete' => $skip_delete,
             'links' => $grid['grids']['links'],
             'id' => $id_record,
@@ -2425,7 +2463,7 @@ class Datab extends CI_Model
 
                 if ($lnk) {
                     foreach ($value as $id => $name) {
-                        $value[$id] = anchor("{$lnk}/{$id}", $name);
+                        $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
                     }
                 }
                 return implode('<br/>', $value);
@@ -2513,6 +2551,10 @@ class Datab extends CI_Model
             } else {
                 return $text;
             }
+        } elseif ($field['grids_fields_switch_inline'] == DB_BOOL_TRUE) {
+            $entity = $this->get_entity($field['fields_entity_id']);
+            $idKey = $entity['entity_name'] . '_id';
+            return $this->load->view('box/grid/switch_bool', ['field' => $field, 'value' => $value, 'row_id' => $dato[$idKey]], true);
         } else {
             // Posso stampare il campo in base al tipo
             switch ($field['fields_draw_html_type']) {
@@ -2531,6 +2573,7 @@ class Datab extends CI_Model
                         } else {
                             $_url = base_url_admin("imgn/1/50/50/uploads/{$value}");
                         }
+                        //die('test');
                         return anchor(base_url_uploads("uploads/{$value}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                     } else {
                         //                        $path = base_url('images/no-image-50x50.gif');
@@ -2544,13 +2587,23 @@ class Datab extends CI_Model
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
-                            //debug($item, true);
-                            if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
-                                $_url = base_url_uploads("uploads/{$item['path_local']}");
+                            
+                            if (in_array($item['file_type'], ['image/jpeg','image/png'])) {
+                                if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
+                                    $_url = base_url_uploads("uploads/{$item['path_local']}");
+                                } else {
+                                    $_url = base_url_admin("imgn/1/50/50/uploads/{$item['path_local']}");
+                                }
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                             } else {
-                                $_url = base_url_admin("imgn/1/50/50/uploads/{$item['path_local']}");
+                                if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
+                                    $_url = base_url_uploads("uploads/{$item['path_local']}");
+                                } else {
+                                    $_url = base_url_admin("uploads/{$item['path_local']}");
+                                }
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<a href='" . $_url . "' target=\"_blank\"><img src=\"".base_url('images/document.png')."\" style='width: 50px;'/></a>", array('style' => 'width:50px'));
                             }
-                            return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
+                            
                         }, $value);
                     } else { //Se arrivo qua i file sono scritti su un altra tabella, quindi mi arriva già l'array bello pulito con i file...
                         $value = array_map(function ($item) {
@@ -2597,7 +2650,7 @@ class Datab extends CI_Model
                     }
 
                 case 'date':
-                    
+
                     if ($escape_date && $value) {
                         $append = "<span class='hide'>{$value}</span>";
                     } else {
@@ -2762,7 +2815,7 @@ class Datab extends CI_Model
 
 
             $style = $langShow ? '' : 'style="display:none"';
-            $label = $baseShowLabel ? '<label class="control-label">' . $langLabel . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk" style="font-size: 85%"></small>' : '') : '';
+            $label = $baseShowLabel ? '<label class="control-label">' . t($langLabel) . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk firegui_fontsize85"></small>' : '') : '';
 
             $data = [
                 'lang' => $langId,
@@ -2790,9 +2843,8 @@ class Datab extends CI_Model
             if ($baseType == 'multi_upload') {
                 //debug($data);
             }
-
-
-
+            
+            
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
             if ($baseType !== 'input_hidden') {
                 $wrapAttributes = implode(' ', array_filter([$style, $langAttribute]));
@@ -3074,6 +3126,7 @@ class Datab extends CI_Model
     {
         foreach ($this->_languages as $lang) {
             if (strtolower($lang['name']) == strtolower($this->_default_language['languages_name'])) {
+                
                 return $lang;
             }
         }

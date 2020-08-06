@@ -19,7 +19,7 @@ foreach ($grid['grids_fields'] as $field) {
             <thead>
                 <tr>
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'style="width:50px;"'; ?>><?php echo $field['grids_fields_column_name']; ?></th>
+                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
                     <?php endforeach; ?>
                 </tr>
             </thead>
@@ -43,7 +43,7 @@ foreach ($grid['grids_fields'] as $field) {
 
                         <?php foreach ($grid['grids_fields'] as $field) : ?>
                             <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
-                            <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' style="width:50px;"'; ?>>
+                            <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
                             </th>
                         <?php endforeach; ?>
 
