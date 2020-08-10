@@ -67,7 +67,7 @@
     </tr>
     <tr>
         <td>ImageMagick PHP Extension</td>
-        <td><?php echo $requirements['imagick'] ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($requirements['imagick']) && $requirements['imagick']) ? $res_true : $res_false; ?></td>
         <td><?php echo $requirements['php-imagick'] ? '' : 'Suggested but not required'; ?></td>
     </tr>
     <tr>
