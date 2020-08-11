@@ -2181,7 +2181,7 @@ class Datab extends CI_Model
     }
 
 
-    
+
     /**
      * Layout builder
      */
@@ -2204,7 +2204,7 @@ class Datab extends CI_Model
             // ========================================
             $this->layout->addLayout($layout_id);
             $dati['layout_container'] = $this->layout->getLayout($layout_id);
-            
+
             if (empty($dati['layout_container'])) {
                 show_404();
             }
@@ -2220,7 +2220,7 @@ class Datab extends CI_Model
             if (is_null($layout_data_detail) && $dati['layout_container']['layouts_is_entity_detail'] === DB_BOOL_TRUE) {
                 //die('test');
                 $this->layout->removeLastLayout($layout_id);
-                
+
                 return null;
             }
 
@@ -2278,7 +2278,7 @@ class Datab extends CI_Model
             // ========================================
             $this->layout->removeLastLayout($layout_id);
         }
-        
+
         return $dati;
     }
 
@@ -2560,8 +2560,8 @@ class Datab extends CI_Model
             switch ($field['fields_draw_html_type']) {
                 case 'upload':
                     if ($value) {
-                        //                        return anchor(base_url("uploads/$value"), 'Downhload file', array('target' => '_blank'));
-                        return anchor(base_url_uploads("uploads/$value"), 'Downhload file', array('target' => '_blank'));
+                        //                        return anchor(base_url("uploads/$value"), 'Download file', array('target' => '_blank'));
+                        return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank'));
                     }
                     break;
 
@@ -2587,8 +2587,8 @@ class Datab extends CI_Model
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
-                            
-                            if (in_array($item['file_type'], ['image/jpeg','image/png'])) {
+
+                            if (in_array($item['file_type'], ['image/jpeg', 'image/png'])) {
                                 if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                                     $_url = base_url_uploads("uploads/{$item['path_local']}");
                                 } else {
@@ -2601,9 +2601,8 @@ class Datab extends CI_Model
                                 } else {
                                     $_url = base_url_admin("uploads/{$item['path_local']}");
                                 }
-                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<a href='" . $_url . "' target=\"_blank\"><img src=\"".base_url('images/document.png')."\" style='width: 50px;'/></a>", array('style' => 'width:50px'));
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<a href='" . $_url . "' target=\"_blank\"><img src=\"" . base_url('images/document.png') . "\" style='width: 50px;'/></a>", array('style' => 'width:50px'));
                             }
-                            
                         }, $value);
                     } else { //Se arrivo qua i file sono scritti su un altra tabella, quindi mi arriva già l'array bello pulito con i file...
                         $value = array_map(function ($item) {
@@ -2843,8 +2842,8 @@ class Datab extends CI_Model
             if ($baseType == 'multi_upload') {
                 //debug($data);
             }
-            
-            
+
+
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
             if ($baseType !== 'input_hidden') {
                 $wrapAttributes = implode(' ', array_filter([$style, $langAttribute]));
@@ -3126,7 +3125,7 @@ class Datab extends CI_Model
     {
         foreach ($this->_languages as $lang) {
             if (strtolower($lang['name']) == strtolower($this->_default_language['languages_name'])) {
-                
+
                 return $lang;
             }
         }
