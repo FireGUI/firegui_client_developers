@@ -127,7 +127,7 @@
     <tr>
         <td>mod_rewrite</td>
         <td><?php echo (isset($requirements['mod_rewrite_enabled']) && $requirements['mod_rewrite_enabled']) ? $res_true : $res_false; ?></td>
-        <td><?php echo $requirements['mod_rewrite_enabled'] ? $res_true : 'Extremely suggested if you run Apache/HTTPD'; ?></td>
+        <td><?php echo (isset($requirements['mod_rewrite_enabled']) && $requirements['mod_rewrite_enabled']) ? $res_true : 'Extremely suggested if you run Apache/HTTPD'; ?></td>
     </tr>
     <tr>
         <td>upload_max_filesize:</td>
