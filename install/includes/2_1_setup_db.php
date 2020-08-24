@@ -37,7 +37,10 @@ try {
         "mysql:host={$dbHost}:{$dbPort};dbname={$dbName}",
         $dbUser,
         $dbPass,
-        array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+        array(
+            PDO::ATTR_TIMEOUT => 5,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        )
     );
 
     $statement = $db->prepare("SHOW TABLES");
