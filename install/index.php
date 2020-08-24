@@ -56,10 +56,10 @@ $requirements['php-gd'] = extension_loaded("gd");
 // }
 
 // mod_rewrite
-$requirements['mod_rewrite_enabled'] = null;
+/*$requirements['mod_rewrite_enabled'] = null;
 if (function_exists('apache_get_modules')) {
     $requirements['mod_rewrite_enabled'] = in_array('mod_rewrite', apache_get_modules());
-}
+}*/
 
 $time = time();
 $permissions['localpath'] = dirname(__FILE__);
