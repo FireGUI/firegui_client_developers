@@ -750,7 +750,9 @@ class V1 extends MY_Controller
     {
         //set_status_header($httpStatus);
         if (!empty($this->token_id)) {
+
             $token = $this->db->get_where('api_manager_tokens', ['api_manager_tokens_id' => $this->token_id])->row();
+
             $this->db->where('api_manager_tokens_id', $this->token_id)->update('api_manager_tokens', [
                 'api_manager_tokens_errors' => (int) ($token->api_manager_tokens_errors) + 1
             ]);
