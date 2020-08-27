@@ -126,6 +126,7 @@ class Crmentity extends CI_Model
         $group_by = array_get($additional_parameters, 'group_by', null);
         // Entity name è da deprecare...
         $entity_name = $this->getEntity($entity_id)['entity_name'];
+
         $_cache_key = md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
 
         if ($depth-- <= 0) {    // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
@@ -485,6 +486,8 @@ class Crmentity extends CI_Model
         $to_join_later = [];
 
 
+
+
         $permission_entities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti
 
         //Join entities
@@ -502,18 +505,14 @@ class Crmentity extends CI_Model
                     array_push($joined, $campo['fields_ref']);
 
                     // Devo fare il controllo dei limiti sui field ref
-                    $ent = $this->getEntity($campo['fields_ref']);
-                    if (!in_array($ent['entity_id'], $permission_entities)) {
+                    $ent = $this->getEntity($campo['fields_ref'], false);
+
+                    if ($ent && !in_array($ent['entity_id'], $permission_entities)) {
                         $permission_entities[] = $ent['entity_id'];
                     }
                 }
             }
         }
-
-
-
-
-
 
         // =====================================================================
         // QUERY OUT - COUNT
@@ -532,6 +531,7 @@ class Crmentity extends CI_Model
         // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
         // query sia andata a buon fine
         // =====================================================================
+
         $qResult = $this->db->get();
 
 
@@ -1012,7 +1012,7 @@ class Crmentity extends CI_Model
      * Ritrova entità
      * @param mixed $id
      */
-    public function getEntity($id)
+    public function getEntity($id, $throw_exception = true)
     {
         if (is_array($id) && isset($id['entity_id'])) {
             $id = $id['entity_id'];
@@ -1020,14 +1020,22 @@ class Crmentity extends CI_Model
 
         if (!is_numeric($id)) {
             if (empty($this->_schemaCache['entity_names'][$id])) {
-                throw new Exception(sprintf("Entity '%s' does not exist", $id));
+                if ($throw_exception) {
+                    throw new Exception(sprintf("Entity '%s' does not exist", $id));
+                } else {
+                    return false;
+                }
             }
 
             $id = $this->_schemaCache['entity_names'][$id];
         }
 
         if (empty($this->_schemaCache['entities'][$id])) {
-            throw new Exception(sprintf("Entity '%s' does not exist", $id));
+            if ($throw_exception) {
+                throw new Exception(sprintf("Entity '%s' does not exist", $id));
+            } else {
+                return false;
+            }
         }
 
         return $this->_schemaCache['entities'][$id];
@@ -1179,6 +1187,9 @@ class Crmentity extends CI_Model
                     }
                 }
             }
+            //Sort by field id
+            $ids = array_column($preview, 'fields_id');
+            array_multisort($ids, SORT_ASC, $preview);
 
             return $preview;
         });
