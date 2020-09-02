@@ -1,20 +1,16 @@
-Changelog version 2.0.3
+Changelog version 2.0.4
  
-Fix horizontal scroll on tables
-Fix grid chat type
-Code formatting
-Added more cached methods
-Edited "From" mail header
-change summer image for login background
-Fix and debug cron check method
-Bugfix count grid with group by parameter
-getReferencedEntity result_array fixed to row_array
-Preview field for relationship in filters
-Bugfix languages with accent characters
-Rename language files
-Remove thumbnail for non-image file uploads
-Added apexcharts bar
-Added apexchars line smooth
+Bugfix api search for entity ref a non-entity table
+Removed old console.log js
+Fix installer notice
+Fix typo “Downhload” in datab model
+Fix “undefined index ‘imagick’” in 1_check_requirements.php
+Translations
+Modules now allows language translations
+Bugfix for double database type when comma inserted
+Removed old api_help
+Removed inline styles
+Check if language file exists in module
 Added model module in autoload
 Preload module translations when layout is module dependant
 module_view method now preload translations
@@ -28,11 +24,6 @@ Availability to translate breadcrumbs
 Availability to translate tabs title
 Availability to translate menu label
 Number format with 2 decimals for simple_pie charts
-Check if language file exists in module
-Fix and debug cron check method
-Bugfix count grid with group by parameter
-getReferencedEntity result_array fixed to row_array
-Preview field for relationship in filters
 Bugfix languages with accent characters
 Rename language files
 Remove thumbnail for non-image file uploads
