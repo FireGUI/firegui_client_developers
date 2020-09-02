@@ -943,6 +943,7 @@ class Apilib
             try {
 
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
+
                 $this->cache->save($cache_key, $out, $this->CACHE_TIME);
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
