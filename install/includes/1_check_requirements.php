@@ -17,73 +17,73 @@
     </tr>
     <tr>
         <td>PHP</td>
-        <td><?php echo " " . ($requirements['php_version'] ? $res_true : $res_false); ?></td>
+        <td><?php echo " " . (isset($requirements['php_version']) ? $res_true : $res_false); ?></td>
         <td><?php echo " " . ($requirements['php_version'] ? 'Your PHP versions is: ' . PHP_VERSION : 'Your PHP versions is: ' . PHP_VERSION . ', we need at least PHP ' . $php_min_version); ?></td>
     </tr>
     <tr>
         <td>Path folder writable</td>
-        <td><?php echo $permissions['is_writable'] ? $res_true : $res_false; ?></td>
-        <td><?php echo $permissions['is_writable'] ? '' : 'Your path must be writable!'; ?></td>
+        <td><?php echo (isset($permissions['is_writable']) && $permissions['is_writable']) ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($permissions['is_writable']) && $permissions['is_writable']) ? '' : 'Your path must be writable!'; ?></td>
     </tr>
     <tr>
         <td>Mysqli PHP Extension</td>
-        <td><?php echo $requirements['mysqli'] ? $res_true : $res_false; ?></td>
-        <td><?php echo $requirements['mysqli'] ? '' : 'Mysqli is required!'; ?></td>
+        <td><?php echo (isset($requirements['mysqli']) && $requirements['mysqli']) ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($requirements['mysqli']) && $requirements['mysqli']) ? '' : 'Mysqli is required!'; ?></td>
     </tr>
     <tr>
         <td>OpenSSL PHP Extension</td>
-        <td><?php echo $requirements['openssl_enabled'] ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($requirements['openssl_enabled']) && $requirements['openssl_enabled']) ? $res_true : $res_false; ?></td>
         <td></td>
     </tr>
     <tr>
         <td>PDO PHP Extension</td>
-        <td><?php echo $requirements['pdo_enabled'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['pdo_enabled']) && $requirements['pdo_enabled']) ? $res_true : $res_false; ?> </td>
         <td></td>
     </tr>
     <tr>
         <td>Mbstring PHP Extension</td>
-        <td><?php echo $requirements['mbstring_enabled'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['mbstring_enabled']) && $requirements['mbstring_enabled']) ? $res_true : $res_false; ?> </td>
         <td></td>
     </tr>
     <tr>
         <td>XML PHP Extension</td>
-        <td> <?php echo $requirements['xml_enabled'] ? $res_true : $res_false; ?></td>
+        <td> <?php echo (isset($requirements['xml_enabled']) && $requirements['xml_enabled']) ? $res_true : $res_false; ?></td>
         <td></td>
     </tr>
     <tr>
         <td>CTYPE PHP Extension</td>
-        <td><?php echo $requirements['ctype_enabled'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['ctype_enabled']) && $requirements['ctype_enabled']) ? $res_true : $res_false; ?> </td>
         <td></td>
     </tr>
     <tr>
         <td>JSON PHP Extension</td>
-        <td><?php echo $requirements['json_enabled'] ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['json_enabled']) && $requirements['json_enabled']) ? $res_true : $res_false; ?> </td>
         <td></td>
     </tr>
     <tr>
         <td>Mcrypt PHP Extension</td>
-        <td><?php echo $requirements['mcrypt_enabled'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['mcrypt_enabled'] ? '' : 'Suggested but not required'; ?></td>
+        <td><?php echo (isset($requirements['mcrypt_enabled']) && $requirements['mcrypt_enabled']) ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['mcrypt_enabled']) && $requirements['mcrypt_enabled']) ? '' : 'Suggested but not required'; ?></td>
     </tr>
     <tr>
         <td>ImageMagick PHP Extension</td>
-        <td><?php echo $requirements['imagick'] ? $res_true : $res_false; ?></td>
-        <td><?php echo $requirements['php-imagick'] ? '' : 'Suggested but not required'; ?></td>
+        <td><?php echo (isset($requirements['imagick']) && $requirements['imagick']) ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($requirements['php-imagick']) && $requirements['php-imagick']) ? '' : 'Suggested but not required'; ?></td>
     </tr>
     <tr>
         <td>Curl PHP Extension</td>
-        <td><?php echo $requirements['php-curl'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['php-curl'] ? '' : 'Not required, but highly recommended.'; ?></td>
+        <td><?php echo (isset($requirements['php-curl']) && $requirements['php-curl']) ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['php-curl']) && $requirements['php-curl']) ? '' : 'Not required, but highly recommended.'; ?></td>
     </tr>
     <tr>
         <td>Zip PHP Extension</td>
-        <td><?php echo $requirements['php-zip'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['php-zip'] ? '' : 'Php-zip extension is required'; ?></td>
+        <td><?php echo (isset($requirements['php-zip']) && $requirements['php-zip']) ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['php-zip']) && $requirements['php-zip']) ? '' : 'Php-zip extension is required'; ?></td>
     </tr>
     <tr>
         <td>GD PHP Extension</td>
-        <td><?php echo $requirements['php-gd'] ? $res_true : $res_false; ?> </td>
-        <td><?php echo $requirements['php-gd'] ? '' : 'Not required, but highly recommended.'; ?></td>
+        <td><?php echo (isset($requirements['php-gd']) && $requirements['php-gd']) ? $res_true : $res_false; ?> </td>
+        <td><?php echo (isset($requirements['php-gd']) && $requirements['php-gd']) ? '' : 'Not required, but highly recommended.'; ?></td>
     </tr>
 </table>
 
@@ -126,8 +126,8 @@
     */ ?>
     <tr>
         <td>mod_rewrite</td>
-        <td><?php echo $requirements['mod_rewrite_enabled'] ? $res_true : $res_false; ?></td>
-        <td></td>
+        <td><?php echo (isset($requirements['mod_rewrite_enabled']) && $requirements['mod_rewrite_enabled']) ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($requirements['mod_rewrite_enabled']) && $requirements['mod_rewrite_enabled']) ? $res_true : 'Extremely suggested if you run Apache/HTTPD'; ?></td>
     </tr>
     <tr>
         <td>upload_max_filesize:</td>
@@ -162,27 +162,27 @@
     </tr>
     <tr>
         <td>Path folder writable</td>
-        <td><?php echo $permissions['is_writable'] ? $res_true : $res_false; ?></td>
-        <td><?php echo $permissions['is_writable'] ? '' : 'Your path must be writable!'; ?></td>
+        <td><?php echo (isset($permissions['is_writable']) && $permissions['is_writable']) ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($permissions['is_writable']) && $permissions['is_writable']) ? '' : 'Your path must be writable!'; ?></td>
     </tr>
     <tr>
         <td>mkdir() function</td>
-        <td><?php echo $permissions['mkdir'] ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($permissions['mkdir']) && $permissions['mkdir']) ? $res_true : $res_false; ?></td>
         <td></td>
     </tr>
     <tr>
         <td>rmdir() function</td>
-        <td><?php echo $permissions['rmdir'] ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($permissions['rmdir']) && $permissions['rmdir']) ? $res_true : $res_false; ?></td>
         <td></td>
     </tr>
     <tr>
         <td>fopen(write) function</td>
-        <td><?php echo $permissions['fopen'] ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($permissions['fopen']) && $permissions['fopen']) ? $res_true : $res_false; ?></td>
         <td></td>
     </tr>
     <tr>
         <td>unlink function</td>
-        <td><?php echo $permissions['unlink'] ? $res_true : $res_false; ?></td>
+        <td><?php echo (isset($permissions['unlink']) && $permissions['unlink']) ? $res_true : $res_false; ?></td>
         <td></td>
     </tr>
     <tr>
