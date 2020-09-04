@@ -191,7 +191,7 @@ class Access extends MY_Controller
             show_error("Errore invio mail");
         }
 
-        $this->session->set_flashdata('success', 'Password resetted successfully.<br/>Your new password has been sent to your email.');
+        $this->session->set_flashdata('success', t('Password resetted successfully.<br/>Your new password has been sent to your email.'));
         redirect(base_url('access/login'));
     }
 }
