@@ -149,8 +149,7 @@ class Access extends MY_Controller
 
         $this->email->message(implode(PHP_EOL, $msg));
         $success = $this->email->send();
-
-
+        $this->email->print_debugger();
 
         if (!$success) {
             die(json_encode(array('status' => 0, 'txt' => t('An error occurred sending the email. Try again later or contact the administration.'))));
@@ -192,11 +191,7 @@ class Access extends MY_Controller
             show_error("Errore invio mail");
         }
 
-        redirect(base_url('access/password_resetted'));
-    }
-
-    public function password_resetted()
-    {
-        $this->load->view('layout/password_resetted');
+        $this->session->set_flashdata('success', 'Password resetted successfully.<br/>Your new password has been sent to your email.');
+        redirect(base_url('access/login'));
     }
 }
