@@ -261,7 +261,15 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
                         <div class="form-group">
                             <div class="controls">
-                                <div id="msg_login" class="alert alert-danger hide"></div>
+                                <?php if (!empty($this->session->flashdata('success'))) : ?>
+                                    <div id="msg_login" class="alert alert-success">
+                                        <?php echo $this->session->flashdata('success'); ?>
+                                    </div>
+
+                                <?php endif; ?>
+                                <div id="msg_login" class="alert alert-danger hide">
+                                    <?php if (!empty($this->session->flashdata('error'))) echo $this->session->flashdata('error'); ?>
+                                </div>
                             </div>
                         </div>
 
