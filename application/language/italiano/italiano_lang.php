@@ -194,3 +194,4 @@ $lang['Params'] = 'Params';
 $lang['API Logs'] = 'Logs API';
 $lang['Log Details'] = 'Dettagli Log';
 $lang['Write a message...'] = 'Scrivi un messaggio...';
+$lang['Password resetted successfully.<br/>Your new password has been sent to your email.'] = 'Password reimpostata con successo.<br/>La tua nuova password è stata inviata alla tua email.';
