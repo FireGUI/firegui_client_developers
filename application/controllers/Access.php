@@ -144,7 +144,7 @@ class Access extends MY_Controller
             t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
             t("this email was sent to you because you requested a reset of your password on %s.", 0, [$senderName]),
             t("If you have not requested a password reset, ignore this email, otherwise click on the link below"),
-            base_url("access/reset_password/{$userID}/{$hash}")
+            "<a href='" . base_url("access/reset_password/{$userID}/{$hash}") . "'>" . base_url("access/reset_password/{$userID}/{$hash}") . "</a>"
         ];
 
         $this->email->message(implode(PHP_EOL, $msg));
@@ -181,7 +181,12 @@ class Access extends MY_Controller
         $msg = array(
             t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
             t("your password on %s has been changed", 0, [$senderName]),
-            t("Your new password is %s ", 0, [$newPassword])
+            '<br/>',
+            t("Your new password is %s ", 0, [$newPassword]),
+            '<br/>',
+            t("You can now login by clicking link below:"),
+            '<br/>',
+            "<a href='" . base_url('access/login') . "'>" . base_url('access/login') . "</a>"
         );
 
         $this->email->message(implode(PHP_EOL, $msg));
@@ -191,7 +196,6 @@ class Access extends MY_Controller
             show_error("Errore invio mail");
         }
 
-        $this->session->set_flashdata('success', t('Password resetted successfully.<br/>Your new password has been sent to your email.'));
-        redirect(base_url('access/login'));
+        $this->load->view('layout/password-lost', array('pwd_resetted' => true, 'receiver' => $email));
     }
 }
