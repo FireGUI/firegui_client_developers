@@ -143,6 +143,11 @@
                     <div class="alert alert-success">
                         <p><?php e("We've sent you and email to"); ?> <strong><?php echo $receiver; ?></strong> <?php e("which contains the link for reset the password."); ?> </p>
                     </div>
+                <?php elseif ($pwd_resetted) : ?>
+                    <h3 class="title"><?php e("Password resetted successfully"); ?></h3>
+                    <div class="alert alert-success">
+                        <p><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
+                    </div>
                 <?php else : ?>
                     <form id="lost" class="forget-form formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate" style="display: block;">
                         <?php add_csrf(); ?>
