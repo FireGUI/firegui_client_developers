@@ -30,7 +30,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span></button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo ucwords(str_replace('_', ' ', $form['forms']['forms_name'])); ?></h4>
+                <h4 class="modal-title" id="myModalLabel"><?php echo t(ucwords(str_replace('_', ' ', $form['forms']['forms_name']))); ?></h4>
             </div>
             <div class="modal-body">
 
