@@ -183,6 +183,19 @@
             $('.js_limit_val', jqRow).attr('name', 'limits[' + iNumRows + '][limits_value]');
         });
 
+        try {
+            var token = JSON.parse(atob($(this).data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        } catch (e) {
+
+            var token = JSON.parse(atob($('body').data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        }
+
+
+
         // Update the fields list
         jqTable.on('change', '.js_limit_entity', function() {
             var iValue = $(this).val();
@@ -192,7 +205,8 @@
             $.ajax(base_url + 'get_ajax/entity_fields', {
                 type: 'POST',
                 data: {
-                    entity_id: iValue
+                    entity_id: iValue,
+                    [token_name]: token_hash
                 },
                 dataType: 'JSON',
                 success: function(json) {
