@@ -221,3 +221,6 @@ table tr td {
 .firegui_verticalaligntop {
   vertical-align:top!important;
 }
+.dt-right {
+  text-align: right;
+}

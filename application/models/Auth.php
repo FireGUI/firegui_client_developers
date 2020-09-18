@@ -260,7 +260,7 @@ class Auth extends CI_Model
     }
 
     /*
-     * Invia il cookie remember
+     * Save reminder login cookie
      * 
      * @param int $user_id
      */
@@ -281,7 +281,7 @@ class Auth extends CI_Model
         }
 
         if (!is_null($token_string)) {
-            // Crea il cookie
+            // Cookie creation
             set_cookie(array(
                 'name' => static::$rememberTokenName,
                 //'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout*60)]),
@@ -292,7 +292,10 @@ class Auth extends CI_Model
                 'path' => ($this->config->item('cookie_path')) ?: '/'
             ));
 
-            // Salva il token su db
+            //Before inserting user token, delete old user tokens
+            $this->db->where('user_id', $user_id)->delete('user_tokens');
+
+            // Save token on database
             $this->db->insert(
                 'user_tokens',
                 [

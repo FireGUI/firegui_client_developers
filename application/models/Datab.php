@@ -561,6 +561,9 @@ class Datab extends CI_Model
             $wheres[] = $this->replace_superglobal_data($fieldWhere);
         }
 
+        //If any pre-search are present, run it before extract data
+        $wheres = $this->apilib->runDataProcessing($support_relation_table, 'pre-search', $wheres);
+
         $where = $wheres ? '(' . implode(' AND ', $wheres) . ')' : '';
 
         // Se attualmente ci sono dei filtri E se il campo ha una
@@ -581,7 +584,7 @@ class Datab extends CI_Model
 
             $where .= (($where ? ' OR ' : '') . '(' . $lvalue . ' ' . $oper . ' ' . $rvalue . ')');
         }
-        // TODO Calcoare l'order by
+        // TODO Calculate order by
 
         $order_by = NULL;
 
@@ -589,7 +592,7 @@ class Datab extends CI_Model
 
 
 
-        //debug($field['support_data'] , true);
+        //debug($field['support_data'], true);
         return $field;
     }
     /**
@@ -1045,6 +1048,8 @@ class Datab extends CI_Model
                                                          WHERE fields_entity_id = '{$entity['entity_id']}' AND fields_preview = '" . DB_BOOL_TRUE . "'")->result_array();
             $support_fields = $this->fields_implode($visible_fields_supports);
             $select = $field_support_id . ($support_fields ? ',' . $support_fields : '');
+
+            //TODO: don't use query, but apilib search....
             return $this->db->query("SELECT {$select} FROM {$support_relation_table}")->result_array();
         }
     }
