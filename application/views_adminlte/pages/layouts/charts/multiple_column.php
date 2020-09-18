@@ -103,7 +103,7 @@ foreach ($chart_data as $x => $chart_element_data) {
             labels: {
                 formatter: function(value, timestamp, index) {
 
-                    if (moment(value)) {
+                    if (moment(value).isValid()) {
                         return moment(value).format("DD MMM YYYY")
                     } else {
                         return value;
