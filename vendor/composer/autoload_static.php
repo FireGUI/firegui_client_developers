@@ -80,6 +80,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'Z' => 
         array (
             'Zxing\\' => 6,
+            'Zend\\Escaper\\' => 13,
         ),
         'S' => 
         array (
@@ -100,7 +101,9 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
             'Psr\\SimpleCache\\' => 16,
             'Picqer\\Barcode\\' => 15,
             'PhpParser\\' => 10,
+            'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'PhpOffice\\Common\\' => 17,
         ),
         'M' => 
         array (
@@ -129,6 +132,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'Zxing\\' => 
         array (
             0 => __DIR__ . '/..' . '/khanamiryan/qrcode-detector-decoder/lib',
+        ),
+        'Zend\\Escaper\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
@@ -186,9 +193,17 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
+        'PhpOffice\\PhpWord\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
+        ),
         'PhpOffice\\PhpSpreadsheet\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+        ),
+        'PhpOffice\\Common\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/common/src/Common',
         ),
         'MyCLabs\\Enum\\' => 
         array (
@@ -218,6 +233,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
 
     public static $classMap = array (
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'PclZip' => __DIR__ . '/..' . '/pclzip/pclzip/pclzip.lib.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
     );

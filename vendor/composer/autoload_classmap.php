@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+    'PclZip' => $vendorDir . '/pclzip/pclzip/pclzip.lib.php',
     'Stringable' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
     'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
 );
