@@ -40,7 +40,7 @@ function startDataTables() {
             coldef = {
                 bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined')
             };
-
+            if ($(this).data('totalable')) { coldef.className = "dt-right"; }
             aoColumns.push(coldef);
         });
 
@@ -50,6 +50,7 @@ function startDataTables() {
 
             aaSorting: [],
             aoColumns: aoColumns,
+
             iDisplayLength: 5,
             bFilter: false,
             stateSave: true,

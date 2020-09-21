@@ -1130,12 +1130,12 @@ class Apilib
      * Prepara i dati all'inserimento nel database
      * 
      * @param string|int $entity    Entity name/id sul quale effettuare le modifiche
-     * @param array $dati           I dati da processare
+     * @param array $data           Data to be processed
      * @param int|null $id          Eventuale id con 
      * @param bool $exec_preprocess
      * @return array
      */
-    public function prepareData($entity, array $dati, $id = null, $exec_preprocess = false)
+    public function prepareData($entity, array $data, $id = null, $exec_preprocess = false)
     {
 
         // Salvo il flag di esecuzione post process e abilito/disabilito il
@@ -1145,13 +1145,13 @@ class Apilib
 
         // Elaboro i dati in modo da ottenere i valori esatti da inserire su
         // database. Il metodo mi cambia i dati per riferimento
-        $this->processData($entity, $dati, (bool) $id, $id);
+        $this->processData($entity, $data, (bool) $id, $id);
 
         // Ripristino il vecchio valore di enable processing
         $this->enableProcessing($is_executing_processing);
 
         // Ritorno i dati
-        return $dati;
+        return $data;
     }
 
 
@@ -1159,7 +1159,7 @@ class Apilib
     /**
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
-    private function processData($entity, array &$dati, $editMode = false, $value_id = null)
+    private function processData($entity, array &$data, $editMode = false, $value_id = null)
     {
 
         // Recupero i dati dell'entità
@@ -1175,7 +1175,7 @@ class Apilib
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
 
-        $originalData = $dati;
+        $originalData = $data;
 
         if ($editMode) {
 
@@ -1190,7 +1190,7 @@ class Apilib
                 $dataDb = $this->db->get_where($entity, array($entity . '_id' => $value_id))->row_array();
             }
 
-            $_POST = $dati = array_merge($dataDb, $dati);
+            $_POST = $data = array_merge($dataDb, $data);
         } else {
             $value_id = null;
         }
@@ -1198,7 +1198,7 @@ class Apilib
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
         //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
 
-        //debug($dati, true);
+        //debug($data, true);
 
         // Recupera dati di validazione
         foreach ($fields as $k => $field) {
@@ -1267,7 +1267,7 @@ class Apilib
                         // allora non includo la regola di unicità, perché fallirebbe sempre
                         // e il form validator di CI non è così intelligente da poter determinare che
                         // il valore inserito fa riferimento all'entità
-                        if (!$editMode || $dataDb[$field['fields_name']] != $dati[$field['fields_name']]) {
+                        if (!$editMode || $dataDb[$field['fields_name']] != $data[$field['fields_name']]) {
                             $rule[] = "is_unique[{$validation['fields_validation_extra']}]";
                         }
                         break;
@@ -1308,13 +1308,13 @@ class Apilib
         /**
          * Eseguo il process di pre-validation
          */
-        $_predata = $dati;
+        $_predata = $data;
         $mode = $editMode ? 'update' : 'insert';
         $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->originalPost]);   // Pre-validation specifico
         $processed_predata_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-validation', $processed_predata_1);                                     // Pre-validation generico
         if (isset($processed_predata_2['post'])) {
             // Metto i dati processati nel post
-            $_POST = $dati = $processed_predata_2['post'];
+            $_POST = $data = $processed_predata_2['post'];
         }
 
         if (!empty($rules)) {
@@ -1358,7 +1358,7 @@ class Apilib
          * errori di validazione in eventuali post process successivi
          * 
          * $result è il risultato dell'operazione: se è un array, allora posso
-         * unirlo all'array $dati, altrimenti se è avvenuto un qualche errore di
+         * unirlo all'array $data, altrimenti se è avvenuto un qualche errore di
          * upload, allora questo sarà === false (nota che gli errori sono già
          * stati notificati dalla funzione uploadAll, quindi mi basta fare un
          * return false;
@@ -1367,7 +1367,7 @@ class Apilib
         if ($result === false) {
             return false;
         } elseif ($result && is_array($result)) {
-            $dati = array_merge($dati, $result);
+            $data = array_merge($data, $result);
             $originalData = array_merge($originalData, $result);
         }
 
@@ -1387,7 +1387,7 @@ class Apilib
         foreach ($fields as $field) {
 
             $name = $field['fields_name'];
-            $value = isset($dati[$name]) ? $dati[$name] : null;
+            $value = isset($data[$name]) ? $data[$name] : null;
             $multilingual = $field['fields_multilingual'] == DB_BOOL_TRUE;
 
             $isRelation = $this->checkRelationsOnField($field, $value);
@@ -1395,7 +1395,7 @@ class Apilib
                 // Se il campo è una relazione allora dentro al $value ho il mio
                 // relation bundle. Me lo salvo e proseguo con il processing
                 $relationBundles[] = $value;
-                unset($dati[$name]);
+                unset($data[$name]);
                 continue;
             }
 
@@ -1483,11 +1483,11 @@ class Apilib
                 //                    OR
                 //                    (!$editMode && $value === '' && !$isRequired)
             ) {
-                unset($dati[$name]);
+                unset($data[$name]);
             } elseif ($editMode && $value === '' && !$isRequired) {
-                $dati[$name] = null;
+                $data[$name] = null;
             } else {
-                $dati[$name] = $value;
+                $data[$name] = $value;
             }
         }
 
@@ -1497,7 +1497,7 @@ class Apilib
             $after = $rule['after'];
             $message = $rule['message'];
 
-            if (isset($dati[$before]) && isset($dati[$after]) && strtotime($dati[$after]) <= strtotime($dati[$before])) {
+            if (isset($data[$before]) && isset($data[$after]) && strtotime($data[$after]) <= strtotime($data[$before])) {
                 $this->error = self::ERR_VALIDATION_FAILED;
                 $this->errorMessage = $message ?: t("Start date must be antecedent as of end date");
                 return false;
@@ -1507,24 +1507,24 @@ class Apilib
         /**
          * Run pre-action process
          */
-        $processed_data_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-{$mode}", ['post' => $dati, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-process specifico
+        $processed_data_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-{$mode}", ['post' => $data, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-process specifico
         $processed_data_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-save', $processed_data_1);                             // Pre-process generico
         if (isset($processed_data_2['post'])) {
             // Put data to be inserted into database
-            $dati = $processed_data_2['post'];
+            $data = $processed_data_2['post'];
         }
 
         // Unset entity id for security issue:
         if ($this->processMode !== self::MODE_DIRECT) {
-            unset($dati[$entity . '_id']);
+            unset($data[$entity . '_id']);
         }
 
         // Set creation date and/or edit date
-        if (isset($entityCustomActions['create_time']) && !$editMode && empty($dati[$entityCustomActions['create_time']])) {
-            $dati[$entityCustomActions['create_time']] = date('Y-m-d H:i:s');
+        if (isset($entityCustomActions['create_time']) && !$editMode && empty($data[$entityCustomActions['create_time']])) {
+            $data[$entityCustomActions['create_time']] = date('Y-m-d H:i:s');
         }
         if (isset($entityCustomActions['update_time']) && empty($originalData[$entityCustomActions['update_time']])) {
-            $dati[$entityCustomActions['update_time']] = $editMode ? date('Y-m-d H:i:s') : null;
+            $data[$entityCustomActions['update_time']] = $editMode ? date('Y-m-d H:i:s') : null;
         }
 
 
@@ -1537,7 +1537,7 @@ class Apilib
          * Ovviamente se sono in modalità form crm non mando l'errore, ma
          * rimuovo semplicemente i campi in più
          */
-        $invalidFields = array_diff(array_keys($dati), array_key_map($fields, 'fields_name'));
+        $invalidFields = array_diff(array_keys($data), array_key_map($fields, 'fields_name'));
         if (($key = array_search($entity . '_id', $invalidFields)) !== false) {
             unset($invalidFields[$key]);
         }
@@ -1548,7 +1548,7 @@ class Apilib
                 return false;
             }
 
-            $dati = array_diff_key($dati, array_flip($invalidFields));
+            $data = array_diff_key($data, array_flip($invalidFields));
         }
 
         /*

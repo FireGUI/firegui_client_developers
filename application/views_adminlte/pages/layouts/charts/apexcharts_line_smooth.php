@@ -61,7 +61,7 @@ foreach ($chart_data as $x => $chart_element_data) {
         foreach ($data as $key => $value) {
 
 
-            $elements_data['data'][] = floatVal($value);
+            $elements_data['data'][] = number_format(floatVal($value), 2, '.', '');
         }
         $series['series'][] = $elements_data;
     }
@@ -155,7 +155,15 @@ foreach ($chart_data as $x => $chart_element_data) {
 
             }
         },
-        yaxis: series<?php echo $chartId; ?>.yaxis,
+        yaxis: {
+            labels: {
+                formatter: function(value) {
+                    //console.log('FORMATTO!');
+                    return value.toFixed(2);
+                }
+            },
+        },
+        //yaxis: series<?php echo $chartId; ?>.yaxis,
         tooltip: {
             shared: true,
             intersect: false,
@@ -175,6 +183,4 @@ foreach ($chart_data as $x => $chart_element_data) {
     var chart<?php echo $chartId; ?> = new ApexCharts(document.querySelector("#<?php echo $chartId; ?>"), options<?php echo $chartId; ?>);
 
     chart<?php echo $chartId; ?>.render();
-
-    
 </script>

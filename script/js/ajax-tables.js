@@ -290,8 +290,11 @@ function initTableAjax(grid) {
     $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;
         coldef = {
-            bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined')
+            bSortable: bEnableOrder && (typeof ($(this).attr('data-prevent-order')) === 'undefined'),
+
         };
+
+        if ($(this).data('totalable')) { coldef.className = "dt-right"; }
 
         aoColumns.push(coldef);
     });
@@ -305,7 +308,6 @@ function initTableAjax(grid) {
         var token_name = token.name;
         var token_hash = token.hash;
     }
-
     var datatable = oDataTable.on('error.dt', function (e, settings, techNote, message) {
         // console.log(e);
         // console.log(settings);
@@ -319,6 +321,7 @@ function initTableAjax(grid) {
         //sScrollX: "100%",
 
         aoColumns: aoColumns,
+
         aaSorting: [],
         bRetrieve: true,
         bProcessing: true,
