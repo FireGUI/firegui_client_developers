@@ -424,8 +424,9 @@ $config['sess_regenerate_destroy'] = TRUE;
 $config['cookie_prefix']    = $config['encryption_key'];
 $config['cookie_domain']    = (!empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : ''); // OLD $_SERVER['HTTP_HOST'];
 $config['cookie_path']        = '/';
-$config['cookie_secure']    = FALSE;
+$config['cookie_secure']    = TRUE;
 $config['cookie_httponly']     = FALSE;
+$config['cookie_samesite']     = 'None';
 
 
 /*
@@ -480,7 +481,8 @@ $config['csrf_exclude_uris'] = array(
     'rest/v1/.*?',
     'firegui/.*?',
     'custom/.*?',
-    'db_ajax/multi_upload_async/.*?'
+    'db_ajax/multi_upload_async/.*?',
+
 );
 
 /*
