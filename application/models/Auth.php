@@ -293,7 +293,11 @@ class Auth extends CI_Model
             ));
 
             //Before inserting user token, delete old user tokens
-            $this->db->where('user_id', $user_id)->delete('user_tokens');
+            if ($this->db->dbdriver != 'postgre') {
+                $this->db->where('user_id', $user_id)->where('token_date < now() - interval 180 day', null, false)->delete('user_tokens');
+            } else {
+                $this->db->where('user_id', $user_id)->where("token_date < NOW() - INTERVAL '6 MONTH'", null, false)->delete('user_tokens');
+            }
 
             // Save token on database
             $this->db->insert(
