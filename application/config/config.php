@@ -424,9 +424,9 @@ $config['sess_regenerate_destroy'] = TRUE;
 $config['cookie_prefix']    = $config['encryption_key'];
 $config['cookie_domain']    = (!empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : ''); // OLD $_SERVER['HTTP_HOST'];
 $config['cookie_path']        = '/';
-$config['cookie_secure']    = TRUE;
+$config['cookie_secure']    = (is_https()) ? TRUE : FALSE;
 $config['cookie_httponly']     = FALSE;
-$config['cookie_samesite']     = 'None';
+$config['cookie_samesite']     = (is_https()) ? 'None' : 'Strict';
 
 
 /*
@@ -471,7 +471,7 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection'] = true;
+$config['csrf_protection'] = (is_https()) ? TRUE : FALSE;
 $config['csrf_token_name'] = 'csrf_token_' . $config['encryption_key'];
 $config['csrf_cookie_name'] = 'csrf_cookie_' . $config['encryption_key'];
 $config['csrf_expire'] = 7200;

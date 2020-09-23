@@ -1174,6 +1174,10 @@ class Apilib
         // Gestione delle custom fields actions - recupero il dato dall'entità
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
+        //Xss clean
+        foreach ($data as $key => $val) {
+            $data[$key] = $this->security->xss_clean($val);
+        }
 
         $originalData = $data;
 
