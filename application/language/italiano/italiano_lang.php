@@ -296,3 +296,4 @@ $lang['Data cambio stato'] = 'Data cambio stato';
 $lang['Utente'] = 'Utente';
 $lang['Filtro Pratiche'] = 'Filtro Pratiche';
 $lang['Elenco Pratiche'] = 'Elenco Pratiche';
+$lang['L\'utente {log_crm_user_name} ha eseguito l\'accesso'] = 'L\'utente {log_crm_user_name} ha eseguito l\'accesso';
