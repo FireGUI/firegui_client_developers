@@ -297,3 +297,6 @@ $lang['Utente'] = 'Utente';
 $lang['Filtro Pratiche'] = 'Filtro Pratiche';
 $lang['Elenco Pratiche'] = 'Elenco Pratiche';
 $lang['L\'utente {log_crm_user_name} ha eseguito l\'accesso'] = 'L\'utente {log_crm_user_name} ha eseguito l\'accesso';
+$lang['Configurazione checklist'] = 'Configurazione checklist';
+$lang['H2WEB TOOLS'] = 'H2WEB TOOLS';
+$lang['Changes saved successfully'] = 'Changes saved successfully';
