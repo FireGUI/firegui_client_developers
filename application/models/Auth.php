@@ -282,6 +282,8 @@ class Auth extends CI_Model
 
         if (!is_null($token_string)) {
             // Cookie creation
+            $secure_cookie = (bool) config_item('cookie_secure');
+            $cookie_samesite = config_item('cookie_samesite');
             set_cookie(array(
                 'name' => static::$rememberTokenName,
                 //'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout*60)]),
@@ -290,8 +292,8 @@ class Auth extends CI_Model
                 //'expire' => time() + ($timeout*60),
                 'domain' => '.' . $_SERVER['HTTP_HOST'],
                 'path' => ($this->config->item('cookie_path')) ?: '/',
-
-
+                'samesite' => $cookie_samesite,
+                'secure' => $secure_cookie,
             ));
 
             //Before inserting user token, delete old user tokens

@@ -128,6 +128,7 @@ script  src="<?php echo base_url_scripts("script/global/plugins/datatables/media
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.CircleMarker.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.Circle.js?v=" . VERSION); ?>"></script>
 
+<script src="<?php echo base_url_scripts("script/lib/leaflet-fullscreen/Leaflet.fullscreen.min.js?v=" . VERSION); ?>"></script>
 
 <script src="<?php echo base_url_template('script/global/plugins/dropzone/dropzone.js'); ?>"></script>
 <script>
