@@ -62,6 +62,7 @@
 
 <script>
     $(document).ready(function() {
+        'use strict';
         $('.entity_name').on('change', function() {
             var entity_name = $('.entity_name').val();
             $('.entity_permission, .entity_where').parent().show();

@@ -17,7 +17,7 @@ foreach ($chart_data as $x => $chart_element_data) {
 
 <script>
     $(function() {
-
+        'use strict';
         var title = <?php echo json_encode($chart['charts_title']); ?>;
         var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
         var rotation = <?php echo json_encode((count($chart_data[0]['data']) > 8) ? -45 : 0); ?>;
