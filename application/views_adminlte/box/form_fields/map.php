@@ -44,10 +44,12 @@ if ($value) {
 
 <script>
     $(document).ready(function() {
+        'use strict';
 
         var map = null;
 
         $('#<?php echo $map; ?>').on('resize', function() {
+            'use strict';
             if (map !== null) {
                 map.invalidateSize();
             }
@@ -56,6 +58,7 @@ if ($value) {
 
 
         setTimeout(function() {
+            'use strict';
             var w = $('#<?php echo $map; ?>').width();
             if (w > 0) {
                 $('#<?php echo $map; ?>').height(w);
@@ -81,6 +84,7 @@ if ($value) {
 
 
         $(window).on('resize', function() {
+            'use strict';
             map.invalidateSize();
         });
 
@@ -150,6 +154,7 @@ if ($value) {
         // Geocoding
 
         searchInput.on('blur', function() {
+            'use strict';
             geocoding.geocode(searchInput.val());
         });
 
@@ -193,11 +198,13 @@ if ($value) {
         }
 
         setTimeout(function() {
+            'use strict';
             map.invalidateSize(true)
         }, 2000);
 
         <?php if (isset($lat) && isset($lon)) : ?>
             setTimeout(function() {
+                'use strict';
                 createMarker([<?php echo $lat ?>, <?php echo $lon ?>]);
             }, 1000);
         <?php endif; ?>

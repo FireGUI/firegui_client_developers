@@ -99,6 +99,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
     <?php if ($bulk_mode) : ?>
         <script>
             $(document).ready(function() {
+                'use strict';
                 $(':input:not(.js_field_check,button,[type="hidden"])', $('#<?php echo $form_id; ?>')).attr('disabled', 'disabled');
                 $('.js_field_check').on('click', function() {
                     if ($(this).is(':checked')) {

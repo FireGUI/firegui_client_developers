@@ -1,3 +1,4 @@
+
 function CrmNewInlineTable(grid) {
     this.grid = grid;
 }

@@ -81,6 +81,7 @@
 
     <script>
         $(document).ready(function() {
+            'use strict';
             //$('.js_barcode_grid').hide();
 
             $('.js_print').on('click', function() {

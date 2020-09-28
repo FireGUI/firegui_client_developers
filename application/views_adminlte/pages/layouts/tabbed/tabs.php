@@ -29,7 +29,7 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
 
 <script>
     $(function() {
-
+        'use strict';
         // La stessa tab NON deve mai apparire in una stessa pagina più di una
         // volta
         var tabId = <?php echo json_encode($tabs_id); ?>;

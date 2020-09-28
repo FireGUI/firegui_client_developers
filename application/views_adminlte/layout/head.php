@@ -125,6 +125,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 
 <script>
+    'use strict';
     var base_url = <?php echo json_encode(base_url()); ?>;
     var base_url_admin = <?php echo json_encode(base_url_admin()); ?>;
     var base_url_template = <?php echo json_encode(base_url_template()); ?>;
@@ -154,6 +155,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <script>
     $(function() {
+        'use strict';
         Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function(color) {
             return {
                 radialGradient: {

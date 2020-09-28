@@ -26,6 +26,7 @@
 
 <script>
     $(function() {
+        'use strict';
 
         function load_marker() {
             /***
@@ -34,13 +35,13 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: '<?php echo base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}"); ?>/<?php if(isset($value_id)) echo $value_id; ?>',
+                url: '<?php echo base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}"); ?>/<?php if (isset($value_id)) echo $value_id; ?>',
                 success: function(data) {
                     // Ciclo i Marker
                     var group = new Array();
                     var list = $('#results .js_result_list');
                     $('.js_result_item', list).each(function() {
-                        if(!$(this).hasClass('hide')) {
+                        if (!$(this).hasClass('hide')) {
                             $(this).remove();
                         }
                     });
@@ -49,12 +50,12 @@
                     $.each(data, function(i, val) {
 
                         var html = '<b>' + val.title + '</b><br />';
-                    if (typeof val.description !== "undefined") {
-                        html += val.description
-                    }
-                    html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
+                        if (typeof val.description !== "undefined") {
+                            html += val.description
+                        }
+                        html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
 
-                        if(val.marker) {
+                        if (val.marker) {
                             var icon = L.icon({
                                 iconUrl: base_url_uploads + 'uploads/' + val.marker,
                                 iconSize: [64, null],
@@ -75,7 +76,7 @@
                         item.removeClass('hide');
 
                         // Immagine
-                        if(val.thumbnail) {
+                        if (val.thumbnail) {
                             $('.js_result_image', item).attr('src', base_url_uploads + 'uploads/' + val.thumbnail).css({
                                 width: '50px',
                                 height: 'auto'
@@ -108,10 +109,12 @@
 
 
 
-        var map = L.map('<?php echo $id; ?>', {scrollWheelZoom:false}).setView([42.50, 12.90], 5);
-        
+        var map = L.map('<?php echo $id; ?>', {
+            scrollWheelZoom: false
+        }).setView([42.50, 12.90], 5);
+
         L.maps[<?php echo json_encode($mapId); ?>] = map;
-        
+
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);

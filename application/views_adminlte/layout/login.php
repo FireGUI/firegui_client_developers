@@ -357,6 +357,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
         <script>
             $(function() {
+                'use strict';
                 $('input').iCheck({
                     checkboxClass: 'icheckbox_square-blue',
                     radioClass: 'iradio_square-blue',

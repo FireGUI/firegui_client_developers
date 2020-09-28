@@ -33,7 +33,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
     var token_name = token.name;
     var token_hash = token.hash;
     $(function() {
-
+        'use strict';
         var markers = null;
 
         var map = L.map('<?php echo $mapId; ?>', {
@@ -100,10 +100,10 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                     $.each(data, function(i, val) {
 
                         var html = '<b>' + val.title + '</b><br />';
-                    if (typeof val.description !== "undefined") {
-                        html += val.description
-                    }
-                    html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
+                        if (typeof val.description !== "undefined") {
+                            html += val.description
+                        }
+                        html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
                         var icon;
                         if (val.marker) {
                             icon = L.icon({

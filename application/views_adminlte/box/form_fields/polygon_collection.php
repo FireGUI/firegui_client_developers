@@ -25,8 +25,8 @@ if ($value) {
     $polygons_str = [];
     foreach ($polygons as $polygon) {
         $polygons_str[] = implode(',', array_map(function ($latlon) {
-                    return $latlon[0] . ' ' . $latlon[1];
-                }, $polygon));
+            return $latlon[0] . ' ' . $latlon[1];
+        }, $polygon));
     }
     //debug($polygons_str,true);
 }
@@ -45,22 +45,23 @@ if ($value) {
     <div class="input-group">
         TODO
     </div>
-    <br/>
+    <br />
     <div style="max-width: 100%; height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
 <?php echo $help; ?>
 
 <script>
-    
     $(document).ready(function() {
+        'use strict';
+
         function savePolygons() {
             var bounds = [];
             $('#inputs_container_<?php echo $input; ?>').html('');
             var layers = drawnItems.getLayers();
             for (var i in layers) {
-                if (layers[i] instanceof L.Polygon){
+                if (layers[i] instanceof L.Polygon) {
                     var layerBounds = layers[i].getLatLngs();
-                
+
                     for (var j in layerBounds) {
                         bounds.push(layerBounds[j]);
                     }
@@ -73,7 +74,7 @@ if ($value) {
                         lnglatstrs.push(latlng[j].lng + ' ' + latlng[j].lat);
                     }
                     var val = lnglatstrs.join();
-                    $('#inputs_container_<?php echo $input; ?>').append('<input type="input" name="<?php echo $field['fields_name']; ?>[polygons][]" class="<?php echo $class; ?> <?php echo $input; ?>" value="'+val+'" />');
+                    $('#inputs_container_<?php echo $input; ?>').append('<input type="input" name="<?php echo $field['fields_name']; ?>[polygons][]" class="<?php echo $class; ?> <?php echo $input; ?>" value="' + val + '" />');
                 } else if (layers[i] instanceof L.Circle) {
                     console.log(layers[i]);
                     var circleBounds = layers[i].getBounds();
@@ -82,39 +83,39 @@ if ($value) {
                     }
                     var center = layers[i].getLatLng();
                     var radius = layers[i].getRadius();
-                    var val = center.lng+' '+center.lat+','+radius;
-                    $('#inputs_container_<?php echo $input; ?>').append('<input type="input" name="<?php echo $field['fields_name']; ?>[circles][]" class="<?php echo $class; ?> <?php echo $input; ?>" value="'+val+'" />');
+                    var val = center.lng + ' ' + center.lat + ',' + radius;
+                    $('#inputs_container_<?php echo $input; ?>').append('<input type="input" name="<?php echo $field['fields_name']; ?>[circles][]" class="<?php echo $class; ?> <?php echo $input; ?>" value="' + val + '" />');
                     continue;
                 } else {
                     alert('<?php e('Polygon type not managed yet') ?>');
                     continue;
                 }
-                
+
                 //console.log(val);
-                
+
             }
-            
+
             map.fitBounds(bounds);
-            
-            
-            
+
+
+
         }
-        
+
         var map = null;
-        
+
         $('#<?php echo $map; ?>').on('resize', function() {
-            if(map !== null) {
+            if (map !== null) {
                 map.invalidateSize();
             }
         });
-        
+
         setTimeout(function() {
             var w = $('#<?php echo $map; ?>').width();
-            if(w > 0) {
+            if (w > 0) {
                 $('#<?php echo $map; ?>').height(w);
             }
         }, 1000);
-        
+
         map = L.map('<?php echo $map; ?>', {
             center: new L.LatLng(46.0649520, 13.2374247),
             zoom: 14,
@@ -124,32 +125,32 @@ if ($value) {
                 })
             ],
             minZoom: 5,
-            
+
         });
-        
+
         L.maps[<?php echo json_encode($map); ?>] = map;
-        
+
         var drawnItems = L.featureGroup().addTo(map);
-        
+
         var polygonOpt = {
             allowIntersection: false,
             shapeOptions: {
                 color: '#0000FF',
-//                weight: 10,
-//                smoothFactor: 1,
-//                noClip: false,
-//                stroke: true,
-//                opacity: 0.5,
-//                fill:true,
-//                fillColor: '#000099',
-//                fillOpacity: 0.5,
-//                fillRule: 'nonzero', //evenodd
-//                dashArray: null, //
-//                lineCap: null,
-//                lineJoin: null,
-//                clickable: true,
-//                pointerEvents: null,
-//                className: '',
+                //                weight: 10,
+                //                smoothFactor: 1,
+                //                noClip: false,
+                //                stroke: true,
+                //                opacity: 0.5,
+                //                fill:true,
+                //                fillColor: '#000099',
+                //                fillOpacity: 0.5,
+                //                fillRule: 'nonzero', //evenodd
+                //                dashArray: null, //
+                //                lineCap: null,
+                //                lineJoin: null,
+                //                clickable: true,
+                //                pointerEvents: null,
+                //                className: '',
             },
             drawError: {
                 color: '#990000', // Color the shape will turn when intersects
@@ -157,22 +158,22 @@ if ($value) {
             },
             guidelineDistance: 10,
             metric: true,
-//            repeatMode: false,
+            //            repeatMode: false,
             selectedPathOptions: {
                 maintainColor: true,
                 opacity: 0.3,
             },
             showArea: true,
         };
-    var circleOpt = {
-        shapeOptions: {
+        var circleOpt = {
+            shapeOptions: {
                 color: '#0000FF',
-        },
-    };
-        
+            },
+        };
+
         map.addControl(new L.Control.Draw({
-            draw: { 
-                featureGroup: drawnItems, 
+            draw: {
+                featureGroup: drawnItems,
                 polygon: polygonOpt,
                 circle: circleOpt,
                 polyline: false,
@@ -195,25 +196,26 @@ if ($value) {
         map.on('draw:edited', function(event) {
             savePolygons();
         });
-        
-        map.on('draw:deleted', function () {
+
+        map.on('draw:deleted', function() {
+            'use strict';
             savePolygons();
         });
-        
+
         <?php if ($value) : ?>
             <?php foreach ($polygons as $polygon) : ?>
-            var saved_polygon = L.polygon(<?php echo json_encode($polygon); ?>, polygonOpt);
-            drawnItems.addLayer(saved_polygon);
-            map.addLayer(saved_polygon);
+                var saved_polygon = L.polygon(<?php echo json_encode($polygon); ?>, polygonOpt);
+                drawnItems.addLayer(saved_polygon);
+                map.addLayer(saved_polygon);
             <?php endforeach; ?>
             savePolygons();
         <?php endif; ?>
-        
+
         $(window).on('resize', function() {
+            'use strict';
             map.invalidateSize();
             savePolygons();
         });
-        
+
     });
-    
 </script>

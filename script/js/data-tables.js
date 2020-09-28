@@ -1,3 +1,4 @@
+'use strict';
 function startDataTables() {
 
     $('.js_datatable:not(.dataTable)').each(function () {

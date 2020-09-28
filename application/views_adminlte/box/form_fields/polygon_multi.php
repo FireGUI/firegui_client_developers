@@ -72,6 +72,8 @@ if ($value) {
 <?php echo $help; ?>
 <script>
     $(document).ready(function() {
+        'use strict';
+
         function savePolygons() {
 
             var bounds = [];
@@ -131,6 +133,7 @@ if ($value) {
         });
 
         setTimeout(function() {
+            'use strict';
             var w = $('#<?php echo $map; ?>').width();
             if (w > 0) {
                 $('#<?php echo $map; ?>').height(w);
@@ -237,6 +240,7 @@ if ($value) {
         <?php endif; ?>
 
         $(window).on('resize', function() {
+            'use strict';
             map.invalidateSize();
             savePolygons();
         });
@@ -281,6 +285,7 @@ if ($value) {
         // Geocoding
 
         searchInput.on('blur', function() {
+            'use strict';
             geocoding.geocode(searchInput.val());
         });
         // disabilito l'enter
