@@ -3,29 +3,7 @@ $unique = $field['fields_id'];
 $form_id = $field['forms_fields_forms_id'];
 //debug($field);
 ?>
-<style>
-    div.upload-drop-zone {
-        min-height: 200px !important;
-        border-width: 3px !important;
-        background: url('<?php echo base_url(); ?>images/drop_zone.png');
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        background-size: 300px auto;
-        border-style: dashed !important;
-        border-color: #3c8dbc;
-        line-height: 20px;
-        text-align: left;
-    }
 
-    .dropzone .dz-preview .dz-details img,
-    .dropzone-previews .dz-preview .dz-details img {
-        background-color: #ffffff;
-    }
-
-    .dz-message {
-        display: none !important;
-    }
-</style>
 
 
 <?php //debug($value); 
@@ -55,7 +33,6 @@ $form_id = $field['forms_fields_forms_id'];
 <script>
     var form_selector = '#form_<?php echo $form_id; ?>';
     $(document).ready(function() {
-        'use strict';
         var modalContainer = $('#js_modal_container');
 
         var campo = $('[data-name="<?php echo $field['fields_name']; ?>"]');
@@ -84,7 +61,6 @@ $form_id = $field['forms_fields_forms_id'];
                 }
 
                 $(form_selector).on('submit', function() {
-                    'use strict';
                     return (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
                 });
 
@@ -138,7 +114,6 @@ $form_id = $field['forms_fields_forms_id'];
                         <?php if ($field['fields_type'] == 'JSON') : ?>
                             $.ajax(base_url + 'db_ajax/removeFileFromJson/' + file.id, {
                                 success: function() {
-                                    'use strict';
                                     file.previewElement.remove();
                                     //delete files<?php echo $unique; ?>[file.key];
                                     files<?php echo $unique; ?>.splice(file.key, 1);
