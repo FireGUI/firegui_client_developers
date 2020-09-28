@@ -153,3 +153,5 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/apexcharts-bundle/dist/apexcharts.css?v=" . VERSION); ?>" />
 
 <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>
