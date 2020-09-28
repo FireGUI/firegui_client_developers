@@ -184,13 +184,8 @@
         <div class="box-header with-border">
           <h3 class="box-title"><?php e('Log Details'); ?></h3>
           <div class="box-tools pull-right">
-            <style>
-              .nav>li>a {
-                padding-top: 5px;
-                padding-bottom: 5px;
-              }
-            </style>
-            <ul class="nav nav-pills nav-pills-xs" role="tablist">
+
+            <ul class="nav nav-pills nav-pills-xs api-manager-nav" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#kt_tabs_params" role="tab">
                   <?php e('Params'); ?>

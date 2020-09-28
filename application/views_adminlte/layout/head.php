@@ -81,27 +81,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <link rel="shortcut icon" href="<?php echo base_url('/favicon.ico'); ?>" />
 
-<style>
-    .main-header .sidebar-toggle {
-        float: left;
-        background-color: transparent;
-        background-image: none;
-        padding: 15px 15px;
-        /* font-family: fontAwesome; */
-        font-family: "Font Awesome\ 5 Free";
-        /* cjr */
-    }
-
-    .main-header .sidebar-toggle:before {
-        content: "\f0c9";
-        font-weight: 900;
-        /* cjr */
-    }
-</style>
-
 <?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON) : ?>
-
-
     <link rel="apple-touch-icon" sizes="57x57" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-72x72.png">
@@ -118,12 +98,9 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     <!--<link rel="manifest" href="/manifest.json">-->
     <meta name="msapplication-TileImage" content="/<?php echo base_url_admin(CUSTOM_FAVICON); ?>-144x144.png">
     <meta name="theme-color" content="#ffffff">
-
 <?php endif; ?>
 
 <!-- JQUERY -->
-
-
 <script>
     var base_url = <?php echo json_encode(base_url()); ?>;
     var base_url_admin = <?php echo json_encode(base_url_admin()); ?>;
@@ -139,7 +116,6 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <!-- HIGHCHARTS -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v=" . VERSION); ?>"></script>
-
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v=" . VERSION); ?>"></script>

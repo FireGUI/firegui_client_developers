@@ -4,10 +4,6 @@ $form_id = $field['forms_fields_forms_id'];
 //debug($field);
 ?>
 
-
-
-<?php //debug($value); 
-?>
 <?php echo $label; ?>
 <br />
 <div class="col-md-12 <?php echo $class ?> fileinput <?php echo $value ? 'fileinput-exists' : 'fileinput-new' ?>" data-provides="fileinput">
