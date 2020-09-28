@@ -4,11 +4,11 @@
 
     <input type="hidden" class="default" name="<?php echo $field['fields_name']; ?>" value="<?php echo $value; ?>" />
 
-    <div class="fileinput-new thumbnail" style="width: 156px; height: 100px;">
-        <img src="<?php echo base_url(); ?>images/upload_icon.png" alt="" style="max-height:80px;" />
+    <div class="fileinput-new thumbnail">
+        <img src="<?php echo base_url(); ?>images/upload_icon.png" />
     </div>
-    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;">
-        <img src="<?php echo $value ? base_url_uploads("uploads/{$value}") : ''; ?>" alt="" style="max-height: 140px;">
+    <div class="fileinput-preview fileinput-exists thumbnail">
+        <img src="<?php echo $value ? base_url_uploads("uploads/{$value}") : ''; ?>">
     </div>
     <div>
         <span class="btn btn-default btn-sm btn-file">

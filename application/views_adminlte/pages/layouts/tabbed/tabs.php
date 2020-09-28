@@ -12,8 +12,11 @@ if (isset($_COOKIE['tab-' . $tabs_id])) {
 }
 
 $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_keys($tabs)[$index] : null;
+
+
+
 ?>
-<div class="<?php echo $tabs_id; ?> tabbable-custom">
+<div class="<?php echo $tabs_id; ?> tabbable-custom js-tabs">
     <ul class="nav nav-tabs">
         <?php foreach ($tabs as $key => $tab) : ?>
             <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php e($tab['title']); ?></a></li>
@@ -25,62 +28,3 @@ $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_k
         <?php endforeach; ?>
     </div>
 </div>
-
-
-<script>
-    $(function() {
-        'use strict';
-        // La stessa tab NON deve mai apparire in una stessa pagina più di una
-        // volta
-        var tabId = <?php echo json_encode($tabs_id); ?>;
-        var tabs = $('.' + tabId).filter(':first');
-        var tabToggles = $('> ul > li > a', tabs);
-
-        tabToggles.on('click', function() {
-            var clicked = $(this);
-            var index = tabToggles.index(clicked);
-
-            if (index > -1) {
-                $.cookie('tab-' + tabId, index, {
-                    path: '/'
-                });
-            }
-
-
-        });
-
-        tabToggles.on('shown.bs.tab', function(e) {
-            //            $(window).trigger('resize');
-            //            $.each($.fn.dataTable.tables(), function () {
-            //                console.log($(this));
-            //            });
-            //            $.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
-            //            $.fn.dataTable.tables( { visible: true, api: true } ).draw(); //Prima c'era il destroy cghe metteva a posto le cose. Il problema è che col destroy toglie la riga col cerca e col visualizza n elementi...
-            var tablenode = $.fn.dataTable.tables({
-                visible: true,
-                api: true
-            }).table().node();
-            if (typeof tablenode !== 'undefined') {
-                tablenode
-                    .style
-                    .width = '';
-            }
-            //console.log($.fn.dataTable.tables());
-            // $.each($.fn.dataTable.tables({
-            //     visible: true,
-            //     api: true
-            // }), function() {
-            //     if ($(this).parents('.active').length > 0) {
-            //         $(this).columns.adjust().draw();
-            //     }
-            // });
-            $.fn.dataTable.tables({
-                visible: true,
-                api: true
-            }).columns.adjust().draw();
-
-        });
-
-
-    });
-</script>

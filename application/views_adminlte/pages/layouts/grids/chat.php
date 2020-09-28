@@ -49,7 +49,7 @@ if (isset($grid_data['data'])) {
 ?>
 
 <div class="direct-chat direct-chat-primary" <?php echo "id='{$itemId}'"; ?>>
-    <div class="scroller" style="min-height:300px;max-height: 435px;overflow-y:auto" data-always-visible="1" data-rail-visible1="1">
+    <div class="scroller" data-always-visible="1" data-rail-visible1="1">
         <ul class="direct-chat-messages chats">
             <?php foreach ($items as $item) : ?>
                 <li class="direct-chat-msg <?php echo $item['class']; ?>">

@@ -139,7 +139,7 @@
           <table id='api_logs' class="table table-striped table-condensed table-bordered js_datatable">
             <thead>
               <tr>
-                <th style="display:none">ID</th>
+                <th class="hidden">ID</th>
                 <th><?php e('Date'); ?></th>
                 <th><?php e('IP'); ?></th>
                 <th><?php e('Method'); ?></th>
@@ -151,7 +151,7 @@
 
               <?php foreach ($dati['logs'] as $item) : ?>
                 <tr>
-                  <td style="display:none"><?php echo $item['log_api_id']; ?></td>
+                  <td class="hidden"><?php echo $item['log_api_id']; ?></td>
                   <td><?php echo $item['log_api_date']; ?></td>
                   <td><?php echo $item['log_api_ip_addr']; ?></td>
                   <td><?php echo $item['log_api_method']; ?></td>
@@ -179,18 +179,13 @@
       </script>
     </div>
 
-    <div class="col-md-6 response" style="display:none;">
+    <div class="col-md-6 response" class="hide">
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title"><?php e('Log Details'); ?></h3>
           <div class="box-tools pull-right">
-            <style>
-              .nav>li>a {
-                padding-top: 5px;
-                padding-bottom: 5px;
-              }
-            </style>
-            <ul class="nav nav-pills nav-pills-xs" role="tablist">
+
+            <ul class="nav nav-pills nav-pills-xs api-manager-nav" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#kt_tabs_params" role="tab">
                   <?php e('Params'); ?>

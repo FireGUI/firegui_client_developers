@@ -1,24 +1,3 @@
-<style>
-    .list-group-item>span {
-        color: #3c8dbc !important;
-        word-wrap: break-word;
-    }
-
-    .list-group-item>a {
-        font-weight: bold !important;
-    }
-
-    .list-group-item {
-        overflow: hidden !important;
-        position: relative !important;
-        display: block !important;
-        padding: 10px 15px !important;
-        margin-bottom: -1px !important;
-        background-color: #fff !important;
-    }
-</style>
-<?php //debug($grid_data); 
-?>
 <?php if (isset($grid_data['data'])) : ?>
     <?php foreach ($grid_data['data'] as $dato) : ?>
         <ul class="list-group <?php echo $grid['grids']['grids_append_class']; ?>" <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
@@ -34,7 +13,7 @@
             <?php if (grid_has_action($grid['grids'])) : ?>
                 <li class="list-group-item">
                     <b class="dl-actions"><?php e('Actions'); ?></b>
-                    <span class="pull-right dl-actions-label" style="word-wrap: break-word !important"><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></span>
+                    <span class="pull-right dl-actions-label"><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></span>
                 </li>
             <?php endif; ?>
         </ul>
