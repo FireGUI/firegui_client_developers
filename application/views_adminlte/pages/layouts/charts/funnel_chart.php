@@ -13,16 +13,24 @@ foreach ($chart_data[0]['series'] as $name => $data) {
 <div <?php echo sprintf('id="%s"', $chartId); ?> class="container_hightcharts"></div>
 
 <script>
-    $(function () {
-
+    $(function() {
+        'use strict';
         var title = <?php echo json_encode($chart['charts_title']); ?>;
         var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
         var series = <?php echo json_encode($series); ?>;
 
         $('#<?php echo $chartId; ?>').highcharts({
-            chart: {type: 'funnel', marginRight: 150},
-            title: {text: title, x: -50},
-            subtitle: {text: subtitle},
+            chart: {
+                type: 'funnel',
+                marginRight: 150
+            },
+            title: {
+                text: title,
+                x: -50
+            },
+            subtitle: {
+                text: subtitle
+            },
             plotOptions: {
                 series: {
                     dataLabels: {
@@ -36,10 +44,10 @@ foreach ($chart_data[0]['series'] as $name => $data) {
                     neckHeight: '25%'
                 }
             },
-            legend: {enabled: false},
+            legend: {
+                enabled: false
+            },
             series: series
         });
     });
-
 </script>
-
