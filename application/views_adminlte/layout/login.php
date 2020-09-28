@@ -96,7 +96,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 </div>
 
                 <div class="login-box-body">
-                    <p class="login-box-msg"><?php e('Enter in your profile'); ?></p>
+                    <p class="login-box-msg login-p"><?php e('Enter in your profile'); ?></p>
 
                     <form id="login" class="login-form rounded formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
                         <?php add_csrf(); ?>
@@ -160,10 +160,10 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                     <!-- /.social-auth-links -->
                     <div class="forget_password">
                         <div class="password_title">
-                            <h5><?php e('Forgot your password?'); ?></h5>
+                            <h5 class="login-p"><?php e('Forgot your password?'); ?></h5>
                         </div>
                         <div class="password_reset">
-                            <p><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></p>
+                            <p class="login-p"><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></p>
                         </div>
                     </div>
                     <?php if ($this->input->get('source') == 'firegui') : ?>
