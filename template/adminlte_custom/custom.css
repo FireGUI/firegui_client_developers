@@ -332,12 +332,12 @@ h5 {
   color: white !important;
 }
 
-.rounded.form-group label {
+.rounded > .form-group label {
   margin-right: 10px;
   color: #fffffe !important;
 }
 
-.rounded > input.form-control {
+.rounded > * > input.form-control {
   border-radius: 20px;
   /*background-color: transparent;
                 border: 1px solid #e3e3e3;
@@ -521,4 +521,64 @@ div.upload-drop-zone {
 }
 .list-group-item-text > p {
   color: #121417 !important;
+}
+.notification > span {
+  white-space: normal;
+}
+
+.error-page > .headline {
+  font-size: 50px;
+}
+.error-page > .error-content {
+  margin-left: 160px;
+}
+.js_form_daterangepicker > button.btn {
+  top: -5px;
+}
+.location-search-container {
+  max-width: 100%;
+}
+.location-search-container > div.input-group {
+  margin-bottom: 3px;
+}
+.location-search-container > .location-map-container {
+  max-width: 100%;
+  height: 300px;
+  max-height: 400px;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.fileinput-new {
+  width: 156px;
+  height: 100px;
+}
+.fileinput-new > img {
+  max-height: 80px;
+}
+.fileinput-preview {
+  max-width: 200px;
+  max-height: 150px;
+}
+.fileinput-preview > img {
+  max-height: 140px;
+}
+.btn-grid-action-s > span {
+  color: white !important;
+}
+.custom-action {
+  color: white !important;
+  margin-left: 3px;
+}
+th.w15 {
+  width: 15%;
+}
+.logo {
+  max-width: 360px;
+}
+.firegui-box {
+  margin-top: 100px;
+}
+.forget-form {
+  display: block;
 }
