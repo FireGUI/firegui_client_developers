@@ -519,3 +519,6 @@ div.upload-drop-zone {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+.list-group-item-text > p {
+  color: #121417 !important;
+}
