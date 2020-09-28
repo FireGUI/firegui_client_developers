@@ -2579,7 +2579,7 @@ class Datab extends CI_Model
                             $_url = base_url_admin("imgn/1/50/50/uploads/{$value}");
                         }
                         //die('test');
-                        return anchor(base_url_uploads("uploads/{$value}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
+                        return anchor(base_url_uploads("uploads/{$value}"), "<img src='" . $_url . "' />", array('class' => 'fancybox',));
                     } else {
                         //                        $path = base_url('images/no-image-50x50.gif');
                         $path = base_url_admin('images/no-image-50x50.gif');
