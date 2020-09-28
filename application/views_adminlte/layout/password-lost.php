@@ -80,7 +80,7 @@ endif;
                     <?php if ($this->settings === array()) : ?>
                         <h2 class="login-logo"><?php e('Your Company'); ?></h2>
                     <?php elseif ($this->settings['settings_company_logo']) : ?>
-                        <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
+                        <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" class="logo" />
                     <?php else : ?>
                         <h2 class="text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
                     <?php endif; ?>
@@ -100,7 +100,7 @@ endif;
                         <p><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
                     </div>
                 <?php else : ?>
-                    <form id="lost" class="forget-form rounded formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate" style="display: block;">
+                    <form id="lost" class="forget-form rounded formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate">
                         <?php add_csrf(); ?>
                         <h4 class="title"><?php e("Password lost?"); ?></h4>
                         <p><?php e("Type your e-mail address to reset the password."); ?></p>

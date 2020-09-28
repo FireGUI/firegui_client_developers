@@ -25,7 +25,7 @@
                     continue;
                 }
                 ?>
-                <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'" : null; ?> style="color:white !important; margin-left: 3px;"><?php echo $action; ?></span>
+                <span class="custom-action" <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'" : null; ?>><?php echo $action; ?></span>
             <?php else : ?>
 
                 <?php
@@ -84,9 +84,9 @@
                 $url = str_replace('{base_url}', base_url(), $url);
 
                 ?>
-                <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='".t($custom_action['grids_actions_name'])."'" : null; ?>>
+                <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='" . t($custom_action['grids_actions_name']) . "'" : null; ?>>
                     <a class="js-action_button btn btn-grid-action-s <?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
-                        <span class="<?php echo $custom_action['grids_actions_icon']; ?>" style="color:white !important;"></span>
+                        <span class="<?php echo $custom_action['grids_actions_icon']; ?>"></span>
                     </a>
                 </span>
 
@@ -95,16 +95,17 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php //Mantained for back compatibility, but should be removed... ?>
+    <?php //Mantained for back compatibility, but should be removed... 
+    ?>
     <?php if (isset($links['view']) && $links['view']) : ?>
         <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-grid-action-s <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['view_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('View'); ?>">
-            <span class="fas fa-search-plus" style="color:white !important;"></span>
+            <span class="fas fa-search-plus"></span>
         </a>
     <?php endif; ?>
 
     <?php if (isset($links['edit']) && $links['edit']) : ?>
         <a href="<?php echo $links['edit'] . $id; ?>" class="btn bg-purple btn-grid-action-s <?php if (!empty($links['edit_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['edit_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('Edit'); ?>">
-            <span class="fas fa-edit" style="color:white !important;"></span>
+            <span class="fas fa-edit"></span>
         </a>
     <?php endif; ?>
 

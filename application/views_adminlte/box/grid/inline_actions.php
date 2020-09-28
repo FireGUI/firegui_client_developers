@@ -31,19 +31,6 @@
             <?php else : ?>
 
                 <?php
-                /*
-            [grids_actions_id] =&gt; 2
-            [grids_actions_grids_id] =&gt; 5
-            [grids_actions_order] =&gt; 1
-            [grids_actions_name] =&gt; edit_layout
-            [grids_actions_html] =&gt; 
-            [grids_actions_link] =&gt; 
-            [grids_actions_layout] =&gt; 3
-            [grids_actions_icon] =&gt; far fa-edit
-            [grids_actions_mode] =&gt; default
-            [grids_actions_type] =&gt; edit_layout
-            [grids_actions_color] =&gt; rgb(255, 193, 7)
-             */
                 $confirm = false;
                 if (empty($custom_action['grids_actions_link'])) {
                     if (!empty($custom_action['grids_actions_type']) && in_array($custom_action['grids_actions_type'], ['detail', 'edit_layout'])) {
