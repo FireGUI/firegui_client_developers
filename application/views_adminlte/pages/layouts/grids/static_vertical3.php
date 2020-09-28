@@ -1,7 +1,7 @@
 <style>
     .list-group-item>span {
         color: #3c8dbc !important;
-        word-wrap: break-word;
+        word-wrap: break-word !important;
     }
 
     .list-group-item>a {
@@ -34,7 +34,7 @@
             <?php if (grid_has_action($grid['grids'])) : ?>
                 <li class="list-group-item">
                     <b class="dl-actions"><?php e('Actions'); ?></b>
-                    <span class="pull-right dl-actions-label" style="word-wrap: break-word !important"><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></span>
+                    <span class="pull-right dl-actions-label"><?php $this->load->view('box/grid/actions', array('links' => $grid['grids']['links'], 'id' => $dato[$grid['grids']['entity_name'] . "_id"], 'row_data' => $dato)); ?></span>
                 </li>
             <?php endif; ?>
         </ul>
