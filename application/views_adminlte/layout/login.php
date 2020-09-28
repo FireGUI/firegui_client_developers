@@ -88,9 +88,9 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                         <?php if ($this->settings === array()) : ?>
                             <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
                         <?php elseif ($this->settings['settings_company_logo']) : ?>
-                            <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" style="max-width: 360px;" />
+                            <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" class="logo" />
                         <?php else : ?>
-                            <h2 class="text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
+                            <h2 class=" text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -167,8 +167,8 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                         </div>
                     </div>
                     <?php if ($this->input->get('source') == 'firegui') : ?>
-                        <div class="box box-primary box-solid" style="margin-top:100px;">
-                            <div class="box-header with-border">
+                        <div class="box box-primary box-solid firegui-box">
+                            <div class=" box-header with-border">
                                 <h3 class="box-title"><?php e('Welcome to your client!'); ?></h3>
 
                                 <div class="box-tools pull-right">
