@@ -54,6 +54,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/iCheck/square/blue.css?v={$this->config->item('version')}"); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
 
         <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -73,161 +74,11 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 color: <?php echo LOGIN_TITLE_COLOR; ?>
             }
 
-            <?php endif; ?><?php endif; ?>body {
-                /*background: #121417!important;*/
-                background: transparent !important;
-                /*background-image: linear-gradient(rgba(23, 23, 23, 0.5), rgba(18, 20, 23, 0.5)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;
-                background-position: center!important; 
-                background-repeat: no-repeat!important; 
-                background-size: cover!important;
-                min-height: 100%!important;*/
-            }
-
-            p,
-            h5 {
-                /*color: #121417!important;*/
-                color: #fffffe !important;
-            }
-
-            .background_img {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
+            <?php endif; ?><?php endif; ?>.background_img {
                 background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo (!empty($season)) ? base_url("images/{$season}.jpg") : ''; ?>) !important;
-                background-position: center !important;
-                background-repeat: no-repeat !important;
-                background-size: cover !important;
-                min-height: 100% !important;
-            }
-
-            .login-box-body {
-                background: none !important;
-                /*color: #fffffe;*/
-            }
-
-            .disconnect {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: baseline;
-                margin-top: 40px;
-            }
-
-            .disconnect_label {
-                /*width: 50%;*/
-            }
-
-            .form-group select {
-                color: #121417 !important;
-                background-color: transparent !important;
-                color: #fffffe !important;
-                border: 1px solid #fffffe;
-                width: 30%;
-            }
-
-            .transparent {
-                background: transparent !important;
-                color: white !important;
-            }
-
-            .form-group label {
-                margin-right: 10px;
-                color: #fffffe !important;
-            }
-
-            input.form-control {
-                border-radius: 20px;
-                /*background-color: transparent;
-                border: 1px solid #e3e3e3;
-                border-radius: 30px;
-                color: #2c2c2c;*/
-            }
-
-            div.form-group span {
-                color: #121417 !important;
-                margin-right: 10px;
-            }
-
-            /*add rules to bootstrap-select*/
-            .dropdown-toggle {
-                border-radius: 20px;
-            }
-
-            .bootstrap-select {
-                max-width: 40% !important;
-            }
-
-            .bootstrap-select>.dropdown-toggle {
-                background-color: transparent !important;
-                color: #fffffe !important;
-            }
-
-            .bootstrap-select>.dropdown-toggle>.bs-caret>.caret {
-                color: #fffffe !important;
-            }
-
-            .dropdown-menu>.active>a {
-                background-color: #3c8dbc !important;
-            }
-
-            .dropdown-menu>.active>a>span {
-                color: #fffffe !important;
-            }
-
-            /*end boostrap-select customization*/
-
-            .forget_password {
-                width: 100%;
-                display: flex;
-                /*justify-content: space-between;*/
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-            }
-
-            .password_title {}
-
-            .password_reset p a {
-                color: #fffffe !important;
-                font-weight: 700;
-            }
-
-            .rounded_btn {
-                width: 100% !important;
-                border-radius: 20px !important;
-                padding-top: 10px;
-                padding-bottom: 10px;
-                margin: 30px 0px;
-                /*background-color: #24292e;
-                border-color: #24292e!important;
-                font-size: 16px;*/
-                transition: background-color .45s ease;
-            }
-
-            /*.rounded_btn:active {
-                background-color: #393e42!important;
-            }
-            .rounded_btn:hover {
-                background-color: #393e42!important;
-                border-color: #393e42!important;
-            }*/
-
-            .background_img {
-                min-height: 100vh;
-                max-height: 100%;
-                top: 0;
-                left: 0;
-                padding: 0;
-                color: #fff;
-                position: absolute;
-                overflow: hidden;
             }
         </style>
     </head>
-
-
 
     <body class="hold-transition login-page">
         <div class="background_img">
@@ -247,7 +98,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                 <div class="login-box-body">
                     <p class="login-box-msg"><?php e('Enter in your profile'); ?></p>
 
-                    <form id="login" class="login-form formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
+                    <form id="login" class="login-form rounded formAjax" action="<?php echo base_url('access/login_start'); ?>" method="post">
                         <?php add_csrf(); ?>
 
                         <div class="form-group has-feedback">
