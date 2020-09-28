@@ -1,5 +1,6 @@
-$(document).ready(function () {
 
+$(document).ready(function () {
+    'use strict';
     $('body').on('mouseenter', 'table tr', function () {
 
         var inline_actions_container = $('.js_action_inline', $(this));

@@ -55,6 +55,7 @@ $form_id = $field['forms_fields_forms_id'];
 <script>
     var form_selector = '#form_<?php echo $form_id; ?>';
     $(document).ready(function() {
+        'use strict';
         var modalContainer = $('#js_modal_container');
 
         var campo = $('[data-name="<?php echo $field['fields_name']; ?>"]');
@@ -83,10 +84,11 @@ $form_id = $field['forms_fields_forms_id'];
                 }
 
                 $(form_selector).on('submit', function() {
+                    'use strict';
                     return (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
                 });
 
-                if (response!=null) {
+                if (response != null) {
                     response = JSON.parse(response);
                     //console.log(response);
                     if (!response.status) {
@@ -113,18 +115,18 @@ $form_id = $field['forms_fields_forms_id'];
 
                         }
 
-                        
+
                     }
                 }
-                
-//<a class="dz-remove" href="javascript:undefined;" data-dz-remove="">Remove file</a>
-                
+
+                //<a class="dz-remove" href="javascript:undefined;" data-dz-remove="">Remove file</a>
+
                 var a = document.createElement('a');
-                a.setAttribute('href',file.url);
+                a.setAttribute('href', file.url);
                 a.setAttribute('class', 'dz-download');
                 a.innerHTML = "<?php e('Download'); ?>";
                 file.previewTemplate.appendChild(a);
-            
+
             },
             removedfile: function(file) {
                 x = confirm('Do you want to delete?');
@@ -136,6 +138,7 @@ $form_id = $field['forms_fields_forms_id'];
                         <?php if ($field['fields_type'] == 'JSON') : ?>
                             $.ajax(base_url + 'db_ajax/removeFileFromJson/' + file.id, {
                                 success: function() {
+                                    'use strict';
                                     file.previewElement.remove();
                                     //delete files<?php echo $unique; ?>[file.key];
                                     files<?php echo $unique; ?>.splice(file.key, 1);

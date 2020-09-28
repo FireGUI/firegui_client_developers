@@ -171,6 +171,7 @@
 
       <script>
         $(document).ready(function() {
+          'use strict';
           $('.js_load_log_api_item').on('click', function() {
             $('.response').show();
           });
@@ -244,10 +245,10 @@
 
 <script>
   $(document).ready(function() {
-    $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
-  });
+    'use strict';
 
-  $(document).ready(function() {
+    $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
+
     $('.js_load_log_api_item').on('click', function(e) {
       e.preventDefault();
 

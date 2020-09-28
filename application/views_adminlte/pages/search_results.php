@@ -109,6 +109,7 @@
 
     <script>
         $(document).ready(function() {
+            'use strict';
             $.fn.dataTableExt.oApi.fnHideEmptyColumns = function(oSettings, tableObject) {
                 /**
                  * This plugin hides the columns that are empty.

@@ -12,6 +12,7 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
     var token_name = token.name;
     var token_hash = token.hash;
     $(function() {
+        'use strict';
         var url = '<?php echo $ajaxURL; ?>';
         var markers = null;
         var map = L.map('<?php echo $id; ?>', {

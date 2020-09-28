@@ -21,6 +21,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
 <script>
     $(function() {
+        'use strict';
         if (!jQuery().fullCalendar) {
             throw Error('Calendar not loaded');
         }

@@ -1,3 +1,5 @@
+
+'use strict';
 /**
  * Crea nuovo oggetto inline table
  * 

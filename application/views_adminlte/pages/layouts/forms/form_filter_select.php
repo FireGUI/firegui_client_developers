@@ -90,6 +90,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             <script>
                                 //alert('<?php echo $value; ?>');
                                 $(document).ready(function() {
+                                    'use strict';
                                     $("#range_field_<?php echo $field['id']; ?>").ionRangeSlider({
                                         min: <?php echo $min; ?>,
                                         max: <?php echo $max; ?>,
