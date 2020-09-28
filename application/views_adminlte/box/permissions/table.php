@@ -57,9 +57,9 @@
             <thead>
                 <tr>
                     <th><?php e('entity'); ?></th>
-                    <th style="width: 15%" class="text-center"><?php e('none'); ?></th>
-                    <th style="width: 15%" class="text-center"><?php e('read'); ?></th>
-                    <th style="width: 15%" class="text-center"><?php e('write'); ?></th>
+                    <th class="w15" class="text-center"><?php e('none'); ?></th>
+                    <th class="w15" class="text-center"><?php e('read'); ?></th>
+                    <th class="w15" class="text-center"><?php e('write'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -81,8 +81,8 @@
                 <thead>
                     <tr>
                         <th><?php e('modules'); ?></th>
-                        <th style="width: 15%" class="text-center"><?php e('none'); ?></th>
-                        <th style="width: 15%" class="text-center"><?php e('access'); ?></th>
+                        <th class="w15" class="text-center"><?php e('none'); ?></th>
+                        <th class="w15" class="text-center"><?php e('access'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -111,7 +111,7 @@
             <tr>
                 <th><?php e('Entity'); ?></th>
                 <th><?php e('Field'); ?></th>
-                <th style="display:none"><?php e('Operator'); ?></th>
+                <th class="hidden"><?php e('Operator'); ?></th>
                 <th><?php e('Values'); ?></th>
                 <th></th>
             </tr>
@@ -130,7 +130,7 @@
                     <td>
                         <select class="form-control input-sm js_limit_field" name="<?php echo "limits[{$k}][limits_fields_id]" ?>" data-value="<?php if (isset($limit['limits_fields_id'])) echo $limit['limits_fields_id']; ?>"></select>
                     </td>
-                    <td style="display:none">
+                    <td class="hidden">
                         <input type="hidden" name="<?php echo "limits[{$k}][limits_operator]" ?>" value="in" class="js_limit_op" />
                         <?php /*
                         <select class="form-control input-sm js_limit_op" name="<?php echo "limits[{$k}][limits_operator]" ?>" >

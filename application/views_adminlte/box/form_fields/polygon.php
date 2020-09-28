@@ -58,8 +58,7 @@ if ($value) {
 <div id="inputs_container_<?php echo $input; ?>">
 
 </div>
-<!--<div style="max-width: 400px;">-->
-<div style="max-width: 100%;">
+<div class="location-search-container">
     <div class="input-group">
         <input type="text" class="form-control js_map_search" placeholder="<?php e('find a place') ?>" />
         <span class="input-group-btn">
@@ -67,7 +66,7 @@ if ($value) {
         </span>
     </div>
     <br />
-    <div style="max-width: 100%; height: 500px; max-height: 600px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
+    <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
 <?php echo $help; ?>
 <script>

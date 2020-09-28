@@ -1,7 +1,7 @@
 <div class="error-page">
-    <h2 class="headline text-yellow" style="font-size:50px"> Oops!</h2>
+    <h2 class="headline text-yellow"> Oops!</h2>
 
-    <div class="error-content" style="margin-left:160px;">
+    <div class="error-content">
         <h3><i class="fa fa-warning text-yellow"></i><?php e('Form %s not found.', 0, [$form_id]); ?></h3>
 
         <p>
