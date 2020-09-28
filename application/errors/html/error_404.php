@@ -29,7 +29,6 @@ if (!function_exists('base_url')) {
 
 
     <script>
-        'use strict';
         var base_url = '<?php echo base_url(); ?>';
     </script>
 
