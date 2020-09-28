@@ -43,6 +43,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 
 <script>
     $(function() {
+        'use strict';
         var markers = null;
         var searchInput = $('#<?php echo $mapGeocodeInput; ?>');
         var searchInputToggle = $('#<?php echo $mapGeocodeToggle; ?>');
@@ -151,10 +152,10 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                     $.each(data, function(i, val) {
 
                         var html = '<b>' + val.title + '</b><br />';
-                    if (typeof val.description !== "undefined") {
-                        html += val.description
-                    }
-                    html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
+                        if (typeof val.description !== "undefined") {
+                            html += val.description
+                        }
+                        html += '<br /><a href="' + val.link + '"><?php e('View details'); ?></a>';
                         var icon;
                         if (val.marker) {
                             icon = L.icon({

@@ -33,6 +33,7 @@
 <!-- END NOTIFICATION DROPDOWN -->
 
 <script>
+    'use strict';
     var CrmNotifier = {
 
         /**
@@ -51,6 +52,7 @@
         played: false,
 
         fetch: function() {
+            'use strict';
             var notifier = this;
             $.ajax({
                 url: base_url + 'get_ajax/dropdown_notification_list',
@@ -99,7 +101,7 @@
         },
 
         isPlayable: function() {
-
+            'use strict';
             var time = localStorage.getItem('played');
             if (!time) {
                 return true;
@@ -124,6 +126,7 @@
         },
 
         readAll: function() {
+            'use strict';
             var ajax = this.setRead();
             if (ajax !== null) {
                 var notifier = this;
@@ -139,6 +142,7 @@
             var ajax = this.setRead(notificationId);
             if (ajax !== null) {
                 ajax.success(function() {
+                    'use strict';
                     if (link === 'javascript:void(0);') {
                         that.fetch();
                     } else {
@@ -149,10 +153,12 @@
         },
 
         init: function() {
+            'use strict';
             var notifier = this;
             notifier.fetch();
 
             setInterval(function() {
+                'use strict';
                 notifier.fetch();
             }, 5 * 60 * 1000); // 5 min
 
@@ -174,6 +180,7 @@
 
 
     $(document).ready(function() {
+        'use strict';
         CrmNotifier.init();
     });
 </script>

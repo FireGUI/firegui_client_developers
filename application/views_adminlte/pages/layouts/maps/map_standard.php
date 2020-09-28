@@ -12,20 +12,71 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
     var token_name = token.name;
     var token_hash = token.hash;
     $(function() {
+        'use strict';
         var url = '<?php echo $ajaxURL; ?>';
         var markers = null;
         var map = L.map('<?php echo $id; ?>', {
-            scrollWheelZoom: false
+            scrollWheelZoom: false,
+            fullscreenControl: {
+                pseudoFullscreen: false
+            }
         }).setView([40.730610, -73.935242], <?php echo ($data['maps']['maps_init_zoom']) ?: 5; ?>);
 
         L.maps[<?php echo json_encode($id); ?>] = map;
 
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        // L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        //     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        // }).addTo(map);
+
+
+
+        var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+        /*,
+                    mqi = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png", {
+                        subdomains: ['otile1', 'otile2', 'otile3', 'otile4']
+                    })
+                ,
+                            googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            }),
+                            googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            }),
+                            googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            }),
+                            googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            })*/
+        ;
+
+
+
+
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            //"MapQuestImagery": mqi,
+            /*"Google Street": googleStreets,
+            "Google Satellite": googleSat,
+            "Google Hybrid": googleHybrid,
+            "Google Terrain": googleTerrain,*/
+        };
+        var overlays = {};
+        L.control.layers(baseMaps, overlays, {
+            position: 'bottomleft'
         }).addTo(map);
+
+        //Set default
+        osm.addTo(map); //  set as 
+
         $(window).on('resize', function() {
             map.invalidateSize();
         });
+
 
         function load_marker() {
             /***
@@ -81,10 +132,9 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
 
 
                     if (group.length > 0) {
+                        //console.log('fitBounds!!!');
                         map.fitBounds(group);
-                        <?php if ($data['maps']['maps_init_zoom']) : ?>
-                            map.setZoom(<?php echo $data['maps']['maps_init_zoom']; ?>);
-                        <?php endif; ?>
+
                     }
 
 

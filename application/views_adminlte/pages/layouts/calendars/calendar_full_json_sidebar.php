@@ -108,7 +108,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 <script>
     var jqCalendarView;
     $(function() {
-
+        'use strict';
         var jqCalendar = $('#<?php echo $calendarId; ?>');
         var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>";
         var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;

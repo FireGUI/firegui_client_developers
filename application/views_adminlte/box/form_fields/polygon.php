@@ -72,6 +72,7 @@ if ($value) {
 <?php echo $help; ?>
 <script>
     $(document).ready(function() {
+        'use strict';
 
         function savePolygons() {
 
@@ -151,6 +152,7 @@ if ($value) {
         });
 
         setTimeout(function() {
+            'use strict';
             var w = $('#<?php echo $map; ?>').width();
             if (w > 0) {
                 $('#<?php echo $map; ?>').height(w);

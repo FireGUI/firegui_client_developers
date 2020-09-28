@@ -15,7 +15,7 @@ foreach ($chart_data[0]['series'] as $name => $data) {
 
 <script>
     $(function() {
-
+        'use strict';
         var title = <?php echo json_encode($chart['charts_title']); ?>;
         var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
         var series = <?php echo json_encode($series); ?>;
@@ -27,9 +27,15 @@ foreach ($chart_data[0]['series'] as $name => $data) {
                 plotShadow: false,
                 type: 'pie',
             },
-            title: {text: title},
-            subtitle: {text: subtitle},
-            tooltip: {pointFormat: '{series.name}: <b>{point.y}</b>'},
+            title: {
+                text: title
+            },
+            subtitle: {
+                text: subtitle
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.y}</b>'
+            },
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
@@ -37,8 +43,8 @@ foreach ($chart_data[0]['series'] as $name => $data) {
                     dataLabels: {
                         enabled: false,
                         //format: '<b>{point.name}</b>: {point.y}',
-                        crop:true,
-                         style: {
+                        crop: true,
+                        style: {
                             fontWeight: 'bold',
                             color: 'white',
                             textShadow: '0px 1px 2px black'
@@ -53,6 +59,4 @@ foreach ($chart_data[0]['series'] as $name => $data) {
             series: series
         });
     });
-
 </script>
-

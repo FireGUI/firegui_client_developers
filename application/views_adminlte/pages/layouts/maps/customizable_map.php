@@ -11,6 +11,7 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
 
 <script>
     $(document).ready(function() {
+        'use strict';
         var url = '<?php echo $ajaxURL; ?>';
         var markers = null;
         var map = L.map('<?php echo $js_identifier; ?>', {
@@ -51,7 +52,7 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                 // Ciclo i Marker
                 var group = new Array();
                 $.each(data, function(i, val) {
-                    
+
                     var html = '<b>' + val.title + '</b><br />';
                     if (typeof val.description !== "undefined") {
                         html += val.description
