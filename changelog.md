@@ -9,3 +9,4 @@ Removed inline style from grid-list template
 Added italian translations
 Added ’use strict” in javascripts
 Remove inline styles
+Fix css multiupload
