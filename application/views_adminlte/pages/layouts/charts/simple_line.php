@@ -9,19 +9,24 @@ foreach ($chart_data[0]['series'] as $name => $data) {
 <div <?php echo sprintf('id="%s"', $chartId); ?> class="container_hightcharts"></div>
 
 <script>
-        
-    $(function () {
-
+    $(function() {
+        'use strict';
         var title = <?php echo json_encode($chart['charts_title']); ?>;
         var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
         var rotation = <?php echo json_encode((count($chart_data[0]['data']) > 8) ? -45 : 0); ?>;
         var categories = <?php echo json_encode(array_values($chart_data[0]['x'])); ?>;
         var label2 = <?php echo json_encode($chart_data[0]['element']['charts_elements_label2']); ?>;
         var series = <?php echo json_encode($series); ?>;
-        
+
         $('#<?php echo $chartId; ?>').highcharts({
-            title: {text: title, x: -20},
-            subtitle: {text: subtitle, x: -20},
+            title: {
+                text: title,
+                x: -20
+            },
+            subtitle: {
+                text: subtitle,
+                x: -20
+            },
             xAxis: {
                 labels: {
                     rotation: rotation,
@@ -33,7 +38,9 @@ foreach ($chart_data[0]['series'] as $name => $data) {
                 categories: categories
             },
             yAxis: {
-                title: { text: label2 },
+                title: {
+                    text: label2
+                },
                 plotLines: [{
                     value: 0,
                     width: 1,
@@ -49,7 +56,4 @@ foreach ($chart_data[0]['series'] as $name => $data) {
             series: series
         });
     });
-    
-    
-
 </script>

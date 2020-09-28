@@ -10,13 +10,12 @@ if ($value && $field['fields_type'] === 'DATERANGE') {
         <div class="input-group js_form_daterangepicker <?php echo $class ?>">
             <input name="<?php echo $field['fields_name']; ?>" type="text" class="form-control" <?php echo $onclick; ?> value="<?php echo $value; ?>" />
             <span class="input-group-btn">
-                <button class="btn btn-default" type="button" style="top:-5px">
+                <button class="btn btn-default" type="button">
                     <i class="far fa-calendar"></i>
                 </button>
             </span>
         </div>
-<?php echo $help; ?>
+        <?php echo $help; ?>
     </div>
 </div>
 <div class="clearfix"></div>
-

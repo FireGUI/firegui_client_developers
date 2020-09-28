@@ -27,18 +27,15 @@ if ($value) {
 ?>
 <?php echo $label; ?>
 
-<?php //debug($value); 
-?>
 <input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" />
-<!--<div style="max-width: 400px;">-->
-<div style="max-width: 100%;">
-    <div class="input-group" style="margin-bottom: 3px;">
+<div class="location-search-container">
+    <div class="input-group">
         <input type="text" class="form-control js_map_search" placeholder="<?php e('find localtion') ?>" />
         <span class="input-group-btn">
             <button class="btn btn-default" type="button"><i class="fas fa-search"></i></button>
         </span>
     </div>
-    <div style="max-width: 100%; height: 300px; max-height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
+    <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
 <?php echo $help; ?>
 

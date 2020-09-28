@@ -41,12 +41,12 @@ if ($value) {
 
       <?php endif; */ ?>
 </div>
-<div style="max-width: 400px;">
+<div class="location-search-container">
     <div class="input-group">
         TODO
     </div>
     <br />
-    <div style="max-width: 100%; height: 400px;" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
+    <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
 <?php echo $help; ?>
 

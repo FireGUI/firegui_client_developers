@@ -1,7 +1,5 @@
 <!-- Logo -->
 <a href="<?php echo base_url('main/dashboard'); ?>" class="logo">
-
-
     <?php if (empty($this->settings['settings_company_logo'])) : ?>
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini">
@@ -23,7 +21,7 @@
     <?php if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) : ?>.navbar-static-top,
     .logo {
         background-color: <?php echo TOPBAR_COLOR; ?> !important;
-        box-shadow: 0 4px 2px 0 rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.35);
+        box-shadow: 0 4px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .35);
     }
 
     <?php if (defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)) : ?>.sidebar-toggle:hover {
@@ -42,28 +40,6 @@
     }
 
     <?php endif; ?>
-
-    .navbar-custom-menu {
-        font-size: 16px;
-    }
-    .dropdown-menu {
-        border: none !important;
-        box-shadow: 0 4px 2px 0 rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.35);
-    }
-     .dropdown-menu > .user-header {
-         background-color: #222d32 !important;
-     }
-     .dropdown-menu > .user-body:hover {
-        background: #26546f;
-        transition: all .25s ease-in;
-     }
-     .navbar-nav > .user-menu > .dropdown-menu > .user-body:hover a {
-        color: #fff !important;
-        transition: color .25s ease-in;
-     }
-    .navbar-nav > .notifications-menu > .dropdown-toggle >  i {
-        margin-right: 5px !important;
-    }
 </style>
 <nav class="navbar navbar-static-top">
 
@@ -79,38 +55,6 @@
             <?php if (file_exists(__DIR__ . '/custom/header-menu.php')) $this->load->view('layout/custom/header-menu'); ?>
             <?php $this->load->view('box/notification_dropdown_list'); ?>
             <?php $this->hook->message_dropdown(); ?>
-            <!-- Notifications: style can be found in dropdown.less -->
-            <?php if (false) : ?>
-                <li class="dropdown notifications-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="far fa-bell"></i> <span class="label label-warning">10</span> </a>
-                    <ul class="dropdown-menu">
-                        <li class="header">You have 10 notifications</li>
-                        <li>
-                            <!-- inner menu: contains the actual data -->
-                            <ul class="menu">
-                                <li>
-                                    <a href="#"> <i class="fas fa-users text-aqua"></i> 5 new members joined today </a>
-                                </li>
-                                <li>
-                                    <a href="#"> <i class="fas fa-exclamation-triangle text-yellow"></i> Very long description here
-                                        that may not fit into the page and may cause design problems </a>
-                                </li>
-                                <li>
-                                    <a href="#"> <i class="fas fa-users text-red"></i> 5 new members joined </a>
-                                </li>
-                                <li>
-                                    <a href="#"> <i class="fas fa-shopping-cart text-green"></i> 25 sales made </a>
-                                </li>
-                                <li>
-                                    <a href="#"> <i class="fas fa-user text-red"></i> You changed your username </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="footer"><a href="#">View all</a></li>
-                    </ul>
-                </li>
-                <!-- Tasks: style can be found in dropdown.less -->
-            <?php endif; ?>
 
             <!-- User Account: style can be found in dropdown.less -->
             <li class="dropdown user user-menu">
