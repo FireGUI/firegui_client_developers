@@ -92,18 +92,18 @@ endif;
                 <?php if ($sent) : ?>
                     <h3 class="title"><?php e("E-mail sent successfully"); ?></h3>
                     <div class="alert alert-success">
-                        <p><?php e("We've sent you and email to"); ?> <strong><?php echo $receiver; ?></strong> <?php e("which contains the link for reset the password."); ?> </p>
+                        <p class="login-p"><?php e("We've sent you and email to"); ?> <strong><?php echo $receiver; ?></strong> <?php e("which contains the link for reset the password."); ?> </p>
                     </div>
                 <?php elseif (!empty($pwd_resetted)) : ?>
                     <h3 class="title"><?php e("Password resetted successfully"); ?></h3>
                     <div class="alert alert-success">
-                        <p><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
+                        <p class="login-p"><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
                     </div>
                 <?php else : ?>
                     <form id="lost" class="forget-form rounded formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate">
                         <?php add_csrf(); ?>
-                        <h4 class="title"><?php e("Password lost?"); ?></h4>
-                        <p><?php e("Type your e-mail address to reset the password."); ?></p>
+                        <h4 class="title login-p"><?php e("Password lost?"); ?></h4>
+                        <p class="login-p"><?php e("Type your e-mail address to reset the password."); ?></p>
                         <div class="form-group has-feedback">
                             <input class="form-control" type="text" autocomplete="off" placeholder="Email" name="email">
                             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>

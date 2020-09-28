@@ -284,10 +284,8 @@ body {
                 min-height: 100%!important;*/
 }
 
-p,
-h5 {
-  /*color: #121417!important;*/
-  color: #fffffe !important;
+.login-p {
+  color: #ffffff !important;
 }
 
 .background_img {
@@ -555,8 +553,8 @@ div.upload-drop-zone {
 }
 
 .dropzone_div.fileinput-new {
-  width: 100%!important;
-  height: auto!important;
+  width: 100% !important;
+  height: auto !important;
 }
 
 .fileinput-new > img {
