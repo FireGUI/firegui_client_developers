@@ -52,6 +52,9 @@ endif;
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+    <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
+
+
     <style>
         <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
         .register-page {
@@ -62,88 +65,9 @@ endif;
             color: <?php echo LOGIN_TITLE_COLOR; ?>
         }
 
-        <?php endif; ?><?php endif; ?>body {
-            /*background: #121417!important;*/
-            background: transparent !important;
-            /*background-image: linear-gradient(rgba(23, 23, 23, 0.5), rgba(18, 20, 23, 0.5)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;
-                background-position: center!important; 
-                background-repeat: no-repeat!important; 
-                background-size: cover!important;
-                min-height: 100%!important;*/
-        }
-
-        p {
-            /*color: #121417!important;*/
-            color: #fffffe !important;
-        }
-
-        .background_img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /*background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.6)), url('https://images.unsplash.com/photo-1485470733090-0aae1788d5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1391&q=80')!important;*/
+        <?php endif; ?><?php endif; ?>.background_img {
             background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo (!empty($season)) ? base_url("images/{$season}.jpg") : ''; ?>) !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            background-size: cover !important;
-            min-height: 100% !important;
-        }
 
-        .login-box-body {
-            background: none !important;
-            /*color: #fffffe;*/
-        }
-
-        .title {
-            color: #fffffe !important;
-            text-align: center;
-            padding: 0 20px 20px 20px;
-        }
-
-        input.form-control {
-            border-radius: 20px;
-            /*background-color: transparent;
-                border: 1px solid #e3e3e3;
-                border-radius: 30px;
-                color: #2c2c2c;*/
-        }
-
-        div.form-group span {
-            color: #121417 !important;
-            margin-right: 10px;
-        }
-
-        .rounded_btn {
-            width: 100% !important;
-            border-radius: 20px !important;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            margin: 10px 0px;
-            /*background-color: #24292e;
-                border-color: #24292e!important;
-                font-size: 16px;*/
-            transition: background-color .45s ease;
-        }
-
-        /*.rounded_btn:active {
-                background-color: #393e42!important;
-            }
-            .rounded_btn:hover {
-                background-color: #393e42!important;
-                border-color: #393e42!important;
-            }*/
-
-        .background_img {
-            min-height: 100vh;
-            max-height: 100%;
-            top: 0;
-            left: 0;
-            padding: 0;
-            color: #fff;
-            position: absolute;
-            overflow: hidden;
         }
     </style>
 </head>
@@ -170,13 +94,13 @@ endif;
                     <div class="alert alert-success">
                         <p><?php e("We've sent you and email to"); ?> <strong><?php echo $receiver; ?></strong> <?php e("which contains the link for reset the password."); ?> </p>
                     </div>
-                <?php elseif ($pwd_resetted) : ?>
+                <?php elseif (!empty($pwd_resetted)) : ?>
                     <h3 class="title"><?php e("Password resetted successfully"); ?></h3>
                     <div class="alert alert-success">
                         <p><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
                     </div>
                 <?php else : ?>
-                    <form id="lost" class="forget-form formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate" style="display: block;">
+                    <form id="lost" class="forget-form rounded formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate" style="display: block;">
                         <?php add_csrf(); ?>
                         <h4 class="title"><?php e("Password lost?"); ?></h4>
                         <p><?php e("Type your e-mail address to reset the password."); ?></p>
