@@ -553,6 +553,12 @@ div.upload-drop-zone {
   width: 156px;
   height: 100px;
 }
+
+.dropzone_div.fileinput-new {
+  width: 100%!important;
+  height: auto!important;
+}
+
 .fileinput-new > img {
   max-height: 80px;
 }
