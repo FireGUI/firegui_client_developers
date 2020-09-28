@@ -689,6 +689,10 @@ a {
     Grid List Widget Style
 *******************************/
 
+.grid-list {
+    height: 300px;
+}
+
 .list-grid ul:empty {
     display: none;
 }

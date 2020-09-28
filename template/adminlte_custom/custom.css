@@ -224,3 +224,6 @@ table tr td {
 .dt-right {
   text-align: right;
 }
+a.fancybox {
+  width:50px!important;
+}

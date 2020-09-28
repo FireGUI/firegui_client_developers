@@ -168,6 +168,7 @@
      * Gestione limiti
      */
     $(document).ready(function() {
+        'use strict';
         var jqAdd = $('#js_limit_add');
         var jqTable = $('#js_limits');
         var jqFirstRow = $('tbody tr.hide', jqTable);
@@ -288,6 +289,7 @@
 
         // Mostra/nascondi tabelle permessi alla disattivazione/attivazione del campo amministratore
         $('.permission_toggle').on('change', function() {
+            'use strict';
             var jqToggle = $(this);
             console.log(jqToggle.val());
             $('#permission_container').collapse(
@@ -299,6 +301,7 @@
 
 
         $('.js-group').on('change', function() {
+            'use strict';
             var groupAssigned = $(this).val();
 
             if (groupAssigned) {

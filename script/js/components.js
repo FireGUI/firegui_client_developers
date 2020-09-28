@@ -1,3 +1,4 @@
+'use strict';
 /* Variabile globale per tracciare tutte le mappe create */
 L.maps = {};
 

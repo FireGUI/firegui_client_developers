@@ -5,6 +5,7 @@
     <button <?php echo sprintf('id="%s"', ($randId = uniqid('form-opener'))); ?> type="button" class="btn-xs btn-link js-form-opener"><?php e('Create new') ?></button>
     <script>
         $(function() {
+            'use strict';
             var params = <?php echo json_encode(compact('randId', 'field', 'subform')); ?>;
             // ==============
             var button = $('#' + params.randId);

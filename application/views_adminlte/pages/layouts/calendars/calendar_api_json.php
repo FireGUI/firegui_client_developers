@@ -20,6 +20,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 <script>
     $(function() {
+        'use strict';
 
         if (!jQuery().fullCalendar) {
             throw Error('Calendar not loaded');

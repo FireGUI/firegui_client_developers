@@ -116,6 +116,7 @@
         <?php if (isset($layout['layouts_fullscreen']) && $layout['layouts_fullscreen'] === DB_BOOL_TRUE) : ?>
             <script>
                 $(document).ready(function() {
+                    'use strict';
                     $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
                 });
             </script>

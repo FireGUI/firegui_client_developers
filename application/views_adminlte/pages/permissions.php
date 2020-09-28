@@ -162,6 +162,7 @@ if ($max_input_vars < $stima_campi) {
     var token_name = token.name;
     var token_hash = token.hash;
     $(document).ready(function() {
+        'use strict';
         var numero_di_campi = $('#views_form :input').length;
         if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
             alert('Il limite max_input_vars (<?php echo $max_input_vars; ?>) è troppo basso rispetto al numero di campi in questa pagina (' + numero_di_campi + ')! Funzionalità disattivata.');
@@ -178,6 +179,7 @@ if ($max_input_vars < $stima_campi) {
         // Nascondi vista precedente
         $('#js-remove-group').hide().off('click');
         jqTableContainer.fadeTo('fast', 0, function() {
+            'use strict';
             $.ajax({
                 url: base_url + 'get_ajax/permission_table/',
                 type: 'post',
@@ -210,7 +212,7 @@ if ($max_input_vars < $stima_campi) {
     }
 
     var ViewPermissionsTable = function() {
-
+        'use strict';
         return {
             tableSel: '#views_form table',
             checkAllSel: '.js-toggle-all',
