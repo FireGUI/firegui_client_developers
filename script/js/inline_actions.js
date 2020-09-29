@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('body').on('mouseenter', 'table tr', function () {
 
         var inline_actions_container = $('.js_action_inline', $(this));
-        //console.log(inline_actions_container);
+
         if (inline_actions_container.length > 0) {
             inline_actions_container.css('visibility', 'visible');
         }
@@ -16,12 +16,6 @@ $(document).ready(function () {
 
     });
     $('body').on('change', 'table .js_switch_bool', function () {
-
-        // if ($(this).is(':checked')) {
-        //     console.log('attivo');
-        // } else {
-        //     console.log('disattivo');
-        // }
         var field_name = $(this).data('field_name');
         var row_id = $(this).data('row_id');
         loading(true);
@@ -32,7 +26,7 @@ $(document).ready(function () {
                 loading(false);
             },
             success: function (msg) {
-                //handleSuccess(msg);
+
             },
             error: function (xhr, ajaxOptions, thrownError) {
 
