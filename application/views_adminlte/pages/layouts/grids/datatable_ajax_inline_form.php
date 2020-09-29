@@ -20,7 +20,18 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 <div class="clearfix"></div>
 <br />
 <?php
-// if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE && isset($links['custom']) && $links['custom']) {
+    $preload_colors = ['CCCCCC' => '#CCCCCC'];
+    foreach ($links['custom'] as $custom_action) {
+        $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
+    }
+    $preload_colors = array_unique($preload_colors);
+    $preload_colors = array_filter($preload_colors, 'strlen');
+
+    $data['background-colors'] = $preload_colors;
+
+    $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
+}
 ?>
 <div class="___table-scrollable table-scrollable-borderless">
     <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>" data-parent_field="<?php echo (empty($parent_field)) ? '' : $parent_field; ?>" data-parent_id="<?php echo (empty($parent_id)) ? '' : $parent_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover table-middle js_ajax_datatable nowrap js_datatable_new_inline <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
