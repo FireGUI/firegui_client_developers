@@ -5,7 +5,7 @@
             <?php foreach ($grid['grids_fields'] as $field) : ?>
                 <dt class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php e($field['grids_fields_column_name']);  ?>:</dt>
                 <dd class="<?php echo "js-grid-field-{$field['fields_id']}" ?>"><?php echo $this->datab->build_grid_cell($field, $dato); ?></dd>
-                <hr style="margin-top: 0.5% !important; margin-bottom: 0.5% !important;">
+                <hr>
             <?php endforeach; ?>
             <?php if (grid_has_action($grid['grids'])) : ?>
                 <dt class="dl-actions-label"><?php e('Actions'); ?></dt>

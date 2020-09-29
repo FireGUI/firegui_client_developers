@@ -5,9 +5,7 @@ $passedId = isset($value_id) ? $value_id : null;
 $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passedId}");
 ?>
 
-<div id="<?php echo $js_identifier; ?>" style="height:380px"></div>
-
-
+<div class="map-customizable" id="<?php echo $js_identifier; ?>"></div>
 
 <script>
     $(document).ready(function() {
@@ -27,9 +25,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
             map.invalidateSize();
         });
     });
-
-
-
 
     function load_marker() {
         /***
@@ -92,7 +87,5 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
             }
         });
     }
-
-
     //    setTimeout(load_marker, 500);
 </script>

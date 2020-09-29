@@ -53,7 +53,7 @@ class Api_manager extends MY_Controller
             ->get('api_manager_tokens')
             ->result_array();
 
-        $dati['logs'] = $this->db->get('log_api')->result_array();
+        $dati['logs'] = $this->db->limit(10)->get('log_api')->result_array();
 
         $dati['current_page'] = 'api_manager';
 

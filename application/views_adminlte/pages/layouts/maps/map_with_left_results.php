@@ -1,6 +1,6 @@
 <div id="results">
     <div class="row">
-        <div class="col-md-3" style="height: 680px; overflow-y: auto;">
+        <div class="col-md-3 map-results">
             <h3><span class="js_results_number"></span> Risultati</h3>
             <ul class="js_result_list media-list">
                 <li class="js_result_item media hide">
@@ -18,7 +18,7 @@
         </div>
 
         <div class="col-md-9">
-            <div id="<?php echo ($id = "map_sidebar{$data['maps']['maps_id']}"); ?>" style="height:680px"></div>
+            <div id="<?php echo ($id = "map_sidebar{$data['maps']['maps_id']}"); ?>" class="map-container"></div>
         </div>
     </div>
 </div>
