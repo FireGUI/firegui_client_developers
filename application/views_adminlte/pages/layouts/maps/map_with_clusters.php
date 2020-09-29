@@ -20,14 +20,12 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
         </form>
     </div>
 
-    <div class="row" style="margin-top: 30px;">
+    <div class="row mt-30">
         <div class="col-md-12">
-            <div <?php echo sprintf('id="%s"', $mapId); ?> style="height:680px"></div>
+            <div <?php echo sprintf('id="%s"', $mapId); ?> class="map-container"></div>
         </div>
     </div>
 </div>
-
-
 <script>
     var token = JSON.parse(atob($('body').data('csrf')));
     var token_name = token.name;
@@ -95,10 +93,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                     } else {
                         markers = L.layerGroup();
                     }
-
-
                     $.each(data, function(i, val) {
-
                         var html = '<b>' + val.title + '</b><br />';
                         if (typeof val.description !== "undefined") {
                             html += val.description
@@ -114,17 +109,13 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                         } else {
                             icon = new L.Icon.Default();
                         }
-
-
                         var marker = L.marker([val.lat, val.lon], {
                             icon: icon
                         }).bindPopup(html);
                         markers.addLayer(marker);
-
                         var coor = L.latLng(val.lat, val.lon);
                         group.push(coor);
                     });
-
                     map.addLayer(markers);
                     map.fitBounds(group);
                 },
@@ -134,10 +125,6 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
                 }
             });
         }
-
-
-
         load_marker();
-
     });
 </script>

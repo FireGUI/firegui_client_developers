@@ -173,13 +173,15 @@
         $(document).ready(function() {
           'use strict';
           $('.js_load_log_api_item').on('click', function() {
-            $('.response').show();
+            if ($('.response').hasClass('hidden')) {
+              $('.response').removeClass('hidden')
+            }
           });
         });
       </script>
     </div>
 
-    <div class="col-md-6 response" class="hide">
+    <div class="col-md-6 response hidden">
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title"><?php e('Log Details'); ?></h3>
