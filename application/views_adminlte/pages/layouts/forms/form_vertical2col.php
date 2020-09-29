@@ -8,7 +8,7 @@
 
     <div class="form-body">
         <div class="row">
-            <div class="col-md-6" style="border-right: 1px solid #e4e4e4;">
+            <div class="col-md-6 form-vertical2col">
                 <?php // echo implode(PHP_EOL, array_slice($form['forms_fields'], 0, $half)); 
                 ?>
                 <?php foreach (array_slice($form['forms_fields'], 0, $half) as $field) : ?>

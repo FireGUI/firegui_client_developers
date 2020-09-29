@@ -29,7 +29,7 @@
                         }
                         $base64img = base64_encode($generator->getBarcode($value_no_check, $type));
                         ?>
-                        <div class="text-center js_barcode_container" style="margin-bottom:56px;" data-type="<?php echo $type; ?>" data-value="<?php echo base64_encode($value); ?>" data-url="main/print_barcode/">
+                        <div class="text-center js_barcode_container" data-type="<?php echo $type; ?>" data-value="<?php echo base64_encode($value); ?>" data-url="main/print_barcode/">
 
                             <div><strong><?php echo $type; ?></strong></div>
                             <div><label><?php e($field_label); ?></label></div>
@@ -74,9 +74,6 @@
                 </div>
             <?php endforeach; ?>
         </div>
-
-
-
     <?php endforeach; ?>
 
     <script>
@@ -96,8 +93,6 @@
                 var url = '<?php echo base_url(); ?>' + container.data('url') + type + '/?val=' + value + pars;
                 window.open(url, '_blank');
             });
-
         });
     </script>
-
 <?php endif; ?>

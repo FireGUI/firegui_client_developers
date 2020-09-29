@@ -19,7 +19,7 @@
                             </select>
                         </div>
 
-                        <div class="form-group col-md-4 col-sm-6" style="display:none;">
+                        <div class="form-group col-md-4 col-sm-6 hidden">
                             <label class="control-label"><?php e('Permissions'); ?></label>
                             <select class="form-control select2_standard entity_permission" name="entity_permission">
                                 <option value=""><?php e('All permissions'); ?></option>
@@ -31,12 +31,12 @@
                             </select>
                         </div>
 
-                        <div class="form-group col-sm-12" style="display:none;">
+                        <div class="form-group col-sm-12 hidden">
                             <label class="control-label"><?php e('Optional where'); ?></label>
                             <textarea class="form-control __select2_standard entity_where" name="entity_where"></textarea>
                         </div>
 
-                        <div class="form-group col-sm-12" style="display:none;">
+                        <div class="form-group col-sm-12 hidden">
                             <label class="control-label"><strong><?php e('Single fields permissions'); ?></strong></label>
                             <div id="campi">
 
@@ -64,7 +64,9 @@
         'use strict';
         $('.entity_name').on('change', function() {
             var entity_name = $('.entity_name').val();
-            $('.entity_permission, .entity_where').parent().show();
+            if ($('.entity_permission, .entity_where').parent().hasClass('hidden')) {
+                $('.entity_permission, .entity_where').parent().removeClass('hidden');
+            }
             $.ajax(base_url + 'api_manager/get_entity_permissions/<?php echo $dati['token']; ?>/' + entity_name, {
                 dataType: 'json',
                 success: function(entity_permission) {
@@ -88,7 +90,9 @@
                 dataType: 'json',
                 success: function(fields) {
                     $('#campi').html('');
-                    $('#campi').parent().show();
+                    if ($('#campi').parent().hasClass('hidden')) {
+                        $('#campi').parent().removeClass('hidden');
+                    }
 
                     $.each(fields, function(i, field) {
                         //$('<input/>').val(field.fields_name).text(field.fields_name).appendTo($('.entity_name'));

@@ -33,9 +33,9 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
         </div>
     </div>
 
-    <div class="row" style="margin-top: 10px;">
+    <div class="row mt-10">
         <div class="col-md-12">
-            <div <?php echo sprintf('id="%s"', $mapId); ?> style="height:680px"></div>
+            <div <?php echo sprintf('id="%s"', $mapId); ?> class="map-container"></div>
         </div>
     </div>
 </div>

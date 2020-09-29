@@ -6,7 +6,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 ?>
 <div id="results">
     <div class="row">
-        <div class="col-xs-12" style="margin-bottom: 10px">
+        <div class="col-xs-12 mb-10">
             <a href="<?php // echo "#clusered_map_form_".$data['maps']['maps_id']; 
                         ?>" onclick="$('#<?php echo 'clusered_map_form_toggle' . $data['maps']['maps_id']; ?>').fadeIn('slow');" class="btn btn-xs red"><i class="fas fa-times"></i></a>
         </div>
@@ -43,8 +43,8 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
     </div>
 
 
-    <div class="row" style="margin-top: 10px;">
-        <div class="col-lg-2 col-sm-3 hidden-xs" style="height: 680px; overflow-y: auto;">
+    <div class="row mt-10">
+        <div class="col-lg-2 col-sm-3 hidden-xs map-results">
             <h3>
                 <span class="js_results_number"></span> Risultati<br />
                 <small class="js_limited_results"></small>
@@ -68,7 +68,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
         </div>
 
         <div class="col-lg-10 col-sm-9">
-            <div <?php echo sprintf('id="%s"', $mapId); ?> style="height:680px"></div>
+            <div <?php echo sprintf('id="%s"', $mapId); ?> class="map-container"></div>
         </div>
     </div>
 </div>

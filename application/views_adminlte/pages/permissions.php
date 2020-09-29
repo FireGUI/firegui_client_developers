@@ -64,7 +64,7 @@ if ($max_input_vars < $stima_campi) {
                         <div class="form-actions fluid">
                             <div class="col-md-12">
                                 <div class='pull-right'>
-                                    <button id="js-remove-group" type="button" class="btn red" style="display:none"><?php e('Delete group'); ?></button>
+                                    <button id="js-remove-group" type="button" class="btn red"><?php e('Delete group'); ?></button>
                                     <button id="js_form_toggler" type="submit" class="btn btn-primary" disabled><?php e('Save'); ?></button>
                                 </div>
                             </div>
@@ -103,7 +103,7 @@ if ($max_input_vars < $stima_campi) {
                                                 <th>
                                                     <label>
                                                         <input type="checkbox" data-toggle="tooltip" title="<?php e('Attiva/Disattiva tutti'); ?>" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
-                                                        <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted" style="font-weight:normal">Group</small> ') . $username; ?></strong>
+                                                        <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted fw-normal">Group</small> ') . $username; ?></strong>
                                                     </label>
                                                 </th>
                                             <?php endforeach; ?>
@@ -114,7 +114,7 @@ if ($max_input_vars < $stima_campi) {
                                         <?php foreach ($dati['layouts'] as $layoutID => $layout) : ?>
                                             <tr>
                                                 <th>
-                                                    <label style="width: 220px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title="<?php echo $layout; ?>">
+                                                    <label class="permissions-layout-label" title="<?php echo $layout; ?>">
                                                         <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
                                                         <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
                                                     </label>

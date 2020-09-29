@@ -3,9 +3,7 @@ $id = "map_standard{$data['maps']['maps_id']}";
 $passedId = isset($value_id) ? $value_id : null;
 $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passedId}");
 ?>
-<div <?php echo sprintf('id="%s"', $id); ?> style="height:380px"></div>
-
-
+<div class="map-standard" <?php echo sprintf('id="%s"', $id); ?>></div>
 
 <script>
     var token = JSON.parse(atob($('body').data('csrf')));
@@ -27,8 +25,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
         // L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         //     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         // }).addTo(map);
-
-
 
         var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
         /*,
@@ -53,9 +49,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
                                 subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
                             })*/
         ;
-
-
-
 
         var baseMaps = {
             "OpenStreetMap": osm,
@@ -146,8 +139,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
             });
         }
 
-
         setTimeout(load_marker, 500);
-
     });
 </script>

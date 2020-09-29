@@ -50,7 +50,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                             <?php endif; ?>
                             <?php if ($sub_data) : ?>
 
-                                <a style="margin-top: 5px;" onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-xs" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
+                                <a onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-xs dt-subdata-btn" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
                                     <?php e('expand'); ?> <span data-toggle="tooltip" class="caret"></span>
                                 </a>
                             <?php endif; ?>
@@ -60,15 +60,15 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
                     <?php /* INIZIO SUB ENTITY */ ?>
                     <?php if ($sub_data) : ?>
-                        <tr style="background-color:#DDD!important;">
-                            <td <?php echo 'colspan="' . (count($grid['grids_fields']) + 1) . '"'; ?> style="padding: 0;border: none;">
-                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse" style="margin-top:25px;padding: 5px;">
+                        <tr class="subdata-tr">
+                            <td <?php echo 'colspan="' . (count($grid['grids_fields']) + 1) . '"'; ?> class="subdata-td">
+                                <div <?php echo "id='{$collapse_id}'"; ?> class="collapse">
                                     <?php if (!$sub_grid['grids']['grids_layout']) : ?>
-                                        <table class="table table-bordered table-full-width" style="margin-bottom: 0!important">
+                                        <table class="table table-bordered table-full-width subdata-table">
                                             <thead>
                                                 <tr>
                                                     <?php foreach ($sub_grid['grids_fields'] as $field) : ?>
-                                                        <th style="background-color: #dcdcdc; color: #000"><?php e($field['grids_fields_column_name']);  ?></th>
+                                                        <th class="subdata-th"><?php e($field['grids_fields_column_name']);  ?></th>
                                                     <?php endforeach; ?>
                                                     <th><?php e('Actions'); ?></th>
                                                 </tr>

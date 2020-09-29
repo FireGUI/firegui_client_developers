@@ -14,7 +14,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
         </div>
 
         <div class="js_filter_form_rows_container">
-            <div class="js_filter_form_row row hide" style="margin-bottom: 10px;">
+            <div class="js_filter_form_row row hide">
                 <div class="col-xs-4">
                     <select class="form-control input-sm" data-name="field_id">
                         <option></option>
@@ -51,7 +51,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
             <?php if (isset($sess_data[$form['forms']['forms_filter_session_key']])) : ?>
                 <?php foreach ($sess_data[$form['forms']['forms_filter_session_key']] as $k => $condition) : ?>
-                    <div class="js_filter_form_row row" style="margin-bottom: 10px;">
+                    <div class="js_filter_form_row row">
                         <div class="col-xs-4">
                             <select class="form-control input-sm" name="conditions[<?php echo $k; ?>][field_id]">
                                 <option></option>
