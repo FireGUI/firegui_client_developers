@@ -212,7 +212,7 @@ class Layout extends CI_Model
     public function addDinamicStylesheet($data, $file)
     {
         $file = "template/build/{$file}";
-        if (!file_exists($file)) {
+        if (!file_exists($file) || !$this->apilib->isCacheEnabled()) {
             $fp = fopen($file, 'w+');
             foreach ($data as $key => $vals) {
                 switch ($key) {

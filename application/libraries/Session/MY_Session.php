@@ -98,7 +98,7 @@ class MY_Session extends CI_Session
             [
                 'samesite' => $cookie_samesite,
                 'secure' => $secure_cookie,
-                'expires' => $params['cookie_lifetime'],
+                //'expires' => $params['cookie_lifetime'],
                 'path' => config_item('cookie_path'),
                 'domain' => config_item('cookie_domain'),
                 'httponly' => config_item('cookie_httponly')
