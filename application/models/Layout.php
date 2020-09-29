@@ -134,15 +134,18 @@ class Layout extends CI_Model
 
         return $pdfFile;
     }
-    public function getLayout($layoutId) {
+    public function getLayout($layoutId)
+    {
         $layout = $this->db->get_where('layouts', array('layouts_id' => $layoutId))->row_array();
         return $layout;
     }
 
-    public function setLayoutModule($current_module_identifier = false) {
+    public function setLayoutModule($current_module_identifier = false)
+    {
         $this->current_module_identifier = $current_module_identifier;
     }
-    public function getLayoutModule() {
+    public function getLayoutModule()
+    {
         return $this->current_module_identifier;
     }
 
@@ -202,5 +205,32 @@ class Layout extends CI_Model
     {
         $path = $this->moduleAssets($module_identifier, $file);
         echo '<script src="' . $path . '&v=' . VERSION . '" ></script>';
+    }
+
+
+    //Functions to include dinamic generate css or js
+    public function addDinamicStylesheet($data, $file)
+    {
+        $file = "template/build/{$file}";
+        if (!file_exists($file)) {
+            $fp = fopen($file, 'w+');
+            foreach ($data as $key => $vals) {
+                switch ($key) {
+                    case 'background-colors':
+                        foreach ($vals as $classname => $color) {
+                            $str_append = ".bg{$classname} {background-color:{$color};}";
+                            //die($str_append);
+                            fwrite($fp, $str_append);
+                        }
+                        break;
+                    default:
+                        log_message('error', "Key '$key' not recognized for dinamic stylesheet");
+                        break;
+                }
+            }
+            fclose($fp);
+        }
+
+        echo '<link rel="stylesheet" type="text/css" href="' . base_url($file) . '?v=' . VERSION . '" />';
     }
 }
