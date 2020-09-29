@@ -16,7 +16,20 @@ foreach ($grid['grids_fields'] as $field) {
 <?php if (empty($grid_data['data'])) : ?>
     <p>No records found</p>
 <?php else : ?>
+    <?php
+    if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE && isset($links['custom']) && $links['custom']) {
+        $preload_colors = ['CCCCCC' => '#CCCCCC'];
+        foreach ($links['custom'] as $custom_action) {
+            $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
+        }
+        $preload_colors = array_unique($preload_colors);
+        $preload_colors = array_filter($preload_colors, 'strlen');
 
+        $data['background-colors'] = $preload_colors;
+
+        $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
+    }
+    ?>
     <div class="table-scrollable table-scrollable-borderless">
         <table id="<?php echo $grid_id; ?>" class="table table-striped table-condensed">
             <thead>

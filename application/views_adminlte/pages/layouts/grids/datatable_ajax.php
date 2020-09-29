@@ -13,7 +13,27 @@ foreach ($grid['grids_fields'] as $field) {
         break;
     }
 }
+
+$links = $grid['grids']['links'];
 ?>
+
+
+
+<?php
+if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE && isset($links['custom']) && $links['custom']) {
+    $preload_colors = ['CCCCCC' => '#CCCCCC'];
+    foreach ($links['custom'] as $custom_action) {
+        $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
+    }
+    $preload_colors = array_unique($preload_colors);
+    $preload_colors = array_filter($preload_colors, 'strlen');
+
+    $data['background-colors'] = $preload_colors;
+
+    $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
+}
+?>
+
 
 <div class="___table-scrollable table-scrollable-borderless">
     <?php
