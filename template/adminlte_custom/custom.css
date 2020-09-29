@@ -344,11 +344,6 @@ body {
                 color: #2c2c2c;*/
 }
 
-div.form-group span {
-  color: #121417 !important;
-  margin-right: 10px;
-}
-
 /*add rules to bootstrap-select*/
 .dropdown-toggle {
   border-radius: 20px;
