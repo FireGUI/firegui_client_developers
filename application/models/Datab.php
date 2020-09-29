@@ -3027,7 +3027,7 @@ class Datab extends CI_Model
                     eval(' ?>' . $layoutBoxData['layouts_boxes_content'] . '<?php ');
                     return ob_get_clean();
                 }
-                return sprintf('<strong style="color:red">TYPE: %s ANCORA NON GESTITO</strong>', $contentType);
+                return sprintf('<strong style="color:red">TYPE: %s No content</strong>', $contentType);
         }
     }
 
