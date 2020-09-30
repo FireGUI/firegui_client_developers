@@ -35,7 +35,6 @@ if (isset($grid_data['data'])) {
                                 <img src="<?php echo $item['thumb']; ?>" width="140" />
                             <?php endif; ?>
                         </p>
-                        <!--<div class="desc">Task da fare: <?php echo ''; ?></div>-->
                         <?php if ($item['consegna']) : ?>
                             <div class="desc"><?php e('Consegna prevista:'); ?> <?php echo $item['consegna']; ?></div>
                         <?php endif; ?>

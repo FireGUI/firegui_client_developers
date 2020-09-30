@@ -26,8 +26,6 @@
             </thead>
             <tbody>
               <?php foreach ($dati['tokens'] as $token) : ?>
-                <?php //debug($token, true); 
-                ?>
                 <tr class="odd gradeX" data-id="<?php echo $token['api_manager_tokens_id']; ?>">
                   <td><span class='hide'><?php echo $token['api_manager_tokens_creation_date']; ?></span><?php echo dateFormat($token['api_manager_tokens_creation_date']); ?></td>
                   <td><?php echo $token[LOGIN_NAME_FIELD]; ?> <?php echo $token[LOGIN_SURNAME_FIELD]; ?></td>

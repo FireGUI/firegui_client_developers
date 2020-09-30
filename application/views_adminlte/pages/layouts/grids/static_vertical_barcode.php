@@ -11,13 +11,10 @@
                     foreach ([$generator::TYPE_CODE_128, $generator::TYPE_EAN_13] as $type) :
                     ?>
                         <?php
-                        // debug($type);
-                        // debug($dato[$field['fields_name']]);
                         switch ($type) {
                             case $generator::TYPE_EAN_13:
                                 $value = preg_replace('/\D/', '', $dato[$field['fields_name']]);
                                 $value_no_check = $value; //substr($value, 0, 12);
-                                //dd($generator);
                                 break;
                             default:
                                 $value = $dato[$field['fields_name']];
@@ -79,7 +76,6 @@
     <script>
         $(document).ready(function() {
             'use strict';
-            //$('.js_barcode_grid').hide();
 
             $('.js_print').on('click', function() {
                 var container = $(this).closest('.js_barcode_container');

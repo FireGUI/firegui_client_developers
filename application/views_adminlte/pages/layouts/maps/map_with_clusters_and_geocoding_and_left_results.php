@@ -7,8 +7,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
 <div id="results">
     <div class="row">
         <div class="col-xs-12 mb-10">
-            <a href="<?php // echo "#clusered_map_form_".$data['maps']['maps_id']; 
-                        ?>" onclick="$('#<?php echo 'clusered_map_form_toggle' . $data['maps']['maps_id']; ?>').fadeIn('slow');" class="btn btn-xs red"><i class="fas fa-times"></i></a>
+            <a href="#" onclick="$('#<?php echo 'clusered_map_form_toggle' . $data['maps']['maps_id']; ?>').fadeIn('slow');" class="btn btn-xs red"><i class="fas fa-times"></i></a>
         </div>
         <form <?php echo sprintf('id="%s"', $mapFormId); ?> class="__collapse">
             <?php add_csrf(); ?>
@@ -29,9 +28,7 @@ $mapId = "map_clusters{$data['maps']['maps_id']}";
     </div>
 
     <div class="row">
-        <div class="col-md-8">
-            <!--<a <?php echo sprintf('id="clusered_map_form_toggle%s"', $data['maps']['maps_id']); ?> href="<?php echo '#clusered_map_form_' . $data['maps']['maps_id']; ?>" data-toggle="collapse" onclick="$(this).fadeOut('fast');" class="btn btn-primary">Mostra filtri</a>-->
-        </div>
+        <div class="col-md-8"></div>
         <div class="col-md-4">
             <div class="input-group">
                 <input <?php echo sprintf('id="%s"', $mapGeocodeInput); ?> class="form-control" type="text" placeholder="<?php e('cerca località') ?>" />

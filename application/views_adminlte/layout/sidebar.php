@@ -33,9 +33,6 @@
             $isLinkOrContainer = ($link or $hasSubmenu);
             $isCurrent = in_array($current_page, $menu['pages_names']);
             $label = ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label']));
-
-            //$classes = [sprintf('menu-%s', $menu['menu_id'])];
-            //20190423 - MP - La classe non veniva aggiunta nella sidebar, ma solo nei menu dei layout
             $classes = [sprintf('menu-%s', $menu['menu_id']), $menu['menu_css_class']];
             if ($first) {
                 $classes[] = 'start';
@@ -51,8 +48,7 @@
 
             <?php if ($isLinkOrContainer) : ?>
                 <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
-                    <a href="<?php echo $link ?: 'javascript:;'; ?>" <?php //echo ($menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
-                                                                        ?>>
+                    <a href="<?php echo $link ?: 'javascript:;'; ?>">
                         <i class="<?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i> <span class="title"><?php e($label, true, ['module_name' => $menu['menu_module']]); ?></span>
                         <?php if ($isCurrent) : ?><span class="selected"></span><?php endif; ?>
                         <?php if ($hasSubmenu) : ?><span class="pull-right-container"><i class="fas fa-angle-left pull-right"></i></span><?php endif; ?>
@@ -68,8 +64,7 @@
                                 }
                                 ?>
                                 <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
-                                    <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" <?php //echo ($sub_menu['new_tab'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; 
-                                                                                                            ?>>
+                                    <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>">
                                         <i class="<?php echo $sub_menu['menu_icon_class'] ?: 'fas fa-empty'; ?>"></i>
                                         <?php e(ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])), true, ['module_name' => $sub_menu['menu_module']]); ?>
                                     </a>
@@ -87,26 +82,5 @@
             $first = false;
         endforeach;
         ?>
-
-        <?php /*foreach ($this->datab->get_modules() as $module): ?>
-            <?php
-            $isCurrent = $current_page == "module_{$module['modules_name']}";
-            ?>
-            <li class="<?php echo $module['modules_name']; ?> <?php echo $isCurrent ? "active" : ''; ?>">
-                <a href="<?php echo base_url($module['modules_home_url']) ?>"> <i class="fas fa-plus-circle"></i> <span
-                            class="title"><?php echo $module['modules_label']; ?></span>
-                    <?php if ($isCurrent): ?><span class="selected"></span><?php endif; ?>
-                </a>
-            </li>
-        <?php endforeach; ?>
-
-        <?php if (SHOW_MEDIA_MODULE === true): ?>
-            <li class="<?php echo ($current_page == "module_media") ? "active" : ''; ?>">
-                <a href="<?php echo base_url('media/upload') ?>"> <i class="fas fa-upload"></i> <span
-                            class="title">Media</span>
-                    <?php if ($current_page == "module_media"): ?><span class="selected"></span><?php endif; ?>
-                </a>
-            </li>
-        <?php endif;*/ ?>
     </ul>
 </section>

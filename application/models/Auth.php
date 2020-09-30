@@ -183,21 +183,17 @@ class Auth extends CI_Model
             $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => $secret));
         }
 
-        //debug($this->db->last_query(),true);
-
         if (!$query->num_rows()) {
             // Nessun risultato? Allora esci...
             return false;
         }
 
-
-
         $this->setSessionUserdata($query->row_array());
-
 
         if ($remember || $timeout > 0) {
             $this->rememberUser($query->row()->{LOGIN_ENTITY . '_id'}, $timeout);
         }
+
         return true;
     }
 
@@ -286,10 +282,8 @@ class Auth extends CI_Model
             $cookie_samesite = config_item('cookie_samesite');
             set_cookie(array(
                 'name' => static::$rememberTokenName,
-                //'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout*60)]),
                 'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
                 'expire' => (int) (time() + (31 * 24 * 60 * 60)),
-                //'expire' => time() + ($timeout*60),
                 'domain' => '.' . $_SERVER['HTTP_HOST'],
                 'path' => ($this->config->item('cookie_path')) ?: '/',
                 'samesite' => $cookie_samesite,

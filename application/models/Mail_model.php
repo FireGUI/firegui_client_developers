@@ -67,7 +67,7 @@ class Mail_model extends CI_Model
         }
 
         $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
-        //debug($email, true);
+
         if (empty($email)) {
 
             return false;
@@ -82,7 +82,8 @@ class Mail_model extends CI_Model
         $filteredData = array_filter($data, 'is_scalar');
         $subject = str_replace_placeholders($email['emails_subject'],  $filteredData);
         $message = str_replace_placeholders($email['emails_template'], $filteredData);
-        if (gethostname() === 'idra') { //Meglio questo dell'is_development
+
+        if (is_development()) { //Meglio questo dell'is_development
             $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";
         }
 
@@ -217,9 +218,7 @@ class Mail_model extends CI_Model
             'mail_subject' => $subject,
             'mail_body' => $message,
             'mail_to' => $to,
-            //'mail_boundary' => ['type' => 'TEXT', 'null' => true],
             'mail_headers' => json_encode($headers),
-            //'mail_log' => ['type' => 'TEXT', 'null' => true],
             'mail_is_html' => ($isHtml) ? DB_BOOL_TRUE : DB_BOOL_FALSE,
             'mail_user' => $this->auth->get(LOGIN_ENTITY . '_id') ? $this->auth->get(LOGIN_ENTITY . '_id') : null
         ];
@@ -245,12 +244,12 @@ class Mail_model extends CI_Model
 
         // HTML mail setup
         if ($isHtml) {
-
             $this->email->set_mailtype('html');
 
             if (function_exists('mb_convert_encoding')) {
                 $message = mb_convert_encoding(str_replace('&nbsp;', ' ', $message), 'HTML-ENTITIES', 'UTF-8');
             }
+
             $message = '<html><body>' . $message . '</body></html>';
         }
 
@@ -261,8 +260,6 @@ class Mail_model extends CI_Model
 
         // Prepend the default headers
         $defaultHeaders = $this->config->item('email_headers');
-
-        //debug($this->email,true);
 
         $headers = array_merge($defaultHeaders ?: [], $headers);
 

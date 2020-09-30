@@ -1,6 +1,4 @@
 <div class="js_action_inline action_inline">
-    <?php //debug($links); 
-    ?>
     <?php if (isset($links['custom']) && $links['custom']) : ?>
         <?php
         // Filtra tutti i valori array e oggetto dall'array dati
@@ -63,7 +61,6 @@
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=extra";
                         }
                     } else {
-                        //die('TODO type: ' . $custom_action['grids_actions_type']);
                         $url = '';
                     }
                 } else {

@@ -77,15 +77,12 @@ class Layout extends CI_Model
         $filename = date('Ymd-H-i-s');
         $pdfFile = "{$physicalDir}/{$filename}.pdf";
 
-        //debug("pages/layouts/custom_views/{$module}/{$relative_path}{$view}",true);
         if ($content_html === true) {
             ob_start();
             extract($extra_data);
             eval('?>' . $view);
-            //$content = $this->parser->parse_string($view, $extra_data, true);
 
             $content = ob_get_clean();
-            //die($content);
         } else {
             if (
                 !$module
@@ -105,7 +102,6 @@ class Layout extends CI_Model
                 if ($module) {
                     $relative_path = $module . '/' . $relative_path;
                 }
-                //die("application/views_adminlte/pages/layouts/custom_views/{$module}/{$relative_path}{$view}");
                 $content = $this->parser->parse("pages/layouts/custom_views/{$relative_path}{$view}", $extra_data, true);
             } else {
 
@@ -129,8 +125,6 @@ class Layout extends CI_Model
         $options = "-T '5mm' -B '5mm' -O $orientation";
 
         exec("wkhtmltopdf {$options} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
-        //debug("wkhtmltopdf {$options} --viewport-size 1024 {$tmpHtml} {$pdfFile}",true);
-
 
         return $pdfFile;
     }
@@ -219,7 +213,6 @@ class Layout extends CI_Model
                     case 'background-colors':
                         foreach ($vals as $classname => $color) {
                             $str_append = ".bg{$classname} {background-color:{$color};}";
-                            //die($str_append);
                             fwrite($fp, $str_append);
                         }
                         break;

@@ -1,5 +1,4 @@
 <?php
-//debug($grid);
 $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
 
 $has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
@@ -31,9 +30,6 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
 }
 ?>
 <div class="___table-scrollable table-scrollable-borderless">
-    <?php
-    // if($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
-    ?>
     <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover table-condensed nowrap js_ajax_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-crsf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-value-id="<?php echo $value_id; ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>">
         <thead>
             <tr>

@@ -12,7 +12,6 @@ if (!empty($sub_grid) && !empty($grid_data['sub_grid_data'])) {
     unset($grid_data['sub_grid_data']); // Free memory
 }
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
-//debug($sub_grid,true);
 ?>
 <?php if (empty($grid_data['data'])) : ?>
     <p>No records found</p>
@@ -75,7 +74,6 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
                     </tr>
 
-                    <?php /* INIZIO SUB ENTITY */ ?>
                     <?php if ($sub_data) : ?>
                         <tr class="subdata-tr">
                             <td <?php echo 'colspan="' . (count($grid['grids_fields']) + 1) . '"'; ?> class="subdata-td">
@@ -112,15 +110,12 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                                         </table>
                                     <?php else : ?>
                                         <?php
-
-                                        //debug($dato,true);
                                         $this->load->view(
                                             "pages/layouts/grids/{$sub_grid['grids']['grids_layout']}",
                                             array(
                                                 'grid' => $sub_grid,
                                                 'sub_grid' => false,
                                                 'grid_data' => $sub_data,
-                                                //'value_id' => $value_id, 
                                                 'layout_data_detail' => [],
                                                 'is_sub_grid' => true,
                                                 'where' => "{$sub_grid['grid_relation_field']} = '{$dato[$grid['grids']['entity_name'] . "_id"]}'"
@@ -132,8 +127,6 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                             </td>
                         </tr>
                     <?php endif; ?>
-                    <?php /* Fine Sub entity */ ?>
-
                 <?php endforeach; ?>
             </tbody>
         </table>

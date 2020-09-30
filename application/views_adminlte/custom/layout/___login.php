@@ -5,9 +5,7 @@ RENAME THIS FILE FROM __login.php to login.php THAN REOPEN THE ACCESS PAGE.
 -->
 <style>
     /* Bordered form */
-    form {
-        /*border: 3px solid #f1f1f1;*/
-    }
+    form {}
 
     /* Full-width inputs */
     input[type=text],
@@ -96,7 +94,6 @@ RENAME THIS FILE FROM __login.php to login.php THAN REOPEN THE ACCESS PAGE.
             <label>
                 <b>Logout after:</b>
                 <select name="timeout">
-                    <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
                     <option value="5" class="form-control input-sm select2">5 minutes</option>
                     <option value="10" class="form-control input-sm select2">10 minutes</option>
                     <option value="30" class="form-control input-sm select2">30 minutes</option>

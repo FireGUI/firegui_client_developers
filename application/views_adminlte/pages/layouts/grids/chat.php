@@ -14,8 +14,6 @@ if (isset($grid_data['data'])) {
             if ($item) {
                 $items[] = $item;
             }
-            // debug($dato);
-            // debug($grid['replaces']);
             $item = array(
                 'username' => isset($grid['replaces']['username']) ?
                     (
@@ -70,8 +68,6 @@ if (isset($grid_data['data'])) {
             <input type="hidden" name="user" value="<?php echo $this->auth->get('id'); ?>" />
 
             <?php if (isset($grid['replaces']['value_id'])) : ?>
-                <?php //debug($layout_data_detail);
-                ?>
                 <input type="hidden" name="value_id" value="<?php echo (array_key_exists($grid['replaces']['value_id']['fields_name'], $layout_data_detail)) ? $layout_data_detail[$grid['replaces']['value_id']['fields_name']] : $value_id; ?>" />
             <?php endif; ?>
             <div class="input-group">
@@ -127,7 +123,6 @@ if (isset($grid_data['data'])) {
 
             appendMessage: function(message) {
                 var chatContainer = $('.chats', this.element);
-                //var thisClass = ($('li:last-child', chatContainer).hasClass('in')? 'out': 'in');
                 var thisClass = 'direct-chat-msg right'; // I miei messaggi sono sempre a dx...
                 var listItem = $('<li/>').addClass(thisClass);
                 listItem.append(
@@ -137,7 +132,6 @@ if (isset($grid_data['data'])) {
                     ),
                     (typeof value !== "undefined" ? $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive') : ''),
                     $('<div/>').addClass('direct-chat-text body').append(
-                        //$('<span/>').addClass('arrow'),
                         $('<span/>').html(message.text)
                     )
                 ).appendTo(chatContainer);

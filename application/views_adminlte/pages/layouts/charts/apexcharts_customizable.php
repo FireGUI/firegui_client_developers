@@ -26,27 +26,6 @@ foreach ($chart_data as $x => $chart_element_data) {
         }
     }
 }
-/*series: [
-  {
-    data: [1.4, 2, 2.5, 1.5, 2.5, 2.8, 3.8, 4.6]
-  },
-  {
-    data: [20, 29, 37, 36, 44, 45, 50, 58]
-  }
-],
-yaxis: [
-  {
-    title: {
-      text: "Series A"
-    },
-  },
-  {
-    opposite: true,
-    title: {
-      text: "Series B"
-    }
-  }
-],*/
 
 foreach ($chart_data as $x => $chart_element_data) {
 
@@ -54,9 +33,7 @@ foreach ($chart_data as $x => $chart_element_data) {
         ksort($data);
         $elements_data = [
             'name' => $name,
-            // 'backgroundColor' => $colors[$x % 6],
             'data' => [],
-            //'type' => 'line'
         ];
         foreach ($data as $key => $value) {
 
@@ -66,8 +43,6 @@ foreach ($chart_data as $x => $chart_element_data) {
         $series['series'][] = $elements_data;
     }
 }
-
-//debug($xes, true);
 ?>
 <div class="row">
 
@@ -79,12 +54,7 @@ foreach ($chart_data as $x => $chart_element_data) {
             <option value="line" data-curve="straight" selected>Line (straight)</option>
             <option value="line" data-curve="stepline">Line (stepline)</option>
             <option value="area">Area</option>
-
-            <!-- <option value="candlestick">Candlestick</option> -->
             <option value="heatmap">Heatmap</option>
-            <!--<option value="donut">Donut</option>
-            <option value="radar">Radar</option>
-            <option value="radialBar">Radial bar</option>-->
         </select>
     </div>
 </div>
@@ -93,7 +63,6 @@ foreach ($chart_data as $x => $chart_element_data) {
 </div>
 <script>
     var series<?php echo $chartId; ?> = JSON.parse('<?php echo json_encode($series); ?>');
-    //console.log(series<?php echo $chartId; ?>.yaxis);
     var options<?php echo $chartId; ?> = {
         chart: {
             type: 'line',
@@ -104,13 +73,7 @@ foreach ($chart_data as $x => $chart_element_data) {
             },
         },
         stroke: {
-            //width: [0, 2, 5],
             curve: 'straight',
-            // show: true,
-            // lineCap: 'butt',
-            // colors: undefined,
-            // width: 2,
-            // dashArray: 0,
         },
         plotOptions: {
             bar: {
@@ -138,20 +101,6 @@ foreach ($chart_data as $x => $chart_element_data) {
                 }
             }
         },
-        // fill: {
-        //     opacity: 0.5,
-        //     type: 'gradient',
-        //     gradient: {
-        //         inverseColors: false,
-        //         //shade: 'light',
-        //         type: "vertical",
-        //         stops: [0, 90, 100],
-        //         shadeIntensity: 1,
-        //         opacityFrom: 0.5,
-        //         opacityTo: 0,
-        //         stops: [0, 90, 100]
-        //     }
-        // },
         legend: {
             show: true
         },
@@ -160,7 +109,6 @@ foreach ($chart_data as $x => $chart_element_data) {
             categories: ['<?php echo implode("','", $xes); ?>'],
             labels: {
                 formatter: function(value, timestamp, index) {
-                    //console.log(moment(value));
                     if (moment(value).isValid()) {
 
                         return moment(value).format("DD MMM YYYY")
@@ -185,9 +133,6 @@ foreach ($chart_data as $x => $chart_element_data) {
                 }
             }
         }
-
-
-
     }
 
     var chart<?php echo $chartId; ?> = new ApexCharts(document.querySelector("#<?php echo $chartId; ?>"), options<?php echo $chartId; ?>);
@@ -203,7 +148,6 @@ foreach ($chart_data as $x => $chart_element_data) {
                 type: 'gradient',
                 gradient: {
                     inverseColors: false,
-                    //shade: 'light',
                     type: "vertical",
                     stops: [0, 90, 100],
                     shadeIntensity: 1,
@@ -220,17 +164,9 @@ foreach ($chart_data as $x => $chart_element_data) {
                 type: type,
             },
             stroke: {
-                //width: [0, 2, 5],
                 curve: curve,
-                // show: true,
-                // lineCap: 'butt',
-                // colors: undefined,
-                // width: 2,
-                // dashArray: 0,
             },
             fill: fill,
         });
-        //chart<?php echo $chartId; ?>.destroy();
-        //chart<?php echo $chartId; ?>.render();
     });
 </script>

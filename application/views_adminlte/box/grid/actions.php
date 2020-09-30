@@ -1,6 +1,4 @@
 <div class="action-list">
-    <?php //debug($links); 
-    ?>
     <?php if (isset($links['custom']) && $links['custom']) : ?>
         <?php
         // Filtra tutti i valori array e oggetto dall'array dati
@@ -29,19 +27,6 @@
             <?php else : ?>
 
                 <?php
-                /*
-            [grids_actions_id] =&gt; 2
-            [grids_actions_grids_id] =&gt; 5
-            [grids_actions_order] =&gt; 1
-            [grids_actions_name] =&gt; edit_layout
-            [grids_actions_html] =&gt; 
-            [grids_actions_link] =&gt; 
-            [grids_actions_layout] =&gt; 3
-            [grids_actions_icon] =&gt; far fa-edit
-            [grids_actions_mode] =&gt; default
-            [grids_actions_type] =&gt; edit_layout
-            [grids_actions_color] =&gt; rgb(255, 193, 7)
-             */
                 $confirm = false;
                 if (empty($custom_action['grids_actions_link'])) {
                     if (!empty($custom_action['grids_actions_type']) && in_array($custom_action['grids_actions_type'], ['detail', 'edit_layout'])) {
@@ -70,7 +55,6 @@
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=extra";
                         }
                     } else {
-                        //die('TODO type: ' . $custom_action['grids_actions_type']);
                         $url = '';
                     }
                 } else {
@@ -95,8 +79,7 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php //Mantained for back compatibility, but should be removed... 
-    ?>
+    <!-- Mantained for back compatibility, but should be removed...  -->
     <?php if (isset($links['view']) && $links['view']) : ?>
         <a href="<?php echo $links['view'] . $id; ?>" class="btn btn-success btn-grid-action-s <?php if (!empty($links['view_modal'])) echo 'js_open_modal'; ?>" <?php if (!empty($links['view_modal'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?> data-toggle="tooltip" title="<?php e('View'); ?>">
             <span class="fas fa-search-plus"></span>
