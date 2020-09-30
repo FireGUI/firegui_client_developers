@@ -62,7 +62,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
         <!-- Bootstrap-select -->
-        <link rel="stylesheet" href="<?php echo base_url("script/global/plugins/bootstrap-select/bootstra-select.min.css?v={$this->config->item('version')}"); ?>">
+        <link rel="stylesheet" href="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>">
 
         <style>
             <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
@@ -185,7 +185,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <!-- CUSTOM COMPONENTS -->
         <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- Bootstrap-select -->
-        <script src="<?php echo base_url("script/global/plugins/bootstrap-select/bootstra-select.min.js?v={$this->config->item('version')}"); ?>"></script>
+        <script src="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.js?v={$this->config->item('version')}"); ?>"></script>
     </body>
 
     </html>
