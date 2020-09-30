@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
     'use strict';
     $('.js_test_import').on('click', function () {
@@ -13,7 +12,7 @@ $(document).ready(function () {
             cache: false,
             contentType: false,
             processData: false,
-            dataType: "json",
+            dataType: 'json',
             success: function (msg) {
                 var status = parseInt(msg.status);
                 resultContainer.html(msg.txt);
@@ -26,9 +25,7 @@ $(document).ready(function () {
                 if (msg.txt) {
                     resultContainer.removeClass('hide');
                 }
-
-            }
+            },
         });
     });
-
 });
