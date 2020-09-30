@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Crea nuovo oggetto inline table
  *
@@ -6,8 +6,8 @@
  * @returns {CrmInlineTable}
  */
 function CrmInlineTable(grid) {
-  this.grid = grid;
-  this.nEditing = null;
+    this.grid = grid;
+    this.nEditing = null;
 }
 
 /**
@@ -15,7 +15,7 @@ function CrmInlineTable(grid) {
  * @returns {jQuery}
  */
 CrmInlineTable.prototype.getDatatableHandler = function () {
-  return this.grid.dataTable();
+    return this.grid.dataTable();
 };
 
 /**
@@ -23,7 +23,7 @@ CrmInlineTable.prototype.getDatatableHandler = function () {
  * @returns {String}
  */
 CrmInlineTable.prototype.getEntityName = function () {
-  return this.grid.data("entity");
+    return this.grid.data('entity');
 };
 
 /**
@@ -31,57 +31,54 @@ CrmInlineTable.prototype.getEntityName = function () {
  * @returns {null}
  */
 CrmInlineTable.prototype.registerEvents = function () {
-  var inlineTable = this;
-  var gridID = this.grid.data("grid-id");
+    var inlineTable = this;
+    var gridID = this.grid.data('grid-id');
 
-  // Edit record
-  this.grid.on("click", ".js_edit", function (e) {
-    e.preventDefault();
+    // Edit record
+    this.grid.on('click', '.js_edit', function (e) {
+        e.preventDefault();
 
-    /* Get the row as a parent of the link that was clicked on */
-    var button = $(this);
-    var nRow = button.parents("tr")[0];
+        /* Get the row as a parent of the link that was clicked on */
+        var button = $(this);
+        var nRow = button.parents('tr')[0];
 
-    if (inlineTable.nEditing !== null && inlineTable.nEditing != nRow) {
-      // Currently editing - but not this row - restore the old before
-      // continuing to edit mode
-      inlineTable.restoreRow();
-      inlineTable.editRow(nRow);
-    } else if (inlineTable.nEditing == nRow && button.hasClass("js_save")) {
-      // Editing this row and want to save it
-      inlineTable.saveRow();
-    } else {
-      // No edit in progress - let's start one
-      inlineTable.editRow(nRow);
-    }
-  });
+        if (inlineTable.nEditing !== null && inlineTable.nEditing != nRow) {
+            // Currently editing - but not this row - restore the old before
+            // continuing to edit mode
+            inlineTable.restoreRow();
+            inlineTable.editRow(nRow);
+        } else if (inlineTable.nEditing == nRow && button.hasClass('js_save')) {
+            // Editing this row and want to save it
+            inlineTable.saveRow();
+        } else {
+            // No edit in progress - let's start one
+            inlineTable.editRow(nRow);
+        }
+    });
 
-  // Cancel edit mode
-  this.grid.on("click", ".js_cancel", function (e) {
-    e.preventDefault();
-    inlineTable.restoreRow();
-  });
+    // Cancel edit mode
+    this.grid.on('click', '.js_cancel', function (e) {
+        e.preventDefault();
+        inlineTable.restoreRow();
+    });
 
-  // Delete record
-  this.grid.on("click", ".js_delete", function (e) {
-    e.preventDefault();
+    // Delete record
+    this.grid.on('click', '.js_delete', function (e) {
+        e.preventDefault();
 
-    if (confirm("Vuoi davvero eliminare la riga?") == false) {
-      return;
-    }
+        if (confirm('Vuoi davvero eliminare la riga?') == false) {
+            return;
+        }
 
-    var nRow = $(this).parents("tr")[0];
-    inlineTable.deleteRow(nRow);
-  });
+        var nRow = $(this).parents('tr')[0];
+        inlineTable.deleteRow(nRow);
+    });
 
-  // Create empty record
-  $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on(
-    "click",
-    function (e) {
-      e.preventDefault();
-      inlineTable.createRow();
-    }
-  );
+    // Create empty record
+    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
+        e.preventDefault();
+        inlineTable.createRow();
+    });
 };
 
 /**
@@ -91,16 +88,16 @@ CrmInlineTable.prototype.registerEvents = function () {
  * @returns {null}
  */
 CrmInlineTable.prototype.restoreRow = function () {
-  var datatable = this.getDatatableHandler();
-  var nRow = this.nEditing;
+    var datatable = this.getDatatableHandler();
+    var nRow = this.nEditing;
 
-  var aData = datatable.fnGetData(nRow);
-  var jqTds = $(">td", nRow);
-  for (var i = 0, iLen = jqTds.length; i < iLen; i++) {
-    datatable.fnUpdate(aData[i], nRow, i, false);
-  }
-  datatable.fnDraw();
-  this.nEditing = null;
+    var aData = datatable.fnGetData(nRow);
+    var jqTds = $('>td', nRow);
+    for (var i = 0, iLen = jqTds.length; i < iLen; i++) {
+        datatable.fnUpdate(aData[i], nRow, i, false);
+    }
+    datatable.fnDraw();
+    this.nEditing = null;
 };
 
 /**
@@ -110,26 +107,21 @@ CrmInlineTable.prototype.restoreRow = function () {
  * @returns {null}
  */
 CrmInlineTable.prototype.editRow = function (nRow) {
-  var datatable = this.getDatatableHandler();
+    var datatable = this.getDatatableHandler();
 
-  var aData = datatable.fnGetData(nRow);
-  var max = aData.length;
-  var jqTds = $(">td", nRow);
-  var jqThs = $("tr th", datatable);
+    var aData = datatable.fnGetData(nRow);
+    var max = aData.length;
+    var jqTds = $('>td', nRow);
+    var jqThs = $('tr th', datatable);
 
-  for (var i = 0; i < max - 2; i++) {
-    jqTds[i].innerHTML =
-      '<input type="text" class="form-control input-small" name="' +
-      $(jqThs[i]).attr("data-name") +
-      '" value="' +
-      (aData[i] ? aData[i] : "") +
-      '">';
-  }
+    for (var i = 0; i < max - 2; i++) {
+        jqTds[i].innerHTML = '<input type="text" class="form-control input-small" name="' + $(jqThs[i]).attr('data-name') + '" value="' + (aData[i] ? aData[i] : '') + '">';
+    }
 
-  jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Save</a>';
-  jqTds[max - 1].innerHTML = '<a class="js_cancel" href="">Undo</a>';
+    jqTds[max - 2].innerHTML = '<a class="js_edit js_save" href="">Save</a>';
+    jqTds[max - 1].innerHTML = '<a class="js_cancel" href="">Undo</a>';
 
-  this.nEditing = nRow;
+    this.nEditing = nRow;
 };
 
 /**
@@ -138,60 +130,47 @@ CrmInlineTable.prototype.editRow = function (nRow) {
  * @returns {null}
  */
 CrmInlineTable.prototype.saveRow = function () {
-  var datatable = this.getDatatableHandler();
+    var datatable = this.getDatatableHandler();
 
-  var jqInputs = $("input", this.nEditing);
-  var sEntityName = datatable.attr("data-entity");
+    var jqInputs = $('input', this.nEditing);
+    var sEntityName = datatable.attr('data-entity');
 
-  var data = {};
-  var id = "";
-  jqInputs.each(function () {
-    var input = $(this);
-    var name = input.attr("name");
+    var data = {};
+    var id = '';
+    jqInputs.each(function () {
+        var input = $(this);
+        var name = input.attr('name');
 
-    if (name === sEntityName + "_id") {
-      id = input.val();
-    } else {
-      data[name] = input.val();
+        if (name === sEntityName + '_id') {
+            id = input.val();
+        } else {
+            data[name] = input.val();
+        }
+    });
+
+    try {
+        var token = JSON.parse(atob(datatable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
     }
-  });
+    data[token_name] = token_hash;
 
-  try {
-    var token = JSON.parse(atob(datatable.data("csrf")));
-    var token_name = token.name;
-    var token_hash = token.hash;
-  } catch (e) {
-    var token = JSON.parse(atob($("body").data("csrf")));
-    var token_name = token.name;
-    var token_hash = token.hash;
-  }
-  data[token_name] = token_hash;
+    // Save data
+    $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data).success(function () {
+        var max = jqInputs.size();
+        for (var i = 0; i < max; i++) {
+            datatable.fnUpdate(jqInputs[i].value, this.nEditing, i, false);
+        }
+        datatable.fnUpdate('<a href="#" class="js_edit">Modifica</a>', this.nEditing, max - 2, false);
+        datatable.fnUpdate('<a class="js_cancel" href="#">Elimina</a>', this.nEditing, max - 1, false);
+        datatable.fnDraw();
+    });
 
-  // Save data
-  $.post(
-    base_url + "db_ajax/datatable_inline_edit/" + sEntityName + "/" + id,
-    data
-  ).success(function () {
-    var max = jqInputs.size();
-    for (var i = 0; i < max; i++) {
-      datatable.fnUpdate(jqInputs[i].value, this.nEditing, i, false);
-    }
-    datatable.fnUpdate(
-      '<a href="#" class="js_edit">Modifica</a>',
-      this.nEditing,
-      max - 2,
-      false
-    );
-    datatable.fnUpdate(
-      '<a class="js_cancel" href="#">Elimina</a>',
-      this.nEditing,
-      max - 1,
-      false
-    );
-    datatable.fnDraw();
-  });
-
-  this.nEditing = null;
+    this.nEditing = null;
 };
 
 /**
@@ -199,37 +178,37 @@ CrmInlineTable.prototype.saveRow = function () {
  * @returns {undefined}
  */
 CrmInlineTable.prototype.createRow = function () {
-  // Devo sapere quante colonne ho per prima cosa
-  var sEntityName = this.grid.attr("data-entity");
-  var jqThs = $("tr th", this.grid);
-  var datatable = this.getDatatableHandler();
+    // Devo sapere quante colonne ho per prima cosa
+    var sEntityName = this.grid.attr('data-entity');
+    var jqThs = $('tr th', this.grid);
+    var datatable = this.getDatatableHandler();
 
-  // Creo dei dati vuoti da inserire
-  var data = {};
-  jqThs.each(function () {
-    var name = $(this).attr("data-name");
-    if (typeof name !== "undefined" && name && name !== sEntityName + "_id") {
-      data[name] = "";
+    // Creo dei dati vuoti da inserire
+    var data = {};
+    jqThs.each(function () {
+        var name = $(this).attr('data-name');
+        if (typeof name !== 'undefined' && name && name !== sEntityName + '_id') {
+            data[name] = '';
+        }
+    });
+    try {
+        var token = JSON.parse(atob(this.grid.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
     }
-  });
-  try {
-    var token = JSON.parse(atob(this.grid.data("csrf")));
-    var token_name = token.name;
-    var token_hash = token.hash;
-  } catch (e) {
-    var token = JSON.parse(atob($("body").data("csrf")));
-    var token_name = token.name;
-    var token_hash = token.hash;
-  }
-  data[token_name] = token_hash;
+    data[token_name] = token_hash;
 
-  $.ajax(base_url + "db_ajax/datatable_inline_insert/" + sEntityName, {
-    data: data,
-    type: "POST",
-    success: function (msg) {
-      datatable.fnPageChange("last");
-    },
-  });
+    $.ajax(base_url + 'db_ajax/datatable_inline_insert/' + sEntityName, {
+        data: data,
+        type: 'POST',
+        success: function (msg) {
+            datatable.fnPageChange('last');
+        },
+    });
 };
 
 /**
@@ -239,235 +218,190 @@ CrmInlineTable.prototype.createRow = function () {
  * @returns {undefined}
  */
 CrmInlineTable.prototype.deleteRow = function (nRow) {
-  var datatable = this.getDatatableHandler();
-  var aData = datatable.fnGetData(nRow);
+    var datatable = this.getDatatableHandler();
+    var aData = datatable.fnGetData(nRow);
 
-  // TODO: ora si suppone che l'id sia sulla prima colonna... da rivedere per
-  // generalizzare queste tabelle
-  $.ajax(
-    base_url +
-      "db_ajax/generic_delete/" +
-      this.getEntityName() +
-      "/" +
-      aData[0],
-    {
-      success: function () {
-        datatable.fnDeleteRow(nRow);
-      },
-    }
-  );
+    // TODO: ora si suppone che l'id sia sulla prima colonna... da rivedere per
+    // generalizzare queste tabelle
+    $.ajax(base_url + 'db_ajax/generic_delete/' + this.getEntityName() + '/' + aData[0], {
+        success: function () {
+            datatable.fnDeleteRow(nRow);
+        },
+    });
 };
 
 //MP - 20190206 - Nuove inline table con form
 // Test
 
 jQuery.extend({
-  isValidSelector: function (selector) {
-    if (typeof selector !== "string") {
-      return false;
-    }
-    try {
-      $(selector);
-    } catch (error) {
-      return false;
-    }
-    return true;
-  },
+    isValidSelector: function (selector) {
+        if (typeof selector !== 'string') {
+            return false;
+        }
+        try {
+            $(selector);
+        } catch (error) {
+            return false;
+        }
+        return true;
+    },
 });
 
 function initTableAjax(grid) {
-  var oDataTable = grid;
-  var valueID = oDataTable.attr("data-value-id");
-  var getParameters = oDataTable.data("get_pars"); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
+    var oDataTable = grid;
+    var valueID = oDataTable.attr('data-value-id');
+    var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
 
-  var where_append = oDataTable.data("where_append");
-  if (typeof where_append === "undefined") {
-    where_append = "";
-  }
-
-  var bEnableOrder =
-    typeof oDataTable.attr("data-prevent-order") === "undefined";
-  var defaultLimit = parseInt(oDataTable.attr("default-limit"));
-  var totalable = oDataTable.data("totalable");
-  if (typeof totalable === "undefined") {
-    totalable = 0;
-  }
-
-  var aoColumns = [];
-  $("> thead > tr > th", oDataTable).each(function () {
-    var coldef = null;
-    coldef = {
-      bSortable:
-        bEnableOrder &&
-        typeof $(this).attr("data-prevent-order") === "undefined",
-    };
-
-    if ($(this).data("totalable")) {
-      coldef.className = "dt-right";
+    var where_append = oDataTable.data('where_append');
+    if (typeof where_append === 'undefined') {
+        where_append = '';
     }
 
-    aoColumns.push(coldef);
-  });
-  try {
-    var token = JSON.parse(atob(oDataTable.data("csrf")));
-    var token_name = token.name;
-    var token_hash = token.hash;
-  } catch (e) {
-    var token = JSON.parse(atob($("body").data("csrf")));
-    var token_name = token.name;
-    var token_hash = token.hash;
-  }
-  var datatable = oDataTable
-    .on("error.dt", function (e, settings, techNote, message) {
-      $(".content-header").append(
-        '<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' +
-          oDataTable.data("grid-id") +
-          "'.</p><code>" +
-          message +
-          "</code></div>"
-      );
-    })
-    .dataTable({
-      stateSave: true,
-      bSort: bEnableOrder,
-      aoColumns: aoColumns,
-      aaSorting: [],
-      bRetrieve: true,
-      bProcessing: true,
-      sServerMethod: "POST",
-      bServerSide: true,
-      sAjaxSource:
-        base_url +
-        "get_ajax/get_datatable_ajax/" +
-        oDataTable.data("grid-id") +
-        "/" +
-        valueID +
-        "?" +
-        getParameters +
-        "&where_append=" +
-        where_append,
-      aLengthMenu: [
-        [10, 50, 100, 200, 500, -1],
-        [10, 50, 100, 200, 500, "All"],
-      ],
-      iDisplayLength: defaultLimit,
-      oLanguage: {
-        sUrl:
-          base_url_scripts +
-          "script/dt_translations/datatable." +
-          lang_short_code +
-          ".json",
-      },
+    var bEnableOrder = typeof oDataTable.attr('data-prevent-order') === 'undefined';
+    var defaultLimit = parseInt(oDataTable.attr('default-limit'));
+    var totalable = oDataTable.data('totalable');
+    if (typeof totalable === 'undefined') {
+        totalable = 0;
+    }
 
-      fnServerParams: function (aoData) {
-        aoData.push({ name: token_name, value: token_hash });
-      },
-      drawCallback: function (settings) {
-        initComponents(oDataTable);
-      },
+    var aoColumns = [];
+    $('> thead > tr > th', oDataTable).each(function () {
+        var coldef = null;
+        coldef = {
+            bSortable: bEnableOrder && typeof $(this).attr('data-prevent-order') === 'undefined',
+        };
 
-      footerCallback: function (row, data, start, end, display) {
-        if (totalable == 1) {
-          var api = this.api(),
-            data;
-          $(api.column(0).footer()).html("Totals:");
-          // converting to interger to find total
-          var floatVal = function (i) {
-            i = i.toString();
-            i = i.replace(/[^\d.-]/g, "");
-            if (i != "") {
-              return parseFloat(i);
-            } else {
-              return 0;
-            }
-          };
-
-          api.columns().every(function () {
-            var values = this.data();
-            var footer = this.footer();
-
-            if ($(footer).data("totalable") == 1) {
-              var total = 0;
-              for (var i = 0; i < values.length; i++) {
-                if (
-                  $.isValidSelector(values[i]) &&
-                  $(values[i]).data("totalablevalue") !== null &&
-                  typeof $(values[i]).data("totalablevalue") !== "undefined"
-                ) {
-                  total += floatVal($(values[i]).data("totalablevalue"));
-                } else {
-                  total += floatVal(values[i]);
-                }
-              }
-
-              $(footer).html(parseFloat(total).toFixed(2));
-            }
-          });
+        if ($(this).data('totalable')) {
+            coldef.className = 'dt-right';
         }
-      },
-      fnServerData: function (sSource, aoData, fnCallback) {
-        $.ajax({
-          dataType: "json",
-          type: "POST",
-          url: sSource,
-          data: aoData,
-          success: fnCallback,
-          error: function (request, error) {
-            $(".callout.callout-warning").remove();
-            $(".content-header:first").append(
-              '<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' +
-                oDataTable.data("grid-id") +
-                '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' +
-                request.responseText +
-                "</code></div>"
-            );
-          },
-        });
-      },
-    });
 
-  return datatable;
+        aoColumns.push(coldef);
+    });
+    try {
+        var token = JSON.parse(atob(oDataTable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    var datatable = oDataTable
+        .on('error.dt', function (e, settings, techNote, message) {
+            $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
+        })
+        .dataTable({
+            stateSave: true,
+            bSort: bEnableOrder,
+            aoColumns: aoColumns,
+            aaSorting: [],
+            bRetrieve: true,
+            bProcessing: true,
+            sServerMethod: 'POST',
+            bServerSide: true,
+            sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
+            aLengthMenu: [
+                [10, 50, 100, 200, 500, -1],
+                [10, 50, 100, 200, 500, 'All'],
+            ],
+            iDisplayLength: defaultLimit,
+            oLanguage: {
+                sUrl: base_url_scripts + 'script/dt_translations/datatable.' + lang_short_code + '.json',
+            },
+
+            fnServerParams: function (aoData) {
+                aoData.push({ name: token_name, value: token_hash });
+            },
+            drawCallback: function (settings) {
+                initComponents(oDataTable);
+            },
+
+            footerCallback: function (row, data, start, end, display) {
+                if (totalable == 1) {
+                    var api = this.api(),
+                        data;
+                    $(api.column(0).footer()).html('Totals:');
+                    // converting to interger to find total
+                    var floatVal = function (i) {
+                        i = i.toString();
+                        i = i.replace(/[^\d.-]/g, '');
+                        if (i != '') {
+                            return parseFloat(i);
+                        } else {
+                            return 0;
+                        }
+                    };
+
+                    api.columns().every(function () {
+                        var values = this.data();
+                        var footer = this.footer();
+
+                        if ($(footer).data('totalable') == 1) {
+                            var total = 0;
+                            for (var i = 0; i < values.length; i++) {
+                                if ($.isValidSelector(values[i]) && $(values[i]).data('totalablevalue') !== null && typeof $(values[i]).data('totalablevalue') !== 'undefined') {
+                                    total += floatVal($(values[i]).data('totalablevalue'));
+                                } else {
+                                    total += floatVal(values[i]);
+                                }
+                            }
+
+                            $(footer).html(parseFloat(total).toFixed(2));
+                        }
+                    });
+                }
+            },
+            fnServerData: function (sSource, aoData, fnCallback) {
+                $.ajax({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: sSource,
+                    data: aoData,
+                    success: fnCallback,
+                    error: function (request, error) {
+                        $('.callout.callout-warning').remove();
+                        $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
+                    },
+                });
+            },
+        });
+
+    return datatable;
 }
 
 /** Init ajax datatables **/
 function startAjaxTables() {
-  $(".js_ajax_datatable:not(.dataTable)").each(function () {
-    var gridID = $(this).attr("data-grid-id");
-    var grid = $(this);
+    $('.js_ajax_datatable:not(.dataTable)').each(function () {
+        var gridID = $(this).attr('data-grid-id');
+        var grid = $(this);
 
-    if (grid.data("ajaxTableInitialized") != true) {
-      initTableAjax(grid).on("init", function (e) {
-        var wrapper = e.target.parent;
-        $(".dataTables_filter input", wrapper).addClass(
-          "form-control input-small"
-        ); // modify table search input
-        $(".dataTables_length select", wrapper).addClass(
-          "form-control input-xsmall input-sm"
-        ); // modify table per page dropdown
-        $(".dataTables_processing", wrapper).addClass("col-md-6"); // modify table per page dropdown
+        if (grid.data('ajaxTableInitialized') != true) {
+            initTableAjax(grid).on('init', function (e) {
+                var wrapper = e.target.parent;
+                $('.dataTables_filter input', wrapper).addClass('form-control input-small'); // modify table search input
+                $('.dataTables_length select', wrapper).addClass('form-control input-xsmall input-sm'); // modify table per page dropdown
+                $('.dataTables_processing', wrapper).addClass('col-md-6'); // modify table per page dropdown
 
-        $(".dataTables_info", wrapper).css({
-          "margin-top": "20px",
-          position: "static",
-        });
-        $(".dataTables_filter label, .dataTables_length label", wrapper)
-          .css("padding-bottom", 0)
-          .css("margin-bottom", 0);
-        $(".dataTables_length", wrapper).parent().parent().height(0);
-      });
-    }
-  });
+                $('.dataTables_info', wrapper).css({
+                    'margin-top': '20px',
+                    position: 'static',
+                });
+                $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
+                $('.dataTables_length', wrapper).parent().parent().height(0);
+            });
+        }
+    });
 
-  $(".js_datatable_inline").each(function () {
-    var grid = $(this);
+    $('.js_datatable_inline').each(function () {
+        var grid = $(this);
 
-    if (grid.data("ajaxTableInitialized") != true) {
-      initTable(grid);
+        if (grid.data('ajaxTableInitialized') != true) {
+            initTable(grid);
 
-      var dtInline = new CrmInlineTable(grid);
-      dtInline.registerEvents();
-    }
-  });
+            var dtInline = new CrmInlineTable(grid);
+            dtInline.registerEvents();
+        }
+    });
 }
 
-$.fn.dataTable.ext.errMode = "none";
+$.fn.dataTable.ext.errMode = 'none';
