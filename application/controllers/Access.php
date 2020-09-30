@@ -3,7 +3,6 @@
 
 class Access extends MY_Controller
 {
-
     const SALT = 'ofuh249fh97H98UG876GHOICUYEGRF98ygdfds';
 
     var $settings = NULL;
@@ -15,8 +14,6 @@ class Access extends MY_Controller
         header('Access-Control-Allow-Origin: *');
         if (!empty($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
             @header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
-        } else {
-            //header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
         }
 
         $this->settings = $this->db->get('settings')->row_array();
@@ -69,7 +66,7 @@ class Access extends MY_Controller
 
         /** Servi la richiesta **/
         $data = $this->input->post();
-        $remember = true; //!empty($data['remember']);
+        $remember = true;
         $timeout = $data['timeout'];
 
         $data = $this->apilib->runDataProcessing(LOGIN_ENTITY, 'pre-login', $data);
@@ -83,8 +80,6 @@ class Access extends MY_Controller
 
         //TODO: aggiungere gli auto right join in modo che se un utente è associato a un'altra entità (esempio: aziende che fanno login, dipendenti seven, ecc...)
         //prenda in automatico anche i dati delle entità collegate... Buttare ovviamente anche questi dati in sessione
-
-
         if ($success) {
             $redirection_url = $this->auth->fetch_intended_url();
 
@@ -136,10 +131,9 @@ class Access extends MY_Controller
         $userID = $user[LOGIN_ENTITY . '_id'];
         $hash = md5($userID . self::SALT);
 
-
-
         $this->load->library('email');
         $this->email->subject('Recupero password')->to($email)->from($senderMail, $senderName);
+
         $msg = [
             t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
             t("this email was sent to you because you requested a reset of your password on %s.", 0, [$senderName]),
@@ -158,7 +152,6 @@ class Access extends MY_Controller
         $checkHash = md5($email . self::SALT);
 
         echo json_encode(array('status' => 1, 'txt' => base_url("access/recovery?sent=1&receiver={$email}&chk={$checkHash}")));
-        //redirect(base_url("access/recovery?sent=1&receiver={$email}&chk={$checkHash}"));
     }
 
     public function reset_password($id, $hash)

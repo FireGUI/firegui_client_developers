@@ -100,7 +100,6 @@ class Cron extends MY_Controller
 
         echo PHP_EOL, PHP_EOL, 'Attivi alla partenza', PHP_EOL;
         print_r(array_map(function ($c) use ($idxCrons) {
-            //debug($idxCrons);
             return sprintf('(%s) %s', $c, $idxCrons[$c]);
         }, array_keys($idxCrons)));
 
@@ -119,6 +118,7 @@ class Cron extends MY_Controller
             return sprintf('(%s) %s', $c, $idxCrons[$c]);
         }, $skipped));
         echo '</pre>';
+
         // =============== OUTPUT ===============
         //
         // ============= Start MAIL_QUEUE =============
@@ -147,9 +147,6 @@ class Cron extends MY_Controller
                 $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
                 $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
                 $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 1 MONTH", null, false)->delete('ci_sessions');
-
-                //$this->db->query('OPTIMIZE TABLE ci_sessions'); // Warning!! If you enable this line you will reduce server performance
-
             } else {
                 $this->db
                     ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
@@ -165,12 +162,12 @@ class Cron extends MY_Controller
         // ============= End Delete logs =============
 
         $out = ob_get_clean();
-        //echo $out;
 
         // Send output mail
         if (self::ENABLE_TRACKING) {
             mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
         }
+
         //Send output to the browser if running cron check from client (not cli) and user is logged in as admin
         if ($this->auth->is_admin()) {
             echo $out;
@@ -179,7 +176,6 @@ class Cron extends MY_Controller
 
     private function run(array $cron)
     {
-        //debug($cron);
         switch ($cron['crons_type']) {
             case 'mail':
                 $this->cron_email($cron);
@@ -199,6 +195,7 @@ class Cron extends MY_Controller
                 break;
         }
     }
+
     //TODO: should be private?
     public function cron_php_code($cron)
     {
@@ -217,7 +214,6 @@ class Cron extends MY_Controller
 
     public function cron_curl($cron)
     {
-        //debug($cron);
         $ch = curl_init();
         $url = str_ireplace('{base_url}', base_url(), $cron['crons_file']);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -228,7 +224,6 @@ class Cron extends MY_Controller
 
     public function cron_email($cron)
     {
-        //$this->output->enable_profiler(TRUE);
         $crons_fields = $this->db->query("SELECT * FROM crons_fields LEFT JOIN fields ON crons_fields.crons_fields_fields_id = fields.fields_id WHERE crons_fields_crons_id = '{$cron['crons_id']}'")->result_array();
         $data_entity = $this->datab->get_data_entity($cron['crons_entity_id'], 0, $cron['crons_where']);
 

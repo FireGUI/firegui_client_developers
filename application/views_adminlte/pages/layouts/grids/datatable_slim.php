@@ -63,9 +63,6 @@ foreach ($grid['grids_fields'] as $field) {
                             <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
                             </th>
                         <?php endforeach; ?>
-
-
-
                     </tr>
                 </tfoot>
             <?php endif; ?>

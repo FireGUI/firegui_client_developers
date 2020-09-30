@@ -2,7 +2,6 @@
 
 class Emails extends CI_Model
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -22,9 +21,8 @@ class Emails extends CI_Model
         $headers .= "Return-Path: " . DEFAULT_EMAIL_SYSTEM . "\r\n";
         $headers .= "Organization: Sender " . DEFAULT_EMAIL_SENDER . "\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-        //$headers .= "X-Priority: 3\r\n";
         $headers .= "MIME-Version: 1.0 \r\n";
-        // SE SI UsANO I BOUNDARY è DA CAMBIARE QUESTO METODO
+        // Se si usano i boundary è da cambiare questo metodo
         $headers .= "Content-type: text/html; charset=utf-8 \r\n";
         $headers .= "Content-Transfer-Encoding: 8bit";
 

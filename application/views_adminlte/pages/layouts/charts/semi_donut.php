@@ -42,7 +42,6 @@ foreach ($chart_data[0]['series'] as $name => $data) {
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: false,
-                        //format: '<b>{point.name}</b>: {point.y}',
                         crop: true,
                         style: {
                             fontWeight: 'bold',

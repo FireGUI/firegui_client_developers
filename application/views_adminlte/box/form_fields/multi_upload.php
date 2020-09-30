@@ -1,7 +1,6 @@
 <?php
 $unique = $field['fields_id'];
 $form_id = $field['forms_fields_forms_id'];
-//debug($field);
 ?>
 
 <?php echo $label; ?>
@@ -62,7 +61,6 @@ $form_id = $field['forms_fields_forms_id'];
 
                 if (response != null) {
                     response = JSON.parse(response);
-                    //console.log(response);
                     if (!response.status) {
 
                         error(response.txt, 'form_<?php echo $form_id; ?>');
@@ -76,7 +74,6 @@ $form_id = $field['forms_fields_forms_id'];
 
                         } else {
                             if (!$('[name="<?php echo $field['fields_name']; ?>"]').length) {
-                                //console.log(typeof campo.attr('name'));
                                 campo.attr('name', campo.data('name'));
                                 campo.val(JSON.stringify(files<?php echo $unique; ?>));
                             } else {
@@ -91,8 +88,6 @@ $form_id = $field['forms_fields_forms_id'];
                     }
                 }
 
-                //<a class="dz-remove" href="javascript:undefined;" data-dz-remove="">Remove file</a>
-
                 var a = document.createElement('a');
                 a.setAttribute('href', file.url);
                 a.setAttribute('class', 'dz-download');
@@ -102,7 +97,7 @@ $form_id = $field['forms_fields_forms_id'];
             },
             removedfile: function(file) {
                 x = confirm('Do you want to delete?');
-                //console.log(file);
+
                 if (!x) {
                     return false;
                 } else {
@@ -111,7 +106,6 @@ $form_id = $field['forms_fields_forms_id'];
                             $.ajax(base_url + 'db_ajax/removeFileFromJson/' + file.id, {
                                 success: function() {
                                     file.previewElement.remove();
-                                    //delete files<?php echo $unique; ?>[file.key];
                                     files<?php echo $unique; ?>.splice(file.key, 1);
                                     $('[name="<?php echo $field['fields_name']; ?>"]').val(JSON.stringify(files<?php echo $unique; ?>));
                                     return true;
@@ -119,7 +113,6 @@ $form_id = $field['forms_fields_forms_id'];
                             });
                         <?php else : ?>
                             $.ajax(base_url + 'db_ajax/removeFileFromRelation/' + file.id, {
-                                //dataType: 'json',
                                 success: function() {
                                     file.previewElement.remove();
                                     $('[name="<?php echo $field['fields_name']; ?>[]"][value="' + file.intid + '"]').remove();
@@ -136,20 +129,6 @@ $form_id = $field['forms_fields_forms_id'];
             }
 
         });
-        //            $(form_selector+' [type="submit"]').click(function(e){
-        //                console.log('dentro<?php echo $unique; ?>');
-        //                loading(true);
-        //                e.preventDefault();
-        //                e.stopImmediatePropagation();
-        //                if (myDropzone<?php echo $unique; ?>.files.length > 0) {
-        //                    myDropzone<?php echo $unique; ?>.processQueue();
-        //                } else {
-        //                    console.log('invio form (<?php echo $unique; ?>)');
-        //                    //$(form_selector+' [type="submit"]').unbind('click');
-        //                    //$(form_selector).trigger('submit');
-        //                }
-        //
-        //            });
 
         $('.my_dropzone<?php echo $unique; ?> *').on('click', function(e) {
             e.preventDefault();
@@ -157,20 +136,16 @@ $form_id = $field['forms_fields_forms_id'];
             $('.my_dropzone<?php echo $unique; ?>').trigger('click');
         });
 
-
-
         <?php
         //il decode lo devo fare perchè nel datab.php viene fatto htmlspecialchars...
         if (is_string($value)) {
             $value = htmlspecialchars_decode($value);
         }
 
-        //debug(json_decode(htmlspecialchars_decode($value)),true);
         if (@json_decode($value)) {
 
             $files = json_decode($value);
-            //debug($files,true);
-            foreach ($files as $key => $file) : //debug($file,true);
+            foreach ($files as $key => $file) :
         ?>
                 files<?php echo $unique; ?>.push(<?php echo json_encode($file); ?>);
 
@@ -192,7 +167,6 @@ $form_id = $field['forms_fields_forms_id'];
 
             <?php endforeach;
         } else {
-            //debug($value,true);
             $files = (array) $value;
             $key = 0;
             foreach ($files as $file_id => $file) : ?>
@@ -210,7 +184,6 @@ $form_id = $field['forms_fields_forms_id'];
 
                 // Call the default addedfile event handler
                 myDropzone<?php echo $unique; ?>.emit("addedfile", mockFile);
-                //files_count_uploading<?php echo $form_id; ?>--;
                 // And optionally show the thumbnail of the file:
                 myDropzone<?php echo $unique; ?>.emit("thumbnail", mockFile, "<?php echo base_url_uploads('uploads/' . $file); ?>");
 

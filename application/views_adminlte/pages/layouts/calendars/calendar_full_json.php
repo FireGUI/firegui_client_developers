@@ -13,7 +13,6 @@ $element_id = (isset($value_id) ? $value_id : NULL);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
-//debug($settings, true);
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 <script>
@@ -71,17 +70,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             maxTime: maxTime,
             timeFormat: 'H:mm',
             axisFormat: 'H:mm',
-            // monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-            // monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-            // dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
-            // dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
-            // firstDay: 1,
-            // buttonText: {
-            //     today: 'Mostra oggi',
-            //     month: 'Mese',
-            //     week: 'Sett.',
-            //     day: 'Giorno'
-            // },
 
             select: function(start, end) {
                 var fStart = formatDate(start.toDate()); // formatted start

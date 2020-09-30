@@ -132,19 +132,14 @@ endif;
                     </form>
                 <?php endif; ?>
             </div>
-
         </div>
-
     </div>
-    <div class="copyright"><?php /* powered by <a href="http://firegui.com" class="text-danger" target="_blank">FireGUI</a> */ ?></div>
-
 
     <!-- COMMON PLUGINS -->
-
     <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
     <script src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
-
     <script src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>"></script>
+
     <!-- CUSTOM COMPONENTS -->
     <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
 </body>

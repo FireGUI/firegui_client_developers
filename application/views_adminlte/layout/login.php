@@ -62,7 +62,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
         <!-- Bootstrap-select -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+        <link rel="stylesheet" href="<?php echo base_url("script/global/plugins/bootstrap-select/bootstra-select.min.css?v={$this->config->item('version')}"); ?>">
 
         <style>
             <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
@@ -119,7 +119,6 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                         <div class="form-group disconnect">
                             <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
                             <select name="timeout" class="selectpicker" data-style="btn-default">
-                                <!--<option value="1" class="form-control input-sm select2">1 minuto</option>-->
                                 <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
                                 <option value="10" class="input-sm option_style">10 <?php e('minutes'); ?></option>
                                 <option value="30" class="input-sm option_style">30 <?php e('minutes'); ?></option>
@@ -136,28 +135,14 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                         </div>
 
                         <div class="form-actions">
-                            <!--<div class="row">
-                                <div class="col-xs-8">
-                                    <div class="checkbox icheck" style="display:none;">
-                                        <label>
-                                            <input name="remember" value="1" type="checkbox"> <?php e('Remember me'); ?>
-                                        </label>
-                                    </div>
-
-                                </div>
-                                <div class="col-xs-4">
-                                    <button type="submit" class="btn btn-primary btn-block btn-flat rounded_btn"><?php e('Login'); ?></button>
-                                </div>
-                            </div>-->
                             <div class="row">
                                 <div class="col-xs-12">
                                     <button type="submit" class="btn btn-primary btn-block btn-flat rounded_btn"><?php e('Login'); ?></button>
                                 </div>
-                                <!-- /.col -->
                             </div>
                         </div>
                     </form>
-                    <!-- /.social-auth-links -->
+
                     <div class="forget_password">
                         <div class="password_title">
                             <h5 class="login-p"><?php e('Forgot your password?'); ?></h5>
@@ -174,9 +159,8 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                                 <div class="box-tools pull-right">
                                     <button type="button" class="btn btn-box-tool" data-widget="remove" onclick="location.href='<?php echo base_url(); ?>';"><i class="fa fa-times"></i></button>
                                 </div>
-                                <!-- /.box-tools -->
                             </div>
-                            <!-- /.box-header -->
+
                             <div class="box-body">
                                 <?php e('You can login with the same email and password you used to register in FireGUI.com. After that, you can create new users or change your password directly in your reserved area.'); ?>
                                 <br />
@@ -185,15 +169,12 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
                                     <?php e('ps.: if you don\'t want to see this message simply'); ?> <a href="<?php echo base_url(); ?>"><?php e('click here'); ?></a>
                                 </em>
                             </div>
-                            <!-- /.box-body -->
                         </div>
 
                     <?php endif; ?>
                 </div>
-
-                <div class="copyright"><?php /* powered by <a href="http://firegui.com" class="text-danger" target="_blank">FireGUI</a> */ ?></div>
             </div>
-        </div><!-- /.background_img -->
+        </div>
 
 
 
@@ -204,18 +185,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <!-- CUSTOM COMPONENTS -->
         <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- Bootstrap-select -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-
-        <script>
-            $(function() {
-                'use strict';
-                $('input').iCheck({
-                    checkboxClass: 'icheckbox_square-blue',
-                    radioClass: 'iradio_square-blue',
-                    increaseArea: '20%' /* optional */
-                });
-            });
-        </script>
+        <script src="<?php echo base_url("script/global/plugins/bootstrap-select/bootstra-select.min.js?v={$this->config->item('version')}"); ?>"></script>
     </body>
 
     </html>
