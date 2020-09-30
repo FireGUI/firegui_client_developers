@@ -27,7 +27,7 @@ if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) {
             'background-color' => TOPBAR_COLOR . '!important',
             'box-shadow' => '0 4px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .35)'
         ],
-        '.user-header' => [
+        '.user-header, .navbar' => [
             'background-color' => TOPBAR_COLOR . '!important',
 
         ]
