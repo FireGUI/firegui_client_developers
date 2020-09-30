@@ -14,9 +14,6 @@ class Api_manager extends MY_Controller
         $this->apilib->setProcessingMode(Apilib::MODE_API_CALL);
         $this->apilib->setLanguage();
 
-        //        header('Access-Control-Allow-Origin: *');
-        //        header('Content-Type: application/json');
-
         // Niente profiler in API
         $this->output->enable_profiler(false);
     }
@@ -108,7 +105,7 @@ class Api_manager extends MY_Controller
         $dati['token'] = $token_id;
 
         $pagina = $this->load->view("pages/api_manager/api_manager_permissions", array('dati' => $dati), true);
-        //$this->stampa($pagina);
+
         echo $pagina;
     }
 
@@ -174,12 +171,6 @@ class Api_manager extends MY_Controller
         $entity_permission = $post['entity_permission'];
         unset($post['entity_permission']);
 
-        /*
-            'api_manager_permissions_id' => ['type' => 'serial unique', 'unsigned' => true, 'auto_increment' => true],
-            'api_manager_permissions_entity' => ['type' => 'int', 'unsigned' => true, 'null' => false],
-            'api_manager_permissions_token' => ['type' => 'int', 'unsigned' => true, 'null' => false],
-            'api_manager_tokens_chmod' => ['type' => 'int', 'unsigned' => true, 'null' => false],
-         */
         if ($entity_name) {
             $entity = $this->datab->get_entity_by_name($entity_name);
         } else {
@@ -187,7 +178,6 @@ class Api_manager extends MY_Controller
             exit;
         }
 
-        //debug($entity,true);
         //Rimuovo i vecchi permessi
         $this->db
             ->where('api_manager_permissions_token', $token_id)
@@ -283,7 +273,6 @@ class Api_manager extends MY_Controller
      */
     private function showError($message, $code, $httpStatus = 500)
     {
-        //set_status_header($httpStatus);
         $this->showOutput($message, $code);
     }
 
@@ -301,6 +290,3 @@ class Api_manager extends MY_Controller
         ));
     }
 }
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */

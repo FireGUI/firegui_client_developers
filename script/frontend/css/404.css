@@ -1,14 +1,14 @@
 body {
-    overflow-x: hidden;
-    background-color: #0099cc;
+  overflow-x: hidden;
+  background-color: #0099cc;
 }
 
 p {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 p.small {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 a,
@@ -16,8 +16,8 @@ a:hover,
 a:focus,
 a:active,
 a.active {
-    outline: 0;
-    color: #18bc9c;
+  outline: 0;
+  color: #18bc9c;
 }
 
 h1,
@@ -26,220 +26,215 @@ h3,
 h4,
 h5,
 h6 {
-    text-transform: uppercase;
-    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-weight: 700;
+  text-transform: uppercase;
+  font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
 }
 
 hr.star-light,
 hr.star-primary {
-    margin: 25px auto 30px;
-    padding: 0;
-    max-width: 250px;
-    border: 0;
-    border-top: solid 5px;
-    text-align: center;
+  margin: 25px auto 30px;
+  padding: 0;
+  max-width: 250px;
+  border: 0;
+  border-top: solid 5px;
+  text-align: center;
 }
 
 hr.star-light:after,
 hr.star-primary:after {
-    content: "\f005";
-    display: inline-block;
-    position: relative;
-    top: -.8em;
-    padding: 0 .25em;
-    font-family: FontAwesome;
-    font-size: 2em;
+  content: "\f005";
+  display: inline-block;
+  position: relative;
+  top: -0.8em;
+  padding: 0 0.25em;
+  font-family: FontAwesome;
+  font-size: 2em;
 }
 
 hr.star-light {
-    border-color: #fff;
+  border-color: #fff;
 }
 
 hr.star-light:after {
-    color: #fff;
-    background-color: #18bc9c;
+  color: #fff;
+  background-color: #18bc9c;
 }
 
 hr.star-primary {
-    border-color: #2c3e50;
+  border-color: #2c3e50;
 }
 
 hr.star-primary:after {
-    color: #2c3e50;
-    background-color: #fff;
+  color: #2c3e50;
+  background-color: #fff;
 }
 
 .img-centered {
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 header {
-    text-align: center;
-    color: #fff;
-    background: #0099cc;
-    margin-top: 70px;
+  text-align: center;
+  color: #fff;
+  background: #0099cc;
+  margin-top: 70px;
 }
 
 header .container {
-/*    padding-top: 100px;
-    padding-bottom: 50px;*/
 }
 
 header img {
-    display: block;
-    margin: 0 auto 20px;
+  display: block;
+  margin: 0 auto 20px;
 }
 
 header .intro-text .ops {
-    display: block;
-    font-family: 'Open Sans',"Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 4em;
-    font-weight: 700;
-    text-align: left;
+  display: block;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 4em;
+  font-weight: 700;
+  text-align: left;
 }
 
 header .intro-text .text {
-    font-size: 1.25em;
-    font-weight: 300;
-    color: #FFFFFF;
-    text-align:left;
+  font-size: 1.25em;
+  font-weight: 300;
+  color: #ffffff;
+  text-align: left;
 }
 
 .intro-text {
-    text-align:left;
+  text-align: left;
 }
 
 .logo {
-    max-width:260px;
+  max-width: 260px;
 }
 
 .btn.btn-squared {
-    background: #5ccc7e;
-    color: #ffffff;
-    border-bottom: 10px solid #36c060;
-    padding: 10px 20px;
-    text-transform: uppercase;
-    border-radius: 0px;
-    margin-top: 40px;
-    min-width:180px;
-    font-weight:bold;
+  background: #5ccc7e;
+  color: #ffffff;
+  border-bottom: 10px solid #36c060;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  border-radius: 0px;
+  margin-top: 40px;
+  min-width: 180px;
+  font-weight: bold;
 }
 
 .btn-squared:hover {
-    background: #36c060;
-    color: #ffffff;
-    border-bottom: 10px solid #36c060;
-    padding: 10px 20px;
-    text-transform: uppercase;
-    border-radius: 0px;
-    margin-top: 40px;
-    min-width:180px;
-    font-weight:bold;
+  background: #36c060;
+  color: #ffffff;
+  border-bottom: 10px solid #36c060;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  border-radius: 0px;
+  margin-top: 40px;
+  min-width: 180px;
+  font-weight: bold;
 }
 
 .topbar {
-    background:none;
+  background: none;
 }
 
-@media(min-width:768px) {
-    header .container {
-/*        padding-top: 200px;
-        padding-bottom: 100px;*/
-    }
+@media (min-width: 768px) {
+  header .container {
+  }
 
-    header .intro-text .ops {
-        font-size: 7.2em;
-    }
+  header .intro-text .ops {
+    font-size: 7.2em;
+  }
 
-    header .intro-text .text {
-        font-size: 2.3em;
-        line-height: 1.2;
-        font-weight: 100;
-    }
-     .navbar-fixed-top {
-        padding: 25px 0;
-        -webkit-transition: padding .3s;
-        -moz-transition: padding .3s;
-        transition: padding .3s;
-    }
+  header .intro-text .text {
+    font-size: 2.3em;
+    line-height: 1.2;
+    font-weight: 100;
+  }
+  .navbar-fixed-top {
+    padding: 25px 0;
+    -webkit-transition: padding 0.3s;
+    -moz-transition: padding 0.3s;
+    transition: padding 0.3s;
+  }
 
-    .navbar-fixed-top .navbar-brand {
-        font-size: 2em;
-        -webkit-transition: all .3s;
-        -moz-transition: all .3s;
-        transition: all .3s;
-    }
+  .navbar-fixed-top .navbar-brand {
+    font-size: 2em;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+  }
 
-    .navbar-fixed-top.navbar-shrink {
-        padding: 10px 0;
-    }
+  .navbar-fixed-top.navbar-shrink {
+    padding: 10px 0;
+  }
 
-    .navbar-fixed-top.navbar-shrink .navbar-brand {
-        font-size: 1.5em;
-    }
+  .navbar-fixed-top.navbar-shrink .navbar-brand {
+    font-size: 1.5em;
+  }
 }
 
-@media(min-width:768px) and (max-width: 991px) {
-   header .intro-text .ops {
-        font-size: 6.2em;
-    }
+@media (min-width: 768px) and (max-width: 991px) {
+  header .intro-text .ops {
+    font-size: 6.2em;
+  }
 }
 
 .navbar {
-    text-transform: uppercase;
-    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-weight: 700;
+  text-transform: uppercase;
+  font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
 }
 
 .navbar a:focus {
-    outline: 0;
+  outline: 0;
 }
 
 .navbar .navbar-nav {
-    letter-spacing: 1px;
+  letter-spacing: 1px;
 }
 
 .navbar .navbar-nav li a:focus {
-    outline: 0;
+  outline: 0;
 }
 
 .navbar-default,
 .navbar-inverse {
-    border: 0;
+  border: 0;
 }
 
 section {
-    padding: 100px 0;
+  padding: 100px 0;
 }
 
 section h2 {
-    margin: 0;
-    font-size: 3em;
+  margin: 0;
+  font-size: 3em;
 }
 
 section.success {
-    color: #fff;
-    background: #18bc9c;
+  color: #fff;
+  background: #18bc9c;
 }
 
-@media(max-width:767px) {
-    section {
-        padding: 75px 0;
-    }
+@media (max-width: 767px) {
+  section {
+    padding: 75px 0;
+  }
 
-    section.first {
-        padding-top: 75px;
-    }
-    
-    header .intro-text {
-        text-align: center;
-    }
-    header .intro-text .ops {
-        text-align: center;
-    }
-    header .intro-text .btn {
-        float:none!important;
-    }
-    
+  section.first {
+    padding-top: 75px;
+  }
+
+  header .intro-text {
+    text-align: center;
+  }
+  header .intro-text .ops {
+    text-align: center;
+  }
+  header .intro-text .btn {
+    float: none !important;
+  }
 }

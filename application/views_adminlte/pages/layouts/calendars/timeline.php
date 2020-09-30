@@ -1,5 +1,3 @@
-
-
 <link href="<?php echo base_url_scripts("script/timeline/css/timelineScheduler.css"); ?>" rel="stylesheet" />
 <link href="<?php echo base_url_scripts("script/timeline/css/timelineScheduler.styling.css"); ?>" rel="stylesheet" />
 <link href="<?php echo base_url_scripts("script/timeline/css/calendar.css"); ?>" rel="stylesheet" />
@@ -17,12 +15,10 @@ $data_entity = $this->datab->get_data_entity($data['calendars']['calendars_entit
 ?>
 
 <script>
-
     var today = moment().startOf('day');
 
     var Calendar = {
-        Periods: [
-            {
+        Periods: [{
                 Name: '3 days',
                 Label: '3 days',
                 TimeframePeriod: (60 * 3),
@@ -63,64 +59,54 @@ $data_entity = $this->datab->get_data_entity($data['calendars']['calendars_entit
                 ]
             },
         ],
-        Sections: [
-            {
-                id: 1,
-                name: '<?php echo ucfirst($data_entity['entity']['entity_name']); ?>'
-            },
-            /*{
-             id: 2,
-             name: 'Section 2'
-             },
-             {
-             id: 3,
-             name: 'Section 3'
-             }*/
-        ],
+        Sections: [{
+            id: 1,
+            name: '<?php echo ucfirst($data_entity['entity']['entity_name']); ?>'
+        }, ],
         Items: [
-<?php
-$previews = array();
-$conversion = array(
-    "title" => "name"
-);
+            <?php
+            $previews = array();
+            $conversion = array(
+                "title" => "name"
+            );
 
-foreach ($data['calendars_fields'] as $field) {
-    if ($field['fields_ref']) {
-        $ids = array_map(function($dato) use($field) {
-            return $dato[$field['fields_name']];
-        }, $data_entity['data']);
-        if (empty($ids)) {
-            $previews[$field['fields_ref']] = array();
-        } else {
-            $previews[$field['fields_ref']] = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id IN (" . implode(',', $ids) . ")");
-        }
-    }
-}
-$x = 0;
-foreach ($data_entity['data'] as $event) {
-    $x++;
-    echo '{';
-    echo 'id: ' . $x . ', ';
-    echo 'sectionID: 1, ';
-    echo "classes: 'item-status-none', ";
+            foreach ($data['calendars_fields'] as $field) {
+                if ($field['fields_ref']) {
+                    $ids = array_map(function ($dato) use ($field) {
+                        return $dato[$field['fields_name']];
+                    }, $data_entity['data']);
+                    if (empty($ids)) {
+                        $previews[$field['fields_ref']] = array();
+                    } else {
+                        $previews[$field['fields_ref']] = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id IN (" . implode(',', $ids) . ")");
+                    }
+                }
+            }
+            $x = 0;
+            foreach ($data_entity['data'] as $event) {
+                $x++;
+                echo '{';
+                echo 'id: ' . $x . ', ';
+                echo 'sectionID: 1, ';
+                echo "classes: 'item-status-none', ";
 
-    // Aggiungo campi dinamici e range 
-    foreach ($data['calendars_fields'] as $field) {
-        if ($field['fields_ref'] && isset($previews[$field['fields_ref']][$event[$field['fields_name']]]) && in_array($field['calendars_fields_type'], array('title', 'description'))) {
-            echo "{$conversion[$field['calendars_fields_type']]}: '{$previews[$field['fields_ref']][$event[$field['fields_name']]]}', ";
-        } elseif ($field['calendars_fields_type'] == 'date_range') {
-            $date = explode(',', $event[$field['fields_name']]);
-            echo "start: moment('" . trim($date[0], '[') . "', 'YYYY-MM-DD hh:mm:ss'), ";
-            echo "end: moment('" . trim($date[1], ')') . "', 'YYYY-MM-DD hh:mm:ss'), ";
-        } else {
-            echo "{$conversion[$field['calendars_fields_type']]}: '{$event[$field['fields_name']]}', ";
-        }
-    }
-    echo '},';
-}
-?>
+                // Aggiungo campi dinamici e range 
+                foreach ($data['calendars_fields'] as $field) {
+                    if ($field['fields_ref'] && isset($previews[$field['fields_ref']][$event[$field['fields_name']]]) && in_array($field['calendars_fields_type'], array('title', 'description'))) {
+                        echo "{$conversion[$field['calendars_fields_type']]}: '{$previews[$field['fields_ref']][$event[$field['fields_name']]]}', ";
+                    } elseif ($field['calendars_fields_type'] == 'date_range') {
+                        $date = explode(',', $event[$field['fields_name']]);
+                        echo "start: moment('" . trim($date[0], '[') . "', 'YYYY-MM-DD hh:mm:ss'), ";
+                        echo "end: moment('" . trim($date[1], ')') . "', 'YYYY-MM-DD hh:mm:ss'), ";
+                    } else {
+                        echo "{$conversion[$field['calendars_fields_type']]}: '{$event[$field['fields_name']]}', ";
+                    }
+                }
+                echo '},';
+            }
+            ?>
         ],
-        Init: function () {
+        Init: function() {
             TimeScheduler.Options.GetSections = Calendar.GetSections;
             TimeScheduler.Options.GetSchedule = Calendar.GetSchedule;
             TimeScheduler.Options.Start = today;
@@ -144,16 +130,16 @@ foreach ($data_entity['data'] as $event) {
 
             TimeScheduler.Init();
         },
-        GetSections: function (callback) {
+        GetSections: function(callback) {
             callback(Calendar.Sections);
         },
-        GetSchedule: function (callback, start, end) {
+        GetSchedule: function(callback, start, end) {
             callback(Calendar.Items);
         },
-        Item_Clicked: function (item) {
+        Item_Clicked: function(item) {
             console.log(item);
         },
-        Item_Dragged: function (item, sectionID, start, end) {
+        Item_Dragged: function(item, sectionID, start, end) {
             var foundItem;
 
             console.log(item);
@@ -175,7 +161,7 @@ foreach ($data_entity['data'] as $event) {
 
             TimeScheduler.Init();
         },
-        Item_Resized: function (item, start, end) {
+        Item_Resized: function(item, start, end) {
             var foundItem;
 
             console.log(item);
@@ -195,7 +181,7 @@ foreach ($data_entity['data'] as $event) {
 
             TimeScheduler.Init();
         },
-        Item_Movement: function (item, start, end) {
+        Item_Movement: function(item, start, end) {
             var html;
 
             html = '<div>';
@@ -209,10 +195,10 @@ foreach ($data_entity['data'] as $event) {
 
             $('.realtime-info').empty().append(html);
         },
-        Item_MovementStart: function () {
+        Item_MovementStart: function() {
             $('.realtime-info').show();
         },
-        Item_MovementEnd: function () {
+        Item_MovementEnd: function() {
             $('.realtime-info').hide();
         }
     };

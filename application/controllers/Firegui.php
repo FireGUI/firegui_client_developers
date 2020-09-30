@@ -110,10 +110,7 @@ class Firegui extends MY_Controller
                     header('Content-Type: application/zip');
                     header('Content-Disposition: attachment; filename="' . $identifier . '.zip"');
                     header('Content-Length: ' . filesize($destination_file));
-                    //die(filesize($destination_file));
-                    //ob_end_clean();
                     readfile($destination_file);
-                    //unlink($destination_file);
                 } else {
                     die('Can not create  ' . $destination_file);
                 }
@@ -149,10 +146,6 @@ class Firegui extends MY_Controller
 
     public function updateClient($close = false, $version_code = null)
     {
-        /*$versionDataJson = $this->input->post('client');
-        $version_data = @json_decode($versionDataJson);*/ //DISMESSO ORA PRENDO IL FILE DIRETTAMENTE
-        //var_dump($version_data);
-
         if (!class_exists('ZipArchive')) {
             die("Missing ZipArchive class in client");
         }
@@ -165,7 +158,7 @@ class Firegui extends MY_Controller
 
         //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
         log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
-        //die("Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
+
         $newfile = './tmp_file.zip';
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
@@ -216,7 +209,7 @@ class Firegui extends MY_Controller
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
                                         eval($code);
-                                    } elseif ($key_type == 'include') { //201910070447 - MP - Added possibility to execute a custom code when updating client
+                                    } elseif ($key_type == 'include') { // Added possibility to execute a custom code when updating client
                                         if (is_array($code)) {
                                             foreach ($code as $file_to_include) {
                                                 $file_migration = APPPATH . 'migrations/' . $file_to_include;
@@ -283,7 +276,6 @@ class Firegui extends MY_Controller
 
                     // Sort array from oldest version to newest
                     uksort($updates, 'my_version_compare');
-                    //debug($updates, true);
 
                     foreach ($updates as $key => $value) {
                         $version_compare_old = version_compare($key, $old_version);
@@ -365,8 +357,6 @@ class Firegui extends MY_Controller
     //Send module to firegui (when creating new module or new release)
     public function downloadClientZip()
     {
-
-
         $folder = FCPATH;
 
         $destination_file = './uploads/client.zip';
@@ -383,10 +373,7 @@ class Firegui extends MY_Controller
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="client.zip"');
                 header('Content-Length: ' . filesize($destination_file));
-                //die(filesize($destination_file));
-                //ob_end_clean();
                 readfile($destination_file);
-                //unlink($destination_file);
             } else {
                 log_message('ERROR', "'$destination_file' file does not exists!");
                 die("'$destination_file' file does not exists!");
@@ -404,7 +391,3 @@ class Firegui extends MY_Controller
             array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
     }
 }
-
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */

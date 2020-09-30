@@ -22,33 +22,20 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/@fortawesome/fontawesome-free/css/all.min.css?v=" . VERSION); ?>" />
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v=" . VERSION); ?>" />
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/jvectormap/jquery-jvectormap.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v=" . VERSION); ?>" />
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v=" . VERSION); ?>" />
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v=" . VERSION); ?>" />
-
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v=" . VERSION); ?>"/>-->
-
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("template/adminlte/bower_components/select2/dist/css/select2.css?v=" . VERSION); ?>" />
-
-
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/jquery-multi-select/css/multi-select.css?v=" . VERSION); ?>"/>-->
-
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css.map?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/timeline/build/css/timeline.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/fullcalendar/fullcalendar.min.css?v=" . VERSION); ?>" />
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css?v=" . VERSION); ?>"/>-->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.css"); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>" />
@@ -61,20 +48,13 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <!-- LEAFLET -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v=" . VERSION); ?>" />
-
 <link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/leaflet.draw.css?v=" . VERSION); ?>" />
-
-
 <link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-fullscreen/leaflet.fullscreen.css?v=" . VERSION); ?>" />
 
 <!-- CUSTOM CSS -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" />
 
-
-
 <!-- STYLE OVERRIDE -->
-<!--<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/style.css?v=" . VERSION); ?>" />-->
-
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
     <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" />
 <?php endif; ?>
@@ -95,7 +75,6 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-16x16.png">
-    <!--<link rel="manifest" href="/manifest.json">-->
     <meta name="msapplication-TileImage" content="/<?php echo base_url_admin(CUSTOM_FAVICON); ?>-144x144.png">
     <meta name="theme-color" content="#ffffff">
 <?php endif; ?>
@@ -113,21 +92,18 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <script src="<?php echo base_url_scripts("script/lib/moment.min.js?v=" . VERSION); ?>"></script>
 
-<!-- HIGHCHARTS -->
+<!-- CHARTS -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts_options.js?v=" . VERSION); ?>"></script>
-
-
 <script src="<?php echo base_url_scripts("script/lib/chart.js-2.9.3/dist/Chart.js?v=" . VERSION); ?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/chart.js-2.9.3/dist/Chart.css?v=" . VERSION); ?>" />
-
 <script src="<?php echo base_url_scripts("script/lib/apexcharts-bundle/dist/apexcharts.min.js?v=" . VERSION); ?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/apexcharts-bundle/dist/apexcharts.css?v=" . VERSION); ?>" />
 
+<!-- GENERIC -->
 <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
-
 <script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>

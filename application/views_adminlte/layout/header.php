@@ -44,13 +44,9 @@
 <nav class="navbar navbar-static-top">
 
     <!-- Sidebar toggle button-->
-    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-
-    </a>
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"></a>
 
     <div class="navbar-custom-menu">
-
-
         <ul class="nav navbar-nav">
             <?php if (file_exists(__DIR__ . '/custom/header-menu.php')) $this->load->view('layout/custom/header-menu'); ?>
             <?php $this->load->view('box/notification_dropdown_list'); ?>

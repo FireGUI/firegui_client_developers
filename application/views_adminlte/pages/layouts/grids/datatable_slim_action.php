@@ -1,5 +1,4 @@
 <?php
-//debug($grid);
 $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
 $grid_id = 'grid_' . $grid['grids']['grids_id'];
 ?>
@@ -25,8 +24,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
     }
     ?>
     <div class="table-scrollable table-scrollable-borderless">
-        <table id="<?php echo $grid_id; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered table-condensed table-hover nowrap js_datatable_slim <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
-                                                                                                                                                                                                                                                                                                                                                            ?>>
+        <table id="<?php echo $grid_id; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" class="table table-striped table-bordered table-condensed table-hover nowrap js_datatable_slim <?php echo $grid['grids']['grids_append_class']; ?>">
             <thead>
                 <tr>
                     <?php if ($has_bulk) : ?>

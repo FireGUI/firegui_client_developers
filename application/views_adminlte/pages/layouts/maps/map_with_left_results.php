@@ -81,10 +81,7 @@
                                 width: '50px',
                                 height: 'auto'
                             });
-                        } else {
-                            //$('.js_result_image', item).remove();
                         }
-
 
                         // Link
                         $('.js_result_link', item).attr('href', val.link);

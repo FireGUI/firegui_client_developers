@@ -26,19 +26,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 $protocol = (!empty($_SERVER['HTTPS'])  && $_SERVER['HTTPS'] !== 'off' || (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)) ? "https://" : "http://";
 
-//print_r($_SERVER);
-//print_r(FCPATH);
-//print_r(PATHINFO_BASENAME);
-//print_r(pathinfo(FCPATH, PATHINFO_BASENAME));
-
-
-//$config['base_url'] = '';//$protocol.$_SERVER['HTTP_HOST'].'/'.pathinfo(FCPATH, PATHINFO_BASENAME);
 $base_url = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
 $base_url .= "://" . ((!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '');
 $base_url .=     str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 $config['base_url'] = $base_url;
-
-//die($config['base_url']);
 
 
 /*
@@ -477,7 +468,6 @@ $config['csrf_cookie_name'] = 'csrf_cookie_' . $config['encryption_key'];
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array(
-    //'rest/v1/[a-z0-9_\/]+',
     'rest/v1/.*?',
     'firegui/.*?',
     'custom/.*?',

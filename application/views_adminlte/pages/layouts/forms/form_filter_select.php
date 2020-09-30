@@ -10,11 +10,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
     <div class="form-body">
         <div class="row">
             <?php foreach ($form['forms_fields'] as $k => $field) : ?>
-                <?php //debug($field); 
-                ?>
+
                 <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 6); ?>">
                     <?php
-                    //debug($where_data,true);
                     $value = empty($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];
@@ -57,13 +55,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             </div>
                         <?php elseif ($field['datatype'] == 'INT4RANGE') : ?>
                             <?php
-
-                            //debug($field,true);
-
                             //Mi costruisco i parametri basati sui min/max dell'entità.
                             $field_completo = $this->datab->get_field($field['id']);
                             $entity = $this->datab->get_entity($field_completo['fields_entity_id']);
-                            //var_dump($field['min']);
                             if ($field['min'] === '') {
                                 $min = $this->db->query("SELECT MIN(LOWER({$field_completo['fields_name']})) as min FROM {$entity['entity_name']}");
                                 $min = ($min->num_rows() == 1) ? $min->row()->min : 0;
@@ -82,13 +76,10 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             } else {
                                 $value_expl = [$min, $max];
                             }
-
-                            //debug($value,true);
                             ?>
                             <input id="range_field_<?php echo $field['id']; ?>" type="text" value="<?php echo $value; ?>" />
                             <input type="hidden" class="js-filter-field" id="range_field_value_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value]" value="<?php echo $value; ?>" />
                             <script>
-                                //alert('<?php echo $value; ?>');
                                 $(document).ready(function() {
                                     'use strict';
                                     $("#range_field_<?php echo $field['id']; ?>").ionRangeSlider({
@@ -100,12 +91,10 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                         step: 1,
                                         prefix: "",
                                         postfix: "",
-                                        //prettify: false,
                                         hasGrid: true,
                                         onChange: function(obj) {
                                             from = obj.fromNumber;
                                             to = obj.toNumber + 1;
-                                            //alert(from+','+to);
                                             $('#range_field_value_<?php echo $field['id']; ?>').val(from + ',' + to);
                                         }
                                     });
@@ -115,8 +104,6 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <?php else : ?>
 
                             <?php if ($field['filterref']) : ?>
-                                <?php //debug($field);
-                                ?>
                                 <?php if ($field['type'] == 'multiselect') : ?>
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
 
@@ -128,7 +115,6 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
                                     </select>
                                 <?php else : ?>
-                                    <!--<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo $field['filterref']; ?>" data-referer="<?php echo $field['name']; ?>" class="form-control  __js_select_ajax field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />-->
                                     <?php
                                     $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
                                     $where = '1';
@@ -154,20 +140,13 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                         <option value="">---</option>
 
                                         <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name) : ?>
-                                            <?php //debug($field['filterref'], true); 
-                                            ?>
                                             <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 <?php endif; ?>
 
                             <?php else : ?>
-                                <!--<input type="hidden" name="conditions[<?php echo $k; ?>][value]" data-field-id="<?php echo $field['id']; ?>" class="form-control js_select_ajax_distinct field_<?php echo $field['id']; ?>" value="<?php echo $value; ?>" />-->
-                                <?php
-                                $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array());
-                                //debug($field);
-
-                                ?>
+                                <?php $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array()); ?>
                                 <?php if ($field['type'] == 'multiselect') : ?>
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
 

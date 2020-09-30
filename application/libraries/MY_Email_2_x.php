@@ -1,4 +1,4 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed.');
+<?php defined('BASEPATH') or exit('No direct script access allowed.');
 
 /**
  * CodeIgniter compatible email-library powered by PHPMailer.
@@ -10,7 +10,8 @@
  * This class is intended to be compatible with CI 2.x.
  */
 
-class MY_Email extends CI_Email {
+class MY_Email extends CI_Email
+{
 
     public $phpmailer;  // This property has been made public for testing purposes.
 
@@ -68,14 +69,15 @@ class MY_Email extends CI_Email {
 
     // The Constructor ---------------------------------------------------------
 
-    public function __construct($config = array()) {
+    public function __construct($config = array())
+    {
 
         $this->CI = get_instance();
         $this->CI->load->helper('email');
         $this->CI->load->helper('html');
 
         // Set the default property 'debug_output' by using CLI autodetection.
-        self::$default_properties['debug_output'] = (strpos(PHP_SAPI, 'cli') !== false OR defined('STDIN')) ? 'echo' : 'html';
+        self::$default_properties['debug_output'] = (strpos(PHP_SAPI, 'cli') !== false or defined('STDIN')) ? 'echo' : 'html';
 
         if (!is_array($config)) {
             $config = array();
@@ -101,11 +103,12 @@ class MY_Email extends CI_Email {
 
         $this->initialize($config);
 
-        log_message('info', 'Email Class Initialized (Engine: '.$this->mailer_engine.')');
+        log_message('info', 'Email Class Initialized (Engine: ' . $this->mailer_engine . ')');
     }
 
     // Triggers the setter functions to do their job.
-    protected function refresh_properties() {
+    protected function refresh_properties()
+    {
 
         foreach (array_keys(self::$default_properties) as $name) {
             $this->{$name} = $this->{$name};
@@ -115,7 +118,8 @@ class MY_Email extends CI_Email {
 
     // The Destructor ----------------------------------------------------------
 
-    public function __destruct() {
+    public function __destruct()
+    {
 
         if (is_callable('parent::__destruct')) {
             parent::__destruct();
@@ -125,9 +129,10 @@ class MY_Email extends CI_Email {
 
     // Magic -------------------------------------------------------------------
 
-    function __set($name, $value) {
+    function __set($name, $value)
+    {
 
-        $method = 'set_'.$name;
+        $method = 'set_' . $name;
 
         if (is_callable(array($this, $method))) {
             $this->$method($value);
@@ -136,21 +141,24 @@ class MY_Email extends CI_Email {
         }
     }
 
-    function __get($name) {
+    function __get($name)
+    {
 
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         } else {
-            throw new OutOfBoundsException('The property '.$name.' does not exists.');
+            throw new OutOfBoundsException('The property ' . $name . ' does not exists.');
         }
     }
 
-    public function __isset($name) {
+    public function __isset($name)
+    {
 
         return isset($this->properties[$name]);
     }
 
-    public function __unset($name) {
+    public function __unset($name)
+    {
 
         $this->$name = null;
 
@@ -170,7 +178,8 @@ class MY_Email extends CI_Email {
      * @param   mixed   $expression     A (conditional) expression that is to be executed.
      * @return  object                  Returns a reference to the created library instance.
      */
-    public function that($expression = NULL) {
+    public function that($expression = NULL)
+    {
 
         return $this;
     }
@@ -178,7 +187,8 @@ class MY_Email extends CI_Email {
 
     // Initialization & Clearing -----------------------------------------------
 
-    public function initialize($config = array()) {
+    public function initialize($config = array())
+    {
 
         if (!is_array($config)) {
             $config = array();
@@ -193,7 +203,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function clear($clear_attachments = false) {
+    public function clear($clear_attachments = false)
+    {
 
         $clear_attachments = !empty($clear_attachments);
 
@@ -220,7 +231,8 @@ class MY_Email extends CI_Email {
 
     // Prepare & Send a Message ------------------------------------------------
 
-    public function from($from, $name = '', $return_path = NULL) {
+    public function from($from, $name = '', $return_path = NULL)
+    {
 
         $from = (string) $from;
         $name = (string) $name;
@@ -228,7 +240,7 @@ class MY_Email extends CI_Email {
 
         if ($this->mailer_engine == 'phpmailer') {
 
-            if (preg_match( '/\<(.*)\>/', $from, $match)) {
+            if (preg_match('/\<(.*)\>/', $from, $match)) {
                 $from = $match['1'];
             }
 
@@ -248,7 +260,6 @@ class MY_Email extends CI_Email {
             }
 
             $this->phpmailer->Sender = $return_path;
-
         } else {
 
             parent::from($from, $name);
@@ -257,14 +268,15 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function reply_to($replyto, $name = '') {
+    public function reply_to($replyto, $name = '')
+    {
 
         $replyto = (string) $replyto;
         $name = (string) $name;
 
         if ($this->mailer_engine == 'phpmailer') {
 
-            if (preg_match( '/\<(.*)\>/', $replyto, $match)) {
+            if (preg_match('/\<(.*)\>/', $replyto, $match)) {
                 $replyto = $match['1'];
             }
 
@@ -279,7 +291,6 @@ class MY_Email extends CI_Email {
             $this->phpmailer->addReplyTo($replyto, $name);
 
             $this->_replyto_flag = TRUE;
-
         } else {
 
             parent::reply_to($replyto, $name);
@@ -288,7 +299,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function to($to) {
+    public function to($to)
+    {
 
         if ($this->mailer_engine == 'phpmailer') {
 
@@ -308,7 +320,6 @@ class MY_Email extends CI_Email {
 
                 $i++;
             }
-
         } else {
 
             parent::to($to);
@@ -317,7 +328,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function cc($cc) {
+    public function cc($cc)
+    {
 
         if ($this->mailer_engine == 'phpmailer') {
 
@@ -337,7 +349,6 @@ class MY_Email extends CI_Email {
 
                 $i++;
             }
-
         } else {
 
             parent::cc($cc);
@@ -346,7 +357,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function bcc($bcc, $limit = '') {
+    public function bcc($bcc, $limit = '')
+    {
 
         if ($this->mailer_engine == 'phpmailer') {
 
@@ -366,7 +378,6 @@ class MY_Email extends CI_Email {
 
                 $i++;
             }
-
         } else {
 
             parent::bcc($bcc, $limit);
@@ -375,7 +386,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function subject($subject) {
+    public function subject($subject)
+    {
 
         $subject = (string) $subject;
 
@@ -384,7 +396,6 @@ class MY_Email extends CI_Email {
             // Modified by Ivan Tcholakov, 01-AUG-2015.
             // See https://github.com/ivantcholakov/codeigniter-phpmailer/issues/8
             // This change probably is not needed, done anyway.
-            //$this->phpmailer->Subject = $subject;
             $this->phpmailer->Subject = str_replace(array('{unwrap}', '{/unwrap}'), '', $subject);
             //
 
@@ -396,7 +407,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function message($body) {
+    public function message($body)
+    {
 
         $body = (string) $body;
 
@@ -404,7 +416,6 @@ class MY_Email extends CI_Email {
 
             // Modified by Ivan Tcholakov, 01-AUG-2015.
             // See https://github.com/ivantcholakov/codeigniter-phpmailer/issues/8
-            //$this->phpmailer->Body = $body;
             $this->phpmailer->Body = str_replace(array('{unwrap}', '{/unwrap}'), '', $body);
             //
         }
@@ -416,15 +427,16 @@ class MY_Email extends CI_Email {
 
     // Modified by Ivan Tcholakov, 16-JAN-2014.
     //public function attach($file, $disposition = '', $newname = NULL, $mime = '') {
-    public function attach($file, $disposition = '', $newname = NULL, $mime = '', $embedded_image = false) {
-    //
+    public function attach($file, $disposition = '', $newname = NULL, $mime = '', $embedded_image = false)
+    {
+        //
 
         $file = (string) $file;
 
         $disposition = (string) $disposition;
 
         if ($disposition == '') {
-            $disposition ='attachment';
+            $disposition = 'attachment';
         }
 
         $newname = (string) $newname;
@@ -440,7 +452,7 @@ class MY_Email extends CI_Email {
 
             if ($mime == '') {
 
-                if (strpos($file, '://') === FALSE && ! file_exists($file)) {
+                if (strpos($file, '://') === FALSE && !file_exists($file)) {
 
                     $this->_set_error_message('lang:email_attachment_missing', $file);
                     // Modified by Ivan Tcholakov, 14-JAN-2014.
@@ -470,12 +482,11 @@ class MY_Email extends CI_Email {
 
                 $newname = $newname === NULL ? basename($file) : $newname;
                 $cid = $this->attachment_cid($file);
-
             } else {
 
                 // A buffered file, in this case make sure that $newname has been set.
 
-                $file_content =& $file;
+                $file_content = &$file;
 
                 $this->_attachments[] = array(
                     'name' => array($newname, $newname),
@@ -491,7 +502,6 @@ class MY_Email extends CI_Email {
             } else {
                 $this->phpmailer->addStringEmbeddedImage($file_content, $cid, $newname, 'base64', $mime, $disposition);
             }
-
         } else {
 
             parent::attach($file, $disposition);
@@ -500,7 +510,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function attachment_cid($filename) {
+    public function attachment_cid($filename)
+    {
 
         if ($this->mailer_engine == 'phpmailer') {
 
@@ -508,18 +519,18 @@ class MY_Email extends CI_Email {
 
                 if ($this->_attachments[$i]['name'][0] === $filename) {
 
-                    $this->_attachments[$i]['cid'] = uniqid(basename($this->_attachments[$i]['name'][0]).'@');
+                    $this->_attachments[$i]['cid'] = uniqid(basename($this->_attachments[$i]['name'][0]) . '@');
                     return $this->_attachments[$i]['cid'];
                 }
             }
-
         }
 
         return FALSE;
     }
 
     // Added by Ivan Tcholakov, 16-JAN-2014.
-    public function get_attachment_cid($filename) {
+    public function get_attachment_cid($filename)
+    {
 
         for ($i = 0, $c = count($this->_attachments); $i < $c; $i++) {
 
@@ -531,7 +542,8 @@ class MY_Email extends CI_Email {
         return FALSE;
     }
 
-    public function set_header($header, $value) {
+    public function set_header($header, $value)
+    {
 
         $header = (string) $header;
         $value = (string) $value;
@@ -545,7 +557,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function send($auto_clear = true) {
+    public function send($auto_clear = true)
+    {
 
         $auto_clear = !empty($auto_clear);
 
@@ -569,12 +582,10 @@ class MY_Email extends CI_Email {
                 if ($auto_clear) {
                     $this->clear();
                 }
-
             } else {
 
                 $this->_set_error_message($this->phpmailer->ErrorInfo);
             }
-
         } else {
 
             $result = parent::send();
@@ -586,7 +597,8 @@ class MY_Email extends CI_Email {
 
     // Methods for setting configuration options -------------------------------
 
-    public function set_mailer_engine($mailer_engine) {
+    public function set_mailer_engine($mailer_engine)
+    {
 
         $mailer_engine = strpos(strtolower($mailer_engine), 'phpmailer') !== false ? 'phpmailer' : 'codeigniter';
 
@@ -606,15 +618,15 @@ class MY_Email extends CI_Email {
                 // No? Search for autoloader at some fixed places.
                 if (!$phpmailer_class_exists && defined('COMMONPATH')) {
 
-                    $autoloader = COMMONPATH.'third_party/phpmailer/PHPMailerAutoload.php';
-                    @ include_once $autoloader;
+                    $autoloader = COMMONPATH . 'third_party/phpmailer/PHPMailerAutoload.php';
+                    @include_once $autoloader;
                     $phpmailer_class_exists = class_exists('PHPMailer', true);
                 }
 
                 if (!$phpmailer_class_exists) {
 
-                    $autoloader = APPPATH.'third_party/phpmailer/PHPMailerAutoload.php';
-                    @ include_once $autoloader;
+                    $autoloader = APPPATH . 'third_party/phpmailer/PHPMailerAutoload.php';
+                    @include_once $autoloader;
                     $phpmailer_class_exists = class_exists('PHPMailer', true);
                 }
 
@@ -628,7 +640,7 @@ class MY_Email extends CI_Email {
                 if (property_exists($this->phpmailer, 'PluginDir')) {
 
                     $phpmailer_reflection = new ReflectionClass($this->phpmailer);
-                    $this->phpmailer->PluginDir = dirname($phpmailer_reflection->getFileName()).DIRECTORY_SEPARATOR;
+                    $this->phpmailer->PluginDir = dirname($phpmailer_reflection->getFileName()) . DIRECTORY_SEPARATOR;
                     unset($phpmailer_reflection);
                 }
             }
@@ -640,7 +652,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_useragent($useragent) {
+    public function set_useragent($useragent)
+    {
 
         $useragent = (string) $useragent;
 
@@ -651,7 +664,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_mailpath($value) {
+    public function set_mailpath($value)
+    {
 
         $value = (string) $value;
 
@@ -664,7 +678,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_protocol($protocol = 'mail') {
+    public function set_protocol($protocol = 'mail')
+    {
 
         $protocol = in_array($protocol, self::$protocols, TRUE) ? strtolower($protocol) : 'mail';
 
@@ -691,7 +706,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_host($value) {
+    public function set_smtp_host($value)
+    {
 
         $value = (string) $value;
 
@@ -705,14 +721,15 @@ class MY_Email extends CI_Email {
     }
 
     // See https://github.com/ivantcholakov/codeigniter-phpmailer/issues/31
-    public function set_smtp_auth($value) {
+    public function set_smtp_auth($value)
+    {
 
         $this->properties['smtp_auth'] = $value;
 
         $this->_smtp_auth =
             $value === NULL
-                ? !($this->smtp_user == '' && $this->smtp_pass == '')
-                : !empty($value);
+            ? !($this->smtp_user == '' && $this->smtp_pass == '')
+            : !empty($value);
 
         if ($this->mailer_engine == 'phpmailer') {
             $this->phpmailer->SMTPAuth = $this->_smtp_auth;
@@ -721,7 +738,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_user($value) {
+    public function set_smtp_user($value)
+    {
 
         $value = (string) $value;
 
@@ -729,8 +747,8 @@ class MY_Email extends CI_Email {
 
         $this->_smtp_auth =
             $this->smtp_auth === NULL
-                ? !($value == '' && $this->smtp_pass == '')
-                : !empty($this->smtp_auth);
+            ? !($value == '' && $this->smtp_pass == '')
+            : !empty($this->smtp_auth);
 
         if ($this->mailer_engine == 'phpmailer') {
 
@@ -741,7 +759,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_pass($value) {
+    public function set_smtp_pass($value)
+    {
 
         $value = (string) $value;
 
@@ -749,8 +768,8 @@ class MY_Email extends CI_Email {
 
         $this->_smtp_auth =
             $this->smtp_auth === NULL
-                ? !($this->smtp_user == '' && $value == '')
-                : !empty($this->smtp_auth);
+            ? !($this->smtp_user == '' && $value == '')
+            : !empty($this->smtp_auth);
 
         if ($this->mailer_engine == 'phpmailer') {
 
@@ -761,7 +780,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_port($value) {
+    public function set_smtp_port($value)
+    {
 
         $value = (int) $value;
 
@@ -774,7 +794,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_timeout($value) {
+    public function set_smtp_timeout($value)
+    {
 
         $value = (int) $value;
 
@@ -787,7 +808,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_keepalive($value) {
+    public function set_smtp_keepalive($value)
+    {
 
         $value = !empty($value);
 
@@ -800,7 +822,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_smtp_crypto($smtp_crypto = '') {
+    public function set_smtp_crypto($smtp_crypto = '')
+    {
 
         $smtp_crypto = trim(strtolower($smtp_crypto));
 
@@ -817,7 +840,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_wordwrap($wordwrap = TRUE) {
+    public function set_wordwrap($wordwrap = TRUE)
+    {
 
         $wordwrap = !empty($wordwrap);
 
@@ -830,7 +854,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_wrapchars($wrapchars) {
+    public function set_wrapchars($wrapchars)
+    {
 
         $this->properties['wrapchars'] = $wrapchars;
 
@@ -839,7 +864,6 @@ class MY_Email extends CI_Email {
             if (!$this->wordwrap) {
 
                 $this->phpmailer->WordWrap = 0;
-
             } else {
 
                 if (empty($wrapchars)) {
@@ -853,7 +877,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_mailtype($type = 'text') {
+    public function set_mailtype($type = 'text')
+    {
 
         $type = trim(strtolower($type));
         $type = in_array($type, self::$mailtypes) ? $type : 'text';
@@ -867,7 +892,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_charset($charset) {
+    public function set_charset($charset)
+    {
 
         if ($charset == '') {
             $charset = config_item('charset');
@@ -885,28 +911,32 @@ class MY_Email extends CI_Email {
     }
 
     // Not used by PHPMailer.
-    public function set_multipart($value) {
+    public function set_multipart($value)
+    {
 
         $this->properties['multipart'] = (string) $value;
 
         return $this;
     }
 
-    public function set_alt_message($str = '') {
+    public function set_alt_message($str = '')
+    {
 
         $this->properties['alt_message'] = (string) $str;
 
         return $this;
     }
 
-    public function set_validate($value) {
+    public function set_validate($value)
+    {
 
         $this->properties['validate'] = !empty($value);
 
         return $this;
     }
 
-    public function set_priority($n = 3) {
+    public function set_priority($n = 3)
+    {
 
         $n = preg_match('/^[1-5]$/', $n) ? (int) $n : 3;
 
@@ -919,7 +949,8 @@ class MY_Email extends CI_Email {
         return $this;
     }
 
-    public function set_newline($newline = "\n") {
+    public function set_newline($newline = "\n")
+    {
 
         $newline = in_array($newline, array("\n", "\r\n", "\r")) ? $newline : "\n";
 
@@ -933,7 +964,8 @@ class MY_Email extends CI_Email {
     }
 
     // A CodeIgniter specific option, PHPMailer uses the standard value "\r\n" only.
-    public function set_crlf($crlf = "\n") {
+    public function set_crlf($crlf = "\n")
+    {
 
         $crlf = ($crlf !== "\n" && $crlf !== "\r\n" && $crlf !== "\r") ? "\n" : $crlf;
 
@@ -943,7 +975,8 @@ class MY_Email extends CI_Email {
     }
 
     // Not used by PHPMailer.
-    public function set_dsn($value) {
+    public function set_dsn($value)
+    {
 
         $this->properties['dsn'] = !empty($value);
 
@@ -951,7 +984,8 @@ class MY_Email extends CI_Email {
     }
 
     // Not used by PHPMailer.
-    public function set_send_multipart($value) {
+    public function set_send_multipart($value)
+    {
 
         $this->properties['send_multipart'] = !empty($value);
 
@@ -959,7 +993,8 @@ class MY_Email extends CI_Email {
     }
 
     // Not used by PHPMailer.
-    public function set_bcc_batch_mode($value) {
+    public function set_bcc_batch_mode($value)
+    {
 
         $this->properties['bcc_batch_mode'] = !empty($value);
 
@@ -967,7 +1002,8 @@ class MY_Email extends CI_Email {
     }
 
     // Not used by PHPMailer.
-    public function set_bcc_batch_size($value) {
+    public function set_bcc_batch_size($value)
+    {
 
         $this->properties['bcc_batch_size'] = (int) $value;
 
@@ -976,7 +1012,8 @@ class MY_Email extends CI_Email {
 
     // PHPMailer's SMTP debug info level.
     // 0 = off, 1 = commands, 2 = commands and data, 3 = as 2 plus connection status, 4 = low level data output.
-    public function set_smtp_debug($level) {
+    public function set_smtp_debug($level)
+    {
 
         $level = (int) $level;
 
@@ -1006,9 +1043,11 @@ class MY_Email extends CI_Email {
     // function custom_debug($str, $level) {echo "debug level $level; message: $str";};
     // $this->email->set_debug_output('custom_debug');
     // </code>
-    public function set_debug_output($handle) {
+    public function set_debug_output($handle)
+    {
 
-        if ($handle === null
+        if (
+            $handle === null
             ||
             is_string($handle) && $handle == ''
         ) {
@@ -1026,7 +1065,8 @@ class MY_Email extends CI_Email {
 
     // Setting explicitly the body encoding.
     // See https://github.com/ivantcholakov/codeigniter-phpmailer/issues/3
-    public function set_encoding($encoding) {
+    public function set_encoding($encoding)
+    {
 
         $encoding = (string) $encoding;
 
@@ -1047,7 +1087,8 @@ class MY_Email extends CI_Email {
     // PHPMailer: Whether to enable TLS encryption automatically if a server supports it,
     // even if `SMTPSecure` is not set to 'tls'.
     // Be aware that in PHP >= 5.6 this requires that the server's certificates are valid.
-    public function set_smtp_auto_tls($value) {
+    public function set_smtp_auto_tls($value)
+    {
 
         $value = !empty($value);
 
@@ -1062,7 +1103,8 @@ class MY_Email extends CI_Email {
 
     // PHPMailer: Options array passed to stream_context_create when connecting via SMTP.
     // See https://github.com/ivantcholakov/codeigniter-phpmailer/issues/12
-    public function set_smtp_conn_options($value) {
+    public function set_smtp_conn_options($value)
+    {
 
         if (!is_array($value)) {
             $value = array();
@@ -1080,7 +1122,8 @@ class MY_Email extends CI_Email {
     // DKIM signing, see https://github.com/ivantcholakov/codeigniter-phpmailer/issues/11
 
     // PHPMailer: DKIM signing domain name, for exmple 'example.com'.
-    public function set_dkim_domain($value) {
+    public function set_dkim_domain($value)
+    {
 
         $value = (string) $value;
 
@@ -1094,7 +1137,8 @@ class MY_Email extends CI_Email {
     }
 
     // PHPMailer: DKIM private key, set as a file path.
-    public function set_dkim_private($value) {
+    public function set_dkim_private($value)
+    {
 
         $value = (string) $value;
 
@@ -1119,7 +1163,8 @@ class MY_Email extends CI_Email {
     }
 
     // PHPMailer: DKIM private key, set directly from a string.
-    public function set_dkim_private_string($value) {
+    public function set_dkim_private_string($value)
+    {
 
         $value = (string) $value;
 
@@ -1139,7 +1184,8 @@ class MY_Email extends CI_Email {
     }
 
     // PHPMailer: DKIM selector.
-    public function set_dkim_selector($value) {
+    public function set_dkim_selector($value)
+    {
 
         $value = (string) $value;
 
@@ -1153,7 +1199,8 @@ class MY_Email extends CI_Email {
     }
 
     // PHPMailer: DKIM passphrase, used if your key is encrypted.
-    public function set_dkim_passphrase($value) {
+    public function set_dkim_passphrase($value)
+    {
 
         $value = (string) $value;
 
@@ -1167,7 +1214,8 @@ class MY_Email extends CI_Email {
     }
 
     // PHPMailer: DKIM Identity, usually the email address used as the source of the email.
-    public function set_dkim_identity($value) {
+    public function set_dkim_identity($value)
+    {
 
         $value = (string) $value;
 
@@ -1183,7 +1231,8 @@ class MY_Email extends CI_Email {
 
     // Overridden public methods -----------------------------------------------
 
-    public function valid_email($email) {
+    public function valid_email($email)
+    {
 
         return valid_email($email);
     }
@@ -1191,15 +1240,16 @@ class MY_Email extends CI_Email {
 
     // Custom public methods ---------------------------------------------------
 
-    public function full_html($subject, $message) {
+    public function full_html($subject, $message)
+    {
 
         $full_html =
-'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset='.strtolower($this->charset).'" />
+    <meta http-equiv="Content-Type" content="text/html; charset=' . strtolower($this->charset) . '" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>'.htmlspecialchars($subject, ENT_QUOTES, $this->charset).'</title>
+    <title>' . htmlspecialchars($subject, ENT_QUOTES, $this->charset) . '</title>
 
     <style type="text/css">
 
@@ -1255,7 +1305,7 @@ class MY_Email extends CI_Email {
 
 <body>
 
-'.$message.'
+' . $message . '
 
 </body>
 </html>';
@@ -1266,7 +1316,8 @@ class MY_Email extends CI_Email {
 
     // Protected methods -------------------------------------------------------
 
-    protected function _get_alt_message() {
+    protected function _get_alt_message()
+    {
 
         $alt_message = (string) $this->alt_message;
 
@@ -1284,11 +1335,12 @@ class MY_Email extends CI_Email {
             : $alt_message;
     }
 
-    protected function _plain_text($html) {
+    protected function _plain_text($html)
+    {
 
         if (!function_exists('html_to_text')) {
 
-            $body = @ html_entity_decode($html, ENT_QUOTES, $this->charset); // Added by Ivan Tcholakov, 28-JUL-2013.
+            $body = @html_entity_decode($html, ENT_QUOTES, $this->charset); // Added by Ivan Tcholakov, 28-JUL-2013.
 
             $body = preg_match('/\<body.*?\>(.*)\<\/body\>/si', $body, $match) ? $match[1] : $body;
             $body = str_replace("\t", '', preg_replace('#<!--(.*)--\>#', '', trim(strip_tags($body))));
@@ -1327,7 +1379,8 @@ class MY_Email extends CI_Email {
         return html_to_text($html);
     }
 
-    protected function _extract_name($address) {
+    protected function _extract_name($address)
+    {
 
         if (!is_array($address)) {
 
@@ -1356,7 +1409,8 @@ class MY_Email extends CI_Email {
         return $result;
     }
 
-    protected static function _get_file_name_variables() {
+    protected static function _get_file_name_variables()
+    {
 
         static $result = null;
 
@@ -1375,5 +1429,4 @@ class MY_Email extends CI_Email {
 
         return $result;
     }
-
 }

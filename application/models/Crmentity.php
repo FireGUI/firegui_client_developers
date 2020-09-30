@@ -87,7 +87,6 @@ class Crmentity extends CI_Model
      */
     public function get_data_full($id, $maxDepthLevel = 2)
     {
-        //debug("{$this->entity_name}.{$this->entity_name}_id = '{$id}'");
         $arr = $this->get_data_full_list($this->entity_id, null, "{$this->entity_name}.{$this->entity_name}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
         return array_get($arr, 0, []);
     }
@@ -115,7 +114,6 @@ class Crmentity extends CI_Model
      */
     public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2, $eval_cachable_fields = [], $additional_parameters = [])
     {
-
         if (!$entity_id) {
             if (!$this->entity_id) {
                 throw new Exception("Impossibile eseguire la query: entità non specificata.");
@@ -123,6 +121,7 @@ class Crmentity extends CI_Model
 
             $entity_id = $this->entity_id;
         }
+
         $group_by = array_get($additional_parameters, 'group_by', null);
         // Entity name è da deprecare...
         $entity_name = $this->getEntity($entity_id)['entity_name'];
@@ -134,14 +133,9 @@ class Crmentity extends CI_Model
         }
 
         return $this->getFromCache($_cache_key, function () use ($entity_id, $entity_name, $where, $limit, $offset, $order_by, $group_by, $count, $depth, $eval_cachable_fields) {
-
             $extra_data = true;
-            //die('depth:'.$depth);
-
 
             $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'group_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
-
-            //debug($data,true);
 
             // Se è count ho finito qua, ma anche se non ho nessun risultato
             if ($count or !$data['data']) {
@@ -177,7 +171,6 @@ class Crmentity extends CI_Model
                         $casted_field = "{$geographyField}";
                     }
 
-
                     // Indicizzo i risultati per id
                     if ($this->db->dbdriver == 'postgre') {
                         $this->db->select("{$entity_name}_id as id, ST_Y($casted_field) AS lat, ST_X($casted_field) AS lng")->where_in($entity_name . '_id', $result_ids);
@@ -186,7 +179,6 @@ class Crmentity extends CI_Model
                     }
 
                     foreach ($this->db->get($entity_name)->result_array() as $result) {
-                        //debug($result);
                         $geographyValues[$result['id']] = ['lat' => $result['lat'], 'lng' => $result['lng']];
                     }
 
@@ -211,12 +203,12 @@ class Crmentity extends CI_Model
                     $fieldsMultilingual[$field['fields_id']] = $field;
                 }
 
-                //Attenzione se un domani vogliamo aggiungere il floatrange, temo succeda casino con l'estremo superiore (vd function rangeHumanFriendly)
+                // Attenzione se un domani vogliamo aggiungere il floatrange, temo succeda casino con l'estremo superiore (vd function rangeHumanFriendly)
                 if ($field['fields_type'] === 'INT8RANGE' || $field['fields_type'] === 'INT4RANGE') {
                     $fieldsRanges[$field['fields_id']] = $field;
                 }
 
-                //20191030 - MP - Aggiunto double in qunato i field mysql
+                // Aggiunto double in qunato i field mysql
                 if (strtolower($field['fields_type']) === 'float' || strtolower($field['fields_type']) === 'double') {
                     $fieldsFloat[$field['fields_id']] = $field;
                 }
@@ -225,7 +217,6 @@ class Crmentity extends CI_Model
 
             $baseUrl = function_exists('base_url_admin') ? base_url_admin() : base_url();
             foreach ($data['data'] as $key => $_data) {
-                //debug($_data);
                 $id = $_data[$entity_name . '_id'];
 
                 foreach ($fieldsGeography as $fieldName => $values) {
@@ -348,15 +339,11 @@ class Crmentity extends CI_Model
                     continue;
                 }
 
-
                 // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
                 $ids = array_key_map($data['data'], $field);
 
                 // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
                 $relation_data = $this->db->where_in($field, $ids)->get($relation)->result_array();
-
-
-
 
                 // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
                 // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
@@ -485,9 +472,6 @@ class Crmentity extends CI_Model
         $joined = array($dati['entity']['entity_name']);
         $to_join_later = [];
 
-
-
-
         $permission_entities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti
 
         //Join entities
@@ -534,9 +518,6 @@ class Crmentity extends CI_Model
 
         $qResult = $this->db->get();
 
-
-
-
         if (!$qResult instanceof CI_DB_result) {
             // Errore, la query 
             throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
@@ -559,7 +540,7 @@ class Crmentity extends CI_Model
         if ($dati['data'] && $depth > 0) {
             foreach ($to_join_later as $main_field => $sub_entity_name) {
                 $sub_entity = $this->getEntity($sub_entity_name);
-                //$main_field_values = implode(',', array_unique(array_filter(array_key_map($dati['data'], $main_field))));
+
                 $main_field_values = $this->buildWhereInList(array_filter(array_key_map($dati['data'], $main_field)));
 
                 if (!$main_field_values) {
@@ -613,9 +594,7 @@ class Crmentity extends CI_Model
 
 
         if (!$visible_fields) {
-
             foreach ($entityFullData['visible_fields'] as $campo) {
-
                 // Aggiungo il campo alla select
                 $visible_fields[] = sprintf('%s.%s', $campo['entity_name'], $campo['fields_name']);
 
@@ -646,14 +625,8 @@ class Crmentity extends CI_Model
 
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
-        //array_unshift($visible_fields, sprintf('%s_id', $entityName));
-
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
         $this->db->select(array_unique($visible_fields));
-
-
-
-
 
         //Aggiungo eventuali eval cachable
         $eval_fields = [];
@@ -662,6 +635,7 @@ class Crmentity extends CI_Model
                 $eval_fields[] = $eval_field['grids_fields_eval_cache_data'] . ' AS ' . url_title($eval_field['grids_fields_column_name'], '_', true);
             }
         }
+
         if (!empty($eval_fields)) {
             //Rimuovo la scritta "SELECT " davanti
             $select_str = $this->db->get_compiled_select();
@@ -736,8 +710,6 @@ class Crmentity extends CI_Model
             $this->db->offset($offset);
         }
 
-        //debug($order_by);
-
         if ($order_by !== NULL && !$count) {
             $this->db->_protect_identifiers = FALSE;
             $this->db->order_by($order_by);
@@ -804,11 +776,11 @@ class Crmentity extends CI_Model
                 $order_by = null;
             }
 
-            //20170608 - MP - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+            // Filtro per soft-delete se non viene specificato questo filtro nel where della grid
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
 
-                //20191108 - MP - Where can be an array, so it's not correct to check online the where string conditions, but consider it different...
+                // Where can be an array, so it's not correct to check online the where string conditions, but consider it different...
                 if (is_array($where)) {
                     if (!array_key_exists($entityCustomActions['soft_delete_flag'], $where)) {
                         if (empty($where)) {
@@ -817,7 +789,7 @@ class Crmentity extends CI_Model
                             $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                         }
                     }
-                } else { //If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
+                } else { // If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
                     if (stripos($where, $entityCustomActions['soft_delete_flag']) === FALSE) {
                         if (empty($where)) {
                             $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
@@ -864,7 +836,7 @@ class Crmentity extends CI_Model
 
                 $result[$id] = (trim($preview) || trim($preview) === '0') ? trim($preview) : "ID #{$id}";
             }
-            //debug($result, true);
+
             return $result;
         });
     }
@@ -935,16 +907,12 @@ class Crmentity extends CI_Model
     }
     protected function buildSchemaCacheIfNotValid()
     {
-
         $this->_schemaCache = $this->cache->file->get(self::SCHEMA_CACHE_KEY);
 
-        //echo('INTERVENIRE QUI PER LA CACHE');
-
         if ($this->_schemaCache && $this->isCacheEnabled()) {
-            //die('test');
             return;
         }
-        //echo 'test';
+
         $entities = $this->createDataMap($this->db->get('entity')->result_array(), 'entity_id');
         $fields = $validations = [];
 
@@ -1105,8 +1073,6 @@ class Crmentity extends CI_Model
     {
         if (!array_key_exists($entity, $this->_visible_fields) || $depth > 1) {
             $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function ($item) {
-                //                debug($item);
-                //                var_dump($item['fields_draw_display_none'] !== DB_BOOL_TRUE);
                 return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
             });
 
@@ -1114,15 +1080,12 @@ class Crmentity extends CI_Model
                 $depth--;
                 foreach ($this->_visible_fields[$entity] as $field) {
                     if (!empty($field['fields_ref'])) {
-                        //debug($this->getVisibleFields($field['fields_ref'], $depth));
                         $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
-                        //debug($this->_visible_fields[$entity], true);
                     }
-                    //debug($field, true);
                 }
             }
         }
-        //debug($this->_visible_fields[$entity]);
+
         return $this->_visible_fields[$entity];
     }
 
@@ -1217,7 +1180,6 @@ class Crmentity extends CI_Model
         }
 
         // Step 2: Risolvo l'eventuale entità referenziata
-        //debug($field);
         if (!$field['fields_ref']) {
             // nessun'entità referenziata
             return [];
@@ -1256,7 +1218,6 @@ class Crmentity extends CI_Model
             $query = $this->db->get_where('grids', array(
                 'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE
             ));
-            //debug($query->row_array(),true);
 
             $this->_default_grids[$entity] = $query->row_array();
             return $this->_default_grids[$entity];

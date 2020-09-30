@@ -50,19 +50,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             };
         } else {
             jqCalendar.removeClass("mobile");
-            /*if (Metronic.isRTL()) {
-                h = {
-                    right: 'title',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaDay'
-                };
-            } else {
-                h = {
-                    left: 'title',
-                    center: '',
-                    right: 'prev,next,today,month,agendaWeek,agendaDay'
-                };
-            }*/
         }
 
         jqCalendar.fullCalendar('destroy'); // destroy the calendar
