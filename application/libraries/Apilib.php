@@ -283,7 +283,7 @@ class Apilib
 
         //Remove also css generated files from template cache
         foreach (@scandir(APPPATH . '../template/build/') as $file) {
-            if (is_file($file)) {
+            if ($file != '..' && $file != '.' && is_file($file)) {
                 unlink($file);
             }
         }
