@@ -19,9 +19,6 @@
     }
     ?>
     <div class="table-scrollable table-scrollable-borderless">
-        <?php
-        // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
-        ?>
         <table <?php echo "id='grid_{$grid['grids']['grids_id']}'"; ?> default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap js_datatable <?php echo $grid['grids']['grids_append_class']; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>">
             <thead>
                 <tr>

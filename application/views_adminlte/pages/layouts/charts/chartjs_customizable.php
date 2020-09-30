@@ -36,7 +36,6 @@ foreach ($chart_data as $x => $chart_element_data) {
             'label' => $name,
             'backgroundColor' => $colors[$x % 6],
             'data' => [],
-            //'type' => 'line'
         ];
         foreach ($data as $key => $value) {
             if ($x == 0) {
@@ -48,8 +47,6 @@ foreach ($chart_data as $x => $chart_element_data) {
         $series['datasets'][] = $elements_data;
     }
 }
-
-//debug($series, true);
 ?>
 <div class="row">
     <div class="col-md-10"></div>
@@ -62,8 +59,6 @@ foreach ($chart_data as $x => $chart_element_data) {
             <option value="doughnut">Doughnut</option>
             <option value="pie">Pie</option>
             <option value="polarArea">Polar Area</option>
-            <!--<option value="scatter">Scatter</option>
-            <option value="bubble">Bubble</option>-->
         </select>
     </div>
 </div>
@@ -71,25 +66,6 @@ foreach ($chart_data as $x => $chart_element_data) {
 
 <script>
     var ctx<?php echo $chartId; ?> = $('#<?php echo $chartId; ?>');
-    // var data = {
-    //     labels: ["Chocolate", "Vanilla", "Strawberry"],
-    //     datasets: [{
-    //             label: "Blue",
-    //             backgroundColor: "blue",
-    //             data: [3, 7, 4]
-    //         },
-    //         {
-    //             label: "Red",
-    //             backgroundColor: "red",
-    //             data: [4, 3, 5]
-    //         },
-    //         {
-    //             label: "Green",
-    //             backgroundColor: "green",
-    //             data: [7, 2, 6]
-    //         }
-    //     ]
-    // };
     var data<?php echo $chartId; ?> = JSON.parse('<?php echo json_encode($series); ?>');
 
     var myChart<?php echo $chartId; ?> = new Chart(ctx<?php echo $chartId; ?>, {

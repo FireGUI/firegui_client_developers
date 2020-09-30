@@ -251,7 +251,6 @@ $pprev = $page - 1;
                                 <em class="font-red-thunderbird">*** <?php e('User not detected'); ?> ***</em>
                             <?php else : ?>
                                 <strong><?php echo $log['log_crm_user_name']; ?></strong>
-                                <!--<small class="text-muted"><?php /*echo $log['users_first_name']; */ ?></small>-->
                             <?php endif; ?>
                         </td>
                         <td><?php echo $log['log_crm_title']; ?></td>

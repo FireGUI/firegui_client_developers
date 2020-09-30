@@ -28,23 +28,14 @@ if ($value) {
             return $latlon[0] . ' ' . $latlon[1];
         }, $polygon));
     }
-    //debug($polygons_str,true);
 }
 ?>
 <?php echo $label; ?>
-<div id="inputs_container_<?php echo $input; ?>">
-    <?php /* if ($value) : ?>
-      <?php foreach ($polygons_str as $val) : ?>
-      <input type="input" name="<?php echo $field['fields_name']; ?>[]" class="<?php echo $class; ?> <?php echo $input; ?>" value="<?php echo $val; ?>" />
-      <?php endforeach; ?>
-      <?php else : ?>
 
-      <?php endif; */ ?>
-</div>
+<div id="inputs_container_<?php echo $input; ?>"></div>
+
 <div class="location-search-container">
-    <div class="input-group">
-        TODO
-    </div>
+    <div class="input-group"></div>
     <br />
     <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
@@ -90,15 +81,9 @@ if ($value) {
                     alert('<?php e('Polygon type not managed yet') ?>');
                     continue;
                 }
-
-                //console.log(val);
-
             }
 
             map.fitBounds(bounds);
-
-
-
         }
 
         var map = null;
@@ -136,21 +121,6 @@ if ($value) {
             allowIntersection: false,
             shapeOptions: {
                 color: '#0000FF',
-                //                weight: 10,
-                //                smoothFactor: 1,
-                //                noClip: false,
-                //                stroke: true,
-                //                opacity: 0.5,
-                //                fill:true,
-                //                fillColor: '#000099',
-                //                fillOpacity: 0.5,
-                //                fillRule: 'nonzero', //evenodd
-                //                dashArray: null, //
-                //                lineCap: null,
-                //                lineJoin: null,
-                //                clickable: true,
-                //                pointerEvents: null,
-                //                className: '',
             },
             drawError: {
                 color: '#990000', // Color the shape will turn when intersects
@@ -158,7 +128,6 @@ if ($value) {
             },
             guidelineDistance: 10,
             metric: true,
-            //            repeatMode: false,
             selectedPathOptions: {
                 maintainColor: true,
                 opacity: 0.3,

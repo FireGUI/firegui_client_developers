@@ -22,41 +22,10 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
 
         L.maps[<?php echo json_encode($id); ?>] = map;
 
-        // L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        //     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        // }).addTo(map);
-
-        var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        /*,
-                    mqi = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png", {
-                        subdomains: ['otile1', 'otile2', 'otile3', 'otile4']
-                    })
-                ,
-                            googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                                maxZoom: 20,
-                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                            }),
-                            googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                                maxZoom: 20,
-                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                            }),
-                            googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-                                maxZoom: 20,
-                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                            }),
-                            googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
-                                maxZoom: 20,
-                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                            })*/
-        ;
+        var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
         var baseMaps = {
             "OpenStreetMap": osm,
-            //"MapQuestImagery": mqi,
-            /*"Google Street": googleStreets,
-            "Google Satellite": googleSat,
-            "Google Hybrid": googleHybrid,
-            "Google Terrain": googleTerrain,*/
         };
         var overlays = {};
         L.control.layers(baseMaps, overlays, {
@@ -125,7 +94,6 @@ $ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passe
 
 
                     if (group.length > 0) {
-                        //console.log('fitBounds!!!');
                         map.fitBounds(group);
 
                     }

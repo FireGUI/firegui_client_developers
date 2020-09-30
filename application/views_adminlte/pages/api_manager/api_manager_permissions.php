@@ -82,9 +82,7 @@
             var entity_name = $('.entity_name').val();
             //5 corrisponde a "personalizzato", per cui mostro le opzioni disponibili e mostro il blocco, altrimenti ritorno
             //In realtà mostro sempre le personlizzazioni, altrimenti non potrei indicare che su un entità non si può cancellare, ma solo leggere alcuni campi...
-            //            if (chmod != 5) {
-            //                return;
-            //            }
+
             //Prendo tutti i field di questa entità con relativi eventuali permessi assegnati
             $.ajax(base_url + 'api_manager/get_fields_by_entity_name/' + entity_name, {
                 dataType: 'json',
@@ -95,7 +93,6 @@
                     }
 
                     $.each(fields, function(i, field) {
-                        //$('<input/>').val(field.fields_name).text(field.fields_name).appendTo($('.entity_name'));
                         $('#campi').append(`
                             <div class="col-lg-4">
                                 <div class="form-group" >

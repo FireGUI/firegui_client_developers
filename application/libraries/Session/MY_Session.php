@@ -84,13 +84,6 @@ class MY_Session extends CI_Session
         isset($params['cookie_domain']) or $params['cookie_domain'] = config_item('cookie_domain');
         isset($params['cookie_secure']) or $params['cookie_secure'] = (bool) config_item('cookie_secure');
 
-        // session_set_cookie_params(
-        //     $params['cookie_lifetime'],
-        //     $params['cookie_path'],
-        //     $params['cookie_domain'],
-        //     $params['cookie_secure'],
-        //     TRUE // HttpOnly; Yes, this is intentional and not configurable for security reasons
-        // );
         $secure_cookie = (bool) config_item('cookie_secure');
         $cookie_samesite = config_item('cookie_samesite');
 
@@ -98,7 +91,6 @@ class MY_Session extends CI_Session
             [
                 'samesite' => $cookie_samesite,
                 'secure' => $secure_cookie,
-                //'expires' => $params['cookie_lifetime'],
                 'path' => config_item('cookie_path'),
                 'domain' => config_item('cookie_domain'),
                 'httponly' => config_item('cookie_httponly')

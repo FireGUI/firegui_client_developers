@@ -52,8 +52,6 @@ if ($value) {
             }
         });
 
-
-
         setTimeout(function() {
             'use strict';
             var w = $('#<?php echo $map; ?>').width();
@@ -61,7 +59,6 @@ if ($value) {
                 $('#<?php echo $map; ?>').height(w);
             }
         }, 1000);
-
 
         map = L.map('<?php echo $map; ?>', {
             center: new L.LatLng(40.725249, -74.140363),
@@ -74,11 +71,8 @@ if ($value) {
             minZoom: 5,
         });
 
-
         L.maps[<?php echo json_encode($map); ?>] = map;
         map.marker = null;
-
-
 
         $(window).on('resize', function() {
             'use strict';
@@ -95,7 +89,6 @@ if ($value) {
 
         });
 
-
         function updateLatlngInput() {
             var input = $('#<?php echo $input; ?>');
             var str = '';
@@ -104,9 +97,6 @@ if ($value) {
             }
             input.val(str);
         }
-
-
-
 
         /*
          * Geocoding

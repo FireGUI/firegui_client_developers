@@ -4,7 +4,6 @@ $this->db->empty_table('fi_events');
 
 $pps = $this->db->get('post_process')->result_array();
 foreach ($pps as $pp) {
-    //debug($pp);
     $this->db->insert('fi_events', [
         'fi_events_title' => "PP {$pp['post_process_id']}",
         'fi_events_json_data' => json_encode($pp),
@@ -21,8 +20,6 @@ foreach ($pps as $pp) {
         'fi_events_cron_frequency' => null,
         'fi_events_post_process_id' => $pp['post_process_id']
     ]);
-    //echo $this->db->last_query();
-    //echo_flush(' p ');
 }
 
 //Importo gli hooks
@@ -48,14 +45,12 @@ foreach ($hooks as $hook) {
         'fi_events_hook_id' => $hook['hooks_id']
 
     ]);
-    //echo_flush(' h ');
 }
 
 //Importo i crons
 $crons = $this->db->get('crons')->result_array();
 
 foreach ($crons as $cron) {
-    //debug($cron,true);
     $action_data = json_encode(
         [
             'code' => $cron['crons_text'],
@@ -88,5 +83,4 @@ foreach ($crons as $cron) {
         'fi_events_cron_frequency' => $cron['crons_frequency'],
         'fi_events_cron_id' => $cron['crons_id']
     ]);
-    //echo_flush(' c ');
 }

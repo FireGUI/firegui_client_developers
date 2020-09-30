@@ -53,8 +53,7 @@
                         </div>
 
                     <?php else : ?>
-                        <?php echo $this->datab->build_grid_cell($field, $dato); //$this->load->view('box/grid/td', array('field' => $field, 'dato' => $dato)); 
-                        ?>
+                        <?php echo $this->datab->build_grid_cell($field, $dato); ?>
                     <?php endif; ?>
 
                     <br />

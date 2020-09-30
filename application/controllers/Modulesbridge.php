@@ -11,7 +11,7 @@ class Modulesbridge extends MY_Controller
         parent::__construct();
     }
 
-    public function loadAssetFile($module_identifier) //, $file)
+    public function loadAssetFile($module_identifier)
     {
         $file = $this->input->get('file');
         if (stripos($file, '..')) {

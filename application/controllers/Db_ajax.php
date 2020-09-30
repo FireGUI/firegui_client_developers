@@ -192,7 +192,6 @@ class Db_ajax extends MY_Controller
         }
 
         if (!empty($output['thumbnail'])) {
-            //            $output['thumbnail'] = base_url("uploads/{$output['thumbnail']}");
             $output['thumbnail'] = base_url_uploads("uploads/{$output['thumbnail']}");
         }
 
@@ -213,7 +212,7 @@ class Db_ajax extends MY_Controller
         $form = $this->apilib->getById('forms', $form_id);
 
         $entity = $this->crmentity->getEntityFullData($form['forms_entity_id']);
-        //debug($entity, true);
+
         $_visible_fields = $entity['visible_fields'];
         $visible_fields = [];
         foreach ($_visible_fields as $field) {
@@ -233,7 +232,6 @@ class Db_ajax extends MY_Controller
             // Se invece ho fatto un submit normale, valuto le condizioni valide
             // da tenere in sessione
             foreach ($this->input->post('conditions') as $conditional) {
-                //debug($conditional);
                 if (!array_key_exists($conditional['field_id'], $visible_fields)) {
                     //TODO Wrong! Field id can be in another left joined table, so get the field information direct from the field_id to check his type... 
                     //throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity']['entity_name']}'.");
@@ -241,28 +239,15 @@ class Db_ajax extends MY_Controller
                     //Check field consistency
 
                     $error = false;
+                    $error_text = '';
                     switch ($visible_fields[$conditional['field_id']]['fields_type']) {
                         case 'INT':
-                            //TODO: fix in caso di passaggio di array di int...
-                            // $error = !is_numeric(trim($conditional['value'], "'")) || (int) $conditional['value'] != (float) $conditional['value'];
-                            // $error_text = ($error) ? "'{$conditional['value']}' is not an integer. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
-                            break;
                         case 'TIMESTAMP WITHOUT TIME ZONE':
-                            // $dates = explode(' - ', $conditional['value']);
-                            // foreach ($dates as $date) {
-                            //     if ($error) {
-                            //         break;
-                            //     }
-                            //     $error = !strtotime($date);
-                            //     $error_text = ($error) ? "'{$date}' is not a valid timestamp or date. Check '{$visible_fields[$conditional['field_id']]['fields_name']}' value." : '';
-                            // }
-
                             break;
                         default:
-                            //debug($visible_fields[$conditional['field_id']], true);
                             break;
                     }
-                    if ($error) {
+                    if ($error && !empty($error_text)) {
                         throw new Exception($error_text);
                     }
                 }
@@ -283,10 +268,8 @@ class Db_ajax extends MY_Controller
         $where_data = $this->session->userdata(SESS_WHERE_DATA);
         $where_data[$filterSessionKey] = $conditions;
 
-        //debug($conditions);
-
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
-        //debug($this->session->userdata(SESS_WHERE_DATA));
+
         // Mando output
         json_refresh();
     }
@@ -334,8 +317,7 @@ class Db_ajax extends MY_Controller
 
         $entity_name = $calendar['calendars']['entity_name'];
         $id_column = $entity_name . '_id';
-        /* $result = $this->db->where($id_column, $data[$id_column])
-          ->update($calendar['calendars']['entity_name'], $data); */
+
         try {
             $result = $this->apilib->edit($entity_name, $data[$id_column], $data);
             echo json_encode(array('status' => 1, 'txt' => t('salvato')));
@@ -488,9 +470,6 @@ class Db_ajax extends MY_Controller
                 }
             }
         }
-
-
-
 
         // Gestione limiti completamente indipendente dai gruppi/permessi
         // (al momento)
@@ -833,7 +812,6 @@ class Db_ajax extends MY_Controller
             if ($record) {
                 $new_value = (empty($record[$column]) || $record[$column] === DB_BOOL_FALSE ? DB_BOOL_TRUE : DB_BOOL_FALSE);
                 $this->apilib->edit($table, $id, [$column => $new_value]);
-                //$this->db->update($table, array($column => $new_value), array($table . '_id' => $id));
             }
         }
 
@@ -904,10 +882,6 @@ class Db_ajax extends MY_Controller
 
         $field = $this->datab->get_field($field_id);
 
-        //        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        //        $filename = md5(time() . $_FILES['file']['name']) . '.' . $ext;
-        //        $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
-
         $old_file_data =  $_FILES['file'];
         unset($_FILES['file']);
         $_FILES[$field['fields_name']] = $old_file_data;
@@ -921,7 +895,6 @@ class Db_ajax extends MY_Controller
 
             if ($relations->num_rows() == 0) { //Allora il campo non punta a una relazione ma a una tabella diretta
                 //Cerco allora la tabella
-                //$table = $this->db->where('entity_name', $field['fields_ref'])->get('entity');
 
                 $entity_data = $this->datab->get_entity_by_name($field['fields_ref']);
 
@@ -973,7 +946,6 @@ class Db_ajax extends MY_Controller
                 $id = $this->apilib->create($file_table, [], false);
                 echo json_encode(['status' => 1, 'file' => $id]);
             }
-            //debug($field['fields_ref'],true);
         } else {
             $ext = pathinfo($_FILES[$field['fields_name']]['name'], PATHINFO_EXTENSION);
             $filename = md5(time() . $_FILES[$field['fields_name']]['name']) . '.' . $ext;
@@ -993,7 +965,7 @@ class Db_ajax extends MY_Controller
                     mkdir(FCPATH . 'uploads/' . $localFolder, DIR_WRITE_MODE, true);
                 }
             }
-            //die($localFolder.$filename);
+
             if (file_exists(FCPATH . 'uploads/' . $localFolder . $filename)) {
                 echo json_encode(['status' => 0, 'txt' => "File '{$filename}' already exists!"]);
                 exit;
@@ -1016,9 +988,7 @@ class Db_ajax extends MY_Controller
             $up_data = $this->upload->data();
             $up_data['original_filename'] = $_FILES[$field['fields_name']]['name'];
             $up_data['path_local'] = $localFolder . $filename;
-            //$session = (array)($this->session->userdata('files'));
-            //$session[] = $up_data;
-            //$this->session->set_userdata('files', $session);
+
             echo json_encode(['status' => 1, 'file' => $up_data]);
         }
     }
@@ -1031,17 +1001,12 @@ class Db_ajax extends MY_Controller
 
         $field_name = $field['fields_name'];
 
-        //debug($field_support_id,true);
         $relation = $this->crmentity->getRelationByName($relation_name);
 
         $entity_name = substr($field_support_id, 0, -3);
-        //debug($entity_name,true);
         $record = $this->apilib->searchFirst($relation_name, [$field_support_id => $file_id]);
-        //debug($record,true);
         $key = array_keys($record)[0];
         $this->db->where($key, $record[$key])->delete($relation_name);
-
-        //die($this->db->last_query());
 
         $this->apilib->delete($entity_name, $file_id);
     }
@@ -1059,10 +1024,7 @@ class Db_ajax extends MY_Controller
         $newrecord = [];
         $newrecord[$field_name] = json_encode($json_decoded);
 
-        //debug($newrecord,true);
-
         $this->apilib->edit($entity_name, $record_id, $newrecord);
-        //debug($record);
     }
 
     public function changeLanguage()
@@ -1075,6 +1037,3 @@ class Db_ajax extends MY_Controller
         }
     }
 }
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */

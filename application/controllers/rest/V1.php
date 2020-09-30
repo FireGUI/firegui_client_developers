@@ -8,8 +8,6 @@ class V1 extends MY_Controller
 
     public function __construct()
     {
-        //        print_r($_POST);
-        //        exit;
         parent::__construct();
 
         // Imposto l'apilib:
@@ -22,25 +20,19 @@ class V1 extends MY_Controller
         $this->apilib->setProcessingMode(Apilib::MODE_API_CALL);
         $this->apilib->setLanguage();
 
-        //if (!$this->input->get('develop')) {
         header('Access-Control-Allow-Origin: *');
         @header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
-        //    header('Content-Type: application/json');
-        //}
+
         if ($this->uri->segment(3) != 'help') {
 
             $token_data = $this->db->get_where('api_manager_tokens', ['api_manager_tokens_token' => '' . $this->getBearerToken()]);
             if ($token_data->num_rows() == 0) {
                 $this->showError("Invalid bearer '" . $this->getBearerToken() . "'.", 1, 404);
                 die();
-                /*        } elseif (empty($this->crc)) {
-                $this->showError("Empty crc.", 1, 404);
-                die();*/
             } else {
                 $token = $token_data->row();
                 $this->token_id = $token->api_manager_tokens_id;
                 $this->token = $token->api_manager_tokens_token;
-
 
                 //Aggiorno i conteggi
                 $this->db->where('api_manager_tokens_id', $this->token_id)->update('api_manager_tokens', [
@@ -65,8 +57,6 @@ class V1 extends MY_Controller
 
         //Verifico il codice di controllo
         // Disabled for v1.0
-        //$this->checkCrc($method,$params);
-
         switch ($method) {
             case 'index':
                 $entity = @$params[0];
@@ -182,7 +172,7 @@ class V1 extends MY_Controller
             }
         }
 
-        //20190424 - MP - Ho rimesso questo perchè non faceva più il controllo d'accesso all'entità/fields...
+        // Ho rimesso questo perchè non faceva più il controllo d'accesso all'entità/fields...
         $this->check_request($method, $params);
 
         // A questo punto posso chiamare
@@ -201,13 +191,9 @@ class V1 extends MY_Controller
      */
     public function index($entity = null, $depth = 2)
     {
-
-
-
         $where = $this->getEntityWhere($entity);
 
         try {
-            //$output = $this->apilib->index($entity, $depth);
             $output = $this->apilib->search($entity, $where, null, 0, null, 'ASC', $depth);
             $this->filterOutputFields($entity, $output);
             $this->logAction(__FUNCTION__, func_get_args(), $output);
@@ -227,7 +213,6 @@ class V1 extends MY_Controller
     {
         $where = implode(' AND ', array_filter([$this->getEntityWhere($entity), $entity . '.' . $entity . "_id = '{$id}'"]));
         try {
-            //$_output = [$this->apilib->view($entity, $id, $depth)];
             $_output = $this->apilib->search($entity, $where, null, 0, null, 'ASC', $depth);
             $this->filterOutputFields($entity, $_output);
             $output = $_output[0];
@@ -328,25 +313,6 @@ class V1 extends MY_Controller
             //non uso le apilib altrimenti mi fa left join e non è detto che abbia i permessi per le altre entità... una soluzione potrebbe essere quella di ciclare tutti i permessi e rimuovere nella
             ////filterOutputFields anche le tabelle joinate, ma è un lavorone... per ora no
             $output = $this->apilib->search($entity, array_merge($where, $postData), $limit, $offset, $orderBy, $orderDir, $maxDepth);
-            //            if ($limit !== null) {
-            //                $this->db->limit($limit);
-            //            }
-            //            $where_filter = [];
-            //            foreach ($postData as $campo => $valore) {
-            //                $where_filter[] = "$campo = '$valore'";
-            //            }
-            //            $where_filter = [implode(' AND ', $where_filter)];
-            //            //debug(array_filter(array_merge($where , $where_filter)),true);
-            //            if ($orderBy) {
-            //                $this->db->order_by($orderBy, $orderDir);
-            //            }
-            //            $wh_str = ltrim(implode(' AND ', array_filter(array_merge($where , $where_filter)) ), ' AND ');
-            //            if ($wh_str) {
-            //                $this->db->where($wh_str, null, false);
-            //            }
-            //            $output = $this->db
-            //                    ->offset($offset)
-            //                    ->get($entity)->result_array();
 
             $this->filterOutputFields($entity, $output);
 
@@ -389,9 +355,6 @@ class V1 extends MY_Controller
      */
     public function delete($entity = null, $id = null, $output = 'json')
     {
-
-
-
         try {
             $this->apilib->delete($entity, $id);
             $this->logAction(__FUNCTION__, func_get_args(), array());
@@ -409,21 +372,18 @@ class V1 extends MY_Controller
             $entity = LOGIN_ENTITY;
         }
 
-        //debug($this->input->post(),true);
         $postData = array_filter((array) $this->input->post());
         $getData = array_filter((array) $this->input->get());
         $data = array_merge($getData, $postData);
 
-        //20191108 - Login password and mail are mandatory
+        //Login password and mail are mandatory
         if (!array_key_exists(LOGIN_PASSWORD_FIELD, $data) || !array_key_exists(LOGIN_USERNAME_FIELD, $data)) {
             $this->showError("Login fallito", Apilib::ERR_GENERIC, 200);
             exit;
         }
 
-        //20191108 - If defined a login active field, force where condition
-
+        // If defined a login active field, force where condition
         if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
-
             $data[LOGIN_ACTIVE_FIELD] = DB_BOOL_TRUE;
         }
 
@@ -519,8 +479,6 @@ class V1 extends MY_Controller
         ];
         $permission = $this->db->where(implode(" AND ", $where), null, false)->get('api_manager_permissions');
         //Se non ho impostato permessi specifici
-
-
 
         if ($permission->num_rows() == 0 || $permission->row()->api_manager_permissions_chmod === null) {
             //Allora posso farci di tutto, perchè significa che non ho specificato nulla di particolare su questa entità...
@@ -618,7 +576,6 @@ class V1 extends MY_Controller
         $entities = $this->db
             ->order_by('entity_name')
             ->where("entity_id NOT IN (SELECT api_manager_permissions_entity FROM api_manager_permissions WHERE api_manager_permissions_token = '{$this->token_id}' AND api_manager_permissions_chmod = '0')")
-            //->where('entity_type', $entity_type_default)
             ->get('entity')->result_array();
 
         $tables = [];
@@ -687,9 +644,6 @@ class V1 extends MY_Controller
     private function getAuthorizationHeader()
     {
         $headers = null;
-        //        echo '<pre>';
-        //        var_dump($_SERVER);
-        //        var_dump(apache_request_headers());
         if (isset($_SERVER['Authorization'])) {
             $headers = trim($_SERVER["Authorization"]);
         } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
@@ -698,7 +652,7 @@ class V1 extends MY_Controller
             $requestHeaders = apache_request_headers();
             // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
             $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-            //print_r($requestHeaders);
+
             if (isset($requestHeaders['Authorization'])) {
                 $headers = trim($requestHeaders['Authorization']);
             }
@@ -711,8 +665,6 @@ class V1 extends MY_Controller
     private function getBearerToken()
     {
         $headers = $this->getAuthorizationHeader();
-
-        //debug($headers);
 
         // HEADER: Get the access token from the header
         if (!empty($headers)) {
@@ -748,7 +700,6 @@ class V1 extends MY_Controller
      */
     private function showError($message, $code = 0, $httpStatus = 500)
     {
-        //set_status_header($httpStatus);
         if (!empty($this->token_id)) {
 
             $token = $this->db->get_where('api_manager_tokens', ['api_manager_tokens_id' => $this->token_id])->row();
@@ -775,6 +726,3 @@ class V1 extends MY_Controller
         ));
     }
 }
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
