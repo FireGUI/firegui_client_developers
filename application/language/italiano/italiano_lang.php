@@ -372,3 +372,4 @@ $lang['Title'] = 'Title';
 $lang['Description'] = 'Description';
 $lang['New messaggi monitor'] = 'New messaggi monitor';
 $lang['List messaggi monitor'] = 'List messaggi monitor';
+$lang['Cancella'] = 'Cancella';

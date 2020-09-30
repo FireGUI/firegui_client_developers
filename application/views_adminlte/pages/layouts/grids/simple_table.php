@@ -16,8 +16,11 @@ foreach ($grid['grids_fields'] as $field) {
 <?php if (empty($grid_data['data'])) : ?>
     <p>No records found</p>
 <?php else : ?>
+
     <?php
-    if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE && isset($links['custom']) && $links['custom']) {
+
+    if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) && $grid['grids']['links']['custom']) {
+        $links = $grid['grids']['links'];
         $preload_colors = ['CCCCCC' => '#CCCCCC'];
         foreach ($links['custom'] as $custom_action) {
             $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
