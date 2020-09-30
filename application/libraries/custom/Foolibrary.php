@@ -5,8 +5,8 @@ if (!defined('BASEPATH'))
 
 class Foolibrary
 {
-    public function foo()
+    public function bar()
     {
-        return 'foo';
+        return 'foo library; bar method';
     }
 }
