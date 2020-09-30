@@ -98,7 +98,6 @@ class Apilib
 
         // Aggiungi tracciamento eccezioni non catchate, quantomeno per non
         // bloccare il sistema e che nessuno sappia nulla
-        //set_exception_handler('crm_exception_handler');
 
         //Se impostato un tempo di cache diverso prendo quello
         if (defined('CACHE_TIME')) {
@@ -256,7 +255,6 @@ class Apilib
             $adapter = ['adapter' => 'file', 'backup' => 'dummy'];
         }
 
-        //$adapter = $enable? ['adapter' => 'file', 'backup' => 'dummy']: ['adapter' => 'dummy'];
         $out = file_put_contents(APPPATH . 'cache/cache-controller', serialize($adapter), LOCK_EX);
         return $out !== false;
     }
@@ -275,40 +273,7 @@ class Apilib
 
     public function clearCache($testMode = false)
     {
-
-        /*// Controllo che il parent della mia app directory sia la root
-        $files = [];
-        if (trim(dirname(APPPATH), DIRECTORY_SEPARATOR) !== trim(FCPATH, DIRECTORY_SEPARATOR)) {
-            
-            // Se così non fosse, allora sono in ambiente multiapp
-            $applicationContainer = dirname(APPPATH);
-            $di = new DirectoryIterator($applicationContainer);
-            
-            foreach ($di as $fileinfo) {
-                if ($fileinfo->isDot() OR $fileinfo->isFile()) {
-                    continue;
-                }
-                
-                $cachedir = $fileinfo->getRealPath() . DIRECTORY_SEPARATOR . 'cache/';
-                if (is_dir($cachedir)) {
-                    $files = array_merge($files, glob($cachedir.'*'));
-                }
-            }
-        }
-        
-        $keep = array('cache-controller', 'index.html');
-        $cleared = [];
-        foreach ($files as $file) {
-            if (is_file($file) && !in_array(basename($file), $keep)) {
-                if (!$testMode) {
-                    unlink($file);
-                }
-                $cleared[] = substr($file, strlen(FCPATH));
-            }
-        }
-        
-        return $cleared;*/
-        // 20200310 - Michael E. - Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
+        // Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
 
         $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
         $this->cache->clean();
@@ -319,7 +284,6 @@ class Apilib
         //Remove also css generated files from template cache
         foreach (@scandir(APPPATH . '../template/build/') as $file) {
             if (is_file($file)) {
-
                 unlink($file);
             }
         }
@@ -451,8 +415,8 @@ class Apilib
         }
 
         $success = $this->db->update($entity, $data, [$entity . '_id' => $id]);
-        //debug($this->db->last_query(),true);
-        return $success; // && $this->db->affected_rows()>0;
+
+        return $success;
     }
 
 
@@ -469,11 +433,10 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
-        //MP: rimuovo i campi password passati vuoti...
+        //rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
-        //debug($fields,true);
+
         foreach ($fields as $field) {
-            //debug($field['fields_draw_html_type']);
             if ($field['fields_draw_html_type'] == 'input_password' && empty($_data[$field['fields_name']])) {
                 unset($_data[$field['fields_name']]);
             }
@@ -488,7 +451,6 @@ class Apilib
 
                 if (!$date) {
                     throw new ApiException("Date format incorrect or unknown: '{$_data[$field['fields_name']]}'", self::ERR_INTERNAL_DB);
-                    //debug($_data,true);
                 }
 
                 $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
@@ -506,8 +468,8 @@ class Apilib
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
 
-            //$this->cache->clean();
             $this->clearCache();
+
             // Prima di uscire voglio ripristinare il post precedentemente modificato
             $_POST = $this->originalPost;
 
@@ -536,19 +498,15 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
-
-
-        //MP: rimuovo i campi password passati vuoti...
+        // rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
-        //debug($fields,true);
+
         foreach ($fields as $field) {
-            //debug($field['fields_draw_html_type']);
             if ($field['fields_draw_html_type'] == 'input_password' && empty($_data[$field['fields_name']])) {
                 unset($_data[$field['fields_name']]);
             }
             //Per i campi date e date_time, se sono su mysql li converto in formato mysql
             elseif ($this->db->dbdriver != 'postgre' && in_array($field['fields_type'], ['TIMESTAMP']) && !empty($_data[$field['fields_name']])) {
-                //debug($_data[$field['fields_name']]);
                 if (count(explode(' ', $_data[$field['fields_name']])) == 2) { //Se la data ha anche i secondi
                     if (count(explode('/', $_data[$field['fields_name']])) >= 2) { //In modifica le date vengono passate con la barra (bug datetime picker?)
                         $date = DateTime::createFromFormat("d/m/Y H:i", $_data[$field['fields_name']]);
@@ -559,16 +517,12 @@ class Apilib
                     $date = DateTime::createFromFormat("d/m/Y", $_data[$field['fields_name']]);
                 }
 
-
-
                 $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
             }
         }
 
         if ($this->processData($entity, $_data, true, $id)) {
             $oldData = $this->getById($entity, $id);
-            //debug($id,true);
-
 
             if (!$this->updateById($entity, $id, $_data)) {
                 $this->showError(self::ERR_GENERIC);
@@ -577,7 +531,7 @@ class Apilib
 
             $this->savePendingRelations($id);
 
-            //20170904 MP - Al pp save non arrivavano i dati old. Li mergio coi dati dell'entità
+            // Al pp save non arrivavano i dati old. Li mergio coi dati dell'entità
             $newData = $this->runDataProcessing(
                 $entity,
                 'save',
@@ -617,15 +571,6 @@ class Apilib
         // ***
         // L'idea è quella di far partire una transazione in modo tale che se
         // uno fallisce falliscono tutti
-        /*$this->db->trans_start();
-        
-        $output = [];
-        foreach ($data as $row) {
-            $output[] = $this->create($entity, $row);
-        }
-        
-        $this->db->trans_complete();
-        return $output;*/
 
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -705,12 +650,6 @@ class Apilib
             $data = (array) $data;
         }
 
-        /*foreach ($data as $key => $val) {
-            if ($val === '') {
-                unset($data[$key]);
-            }
-        }*/
-
         return $data;
     }
 
@@ -727,7 +666,7 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        //20170608 - MP - integrazione soft-delete
+        // integrazione soft-delete
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -751,9 +690,9 @@ class Apilib
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
-        //$this->cache->clean();
         $this->clearCache();
     }
+
     /**
      * Alias function
      */
@@ -805,7 +744,6 @@ class Apilib
 
     public function entityList()
     {
-
         $entity_type_default = defined('ENTITY_TYPE_DEFAULT') ? ENTITY_TYPE_DEFAULT : 1;
         $entities = $this->db->order_by('entity_name')->get_where('entity', ['entity_type' => $entity_type_default])->result_array();
 
@@ -826,12 +764,8 @@ class Apilib
         return $tables;
     }
 
-
-
     public function supportList()
     {
-
-
         $entity_type_support = defined('ENTITY_TYPE_SUPPORT_TABLE') ? ENTITY_TYPE_SUPPORT_TABLE : 2;
         $support_tables = $this->db->order_by('entity_name')->get_where('entity', array('entity_type' => $entity_type_support))->result_array();
 
@@ -861,8 +795,6 @@ class Apilib
 
     public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC',  $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
     {
-
-        //die('test');
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -873,8 +805,6 @@ class Apilib
         $group_by = array_get($additional_parameters, 'group_by', null);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
-
-
 
         if (!($out = $this->cache->get($cache_key))) {
 
@@ -912,7 +842,7 @@ class Apilib
 
             $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
-            //20170608 - MP - Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+            // Filtro per soft-delete se non viene specificato questo filtro nel where della grid
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
                 //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
@@ -946,7 +876,6 @@ class Apilib
             }
 
             $order = empty($order_array) ? null : implode(', ', $order_array);
-            //$order = $orderBy? $orderBy.' '.($orderDir==='ASC'? $orderDir: 'DESC'): null;
 
             try {
 
@@ -965,9 +894,7 @@ class Apilib
 
     public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1, $additional_parameters = [])
     {
-        //$group_by = array_get($additional_parameters, 'group_by', null);
-        //$out = $this->search($entity, $input, 1);
-        //20151019 - Fix MP: aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
+        // aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
         $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth, [], $additional_parameters);
         return array_shift($out) ?: [];
     }
@@ -976,7 +903,6 @@ class Apilib
 
     public function count($entity = null, $input = [], $additional_parameters = [])
     {
-
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -1021,8 +947,6 @@ class Apilib
         return $out;
     }
 
-
-
     /**
      * Torna l'array dei messaggi d'errore,
      * NB: a scopi di debug - help ecc
@@ -1031,9 +955,6 @@ class Apilib
     {
         return $this->errorMessages;
     }
-
-
-
 
     /**
      * Lancia eccezione con errore passato o quello corrente
@@ -1076,18 +997,6 @@ class Apilib
         throw $exception;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Rimuovi tutti i dati relativi all'entità da
      * tutti gli elementi di una lista
@@ -1110,9 +1019,6 @@ class Apilib
             return null;
         }
     }
-
-
-
 
     /**
      * Per ogni elemento ci metto 
@@ -1162,8 +1068,6 @@ class Apilib
         return $data;
     }
 
-
-
     /**
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
@@ -1198,7 +1102,7 @@ class Apilib
                 $value_id = $dataDb[$entity . '_id'];
             } else {
                 // Pre-fetch dei dati sennò fallisce la validazione
-                //TODO: if db table has columns not present in fields, this will cause an error later... suggestion: use build_select to get only columns present in fields
+                //@todo if db table has columns not present in fields, this will cause an error later... suggestion: use build_select to get only columns present in fields
                 $dataDb = $this->db->get_where($entity, array($entity . '_id' => $value_id))->row_array();
             }
 
@@ -1208,14 +1112,10 @@ class Apilib
         }
 
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
-        //$fields = $this->db->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')->get_where('fields', ['fields_entity_id' => $entity_data['entity_id']])->result_array();
-
-        //debug($data, true);
 
         // Recupera dati di validazione
         foreach ($fields as $k => $field) {
             $fields[$k]['validations'] = $this->crmEntity->getValidations($field['fields_id']);
-            //$fields[$k]['validations'] = $this->db->get_where('fields_validation', array('fields_validation_fields_id' => $field['fields_id']))->result_array();
         }
 
         /**
@@ -1333,14 +1233,13 @@ class Apilib
             // Non uso $this->form_validation (del controller) se già
             // inizializzato, ma ne creo uno nuovo all'occorrenza
             if (!class_exists('CI_Form_validation') && !class_exists('MY_Form_validation')) {
-                //debug(class_exists('CI_Form_validation'),true);
                 $this->load->library('form_validation');
             } else {
                 $validatorClass = (class_exists('MY_Form_validation') ? 'MY_Form_validation' : 'CI_Form_validation');
 
                 $this->form_validation = new $validatorClass;
             }
-            //20180426 - MP - Col passaggio a CI3, non viene più verificato il $_POST dal form validator, ma direttamente il CI->input->method (che nel caso di "change_value" è GET, non POST).
+            // Col passaggio a CI3, non viene più verificato il $_POST dal form validator, ma direttamente il CI->input->method (che nel caso di "change_value" è GET, non POST).
             //Fortunatamente hanno previsto la possibilità di dire al form validator che non deve valutare $_POST, ma un array "validation_data" che si può settare con set_data. Ecco il perchè di questa modifica.
             $this->form_validation->set_data($_POST);
             $this->form_validation->set_rules($rules);
@@ -1483,17 +1382,8 @@ class Apilib
             $isRequired = $field['fields_required'] === DB_BOOL_TRUE;
 
             //Quersta è la vecchia condizione di Alberto. Secondo me è corretto che se non è obbligatorio e uno lo lascia vuoto, venga settato a null comunque...
-            //if ($isNull && ($hasDefault OR ($editMode && $isRequired))) {
-
-            //            if ($name == 'projects_database_port') {
-            //                var_dump($value);
-            //                exit;
-            //            }
-
             if (
                 ($isNull && ($hasDefault or ($editMode && $isRequired)))
-                //                    OR
-                //                    (!$editMode && $value === '' && !$isRequired)
             ) {
                 unset($data[$name]);
             } elseif ($editMode && $value === '' && !$isRequired) {
@@ -1658,7 +1548,7 @@ class Apilib
                 // Se $relation['value'] è vuoto allora anche
                 // $relationFullData sarà vuoto
                 $relationFullData = array_map(function ($value) use ($relationBundle, $savedId) {
-                    //TODO: MP 20191108 Non è detto che il field_1 sia il saveId, nulla vieta di invertire le due tabella. Sarebbe da fare un check per capire dove va l'id salvato e dove va invece ilvalore della multiselect...
+                    //@todo Non è detto che il field_1 sia il saveId, nulla vieta di invertire le due tabella. Sarebbe da fare un check per capire dove va l'id salvato e dove va invece ilvalore della multiselect...
                     return [
                         $relationBundle['relations_field_1'] => $savedId,
                         $relationBundle['relations_field_2'] => $value
@@ -1670,15 +1560,6 @@ class Apilib
         }
         $this->pendingRelations = null;
     }
-
-
-
-
-
-
-
-
-
 
     /**
      * Lancia il processo di valutazione/validazione di un campo. Questo metodo
@@ -1767,14 +1648,6 @@ class Apilib
                     // intero valido
                     throw new ApiException(sprintf("Il campo %s dev'essere inserito senza caratteri speciali (ad es. `,` e `.`)", $field['fields_draw_label']));
                 }
-                //----
-                /*if(isset($value) && !is_numeric($value)) {
-                    $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                }
-
-                if(($value === '' OR $value === false) && $field['fields_required'] === DB_BOOL_FALSE ) {
-                    $value = null;
-                }*/
                 break;
 
             case 'FLOAT':
@@ -1841,8 +1714,6 @@ class Apilib
 
         return true;
     }
-
-
 
     /**
      * Formattazione corretta di un input in una stringa date/datetime
@@ -1918,18 +1789,16 @@ class Apilib
      */
     public function filterInputPolygonMulti($value)
     {
-        //debug($value,true);
         if (isset($value['multipolygon'])) {
             return $value['multipolygon'];
         }
         //FORMATO: ST_GeographyFromText('MULTIPOLYGON(((lon lat, lon lat), (.......)))') AS geography
         if (!is_array($value) || $value == array()) {
-            //debug('test');
             return null;
         } else {
 
             $collections = array();
-            //debug($value,true);
+
             if (array_key_exists('polygons', $value)) { //Processo prima i poligoni
                 $value['polygons'] = array_map(
                     function ($polygon) {
@@ -1969,7 +1838,7 @@ class Apilib
                         } else {
                             $points = json_decode($this->db->query("SELECT ST_AsGeoJSON(ST_Buffer(ST_GeomCollFromText('POINT($center)'), $radius)) as circle")->row()->circle, true)['coordinates'];
                         }
-                        //debug($points,true);
+
                         $points_space_imploded = [];
                         foreach ($points[0] as $point) {
                             $points_space_imploded[] = implode(' ', $point);
@@ -1985,11 +1854,7 @@ class Apilib
                 $value['circles'] = array();
             }
 
-            //debug($value['circles'],true);
-
             $merged_polygons = array_merge($value['circles'], $value['polygons']);
-
-            //debug($merged_polygons,true);
 
             $multipolygon = "MULTIPOLYGON((" . implode(',', $merged_polygons) . "))";
 
@@ -2003,13 +1868,10 @@ class Apilib
                     $query = $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_CollectionExtract(ST_GeographyFromText('$multipolygon')::geometry, 3))))::geography AS geography");
                 } else {
                     $query = $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_CollectionExtract(ST_GeographyFromText('$multipolygon')::geometry, 3))))::geography AS geography");
-                    //debug($this->db->last_query());
                 }
 
 
                 if (!$query) {
-                    //return null;  // Decommentare per task di importazione, poi ripristinare
-                    //throw new ApiException('Il poligono disegnato non è valido');
                     $this->error = self::ERR_VALIDATION_FAILED;
                     $this->errorMessage = "Il poligono disegnato non è valido";
                     return false;
@@ -2017,21 +1879,6 @@ class Apilib
 
                 $this->db->db_debug = $debug;
                 return $query->row()->geography;
-
-                // V2: questa lascia i buchi in caso di poligoni intersecati (a causa di ST_MakeValid)
-                //return $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_MakeValid(ST_Collect(ST_GeographyFromText('$multipolygon')::geometry))))::geography AS geography")->row()->geography;
-
-                // V1: non ricordo perché, ma se abbiamo fatto una v2 ci dev'essere un motivo...
-                /*$valid = $this->db->query("SELECT ST_IsValid(ST_Collect(ST_GeographyFromText('$multipolygon')::geometry)) AS valid")->row()->valid;
-                //debug($multipolygon);
-                
-                if ($valid === 't') {
-                    // La geometria ottenuta dall'aggregazione dei poligoni è corretta, quindi procedo
-                    return $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_GeographyFromText('$multipolygon')::geometry)))::geography AS geography")->row()->geography;
-                } else {
-                    // La geometria non può essere ottimizzata, quindi prendo i poligoni così come sono
-                    return $this->db->query("SELECT ST_GeographyFromText('$multipolygon') AS geography")->row()->geography;
-                }*/
             } else {
                 return null;
             }
@@ -2060,7 +1907,6 @@ class Apilib
 
     public function runDataProcessing($entity_id, $pptype, $data = [])
     {
-
         if (!$this->processEnabled) {
             return $data;
         }
@@ -2346,9 +2192,6 @@ class Apilib
 
         $this->db->insert('log_crm', $logEntry);
     }
-
-
-
 
     /**
      * CrmEntity Factory

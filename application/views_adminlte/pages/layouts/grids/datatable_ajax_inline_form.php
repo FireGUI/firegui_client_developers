@@ -12,7 +12,6 @@ foreach ($grid['grids_fields'] as $field) {
         break;
     }
 }
-//debug($where);
 
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 ?>
@@ -107,17 +106,6 @@ $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null);
 if (!$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
     return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
 }
-
-//Forzo tutti i campi a essere sulla stessa row...
-//$colonne = count($grid['grids_fields'])+1;
-//$col_attr = ceil(12/$colonne);
-//
-//
-//foreach ($form['forms_fields'] as $key => $field) {
-//    $form['forms_fields'][$key]['size'] = $col_attr;
-//}
-
-//debug($form,true);
 ?>
 <div class="js_inline_hidden_form_container hidden" grid_id="<?php echo $grid['grids']['grids_id']; ?>">
     <?php
@@ -127,7 +115,6 @@ if (!$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
             'form' => $form,
             'ref_id' => $grid['grids']['grids_inline_form'],
             'value_id' => null,
-            //'layout_data_detail' => $layoutEntityData
         ),
         false
     );

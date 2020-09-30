@@ -139,7 +139,6 @@ class MX_Loader extends CI_Loader
 	/** Load a module language file **/
 	public function language($langfile, $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '')
 	{
-		//debug(CI::$APP->lang);
 		CI::$APP->lang->load($langfile, $idiom, $return, $add_suffix, $alt_path, $this->_module);
 
 
@@ -149,7 +148,6 @@ class MX_Loader extends CI_Loader
 
 	public function languages($languages)
 	{
-		//debug('ASSERT ERROR!', true);
 		foreach ($languages as $_language) $this->language($_language);
 		return $this;
 	}

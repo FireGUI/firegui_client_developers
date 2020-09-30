@@ -26,48 +26,21 @@ foreach ($chart_data as $x => $chart_element_data) {
         }
     }
 }
-/*series: [
-  {
-    data: [1.4, 2, 2.5, 1.5, 2.5, 2.8, 3.8, 4.6]
-  },
-  {
-    data: [20, 29, 37, 36, 44, 45, 50, 58]
-  }
-],
-yaxis: [
-  {
-    title: {
-      text: "Series A"
-    },
-  },
-  {
-    opposite: true,
-    title: {
-      text: "Series B"
-    }
-  }
-],*/
 
 foreach ($chart_data as $x => $chart_element_data) {
 
     foreach ($chart_element_data['series'] as $name => $data) {
-        //ksort($data);
         $elements_data = [
             'name' => $name,
-            // 'backgroundColor' => $colors[$x % 6],
             'data' => [],
-            //'type' => 'line'
         ];
         foreach ($data as $key => $value) {
-
-
-            $elements_data['data'][] =            number_format(floatVal($value), 2, '.', '');
+            $elements_data['data'][] = number_format(floatVal($value), 2, '.', '');
         }
         $series['series'][] = $elements_data;
     }
 }
 
-//debug($xes, true);
 ?>
 
 <div class="row">
@@ -75,7 +48,6 @@ foreach ($chart_data as $x => $chart_element_data) {
 </div>
 <script>
     var series<?php echo $chartId; ?> = JSON.parse('<?php echo json_encode($series); ?>');
-    //console.log(series<?php echo $chartId; ?>.yaxis);
     var options<?php echo $chartId; ?> = {
         chart: {
             type: 'bar',
@@ -112,20 +84,6 @@ foreach ($chart_data as $x => $chart_element_data) {
                 }
             }
         },
-        // fill: {
-        //     opacity: 0.5,
-        //     type: 'gradient',
-        //     gradient: {
-        //         inverseColors: false,
-        //         //shade: 'light',
-        //         type: "vertical",
-        //         stops: [0, 90, 100],
-        //         shadeIntensity: 1,
-        //         opacityFrom: 0.5,
-        //         opacityTo: 0,
-        //         stops: [0, 90, 100]
-        //     }
-        // },
         legend: {
             show: true
         },
@@ -134,23 +92,17 @@ foreach ($chart_data as $x => $chart_element_data) {
             categories: ['<?php echo implode("','", $xes); ?>'],
             labels: {
                 formatter: function(value, timestamp, index) {
-                    //console.log(moment(value));
                     if (moment(value).isValid()) {
-
                         return moment(value).format("DD MMM YYYY")
                     } else {
                         return value;
                     }
-
-
                 },
-
             }
         },
         yaxis: {
             labels: {
                 formatter: function(value) {
-                    //console.log('FORMATTO!');
                     return value.toFixed(2);
                 }
             },
@@ -160,15 +112,10 @@ foreach ($chart_data as $x => $chart_element_data) {
             intersect: false,
             y: {
                 formatter: function(y) {
-
                     return y;
-
                 }
             }
         }
-
-
-
     }
 
     var chart<?php echo $chartId; ?> = new ApexCharts(document.querySelector("#<?php echo $chartId; ?>"), options<?php echo $chartId; ?>);

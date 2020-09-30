@@ -33,10 +33,8 @@
                                     }
                                 });
                                 $fields = array_values(array_filter($entity_result['visible_fields'], function ($field) {
-                                    //debug($field['fields_type']);
                                     return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'varchar', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
                                 }));
-                                //debug($entity_result['visible_fields']);
                                 ?>
                                 <table class="table table-condensed table-bordered table-hover table-scrollable table-scrollable-borderless js_search_datatable">
                                     <thead>

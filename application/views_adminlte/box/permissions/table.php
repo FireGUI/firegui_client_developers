@@ -25,13 +25,9 @@
     <div class="col-md-9">
         <input type="text" class="form-control input-large" name="permissions_group_rename" />
     </div>
-
 <?php endif; ?>
 <div class="clearfix"></div>
 <br />
-
-
-
 
 <div id="all-permissions">
     <label class="col-md-3 control-label"><?php e("admin"); ?></label>
@@ -46,11 +42,8 @@
         </label>
     </div>
 
-
     <div class="clearfix"></div>
     <br />
-
-
 
     <div id="permission_container" class="<?php echo ($is_administrator ? 'collapse' : 'in'); ?>">
         <table class="table table-striped table-condensed table-hover">
@@ -132,14 +125,6 @@
                     </td>
                     <td class="hidden">
                         <input type="hidden" name="<?php echo "limits[{$k}][limits_operator]" ?>" value="in" class="js_limit_op" />
-                        <?php /*
-                        <select class="form-control input-sm js_limit_op" name="<?php echo "limits[{$k}][limits_operator]" ?>" >
-                            <option value=""></option>
-                            <?php foreach (unserialize(OPERATORS) as $val=>$op): ?>
-                                <option value="<?php echo $val; ?>" <?php if(isset($limit['limits_operator']) && $limit['limits_operator']==$val) echo 'selected'; ?>><?php echo $op['html']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                         */ ?>
                     </td>
                     <td><input type="text" class="form-control input-sm js_limit_val" name="<?php echo "limits[{$k}][limits_value]" ?>" value="<?php if (isset($limit['limits_value'])) echo $limit['limits_value']; ?>" /></td>
                     <td class="text-center">

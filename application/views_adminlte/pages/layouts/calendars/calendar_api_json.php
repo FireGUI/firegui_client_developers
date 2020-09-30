@@ -47,19 +47,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             };
         } else {
             jqCalendar.removeClass("mobile");
-            /*if (Metronic.isRTL()) {
-                h = {
-                    right: 'title',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaDay'
-                };
-            } else {
-                h = {
-                    left: 'title',
-                    center: '',
-                    right: 'prev,next,today,month,agendaWeek,agendaDay'
-                };
-            }*/
         }
 
         jqCalendar.fullCalendar('destroy'); // destroy the calendar
@@ -72,19 +59,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             minTime: minTime,
             maxTime: maxTime,
             lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
-            // monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-            // monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-            // dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
-            // dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
-            // firstDay: 1,
-            // timeFormat: 'H:mm',
-            // axisFormat: 'H:mm',
-            // buttonText: {
-            //     today: 'Mostra oggi',
-            //     month: 'Mese',
-            //     week: 'Sett.',
-            //     day: 'Giorno'
-            // },
 
             selectHelper: true,
             select: function(start, end, allDay) {

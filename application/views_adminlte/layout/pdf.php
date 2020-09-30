@@ -30,13 +30,6 @@
 
 <body>
     <div class="container">
-        <?php
-        // foreach ($dati['layout'] as $row) {
-        //     foreach ($row as $layout) {
-        //         echo (($layout['layouts_boxes_titolable'] === DB_BOOL_TRUE) ? '<h2>' . ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])) . '</h2>' : '') . "<div>{$layout['content']}</div>";
-        //     }
-        // }
-        ?>
         <?php foreach ($dati['layout'] as $row) : ?>
 
             <div class="row">

@@ -67,7 +67,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
                     $filterWhereFilter = "{$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
                 }
             }
-            //debug($filterWhereFilter);
             $filter_data = $this->datab->get_entity_preview_by_name($entity['entity_name'], $filterWhereFilter);
 
 
@@ -100,10 +99,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
         <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
     </div>
 </div>
-
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/locale-all.js"></script>-->
 
 <script>
     var jqCalendarView;
@@ -153,17 +148,6 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
             timeFormat: 'H:mm',
             axisFormat: 'H:mm',
-            // monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-            // monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-            // dayNames: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
-            // dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
-            // firstDay: 1,
-            // buttonText: {
-            //     today: 'Mostra oggi',
-            //     month: 'Mese',
-            //     week: 'Sett.',
-            //     day: 'Giorno',
-            // },
             timeFormat: 'H:mm',
             columnFormat: {
                 agendaWeek: 'ddd D MMMM'

@@ -24,19 +24,13 @@ class Foo extends MY_Controller
     public function foo()
     {
         //Load custom model foo (you can call both with custom/ prefix or without it)
-        //$this->load->model('custom/foomodel');
         $this->load->model('foomodel');
-        // debug($this->foomodel->foo());
 
         // //Load custom library foo (you can call both with custom/ prefix or without it)
-        //$this->load->library('custom/foolibrary');
         $this->load->library('foolibrary');
         $foo = new Foolibrary();
-        // debug($foo->foo());
-
 
         d($foo->foo());
-
 
         $array = array(
             "1" => "PHP code tester Sandbox Online",
@@ -50,12 +44,5 @@ class Foo extends MY_Controller
         );
         d($array);
         d($foo->foo());
-
-
-        //Load custom helper foo (you can call both with custom/ prefix or without it)
-        //$this->load->helper('custom/foo_helper');
-        // $this->load->helper('foo_helper');
-        // debug(foo());
-        // d(foo());
     }
 }
