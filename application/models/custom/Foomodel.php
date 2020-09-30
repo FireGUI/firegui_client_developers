@@ -10,8 +10,8 @@ class Foomodel extends CI_Model
         parent::__construct();
     }
 
-    public function foo()
+    public function bar()
     {
-        return 'foo';
+        return 'foo model; bar method';
     }
 }
