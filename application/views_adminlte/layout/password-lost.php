@@ -78,7 +78,7 @@ endif;
             <div class="logo">
                 <div class="text-center">
                     <?php if ($this->settings === array()) : ?>
-                        <h2 class="login-logo"><?php e('Your Company'); ?></h2>
+                        <h2 class="login-logo login-p"><?php e('Your Company'); ?></h2>
                     <?php elseif ($this->settings['settings_company_logo']) : ?>
                         <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" class="logo" />
                     <?php else : ?>
@@ -90,12 +90,12 @@ endif;
 
             <div class="login-box-body">
                 <?php if ($sent) : ?>
-                    <h3 class="title"><?php e("E-mail sent successfully"); ?></h3>
+                    <h3 class="title login-p"><?php e("E-mail sent successfully"); ?></h3>
                     <div class="alert alert-success">
                         <p class="login-p"><?php e("We've sent you and email to"); ?> <strong><?php echo $receiver; ?></strong> <?php e("which contains the link for reset the password."); ?> </p>
                     </div>
                 <?php elseif (!empty($pwd_resetted)) : ?>
-                    <h3 class="title"><?php e("Password resetted successfully"); ?></h3>
+                    <h3 class="title login-p"><?php e("Password resetted successfully"); ?></h3>
                     <div class="alert alert-success">
                         <p class="login-p"><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
                     </div>
