@@ -8,3 +8,4 @@ Fix ckeditor margins
 Added dynamic generated stylesheet for grid actions
 Moved all inline styles to external css
 Fix custom.css
+Added ‘use strict’ in javascript
