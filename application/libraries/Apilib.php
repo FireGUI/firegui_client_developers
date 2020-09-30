@@ -317,7 +317,7 @@ class Apilib
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
         //Remove also css generated files from template cache
-        foreach (scandir(APPPATH . '../template/build/') as $file) {
+        foreach (@scandir(APPPATH . '../template/build/') as $file) {
             if (is_file($file)) {
 
                 unlink($file);

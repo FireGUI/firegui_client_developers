@@ -1,5 +1,7 @@
 <?php
-if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE && isset($links['custom']) && $links['custom']) {
+
+if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) && $grid['grids']['links']['custom']) {
+    $links = $grid['grids']['links'];
     $preload_colors = ['CCCCCC' => '#CCCCCC'];
     foreach ($links['custom'] as $custom_action) {
         $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
@@ -12,7 +14,6 @@ if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] ==
     $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
 }
 ?>
-
 
 <?php if (isset($grid_data['data'])) : ?>
     <?php foreach ($grid_data['data'] as $dato) : ?>
