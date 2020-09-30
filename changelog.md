@@ -8,4 +8,5 @@ Fix ckeditor margins
 Added dynamic generated stylesheet for grid actions
 Moved all inline styles to external css
 Fix custom.css
-Added ‘use strict’ in javascript
+Added ‘use strict’ in javascrip
+Fix bootstrap js and css in login page
