@@ -1,9 +1,9 @@
 <?php
 
-if (!function_exists('foo')) {
+if (!function_exists('bar')) {
 
-    function foo()
+    function bar()
     {
-        return 'foo';
+        return 'foo helper; bar function';
     }
 }

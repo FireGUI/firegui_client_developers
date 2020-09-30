@@ -20,20 +20,36 @@ class Foo extends MY_Controller
         }
     }
 
-    //Call this method by {your_url}/custom/foo/foo
-    public function foo()
+    // Call this method by {your_url}/custom/foo/bar
+    public function bar()
     {
-        //Load custom model foo (you can call both with custom/ prefix or without it)
+        // Load custom model foo (you can call both with custom/ prefix or without it)
+
+        // Uncomment this code to test it!
+        // $this->load->model('custom/foomodel');
+
         $this->load->model('foomodel');
 
-        // //Load custom library foo (you can call both with custom/ prefix or without it)
+        d($this->foomodel->bar());
+
+        // Load custom library foo (you can call both with custom/ prefix or without it)
+
+        // Uncomment this code to test it!
+        // $this->load->library('custom/foolibrary');
         $this->load->library('foolibrary');
+
         $foo = new Foolibrary();
 
-        d($foo->foo());
+        d($foo->bar());
 
-        $array = array(
-            "1" => "PHP code tester Sandbox Online",
+        // Load custom helper foo (you can call both with custom/ prefix or without it)
+
+        $this->load->helper('custom/foo_helper');
+        d(bar());
+
+        // A simple array
+        $fooArray = array(
+            "1" => "This is an array",
             "foo" => "bar",
             5 => [
                 "case" => "Random Stuff: " . rand(100, 999),
@@ -42,7 +58,7 @@ class Foo extends MY_Controller
             52 => 89009,
 
         );
-        d($array);
-        d($foo->foo());
+
+        d($fooArray);
     }
 }
