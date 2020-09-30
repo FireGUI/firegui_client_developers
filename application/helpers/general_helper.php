@@ -487,8 +487,7 @@ if (!function_exists('t')) {
     function t($string, $ucfirst = false, $params = array())
     {
 
-        //$CI = get_instance();
-        //debug($CI->config->item('language'));
+
         $translation = lang($string);
 
         if ($translation === false) {
@@ -541,11 +540,7 @@ if (!function_exists('t')) {
 
                         $CI->lang->language = array_merge($CI->lang->language, [$val => $val]);
                     } else {
-                        //echo "Couldn't get the lock!";
                     }
-
-
-                    //file_put_contents($path, $add, FILE_APPEND | LOCK_EX);
                 }
             }
 
@@ -727,8 +722,6 @@ if (!function_exists('is_development')) {
         } else {
             $ipAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR') ?: @$_SERVER['REMOTE_ADDR'];
         }
-        //die($_SERVER['REMOTE_ADDR']);
-        //return in_array($ipAddr, ['151.95.143.14']) OR ( gethostname() === 'sfera');
         return ((!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])));
     }
 }
@@ -756,11 +749,7 @@ if (!function_exists('crm_exception_handler')) {
 
     function crm_exception_handler($ex, $print = true, $sendQueryListing = false)
     {
-        // $CI = &get_instance();
-        // //$CI->load->model('Exception');
-        // //$CI->show_exception($ex);
-        // Exceptions::show_exception($ex);
-        // exit;
+
         // messaggio per utente
         $out = '<div style="padding:10px;background:#efefef;border-radius:7px;">';
         $out .= 'Si &egrave; verificato un errore imprevisto. Il problema &egrave; gi&agrave; stato inoltrato al nostro staff tecnico<br/>';
@@ -770,7 +759,6 @@ if (!function_exists('crm_exception_handler')) {
             $out .= 'Eccezione:';
             $out .= '<div style="padding:10px;background:#fff;border-radius:7px;margin-top:10px;">' . $ex->getMessage() . " at line {$ex->getLine()} in file {$ex->getFile()}";
 
-            //debug(get_class_methods($ex),true);
 
             $out .= '<hr><pre>' . $ex->getTraceAsString() . '</pre>';
             $out .= '</div>';
@@ -847,10 +835,8 @@ if (!function_exists('base64_to_jpeg')) {
     function base64_to_jpeg($base64_string, $output_file)
     {
         // open the output file for writing
-        //debug($output_file);
         $ifp = fopen($output_file, 'wb');
 
-        //debug($ifp);
         // split the string on commas
         // $data[ 0 ] == "data:image/png;base64"
         // $data[ 1 ] == <actual base64 string>
@@ -976,7 +962,6 @@ if (!function_exists('zip_folder')) {
 
         $zip = new ZipArchive();
         if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
-            //return $zip->getStatusString();
             return false;
         }
 
@@ -1000,7 +985,6 @@ if (!function_exists('zip_folder')) {
                         continue;
                     }
                     if (!$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'))) {
-                        //die('Error adding folder '.$file);
                     }
                 } else if (is_file($file) === true) {
                     if ($exclude_dirs) {
@@ -1009,22 +993,20 @@ if (!function_exists('zip_folder')) {
                         $dir_container = implode('/', $dir_container);
 
                         if (in_array($dir_container, $exclude_dirs)) {
-                            //die(str_replace($source . '/', '', $file));
+
                             continue;
                         }
                     }
                     if (!$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file))) {
-                        //die('Error adding file '.$file);
                     }
                 }
             }
         } else if (is_file($source) === true) {
             if (!$zip->addFromString(basename($source), file_get_contents($source))) {
-                //die('Error adding file '.$source);
             }
         }
 
-        //die($destination);
+
 
         return $zip->close();
     }
@@ -1052,8 +1034,6 @@ if (!function_exists('doGeocoding')) {
         $result = curl_exec($ch);
         $data = json_decode($result, true);
 
-        //debug($result,true);
-
         curl_close($ch);
 
         $place = is_array($data) ? array_shift($data) : null;
@@ -1069,7 +1049,6 @@ if (!function_exists('calculateDistance')) {
     {
         $url = "http://www.yournavigation.org/api/1.0/gosmore.php?flat={$startPlace['lat']}&flon={$startPlace['lon']}&tlat={$endPlace['lat']}&tlon={$endPlace['lon']}&v=motorcar&fast=0&layer=mapnik&format=geojson";
 
-        //die($url);
 
         $ch = curl_init();
         curl_setopt_array($ch, array(CURLOPT_URL => $url, CURLOPT_HEADER => 0, /* CURLOPT_FOLLOWLOCATION => 1, */ CURLOPT_RETURNTRANSFER => 1));
@@ -1205,9 +1184,9 @@ if (!function_exists('checkClientVersion')) {
             $last_check = date('Y-m-d h:i:s');
             $CI->session->set_userdata('last_client_check', $last_check);
 
-            //$file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION;
+
             $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
-            //$new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION);
+
             $CI->session->set_userdata('last_checked_version', $new_version);
             if ($new_version != VERSION) {
                 return $new_version;
@@ -1286,7 +1265,6 @@ if (!function_exists('get_csrf')) {
             'hash' => $CI->security->get_csrf_hash()
         );
         return $csrf;
-        //echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
     }
 }
 if (!function_exists('e_json')) {

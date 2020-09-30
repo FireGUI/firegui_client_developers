@@ -25,6 +25,8 @@ application/config/database.php
 .htaccess
 
 modules/*
+!modules/.gitkeep 
+
 custom_views/*
 controllers/custom/*
 
@@ -45,3 +47,4 @@ application/tests/*
 
 
 template/build/*
+!template/build/.gitkeep 
