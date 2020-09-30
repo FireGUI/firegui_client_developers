@@ -17,30 +17,50 @@
     <?php endif; ?>
 
 </a>
-<style>
-    <?php if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) : ?>.navbar-static-top,
-    .logo {
-        background-color: <?php echo TOPBAR_COLOR; ?> !important;
-        box-shadow: 0 4px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .35);
-    }
 
-    <?php if (defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)) : ?>.sidebar-toggle:hover {
-        background-color: <?php echo TOPBAR_HOVER; ?> !important;
-    }
+<?php
+$data['custom'] = [];
 
-    <?php endif; ?>.user-header {
-        background-color: <?php echo TOPBAR_COLOR; ?> !important;
-    }
+if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) {
+    $data['custom'] = array_merge([
+        '.logo' => [
+            'background-color' => TOPBAR_COLOR . '!important',
+            'box-shadow' => '0 4px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .35)'
+        ],
+        '.user-header' => [
+            'background-color' => TOPBAR_COLOR . '!important',
 
-    <?php endif; ?><?php if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) : ?>.skin-blue .sidebar-menu>li:hover>a,
-    .skin-blue .sidebar-menu>li.active>a,
-    .skin-blue .sidebar-menu>li.menu-open>a {
-        color: #fff;
-        background: <?php echo SIDEBAR_ELEMENT; ?>;
-    }
+        ]
+    ], $data['custom']);
+}
+if (defined('TOPBAR_HOVER') && !empty(TOPBAR_HOVER)) {
+    $data['custom'] = array_merge([
+        '.sidebar-toggle:hover' => [
+            'background-color' => TOPBAR_HOVER
+        ]
+    ], $data['custom']);
+}
+if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) {
+    $data['custom'] = array_merge([
+        '.sidebar-toggle:hover' => [
+            'background-color' => TOPBAR_HOVER
+        ]
+    ], $data['custom']);
+}
 
-    <?php endif; ?>
-</style>
+if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
+    $data['custom'] = array_merge([
+        '.skin-blue .sidebar-menu>li:hover>a,
+        .skin-blue .sidebar-menu>li.active>a,
+        .skin-blue .sidebar-menu>li.menu-open>a' => [
+            'background' => SIDEBAR_ELEMENT,
+            'color' => '#FFF',
+        ]
+    ], $data['custom']);
+}
+$this->layout->addDinamicStylesheet($data, "header.css");
+?>
+
 <nav class="navbar navbar-static-top">
 
     <!-- Sidebar toggle button-->
