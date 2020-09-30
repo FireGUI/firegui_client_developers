@@ -211,9 +211,20 @@ class Layout extends CI_Model
             foreach ($data as $key => $vals) {
                 switch ($key) {
                     case 'background-colors':
-                        foreach ($vals as $classname => $color) {
-                            $str_append = ".bg{$classname} {background-color:{$color};}";
+                        foreach ($vals as $md5 => $color) {
+                            $str_append = ".bg{$md5} {background-color:{$color};}";
                             fwrite($fp, $str_append);
+                        }
+                        break;
+                    case 'custom':
+                        foreach ($vals as $selector => $styles) {
+                            fwrite($fp, "$selector {");
+
+                            foreach ($styles as $prop => $val) {
+                                fwrite($fp, "$prop: $val;");
+                            }
+
+                            fwrite($fp, "}");
                         }
                         break;
                     default:
