@@ -64,20 +64,32 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
         <!-- Bootstrap-select -->
         <link rel="stylesheet" href="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>">
 
-        <style>
-            <?php if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) : ?>.login-page,
-            .register-page {
-                background: <?php echo LOGIN_COLOR; ?>;
-            }
 
-            <?php if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) : ?>.logo h2 {
-                color: <?php echo LOGIN_TITLE_COLOR; ?>
-            }
+        <?php
+        $data['custom'] = [
+            '.background_img' => [
+                'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . ((!empty($season)) ? base_url("images/{$season}.jpg") : '') . ")!important"
+            ]
+        ];
 
-            <?php endif; ?><?php endif; ?>.background_img {
-                background-image: linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(<?php echo (!empty($season)) ? base_url("images/{$season}.jpg") : ''; ?>) !important;
-            }
-        </style>
+        if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) {
+            $data['custom'] = array_merge([
+                '.login-page, .register-page' => [
+                    'background' => LOGIN_COLOR
+                ]
+            ], $data['custom']);
+        }
+        if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) {
+            $data['custom'] = array_merge([
+                '.logo h2' => [
+                    'color' => LOGIN_TITLE_COLOR
+                ]
+            ], $data['custom']);
+        }
+        $this->layout->addDinamicStylesheet($data, "login.css");
+        ?>
+
+
     </head>
 
     <body class="hold-transition login-page">
