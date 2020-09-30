@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -18,13 +18,3 @@ $hook['post_controller_constructor'] = array(
     'filepath' => 'hooks',
     'params' => array()
 );
-
-//$hook['post_system'][] = array(
-//    'class' => 'LogQueryHook',
-//    'function' => 'log_queries',
-//    'filename' => 'LogQueryHook.php',
-//    'filepath' => 'hooks'
-//);
-
-/* End of file hooks.php */
-/* Location: ./application/config/hooks.php */

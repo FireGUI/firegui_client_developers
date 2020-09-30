@@ -18,21 +18,12 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                 <div class="col-xs-4">
                     <select class="form-control input-sm" data-name="field_id">
                         <option></option>
-                        <?php //debug($field); 
-                        ?>
+
                         <?php foreach ($form['forms_fields'] as $k => $field) : ?>
                             <option value="<?php echo $field['id'] ?>">
                                 <?php echo $field['label']; ?>
                             </option>
                         <?php endforeach; ?>
-                        <?php /* 
-                        <?php foreach($form['forms_fields'] as $field): ?>
-                        <option value="<?php echo $field['forms_fields_fields_id'] ?>">
-                            <?php echo ($field['fields_draw_label']? $field['fields_draw_label']: $field['fields_name']); ?>
-                        </option>
-                        <?php endforeach; ?>
-                         * 
-                         */ ?>
                     </select>
                 </div>
                 <div class="col-xs-4">

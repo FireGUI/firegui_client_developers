@@ -7,10 +7,7 @@ $grids = $this->db->where('grids_delete_link <>', '#')->or_where('grids_delete_l
 foreach ($grids as $grid) {
 
     $grid_id = $grid['grids_id'];
-    // if ($grid_id != 13) {
-    //     continue;
-    // }
-    // debug($grid);
+
     //Create action delete
     $action_data = [
         'grids_actions_grids_id' => $grid_id,
@@ -26,6 +23,7 @@ foreach ($grids as $grid) {
         'grids_actions_name' => 'Delete',
 
     ];
+
     $this->db->insert('grids_actions', $action_data);
 
     //remove old action delete

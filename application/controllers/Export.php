@@ -185,8 +185,3 @@ class Export extends MY_Controller
         return $filedata;
     }
 }
-
-
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */

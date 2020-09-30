@@ -9,8 +9,6 @@
     <div class="form-body">
         <div class="row">
             <div class="col-md-6 form-vertical2col">
-                <?php // echo implode(PHP_EOL, array_slice($form['forms_fields'], 0, $half)); 
-                ?>
                 <?php foreach (array_slice($form['forms_fields'], 0, $half) as $field) : ?>
                     <div class="row">
                         <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
@@ -18,8 +16,6 @@
                 <?php endforeach; ?>
             </div>
             <div class="col-md-6">
-                <?php // echo implode(PHP_EOL, array_slice($form['forms_fields'], $half, $count)); 
-                ?>
                 <?php foreach (array_slice($form['forms_fields'], $half, $count) as $field) : ?>
                     <div class="row">
                         <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>

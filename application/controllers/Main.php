@@ -38,8 +38,6 @@ class Main extends MY_Controller
             redirect('access' . $append);
         }
 
-
-
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
     }
@@ -55,7 +53,6 @@ class Main extends MY_Controller
      */
     public function index()
     {
-
         // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
         $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
         foreach ($layouts as $layout) {
@@ -86,8 +83,6 @@ class Main extends MY_Controller
         //Se non è un numero, vuol dire che sto passando un url-key
         if (!is_numeric($layout_id)) {
             $result = $this->db->where('layouts_identifier', $layout_id)->get('layouts');
-
-            //debug($this->db->last_query(),true);
 
             if ($result->num_rows() == 0) {
                 show_error("Layout '$layout_id' non trovato!");
@@ -145,15 +140,6 @@ class Main extends MY_Controller
             header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
             $this->layout->setLayoutModule();
             echo base64_decode($pdf_b64);
-
-            // // Load and render the pdf
-            // require_once('./class/html2pdf/html2pdf.class.php');
-            // $html2pdf = new HTML2PDF($this->input->get('orientation') ?: 'P', 'A4', 'it');
-            // $html2pdf->pdf->SetDisplayMode('fullpage');
-            // $html2pdf->WriteHTML($content);
-
-            // $name = url_title($dati['layout_container']['layouts_title'], '-', true) . '.pdf';
-            // $html2pdf->Output($name, 'I'); // stampa il pdf nel browser
         } else {
             $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
             $dati['current_page'] = "layout_{$layout_id}";
@@ -180,7 +166,6 @@ class Main extends MY_Controller
         } else {
             $this->template['header'] = $this->load->view('layout/header', array(), true);
         }
-
 
         $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
         $this->template['page'] = $pagina;
@@ -529,12 +514,9 @@ class Main extends MY_Controller
 
     public function custom_view_to_pdf($view, $orientation = "landscape", $html = FALSE)
     {
-
         if ($html) {
-
             die($content);
         } else {
-
             $relative_path = ($this->input->get('relative_path')) ?: '';
 
             $pdfFile = $this->layout->generate_pdf($view, $orientation, $relative_path);

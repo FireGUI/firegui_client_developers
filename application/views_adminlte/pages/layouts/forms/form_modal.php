@@ -23,8 +23,6 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
 ?>
 
 <div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <?php //debug($form); 
-    ?>
     <div class="modal-dialog <?php echo $sizeClass; ?>">
         <div class="modal-content">
             <div class="modal-header">

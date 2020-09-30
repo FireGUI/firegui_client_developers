@@ -1,5 +1,4 @@
 <?php
-//debug($grid);
 $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
 $grid_id = 'grid_' . $grid['grids']['grids_id'];
 ?>
