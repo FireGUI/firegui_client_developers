@@ -1251,12 +1251,8 @@ if (!function_exists('dirToArray')) {
 if (!function_exists('add_csrf')) {
     function add_csrf()
     {
-        $CI = get_instance();
-
-        if ($CI->config->item('csrf')) {
-            $csrf = get_csrf();
-            echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
-        }
+        $csrf = get_csrf();
+        echo "<input type=\"hidden\" name=\"{$csrf['name']}\" value=\"{$csrf['hash']}\" />";
     }
 }
 
@@ -1264,15 +1260,11 @@ if (!function_exists('get_csrf')) {
     function get_csrf()
     {
         $CI = get_instance();
-        if ($CI->config->item('csrf')) {
-            $csrf = array(
-                'name' => $CI->security->get_csrf_token_name(),
-                'hash' => $CI->security->get_csrf_hash()
-            );
-            return $csrf;
-        } else {
-            return null;
-        }
+        $csrf = array(
+            'name' => $CI->security->get_csrf_token_name(),
+            'hash' => $CI->security->get_csrf_hash()
+        );
+        return $csrf;
     }
 }
 if (!function_exists('e_json')) {
