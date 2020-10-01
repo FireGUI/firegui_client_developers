@@ -10,6 +10,7 @@ foreach ($chart_data as $x => $chart_element_data) {
         $xes[$dato['x']] = $dato['x'];
     }
 }
+
 //Fill empty columns for each chart's element
 foreach ($chart_data as $x => $chart_element_data) {
     if (!array_key_exists('series', $chart_element_data)) {
@@ -28,7 +29,6 @@ foreach ($chart_data as $x => $chart_element_data) {
 }
 
 foreach ($chart_data as $x => $chart_element_data) {
-
     foreach ($chart_element_data['series'] as $name => $data) {
         ksort($data);
         $elements_data = [
@@ -45,68 +45,7 @@ foreach ($chart_data as $x => $chart_element_data) {
 }
 
 ?>
+
 <div class="row">
-    <div id="<?php echo $chartId; ?>"></div>
+    <div class="apexcharts-bar" id="<?php echo $chartId; ?>" data-series="<?php echo base64_encode(json_encode($series)); ?>" data-categories="<?php echo base64_encode(json_encode(array_values($xes))); ?>"></div>
 </div>
-<script>
-    var series<?php echo $chartId; ?> = JSON.parse('<?php echo json_encode($series); ?>');
-    var options<?php echo $chartId; ?> = {
-        chart: {
-            type: 'bar',
-            zoom: {
-                type: 'x',
-                enabled: true,
-                autoScaleYaxis: true
-            },
-        },
-
-        dataLabels: {
-            enabled: false,
-            enabledOnSeries: true,
-            position: 'center',
-            maxItems: 100,
-            hideOverflowingLabels: true,
-            orientation: 'vertical'
-        },
-
-        legend: {
-            show: true
-        },
-        series: series<?php echo $chartId; ?>.series,
-        xaxis: {
-            categories: ['<?php echo implode("','", $xes); ?>'],
-            labels: {
-                formatter: function(value, timestamp, index) {
-
-                    if (moment(value).isValid()) {
-                        return moment(value).format("DD MMM YYYY")
-                    } else {
-                        return value;
-                    }
-
-
-                },
-
-            }
-        },
-        yaxis: series<?php echo $chartId; ?>.yaxis,
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function(y) {
-
-                    return y;
-
-                }
-            }
-        }
-
-
-
-    }
-
-    var chart<?php echo $chartId; ?> = new ApexCharts(document.querySelector("#<?php echo $chartId; ?>"), options<?php echo $chartId; ?>);
-
-    chart<?php echo $chartId; ?>.render();
-</script>

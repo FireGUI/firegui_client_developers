@@ -12,42 +12,4 @@ foreach ($chart_data[0]['series'] as $name => $data) {
 }
 
 ?>
-<div <?php echo sprintf('id="%s"', $chartId); ?> class="container_hightcharts"></div>
-
-<script>
-    $(function() {
-        'use strict';
-        var title = <?php echo json_encode($chart['charts_title']); ?>;
-        var subtitle = <?php echo json_encode($chart['charts_subtitle']); ?>;
-        var series = <?php echo json_encode($series); ?>;
-
-        $('#<?php echo $chartId; ?>').highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            title: {
-                text: title
-            },
-            subtitle: {
-                text: subtitle
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: false,
-                    },
-                    showInLegend: true
-                }
-            },
-            series: series
-        });
-    });
-</script>
+<div <?php echo sprintf('id="%s"', $chartId); ?> class="simple-pie-legend" data-series="<?php echo base64_encode(json_encode($series)); ?>" data-subtitle="<?php echo base64_encode(json_encode($chart['charts_subtitle'])); ?>" data-title="<?php echo base64_encode(json_encode($chart['charts_title'])); ?>"></div>
