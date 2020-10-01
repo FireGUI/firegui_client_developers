@@ -48,6 +48,7 @@ foreach ($chart_data as $x => $chart_element_data) {
     }
 }
 ?>
+
 <div class="row">
     <div class="col-md-10"></div>
     <div class="col-md-2">
@@ -62,32 +63,5 @@ foreach ($chart_data as $x => $chart_element_data) {
         </select>
     </div>
 </div>
-<canvas id="<?php echo $chartId; ?>" width="400"></canvas>
 
-<script>
-    var ctx<?php echo $chartId; ?> = $('#<?php echo $chartId; ?>');
-    var data<?php echo $chartId; ?> = JSON.parse('<?php echo json_encode($series); ?>');
-
-    var myChart<?php echo $chartId; ?> = new Chart(ctx<?php echo $chartId; ?>, {
-        type: 'bar',
-        data: data<?php echo $chartId; ?>,
-        options: {
-            barValueSpacing: 20,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                    }
-                }]
-            }
-        }
-    });
-    $('#change<?php echo $chartId; ?>').on('change', function() {
-        var type = $(this).val();
-        myChart<?php echo $chartId; ?>.destroy();
-        myChart<?php echo $chartId; ?> = new Chart(ctx<?php echo $chartId; ?>, {
-            type: type,
-            data: data<?php echo $chartId; ?>
-        });
-    });
-</script>
+<canvas class="chartjs-customizable" id="<?php echo $chartId; ?>" width="400" data-datas="<?php echo base64_decode(json_encode($series)); ?>"></canvas>
