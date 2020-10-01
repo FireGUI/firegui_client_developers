@@ -106,3 +106,4 @@
 <script src="<?php echo base_url_scripts("script/js/components.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/IE.missing.functions.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/inline_actions.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/js/map_standard.js?v=" . VERSION); ?>"></script>
