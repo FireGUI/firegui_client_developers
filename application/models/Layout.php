@@ -237,4 +237,19 @@ class Layout extends CI_Model
 
         echo '<link rel="stylesheet" type="text/css" href="' . base_url($file) . '?v=' . VERSION . '" />';
     }
+
+    //Functions to include dinamic generate css or js
+    public function addDinamicJavascript($data, $file)
+    {
+        $file = "template/build/{$file}";
+        if (!file_exists($file) || !$this->apilib->isCacheEnabled()) {
+            $fp = fopen($file, 'w+');
+            foreach ($data as $key => $val) {
+                fwrite($fp, $val . PHP_EOL);
+            }
+            fclose($fp);
+        }
+
+        echo '<script src="' . base_url($file) . '?v=' . VERSION . '" ></script>';
+    }
 }

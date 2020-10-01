@@ -92,9 +92,7 @@
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/edit/handler/Edit.Circle.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/leaflet-fullscreen/Leaflet.fullscreen.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template('script/global/plugins/dropzone/dropzone.js'); ?>"></script>
-<script>
-    Dropzone.autoDiscover = false;
-</script>
+
 
 <!-- ADMINLTE SCRIPTS -->
 <script src="<?php echo base_url_template("template/adminlte/dist/js/adminlte_components.js?v=" . VERSION); ?>"></script>
