@@ -23,16 +23,14 @@ Full Documentation http://docs.firegui.com
 
 - Copy the source code in your hosting web directory
 
-- Edit application/config/database.php file and insert your database configuration.
+- Open your project url with a browser, example: http://localhost/myproject/install
 
-- Import downloaded database dump to your personal database
-
-- Enjoy your project in your hosting
+- Enjoy your project in your hosting!
 
 <img class="img-responsive" src="http://docs.firegui.com/uploads/media/login_firegui_client.png">
 
 
 
-Full Documentation http://docs.firegui.com
+Full Documentation https://docs.firegui.com
 
 

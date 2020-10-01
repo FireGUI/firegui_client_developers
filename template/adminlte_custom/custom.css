@@ -635,3 +635,4 @@ th.w15 {
 .mt-30 {
   margin-top: 30px !important;
 }
+.tab-pane .content { padding:0px; }
