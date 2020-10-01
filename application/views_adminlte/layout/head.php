@@ -79,19 +79,17 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     <meta name="theme-color" content="#ffffff">
 <?php endif; ?>
 
-<!-- JQUERY -->
-<script>
-    var base_url = <?php echo json_encode(base_url()); ?>;
-    var base_url_admin = <?php echo json_encode(base_url_admin()); ?>;
-    var base_url_template = <?php echo json_encode(base_url_template()); ?>;
-    var base_url_scripts = <?php echo json_encode(base_url_scripts()); ?>;
-    var base_url_uploads = <?php echo json_encode(base_url_uploads()); ?>;
-    var lang_code = '<?php echo (!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN'; ?>';
-    var lang_short_code = '<?php echo (!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en'; ?>';
-</script>
+<?php $this->layout->addDinamicJavascript([
+    "var base_url = " . json_encode(base_url()) . ";",
+    "var base_url_admin = " . json_encode(base_url_admin()) . ";",
+    "var base_url_template = " . json_encode(base_url_template()) . ";",
+    "var base_url_scripts = " . json_encode(base_url_scripts()) . ";",
+    "var base_url_uploads = " . json_encode(base_url_uploads()) . ";",
+    "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
+    "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
+], 'config.js'); ?>
 
 <script src="<?php echo base_url_scripts("script/lib/moment.min.js?v=" . VERSION); ?>"></script>
-
 <!-- CHARTS -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v=" . VERSION); ?>"></script>
