@@ -475,9 +475,8 @@ function loadModal(url, data, callbackSuccess, method) {
     var modalContainer = $('#js_modal_container');
 
     if (typeof data === 'undefined') {
-        data = {
-            [token_name]: token_hash
-        };
+        data = [];
+        data.push({ name: token_name, value: token_hash });
     } else if (Array.isArray(data)) {
         data.push({ name: token_name, value: token_hash });
     } else {

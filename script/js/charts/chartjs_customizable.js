@@ -20,11 +20,11 @@ $(function () {
                         {
                             ticks: {
                                 min: 0,
-                            },
-                        },
-                    ],
-                },
-            },
+                            }
+                        }
+                    ]
+                }
+            }
         });
 
         $('#change' + chartId).on('change', function () {
@@ -32,7 +32,7 @@ $(function () {
             charts.chartId.destroy();
             charts.chartId = new Chart($('#'.chartId), {
                 type: type,
-                data: datas.chartId,
+                data: datas.chartId
             });
         });
     });

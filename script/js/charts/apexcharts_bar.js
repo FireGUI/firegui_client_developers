@@ -19,7 +19,7 @@ $(function () {
                 zoom: {
                     type: 'x',
                     enabled: true,
-                    autoScaleYaxis: true,
+                    autoScaleYaxis: true
                 },
             },
 
@@ -36,23 +36,23 @@ $(function () {
                             {
                                 from: 0,
                                 to: 0,
-                                color: undefined,
+                                color: undefined
                             },
                         ],
                         backgroundBarColors: [],
                         backgroundBarOpacity: 1,
-                        backgroundBarRadius: 0,
+                        backgroundBarRadius: 0
                     },
                     dataLabels: {
                         position: 'center',
                         maxItems: 100,
                         hideOverflowingLabels: false,
-                        orientation: 'vertical',
-                    },
-                },
+                        orientation: 'vertical'
+                    }
+                }
             },
             legend: {
-                show: true,
+                show: true
             },
             series: series.chartId.series,
             xaxis: {
@@ -64,15 +64,15 @@ $(function () {
                         } else {
                             return value;
                         }
-                    },
-                },
+                    }
+                }
             },
             yaxis: {
                 labels: {
                     formatter: function (value) {
                         return value.toFixed(2);
-                    },
-                },
+                    }
+                }
             },
             tooltip: {
                 shared: true,
@@ -80,8 +80,8 @@ $(function () {
                 y: {
                     formatter: function (y) {
                         return y;
-                    },
-                },
+                    }
+                }
             },
         };
 
