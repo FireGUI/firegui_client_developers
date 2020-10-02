@@ -107,6 +107,7 @@
 <script src="<?php echo base_url_scripts("script/js/IE.missing.functions.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/inline_actions.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/map_standard.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/js/multiupload.js?v=" . VERSION); ?>"></script>
 
 <!-- CHARTS -->
 <script src="<?php echo base_url_scripts("script/js/charts/apexcharts_bar.js?v=" . VERSION); ?>"></script>

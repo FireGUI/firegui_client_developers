@@ -993,6 +993,47 @@ class Db_ajax extends MY_Controller
         }
     }
 
+    //This function is used to remove file from a generic multiupload field. It detects the field type and if it's a JSON field or an INT (pointing to a relation)
+    public function removeFileFromMultiUpload($fieldname, $edit_id, $file_id)
+    {
+        //Get field
+        $field = $this->datab->get_field($fieldname);
+        if (empty($field['fields_ref'])) { //It's a JSON/LONGTEXT field type
+            $entity = $this->datab->get_entity($field['fields_entity_id']);
+            $record = $this->apilib->view($entity['entity_name'], $edit_id);
+            $json_data = $record[$fieldname];
+            $files = json_decode($json_data);
+            $new_files = [];
+
+            foreach ($files as $key => $file) {
+                $file = (array)$file;
+                if ($key != $file_id) {
+                    $new_files[] = $file;
+                } else {
+                    //debug($file, true);
+                    @unlink($file['full_path']);
+                }
+            }
+            $json_new = json_encode($new_files);
+            $this->apilib->edit($entity['entity_name'], $edit_id, [$fieldname => $json_new]);
+        } else { //It's a field pointing to a relation/table
+            $relation_name = $field['fields_ref'];
+            $field_name = $fieldname;
+
+            $relation = $this->crmentity->getRelationByName($relation_name);
+
+            $attachments_table = $relation['relations_table_2'];
+            $field_support_id = $relation['relations_field_2'];
+
+            $record = $this->apilib->searchFirst($relation_name, [$field_support_id => $file_id]);
+            //debug($record, true);
+            $key = array_keys($record)[0];
+            $this->db->where($key, $record[$key])->delete($relation_name);
+
+            $this->apilib->delete($attachments_table, $file_id);
+        }
+    }
+
     public function removeFileFromRelation($field_support_id, $field_id, $file_id)
     {
 
