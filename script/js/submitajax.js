@@ -64,6 +64,7 @@ function loading(bShow) {
 }
 
 $(document).ready(function () {
+    'use strict';
     $('body').on('submit', '.formAjax', function (e) {
         e.preventDefault();
         var form = $(this);
@@ -270,7 +271,7 @@ function closeContainingPopups(el) {
     if (bsModalParent.size()) {
         try {
             bsModalParent.data('bs.modal').askConfirmationOnClose = false;
-        } catch (e) {}
+        } catch (e) { }
         bsModalParent.modal('hide');
     }
 
