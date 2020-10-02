@@ -116,7 +116,7 @@ function initComponents(container) {
             });
         });
         $('.select2me', container).select2({ allowClear: true });
-    } catch (e) {}
+    } catch (e) { }
 
     $('.select2_standard', container).select2();
 
@@ -476,7 +476,7 @@ function loadModal(url, data, callbackSuccess, method) {
 
     if (typeof data === 'undefined') {
         data = {
-            [token_name]: token_hash,
+            [token_name]: token_hash
         };
     } else if (Array.isArray(data)) {
         data.push({ name: token_name, value: token_hash });
@@ -561,7 +561,7 @@ function loadModal(url, data, callbackSuccess, method) {
 }
 
 /** Fix per focus su select in modale **/
-$.fn.modal.Constructor.prototype.enforceFocus = function () {};
+$.fn.modal.Constructor.prototype.enforceFocus = function () { };
 
 function formatDate(dateTime, ignoreTimezone) {
     if (!ignoreTimezone) {

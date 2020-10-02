@@ -1,6 +1,9 @@
 <?php
 $unique = $field['fields_id'];
 $form_id = $field['forms_fields_forms_id'];
+if (is_string($value)) {
+    $value = htmlspecialchars_decode($value);
+}
 ?>
 
 <?php echo $label; ?>
@@ -16,179 +19,9 @@ $form_id = $field['forms_fields_forms_id'];
         <input type="hidden" class="default" name="<?php echo $field['fields_name']; ?>" value="<?php echo $value; ?>" />
     <?php endif; ?>
 
-    <div class="row  my_dropzone<?php echo $unique; ?> dropzone upload-drop-zone">
+    <div class="row js_dropzone dropzone upload-drop-zone" data-preview="1" data-fieldid="<?php echo $field['forms_fields_fields_id']; ?>" data-formid="<?php echo $form_id; ?>" data-unique="<?php echo $unique; ?>" data-fieldname="<?php echo $field['fields_name']; ?>" data-maxuploadsize="<?php echo (int) ((defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000) / 1000); ?>" data-fieldtype="<?php echo $field['fields_type']; ?>" data-value="<?php echo base64_encode(json_encode($value)); ?>" data-url="<?php echo base_url("db_ajax/multi_upload_async/{$field['fields_id']}"); ?>">
 
     </div>
 
 </div>
 <?php echo $help; ?>
-
-
-
-<script>
-    var form_selector = '#form_<?php echo $form_id; ?>';
-    $(document).ready(function() {
-        var modalContainer = $('#js_modal_container');
-
-        var campo = $('[data-name="<?php echo $field['fields_name']; ?>"]');
-        var files<?php echo $unique; ?> = [];
-        var myDropzone<?php echo $unique; ?> = new Dropzone(document.querySelector('.my_dropzone<?php echo $unique; ?>'), {
-            url: "<?php echo base_url("db_ajax/multi_upload_async/{$field['fields_id']}"); ?>",
-            autoProcessQueue: true,
-            parallelUploads: 1,
-            addRemoveLinks: true,
-            maxThumbnailFilesize: <?php echo (int) ((defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000) / 1000); ?>,
-            maxFilesize: <?php echo (int) ((defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000) / 1000); ?>,
-            clickable: true,
-
-
-            success: function(file, response) {
-
-                var drop_obj = this;
-
-                if (typeof $('.modal', modalContainer).data('bs.modal') != 'undefined') {
-                    var cansubmit = (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
-                    if (cansubmit) {
-                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
-                    } else {
-                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
-                    }
-                }
-
-                $(form_selector).on('submit', function() {
-                    return (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
-                });
-
-                if (response != null) {
-                    response = JSON.parse(response);
-                    if (!response.status) {
-
-                        error(response.txt, 'form_<?php echo $form_id; ?>');
-
-                    } else {
-
-                        files<?php echo $unique; ?>.push(response.file);
-
-                        if (Number.isInteger(response.file)) {
-                            $(form_selector).append(campo.clone().attr('name', campo.data('name') + '[]').val(response.file));
-
-                        } else {
-                            if (!$('[name="<?php echo $field['fields_name']; ?>"]').length) {
-                                campo.attr('name', campo.data('name'));
-                                campo.val(JSON.stringify(files<?php echo $unique; ?>));
-                            } else {
-                                $('[name="<?php echo $field['fields_name']; ?>"]').val(JSON.stringify(files<?php echo $unique; ?>));
-                            }
-
-
-
-                        }
-
-
-                    }
-                }
-
-                var a = document.createElement('a');
-                a.setAttribute('href', file.url);
-                a.setAttribute('class', 'dz-download');
-                a.innerHTML = "<?php e('Download'); ?>";
-                file.previewTemplate.appendChild(a);
-
-            },
-            removedfile: function(file) {
-                x = confirm('Do you want to delete?');
-
-                if (!x) {
-                    return false;
-                } else {
-                    if (file.id) {
-                        <?php if ($field['fields_type'] == 'JSON') : ?>
-                            $.ajax(base_url + 'db_ajax/removeFileFromJson/' + file.id, {
-                                success: function() {
-                                    file.previewElement.remove();
-                                    files<?php echo $unique; ?>.splice(file.key, 1);
-                                    $('[name="<?php echo $field['fields_name']; ?>"]').val(JSON.stringify(files<?php echo $unique; ?>));
-                                    return true;
-                                }
-                            });
-                        <?php else : ?>
-                            $.ajax(base_url + 'db_ajax/removeFileFromRelation/' + file.id, {
-                                success: function() {
-                                    file.previewElement.remove();
-                                    $('[name="<?php echo $field['fields_name']; ?>[]"][value="' + file.intid + '"]').remove();
-                                    return true;
-                                }
-                            });
-                        <?php endif; ?>
-                    } else {
-                        file.previewElement.remove();
-                        return true;
-                    }
-
-                }
-            }
-
-        });
-
-        $('.my_dropzone<?php echo $unique; ?> *').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $('.my_dropzone<?php echo $unique; ?>').trigger('click');
-        });
-
-        <?php
-        //il decode lo devo fare perchè nel datab.php viene fatto htmlspecialchars...
-        if (is_string($value)) {
-            $value = htmlspecialchars_decode($value);
-        }
-
-        if (@json_decode($value)) {
-
-            $files = json_decode($value);
-            foreach ($files as $key => $file) :
-        ?>
-                files<?php echo $unique; ?>.push(<?php echo json_encode($file); ?>);
-
-                // Create the mock file:
-                var mockFile = {
-                    name: "<?php echo $file->client_name; ?>",
-                    key: <?php echo $key; ?>,
-                    size: <?php echo $file->file_size; ?>,
-                    id: '<?php echo "{$field['forms_fields_fields_id']}/"; ?>' + $(form_selector).data('edit-id') + '<?php echo "/{$key}"; ?>',
-                    url: "<?php echo base_url_uploads('uploads/' . $file->path_local); ?>"
-                };
-
-                // Call the default addedfile event handler
-                myDropzone<?php echo $unique; ?>.emit("addedfile", mockFile);
-
-                // And optionally show the thumbnail of the file:
-                myDropzone<?php echo $unique; ?>.emit("thumbnail", mockFile, "<?php echo base_url_uploads(($file->is_image) ? "uploads/{$file->path_local}" : 'no-image.png'); ?>");
-                myDropzone<?php echo $unique; ?>.emit("success", mockFile, null);
-
-            <?php endforeach;
-        } else {
-            $files = (array) $value;
-            $key = 0;
-            foreach ($files as $file_id => $file) : ?>
-                <?php if (empty($field['field_support_id'])) {
-                    continue;
-                } ?>
-                // Create the mock file:
-                var mockFile = {
-                    name: "Allegato <?php echo $key + 1; ?>",
-                    intid: <?php echo $file_id; ?>,
-                    size: 1000000,
-                    id: '<?php echo "{$field['field_support_id']}/{$field['fields_id']}/{$file_id}"; ?>',
-                    url: "<?php echo base_url_uploads('uploads/' . $file); ?>"
-                };
-
-                // Call the default addedfile event handler
-                myDropzone<?php echo $unique; ?>.emit("addedfile", mockFile);
-                // And optionally show the thumbnail of the file:
-                myDropzone<?php echo $unique; ?>.emit("thumbnail", mockFile, "<?php echo base_url_uploads('uploads/' . $file); ?>");
-
-        <?php endforeach;
-        }
-        ?>
-    });
-</script>
