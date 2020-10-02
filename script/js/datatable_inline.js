@@ -95,7 +95,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
 
     this.createRow(id);
 
-    var row_with_form = $('tr:last', this.grid);
+    var row_with_form = $('tbody tr:last', this.grid);
     var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
 
     var form = $('form', form_container);
@@ -303,9 +303,9 @@ function initTable(grid) {
     var lengthMenu =
         typeof oDataTable.attr('data-lengthmenu') === 'undefined'
             ? [
-                  [10, 50, 100, 200, 500, -1],
-                  [10, 50, 100, 200, 500, 'Tutti'],
-              ]
+                [10, 50, 100, 200, 500, -1],
+                [10, 50, 100, 200, 500, 'Tutti'],
+            ]
             : JSON.parse(oDataTable.attr('data-lengthmenu'));
 
     var datatable = oDataTable.dataTable({
