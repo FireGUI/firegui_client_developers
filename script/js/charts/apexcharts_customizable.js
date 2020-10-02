@@ -96,7 +96,7 @@ $(function () {
                         shadeIntensity: 1,
                         opacityFrom: 0.5,
                         opacityTo: 0,
-                        stops: [0, 90, 100],
+                        stops: [0, 90, 100]
                     },
                 };
             } else {
