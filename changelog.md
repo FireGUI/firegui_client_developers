@@ -23,3 +23,4 @@ Fix ckeditor margin
 Added dynamic generated stylesheet for grid actions
 Moved all inline styles to external css
 Fix custom.css
+Fix IE compatibility

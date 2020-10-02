@@ -19,11 +19,11 @@ $(function () {
                 zoom: {
                     type: 'x',
                     enabled: true,
-                    autoScaleYaxis: true,
+                    autoScaleYaxis: true
                 },
             },
             stroke: {
-                curve: 'smooth',
+                curve: 'smooth'
             },
             plotOptions: {
                 bar: {
@@ -38,18 +38,18 @@ $(function () {
                             {
                                 from: 0,
                                 to: 0,
-                                color: undefined,
+                                color: undefined
                             },
                         ],
                         backgroundBarColors: [],
                         backgroundBarOpacity: 1,
-                        backgroundBarRadius: 0,
+                        backgroundBarRadius: 0
                     },
                     dataLabels: {
                         position: 'center',
                         maxItems: 100,
                         hideOverflowingLabels: false,
-                        orientation: 'vertical',
+                        orientation: 'vertical'
                     },
                 },
             },
@@ -82,9 +82,9 @@ $(function () {
                 y: {
                     formatter: function (y) {
                         return y;
-                    },
-                },
-            },
+                    }
+                }
+            }
         };
 
         charts.chartId = new ApexCharts(document.querySelector('#' + chartId), options.chartId);

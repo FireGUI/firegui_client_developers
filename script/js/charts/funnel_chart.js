@@ -15,11 +15,11 @@ $(function () {
         $('#' + chartId).highcharts({
             chart: {
                 type: 'funnel',
-                marginRight: 150,
+                marginRight: 150
             },
             title: {
                 text: titles.chartId,
-                x: -50,
+                x: -50
             },
             subtitle: {
                 text: subtitles.chartId,
@@ -31,16 +31,16 @@ $(function () {
                         format: '<b>{point.name}</b> ({point.y:,.0f})',
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
                         softConnector: true,
-                        crop: true,
+                        crop: true
                     },
                     neckWidth: '30%',
-                    neckHeight: '25%',
-                },
+                    neckHeight: '25%'
+                }
             },
             legend: {
-                enabled: false,
+                enabled: false
             },
-            series: series.chartId,
+            series: series.chartId
         });
     });
 });

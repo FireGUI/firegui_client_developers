@@ -35,23 +35,23 @@ $(function () {
                             {
                                 from: 0,
                                 to: 0,
-                                color: undefined,
+                                color: undefined
                             },
                         ],
                         backgroundBarColors: [],
                         backgroundBarOpacity: 1,
-                        backgroundBarRadius: 0,
+                        backgroundBarRadius: 0
                     },
                     dataLabels: {
                         position: 'center',
                         maxItems: 100,
                         hideOverflowingLabels: false,
-                        orientation: 'vertical',
-                    },
-                },
+                        orientation: 'vertical'
+                    }
+                }
             },
             legend: {
-                show: true,
+                show: true
             },
             series: series.chartId.series,
             xaxis: {
@@ -63,8 +63,8 @@ $(function () {
                         } else {
                             return value;
                         }
-                    },
-                },
+                    }
+                }
             },
             yaxis: series.chartId.yaxis,
             tooltip: {
@@ -73,8 +73,8 @@ $(function () {
                 y: {
                     formatter: function (y) {
                         return y;
-                    },
-                },
+                    }
+                }
             },
         };
 
@@ -95,20 +95,20 @@ $(function () {
                         stops: [0, 90, 100],
                         shadeIntensity: 1,
                         opacityFrom: 0.5,
-                        opacityTo: 0,
-                    },
+                        opacityTo: 0
+                    }
                 };
             } else {
                 fill = {};
             }
             charts.chartId.updateOptions({
                 chart: {
-                    type: type,
+                    type: type
                 },
                 stroke: {
-                    curve: curve,
+                    curve: curve
                 },
-                fill: fill,
+                fill: fill
             });
         });
     });
