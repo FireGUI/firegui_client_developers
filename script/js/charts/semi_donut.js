@@ -17,16 +17,16 @@ $(function () {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                type: 'pie',
+                type: 'pie'
             },
             title: {
-                text: titles.chartId,
+                text: titles.chartId
             },
             subtitle: {
-                text: subtitles.chartId,
+                text: subtitles.chartId
             },
             tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>',
+                pointFormat: '{series.name}: <b>{point.y}</b>'
             },
             plotOptions: {
                 pie: {
@@ -38,16 +38,16 @@ $(function () {
                         style: {
                             fontWeight: 'bold',
                             color: 'white',
-                            textShadow: '0px 1px 2px black',
-                        },
+                            textShadow: '0px 1px 2px black'
+                        }
                     },
                     showInLegend: true,
                     startAngle: -90,
                     endAngle: 90,
-                    center: ['50%', '75%'],
-                },
+                    center: ['50%', '75%']
+                }
             },
-            series: series.chartId,
+            series: series.chartId
         });
     });
 });

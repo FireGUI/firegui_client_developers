@@ -17,16 +17,16 @@ $(function () {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                type: 'pie',
+                type: 'pie'
             },
             title: {
-                text: titles.chartId,
+                text: titles.chartId
             },
             subtitle: {
-                text: subtitles.chartId,
+                text: subtitles.chartId
             },
             tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>',
+                pointFormat: '{series.name}: <b>{point.y}</b>'
             },
             plotOptions: {
                 pie: {
@@ -37,13 +37,13 @@ $(function () {
                         format: '<b>{point.name}</b>: {point.y}',
                         crop: true,
                         style: {
-                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                         },
-                        connectorColor: 'silver',
-                    },
-                },
+                        connectorColor: 'silver'
+                    }
+                }
             },
-            series: series.chartId,
+            series: series.chartId
         });
     });
 });

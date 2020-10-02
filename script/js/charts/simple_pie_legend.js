@@ -17,28 +17,28 @@ $(function () {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                type: 'pie',
+                type: 'pie'
             },
             title: {
-                text: titles.chartId,
+                text: titles.chartId
             },
             subtitle: {
-                text: subtitles.chartId,
+                text: subtitles.chartId
             },
             tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>',
+                pointFormat: '{series.name}: <b>{point.y}</b>'
             },
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
                     cursor: 'pointer',
                     dataLabels: {
-                        enabled: false,
+                        enabled: false
                     },
-                    showInLegend: true,
-                },
+                    showInLegend: true
+                }
             },
-            series: series.chartId,
+            series: series.chartId
         });
     });
 });

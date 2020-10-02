@@ -22,41 +22,41 @@ $(function () {
         $('#' + chartId).highcharts({
             title: {
                 text: titles.chartId,
-                x: -20,
+                x: -20
             },
             subtitle: {
                 text: subtitles.chartId,
-                x: -20,
+                x: -20
             },
             xAxis: {
                 labels: {
                     rotation: rotations.chartId,
                     style: {
                         fontSize: '13px',
-                        fontFamily: 'Verdana, sans-serif',
-                    },
+                        fontFamily: 'Verdana, sans-serif'
+                    }
                 },
-                categories: categories.chartId,
+                categories: categories.chartId
             },
             yAxis: {
                 title: {
-                    text: label2s.chartId,
+                    text: label2s.chartId
                 },
                 plotLines: [
                     {
                         value: 0,
                         width: 1,
-                        color: '#808080',
-                    },
-                ],
+                        color: '#808080'
+                    }
+                ]
             },
             legend: {
                 layout: 'vertical',
                 align: 'right',
                 verticalAlign: 'middle',
-                borderWidth: 0,
+                borderWidth: 0
             },
-            series: series.chartId,
+            series: series.chartId
         });
     });
 });
