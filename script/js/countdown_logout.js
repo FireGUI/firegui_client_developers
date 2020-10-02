@@ -1,6 +1,7 @@
-'use strict';
+
 var testo_tempo_rimanente = '';
 $(document).ready(function () {
+    'use strict';
     var barra = $('#js-countdown-bar');
     var timeout = barra.data('timeout');
     var now = Math.round(new Date().getTime() / 1000);
