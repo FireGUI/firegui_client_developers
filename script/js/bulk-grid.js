@@ -1,5 +1,6 @@
-'use strict';
+
 $(document).ready(function () {
+    'use strict';
     $('.js-bulk-action > option[value=""]').attr('selected', 'selected').trigger('change');
     $('input:checkbox.js_bulk_check,.js-bulk-select-all').removeAttr('checked').trigger('change');
     $.uniform.update();
