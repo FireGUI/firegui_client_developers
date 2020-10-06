@@ -142,7 +142,7 @@ function initDropzones() {
                         key: index,
                         size: file.file_size,
                         id: index,
-                        url: base_url_uploads + '/' + file.path_local,
+                        url: base_url_uploads + 'uploads/' + file.path_local,
                     };
                 } else {
                     var mockFile = {
@@ -150,7 +150,7 @@ function initDropzones() {
                         intid: index,
                         size: 1000000,
                         id: index,
-                        url: base_url_uploads + '/uploads/' + file.path_local,
+                        url: base_url_uploads + 'uploads/' + file.path_local,
                     };
                 }
                 // Create the mock file:
