@@ -48,3 +48,5 @@ application/tests/*
 
 template/build/*
 !template/build/.gitkeep 
+
+vendor/kenjis/*

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e33a6bc3350da86497c0ed014bbc50c0",
+    "content-hash": "c97f90ae99ec1bc8666657e5ed6519ea",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1584,16 +1584,16 @@
     "packages-dev": [
         {
             "name": "kenjis/ci-phpunit-test",
-            "version": "v0.17.3",
+            "version": "v0.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kenjis/ci-phpunit-test.git",
-                "reference": "cbbeb711353b5613d46bcc68f5d4c07e030b42d6"
+                "reference": "0b501b0f33056a46519f7ed1a659d84b64aeffa3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kenjis/ci-phpunit-test/zipball/cbbeb711353b5613d46bcc68f5d4c07e030b42d6",
-                "reference": "cbbeb711353b5613d46bcc68f5d4c07e030b42d6",
+                "url": "https://api.github.com/repos/kenjis/ci-phpunit-test/zipball/0b501b0f33056a46519f7ed1a659d84b64aeffa3",
+                "reference": "0b501b0f33056a46519f7ed1a659d84b64aeffa3",
                 "shasum": ""
             },
             "require": {
@@ -1625,7 +1625,7 @@
                 "test",
                 "unit testing"
             ],
-            "time": "2020-02-05T11:37:48+00:00"
+            "time": "2020-05-17T10:52:24+00:00"
         },
         {
             "name": "nikic/php-parser",

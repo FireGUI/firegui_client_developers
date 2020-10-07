@@ -1,5 +1,17 @@
 # Change Log for ci-phpunit-test
 
+## v0.18.0 (2020/05/17)
+
+### Added
+
+* Now you can assert whether a message is logged. See [#331](https://github.com/kenjis/ci-phpunit-test/pull/331).
+
+### Fixed
+
+* Fix bug that config files are not loaded with HMVC. See [#327](https://github.com/kenjis/ci-phpunit-test/pull/327), [#328](https://github.com/kenjis/ci-phpunit-test/pull/328).
+* Fix bug that NetBeans test suite provider causes `Class 'PHPUnit_Util_Configuration' not found`. See [#313](https://github.com/kenjis/ci-phpunit-test/pull/313).
+* Fix bug that `$assign_to_config` does not work. See [#314](https://github.com/kenjis/ci-phpunit-test/pull/314).
+
 ## v0.17.3 (2020/02/05)
 
 ### Fixed
