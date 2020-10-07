@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Part of ci-phpunit-test
  *
@@ -36,15 +37,14 @@ class CIPHPUnitTestDbTestCase extends CIPHPUnitTestCase
 
 	protected function loadDependencies()
 	{
-		if ($this->db === null)
-		{
-			$CI =& get_instance();
+		if ($this->db === null) {
+			$CI = &get_instance();
 			$CI->load->database();
 			$this->db = $CI->db;
 		}
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$this->loadDependencies();
 	}
@@ -55,14 +55,12 @@ class CIPHPUnitTestDbTestCase extends CIPHPUnitTestCase
 	 * Takes care of any required cleanup after the test, like
 	 * removing any rows inserted via $this->hasInDatabase()
 	 */
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		$this->checkDbConnId();
 
-		if (! empty($this->insertCache))
-		{
-			foreach ($this->insertCache as $row)
-			{
+		if (!empty($this->insertCache)) {
+			foreach ($this->insertCache as $row) {
 				$this->db->delete($row[0], $row[1]);
 			}
 		}
@@ -86,7 +84,7 @@ class CIPHPUnitTestDbTestCase extends CIPHPUnitTestCase
 		$this->db->close();
 		$this->db = null;
 
-		$CI =& get_instance();
+		$CI = &get_instance();
 		$CI->load->database();
 		$this->db = $CI->db;
 	}

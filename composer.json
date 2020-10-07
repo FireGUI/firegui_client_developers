@@ -1,6 +1,6 @@
 {
     "require-dev": {
-        "kenjis/ci-phpunit-test": "^0.17.0",
+        "kenjis/ci-phpunit-test": "^0.18.0",
         "symfony/var-dumper": "^5.0"
     },
     "require": {
