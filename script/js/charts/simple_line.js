@@ -15,7 +15,7 @@ $(function () {
         titles.chartId = JSON.parse(atob(this_element.data('title')));
         subtitles.chartId = JSON.parse(atob(this_element.data('subtitle')));
         rotations.chartId = JSON.parse(atob(this_element.data('rotation')));
-        categories.chartId = JSON.parse(atob(this_element.data('categorie')));
+        categories.chartId = JSON.parse(atob(this_element.data('categories')));
         label2s.chartId = JSON.parse(atob(this_element.data('label2')));
         series.chartId = JSON.parse(atob(this_element.data('series')));
 
