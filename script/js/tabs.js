@@ -4,9 +4,10 @@ $(function () {
     $('.js-tabs').each(function () {
         // La stessa tab NON deve mai apparire in una stessa pagina più di una
         // volta
-        var tabId = $(this).attr('class');
-        var tabs = $('.' + tabId).filter(':first');
-        var tabToggles = $('> ul > li > a', tabs);
+        var tabId = $(this).data('tabid');
+
+
+        var tabToggles = $('> ul > li > a', $(this));
 
         tabToggles.on('click', function () {
             var clicked = $(this);
