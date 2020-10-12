@@ -483,3 +483,4 @@ $lang['Elettrodomestici'] = 'Elettrodomestici';
 $lang['Rapporto riparazione'] = 'Rapporto riparazione';
 $lang['Documenti Cliente'] = 'Documenti Cliente';
 $lang['Assistenza ticket'] = 'Assistenza ticket';
+$lang['Suppliers'] = 'Suppliers';
