@@ -1,7 +1,6 @@
 <style media="print">
     @page {
         size: <?php echo $w; ?>mm <?php echo $h; ?>mm landscape;
-        margin: <?php echo $left; ?>px <?php echo $top; ?>px 2px 0;
     }
 
     * {
@@ -9,9 +8,10 @@
         padding: 0;
 
     }
+
 </style>
 
-<div style="width:<?php echo $w; ?>mm;padding:1mm;height:<?php echo $h; ?>mm;border: 0px solid #000;overflow:hidden;font-size:11px;font-family: Arial;">
+<div style="width:<?php echo $w; ?>mm; margin-top:<?php echo $top; ?>mm; margin-left:<?php echo $left; ?>mm; padding:1mm;height:<?php echo $h; ?>mm;border: 0px solid #000;overflow:hidden;font-size:11px;font-family: Arial;">
     <div style="text-align: center; width:100%; height:100%">
         <?php
         $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
