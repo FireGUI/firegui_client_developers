@@ -82,7 +82,7 @@
                 var w = $('[name="w"]', container).val();
                 var h = $('[name="h"]', container).val();
                 var left = $('[name="left"]', container).val();
-                var top = $('[name="top"], container').val();
+                var top = $('[name="top"]', container).val();
                 var type = container.data('type');
                 var value = container.data('value');
                 var pars = '&w=' + w + '&h=' + h + '&left=' + left + '&top=' + top;
