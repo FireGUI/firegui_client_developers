@@ -100,6 +100,7 @@ $(document).ready(function () {
         $.ajax({
             url: url,
             dataType: 'json',
+            timeout: 0,
             complete: function () {
                 loading(false);
             },
@@ -158,6 +159,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
         cache: false,
         contentType: false,
         processData: false,
+        timeout: 0,
 
         dataType: 'json',
         complete: function () {
