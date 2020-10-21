@@ -8,9 +8,9 @@ class MY_Loader extends MX_Loader
     function module_view($folder, $view, $vars = array(), $return = FALSE)
     {
         $CI = get_instance();
-        
+
         $CI->lang->language = array_merge($CI->lang->language, $CI->module->loadTranslations($folder, @array_values($CI->lang->is_loaded)[0]));
-        
+
         $this->_ci_view_paths = array_merge($this->_ci_view_paths, array(APPPATH . 'modules/' . $folder . '/' => TRUE));
         $vars = (is_object($vars)) ? get_object_vars($vars) : $vars;
         $_ci_ext = pathinfo($view, PATHINFO_EXTENSION);
@@ -18,12 +18,15 @@ class MY_Loader extends MX_Loader
         $file = APPPATH . 'modules/' . $folder . '/' . $_ci_file;
 
         if (!file_exists($file)) {
-            $content = '<div class="alert alert-warning alert-dismissible">
+            if (is_maintenance()) {
+                $content = '<div class="alert alert-warning alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                 <h4><i class="icon fa fa-warning"></i> Alert!</h4>
                 View ' . $file . ' doesn\'t exist
               </div>';
-
+            } else {
+                $content = '';
+            }
             if ($return) {
                 return $content;
             } else {
