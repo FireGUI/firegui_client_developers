@@ -34,7 +34,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <input type="hidden" class="js-filter-field" name="conditions[<?php echo $k; ?>][field_id]" value="<?php echo $field['id']; ?>" />
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="<?php echo $oper; ?>" />
 
-                        <label><?php echo $field['label']; ?></label>
+                        <label><?php e($field['label']); ?></label>
                         <?php if (in_array($field['type'], ['date', 'date_time'])) : ?>
                             <div class="input-group js_form_daterangepicker">
                                 <input name="conditions[<?php echo $k; ?>][value]" type="text" class="form-control" value="<?php echo $value; ?>" />
