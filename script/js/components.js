@@ -652,10 +652,10 @@ function openCreationForm(formId, entity, onSuccess) {
                 data: { _raw: 1 },
             },
             beforeShow: function () {
-                initComponents();
+                initComponents($('#form_' + formId));
             },
             afterShow: function () {
-                initComponents();
+                initComponents($('#form_' + formId));
             },
             beforeClose: function () {
                 $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
