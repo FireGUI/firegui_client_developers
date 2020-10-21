@@ -174,7 +174,9 @@ class Layout extends CI_Model
                 $thisSubboxes = [];
                 $index = 0;
                 foreach ($box['subboxes'] as $subboxId) {
-                    $thisSubboxes[$myKey . '-' . $index++] = $lboxes[$subboxId];
+                    if (array_key_exists($subboxId, $lboxes)) {
+                        $thisSubboxes[$myKey . '-' . $index++] = $lboxes[$subboxId];
+                    }
                 }
 
                 $boxes[$myKey]['subboxes'] = $thisSubboxes;

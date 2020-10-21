@@ -13,7 +13,10 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
                 <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 6); ?>">
                     <?php
-                    $value = empty($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
+
+                    $field_completo = $this->datab->get_field($field['id']);
+
+                    $value = !isset($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];
                     } else {
@@ -45,6 +48,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             </button>
                             <div class="col-xs-12">
                                 <label class="radio-inline">
+
                                     <input type="radio" name="conditions[<?php echo $k; ?>][value]" class="toggle field_<?php echo $field['id']; ?>" value="<?php echo DB_BOOL_TRUE; ?>" <?php echo (($value == DB_BOOL_TRUE) ? 'checked' : ''); ?> />
                                     <?php e('Yes'); ?>
                                 </label>
@@ -56,7 +60,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <?php elseif ($field['datatype'] == 'INT4RANGE') : ?>
                             <?php
                             //Mi costruisco i parametri basati sui min/max dell'entità.
-                            $field_completo = $this->datab->get_field($field['id']);
+
                             $entity = $this->datab->get_entity($field_completo['fields_entity_id']);
                             if ($field['min'] === '') {
                                 $min = $this->db->query("SELECT MIN(LOWER({$field_completo['fields_name']})) as min FROM {$entity['entity_name']}");
@@ -125,7 +129,11 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                             $where .= " AND $valore";
                                         }
                                     }
-
+                                    if ($field_completo['fields_select_where']) {
+                                        $field_completo['fields_select_where'] = str_replace('{value_id}', $value_id, $field_completo['fields_select_where']);
+                                        $where_replaced = $this->datab->replace_superglobal_data(trim($field_completo['fields_select_where']));
+                                        $where .= " AND {$where_replaced}";
+                                    }
                                     if ($where === '1') {
                                         $where = null;
                                     }
