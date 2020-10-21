@@ -288,7 +288,10 @@ function initTableAjax(grid) {
     }
     var datatable = oDataTable
         .on('error.dt', function (e, settings, techNote, message) {
-            $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
+
+            if (typeof message !== 'undefined') {
+                $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
+            }
         })
         .dataTable({
             stateSave: true,
@@ -359,8 +362,11 @@ function initTableAjax(grid) {
                     data: aoData,
                     success: fnCallback,
                     error: function (request, error) {
-                        $('.callout.callout-warning').remove();
-                        $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
+                        //console.log(message);
+                        if (typeof request.responseText !== 'undefined') {
+                            $('.callout.callout-warning').remove();
+                            $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
+                        }
                     },
                 });
             },
