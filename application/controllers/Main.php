@@ -159,7 +159,11 @@ class Main extends MY_Controller
      */
     protected function stampa($pagina)
     {
-        $this->template['head'] = $this->load->view('layout/head', array(), true);
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/head.php")) {
+            $this->template['head'] = $this->load->view('custom/layout/head', array(), true);
+        } else {
+            $this->template['head'] = $this->load->view('layout/head', array(), true);
+        }
 
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/header.php")) {
             $this->template['header'] = $this->load->view('custom/layout/header', array(), true);
@@ -167,9 +171,19 @@ class Main extends MY_Controller
             $this->template['header'] = $this->load->view('layout/header', array(), true);
         }
 
-        $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/sidebar.php")) {
+            $this->template['sidebar'] = $this->load->view('custom/layout/sidebar', array(), true);
+        } else {
+            $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
+        }
+                
         $this->template['page'] = $pagina;
-        $this->template['footer'] = $this->load->view('layout/footer', null, true);
+
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/footer.php")) {
+            $this->template['footer'] = $this->load->view('custom/layout/footer', null, true);
+        } else {
+            $this->template['footer'] = $this->load->view('layout/footer', null, true);
+        }
 
         echo $this->load->view('layout/main', $this->template, true);
     }
