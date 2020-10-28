@@ -129,6 +129,8 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                                 //Nel dubbio assegno anche l'attributo selected...
                                 $('option[value=' + valore + ']', $(this)).attr('selected', 'selected');
                             } else {
+                                //var form_field_name = $(this).attr('name');
+
                                 $(this).val(data.data[$(this).attr('name')]).trigger('change');
                             }
                         }
@@ -155,7 +157,10 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
 
             //Hidden fields must be always cloned (ex.: csrf field...)
             $('[type="hidden"]', form).each(function () {
-                $('td', row_with_form).first().append($(this).clone());
+                if ($('[name="' + $(this).attr('name') + '"]', row_with_form).length == 0) {
+                    $('td', row_with_form).first().append($(this).clone());
+                }
+
             });
         },
     });
