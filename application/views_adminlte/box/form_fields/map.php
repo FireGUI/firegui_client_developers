@@ -1,4 +1,9 @@
 <?php
+        $settings = $this->apilib->searchFirst('settings');
+
+        $company_lat = (!empty($settings['settings_company_position']['lat'])) ? $settings['settings_company_position']['lat'] : 40.725249;
+        $company_lng = (!empty($settings['settings_company_position']['lng'])) ? $settings['settings_company_position']['lng'] : -74.140363;
+
 $map = "js_map_container_{$field['fields_id']}_map" . ($lang ? "_{$lang}" : '');
 $input = "js_map_container_{$field['fields_id']}_input" . ($lang ? "_{$lang}" : '');
 
@@ -32,7 +37,7 @@ if ($value) {
     <div class="input-group">
         <input type="text" class="form-control js_map_search" placeholder="<?php e('find localtion') ?>" />
         <span class="input-group-btn">
-            <button class="btn btn-default" type="button"><i class="fas fa-search"></i></button>
+            <button class="btn btn-default btn-search" type="button"><i class="fas fa-search"></i></button>
         </span>
     </div>
     <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
@@ -45,10 +50,20 @@ if ($value) {
 
         var map = null;
 
+        var lat = <?php echo $company_lat; ?>;
+        var lng = <?php echo $company_lng; ?>;
+
         $('#<?php echo $map; ?>').on('resize', function() {
             'use strict';
             if (map !== null) {
                 map.invalidateSize();
+            }
+        });
+
+        $('.js_map_search').on('keyup', function(e) {
+            e.preventDefault();
+            if (e.keyCode == 32) { // pressed spacebar
+                $('.btn-search').trigger('click');
             }
         });
 
@@ -61,7 +76,7 @@ if ($value) {
         }, 1000);
 
         map = L.map('<?php echo $map; ?>', {
-            center: new L.LatLng(40.725249, -74.140363),
+            center: new L.LatLng(lat, lng),
             zoom: 14,
             layers: [
                 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {

@@ -50,9 +50,9 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
                     <th data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && !$field['grids_fields_eval_cache_data']) ? ' data-prevent-order ' : ''; ?>><?php e($field['grids_fields_column_name']);  ?></th>
 
                 <?php endforeach; ?>
-
-                <th data-prevent-order>&nbsp;</th>
-
+                <?php if ($grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                    <th data-prevent-order>&nbsp;</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody></tbody>
@@ -70,8 +70,9 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
                         <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
                         </th>
                     <?php endforeach; ?>
-
-                    <th data-prevent-order>&nbsp;</th>
+                    <?php if ($grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                        <th data-prevent-order>&nbsp;</th>
+                    <?php endif; ?>
 
                 </tr>
             </tfoot>
