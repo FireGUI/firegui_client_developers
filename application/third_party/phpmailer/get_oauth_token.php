@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Get an OAuth2 token from Google.
  * * Install this script on your server so that it's accessible
@@ -22,7 +23,12 @@ use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 
-session_start();
+if (
+    !isset($_SESSION)
+    && !headers_sent()
+) {
+    session_start();
+}
 
 //If this automatic URL doesn't work, set it yourself manually
 $redirectUri = isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
@@ -68,12 +74,12 @@ class Google extends AbstractProvider
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-	return ' ';
+        return ' ';
     }
 
     protected function getAuthorizationParameters(array $options)
     {
-	if (is_array($this->scope)) {
+        if (is_array($this->scope)) {
             $separator = $this->getScopeSeparator();
             $this->scope = implode($separator, $this->scope);
         }
@@ -83,7 +89,7 @@ class Google extends AbstractProvider
             array_filter([
                 'hd'          => $this->hostedDomain,
                 'access_type' => $this->accessType,
-		'scope'       => $this->scope,
+                'scope'       => $this->scope,
                 // if the user is logged in with more than one account ask which one to use for the login!
                 'authuser'    => '-1'
             ])
@@ -134,7 +140,7 @@ $provider = new Google(
         'clientSecret' => $clientSecret,
         'redirectUri' => $redirectUri,
         'scope' => array('https://mail.google.com/'),
-	'accessType' => 'offline'
+        'accessType' => 'offline'
     )
 );
 
@@ -144,7 +150,7 @@ if (!isset($_GET['code'])) {
     $_SESSION['oauth2state'] = $provider->getState();
     header('Location: ' . $authUrl);
     exit;
-// Check given state against previously stored one to mitigate CSRF attack
+    // Check given state against previously stored one to mitigate CSRF attack
 } elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
     unset($_SESSION['oauth2state']);
     exit('Invalid state');

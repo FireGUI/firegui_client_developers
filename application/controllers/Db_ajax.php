@@ -879,7 +879,6 @@ class Db_ajax extends MY_Controller
     public function multi_upload_async($field_id)
     {
 
-
         $field = $this->datab->get_field($field_id);
 
         $old_file_data =  $_FILES['file'];
