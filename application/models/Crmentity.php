@@ -266,6 +266,9 @@ class Crmentity extends CI_Model
                 $refererEntity = $entity['entity_name'];
                 $refererField = $entity['fields_name'];
 
+
+
+
                 // Se il campo che fa riferimento alla mia entità, ha lo
                 // stesso nome dell'id di questa entità allora lo skippo,
                 // perché vorrebbe dire che questa è una relazione
@@ -297,11 +300,11 @@ class Crmentity extends CI_Model
                     }
                 }
             }
-
+            debug($_data);
             foreach ($data['data'] as &$_data) {
                 $_data = array_merge($_data, $referersKeys, $referersRecords[$_data[$entity_name . '_id']]);
             }
-
+            debug($_data, true);
 
             // Estraggo le eventuali relazioni
             foreach ($data['relations'] as $relation) {
@@ -1040,8 +1043,7 @@ class Crmentity extends CI_Model
     }
 
     /**
-     * Ottieni i campi che puntano all'entità passata, sse questi campi
-     * permettono la right join automatica
+     * Get all fields that are right joined to the entity passed
      * 
      * @param string|int $entity
      * @return array
