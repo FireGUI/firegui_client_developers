@@ -635,4 +635,16 @@ th.w15 {
 .mt-30 {
   margin-top: 30px !important;
 }
+.margin-0 {
+  margin:0px;
+}
+.margin-bottom-20 {
+  margin-bottom: 20px
+}
+.paggind-0 {
+  padding:0px;
+}
 .tab-pane .content { padding:0px; }
+.overflow-auto {
+  overflow:auto;
+}

@@ -130,7 +130,7 @@ if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
 
                         <div class="form-group disconnect">
                             <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
-                            <select name="timeout" class="selectpicker" data-style="btn-default">
+                            <select name="timeout" class="selectpicker">
                                 <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
                                 <option value="10" class="input-sm option_style">10 <?php e('minutes'); ?></option>
                                 <option value="30" class="input-sm option_style">30 <?php e('minutes'); ?></option>

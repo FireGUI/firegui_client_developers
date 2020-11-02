@@ -34,7 +34,7 @@ RENAME THIS FILE FROM __login.php to login.php THAN REOPEN THE ACCESS PAGE.
             </label>
         </div>
 
-        <div class="container" style="background-color:#f1f1f1">
+        <div class="container">
             <button type="submit" class="cancelbtn">Cancel</button>
             <span class="psw">Forgot <a href="<?php echo base_url("access/recovery"); ?>">password?</a></span>
         </div>
