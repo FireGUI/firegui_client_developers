@@ -300,11 +300,11 @@ class Crmentity extends CI_Model
                     }
                 }
             }
-            debug($_data);
+
             foreach ($data['data'] as &$_data) {
                 $_data = array_merge($_data, $referersKeys, $referersRecords[$_data[$entity_name . '_id']]);
             }
-            debug($_data, true);
+
 
             // Estraggo le eventuali relazioni
             foreach ($data['relations'] as $relation) {
