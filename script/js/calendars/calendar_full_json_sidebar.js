@@ -9,8 +9,8 @@ $(function () {
         var minTime = $(this).data('mintime');
         var maxTime = $(this).data('maxtime');
         var language = $(this).data('language');
-        var start = $(this).data('start');
-        var end = $(this).data('end');
+        var startField = $(this).data('start');
+        var endField = $(this).data('end');
         var allday = $(this).data('allday');
         var formurl = $(this).data('formurl');
         var formedit = $(this).data('formedit');
@@ -77,10 +77,11 @@ $(function () {
                 var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
                 var data = {
                     [token_name]: token_hash,
-                    [start]: fStart,
-                    [end]: fEnd
+                    [startField]: fStart,
+                    [endField]: fEnd
                     //TODO: manage all days events
                 };
+
                 loadModal(formurl, data, function () {
                     jqCalendar.fullCalendar('refetchEvents');
                 }, 'get');
@@ -103,8 +104,8 @@ $(function () {
                 var data = {
                     [token_name]: token_hash,
                     [fieldid]: event.id,
-                    [start]: fStart,
-                    [end]: fEnd
+                    [startField]: fStart,
+                    [endField]: fEnd
                     //TODO: manage all days events
                 };
 
@@ -132,8 +133,8 @@ $(function () {
                 var data = {
                     [token_name]: token_hash,
                     [fieldid]: event.id,
-                    [start]: fStart,
-                    [end]: fEnd
+                    [startField]: fStart,
+                    [endField]: fEnd
                     //TODO: manage all days events
                 };
 

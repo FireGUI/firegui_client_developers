@@ -286,10 +286,7 @@ class Datab extends CI_Model
                         }
 
                         break;
-                    case '{different_date}':
-                        $timestamp = strtotime($var1 . ((trim($var1) === '+1') ? " day" : " days"));
-                        $value = date('d/m/Y', $timestamp);
-                        break;
+
                     case '{different_date_time}':
                         // Se l'argomento è della forma +10 allora appendi days alla fine
                         if (preg_match('/\A\+[0-9]+\z/', $var1)) {
@@ -299,6 +296,25 @@ class Datab extends CI_Model
                         break;
                     case '{now_date_time}':
                         $value = date("d/m/Y H:i");
+                        break;
+                    case '{now_time}':
+                        if (!empty($var1)) {
+                            $value = date($var1);
+                        } else {
+                            $value = date("H:i");
+                        }
+                        break;
+                    case '{different_date}':
+                        //TODO: accept also minus values
+                        $timestamp = strtotime($var1 . ((trim($var1) === '+1') ? " day" : " days"));
+                        $value = date('d/m/Y', $timestamp);
+                        break;
+                    case '{different_time}':
+                        //TODO: accept also minus values
+                        if (preg_match('/\A\+[0-9]+\z/', $var1)) {
+                            $var1 .= " minutes";
+                        }
+                        $value = date("H:i", strtotime($var1));
                         break;
 
                     default:
