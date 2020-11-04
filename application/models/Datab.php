@@ -277,6 +277,7 @@ class Datab extends CI_Model
                 $var1 = (isset($exp[1])) ? $exp[1] : null;
                 $var2 = (isset($exp[2])) ? $exp[2] : null;
                 $var3 = (isset($exp[3])) ? $exp[3] : null;
+                $var4 = (isset($exp[4])) ? $exp[4] : null;
 
                 switch ($func) {
                     case '{now_date}':
@@ -331,17 +332,17 @@ class Datab extends CI_Model
 
                         if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
                             if (substr($var1, 0, 1) == '+') {
-                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var1) . 'M'));
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var1) . 'H'));
                             } elseif (substr($var1, 0, 1) == '-') {
-                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var1) . 'M'));
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var1) . 'H'));
                             }
                         }
 
                         if (preg_match('/\A[-+]?[0-9]+\z/', $var2)) {
                             if (substr($var2, 0, 1) == '+') {
-                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var2) . 'H'));
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var2) . 'M'));
                             } elseif (substr($var2, 0, 1) == '-') {
-                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var2) . 'H'));
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var2) . 'M'));
                             }
                         }
 
@@ -363,6 +364,22 @@ class Datab extends CI_Model
                                 $timeobj->add(new DateInterval('P' . str_ireplace('+', '', $var2) . 'M'));
                             } elseif (substr($var2, 0, 1) == '-') {
                                 $timeobj->sub(new DateInterval('P' . str_ireplace('-', '', $var2) . 'M'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var3)) {
+                            if (substr($var3, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var3) . 'H'));
+                            } elseif (substr($var3, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var3) . 'H'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var4)) {
+                            if (substr($var4, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var4) . 'M'));
+                            } elseif (substr($var4, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var4) . 'M'));
                             }
                         }
 
