@@ -276,6 +276,8 @@ class Datab extends CI_Model
                 $func = $exp[0];
                 $var1 = (isset($exp[1])) ? $exp[1] : null;
                 $var2 = (isset($exp[2])) ? $exp[2] : null;
+                $var3 = (isset($exp[3])) ? $exp[3] : null;
+                $var4 = (isset($exp[4])) ? $exp[4] : null;
 
                 switch ($func) {
                     case '{now_date}':
@@ -285,14 +287,6 @@ class Datab extends CI_Model
                             $value = date("d/m/Y");
                         }
 
-                        break;
-
-                    case '{different_date_time}':
-                        // Se l'argomento è della forma +10 allora appendi days alla fine
-                        if (preg_match('/\A\+[0-9]+\z/', $var1)) {
-                            $var1 .= " days";
-                        }
-                        $value = date("d/m/Y H:i", strtotime($var1));
                         break;
                     case '{now_date_time}':
                         $value = date("d/m/Y H:i");
@@ -305,18 +299,92 @@ class Datab extends CI_Model
                         }
                         break;
                     case '{different_date}':
-                        //TODO: accept also minus values
-                        $timestamp = strtotime($var1 . ((trim($var1) === '+1') ? " day" : " days"));
-                        $value = date('d/m/Y', $timestamp);
+                        $timeobj = new DateTime;
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
+                            if (substr($var1, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var1) . 'D'));
+                            } elseif (substr($var1, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var1) . 'D'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var2)) {
+                            if (substr($var2, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var2) . 'M'));
+                            } elseif (substr($var2, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var2) . 'M'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var3)) {
+                            if (substr($var3, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var3) . 'Y'));
+                            } elseif (substr($var2, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var3) . 'Y'));
+                            }
+                        }
+
+                        $value = $timeobj->format('d/m/Y');
                         break;
                     case '{different_time}':
-                        //TODO: accept also minus values
-                        if (preg_match('/\A\+[0-9]+\z/', $var1)) {
-                            $var1 .= " minutes";
-                        }
-                        $value = date("H:i", strtotime($var1));
-                        break;
+                        $timeobj = new DateTime;
 
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
+                            if (substr($var1, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var1) . 'H'));
+                            } elseif (substr($var1, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var1) . 'H'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var2)) {
+                            if (substr($var2, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var2) . 'M'));
+                            } elseif (substr($var2, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var2) . 'M'));
+                            }
+                        }
+
+                        $value = $timeobj->format('H:i');
+                        break;
+                    case '{different_date_time}':
+                        $timeobj = new DateTime;
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
+                            if (substr($var1, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('P' . str_ireplace('+', '', $var1) . 'D'));
+                            } elseif (substr($var1, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('P' . str_ireplace('-', '', $var1) . 'D'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var2)) {
+                            if (substr($var2, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('P' . str_ireplace('+', '', $var2) . 'M'));
+                            } elseif (substr($var2, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('P' . str_ireplace('-', '', $var2) . 'M'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var3)) {
+                            if (substr($var3, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var3) . 'H'));
+                            } elseif (substr($var3, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var3) . 'H'));
+                            }
+                        }
+
+                        if (preg_match('/\A[-+]?[0-9]+\z/', $var4)) {
+                            if (substr($var4, 0, 1) == '+') {
+                                $timeobj->add(new DateInterval('PT' . str_ireplace('+', '', $var4) . 'M'));
+                            } elseif (substr($var4, 0, 1) == '-') {
+                                $timeobj->sub(new DateInterval('PT' . str_ireplace('-', '', $var4) . 'M'));
+                            }
+                        }
+
+                        $value = $timeobj->format('d/m/Y H:i');
+                        break;
                     default:
 
                         debug("NON GESTITA DEFAULT TYPE FUNCTION");
