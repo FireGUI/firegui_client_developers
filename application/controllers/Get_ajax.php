@@ -279,7 +279,25 @@ class Get_ajax extends MY_Controller
                 }
             } else {
                 //Devo prendere tutti i campi [preview (edit 14/10/2014)] dell'entità per poter creare il where su cui effettuare la ricerca
-                $fields = $this->db->get_where('fields', array('fields_entity_id' => $entity['entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
+                $fields = $this->db->get_where(
+                    'fields',
+                    array(
+                        'fields_entity_id' => $entity['entity_id'],
+                        'fields_preview' => DB_BOOL_TRUE
+                    )
+                )->result_array();
+
+                //Check if a preview field is related to an entity, so add that entity preview fields in $fields
+                foreach ($fields as $key => $field) {
+                    if ($field['fields_ref']) {
+                        $fields[$key]['support_fields'] = array_values(array_filter(
+                            $this->crmentity->getFields($field['fields_ref']),
+                            function ($field) {
+                                return $field['fields_preview'] == DB_BOOL_TRUE;
+                            }
+                        ));
+                    }
+                }
 
                 $where = $this->datab->search_like($search, $fields);
                 if ($where && $where_limit) {

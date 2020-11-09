@@ -125,7 +125,7 @@ function initDropzones() {
 
         try {
             if (typeof value === "string") {
-                var json_decoded_value = JSON.parse(value);
+                var json_decoded_value = (value != '') ? (JSON.parse(value)) : [];
             } else {
                 var json_decoded_value = value;
             }
@@ -134,7 +134,7 @@ function initDropzones() {
             for (var index in json_decoded_value) {
 
                 var file = json_decoded_value[index];
-                dzfiles[unique].push(JSON.stringify(file));
+                dzfiles[unique].push(file);
 
                 if (file.hasOwnProperty('client_name')) {
                     var mockFile = {

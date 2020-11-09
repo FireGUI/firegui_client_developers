@@ -78,7 +78,10 @@ CrmNewInlineTable.prototype.createRow = function (id) {
         if ($(this).attr('name') == parent_field) {
             $(this).val(parent_id);
         }
-        $('td', tr).last().append($(this).clone());
+        var cloned = $(this).clone();
+        cloned.val($(this).val());
+
+        $('td', tr).last().append(cloned);
     });
 
     $('> tbody', this.grid).append(tr);
@@ -131,7 +134,9 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                             } else {
                                 //var form_field_name = $(this).attr('name');
 
-                                $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                                if (data.data[$(this).attr('name')]) {
+                                    $(this).val(data.data[$(this).attr('name')]).trigger('change');
+                                }
                             }
                         }
                     }
