@@ -39,7 +39,7 @@ $(function () {
             /***
              * CARICO I MARKER VIA AJAX
              */
-            data = [];
+            var data = [];
             data.push({ name: token_name, value: token_hash });
             $.ajax({
                 type: "POST",

@@ -75,6 +75,16 @@ function initComponents(container) {
                     format: 'DD/MM/YYYY',
                     firstDay: 1,
                 },
+                ranges: {
+                    'Oggi': [moment(), moment()],
+                    'Ieri': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Ultimi 7 Giorni': [moment().subtract(6, 'days'), moment()],
+                    'Ultimi 30 Giorni': [moment().subtract(29, 'days'), moment()],
+                    'Mese corrente': [moment().startOf('month'), moment().endOf('month')],
+                    'Mese precedente': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Anno corrente': [moment().startOf('year'), moment().endOf('year')],
+                    'Anno precedente': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
+                },
             },
             function (start, end) {
                 $('input', this.element).val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
