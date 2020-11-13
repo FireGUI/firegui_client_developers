@@ -11,11 +11,11 @@ function initDropzones() {
         var fieldtype = $(this).data('fieldtype');
         var preview = $(this).data('preview');
 
-
-
-        var value = JSON.parse(atob($(this).data('value')))
-
-
+        if ($(this).data('value')) {
+            var value = JSON.parse(atob($(this).data('value')))
+        } else {
+            var value = $(this).data('value')
+        }
 
         var form_selector = '#form_' + formid;
         var modalContainer = $('#js_modal_container');
@@ -160,7 +160,7 @@ function initDropzones() {
                 if (preview) {
                     myDropzones[unique].emit("addedfile", mockFile);
 
-                    myDropzones[unique].emit("thumbnail", mockFile, base_url_uploads + 'uploads/' + ((file.is_image) ? file.path_local : 'no-image.png'));
+                    myDropzones[unique].emit("thumbnail", mockFile, base_url_uploads + ((file.is_image) ? 'uploads/' + file.path_local : 'images/' + 'no_image.png'));
 
                     myDropzones[unique].emit("success", mockFile, null);
                 }
