@@ -34,3 +34,21 @@ Added use strict in js files
 Fix js for Internet Explorer
 Added generic removeFileFromMultiUpload function
 Removed all javascript in multiupload view
+Changed bulk-select-all jquery from attr to prop
+MAX_UPLOAD_SIZE in enviroment.php
+Added joined preview field for search
+Fixed multiupload with Json field
+Bugfix datatable inline
+Restored 300 timeout in GET_LOCK mysql
+Fix apilib undefined index
+Fix “ReferenceError: data is not defined at load_marker (map_standard.js?v=2.0.9:42)”
+Fix {different_date_time} in datab model
+Added last/current year to daterangepicker ranges
+Added variables to different_* functions in datab default form fields values
+Added custom ranges to daterangepicker component
+Fix calendar external js
+Added different_time and now_time for default form values in dates
+Fix calendar full json sidebar with external js
+Bugfix for oauth token session
+Removed adminlte unusefull files
+CSS improvements
