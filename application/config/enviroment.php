@@ -19,6 +19,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('DEFAULT_DATE_FORMAT', 'Y-m-d');
     define('DEFAULT_DATETIME_FORMAT', 'Y-m-d H:i:s');
+
+    define('MAX_UPLOAD_SIZE', 30000);
     /*
  * ============================================================
  * E-mail system
