@@ -6,11 +6,10 @@ $(document).ready(function () {
     $.uniform.update();
     $('.js-bulk-select-all').on('click', function () {
         var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
-
         if ($(this).is(':checked')) {
-            $('input[type="checkbox"].js_bulk_check', grid_container).attr('checked', 'checked').trigger('change');
+            $('input[type="checkbox"].js_bulk_check', grid_container).prop('checked', true).trigger('change');
         } else {
-            $('input[type="checkbox"].js_bulk_check', grid_container).removeAttr('checked').trigger('change');
+            $('input[type="checkbox"].js_bulk_check', grid_container).prop('checked', false).trigger('change');
         }
         //Questo ridisegna le checkbox metronic
         $.uniform.update();
