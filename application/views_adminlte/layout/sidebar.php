@@ -75,7 +75,7 @@
                 </li>
             <?php else : ?>
                 <li class="heading menu-<?php echo $menu['menu_id'] ?>">
-                    <h3 class="uppercase"><?php e($label, true, ['module_name' => $sub_menu['menu_module']]); ?></h3>
+                    <h3 class="uppercase"><?php e($label, true); ?></h3>
                 </li>
             <?php endif; ?>
         <?php
