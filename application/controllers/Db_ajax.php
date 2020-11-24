@@ -266,6 +266,8 @@ class Db_ajax extends MY_Controller
         // condizioni processate. Nel caso in cui siano vuote, queste verranno 
         // rimosse con un array_filter
         $where_data = $this->session->userdata(SESS_WHERE_DATA);
+
+
         $where_data[$filterSessionKey] = $conditions;
 
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));

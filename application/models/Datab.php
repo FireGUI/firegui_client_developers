@@ -385,6 +385,20 @@ class Datab extends CI_Model
 
                         $value = $timeobj->format('d/m/Y H:i');
                         break;
+                    case '{last_month}':
+                        $timeobj = new DateTime;
+                        $last_month_day = $timeobj->format('t/m/Y');
+                        $first_month_day = $timeobj->format('01/m/Y');
+                        $value = "{$first_month_day} - {$last_month_day}";
+                        //debug($value);
+                        break;
+                    case '{last_year}':
+                        $timeobj = new DateTime;
+                        $last_year_day = $timeobj->format('31/12/Y');
+                        $first_year_day = $timeobj->format('01/01/Y');
+                        $value = "{$first_year_day} - {$last_year_day}";
+                        //debug($value);
+                        break;
                     default:
 
                         debug("NON GESTITA DEFAULT TYPE FUNCTION");
