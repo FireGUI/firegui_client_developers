@@ -169,7 +169,7 @@ class Modules
 
 			$result = $$type;
 		}
-		log_message('debug', "File loaded: {$location}");
+		log_message('info', "File loaded: {$location}");
 		return $result;
 	}
 
