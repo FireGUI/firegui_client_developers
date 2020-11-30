@@ -400,6 +400,7 @@ $config['sess_match_useragent'] = FALSE;
 $config['sess_time_to_update'] = 43200;
 $config['sess_regenerate_destroy'] = TRUE;
 
+
 /*
 |--------------------------------------------------------------------------
 | Cookie Related Variables
