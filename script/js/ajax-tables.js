@@ -349,7 +349,14 @@ function initTableAjax(grid) {
                                 }
                             }
 
-                            $(footer).html(parseFloat(total).toFixed(2));
+                            var totalFixed = total.toFixed(2);
+                            var splitted = totalFixed.split('.');
+                            var decimals = splitted[1];
+                            var totalString = splitted[0].toString();
+                            var totalThousandDot = totalString.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                            var totalHtml = totalThousandDot + "," + decimals;
+
+                            $(footer).html(totalHtml);
                         }
                     });
                 }
