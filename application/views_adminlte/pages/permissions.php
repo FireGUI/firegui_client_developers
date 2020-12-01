@@ -111,18 +111,18 @@ if ($max_input_vars < $stima_campi) {
                                     </thead>
 
                                     <tbody>
-                                        <?php foreach ($dati['layouts'] as $layoutID => $layout) : ?>
+                                        <?php foreach ($dati['layouts'] as $layout) : ?>
                                             <tr>
                                                 <th>
-                                                    <label class="permissions-layout-label" title="<?php echo $layout; ?>">
-                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layoutID; ?>" />
-                                                        <small class="text-muted"><?php echo $layoutID; ?> - </small> <?php echo $layout; ?>
+                                                    <label class="permissions-layout-label" title="<?php echo $layout['layouts_title']; ?>">
+                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layout['layouts_id']; ?>" />
+                                                        <small class="text-muted"><?php echo $layout['layouts_id']; ?> - </small> <?php echo $layout['layouts_title']; ?> <small><?php echo $layout['layouts_module']; ?></small>
                                                     </label>
                                                 </th>
                                                 <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
                                                     <td>
                                                         <label>
-                                                            <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layoutID; ?>][]" <?php if (!isset($dati['unallowed'][$userID]) || !in_array($layoutID, $dati['unallowed'][$userID])) echo 'checked' ?> />
+                                                            <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layout['layouts_id']; ?>][]" <?php if (!isset($dati['unallowed'][$userID]) || !in_array($layout['layouts_id'], $dati['unallowed'][$userID])) echo 'checked' ?> />
                                                             <small class="text-muted"><?php echo $username; ?></small>
                                                         </label>
                                                     </td>
