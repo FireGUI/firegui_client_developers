@@ -385,6 +385,20 @@ class Datab extends CI_Model
 
                         $value = $timeobj->format('d/m/Y H:i');
                         break;
+                    case '{last_month}':
+                        $timeobj = new DateTime;
+                        $last_month_day = $timeobj->format('t/m/Y');
+                        $first_month_day = $timeobj->format('01/m/Y');
+                        $value = "{$first_month_day} - {$last_month_day}";
+                        //debug($value);
+                        break;
+                    case '{last_year}':
+                        $timeobj = new DateTime;
+                        $last_year_day = $timeobj->format('31/12/Y');
+                        $first_year_day = $timeobj->format('01/01/Y');
+                        $value = "{$first_year_day} - {$last_year_day}";
+                        //debug($value);
+                        break;
                     default:
 
                         debug("NON GESTITA DEFAULT TYPE FUNCTION");
@@ -818,7 +832,10 @@ class Datab extends CI_Model
             if (!filter_var($dati['grids']['links']['delete'], FILTER_VALIDATE_URL)) {
                 unset($dati['grids']['links']['delete']);
             }
-
+            //TODO: check other actions
+            // if (empty($dati['grids']['entity_id'])) {
+            //     debug($dati, true);
+            // }
             $can_write = $this->can_write_entity($dati['grids']['entity_id']);
             if (!$can_write) {
                 unset($dati['grids']['links']['edit'], $dati['grids']['links']['delete']);
@@ -2234,7 +2251,12 @@ class Datab extends CI_Model
             $dati['layout_container'] = $this->layout->getLayout($layout_id);
 
             if (empty($dati['layout_container'])) {
-                show_404();
+                return [
+                    'pre-layout' => '',
+                    'post-layout' => '',
+                    'layout' => [],
+                ];
+                //show_404();
             }
 
             if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0) {

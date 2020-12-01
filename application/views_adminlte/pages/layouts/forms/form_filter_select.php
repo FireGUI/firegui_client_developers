@@ -2,7 +2,9 @@
 $sess_data = $this->session->userdata(SESS_WHERE_DATA) ?: [];
 
 // Recupera info filtri e indicizza i dati per field_id
-$_sess_where_data = array_get($sess_data, $form['forms']['forms_filter_session_key'], []);
+$filterSessionKey = $form['forms']['forms_filter_session_key'];
+$_sess_where_data = array_get($sess_data, $filterSessionKey, []);
+
 $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess_where_data);
 ?>
 <form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form" enctype="multipart/form-data">
@@ -28,6 +30,40 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         // intanto lo implodo, poi vedrò come gestirlo
                         $value = implode(',', $value);
                     }
+
+                    if (!$value) {
+                        $form_field = $this->db
+                            ->join('fields', 'fields_id = forms_fields_fields_id', 'LEFT')
+                            ->get_where('forms_fields', [
+                                'fields_name' => $field['name'],
+                                'forms_fields_forms_id' => $form['forms']['forms_id']
+                            ])
+                            ->row_array();
+
+                        $value = $this->datab->get_default_fields_value($form_field);
+                        if ($value) {
+                            //If it has a default value, save into session
+                            if (empty($sess_data[$filterSessionKey])) {
+                                $sess_data[$filterSessionKey] = [];
+                            }
+
+                            $where_data = $this->session->userdata(SESS_WHERE_DATA);
+                            if (empty($where_data[$filterSessionKey])) {
+                                $where_data[$filterSessionKey] = [];
+                            }
+                            $where_data[$filterSessionKey] = array_unique(array_merge(
+                                $where_data[$filterSessionKey],
+                                [
+                                    $field['id'] => [
+                                        'field_id' => $field['id'],
+                                        'operator' => 'eq',
+                                        'value' => $value,
+                                    ]
+                                ]
+                            ), SORT_NATURAL);
+                            $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
+                        }
+                    }
                     ?>
 
                     <div class="form-group">
@@ -37,6 +73,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <label><?php e($field['label']); ?></label>
                         <?php if (in_array($field['type'], ['date', 'date_time'])) : ?>
                             <div class="input-group js_form_daterangepicker">
+
                                 <input name="conditions[<?php echo $k; ?>][value]" type="text" class="form-control" value="<?php echo $value; ?>" />
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button"> <i class="fas fa-calendar-alt"></i> </button>

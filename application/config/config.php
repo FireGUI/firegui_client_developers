@@ -400,6 +400,7 @@ $config['sess_match_useragent'] = FALSE;
 $config['sess_time_to_update'] = 43200;
 $config['sess_regenerate_destroy'] = TRUE;
 
+
 /*
 |--------------------------------------------------------------------------
 | Cookie Related Variables
@@ -525,7 +526,7 @@ $config['time_reference'] = 'local';
 | Note: You need to have eval() enabled for this to work.
 |
 */
-$config['rewrite_short_tags'] = FALSE;
+$config['rewrite_short_tags'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
