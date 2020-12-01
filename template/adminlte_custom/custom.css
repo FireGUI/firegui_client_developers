@@ -321,9 +321,6 @@ body {
 }
 
 /*add rules to bootstrap-select*/
-.dropdown-toggle {
-  border-radius: 20px;
-}
 
 .bootstrap-select {
   max-width: 40% !important;
@@ -332,6 +329,7 @@ body {
 .bootstrap-select > .dropdown-toggle {
   background-color: transparent !important;
   color: #fffffe !important;
+  border-radius: 20px;
 }
 
 .bootstrap-select > .dropdown-toggle > .bs-caret > .caret {
