@@ -116,7 +116,7 @@ if ($max_input_vars < $stima_campi) {
                                                 <th>
                                                     <label class="permissions-layout-label" title="<?php echo $layout['layouts_title']; ?>">
                                                         <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layout['layouts_id']; ?>" />
-                                                        <small class="text-muted"><?php echo $layout['layouts_id']; ?> - </small> <?php echo $layout['layouts_title']; ?> <small><?php echo $layout['layouts_module']; ?></small>
+                                                        <small class="text-muted"><?php echo $layout['layouts_id']; ?> - </small> <a target="_blank" href="<?php echo base_url(); ?>main/layout/<?php echo $layout['layouts_id']; ?>"><?php echo $layout['layouts_title']; ?></a> <small><?php echo $layout['layouts_module']; ?></small>
                                                     </label>
                                                 </th>
                                                 <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
