@@ -547,10 +547,7 @@ th.w15 {
   display: none !important;
 }
 .permissions-layout-label {
-  width: 220px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  
 }
 .fw-normal {
   font-weight: normal;
