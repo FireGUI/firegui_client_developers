@@ -176,7 +176,7 @@ class Main extends MY_Controller
         } else {
             $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
         }
-                
+
         $this->template['page'] = $pagina;
 
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/footer.php")) {
@@ -308,13 +308,13 @@ class Main extends MY_Controller
 
 
         // Crea un array di mappatura layout_id => ucfirst(layout_title)
-        $layouts = $this->db->order_by('layouts_title')->get('layouts')->result_array();
-        $layoutIds = array_key_map($layouts, 'layouts_id');
+        $dati['layouts'] = $this->db->order_by('layouts_module, layouts_title')->get('layouts')->result_array();
+        /*$layoutIds = array_key_map($layouts, 'layouts_id');
         $ucfirsLayoutTitles = array_map(function ($layout) {
             return ucfirst(str_replace('_', ' ', $layout['layouts_title']));
         }, $layouts);
 
-        $dati['layouts'] = array_combine($layoutIds, $ucfirsLayoutTitles);
+        $dati['layouts'] = array_combine($layoutIds, $ucfirsLayoutTitles);*/
 
         //Fix per non prendere tutti gli utenti ma solo quelli che possono fare login
         if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
