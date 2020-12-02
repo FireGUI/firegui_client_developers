@@ -258,6 +258,7 @@ class Db_ajax extends MY_Controller
                     array_key_exists('value', $conditional) && $conditional['value'] !== ''
                 ) {
                     $conditions[$conditional['field_id']] = $conditional;
+                } else {
                 }
             }
         }
@@ -266,6 +267,7 @@ class Db_ajax extends MY_Controller
         // condizioni processate. Nel caso in cui siano vuote, queste verranno 
         // rimosse con un array_filter
         $where_data = $this->session->userdata(SESS_WHERE_DATA);
+
 
 
         $where_data[$filterSessionKey] = $conditions;
