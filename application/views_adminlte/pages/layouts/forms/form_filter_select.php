@@ -31,7 +31,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         $value = implode(',', $value);
                     }
 
-                    if (!$value) {
+                    if (!$value && $value != '-1') {
                         $form_field = $this->db
                             ->join('fields', 'fields_id = forms_fields_fields_id', 'LEFT')
                             ->get_where('forms_fields', [
@@ -182,7 +182,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     }
                                     ?>
                                     <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
-                                        <option value="">---</option>
+
+                                        <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
 
                                         <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name) : ?>
                                             <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
@@ -206,7 +207,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     </select>
                                 <?php else : ?>
                                     <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
-                                        <option value="">---</option>
+
+                                        <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
 
                                         <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row) : ?>
                                             <?php if (!empty($row['valore'])) : ?><option value="<?php echo $row['valore']; ?>" <?php if ($value == $row['valore']) : ?> selected="selected" <?php endif; ?>><?php echo $row['valore']; ?></option><?php endif; ?>

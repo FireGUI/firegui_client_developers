@@ -586,3 +586,5 @@ $lang['Invio prog.'] = 'Invio prog.';
 $lang['Filtro Fatture'] = 'Filtro Fatture';
 $lang['TEST4'] = 'TEST4';
 $lang['TEST2'] = 'TEST2';
+$lang['Impianti'] = 'Impianti';
+$lang['Manutenzioni'] = 'Manutenzioni';
