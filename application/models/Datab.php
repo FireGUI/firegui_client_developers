@@ -1257,7 +1257,9 @@ class Datab extends CI_Model
                             }
                         } else {
                             $condition['value'] = str_replace("'", "''", $condition['value']);
-
+                            if ($condition['value'] == '-1') {
+                                continue;
+                            }
                             switch ($condition['operator']) {
                                 case 'in':
                                     $values = "'" . implode("','", is_array($condition['value']) ? $condition['value'] : explode(',', $condition['value'])) . "'";
