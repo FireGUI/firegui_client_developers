@@ -460,7 +460,6 @@ class Apilib
         }
 
         if ($this->processData($entity, $_data, false)) {
-
             if (!$this->db->insert($entity, $_data)) {
                 $this->showError(self::ERR_GENERIC);
             }
@@ -1394,7 +1393,8 @@ class Apilib
                 $data[$name] = $value;
             }
 
-            if (!$editMode && empty($data[$name]) && $this->db->dbdriver == 'postgre' && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
+            //if (!$editMode && empty($data[$name]) && $this->db->dbdriver == 'postgre' && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
+            if (!$editMode && empty($data[$name]) && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
                 $data[$name] = null;
             }
         }
