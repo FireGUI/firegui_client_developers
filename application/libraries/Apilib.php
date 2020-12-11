@@ -1395,7 +1395,13 @@ class Apilib
 
             //if (!$editMode && empty($data[$name]) && $this->db->dbdriver == 'postgre' && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
             if (!$editMode && empty($data[$name]) && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
-                $data[$name] = null;
+                if (array_key_exists($name, $data)) {
+                    //Avoid numbers to be 0 in case of empty. Forced to null
+                    $data[$name] = null;
+                } else {
+                    //Unset to force database to set the default value
+                    unset($data[$name]);
+                }
             }
         }
 
