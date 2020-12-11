@@ -8,6 +8,11 @@
                     $field_label = $field['grids_fields_column_name'];
                     $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
 
+                    if (empty($dato[$field['fields_name']])) {
+                        echo '<div class="callout callout-info">' . t('No barcode provided.') . '</div>';
+                        continue;
+                    }
+
                     foreach ([$generator::TYPE_CODE_128, $generator::TYPE_EAN_13] as $type) :
                     ?>
                         <?php
