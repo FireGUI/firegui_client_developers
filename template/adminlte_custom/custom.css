@@ -643,3 +643,11 @@ th.w15 {
 .overflow-auto {
   overflow:auto;
 }
+
+/*space and border-radius between button in menu_group*/
+.mr-10 {
+  margin-right: 10px;
+}
+.br-4 {
+  border-radius: 4px!important;
+}
