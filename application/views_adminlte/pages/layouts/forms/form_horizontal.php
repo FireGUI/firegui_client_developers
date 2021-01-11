@@ -23,7 +23,7 @@ $rowCol = 0;
             }
             ?>
 
-            <div class="<?php echo sprintf('col-lg-%d', $col); ?>"><?php echo $field['html']; ?></div>
+            <div class="<?php echo sprintf('col-md-%d', $col); ?>"><?php echo $field['html']; ?></div>
         <?php endforeach; ?>
         <?php echo $rowCol ? $rowEnd : ''; ?>
 
