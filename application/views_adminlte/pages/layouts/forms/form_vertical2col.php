@@ -11,14 +11,14 @@
             <div class="col-md-6 form-vertical2col">
                 <?php foreach (array_slice($form['forms_fields'], 0, $half) as $field) : ?>
                     <div class="row">
-                        <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
+                        <div class="<?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
                     </div>
                 <?php endforeach; ?>
             </div>
             <div class="col-md-6">
                 <?php foreach (array_slice($form['forms_fields'], $half, $count) as $field) : ?>
                     <div class="row">
-                        <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
+                        <div class="<?php echo sprintf('col-lmd-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
                     </div>
                 <?php endforeach; ?>
             </div>
