@@ -13,7 +13,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
         <div class="row">
             <?php foreach ($form['forms_fields'] as $k => $field) : ?>
 
-                <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 6); ?>">
+                <div class="<?php echo sprintf('col-md-%d', $field['size'] ?: 6); ?>">
                     <?php
 
                     $field_completo = $this->datab->get_field($field['id']);
