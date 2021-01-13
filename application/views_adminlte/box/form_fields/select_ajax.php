@@ -13,6 +13,7 @@
 
             button.on('click', function() {
                 openCreationForm(subform, thisField.data('ref'), function(id, name) {
+                    thisField.append($('<option/>').attr('value', id).text(name));
                     thisField.val(id).trigger("change");
                 });
             });
