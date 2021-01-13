@@ -48,6 +48,13 @@ class Access extends MY_Controller
     }
 
 
+    public function change_password()
+    {
+
+        $this->load->view('layout/change-password');
+    }
+
+
     public function logout()
     {
         $this->auth->logout();
