@@ -13,7 +13,9 @@
 
             button.on('click', function() {
                 openCreationForm(subform, thisField.data('ref'), function(id, name) {
+
                     thisField.val(id).trigger("change");
+
                 });
             });
         });

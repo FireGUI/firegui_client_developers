@@ -6,6 +6,8 @@ $filterSessionKey = $form['forms']['forms_filter_session_key'];
 $_sess_where_data = array_get($sess_data, $filterSessionKey, []);
 
 $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess_where_data);
+
+
 ?>
 <form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form" enctype="multipart/form-data">
     <?php add_csrf(); ?>
@@ -31,7 +33,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         $value = implode(',', $value);
                     }
 
-                    if (!$value && $value != '-1') {
+                    if (!$value && $value != '-1' && $field['datatype'] != DB_BOOL_IDENTIFIER) {
                         $form_field = $this->db
                             ->join('fields', 'fields_id = forms_fields_fields_id', 'LEFT')
                             ->get_where('forms_fields', [
@@ -41,6 +43,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             ->row_array();
 
                         $value = $this->datab->get_default_fields_value($form_field);
+
                         if ($value) {
                             //If it has a default value, save into session
                             if (empty($sess_data[$filterSessionKey])) {
@@ -51,6 +54,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             if (empty($where_data[$filterSessionKey])) {
                                 $where_data[$filterSessionKey] = [];
                             }
+
                             $where_data[$filterSessionKey] = array_unique(array_merge(
                                 $where_data[$filterSessionKey],
                                 [
@@ -60,7 +64,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                         'value' => $value,
                                     ]
                                 ]
-                            ), SORT_NATURAL);
+                            ), SORT_REGULAR);
                             $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
                         }
                     }
