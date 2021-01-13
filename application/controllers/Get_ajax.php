@@ -784,6 +784,7 @@ class Get_ajax extends MY_Controller
                     $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     $mark['link'] = ($link ? $link . '/' . $mark['id'] : '');
                     unset($mark['latlng']); // Questa chiave non serve più...
+                    //debug($mark, true);
                     array_push($markers, $mark);
                 }
             }

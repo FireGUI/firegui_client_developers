@@ -2995,7 +2995,12 @@ class Datab extends CI_Model
                         return str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
                     }
 
-                    return $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", array('form' => $form, 'ref_id' => $contentRef, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
+                    return $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", array(
+                        'form' => $form,
+                        'ref_id' => $contentRef,
+                        'value_id' => $value_id,
+                        'layout_data_detail' => $layoutEntityData
+                    ), true);
                 } else {
                     return $this->load->view("box/errors/missing_form", ['form_id' => $form_id], true);
                 }
