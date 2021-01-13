@@ -56,7 +56,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                                 </div>
                                                 <div class="col-lg-9">
                                                 <?php else : ?>
-                                                    <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>">
+                                                    <div class="<?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>">
                                                     <?php endif; ?>
                                                     <?php echo $field['html']; ?>
 
