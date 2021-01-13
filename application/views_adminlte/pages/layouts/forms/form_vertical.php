@@ -8,7 +8,7 @@
     <div class="form-body">
         <?php foreach ($form['forms_fields'] as $field) : ?>
             <div class="row">
-                <div class="<?php echo sprintf('col-lg-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
+                <div class="<?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>"><?php echo $field['html']; ?></div>
             </div>
         <?php endforeach; ?>
 
