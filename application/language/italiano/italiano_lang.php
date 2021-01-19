@@ -594,3 +594,5 @@ $lang['Current password'] = 'Password corrente';
 $lang['New password'] = 'Nuova password';
 $lang['Confirm password'] = 'Conferma password';
 $lang['Change password'] = 'Modifica password';
+$lang['Contatti'] = 'Contatti';
+$lang['Ordini'] = 'Ordini';
