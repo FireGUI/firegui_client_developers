@@ -56,6 +56,8 @@ class Firegui extends MY_Controller
             if (!is_dir($prefix_folder . $folder)) //create the folder if it's not already exists
             {
                 mkdir($prefix_folder . $folder, DIR_WRITE_MODE, true);
+
+                touch($prefix_folder . $folder . '/.gitkeep');
             }
         }
     }
