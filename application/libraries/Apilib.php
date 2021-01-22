@@ -271,7 +271,7 @@ class Apilib
     }
 
 
-    public function clearCache($testMode = false)
+    public function clearCache($drop_template_files = false)
     {
         // Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
 
@@ -282,11 +282,13 @@ class Apilib
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
         //Remove also css generated files from template cache
-        foreach (@scandir(APPPATH . '../template/build/') as $file) {
+        if ($drop_template_files) {
+            foreach (@scandir(APPPATH . '../template/build/') as $file) {
 
-            if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . '../template/build/' . $file)) {
+                if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . '../template/build/' . $file)) {
 
-                unlink(APPPATH . '../template/build/' . $file);
+                    unlink(APPPATH . '../template/build/' . $file);
+                }
             }
         }
     }
@@ -469,7 +471,7 @@ class Apilib
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
 
-            $this->clearCache();
+            $this->clearCache(false);
 
             // Prima di uscire voglio ripristinare il post precedentemente modificato
             $_POST = $this->originalPost;
@@ -548,7 +550,7 @@ class Apilib
                 'value_id' => $id
             ]);
 
-            $this->clearCache();
+            $this->clearCache(false);
 
             $_POST = $this->originalPost;
 
@@ -615,7 +617,7 @@ class Apilib
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $record));
         }
 
-        $this->clearCache();
+        $this->clearCache(false);
 
         // Prima di uscire voglio ripristinare il post precedentemente modificato
         $_POST = $this->originalPost;
@@ -691,7 +693,7 @@ class Apilib
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
-        $this->clearCache();
+        $this->clearCache(false);
     }
 
     /**
@@ -699,7 +701,7 @@ class Apilib
      */
     public function cleanCache()
     {
-        $this->clearCache();
+        $this->clearCache(false);
     }
 
     /**
