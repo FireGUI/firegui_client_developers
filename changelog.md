@@ -1,18 +1,14 @@
-Changelog version 2.1.0
+Changelog version 2.1.1
  
-Layout list improvements
-Added module name on permissions layout list
-Formatted ajax dt totalable values
-Enable rewrite short tags option
-Added last_month and last_year as placeholders in default field value
-Changed log_message “file loaded” from debug to info
-Added possibility to specify default filter field values
-Added possibility to empty default filters
-Low level log threshold
-Added method moduleExists in module model
-Check empty layout_container
-Added radius in bootstrap-selects
-Fix variable module_name undefined in sidebar
-Fix multiupload json/relation
-Fix no-image in multiupload.js
-Fix 0 value inserted for integer instead of null
+Added optional parameters options as get input for wkhtmltopdf
+Added touch .gitkeep to module folder creation (for git easy solution)
+Italian translations
+Disabled rewrite short tags
+Bugfix for radio filter inputs
+Added marker color in map standard
+Fix select ajax subform
+Added change-password page
+Changed default col-lg-6 to col-md-6 in forms
+Added margin-right to buttons in menu_groups
+Added message in static_vertical_barcode if barcode not provided
+Bugfix null values in filters
