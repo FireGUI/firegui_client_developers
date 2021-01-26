@@ -1,4 +1,3 @@
-'use strict';
 // This plugin comes from:
 //
 // http://www.keyframesandcode.com/resources/javascript/jQuery/demos/populate-demo.html
