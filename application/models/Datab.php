@@ -2891,37 +2891,53 @@ class Datab extends CI_Model
     private function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [])
     {
 
+
+
+
         $contentType = $layoutBoxData['layouts_boxes_content_type'];
         $contentRef = $layoutBoxData['layouts_boxes_content_ref'];
 
         switch ($contentType) {
             case "layout":
-                $subLayout = $this->build_layout($contentRef, $value_id, $layoutEntityData);
-                $subLayout['current_page'] = sprintf("layout_%s", $layoutBoxData['layouts_boxes_layout']);
-                $subLayout['show_title'] = false;
-                return $this->load->view("pages/layout", array('dati' => $subLayout, 'value_id' => $value_id), true);
 
+                if (!$this->datab->can_access_layout($contentRef)) {
+                    //Layout permission unallowed
+                    return false;
+                } else {
+                    $subLayout = $this->build_layout($contentRef, $value_id, $layoutEntityData);
+                    $subLayout['current_page'] = sprintf("layout_%s", $layoutBoxData['layouts_boxes_layout']);
+                    $subLayout['show_title'] = false;
+
+                    if ($subLayout['layout'] != []) {
+                        return $this->load->view("pages/layout", array('dati' => $subLayout, 'value_id' => $value_id), true);
+                    } else {
+                        //Layout content is empty
+                        return false;
+                    }
+                }
             case 'tabs':
                 $tabs = [];
                 $tabId = 'tabs_' . $layoutBoxData['layouts_boxes_id'];
                 $subboxes = (isset($layoutBoxData['subboxes']) && is_array($layoutBoxData['subboxes'])) ? $layoutBoxData['subboxes'] : [];
                 foreach ($subboxes as $key => $subbox) {
                     // Nelle tab non venivano scatenati i pre-grid, post-grid, ecc.... ora si!
+
                     $content = $this->getBoxContent($subbox, $value_id, $layoutEntityData);
+                    if ($content) {
+                        $hookSuffix = $subbox['layouts_boxes_content_type'];
+                        $hookRef = $subbox['layouts_boxes_content_ref'];
 
-                    $hookSuffix = $subbox['layouts_boxes_content_type'];
-                    $hookRef = $subbox['layouts_boxes_content_ref'];
-
-                    if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
-                        $content = $this->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
-                            $content .
-                            $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+                        if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
+                            $content = $this->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
+                                $content .
+                                $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+                        }
+                        //debug($content);
+                        $tabs[$key] = [
+                            'title' => $subbox['layouts_boxes_title'],
+                            'content' => $content,
+                        ];
                     }
-
-                    $tabs[$key] = [
-                        'title' => $subbox['layouts_boxes_title'],
-                        'content' => $content,
-                    ];
                 }
                 return $this->load->view("pages/layouts/tabbed/{$contentType}", array('tabs' => $tabs, 'tabs_id' => $tabId, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
 
