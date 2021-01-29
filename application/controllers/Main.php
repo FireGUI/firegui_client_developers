@@ -419,7 +419,6 @@ class Main extends MY_Controller
 
                 @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
-
                 $this->apilib->toggleCachingSystem(false);
 
 
