@@ -259,7 +259,7 @@ class Apilib
     {
         if (!$enable) {
             $adapter = ['adapter' => 'dummy'];
-        } elseif ($this->mycache->apc->is_supported()) {
+        } elseif ($this->mycache->apc && $this->mycache->apc->is_supported()) {
             $adapter = ['adapter' => 'apc', 'backup' => 'file'];
         } else {
             $adapter = ['adapter' => 'file', 'backup' => 'dummy'];
