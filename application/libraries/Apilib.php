@@ -57,9 +57,9 @@ class Apilib
 
     private $logTitlePatterns = [
         self::LOG_LOGIN       => "User {log_crm_user_name} has logged in",
-        self::LOG_LOGIN_FAIL  => "User {log_crm_user_name} has logged in",
+        self::LOG_LOGIN_FAIL  => "User {log_crm_user_name} failed to log in",
         self::LOG_LOGOUT      => "User {log_crm_user_name} has logged out",
-        self::LOG_ACCESS      => "L'utente {log_crm_user_name} ha eseguito l'accesso",
+        self::LOG_ACCESS      => "User {log_crm_user_name} succesfully access",
         self::LOG_CREATE      => "New record ({log_crm_extra id}) on entity {log_crm_extra entity}",
         self::LOG_CREATE_MANY => "New bulk record creation on entity {log_crm_extra entity}",
         self::LOG_EDIT        => "Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}",
@@ -90,11 +90,21 @@ class Apilib
     public function __construct()
     {
         // Prima carica la libreria di cache e dopo carica la crm entity
-        $this->load->driver('cache', $this->getCacheAdapter());
+        //TODO: extend my_cache_file driver to work also with other driver...
         $this->load->model('crmentity');
+        $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
+
+
+
+
+
+        //debug(get_class_methods($this->cache), true);
         $this->previousDebug = $this->db->db_debug;
         $this->crmEntity = $this->getCrmEntity();
+
+
+
 
         // Aggiungi tracciamento eccezioni non catchate, quantomeno per non
         // bloccare il sistema e che nessuno sappia nulla
@@ -249,7 +259,7 @@ class Apilib
     {
         if (!$enable) {
             $adapter = ['adapter' => 'dummy'];
-        } elseif ($this->cache->apc->is_supported()) {
+        } elseif ($this->mycache->apc->is_supported()) {
             $adapter = ['adapter' => 'apc', 'backup' => 'file'];
         } else {
             $adapter = ['adapter' => 'file', 'backup' => 'dummy'];
@@ -273,10 +283,10 @@ class Apilib
 
     public function clearCache($drop_template_files = false)
     {
-        // Fix che riscrive il file cache-controller resettato da $this->cache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
+        // Fix che riscrive il file cache-controller resettato da $this->mycache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
 
         $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
-        $this->cache->clean();
+        $this->mycache->clean();
         file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
 
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
@@ -293,13 +303,28 @@ class Apilib
         }
     }
 
+    public function clearEntityCache($entity)
+    {
+        $tags = $this->buildTagsFromEntity($entity);
+        $this->clearCacheTags($tags);
+    }
+
     public function clearCacheKey($key = null)
     {
         if (!$key) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        $this->cache->delete($key);
+        $this->mycache->delete($key);
+    }
+
+    public function clearCacheTags($tags)
+    {
+        if (!$tags) {
+            $this->showError(self::ERR_INVALID_API_CALL);
+        }
+
+        $this->mycache->deleteByTags($tags);
     }
 
     public function clearCacheRecord($entity = null, $id = null)
@@ -328,9 +353,10 @@ class Apilib
         }
 
         $cache_key = "apilib.list.{$entity}";
-        if (!($out = $this->cache->get($cache_key))) {
+        if (!($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, null, FALSE, $depth);
-            $this->cache->save($cache_key, $out, $this->CACHE_TIME);
+            $tags = $this->buildTagsFromEntity($entity);
+            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
         }
 
         return $this->sanitizeList($out);
@@ -351,9 +377,9 @@ class Apilib
         }
 
         $cache_key = "apilib.item.{$entity}.{$id}";
-        if (!($out = $this->cache->get($cache_key))) {
+        if (!($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
-            $this->cache->save($cache_key, $out, $this->CACHE_TIME);
+            $this->mycache->save($cache_key, $out, $this->CACHE_TIME);
         }
 
         return $this->sanitizeRecord($out);
@@ -471,7 +497,7 @@ class Apilib
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
 
-            $this->clearCache(false);
+            $this->clearEntityCache($entity);
 
             // Prima di uscire voglio ripristinare il post precedentemente modificato
             $_POST = $this->originalPost;
@@ -550,7 +576,8 @@ class Apilib
                 'value_id' => $id
             ]);
 
-            $this->clearCache(false);
+            //TODO: change with specific tags
+            $this->clearEntityCache($entity);
 
             $_POST = $this->originalPost;
 
@@ -617,7 +644,7 @@ class Apilib
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $record));
         }
 
-        $this->clearCache(false);
+        $this->clearEntityCache($entity);
 
         // Prima di uscire voglio ripristinare il post precedentemente modificato
         $_POST = $this->originalPost;
@@ -693,7 +720,8 @@ class Apilib
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
-        $this->clearCache(false);
+
+        $this->clearEntityCache($entity);
     }
 
     /**
@@ -809,7 +837,7 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
-        if (!($out = $this->cache->get($cache_key))) {
+        if (!($out = $this->mycache->get($cache_key))) {
 
             $where = [];
             if (isset($input['where'])) {
@@ -884,7 +912,7 @@ class Apilib
 
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
 
-                $this->cache->save($cache_key, $out, $this->CACHE_TIME);
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
                 throw new ApiException($ex->getMessage(), self::ERR_INTERNAL_DB, $ex);
@@ -919,7 +947,7 @@ class Apilib
 
 
 
-        if (!($out = $this->cache->get($cache_key))) {
+        if (!($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -944,7 +972,7 @@ class Apilib
             }
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
-            $this->cache->save($cache_key, $out, $this->CACHE_TIME);
+            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
         }
 
         return $out;
@@ -2219,6 +2247,22 @@ class Apilib
             $this->currentLanguage,
             $this->fallbackLanguage
         ]);
+    }
+    public function buildTagsFromEntity($entity)
+    {
+        $entity_data = $this->crmEntity->getEntity($entity);
+        $tags = [$entity_data['entity_name']];
+        $fields = $this->crmEntity->getFields($entity);
+        foreach ($fields as $field) {
+            if ($field['fields_ref_auto_right_join']) {
+                $tags[] = $field['fields_ref'];
+            }
+        }
+        $fields_referencing = $this->crmEntity->getFieldsRefBy($entity);
+
+        $tags = array_filter($tags, 'strlen');
+
+        return $tags;
     }
 }
 

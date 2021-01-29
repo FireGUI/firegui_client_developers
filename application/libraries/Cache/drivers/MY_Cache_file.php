@@ -47,7 +47,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link
  */
-class CI_Cache_file extends CI_Driver
+class MY_Cache_file extends CI_Driver
 {
 
 	/**
@@ -56,7 +56,7 @@ class CI_Cache_file extends CI_Driver
 	 * @var string
 	 */
 	protected $_cache_path;
-
+	const TAGS_CACHE_FILE = 'tags_mapping';
 	/**
 	 * Initialize file-based cache
 	 *
@@ -95,21 +95,60 @@ class CI_Cache_file extends CI_Driver
 	 * @param	bool	$raw	Whether to store the raw value (unused)
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60, $raw = FALSE)
+	public function save($id, $data, $ttl = 60, $tags = [])
 	{
-		debug('test');
+
 		$contents = array(
 			'time'		=> time(),
 			'ttl'		=> $ttl,
-			'data'		=> $data
+			'data'		=> $data,
+			//'tags'		=> $tags
 		);
 
 		if (write_file($this->_cache_path . $id, serialize($contents))) {
 			@chmod($this->_cache_path . $id, 0640);
+
+			//if tags are specified, save this id for each tags, so that i can remove it easily later
+			$this->saveTagsMapping($id, $tags);
 			return TRUE;
 		}
 
 		return FALSE;
+	}
+
+	public function saveTagsMapping($id, $tags = [])
+	{
+		$mapping = $this->getTagsMapping();
+
+		if (!$tags) {
+			$tags = [];
+		}
+		foreach ($tags as $tag) {
+			if (!array_key_exists($tag, $mapping)) {
+				$mapping[$tag] = [];
+			}
+			if (!in_array($id, $mapping[$tag])) {
+				//Add the id to the tag mapping
+				$mapping[$tag][] = $id;
+			}
+		}
+		$this->writeMappingFile($mapping);
+	}
+	private function writeMappingFile($mapping)
+	{
+		if (write_file($this->_cache_path . self::TAGS_CACHE_FILE, json_encode($mapping))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public function getTagsMapping()
+	{
+		if (file_exists($this->_cache_path . self::TAGS_CACHE_FILE) && $mapping = json_decode(file_get_contents($this->_cache_path . self::TAGS_CACHE_FILE), true)) {
+			return $mapping;
+		} else {
+			return [];
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -123,6 +162,30 @@ class CI_Cache_file extends CI_Driver
 	public function delete($id)
 	{
 		return is_file($this->_cache_path . $id) ? unlink($this->_cache_path . $id) : FALSE;
+	}
+
+	/**
+	 * Delete from Cache all data related to tags
+	 *
+	 * @param	array	tags
+	 * @return	bool	true on success/false on failure
+	 */
+	public function deleteByTags(array $tags)
+	{
+		foreach ($tags as $tag) {
+			$this->deleteByTag($tag);
+		}
+	}
+	public function deleteByTag($tag)
+	{
+		$mapping = $this->getTagsMapping();
+		if (array_key_exists($tag, $mapping)) {
+			foreach ($mapping[$tag] as $id) {
+				$this->delete($id);
+			}
+			unset($mapping[$tag]);
+			$this->writeMappingFile($mapping);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -260,6 +323,9 @@ class CI_Cache_file extends CI_Driver
 	 */
 	protected function _get($id)
 	{
+
+
+
 		if (!is_readable($this->_cache_path . $id)) {
 			return FALSE;
 		}

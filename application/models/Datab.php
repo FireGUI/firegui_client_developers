@@ -30,6 +30,7 @@ class Datab extends CI_Model
     {
         parent::__construct();
         $this->load->model('crmentity');
+
         $this->preloadLanguages();
         $this->prefetchMyAccessibleLayouts();
     }
@@ -200,7 +201,7 @@ class Datab extends CI_Model
 
                 $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
         }
         return $dati;
     }
@@ -571,7 +572,7 @@ class Datab extends CI_Model
 
 
             $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
         }
         return $dati;
     }
@@ -779,7 +780,8 @@ class Datab extends CI_Model
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $dati = $data;
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+
+            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
         }
         return $dati;
     }
