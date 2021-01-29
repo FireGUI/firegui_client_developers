@@ -1,14 +1,11 @@
-Changelog version 2.1.1
+Changelog version 2.1.2
  
-Added optional parameters options as get input for wkhtmltopdf
-Added touch .gitkeep to module folder creation (for git easy solution)
-Italian translations
-Disabled rewrite short tags
-Bugfix for radio filter inputs
-Added marker color in map standard
-Fix select ajax subform
-Added change-password page
-Changed default col-lg-6 to col-md-6 in forms
-Added margin-right to buttons in menu_groups
-Added message in static_vertical_barcode if barcode not provided
-Bugfix null values in filters
+Improved cache system with tags logic
+Disabled template builder folder remove when clear cache
+Log messages changed
+Added _ci_load_library method in MX Loader
+Better formatted php code
+Tab hiddens when layout box is empty or not accessible
+removed use strict from jquery populate script
+Bugfix cache template build dir
+Forced post edit_fields to be an array in bulk edit
