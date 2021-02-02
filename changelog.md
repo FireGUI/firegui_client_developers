@@ -9,3 +9,4 @@ Tab hiddens when layout box is empty or not accessible
 removed use strict from jquery populate script
 Bugfix cache template build dir
 Forced post edit_fields to be an array in bulk edit
+log_message language missing changed from error to debug
