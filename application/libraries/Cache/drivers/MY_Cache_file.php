@@ -56,7 +56,7 @@ class MY_Cache_file extends CI_Driver
 	 * @var string
 	 */
 	protected $_cache_path;
-	const TAGS_CACHE_FILE = 'tags_mapping';
+	const TAGS_CACHE_FILE = 'tags_mapping.json';
 	/**
 	 * Initialize file-based cache
 	 *
