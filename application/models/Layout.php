@@ -121,10 +121,19 @@ class Layout extends CI_Model
         $tmpHtml = "{$physicalDir}/{$filename}.html";
         file_put_contents($tmpHtml, $content, LOCK_EX);
 
-        // Exec the command
-        $options = "-T '5mm' -B '5mm' -O $orientation";
+        if ($this->input->get('options') !== null) {
+            $_options = $this->input->get('options');
 
-        exec("wkhtmltopdf {$options} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
+            $options = '';
+            foreach ($_options as $key => $value) {
+                $options .= "-{$key} '{$value}' ";
+            }
+        } else {
+            $options = "-T '5mm' -B '5mm'";
+        }
+
+
+        exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
 
         return $pdfFile;
     }
