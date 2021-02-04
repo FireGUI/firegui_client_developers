@@ -238,7 +238,7 @@ class Firegui extends MY_Controller
                 }
 
                 unlink($newfile);
-                $this->clearCache();
+                $this->clearCache(true);
                 if ($close) {
                     echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();window.history.back();}, 5000);</script>";
                 } else {
@@ -314,10 +314,10 @@ class Firegui extends MY_Controller
                     }
                 }
             }
-            $this->clearCache();
+            $this->clearCache(true);
             die('ok');
         } else {
-            $this->clearCache();
+            $this->clearCache(true);
             die('ok');
         }
     }
@@ -346,7 +346,7 @@ class Firegui extends MY_Controller
 
     public function clearCache()
     {
-        $this->apilib->clearCache();
+        $this->apilib->clearCache(true);
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
         // Pulisco cache frontend se c'è...
