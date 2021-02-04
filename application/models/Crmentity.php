@@ -34,6 +34,8 @@ class Crmentity extends CI_Model
         parent::__construct();
 
         $this->load->driver('cache');
+        // $this->load->driver('MY_Cache_file', null, 'mycache');
+
         $this->buildSchemaCacheIfNotValid();
 
         $this->setLanguages($languageId);
@@ -71,7 +73,7 @@ class Crmentity extends CI_Model
 
         if ($result === false) {
             $result = $callback();
-            $this->cache->save($key, $result, self::CACHE_TIME);
+            $this->cache->save($key, $result, self::CACHE_TIME, []);
         }
 
         return $result;
@@ -910,10 +912,11 @@ class Crmentity extends CI_Model
     }
     protected function buildSchemaCacheIfNotValid()
     {
-        $this->_schemaCache = $this->cache->file->get(self::SCHEMA_CACHE_KEY);
-
-        if ($this->_schemaCache && $this->isCacheEnabled()) {
-            return;
+        if ($this->isCacheEnabled()) {
+            $this->_schemaCache = $this->cache->file->get(self::SCHEMA_CACHE_KEY);
+            if ($this->_schemaCache) {
+                return;
+            }
         }
 
         $entities = $this->createDataMap($this->db->get('entity')->result_array(), 'entity_id');
@@ -956,9 +959,10 @@ class Crmentity extends CI_Model
             'validations' => $validations,
             'relations' => ['by_name' => $relbyname, 'by_entity' => $relbyent]
         ];
-
-        // And persist it
-        $this->cache->file->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24);  // 1h * 24 <= Salva cache per un giorno
+        if ($this->isCacheEnabled()) {
+            // And persist it
+            $this->cache->file->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24, [self::SCHEMA_CACHE_KEY]);  // 1h * 24 <= Salva cache per un giorno
+        }
     }
 
     /**

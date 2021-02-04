@@ -414,11 +414,10 @@ class Main extends MY_Controller
 
             case 'off':
                 $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
-                $this->apilib->clearCache();
+                $this->apilib->clearCache(true);
                 file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
 
                 @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-
 
                 $this->apilib->toggleCachingSystem(false);
 
@@ -427,7 +426,7 @@ class Main extends MY_Controller
 
             case 'clear':
 
-                $this->apilib->clearCache();
+                $this->apilib->clearCache(true);
 
                 break;
 
