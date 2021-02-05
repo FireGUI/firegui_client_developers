@@ -75,6 +75,7 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('API_MANAGER_PRIVATE_KEY', '*******');
     define('API_MANAGER_CRM_PASSPARTOUT', '*******');
+    //define('LOGIN_SALT', '********');
 
     //MD5 Passepartout for login password (example: if you want to login with every user email using the string 'your-secret-password', you should copy&paste the md5 of 'your-secret-password' here.)
     define('PASSEPARTOUT', '*********************************');
