@@ -198,4 +198,35 @@ class Access extends MY_Controller
 
         $this->load->view('layout/password-lost', array('pwd_resetted' => true, 'receiver' => $email));
     }
+
+    public function autoLogin($userId = null, $logincode = null, $restore = 1)
+    {
+        //debug('test',true);
+        if (!$userId or !$logincode) {
+            show_error("User id or login code empty", 400);
+        }
+        if (!defined('LOGIN_SALT')) {
+            show_error('LOGIN_SALT undefined', 403);
+        } else {
+            if ($logincode !== md5(LOGIN_SALT . $userId)) {
+                show_error('Incorrect code', 403);
+            }
+
+            $current = $this->auth->get('id');
+
+            // Force logout...
+            $this->auth->logout();
+            //$this->session->sess_destroy();
+            // Force login with remember
+            $this->auth->login_force($userId, true);
+
+            if ($restore) {
+                $this->session->set_userdata('previous_user_id', $current);
+                redirect();
+            } else {
+                $this->session->unset_userdata('previous_user_id');
+                redirect(base_url());
+            }
+        }
+    }
 }
