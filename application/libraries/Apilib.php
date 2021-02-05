@@ -379,7 +379,8 @@ class Apilib
         $cache_key = "apilib.item.{$entity}.{$id}";
         if (!($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME);
+            $tags = $this->buildTagsFromEntity($entity);
+            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
         }
 
         return $this->sanitizeRecord($out);
@@ -944,8 +945,6 @@ class Apilib
 
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
-
-
 
         if (!($out = $this->mycache->get($cache_key))) {
             $where = [];
