@@ -4,7 +4,7 @@
     <div class="col-md-6">
 
         <select id="<?php echo $color_palette_id; ?>" name="<?php echo $field['fields_name']; ?>">
-            <?php foreach (COLORS_PALETTE as $key => $val): ?>
+            <?php foreach (COLORS_PALETTE as $key => $val) : ?>
                 <option value="<?php echo $val; ?>" data-color="<?php echo $val; ?>"><?php echo $key; ?></option>
             <?php endforeach; ?>
         </select>
@@ -17,9 +17,11 @@
 
 
 <script>
-    <?php if ($value): ?>
-        $('#<?php echo $color_palette_id; ?>').colorselector('setColor', '<?php echo $value; ?>');
-    <?php else: ?>
-        $('#<?php echo $color_palette_id; ?>').colorselector();
-    <?php endif; ?>
+    $(function() {
+        <?php if ($value) : ?>
+            $('#<?php echo $color_palette_id; ?>').colorselector('setColor', '<?php echo $value; ?>');
+        <?php else : ?>
+            $('#<?php echo $color_palette_id; ?>').colorselector();
+        <?php endif; ?>
+    })
 </script>
