@@ -14,6 +14,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'a9ed0d27b5a698798a89181429f162c5' => __DIR__ . '/..' . '/khanamiryan/qrcode-detector-decoder/lib/Common/customFunctions.php',
         'abede361264e2ae69ec1eee813a101af' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/abs.php',
         '21a5860fbef5be28db5ddfbc3cca67c4' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acos.php',
@@ -77,6 +78,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
     );
 
     public static $prefixLengthsPsr4 = array (
+        's' => 
+        array (
+            'setasign\\Fpdi\\' => 14,
+        ),
         'Z' => 
         array (
             'Zxing\\' => 6,
@@ -99,6 +104,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
+            'Psr\\Log\\' => 8,
             'Picqer\\Barcode\\' => 15,
             'PhpParser\\' => 10,
             'PhpOffice\\PhpWord\\' => 18,
@@ -108,6 +114,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
+            'Mpdf\\' => 5,
             'Matrix\\' => 7,
         ),
         'E' => 
@@ -116,6 +123,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         ),
         'D' => 
         array (
+            'DeepCopy\\' => 9,
             'DASPRiD\\Enum\\' => 13,
         ),
         'C' => 
@@ -129,6 +137,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
     );
 
     public static $prefixDirsPsr4 = array (
+        'setasign\\Fpdi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
         'Zxing\\' => 
         array (
             0 => __DIR__ . '/..' . '/khanamiryan/qrcode-detector-decoder/lib',
@@ -185,6 +197,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
         'Picqer\\Barcode\\' => 
         array (
             0 => __DIR__ . '/..' . '/picqer/php-barcode-generator/src',
@@ -209,6 +225,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         array (
             0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
         ),
+        'Mpdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
+        ),
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
@@ -216,6 +236,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'Endroid\\QrCode\\' => 
         array (
             0 => __DIR__ . '/..' . '/endroid/qr-code/src',
+        ),
+        'DeepCopy\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
         'DASPRiD\\Enum\\' => 
         array (
@@ -232,6 +256,7 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PclZip' => __DIR__ . '/..' . '/pclzip/pclzip/pclzip.lib.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
