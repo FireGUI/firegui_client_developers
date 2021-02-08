@@ -1073,7 +1073,7 @@ class Crmentity extends CI_Model
             $_allFieldsRefBy = $this->db->query("
                 SELECT entity_id, entity_name, fields_name, fields_type, fields_ref 
                 FROM fields JOIN entity ON entity_id = fields_entity_id 
-                WHERE fields_ref IS NOT NULL AND fields_ref != '' AND $column_join = " . DB_BOOL_TRUE . "
+                WHERE fields_ref IS NOT NULL AND fields_ref != '' AND $column_join = '" . DB_BOOL_TRUE . "'
             ")->result_array();
 
             foreach ($_allFieldsRefBy as $field) {

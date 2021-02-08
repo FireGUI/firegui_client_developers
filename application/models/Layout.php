@@ -83,8 +83,6 @@ class Layout extends CI_Model
             eval('?>' . $view);
 
             $content = ob_get_clean();
-
-            return $content;
         } else {
             if (
                 !$module
@@ -136,6 +134,8 @@ class Layout extends CI_Model
 
             $mpdf->WriteHtml($content);
             $mpdf->Output();
+
+            //TODO: return true?
         } else {
             if ($this->input->get('options') !== null) {
                 $_options = $this->input->get('options');
