@@ -2249,17 +2249,25 @@ class Apilib
     }
     public function buildTagsFromEntity($entity)
     {
+
+
         $entity_data = $this->crmEntity->getEntity($entity);
         $tags = [$entity_data['entity_name']];
         $fields = $this->crmEntity->getFields($entity);
         foreach ($fields as $field) {
-            if ($field['fields_ref_auto_right_join']) {
+            if ($field['fields_ref_auto_right_join'] == DB_BOOL_TRUE || $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
                 $tags[] = $field['fields_ref'];
             }
         }
-        $fields_referencing = $this->crmEntity->getFieldsRefBy($entity);
+        //Get all fields that references this entity (false to force left join instead of right join)
+        $fields_referencing = $this->crmEntity->getFieldsRefBy($entity, false);
+
+        foreach ($fields_referencing as $field) {
+            $tags[] = $field['entity_name'];
+        }
 
         $tags = array_filter($tags, 'strlen');
+
 
         return $tags;
     }
