@@ -481,7 +481,8 @@ class Crmentity extends CI_Model
 
         //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
-            $leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
+            //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
+            $leftJoinable = $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
 
             // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
             if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
@@ -592,6 +593,8 @@ class Crmentity extends CI_Model
         // Inizializzo i fields: se ho specificato una select allora sono a
         // posto, altrimenti li autocalcolo in base ai fields entità
         $visible_fields = array_get($options, 'select', []);
+
+
         $depth = array_get($options, 'depth', 1);
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
@@ -599,6 +602,7 @@ class Crmentity extends CI_Model
 
 
         if (!$visible_fields) {
+
             foreach ($entityFullData['visible_fields'] as $campo) {
                 // Aggiungo il campo alla select
                 $visible_fields[] = sprintf('%s.%s', $campo['entity_name'], $campo['fields_name']);
@@ -613,12 +617,11 @@ class Crmentity extends CI_Model
 
                 $hasFieldRef = (bool) $campo['fields_ref'];
                 $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
-                $isJoinable = $campo['fields_ref_auto_left_join'] === DB_BOOL_TRUE;
+                $isJoinable = $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
 
                 if ($hasFieldRef && !$isRelation && $isJoinable) {
                     $entity = $this->getEntity($campo['fields_ref']);
                     foreach ($this->getVisibleFields($entity['entity_id'], $depth) as $supfield) {
-
                         $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
                         $entityFullData['visible_fields'][] = $supfield;
                     }
@@ -626,11 +629,10 @@ class Crmentity extends CI_Model
             }
         }
 
-
-
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
+
         $this->db->select(array_unique($visible_fields));
 
         //Aggiungo eventuali eval cachable
@@ -641,10 +643,16 @@ class Crmentity extends CI_Model
             }
         }
 
+
+
+
         if (!empty($eval_fields)) {
             //Rimuovo la scritta "SELECT " davanti
             $select_str = $this->db->get_compiled_select();
             $select_str = str_ireplace("SELECT ", '', $select_str);
+
+
+
             $this->db->select($select_str . ',' . implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
         }
     }
@@ -1052,13 +1060,20 @@ class Crmentity extends CI_Model
      * @param string|int $entity
      * @return array
      */
-    public function getFieldsRefBy($entity)
+    public function getFieldsRefBy($entity, $right_join = true)
     {
         if (!$this->_fields_ref_by) {
+
+            if ($right_join) {
+                $column_join = 'fields_ref_auto_right_join';
+            } else {
+                $column_join = 'fields_ref_auto_left_join';
+            }
+
             $_allFieldsRefBy = $this->db->query("
                 SELECT entity_id, entity_name, fields_name, fields_type, fields_ref 
                 FROM fields JOIN entity ON entity_id = fields_entity_id 
-                WHERE fields_ref IS NOT NULL AND fields_ref != '' AND fields_ref_auto_right_join
+                WHERE fields_ref IS NOT NULL AND fields_ref != '' AND $column_join = " . DB_BOOL_TRUE . "
             ")->result_array();
 
             foreach ($_allFieldsRefBy as $field) {
@@ -1085,7 +1100,8 @@ class Crmentity extends CI_Model
             while ($depth > 1) {
                 $depth--;
                 foreach ($this->_visible_fields[$entity] as $field) {
-                    if (!empty($field['fields_ref'])) {
+                    $isJoinable = $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
+                    if (!empty($field['fields_ref']) && $isJoinable) {
                         $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
                     }
                 }
