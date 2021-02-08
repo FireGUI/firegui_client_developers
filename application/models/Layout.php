@@ -68,12 +68,12 @@ class Layout extends CI_Model
     }
 
 
-    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false)
+    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false, $useMpdf = false)
     {
 
         $this->load->library('parser');
 
-        $physicalDir = __DIR__ . "/../../uploads";
+        $physicalDir = FCPATH . "/uploads";
         $filename = date('Ymd-H-i-s');
         $pdfFile = "{$physicalDir}/{$filename}.pdf";
 
@@ -83,6 +83,8 @@ class Layout extends CI_Model
             eval('?>' . $view);
 
             $content = ob_get_clean();
+
+            return $content;
         } else {
             if (
                 !$module
@@ -121,22 +123,37 @@ class Layout extends CI_Model
         $tmpHtml = "{$physicalDir}/{$filename}.html";
         file_put_contents($tmpHtml, $content, LOCK_EX);
 
-        if ($this->input->get('options') !== null) {
-            $_options = $this->input->get('options');
+        if ($useMpdf) {
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'margin_left' => 0,
+                'margin_right' => 0,
+                'margin_top' => 0,
+                'margin_bottom' => 0,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+            ]);
 
-            $options = '';
-            foreach ($_options as $key => $value) {
-                $options .= "-{$key} '{$value}' ";
-            }
+            $mpdf->WriteHtml($content);
+            $mpdf->Output();
         } else {
-            $options = "-T '5mm' -B '5mm'";
+            if ($this->input->get('options') !== null) {
+                $_options = $this->input->get('options');
+
+                $options = '';
+                foreach ($_options as $key => $value) {
+                    $options .= "-{$key} {$value} ";
+                }
+            } else {
+                $options = "-T '5mm' -B '5mm'";
+            }
+
+            exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
+
+            return $pdfFile;
         }
-
-
-        exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
-
-        return $pdfFile;
     }
+
     public function getLayout($layoutId)
     {
         $layout = $this->db->get_where('layouts', array('layouts_id' => $layoutId))->row_array();
