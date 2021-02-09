@@ -68,15 +68,8 @@ class Layout extends CI_Model
     }
 
 
-    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false, $useMpdf = false)
+    public function generate_html($view, $relative_path = "", $extra_data = [], $module = false, $content_html = false)
     {
-
-        $this->load->library('parser');
-
-        $physicalDir = FCPATH . "/uploads";
-        $filename = date('Ymd-H-i-s');
-        $pdfFile = "{$physicalDir}/{$filename}.pdf";
-
         if ($content_html === true) {
             ob_start();
             extract($extra_data);
@@ -104,7 +97,6 @@ class Layout extends CI_Model
                 }
                 $content = $this->parser->parse("pages/layouts/custom_views/{$relative_path}{$view}", $extra_data, true);
             } else {
-
                 $content = $this->load->module_view($module . "/views/{$relative_path}", $view, $extra_data, true);
             }
         }
@@ -114,15 +106,17 @@ class Layout extends CI_Model
             die($content);
         }
 
-        // Create a temporary file with the view html
-        if (!is_dir($physicalDir)) {
-            mkdir($physicalDir, 0755, true);
-        }
-        $tmpHtml = "{$physicalDir}/{$filename}.html";
-        file_put_contents($tmpHtml, $content, LOCK_EX);
+        return $content;
+    }
+
+    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false, $options = [])
+    {
+        $useMpdf = array_get($options, 'useMpdf', false);
+
+        $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);
 
         if ($useMpdf) {
-            $mpdf = new \Mpdf\Mpdf([
+            $mpdfInit = array_get($options, 'mpdfInit', [
                 'mode' => 'utf-8',
                 'margin_left' => 0,
                 'margin_right' => 0,
@@ -132,11 +126,36 @@ class Layout extends CI_Model
                 'margin_footer' => 0,
             ]);
 
-            $mpdf->WriteHtml($content);
+            $mpdf = new \Mpdf\Mpdf($mpdfInit);
+
+            $header = array_get($options, 'mpdfHeader', '');
+            $footer = array_get($options, 'mpdfFooter', '');
+            $css = array_get($options, 'mpdfCss', '');
+            $pdfTitle = array_get($options, 'mpdfTitle', '');
+
+            if (!empty($header)) $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
+            if (!empty($footer)) $mpdf->SetHTMLFooter($this->generate_html($footer, $relative_path, $extra_data, $module, true));
+            if (!empty($pdfTitle)) $mpdf->SetTitle($pdfTitle);
+            if (!empty($css)) $mpdf->WriteHtml($css, \Mpdf\HTMLParserMode::HEADER_CSS);
+
+            $mpdf->WriteHtml($content, \Mpdf\HTMLParserMode::DEFAULT_MODE);
             $mpdf->Output();
 
             //TODO: return true?
         } else {
+            $this->load->library('parser');
+
+            $physicalDir = FCPATH . "/uploads";
+            $filename = date('Ymd-H-i-s');
+            $pdfFile = "{$physicalDir}/{$filename}.pdf";
+
+            // Create a temporary file with the view html
+            if (!is_dir($physicalDir)) {
+                mkdir($physicalDir, 0755, true);
+            }
+            $tmpHtml = "{$physicalDir}/{$filename}.html";
+            file_put_contents($tmpHtml, $content, LOCK_EX);
+
             if ($this->input->get('options') !== null) {
                 $_options = $this->input->get('options');
 
