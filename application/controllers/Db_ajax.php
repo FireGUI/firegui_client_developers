@@ -91,7 +91,7 @@ class Db_ajax extends MY_Controller
                 } else {
                     //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
                     foreach ($dati as $key => $val) {
-                        log_message('DEBUG', 'TODO: check codice che casta ad array questo input post');
+
                         if (!in_array($key, (array)$this->input->post('edit_fields'))) {
                             unset($dati[$key]);
                         }
