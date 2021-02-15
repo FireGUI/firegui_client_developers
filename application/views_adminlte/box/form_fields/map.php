@@ -1,8 +1,8 @@
 <?php
-        $settings = $this->apilib->searchFirst('settings');
+$settings = $this->apilib->searchFirst('settings');
 
-        $company_lat = (!empty($settings['settings_company_position']['lat'])) ? $settings['settings_company_position']['lat'] : 40.725249;
-        $company_lng = (!empty($settings['settings_company_position']['lng'])) ? $settings['settings_company_position']['lng'] : -74.140363;
+$company_lat = (!empty($settings['settings_company_position']['lat'])) ? $settings['settings_company_position']['lat'] : 40.725249;
+$company_lng = (!empty($settings['settings_company_position']['lng'])) ? $settings['settings_company_position']['lng'] : -74.140363;
 
 $map = "js_map_container_{$field['fields_id']}_map" . ($lang ? "_{$lang}" : '');
 $input = "js_map_container_{$field['fields_id']}_input" . ($lang ? "_{$lang}" : '');
@@ -117,6 +117,7 @@ if ($value) {
          * Geocoding
          */
         var searchInput = $('.js_map_search', $('#<?php echo $map; ?>').parent());
+        var btnSearch = $('.btn-search', $('#<?php echo $map; ?>').parent());
         var geocoding = new L.Geocoding({
             providers: {
                 custom: function(arg) {
@@ -155,7 +156,7 @@ if ($value) {
 
         // Geocoding
 
-        searchInput.on('blur', function() {
+        btnSearch.on('click', function() {
             'use strict';
             geocoding.geocode(searchInput.val());
         });
