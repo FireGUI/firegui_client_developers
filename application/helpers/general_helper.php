@@ -1305,3 +1305,34 @@ if (!function_exists('time_elapsed')) {
         return $string ? implode(', ', $string) . t(' ago') : t('just now');
     }
 }
+
+function getReverseGeocoding($address)
+{
+    //$address = htmlentities($address);
+    $ch = curl_init();
+
+    $get = http_build_query([
+        'format' => 'json',
+        'addressdetails' => 1,
+        'limit' => 1,
+        'polygon_svg' => 1
+    ]);
+
+    curl_setopt_array($ch, [
+        CURLOPT_URL => "https://nominatim.openstreetmap.org/search/{$address}?{$get}",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20100101 Firefox/17.0'
+    ]);
+
+    $response = curl_exec($ch);
+
+    curl_close($ch);
+
+    if ($response) {
+        return json_decode($response, true);
+    } else {
+        return null;
+    }
+}
