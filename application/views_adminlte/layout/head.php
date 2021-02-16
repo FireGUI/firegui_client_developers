@@ -81,7 +81,8 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
 
-<?php $this->layout->addDinamicJavascript(["var base_url = '" . base_url() . "';",
+<?php $this->layout->addDinamicJavascript([
+    "var base_url = '" . base_url() . "';",
     "var base_url_admin = '" . base_url_admin() . "';",
     "var base_url_template = '" . base_url_template() . "';",
     "var base_url_scripts = '" . base_url_scripts() . "';",
@@ -103,5 +104,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/apexcharts-bundle/dist/apexcharts.css?v=" . VERSION); ?>" />
 
 <!-- GENERIC -->
-<script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>
+<?php if ($this->auth->check()) :  ?>
+    <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
+<?php endif; ?>
