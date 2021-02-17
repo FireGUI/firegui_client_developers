@@ -32,17 +32,19 @@ function initDropzones() {
             maxFilesize: maxuploadsize,
             clickable: true,
 
+            init: function () {
+                this.on("addedfiles", function (files) {
+                    if (typeof $('.modal', modalContainer).data('bs.modal') != 'undefined') {
+                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
+                    }
+                });
+            },
             success: function (file, response) {
 
                 var drop_obj = this;
 
                 if (typeof $('.modal', modalContainer).data('bs.modal') != 'undefined') {
-                    var cansubmit = (drop_obj.getUploadingFiles().length === 0 && drop_obj.getQueuedFiles().length === 0);
-                    if (cansubmit) {
-                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
-                    } else {
-                        $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
-                    }
+                    $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
                 }
 
                 $(form_selector).on('submit', function () {
