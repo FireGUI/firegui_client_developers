@@ -28,7 +28,12 @@ class Module extends CI_Model
 
     public function moduleExists($identifier)
     {
-        $result = $this->selected_db->where('modules_identifier', $identifier)->get('modules');
-        return $result->num_rows() != 0;
+        $result = $this->db->where('modules_identifier', $identifier)->get('modules');
+
+        if ($result->num_rows()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
