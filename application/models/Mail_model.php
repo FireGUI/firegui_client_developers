@@ -284,7 +284,11 @@ class Mail_model extends CI_Model
 
         if (isset($attachments) && !empty($attachments)) {
             foreach ($attachments as $attachment) {
-                $this->email->attach($attachment);
+                if (is_array($attachment) && !empty($attachment['file_name']) && !empty($attachment['file'])) {
+                    $this->email->attach($attachment['file'], 'attachment', $attachment['file_name']);
+                } else {
+                    $this->email->attach($attachment);
+                }
             }
         }
 
