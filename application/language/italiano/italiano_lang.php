@@ -738,3 +738,21 @@ $lang['Receipt reference'] = 'Riferimento ricevuta';
 $lang['Attachment'] = 'Allegato';
 $lang['Settings'] = 'Impostazioni';
 /* ====== End Expenses translation ====== */
+/* ====== Start General Settings translation ====== */
+$lang['General settings'] = 'Impostazioni generali';
+$lang['Company name'] = 'Nome azienda';
+$lang['Company short name'] = 'Abbreviazione nome azienda';
+$lang['Company logo'] = 'Logo azienda';
+$lang['Company description'] = 'Descrizione azienda';
+$lang['Company address'] = 'Indirizzo azienda';
+$lang['Company city'] = 'Città azienda';
+$lang['Company province'] = 'Provincia azienda';
+$lang['Company country'] = 'Stato azienda';
+$lang['Company codice fiscale'] = 'Codice fiscale azienda';
+$lang['Company fax'] = 'Fax azienda';
+$lang['Company email'] = 'Email azienda';
+$lang['Company pec'] = 'Pec azienda';
+$lang['Company web'] = 'Sito web azienda';
+$lang['Default language'] = 'Lingua predefinita';
+$lang['Company position'] = 'Posizione azienda';
+/* ====== End General Settings translation ====== */
