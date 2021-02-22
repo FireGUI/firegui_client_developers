@@ -4,9 +4,7 @@
 $stima_campi = (count($dati['layouts']) * count($dati['users_layout'])) * 2; //Mi tengo un margine doppio, non voglio rischiare...
 $max_input_vars = ini_get('max_input_vars');
 
-if ($max_input_vars < $stima_campi) {
-    throw new Exception("max_input_vars troppo basso per utilizzare questa pagina ($max_input_vars < $stima_campi).");
-}
+
 
 ?>
 <section class="content-header">
@@ -18,7 +16,39 @@ if ($max_input_vars < $stima_campi) {
 </section>
 
 <section class="content">
+    <?php if ($max_input_vars < $stima_campi) : ?>
 
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class=" gren  ">
+
+
+                    <div class="box-body view ">
+                        <div class="callout callout-danger Metronic-alerts alert alert-info">
+                            <h4>Attenzione!</h4>
+
+                            <p>
+                                max_input_vars troppo basso per utilizzare questa pagina (<?php echo $max_input_vars; ?> &lt; <?php echo $stima_campi; ?>)
+                            </p>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+    <?php endif; ?>
     <div class="row">
 
         <div class="col-md-8">
