@@ -1,5 +1,5 @@
 <?php
-if (file_exists(__DIR__ . '/../custom/layout/login.php')) {
+if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
     $this->load->view('custom/layout/login');
 } else {
     // What is today's date - number

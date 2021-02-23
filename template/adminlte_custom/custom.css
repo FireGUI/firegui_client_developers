@@ -651,3 +651,8 @@ th.w15 {
 .br-4 {
   border-radius: 4px!important;
 }
+
+/*Remove default background-color on hover*/
+.main-header .sidebar-toggle:hover {
+  background-color: transparent!important;
+}

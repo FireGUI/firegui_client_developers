@@ -708,6 +708,9 @@ $lang['Sales agent'] = 'Agente venditore';
 $lang['Agent commissions percentage'] = 'Percentuale commissioni agente';
 $lang['Customers Filter'] = 'Filtro Clienti';
 $lang['Filters'] = 'Filtri';
+$lang['Contacts'] = 'Contatti';
+$lang['State'] = 'Stato';
+$lang['Position'] = 'Posizione';
 //customer detail
 $lang['Contacts & Users'] = 'Contatti & Utenti';
 $lang['Bank Accounts'] = 'Accounts bancari';
@@ -719,10 +722,12 @@ $lang['Billing'] = 'Fatturazione';
 $lang['Sold Items'] = 'Articoli venduti';
 $lang['Calls'] = 'Chiamate';
 $lang['New Ticket Report'] = 'Nuovo Intervento';
+$lang['Tickets Reports'] = 'Interventi';
 $lang['New Billable Hour'] = 'Nuovo Pacchetto Ore';
 $lang['Hour start'] = 'Orario inizio';
 $lang['Hour end'] = 'Orario fine';
 $lang['Technician'] = 'Tecnico';
+$lang['Customers Contacts'] = 'Contatti';
 /* ====== End Customer translation ====== */
 /* ====== Start Expenses translation ====== */
 $lang['Sales'] = 'Vendite';
