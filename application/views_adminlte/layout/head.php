@@ -59,9 +59,9 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" />
 <?php endif; ?>
 
-<link rel="shortcut icon" href="<?php echo base_url('/favicon.ico'); ?>" />
 
 <?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON) : ?>
+    <link rel="shortcut icon" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>" />
     <link rel="apple-touch-icon" sizes="57x57" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-72x72.png">
@@ -77,6 +77,8 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     <link rel="icon" type="image/png" sizes="16x16" href="<?php echo base_url_admin(CUSTOM_FAVICON); ?>-16x16.png">
     <meta name="msapplication-TileImage" content="/<?php echo base_url_admin(CUSTOM_FAVICON); ?>-144x144.png">
     <meta name="theme-color" content="#ffffff">
+<?php else : ?>
+    <link rel="shortcut icon" href="<?php echo base_url('/favicon.ico'); ?>" />
 <?php endif; ?>
 
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script>
