@@ -760,4 +760,17 @@ $lang['Company pec'] = 'Pec azienda';
 $lang['Company web'] = 'Sito web azienda';
 $lang['Default language'] = 'Lingua predefinita';
 $lang['Company position'] = 'Posizione azienda';
-/* ====== End General Settings translation ====== */
+/* ====== End General Settings translation ====== */$lang['Form %s not found.'] = 'Form %s not found.';
+$lang['*** Grid `%s` without fields ***'] = '*** Grid `%s` without fields ***';
+$lang['Filtri Timesheet'] = 'Filtri Timesheet';
+$lang['Elenco Timesheet'] = 'Elenco Timesheet';
+$lang['Dashboard monitor'] = 'Dashboard monitor';
+$lang['Dashboard Commesse'] = 'Dashboard Commesse';
+$lang['ERP'] = 'ERP';
+$lang['Distinte base'] = 'Distinte base';
+$lang['Budget & Targets'] = 'Budget & Targets';
+$lang['Candidature'] = 'Candidature';
+$lang['Scoreboard'] = 'Scoreboard';
+$lang['Tabella   ASINTEC'] = 'Tabella   ASINTEC';
+$lang['Who\'s working'] = 'Who\'s working';
+$lang['Last closed tasks'] = 'Last closed tasks';
