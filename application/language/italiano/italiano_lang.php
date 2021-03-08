@@ -774,3 +774,4 @@ $lang['Scoreboard'] = 'Scoreboard';
 $lang['Tabella   ASINTEC'] = 'Tabella   ASINTEC';
 $lang['Who\'s working'] = 'Who\'s working';
 $lang['Last closed tasks'] = 'Last closed tasks';
+$lang['Test'] = 'Test';

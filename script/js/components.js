@@ -750,6 +750,13 @@ $(function () {
             inlinelist.remove();
         });
     });
+    $('body').on('click', '.paginate_button', function () {
+        var table_container = $(this).closest('.dataTables_wrapper');
+
+        $('html, body').animate({
+            scrollTop: table_container.closest(".dataTables_wrapper").offset().top - 80
+        }, 'fast');
+    });
 
     $('.content').on('keyup', '.decimal', function () {
         var val = $(this).val().replace(',', '.');
