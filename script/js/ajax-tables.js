@@ -293,11 +293,11 @@ function initTableAjax(grid) {
                 $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
             }
         })
-        .on('draw.dt', function () {
-            $('html, body').animate({
-                scrollTop: $(".dataTables_wrapper").offset().top - 80
-            }, 'fast');
-        })
+        // .on('draw.dt', function () {
+        //     $('html, body').animate({
+        //         scrollTop: oDataTable.closest(".dataTables_wrapper").offset().top - 80
+        //     }, 'fast');
+        // })
         .dataTable({
             stateSave: true,
             bSort: bEnableOrder,

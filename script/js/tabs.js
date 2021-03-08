@@ -32,13 +32,21 @@ $(function () {
                 tablenode.style.width = '';
             }
 
-            $.fn.dataTable
-                .tables({
-                    visible: true,
-                    api: true,
-                })
-                .columns.adjust()
-                .draw();
+            // $.fn.dataTable
+            //     .tables({
+            //         visible: true,
+            //         api: true,
+            //     })
+            //     .columns.adjust()
+            //     .draw();
+
+
+            $.each($.fn.dataTable.tables(), function () {
+                if ($(this).parents('.tab-pane.active').length > 0) {
+                    var parentTabContainer = $(this).parents('.tab-pane.active');
+                    $(this).DataTable().ajax.reload();
+                }
+            });
         });
     });
 });
