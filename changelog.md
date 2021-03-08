@@ -1,10 +1,23 @@
-Changelog version 2.1.3
+Changelog version 2.1.4
  
-Bugfix cache when entity reference or referenced by other entities
-Added JSON_PRETTY_PRINT constant in json_encode mapping file
-Important: bugfix with auto left join information
-Added autologin function to the Access controller
-Added commented LOGIN_SALT constant in enviroment.php
-Fix color palette init
-Added mpdf composer package
-Bugfix for constant DB_BOOL_TRUE for postgresql driver
+Added scroll to top when clicking paginate_button
+Added reload datatable when clicking a tab
+Added link for custom favicon
+Fix custom login page
+New translations
+Removed toggle menu hover effect
+Added general settings translations
+Added capability to set attachment name in mail_model
+Bugfix for search_like function with left joined tables
+Max input vars managed in permissions page
+Added multiupload dropzone capability to block modal close
+Fix undefined property selected_db in module model
+Added auth->check to head.php for crmnotifier
+Added getReverseGeocoding function to general helper
+Fix map search input
+Fix datab get_default_fields_value date pt unknown format
+Removed unusefull log_message
+Layout model compatible with mpdf and wkhtmltopdf
+Fix layout model pdf
+Bugfix for postgres
+Added mpdf to layout model
