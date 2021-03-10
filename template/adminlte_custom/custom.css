@@ -656,3 +656,18 @@ th.w15 {
 .main-header .sidebar-toggle:hover {
   background-color: transparent!important;
 }
+/*Removed border from sidebar search*/
+.skin-blue .sidebar-form {
+  border-radius: none;
+  border: none;
+  margin: 10px 10px;
+}
+/*Hide topbar with logo on mobile*/
+@media (max-width: 768px) {
+  .wrapper .main-header .logo {
+    display: none;
+  }
+  .main-sidebar {
+    padding-top: 50px;
+  }
+}
