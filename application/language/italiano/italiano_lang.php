@@ -715,11 +715,20 @@ $lang['Position'] = 'Posizione';
 $lang['Contacts & Users'] = 'Contatti & Utenti';
 $lang['Bank Accounts'] = 'Accounts bancari';
 $lang['New Subscription'] = 'Nuovo Pagamento Ricorrente';
+$lang['New Contact'] = 'Nuovo Contatto';
+$lang['New Payment'] = 'Nuovo pagamento';
+$lang['New Contract'] = 'Nuovo Contratto';
+$lang['Calls'] = 'Chiamate';
 $lang['New Billing Address'] = 'Nuovo indirizzo fatturazione';
 $lang['New Shipping Address'] = 'Nuovo indirizzo spedizione';
 $lang['Subscriptions'] = 'Pagamenti ricorrenti';
 $lang['Billing'] = 'Fatturazione';
+$lang['Billing Addresses'] = 'Indirizzi di fatturazione';
+$lang['Shipping Address'] = 'Indirizzo di spedizione';
+$lang['Billing Address'] = 'Indirizzo di fatturazione';
 $lang['Sold Items'] = 'Articoli venduti';
+$lang['Projects'] = 'Progetti';
+$lang['Payments'] = 'Pagamenti';
 $lang['Calls'] = 'Chiamate';
 $lang['New Ticket Report'] = 'Nuovo Intervento';
 $lang['Tickets Reports'] = 'Interventi';
@@ -728,6 +737,16 @@ $lang['Hour start'] = 'Orario inizio';
 $lang['Hour end'] = 'Orario fine';
 $lang['Technician'] = 'Tecnico';
 $lang['Customers Contacts'] = 'Contatti';
+$lang['Contracts'] = 'Contratti';
+$lang['Est. hours'] = 'Ore stimate';
+$lang['Billing type'] = 'Tipo fatturazione';
+$lang['Sold price'] = 'Prezzo vendita';
+$lang['Deadline'] = 'Scadenza';
+$lang['Balance hours'] = 'Saldo ore';
+$lang['Invoice'] = 'Fattura';
+$lang['Invoiced'] = 'Fatturato';
+$lang['Paid'] = 'Pagato';
+$lang['Canceled'] = 'Cancellato';
 /* ====== End Customer translation ====== */
 /* ====== Start Expenses translation ====== */
 $lang['Sales'] = 'Vendite';
@@ -760,7 +779,8 @@ $lang['Company pec'] = 'Pec azienda';
 $lang['Company web'] = 'Sito web azienda';
 $lang['Default language'] = 'Lingua predefinita';
 $lang['Company position'] = 'Posizione azienda';
-/* ====== End General Settings translation ====== */$lang['Form %s not found.'] = 'Form %s not found.';
+/* ====== End General Settings translation ====== */
+$lang['Form %s not found.'] = 'Form %s not found.';
 $lang['*** Grid `%s` without fields ***'] = '*** Grid `%s` without fields ***';
 $lang['Filtri Timesheet'] = 'Filtri Timesheet';
 $lang['Elenco Timesheet'] = 'Elenco Timesheet';
@@ -775,3 +795,31 @@ $lang['Tabella   ASINTEC'] = 'Tabella   ASINTEC';
 $lang['Who\'s working'] = 'Who\'s working';
 $lang['Last closed tasks'] = 'Last closed tasks';
 $lang['Test'] = 'Test';
+/* ====== Start Vendite translation ====== */
+$lang['Billing documents'] = 'Documenti fatture';
+$lang['Billing items'] = 'Elementi di fatturazione';
+$lang['Billing PDF templates'] = 'Template PDF fatturazione';
+$lang['New document'] = 'Nuovo documento';
+$lang['Invoices'] = 'Fatture';
+$lang['Credit notes'] = 'Note di credito';
+$lang['Customer'] = 'Cliente';
+$lang['Due date'] = 'Data scadenza';
+$lang['Sale agent'] = 'Agente di vendita';
+$lang['Unit'] = 'Quantità';
+/* ====== End Vendite translation ====== */
+/* ====== Start Payments translation ====== */
+$lang['Payments filters'] = 'Filtri pagamenti';
+$lang['List payments'] = 'Elenco pagamenti';
+/* ====== End Payments translation ====== */
+/* ====== Start Projects translation ====== */
+$lang['To Be Scheduled'] = 'Da programmare';
+$lang['In Progress'] = 'In lavorazione';
+$lang['Finished'] = 'Completati';
+$lang['Standby'] = 'In pausa';
+$lang['New project'] = 'Nuovo progetto';
+$lang['Projects Filter'] = 'Filtro progetti';
+$lang['Projects List'] = 'Elenco progetti';
+$lang['Progress'] = 'Avanzamento';
+$lang['Start / Deadline'] = 'Inizio / Scadenza';
+$lang['Members'] = 'Membri';
+$lang['Balance Hour'] = 'Saldo ore';
