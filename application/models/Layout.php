@@ -131,15 +131,19 @@ class Layout extends CI_Model
             $header = array_get($options, 'mpdfHeader', '');
             $footer = array_get($options, 'mpdfFooter', '');
             $css = array_get($options, 'mpdfCss', '');
-            $pdfTitle = array_get($options, 'mpdfTitle', '');
+            $filename = '';
 
             if (!empty($header)) $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
             if (!empty($footer)) $mpdf->SetHTMLFooter($this->generate_html($footer, $relative_path, $extra_data, $module, true));
-            if (!empty($pdfTitle)) $mpdf->SetTitle($pdfTitle);
+            if (!empty($pdfTitle)) {
+                $filename = str_ireplace([' ', '.'], '_', $pdfTitle).'.pdf';
+                
+                $mpdf->SetTitle($pdfTitle);
+            }
             if (!empty($css)) $mpdf->WriteHtml($css, \Mpdf\HTMLParserMode::HEADER_CSS);
 
             $mpdf->WriteHtml($content, \Mpdf\HTMLParserMode::DEFAULT_MODE);
-            $mpdf->Output();
+            $mpdf->Output($filename, 'I');
 
             //TODO: return true?
         } else {
