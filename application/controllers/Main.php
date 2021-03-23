@@ -12,7 +12,7 @@ class Main extends MY_Controller
     function __construct()
     {
         parent::__construct();
-
+        //$this->output->cache(20);
         // Controllo anche la current uri
         if ($this->auth->guest()) {
 
@@ -185,7 +185,7 @@ class Main extends MY_Controller
             $this->template['footer'] = $this->load->view('layout/footer', null, true);
         }
 
-        echo $this->load->view('layout/main', $this->template, true);
+        $this->load->view('layout/main', $this->template);
     }
     public function print_barcode($type)
     {
