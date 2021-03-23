@@ -775,3 +775,5 @@ $lang['Tabella   ASINTEC'] = 'Tabella   ASINTEC';
 $lang['Who\'s working'] = 'Who\'s working';
 $lang['Last closed tasks'] = 'Last closed tasks';
 $lang['Test'] = 'Test';
+$lang['Dashboard Budget & Targets'] = 'Dashboard Budget & Targets';
+$lang['User {log_crm_user_name} failed to log in'] = 'User {log_crm_user_name} failed to log in';
