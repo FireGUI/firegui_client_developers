@@ -815,7 +815,7 @@ class Datab extends CI_Model
                 $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name'] : $field['fields_draw_label'];
                 $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
 
-                if ($field['fields_ref']&& $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
+                if ($field['fields_ref'] && $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
                     $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
                         $this->crmentity->getFields($field['fields_ref']),
                         function ($field) {
@@ -2602,7 +2602,7 @@ class Datab extends CI_Model
             switch ($field['fields_draw_html_type']) {
                 case 'upload':
                     if ($value) {
-                        return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank'));
+                        return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank', 'download' => ''));
                     }
                     break;
 
