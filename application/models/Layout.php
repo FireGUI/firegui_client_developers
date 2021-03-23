@@ -136,8 +136,8 @@ class Layout extends CI_Model
             if (!empty($header)) $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
             if (!empty($footer)) $mpdf->SetHTMLFooter($this->generate_html($footer, $relative_path, $extra_data, $module, true));
             if (!empty($pdfTitle)) {
-                $filename = str_ireplace([' ', '.'], '_', $pdfTitle).'.pdf';
-                
+                $filename = str_ireplace([' ', '.'], '_', $pdfTitle) . '.pdf';
+
                 $mpdf->SetTitle($pdfTitle);
             }
             if (!empty($css)) $mpdf->WriteHtml($css, \Mpdf\HTMLParserMode::HEADER_CSS);
