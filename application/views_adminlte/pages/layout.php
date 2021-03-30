@@ -78,8 +78,8 @@ $portletBgColorMap = [];
                                 <div class="box-title">
                                     <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
                                     <span class="<?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
-                                        
-                                        <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])),true,['module_name' => $layout['layouts_module']]); ?>
+
+                                        <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])), true, ['module_name' => $layout['layouts_module']]); ?>
                                     </span>
                                 </div>
 
@@ -106,10 +106,10 @@ $portletBgColorMap = [];
     <?php echo $dati['post-layout']; ?>
 
 
-    <?php if (isset($layout['layouts_fullscreen']) && $layout['layouts_fullscreen'] === DB_BOOL_TRUE) : ?>
+    <?php if (isset($layout['layouts_fullscreen']) && $layout['layouts_fullscreen'] == DB_BOOL_TRUE) : ?>
         <script>
-            $(document).ready(function() {
-                $('body').addClass('page-sidebar-closed').find('.page-sidebar-menu').addClass('page-sidebar-menu-closed');
+            $(() => {
+                $('body').addClass('sidebar-collapse');
             });
         </script>
     <?php endif; ?>

@@ -2,8 +2,8 @@
 <?php $current_page = isset($dati['current_page']) ? $dati['current_page'] : null; ?>
 <section class="sidebar">
     <!-- Sidebar user panel -->
-    <?php if (file_exists(__DIR__ . '/custom/sidebar-search.php')) : ?>
-        <?php $this->load->view('layout/custom/sidebar-search'); ?>
+    <?php if (file_exists(FCPATH . "application/views_adminlte/custom/layout/sidebar-search.php")) : ?>
+        <?php $this->load->view('custom/layout/sidebar-search'); ?>
     <?php else : ?>
         <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
         <form class="sidebar-form firegui_sidebar-form" action="<?php echo base_url('main/search'); ?>" method="POST" id="search_form">

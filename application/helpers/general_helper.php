@@ -1,6 +1,17 @@
 <?php
 
-
+if (!function_exists('is_even')) {
+    function is_even($number)
+    {
+        return $number % 2 == 0;
+    }
+}
+if (!function_exists('is_odd')) {
+    function is_odd($number)
+    {
+        return !is_even($number);
+    }
+}
 
 if (!function_exists('command_exists')) {
 

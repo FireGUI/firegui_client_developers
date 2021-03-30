@@ -379,7 +379,7 @@ class Get_ajax extends MY_Controller
         }
 
         // Ritorna il json alla vista
-        echo json_encode($result_json);
+        $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
     }
 
     public function get_distinct_values()
