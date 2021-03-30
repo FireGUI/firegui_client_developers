@@ -3,23 +3,6 @@ $mapFormId = "clusered_map_form_{$data['maps']['maps_id']}";
 $mapId = "map_clusters{$data['maps']['maps_id']}";
 ?>
 <div id="results">
-    <div class="row">
-        <form <?php echo sprintf('id="%s"', $mapFormId); ?>>
-            <?php add_csrf(); ?>
-            <?php foreach ($data['maps_fields'] as $map_field) : ?>
-                <?php if ($map_field['maps_fields_type'] !== 'latlng') : ?>
-                    <div class="col-md-6">
-                        <?php echo $this->datab->build_form_input($map_field); ?>
-                    </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
-            <div class="clearfix"></div>
-            <div class="col-md-6">
-                <button class="btn btn-primary">Filtra dati</button>
-            </div>
-        </form>
-    </div>
-
     <div class="row mt-30">
         <div class="col-md-12">
             <div <?php echo sprintf('id="%s"', $mapId); ?> class="map-container"></div>

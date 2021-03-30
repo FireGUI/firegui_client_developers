@@ -60,6 +60,11 @@
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
 
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_scripts("script/lib/Leaflet.markercluster/dist/leaflet.markercluster-src.js?v=" . VERSION); ?>"></script>
+
+
 <!-- LEAFLET-DRAW-LIBRARY-JS !-->
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Leaflet.draw.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/Leaflet.Draw.Event.js?v=" . VERSION); ?>"></script>
