@@ -144,6 +144,18 @@ class V1 extends MY_Controller
                     exit;
                 }
                 break;
+
+            case 'count':
+                $entity = @$params[0];
+                if (empty($entity)) {
+                    $this->showError("Missing entity param!");
+                    exit;
+                }
+                if (!$this->checkEntityPermission($entity, 'R')) {
+                    $this->showError("Permission denied on entity $entity!");
+                    exit;
+                }
+                break;
             case 'login':
 
                 break;
@@ -318,6 +330,47 @@ class V1 extends MY_Controller
 
             $this->logAction(__FUNCTION__, func_get_args(), $output);
             $this->showOutput($output);
+        } catch (ApiException $e) {
+
+            /** Salvo su log il database error nascondendolo all'utente */
+            if ($e->getCode() == Apilib::ERR_INTERNAL_DB) {
+                $this->logAction(__FUNCTION__, func_get_args(), $e->getPrevious()->getMessage());
+            }
+
+            $this->showError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function count($entity = null)
+    {
+        try {
+            $limit = ($this->input->post('limit')) ? $this->input->post('limit') : null;
+            $offset = ($this->input->post('offset')) ? $this->input->post('offset') : 0;
+            $orderBy = ($this->input->post('orderby')) ? $this->input->post('orderby') : null;
+
+            $orderDir = ($this->input->post('orderdir')) ? $this->input->post('orderdir') : 'ASC';
+            $maxDepth = ($this->input->post('maxdepth')) ? $this->input->post('maxdepth') : 1;
+
+            $postData = array_filter((array) $this->input->post('where'));
+            if ($this->getEntityWhere($entity)) {
+                $where = array_filter([$this->getEntityWhere($entity)]);
+            } else {
+                $where = [];
+            }
+
+
+
+            $postData = $this->apilib->runDataProcessing($entity, 'pre-search', $postData);
+
+
+            //non uso le apilib altrimenti mi fa left join e non è detto che abbia i permessi per le altre entità... una soluzione potrebbe essere quella di ciclare tutti i permessi e rimuovere nella
+            ////filterOutputFields anche le tabelle joinate, ma è un lavorone... per ora no
+            $output = $this->apilib->count($entity, array_merge($where, $postData));
+
+            //$this->filterOutputFields($entity, $output);
+
+            $this->logAction(__FUNCTION__, func_get_args(), $output);
+            $this->showOutput(['count' => $output]);
         } catch (ApiException $e) {
 
             /** Salvo su log il database error nascondendolo all'utente */
