@@ -126,6 +126,7 @@ class Crmentity extends CI_Model
 
         $group_by = array_get($additional_parameters, 'group_by', null);
         // Entity name è da deprecare...
+
         $entity_name = $this->getEntity($entity_id)['entity_name'];
 
         $_cache_key = md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
@@ -138,7 +139,7 @@ class Crmentity extends CI_Model
             $extra_data = true;
 
             $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'group_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
-
+            //debug($entity_id);
             // Se è count ho finito qua, ma anche se non ho nessun risultato
             if ($count or !$data['data']) {
                 return $data['data'];
@@ -468,6 +469,7 @@ class Crmentity extends CI_Model
         $dati = $this->getEntityFullData($entity_id);
 
         $this->buildSelect($dati, $options);
+
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);
         $this->buildGroupBy($options);
@@ -482,7 +484,7 @@ class Crmentity extends CI_Model
         //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
             //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
-            $leftJoinable = $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
+            $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
             // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
             if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
@@ -617,7 +619,7 @@ class Crmentity extends CI_Model
 
                 $hasFieldRef = (bool) $campo['fields_ref'];
                 $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
-                $isJoinable = $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
+                $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
                 if ($hasFieldRef && !$isRelation && $isJoinable) {
                     $entity = $this->getEntity($campo['fields_ref']);
@@ -990,7 +992,10 @@ class Crmentity extends CI_Model
             $to ? array_key_map($data, $to) : $data
         );
     }
-
+    public function entityExists($id)
+    {
+        return $this->getEntity($id, false);
+    }
     /**
      * Ritrova entità
      * @param mixed $id
