@@ -144,7 +144,7 @@ class Datab extends CI_Model
             $permissionEntities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti dei permessi
 
             foreach ($visibleFields as $k => $campo) {
-                if ($campo['fields_ref']) {
+                if ($campo['fields_ref'] && $this->crmentity->entityExists($campo['fields_ref'])) {
                     $joinEnt = $this->crmentity->getEntity($campo['fields_ref']);
                     $visibleFields = array_merge($visibleFields, $this->crmentity->getFields($joinEnt['entity_id']));
                     in_array($joinEnt['entity_id'], $permissionEntities) or array_push($permissionEntities, $joinEnt['entity_id']);
@@ -466,6 +466,12 @@ class Datab extends CI_Model
                 $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}" : ''));
             }
 
+            foreach ($fields as $key => $field) {
+                if ($field['fields_ref'] && !$this->crmentity->entityExists($field['fields_ref'])) {
+                    unset($fields[$key]);
+                }
+            }
+
             /*
          * Per far funzionare correttamente i form non posso recuperare i valori
          * già tradotti, quindi devo resettare il sistema lingue dell'apilib,
@@ -526,6 +532,10 @@ class Datab extends CI_Model
          */
             $hidden = $shown = [];
             foreach ($fields as $field) {
+
+
+
+
                 $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type'] : $field['fields_draw_html_type'];
                 if ($type === 'input_hidden') {
                     $hidden[] = $field;
@@ -810,12 +820,15 @@ class Datab extends CI_Model
             // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
             // CON ENTITA PER ORA
             foreach ($dati['grids_fields'] as $key => $field) {
-
+                if ($field['fields_ref'] && !$this->crmentity->entityExists($field['fields_ref'])) {
+                    unset($dati['grids_fields'][$key]);
+                    continue;
+                }
                 // Preparo il nome colonna
                 $colname = isset($field['grids_fields_column_name']) ? $field['grids_fields_column_name'] : $field['fields_draw_label'];
                 $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
 
-                if ($field['fields_ref'] && $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
+                if ($field['fields_ref'] && $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->crmentity->entityExists($field['fields_ref'])) {
                     $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
                         $this->crmentity->getFields($field['fields_ref']),
                         function ($field) {
@@ -2422,7 +2435,7 @@ class Datab extends CI_Model
     {
         //TODO: if field_ref not empty, grab default grid of that entity, then grab those actions...
 
-        if (!empty($field['fields_ref']) && $grid_db = $this->crmentity->getDefaultGrid($field['fields_ref'])) {
+        if (!empty($field['fields_ref']) && $this->crmentity->entityExists($field['fields_ref']) && $grid_db = $this->crmentity->getDefaultGrid($field['fields_ref'])) {
             $skip_delete = true;
             $id_record = $dato[$field['fields_name']];
             $grid_id = $grid_db['grids_id'];

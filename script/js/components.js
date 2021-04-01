@@ -758,7 +758,7 @@ $(function () {
         }, 'fast');
     });
 
-    $('.content').on('keyup', '.decimal', function () {
+    $('body').on('keyup', '.decimal', function () {
         var val = $(this).val().replace(',', '.');
         if (isNaN(val)) {
             val = val.replace(/[^0-9\.]/g, '');

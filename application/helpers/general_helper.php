@@ -1058,22 +1058,34 @@ if (!function_exists('calculateDistance')) {
 
     function calculateDistance($startPlace, $endPlace)
     {
-        $url = "http://www.yournavigation.org/api/1.0/gosmore.php?flat={$startPlace['lat']}&flon={$startPlace['lon']}&tlat={$endPlace['lat']}&tlon={$endPlace['lon']}&v=motorcar&fast=0&layer=mapnik&format=geojson";
-
+        //$url = "http://www.yournavigation.org/api/1.0/gosmore.php?flat={$startPlace['lat']}&flon={$startPlace['lon']}&tlat={$endPlace['lat']}&tlon={$endPlace['lon']}&v=motorcar&fast=0&layer=mapnik&format=geojson";
+        $url = "https://router.project-osrm.org/route/v1/driving/{$startPlace['lon']},{$startPlace['lat']};{$endPlace['lon']},{$endPlace['lat']}?geometries=geojson&alternatives=false&steps=false&generate_hints=false";
 
         $ch = curl_init();
-        curl_setopt_array($ch, array(CURLOPT_URL => $url, CURLOPT_HEADER => 0, /* CURLOPT_FOLLOWLOCATION => 1, */ CURLOPT_RETURNTRANSFER => 1));
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => $url,
+            CURLOPT_HEADER => 0,
+            /* CURLOPT_FOLLOWLOCATION => 1, */
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_TIMEOUT => 2
+        ));
         $result = curl_exec($ch);
+
+
         $data = json_decode($result, true);
         curl_close($ch);
-
+        //debug($data, true);
         // Non potendo fare più di 10 richieste al secondo metto un leggero tempo di attesa dopo ogni richiesta
         usleep(250000); // 250 ms è un valore sperimentale che mi permette di poter eseguire tutte le richieste una dopo l'altra
-
-        if (empty($data['properties']['distance'])) {
+        $km = 0;
+        if (empty($data['routes'][0]['legs'][0]['distance'])) {
             return 0;
         } else {
-            return ceil($data['properties']['distance']);
+            // foreach ($data['routes'] as $point) {
+            //     $km += $point['distance'];
+            // }
+            $km = $data['routes'][0]['legs'][0]['distance'];
+            return $km / 1000;
         }
     }
 }
