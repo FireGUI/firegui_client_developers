@@ -32,7 +32,7 @@
 
             <?php if (is_maintenance()) : ?>
                 <section class="content-header">
-                    <div class="callout callout-danger">
+                    <div class="callout callout-warning">
                         <h4><?php e('Updates in progress'); ?></h4>
 
                         <p><?php e('Dear customer, we are making updates to your platform, the service may be subject to slight interruptions, we apologize for the inconvenience.'); ?></p>
