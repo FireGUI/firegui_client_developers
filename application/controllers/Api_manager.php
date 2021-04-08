@@ -10,6 +10,29 @@ class Api_manager extends MY_Controller
     {
         parent::__construct();
 
+        if ($this->auth->guest()) {
+
+            // FIX: siamo nel controller main, quindi l'uri dovrebbe cominciare con main
+            $uri = explode('/', uri_string());
+
+            foreach ($uri as $k => $chunk) {
+                if ($chunk === 'main') {
+                    // Se il chunk è main allora sono 'apposto'
+                    break;
+                } else {
+                    // Altrimenti è un prefisso che è già contato nel base_url, quindi lo unsetto
+                    unset($uri[$k]);
+                }
+            }
+            if ($this->input->get('source')) {
+                $append = '?source=' . $this->input->get('source');
+            } else {
+                $append = '';
+            }
+            $redirection_url = base_url(implode('/', $uri));
+            $this->auth->store_intended_url($redirection_url);
+            redirect('access' . $append);
+        }
 
         $this->apilib->setProcessingMode(Apilib::MODE_API_CALL);
         $this->apilib->setLanguage();
