@@ -1,3 +1,5 @@
+L.maps = {};
+
 var token = JSON.parse(atob($('body').data('csrf')));
 var token_name = token.name;
 var token_hash = token.hash;
