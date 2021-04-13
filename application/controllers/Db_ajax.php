@@ -276,7 +276,19 @@ class Db_ajax extends MY_Controller
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
 
         // Mando output
-        json_refresh();
+        //        json_refresh();
+        $status = is_numeric($form['forms_success_status']) ? $form['forms_success_status'] : 7;
+        $message = empty($form['forms_success_message']) ? t('Successfully saved') : $form['forms_success_message'];
+
+        //debug($entity, true);
+        $entity_name = $entity['entity']['entity_name'];
+        if (in_array($status, [0, 1, 2, 3, 4, 5])) {
+            echo json_encode(array(
+                'status' => $status, 'txt' => $message
+            ));
+        } elseif (in_array($status, [6, 7])) {
+            echo json_encode(array('status' => $status, 'txt' => $message, 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity_name));
+        }
     }
 
     public function save_grid_data($form_id = NULL)
