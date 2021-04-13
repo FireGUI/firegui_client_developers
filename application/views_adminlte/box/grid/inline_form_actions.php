@@ -31,7 +31,6 @@
             <?php else : ?>
 
                 <?php
-
                 $confirm = false;
                 if (empty($custom_action['grids_actions_link'])) {
                     if (!empty($custom_action['grids_actions_type']) && in_array($custom_action['grids_actions_type'], ['detail', 'edit_layout'])) {
@@ -70,7 +69,44 @@
 
                 ?>
                 <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'" : null; ?>>
-                    <a class="js-action_button btn btn-grid-action-s btn-primary<?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) echo 'js_open_modal'; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="background-color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?>>
+                    <?php
+                    $btn_classes = '';
+                    $btn_href = $url;
+                    $btn_attrs = '';
+
+                    if ($custom_action['grids_actions_type'] == 'delete') {
+                        $btn_href = '#';
+                        $btn_classes .= 'js_delete ';
+                        $confirm = false;
+                        $btn_attrs .= 'data-id="' . $id . '" ';
+                    } else {
+                        $btn_classes .= 'js_link_ajax ';
+                    }
+
+                    if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) {
+                        $btn_classes .= 'js_open_modal ';
+                    } else {
+                        // todo
+                    }
+
+                    if ($custom_action['grids_actions_mode'] == 'new_tab') {
+                        $btn_attrs .= 'target="_blank" ';
+                    } else {
+                        // todo
+                    }
+
+                    if ($confirm) {
+                        $btn_classes .= 'js_confirm_button ';
+                        $btn_attrs .=  'data-confirm-text="' . t('Are you sure to delete this record?') . '" data-toggle="tooltip" ';
+                    } else {
+                        // todo
+                    }
+
+                    $btn_style = 'style="background-color: ' . ($custom_action['grids_actions_color'] ?? '#CCCCCC') . '"';
+
+                    ?>
+
+                    <a class="js-action_button btn btn-grid-action-s btn-primary <?php echo $btn_classes; ?>" href="<?php echo $btn_href; ?>" <?php echo $btn_attrs, ' ', $btn_style; ?>>
                         <span class="<?php echo $custom_action['grids_actions_icon']; ?>"></span>
                     </a>
                 </span>
