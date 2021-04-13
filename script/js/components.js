@@ -6,7 +6,47 @@ var token = JSON.parse(atob($('body').data('csrf')));
 var token_name = token.name;
 var token_hash = token.hash;
 
-function initComponents(container) {
+function destroyCkeditorInstances(instance = null) {
+    if (instance) {
+        var instance_name = instance.attr('id');
+        if (CKEDITOR.instances[instance_name]) {
+            CKEDITOR.instances[instance_name].destroy(true);
+        }
+    } else {
+        for (name in CKEDITOR.instances) {
+            CKEDITOR.instances[name].destroy(true);
+        }
+    }
+}
+
+function initComponents(container, reset = false) {
+
+    if (reset) {
+        try {
+            $('select', container).each(function() {
+                if ($(this).hasClass("select2-hidden-accessible")) {
+                    // Select2 has been initialized
+                    $(this).select2('destroy');
+                }
+            });
+        } catch (e) {}
+
+        destroyCkeditorInstances($('textarea.js_ckeditor', container));
+    }
+
+    $('textarea.js_ckeditor', container).each(function() {
+        var ckeditor_id = $(this).attr('id');
+
+        destroyCkeditorInstances($(this));
+
+        CKEDITOR.replace(ckeditor_id, {
+            filebrowserUploadUrl: base_url + 'db_ajax/ck_uploader'
+        });
+        CKEDITOR.config.toolbar = [
+            ['Bold', 'Italic', 'Underline', 'StrikeThrough', '-', 'Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste', 'NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+        ];
+    });
+
     /*
      * Form dates
      */
@@ -42,7 +82,7 @@ function initComponents(container) {
         language: lang_short_code,
     });
 
-    $('.js_form_daterangepicker', container).each(function () {
+    $('.js_form_daterangepicker', container).each(function() {
         var jqDateRange = $(this);
         var sDate = $('input', jqDateRange).val();
 
@@ -56,8 +96,7 @@ function initComponents(container) {
             }
         }
 
-        jqDateRange.daterangepicker(
-            {
+        jqDateRange.daterangepicker({
                 format: 'DD/MM/YYYY',
                 separator: ' to ',
                 startDate: start,
@@ -86,7 +125,7 @@ function initComponents(container) {
                     'Anno precedente': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
                 },
             },
-            function (start, end) {
+            function(start, end) {
                 $('input', this.element).val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
             }
         );
@@ -98,14 +137,14 @@ function initComponents(container) {
      * Grid-filtering forms
      */
     var forms = $('.js_filter_form', container);
-    forms.each(function () {
+    forms.each(function() {
         var form = $(this);
-        var btn = $('.js_filter_form_add_row', form).on('click', function () {
+        var btn = $('.js_filter_form_add_row', form).on('click', function() {
             var container = $('.js_filter_form_rows_container', form),
                 rows = $('.js_filter_form_row', container);
             var size = rows.size();
             var obj = rows.filter(':first').clone();
-            $('input, select', obj).each(function () {
+            $('input, select', obj).each(function() {
                 var name = 'conditions[' + size + '][' + $(this).attr('data-name') + ']';
                 $(this).attr('name', name).removeAttr('data-name');
             });
@@ -117,7 +156,7 @@ function initComponents(container) {
      * Select, Multiselect e AjaxSelect
      */
     try {
-        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)', container).each(function () {
+        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)', container).each(function() {
             var that = $(this);
             var minInput = that.data('minimum-input-length');
             that.select2({
@@ -125,16 +164,19 @@ function initComponents(container) {
                 minimumInputLength: minInput ? minInput : 0,
             });
         });
+
         $('.select2me', container).select2({ allowClear: true });
-    } catch (e) { }
+    } catch (e) {}
 
     $('.select2_standard', container).select2();
+
+
 
     /*
      * Select ajax
      */
 
-    $('.js_select_ajax_new', container).each(function () {
+    $('.js_select_ajax_new', container).each(function() {
         var input = $(this);
 
         var $allow_clear = false;
@@ -150,7 +192,7 @@ function initComponents(container) {
                 dataType: 'json',
                 delay: 250,
                 type: 'POST',
-                data: function (term, page) {
+                data: function(term, page) {
                     // C'è un attributo data-referer che identifica il campo che richiede i dati?
                     // Se non c'è prendi il name...
                     var referer = input.data('referer');
@@ -167,9 +209,9 @@ function initComponents(container) {
 
                     return data_post;
                 },
-                processResults: function (data) {
+                processResults: function(data) {
                     return {
-                        results: $.map(data, function (item) {
+                        results: $.map(data, function(item) {
                             return {
                                 text: item.name,
                                 id: item.id,
@@ -181,7 +223,7 @@ function initComponents(container) {
                 cache: false,
             },
             placeholder: 'Ricerca...',
-            escapeMarkup: function (markup) {
+            escapeMarkup: function(markup) {
                 return markup;
             }, // let our custom formatter work
             minimumInputLength: 1,
@@ -192,7 +234,7 @@ function initComponents(container) {
     });
 
     var fieldsSources = [];
-    $('[data-source-field]:not([data-source-field=""])', container).each(function () {
+    $('[data-source-field]:not([data-source-field=""])', container).each(function() {
         // Prendo il form dell'elemento
         var jsMultiselect = $(this);
         var jqForm = jsMultiselect.parents('form');
@@ -202,7 +244,7 @@ function initComponents(container) {
         // Prendo il campo da osservare
         var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"],[data-field_name="' + sSourceField + '"]', jqForm);
 
-        jqField.on('change', function () {
+        jqField.on('change', function() {
             var previousValue = jsMultiselect.attr('data-val').split(',');
             jsMultiselect.select2('val', '');
 
@@ -236,14 +278,14 @@ function initComponents(container) {
                 type: 'POST',
                 data: data_post,
                 dataType: 'json',
-                complete: function () {
+                complete: function() {
                     loading(false);
                 },
-                success: function (data) {
+                success: function(data) {
                     $('option', jsMultiselect).remove();
                     $('<option></option>').appendTo(jsMultiselect);
                     var previousValueFound = false;
-                    $.each(data, function (k, v) {
+                    $.each(data, function(k, v) {
                         var jqOption = $('<option></option>').val(k).text(v);
 
                         if ($.inArray(k, previousValue) > -1) {
@@ -271,7 +313,7 @@ function initComponents(container) {
         }
     });
 
-    $.each(fieldsSources, function (k, selector) {
+    $.each(fieldsSources, function(k, selector) {
         var field = selector;
 
         if (field.val() !== '') {
@@ -310,7 +352,7 @@ function initComponents(container) {
         return repo.full_name || repo.text;
     }
 
-    $('.js_select_ajax').each(function () {
+    $('.js_select_ajax').each(function() {
         var input = $(this);
 
         input.select2({
@@ -321,7 +363,7 @@ function initComponents(container) {
                 url: base_url + 'get_ajax/select_ajax_search',
                 dataType: 'json',
                 type: 'POST',
-                data: function (term, page) {
+                data: function(term, page) {
                     // C'è un attributo data-referer che identifica il campo che richiede i dati?
                     // Se non c'è prendi il name...
                     var referer = input.data('referer');
@@ -336,12 +378,12 @@ function initComponents(container) {
                     data_post.push({ name: 'referer', value: referer });
                     return data_post;
                 },
-                results: function (data, page) {
+                results: function(data, page) {
                     return { results: data };
                 },
             },
 
-            initSelection: function (element, callback) {
+            initSelection: function(element, callback) {
                 var id = element.val();
                 if (id !== '') {
                     var data_post = [];
@@ -353,25 +395,25 @@ function initComponents(container) {
                         type: 'POST',
                         dataType: 'json',
                         data: data_post,
-                    }).done(function (data) {
+                    }).done(function(data) {
                         callback(data);
                     });
                 }
             },
 
-            formatResult: function (rowData, container, query, escapeMarkup) {
+            formatResult: function(rowData, container, query, escapeMarkup) {
                 var markup = [];
                 window.Select2.util.markMatch(rowData.name, query.term, markup, escapeMarkup);
                 return markup.join('');
             },
 
-            formatSelection: function (rowData) {
+            formatSelection: function(rowData) {
                 return rowData.name;
             },
         });
     });
 
-    $('.js_select_ajax_distinct').each(function () {
+    $('.js_select_ajax_distinct').each(function() {
         $(this).select2({
             allowClear: true,
             placeholder: 'Cerca',
@@ -380,7 +422,7 @@ function initComponents(container) {
                 url: base_url + 'get_ajax/get_distinct_values',
                 dataType: 'json',
                 type: 'POST',
-                data: function (term, page) {
+                data: function(term, page) {
                     var data_post = [];
                     data_post.push({ name: token_name, value: token_hash });
                     data_post.push({ name: 'q', value: term });
@@ -391,11 +433,11 @@ function initComponents(container) {
                     });
                     return data_post;
                 },
-                results: function (data, page) {
+                results: function(data, page) {
                     return { results: data };
                 },
             },
-            initSelection: function (element, callback) {
+            initSelection: function(element, callback) {
                 var id = $(element).val();
                 if (id !== '') {
                     var data_post = [];
@@ -412,15 +454,15 @@ function initComponents(container) {
                         type: 'POST',
                         dataType: 'json',
                         data: data_post,
-                    }).done(function (data) {
+                    }).done(function(data) {
                         callback(data);
                     });
                 }
             },
-            formatResult: function (rowData) {
+            formatResult: function(rowData) {
                 return rowData.name;
             },
-            formatSelection: function (rowData) {
+            formatSelection: function(rowData) {
                 return rowData.name;
             },
         });
@@ -497,7 +539,7 @@ function loadModal(url, data, callbackSuccess, method) {
     var modalLoaded = modalContainer.find('> .modal');
     if (modalLoaded.length > 0 && modalLoaded.is(':visible')) {
         // Chiudila e apri la nuova.. valutare riapertura
-        modalLoaded.modal('hide').on('hidden.bs.modal', function (e) {
+        modalLoaded.modal('hide').on('hidden.bs.modal', function(e) {
             // Una volta che la vecchia modale è realmente nascosta, richiama
             // questa funzione
             loadModal(url, data, callbackSuccess, method);
@@ -516,7 +558,7 @@ function loadModal(url, data, callbackSuccess, method) {
         type: method ? method.toUpperCase() : 'POST',
         data: data,
         dataType: 'html',
-        success: function (data) {
+        success: function(data) {
             // Salva i vecchi argomenti per riapertura
             var oldModalArgs = mArgs;
             mArgs = {
@@ -529,7 +571,7 @@ function loadModal(url, data, callbackSuccess, method) {
             modalContainer.html(data);
             $('.modal', modalContainer)
                 .modal()
-                .on('shown.bs.modal', function (e) {
+                .on('shown.bs.modal', function(e) {
                     loading(false);
                     reset_theme_components();
 
@@ -537,12 +579,12 @@ function loadModal(url, data, callbackSuccess, method) {
                     $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
 
                     if ($('form', modalContainer).length > 0) {
-                        $('input:not([type=hidden]), select, textarea', modalContainer).on('change', function () {
+                        $('input:not([type=hidden]), select, textarea', modalContainer).on('change', function() {
                             $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
                         });
                     }
                 })
-                .on('hide.bs.modal', function (e) {
+                .on('hide.bs.modal', function(e) {
                     // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
                     if ($('.modal', modalContainer).is(e.target)) {
                         var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
@@ -555,7 +597,7 @@ function loadModal(url, data, callbackSuccess, method) {
                         }
                     }
                 })
-                .on('hidden.bs.modal', function (e) {
+                .on('hidden.bs.modal', function(e) {
                     mArgs = oldModalArgs;
                     if (typeof callbackSuccess === 'function') {
                         callbackSuccess();
@@ -563,14 +605,14 @@ function loadModal(url, data, callbackSuccess, method) {
                 });
             mAjaxCall = null;
         },
-        error: function () {
+        error: function() {
             mAjaxCall = null;
         },
     });
 }
 
 /** Fix per focus su select in modale **/
-$.fn.modal.Constructor.prototype.enforceFocus = function () { };
+$.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
 function formatDate(dateTime, ignoreTimezone) {
     if (!ignoreTimezone) {
@@ -615,7 +657,7 @@ function changeStarsStatus(el) {
     var star = $(el);
     var val = parseInt(star.attr('data-val'));
     $('input', star.parent()).val(val);
-    $('.star', star.parent()).each(function () {
+    $('.star', star.parent()).each(function() {
         if (parseInt($(this).attr('data-val')) <= val) {
             // Stella prima da attivare
             $('i', $(this)).removeClass('fa fa-star-o').addClass('fa fa-star');
@@ -628,9 +670,8 @@ function changeStarsStatus(el) {
 
 function changeLanguage(langId) {
     $.post(
-        base_url + 'db_ajax/changeLanguage',
-        { language: langId },
-        function (out) {
+        base_url + 'db_ajax/changeLanguage', { language: langId },
+        function(out) {
             if (out.success) {
                 changeLanguageTemplate(langId);
             } else {
@@ -649,7 +690,7 @@ function changeLanguageTemplate(langId) {
 }
 
 function openCreationForm(formId, entity, onSuccess) {
-    $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
+    $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function(json) {
         var currentLastId = json.data.id;
 
         $.fancybox.open({
@@ -661,14 +702,14 @@ function openCreationForm(formId, entity, onSuccess) {
             ajax: {
                 data: { _raw: 1 },
             },
-            beforeShow: function () {
+            beforeShow: function() {
                 initComponents($('#form_' + formId));
             },
-            afterShow: function () {
+            afterShow: function() {
                 initComponents($('#form_' + formId));
             },
-            beforeClose: function () {
-                $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
+            beforeClose: function() {
+                $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function(json) {
                     if (json.status === 0 && json.data.id && currentLastId != json.data.id) {
                         onSuccess(json.data.id, json.data.preview);
                     }
@@ -678,8 +719,8 @@ function openCreationForm(formId, entity, onSuccess) {
     });
 }
 
-$(function () {
-    $('body').on('click', '.js_open_modal', function (e) {
+$(function() {
+    $('body').on('click', '.js_open_modal', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var sUrl = $(this).attr('href');
@@ -702,12 +743,12 @@ $(function () {
         }
     });
 
-    $('body').on('click', '.js_title_collapse', function () {
+    $('body').on('click', '.js_title_collapse', function() {
         $('.expand, .collapse', $(this)).click();
         $(window).trigger('resize');
     });
 
-    $('body').on('click', '.expand, .collapse', function (e) {
+    $('body').on('click', '.expand, .collapse', function(e) {
         e.stopPropagation();
         $(window).trigger('resize');
     });
@@ -716,9 +757,9 @@ $(function () {
 
     var list = $('<ul class="language-switch pull-right list-inline">');
     $('.page-content > .layout-container > .page-title').append(list);
-    $.getJSON(base_url + 'get_ajax/langInfo', {}, function (json) {
+    $.getJSON(base_url + 'get_ajax/langInfo', {}, function(json) {
         var curr = json.current;
-        $.each(json.languages, function (i, lang) {
+        $.each(json.languages, function(i, lang) {
             var toggle = $('<a href="javascript:void(0)">');
             toggle.append($('<img>').attr('src', lang.flag).attr('alt', lang.name));
             toggle.appendTo($('<li>').appendTo(list));
@@ -730,7 +771,7 @@ $(function () {
                 placement: 'bottom',
             });
 
-            toggle.on('click', function () {
+            toggle.on('click', function() {
                 changeLanguage(lang.id);
             });
         });
@@ -740,17 +781,17 @@ $(function () {
         }
     });
 
-    $('body').on('click', '.lang-flag', function () {
+    $('body').on('click', '.lang-flag', function() {
         var inlinelist = list.clone().addClass('floating').insertAfter($(this));
         var flags = $('[data-toggle-lang]', inlinelist);
 
-        flags.on('click', function () {
+        flags.on('click', function() {
             var id = $(this).data('toggle-lang');
             changeLanguage(parseInt(id));
             inlinelist.remove();
         });
     });
-    $('body').on('click', '.paginate_button', function () {
+    $('body').on('click', '.paginate_button', function() {
         var table_container = $(this).closest('.dataTables_wrapper');
 
         $('html, body').animate({
@@ -758,7 +799,7 @@ $(function () {
         }, 'fast');
     });
 
-    $('body').on('keyup', '.decimal', function () {
+    $('body').on('keyup', '.decimal', function() {
         var val = $(this).val().replace(',', '.');
         if (isNaN(val)) {
             val = val.replace(/[^0-9\.]/g, '');
