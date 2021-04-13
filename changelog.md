@@ -17,3 +17,4 @@ Update calculateDistance function using project-osrm
 Bugfix to remove fields from grids and form when related to an entity that does not exists
 decimal fields triggered now on all body content
 Delete action in inline edit grid now refresh grid only and not the whole page
+Form filters now can refresh only grids without refresh the whole page
