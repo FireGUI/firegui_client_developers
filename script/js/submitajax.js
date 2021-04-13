@@ -2,7 +2,7 @@
 var formAjaxSubmittedFormId = null;
 var formAjaxShownMessage = null;
 
-var handleSuccess = function (msg) {
+var handleSuccess = function(msg) {
     switch (parseInt(msg.status)) {
         case 0:
             //Show message
@@ -28,7 +28,7 @@ var handleSuccess = function (msg) {
             //Alert e refresh
             alert(msg.txt);
             if (msg.hasOwnProperty('timeout')) {
-                setTimeout(function () {
+                setTimeout(function() {
                     window.location.reload();
                 }, msg.timeout);
             } else {
@@ -63,13 +63,13 @@ function loading(bShow) {
     }
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
     'use strict';
-    $('body').on('submit', '.formAjax', function (e) {
+    $('body').on('submit', '.formAjax', function(e) {
         e.preventDefault();
         var form = $(this);
         if (formAjaxShownMessage) {
-            formAjaxShownMessage.fadeOut('fast', function () {
+            formAjaxShownMessage.fadeOut('fast', function() {
                 formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ display: '', opacity: '' });
                 formAjaxShownMessage = null;
                 formAjaxSend(form);
@@ -80,7 +80,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $('body').on('click', '.js_confirm_button', function (e) {
+    $('body').on('click', '.js_confirm_button', function(e) {
         var text = $(this).data('confirm-text');
         if (!confirm(text ? text : 'Confermi?')) {
             e.preventDefault(); // Prevent follow links
@@ -90,7 +90,7 @@ $(document).ready(function () {
         }
     });
 
-    $('body').on('click', '.js_link_ajax', function (e) {
+    $('body').on('click', '.js_link_ajax', function(e) {
         e.preventDefault(); // Prevent follow links
         e.stopPropagation(); // Prevent propagation on parent DOM elements
         e.stopImmediatePropagation(); // Prevent other handlers to be fired
@@ -101,13 +101,13 @@ $(document).ready(function () {
             url: url,
             dataType: 'json',
             timeout: 0,
-            complete: function () {
+            complete: function() {
                 loading(false);
             },
-            success: function (msg) {
+            success: function(msg) {
                 handleSuccess(msg);
             },
-            error: function (xhr, ajaxOptions, thrownError) {
+            error: function(xhr, ajaxOptions, thrownError) {
                 var errorContainerID = 'ajax-error-container';
                 var errorContainer = $('#' + errorContainerID);
 
@@ -162,11 +162,11 @@ function formAjaxSend(form, ajaxOverrideOptions) {
         timeout: 0,
 
         dataType: 'json',
-        complete: function () {
+        complete: function() {
             form.trigger('form-ajax-complete');
             loading(false);
         },
-        success: function (msg) {
+        success: function(msg) {
             if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
@@ -182,8 +182,11 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids) {
                 refreshGridsByEntity(msg.related_entity);
             }
+
+            form[0].reset();
+            initComponents(form, true);
         },
-        error: function (xhr, ajaxOptions, thrownError) {
+        error: function(xhr, ajaxOptions, thrownError) {
             var msg = { status: 0, txt: 'Oh no! Something wrong. Please try again' };
             handleSuccess(msg);
             if (formEvents && formEvents.hasOwnProperty('form-ajax-error')) {
@@ -199,10 +202,10 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 errorBox.html('Errore ajax:<br/>' + xhr.responseText);
                 errorBox.append(
                     $('<button>')
-                        .text('Chiudi')
-                        .on('click', function () {
-                            errorBox.remove();
-                        })
+                    .text('Chiudi')
+                    .on('click', function() {
+                        errorBox.remove();
+                    })
                 );
             }
         },
@@ -245,8 +248,8 @@ function success(txt) {
 
     if (txt) {
         current.removeClass('hide hidden alert-danger').addClass('alert-success');
-        setTimeout(function () {
-            current.fadeOut(function () {
+        setTimeout(function() {
+            current.fadeOut(function() {
                 current.addClass('hide hidden').html('');
 
                 if (current === formAjaxShownMessage) {
@@ -276,7 +279,7 @@ function closeContainingPopups(el) {
     if (bsModalParent.size()) {
         try {
             bsModalParent.data('bs.modal').askConfirmationOnClose = false;
-        } catch (e) { }
+        } catch (e) {}
         bsModalParent.modal('hide');
     }
 
