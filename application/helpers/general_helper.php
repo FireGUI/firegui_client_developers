@@ -1318,7 +1318,7 @@ if (!function_exists('time_elapsed')) {
         );
         foreach ($string as $k => &$v) {
             if ($diff->$k) {
-                $v = $diff->$k . ' ' . $v . t(($diff->$k > 1 ? 's' : ''));
+                $v = $diff->$k . ' ' . t($v . ($diff->$k > 1 ? 's' : ''));
             } else {
                 unset($string[$k]);
             }
