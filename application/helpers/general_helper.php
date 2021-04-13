@@ -1308,17 +1308,17 @@ if (!function_exists('time_elapsed')) {
         $diff->d -= $diff->w * 7;
 
         $string = array(
-            'y' => t('year'),
-            'm' => t('month'),
-            'w' => t('week'),
-            'd' => t('day'),
-            'h' => t('hour'),
-            'i' => t('minute'),
-            's' => t('second'),
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
         );
         foreach ($string as $k => &$v) {
             if ($diff->$k) {
-                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+                $v = $diff->$k . ' ' . $v . t(($diff->$k > 1 ? 's' : ''));
             } else {
                 unset($string[$k]);
             }
