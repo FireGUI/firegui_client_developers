@@ -153,7 +153,7 @@ class Db_ajax extends MY_Controller
             if (in_array($status, [0, 1, 2, 3, 4, 5])) {
                 echo json_encode(array('status' => $status, 'txt' => str_replace($replaceFrom, $replaceTo, $message)));
             } elseif (in_array($status, [6, 7])) {
-                echo json_encode(array('status' => $status, 'txt' => str_replace($replaceFrom, $replaceTo, $message), 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity));
+                echo json_encode(array('status' => $status, 'txt' => str_replace($replaceFrom, $replaceTo, $message), 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity, 'reset_form' => 1));
             }
 
             //
@@ -287,7 +287,7 @@ class Db_ajax extends MY_Controller
                 'status' => $status, 'txt' => $message
             ));
         } elseif (in_array($status, [6, 7])) {
-            echo json_encode(array('status' => $status, 'txt' => $message, 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity_name));
+            echo json_encode(array('status' => $status, 'txt' => $message, 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity_name, 'reset_form' => false));
         }
     }
 
