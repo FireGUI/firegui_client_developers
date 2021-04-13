@@ -1,17 +1,18 @@
-Changelog version 2.1.5
+Changelog version 2.1.6
  
-Changed echo json_encode functions to $this->load->view
-Added count method in api
-Added is_even and is_odd common functions
-Added possibility to customize sidebar-search template
-Bugfix for layouts in fullscreen
-Added leaflet markercluster
-Fix totalable datatable ajax slim
-Added MY_Output class to override core cache
-Added download attribute in datab html type upload
-Added dynamic pdf title and filename
-Removed white background on hover in user-menu
-Removed border from search in sidebar
-Hide header logo on mobile
-Removed border from search in sidebar
-Hide header logo on mobile
+Code formatting
+Moved CKEDITOR init/destroy into components.js
+Added parameter to initComponents for clean reinitializing components (for now, select2s and ckeditor)
+Resetting form in submitajax
+Added new form success status 7 with ajax table refresh without refreshing all page
+Bugfix for multiselect filter when referring relation
+Added js_fg_grid_entityname in ajax grids
+Added refreshGridsByEntity(entityname) function
+Fix typo in time_elapsed helper function
+Fix time_elapsed typos helper function on-the-fly
+Bug fix for integer field not null when passing 0 as value
+Removed Leaflet inizializing from components.js and moved to map_standard.js
+Changed maintenance banner color from red to orange
+Update calculateDistance function using project-osrm
+Bugfix to remove fields from grids and form when related to an entity that does not exists
+decimal fields triggered now on all body content
