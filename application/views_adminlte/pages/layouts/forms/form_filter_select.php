@@ -84,6 +84,10 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 </span>
                             </div>
                         <?php elseif ($field['datatype'] == DB_BOOL_IDENTIFIER) : ?>
+
+
+
+
                             <button type="button" class="btn-link" onclick="$('.field_<?php echo $field['id']; ?>', $('#<?php echo "form_{$form['forms']['forms_id']}" ?>')).attr('checked', false)" data-toggle="tooltip" title="<?php e('Remove selection'); ?>">
                                 <small><i class="fas fa-times"></i></small>
                             </button>
@@ -150,11 +154,22 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
                             <?php if ($field['filterref']) : ?>
                                 <?php if ($field['type'] == 'multiselect') : ?>
+
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
 
                                     <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
+                                        <?php
+                                        $filter_ref = $field['filterref'];
+                                        $entity = $this->crmentity->getEntity($filter_ref);
+                                        if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
+                                            $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
 
-                                        <?php foreach ($this->crmentity->getEntityPreview($field['filterref']) as $id => $name) : ?>
+                                            $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2']);
+                                        } else {
+                                            $support_data = $this->crmentity->getEntityPreview($field['filterref']);
+                                        }
+                                        ?>
+                                        <?php foreach ($support_data as $id => $name) : ?>
                                             <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                         <?php endforeach; ?>
 

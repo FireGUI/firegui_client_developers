@@ -179,6 +179,9 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
                 closeContainingPopups(form);
             }
+            if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids) {
+                refreshGridsByEntity(msg.related_entity);
+            }
         },
         error: function (xhr, ajaxOptions, thrownError) {
             var msg = { status: 0, txt: 'Oh no! Something wrong. Please try again' };
@@ -282,4 +285,9 @@ function closeContainingPopups(el) {
     if (fancyboxParent.size()) {
         $.fancybox.close();
     }
+}
+
+function refreshGridsByEntity(entity_name) {
+    $('.js_fg_grid_' + entity_name).DataTable().ajax.reload();
+
 }
