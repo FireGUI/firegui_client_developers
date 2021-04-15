@@ -1,4 +1,8 @@
 <div class="action-list">
+    <a href="#" class="js_edit btn bg-purple btn-grid-action-s" data-id="<?php echo $id; ?>">
+        <span class="fas fa-edit"></span>
+    </a>
+
     <?php if (isset($links['custom']) && $links['custom']) : ?>
         <?php
         // Filtra tutti i valori array e oggetto dall'array dati
@@ -75,12 +79,12 @@
                         $btn_classes .= 'js_delete ';
                         $confirm = false;
                         $btn_attrs .= 'data-id="' . $id . '" ';
-                    } elseif ($custom_action['grids_actions_type'] == 'edit_form') {
+                    } /*elseif ($custom_action['grids_actions_type'] == 'edit_form') {
                         $btn_href = '#';
                         $btn_classes .= 'js_edit ';
                         $confirm = false;
                         $btn_attrs .= 'data-id="' . $id . '" ';
-                    } else {
+                    }*/ else {
                         $btn_classes .= 'js_link_ajax ';
                     }
 
