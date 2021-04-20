@@ -180,7 +180,8 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 closeContainingPopups(form);
             }
             if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids) {
-                refreshGridsByEntity(msg.related_entity);
+                //refreshGridsByEntity(msg.related_entity);
+                refreshAjaxLayoutBoxes();
             }
             if (typeof msg.reset_form !== 'undefined' && msg.reset_form) {
                 form[0].reset();
@@ -295,4 +296,10 @@ function closeContainingPopups(el) {
 function refreshGridsByEntity(entity_name) {
     $('.js_fg_grid_' + entity_name).DataTable().ajax.reload();
 
+}
+function refreshVisibleAjaxGrids() {
+    $('.js_ajax_datatable:visible').DataTable().ajax.reload();
+}
+function refreshAjaxLayoutBoxes() {
+    refreshVisibleAjaxGrids();
 }
