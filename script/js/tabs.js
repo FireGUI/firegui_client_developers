@@ -40,11 +40,12 @@ $(function () {
             //     .columns.adjust()
             //     .draw();
 
-
+            startAjaxTables();
             $.each($.fn.dataTable.tables(), function () {
                 if ($(this).parents('.tab-pane.active').length > 0) {
                     var parentTabContainer = $(this).parents('.tab-pane.active');
                     $(this).DataTable().ajax.reload();
+
                 }
             });
         });

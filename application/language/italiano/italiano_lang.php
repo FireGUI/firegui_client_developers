@@ -871,3 +871,7 @@ $lang['weeks'] = 'settimane';
 $lang['minutes'] = 'minuti';
 $lang['months'] = 'mesi';
 $lang['seconds'] = 'secondi';
+$lang['Task'] = 'Task';
+$lang['Progetto'] = 'Progetto';
+$lang['Total hours'] = 'Total hours';
+$lang['Ore totali'] = 'Ore totali';
