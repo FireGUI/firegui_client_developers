@@ -494,6 +494,11 @@ function initComponents(container, reset = false) {
     drawPieLegendCharts();
 
     /**
+     * Tabs
+     */
+    tabsInit();
+
+    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
      *

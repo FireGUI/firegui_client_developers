@@ -6,6 +6,11 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
         $value = date('d/m/Y', $timestamp);
     }
 }
+
+if (empty($value)) {
+    $value = date('d/m/Y');
+}
+
 ?>
 <?php echo $label; ?>
 <div class="row">

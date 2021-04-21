@@ -191,7 +191,24 @@ class Layout extends CI_Model
     {
         return $this->current_module_identifier;
     }
+    public function getLayoutBox($lb_id)
+    {
 
+        $box = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
+            ->join('layouts', 'layouts.layouts_id = layouts_boxes.layouts_boxes_layout', 'left')
+            ->get_where('layouts_boxes', ['layouts_boxes_id' => $lb_id])->row_array();
+
+
+        $allSubboxes = [];
+        if ($box['layouts_boxes_content_type'] === 'tabs') {
+            $box['subboxes'] = explode(',', $box['layouts_boxes_content_ref']);
+            $allSubboxes = array_merge($allSubboxes, $box['subboxes']);
+        }
+
+
+
+        return $box;
+    }
     public function getBoxes($layoutId)
     {
         $queriedBoxes = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
@@ -231,7 +248,7 @@ class Layout extends CI_Model
                 $boxes[$myKey]['subboxes'] = $thisSubboxes;
             }
         }
-
+        //debug($boxes, true);
         return $boxes;
     }
 

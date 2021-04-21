@@ -297,9 +297,54 @@ function refreshGridsByEntity(entity_name) {
     $('.js_fg_grid_' + entity_name).DataTable().ajax.reload();
 
 }
-function refreshVisibleAjaxGrids() {
-    $('.js_ajax_datatable:visible').DataTable().ajax.reload();
+function refreshVisibleAjaxGrids(table) {
+    if (typeof table === 'undefined') {
+        $('.js_ajax_datatable:visible').DataTable().ajax.reload();
+    } else {
+        table.DataTable().ajax.reload();
+    }
+
+}
+function refreshLayoutBox(lb_id, value_id) {
+    var data = [];
+    var selector = '.layout_box[data-layout-box="' + lb_id + '"]';
+    var lb = $(selector);
+    try {
+        var token = JSON.parse(atob(this.grid.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    data[token_name] = token_hash;
+
+    $.ajax(base_url + 'get_ajax/get_layout_box_content/' + lb_id + '/' + value_id, {
+        data: data,
+        type: 'POST',
+        async: true,
+        success: function (html) {
+            lb.html(html);
+            initComponents(lb);
+        },
+    });
 }
 function refreshAjaxLayoutBoxes() {
-    refreshVisibleAjaxGrids();
+    //refreshVisibleAjaxGrids();
+    //TODO: check if box is refreshable
+    $('.layout_box:visible').each(function () {
+
+        if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
+            refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
+        } else {
+            var lb = $(this);
+            var lb_id = $(this).data('layout-box');
+            var value_id = $(this).data('value_id');
+            refreshLayoutBox(lb_id, value_id);
+        }
+
+    });
+
+
 }

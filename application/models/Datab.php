@@ -2904,11 +2904,13 @@ class Datab extends CI_Model
      * 
      * @return string
      */
-    private function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [])
+    public function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [])
     {
 
+        if (is_numeric($layoutBoxData)) {
 
-
+            $layoutBoxData = $this->layout->getLayoutBox($layoutBoxData);
+        }
 
         $contentType = $layoutBoxData['layouts_boxes_content_type'];
         $contentRef = $layoutBoxData['layouts_boxes_content_ref'];
@@ -2934,12 +2936,17 @@ class Datab extends CI_Model
             case 'tabs':
                 $tabs = [];
                 $tabId = 'tabs_' . $layoutBoxData['layouts_boxes_id'];
+
                 $subboxes = (isset($layoutBoxData['subboxes']) && is_array($layoutBoxData['subboxes'])) ? $layoutBoxData['subboxes'] : [];
                 foreach ($subboxes as $key => $subbox) {
                     // Nelle tab non venivano scatenati i pre-grid, post-grid, ecc.... ora si!
 
                     $content = $this->getBoxContent($subbox, $value_id, $layoutEntityData);
                     if ($content) {
+                        if (is_numeric($subbox)) {
+
+                            $subbox = $this->layout->getLayoutBox($subbox);
+        }
                         $hookSuffix = $subbox['layouts_boxes_content_type'];
                         $hookRef = $subbox['layouts_boxes_content_ref'];
 
