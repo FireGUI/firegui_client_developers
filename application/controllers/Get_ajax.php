@@ -148,7 +148,31 @@ class Get_ajax extends MY_Controller
             $this->layout->setLayoutModule();
         }
     }
+    public function get_layout_box_content($lb_id, $value_id = null)
+    {
+        $layout_box = $this->layout->getLayoutBox($lb_id); //$this->db->get_where('layouts_boxes', ['layouts_boxes_id' => $lb_id])->row_array();
+        //debug($layout_box, true);
 
+        $layout['content'] = $this->datab->getBoxContent($layout_box, $value_id, []);
+
+        //debug($layout, true);
+
+        // Fa il wrap degli hook pre e post che devono esistere per ogni
+        // componente ad eccezione di custom views e custom php code
+        // ---
+        // Gli hook per il layout non vengono definiti da qua ma vengono
+        // presi globali all'inizio del build layout
+        $hookSuffix = $layout_box['layouts_boxes_content_type'];
+        $hookRef = $layout_box['layouts_boxes_content_ref'];
+
+        if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
+            $layout['content'] = $this->datab->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
+                $layout['content'] .
+                $this->datab->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+        }
+
+        echo $layout['content'];
+    }
     /**
      * Alias di modal_form
      * @see Get_ajax::modal_form
