@@ -318,10 +318,13 @@ function refreshLayoutBox(lb_id, value_id) {
         var token_name = token.name;
         var token_hash = token.hash;
     }
-    data[token_name] = token_hash;
+
+
+    var data_post = [];
+    data_post.push({ name: token_name, value: token_hash });
 
     $.ajax(base_url + 'get_ajax/get_layout_box_content/' + lb_id + '/' + value_id, {
-        data: data,
+        data: data_post,
         type: 'POST',
         async: true,
         success: function (html) {
