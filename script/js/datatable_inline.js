@@ -1,7 +1,15 @@
 function CrmNewInlineTable(grid) {
     this.grid = grid;
 }
-
+try {
+    var token = JSON.parse(atob(oDataTable.data('csrf')));
+    var token_name = token.name;
+    var token_hash = token.hash;
+} catch (e) {
+    var token = JSON.parse(atob($('body').data('csrf')));
+    var token_name = token.name;
+    var token_hash = token.hash;
+}
 CrmNewInlineTable.prototype.getDatatableHandler = function () {
     return this.grid.dataTable();
 };
@@ -333,6 +341,10 @@ function initTable(grid) {
         autoWidth: false,
         oLanguage: {
             sUrl: base_url_scripts + 'script/datatable.transl.json',
+        },
+        fnServerParams: function (aoData) {
+            aoData.push({ name: token_name, value: token_hash });
+            //console.log(aoData);
         },
     });
 
