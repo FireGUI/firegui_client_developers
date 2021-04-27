@@ -1583,7 +1583,26 @@ class Apilib
              * nel caso di un inserimento non si elimina niente.
              * Corretto?
              * ========================================================= */
-            $this->db->delete($relationBundle['entity'], [$relationBundle['relations_field_1'] => $savedId]);
+            //20210427 - MP - fix get old data and delete only records that are not in the new multiselect values... insert new record and leave intact old records...
+            $old_data = $this->db->where($relationBundle['relations_field_1'], $savedId)->get($relationBundle['entity'])->result_array();
+
+            foreach ($old_data as $old) {
+                if (!in_array($old[$relationBundle['relations_field_2']], $relationBundle['value'])) {
+                    //Delete from db if related field2 has been removed from multiselect
+                    $this->db->delete($relationBundle['entity'], [
+                        $relationBundle['relations_field_1'] => $savedId,
+                        $relationBundle['relations_field_2'] => $old[$relationBundle['relations_field_2']]
+                    ]);
+                } else {
+                    //Delete from $relationBundle['value'] so that after it will be not inserted twice
+                    unset($relationBundle['value'][array_search($old[$relationBundle['relations_field_2']], $relationBundle['value'])]);
+                }
+            }
+
+            // debug($old_data);
+            // debug($relationBundle['value'], true);
+
+            //$this->db->delete($relationBundle['entity'], [$relationBundle['relations_field_1'] => $savedId]);
             if (is_array($relationBundle['value']) && $relationBundle['value']) {
 
                 // Se $relation['value'] è vuoto allora anche

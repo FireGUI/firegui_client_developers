@@ -905,3 +905,5 @@ $lang['Ordini cliente'] = 'Ordini cliente';
 $lang['Ordini fornitore'] = 'Ordini fornitore';
 $lang['Elenco DDT'] = 'Elenco DDT';
 $lang['New Task'] = 'New Task';
+$lang['Materiali commesse'] = 'Materiali commesse';
+$lang['H2 sviluppo'] = 'H2 sviluppo';
