@@ -59,7 +59,6 @@
 <!-- LEAFLET-JS -->
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v=" . VERSION); ?>"></script>
 
 <script src="<?php echo base_url_scripts("script/js/leaflet.markercluster.min.js?v=" . VERSION); ?>"></script>
 
