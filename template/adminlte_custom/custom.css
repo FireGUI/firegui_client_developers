@@ -47,7 +47,8 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
   animation: blinker 2s linear infinite;
 }
 .select2-container {
-  z-index: 1000 !important;
+    /*z-index: 1000 !important;*/
+    z-index: 500!important; /* fix for collapsed menu */
 }
 #js_modal_container .modal-dialog .select2-container,
 .select2-container--open {
