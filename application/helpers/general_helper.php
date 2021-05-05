@@ -1359,3 +1359,51 @@ function getReverseGeocoding($address)
         return null;
     }
 }
+
+if (!function_exists('curlRequest')) {
+    function curlRequest($url, $data = [], $isPost = false, $headers = [], $jsonPayload = false)
+    {
+        $ch = curl_init();
+
+        $params = null;
+        if (!$isPost && !empty($data)) {
+            $params = '?' . http_build_query($data);
+        } elseif ($isPost && !empty($data)) {
+            if ($jsonPayload) {
+                $data = json_encode($data);
+            }
+
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        } else {
+            // dump("isPost false");
+        }
+
+        $headers = array_merge(['Content-Type: application/json'], $headers);
+
+        // dump($url);
+        // dump($data);
+        // dump($isPost);
+
+        curl_setopt($ch, CURLOPT_URL, $url . $params);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 900);
+
+        $data = curl_exec($ch);
+
+        if ($data === false) {
+            dd(curl_error($ch));
+        }
+
+        curl_close($ch);
+
+        // dump('----------------------------');
+
+        return $data;
+    }
+}
