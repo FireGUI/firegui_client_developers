@@ -46,6 +46,10 @@ var handleSuccess = function (msg) {
 
             success(msg.txt);
             break;
+        case 7:
+            refreshAjaxLayoutBoxes();
+            success(msg.txt);
+            break;
         case 9:
             // Callback
             eval(msg.txt);
