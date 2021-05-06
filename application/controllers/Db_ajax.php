@@ -767,7 +767,7 @@ class Db_ajax extends MY_Controller
 
 
         if ($this->input->is_ajax_request()) {
-            echo json_encode(['status' => 2]);
+            echo json_encode(['status' => 7]);
         } else {
             redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
         }
