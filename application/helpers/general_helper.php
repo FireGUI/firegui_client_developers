@@ -452,6 +452,17 @@ if (!function_exists('array_key_map')) {
     }
 }
 
+if (!function_exists('array_key_map_data')) {
+
+    function array_key_map_data(array $array, $key, $default = null)
+    {
+        $new_array = [];
+        foreach ($array as $k => $v) {
+            $new_array[$v[$key]] = $v;
+        }
+        return $new_array;
+    }
+}
 
 if (!function_exists('array_get')) {
 
