@@ -9,7 +9,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
 
 ?>
-<form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form" enctype="multipart/form-data">
+<form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form <?php echo ("form_{$form['forms']['forms_id']}"); ?>" enctype="multipart/form-data">
     <?php add_csrf(); ?>
     <div class="form-body">
         <div class="row">
@@ -247,8 +247,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
             <div class="pull-right">
 
                 <?php if ($where_data) : ?>
-                    <input type="hidden" id="clear-filters-<?php echo $form['forms']['forms_id']; ?>" name="clear-filters" value="" />
-                    <input type="button" onclick="javascript:$('#clear-filters-<?php echo $form['forms']['forms_id']; ?>').val('1');$('#form_<?php echo $form['forms']['forms_id']; ?>').trigger('submit');" class="btn red-intense" value="<?php e('Clear filters'); ?>" />
+                    <input type="hidden" class="clear-filters-<?php echo $form['forms']['forms_id']; ?>" name="clear-filters" value="" />
+                    <input type="button" onclick="javascript:$('.clear-filters-<?php echo $form['forms']['forms_id']; ?>').val('1');$('.form_<?php echo $form['forms']['forms_id']; ?>').trigger('submit');" class="btn red-intense" value="<?php e('Clear filters'); ?>" />
                 <?php endif; ?>
                 <button type="submit" class="btn btn-primary"><?php echo $where_data ? t('Filter') : t('Update filters'); ?></button>
             </div>

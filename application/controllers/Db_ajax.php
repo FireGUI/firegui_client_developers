@@ -235,6 +235,7 @@ class Db_ajax extends MY_Controller
             // Se invece ho fatto un submit normale, valuto le condizioni valide
             // da tenere in sessione
             foreach ($this->input->post('conditions') as $conditional) {
+                //debug($conditional);
                 if (!array_key_exists($conditional['field_id'], $visible_fields)) {
                     //TODO Wrong! Field id can be in another left joined table, so get the field information direct from the field_id to check his type... 
                     //throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity']['entity_name']}'.");
@@ -271,8 +272,6 @@ class Db_ajax extends MY_Controller
         // rimosse con un array_filter
         $where_data = $this->session->userdata(SESS_WHERE_DATA);
 
-
-
         $where_data[$filterSessionKey] = $conditions;
 
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
@@ -289,7 +288,12 @@ class Db_ajax extends MY_Controller
                 'status' => $status, 'txt' => $message
             ));
         } elseif (in_array($status, [6, 7])) {
-            echo json_encode(array('status' => $status, 'txt' => $message, 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity_name, 'reset_form' => false));
+            if ($this->input->post('clear-filters')) {
+                $reset_form = true;
+            } else {
+                $reset_form = false;
+            }
+            echo json_encode(array('status' => $status, 'txt' => $message, 'close_modals' => false, 'refresh_grids' => 1, 'related_entity' => $entity_name, 'reset_form' => $reset_form));
         }
     }
 
