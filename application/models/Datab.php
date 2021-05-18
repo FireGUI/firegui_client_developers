@@ -732,7 +732,8 @@ class Datab extends CI_Model
 
             /** Grid order_by * */
             if (is_null($order_by) && !empty($grid['grids']['grids_order_by']) && !$count) {
-                $order_by = $grid['grids']['grids_order_by'];
+                $replaces['value_id'] = $value_id;
+                $order_by = $this->replace_superglobal_data(str_replace_placeholders($grid['grids']['grids_order_by'], $replaces));
             }
 
             /** Grid group_by * */
@@ -2770,6 +2771,7 @@ class Datab extends CI_Model
 
     private function buildEvalGridCell($evalString, $data, $field)
     {
+        extract($data);
         ob_start();
         eval('?> ' . $evalString . '<?php ');
         return ob_get_clean();

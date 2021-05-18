@@ -615,7 +615,7 @@ class Get_ajax extends MY_Controller
 
             $out_array = array();
             foreach ($grid_data as $dato) {
-
+                $dato['value_id'] = $valueID;
                 $tr = array();
                 if ($has_bulk) {
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
@@ -623,7 +623,8 @@ class Get_ajax extends MY_Controller
                 foreach ($grid['grids_fields'] as $field) {
                     $tr[] = $this->datab->build_grid_cell($field, $dato);
                 }
-
+                //Unset to avoi override
+                unset($dato['value_id']);
                 // Controlla se ho delle action da stampare in fondo
                 if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
                     $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
