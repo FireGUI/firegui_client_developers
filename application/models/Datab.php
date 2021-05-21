@@ -1182,7 +1182,9 @@ class Datab extends CI_Model
 
 
                 foreach ($sess_where_data[$element[$element_type . "_filter_session_key"]] as $condition) {
-
+                    if (!array_key_exists('value', $condition) || $condition['value'] === '') {
+                        continue;
+                    }
                     $query_field = $this->db->join('fields_draw', 'fields_draw_fields_id = fields_id', 'left')->get_where('fields', array('fields_id' => (int) $condition['field_id']));
                     if ($query_field->num_rows() && $query_field->row()->fields_name) {
                         $field = $query_field->row();
@@ -2948,7 +2950,7 @@ class Datab extends CI_Model
                         if (is_numeric($subbox)) {
 
                             $subbox = $this->layout->getLayoutBox($subbox);
-        }
+                        }
                         $hookSuffix = $subbox['layouts_boxes_content_type'];
                         $hookRef = $subbox['layouts_boxes_content_ref'];
 
