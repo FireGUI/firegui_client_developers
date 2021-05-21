@@ -228,7 +228,7 @@ class Db_ajax extends MY_Controller
 
         // Processo le condizioni da salvare in input
         $conditions = [];
-
+        //debug($this->input->post('conditions'), true);
         // Se clicchiamo il pulsante pulisci filtri, allora ignoro l'input
         if (!$this->input->post('clear-filters')) {
 
@@ -259,13 +259,19 @@ class Db_ajax extends MY_Controller
                 if (
                     !empty($conditional['operator']) &&
                     !empty($conditional['field_id']) &&
-                    array_key_exists('value', $conditional) && $conditional['value'] !== ''
+                    (!array_key_exists('value', $conditional) ||
+                        $conditional['value'] !== '-1')
                 ) {
+                    if (!array_key_exists('value', $conditional)) {
+                        $conditional['value'] = '';
+                    }
                     $conditions[$conditional['field_id']] = $conditional;
                 } else {
                 }
             }
         }
+
+        //debug($conditions, true);
 
         // Aggiorno i dati da sessione mettendo alla chiave corretta le 
         // condizioni processate. Nel caso in cui siano vuote, queste verranno 
