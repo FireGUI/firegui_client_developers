@@ -77,6 +77,8 @@ class Layout extends CI_Model
 
             $content = ob_get_clean();
         } else {
+            $this->load->library('parser');
+
             if (
                 !$module
                 || file_exists(FCPATH . "application/views_adminlte/custom/{$module}/{$relative_path}{$view}.php")
@@ -147,8 +149,6 @@ class Layout extends CI_Model
 
             //TODO: return true?
         } else {
-            $this->load->library('parser');
-
             $physicalDir = FCPATH . "/uploads";
             $filename = date('Ymd-H-i-s');
             $pdfFile = "{$physicalDir}/{$filename}.pdf";
