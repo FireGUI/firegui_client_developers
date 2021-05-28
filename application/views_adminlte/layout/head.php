@@ -110,6 +110,3 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <!-- GENERIC -->
 <script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>
-<?php if ($this->auth->check()) :  ?>
-    <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
-<?php endif; ?>
