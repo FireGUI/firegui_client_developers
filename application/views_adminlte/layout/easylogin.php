@@ -84,7 +84,10 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
                 </div>
 
                 <div class="login-box-body">
-                    QUI IL BOX
+                    <input type="button" class="js_easylogin_later" value="Later..." />
+                    <input type="button" class="js_easylogin_proceed" value="Proceed..." />
+                    <br />
+                    <input type="button" class="js_easylogin_never" value="Don't ask me again..." />
                 </div>
             </div>
         </div>
