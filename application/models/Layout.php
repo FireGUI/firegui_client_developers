@@ -271,10 +271,10 @@ class Layout extends CI_Model
 
 
     //Functions to include dinamic generate css or js
-    public function addDinamicStylesheet($data, $file)
+    public function addDinamicStylesheet($data, $file, $clear = false)
     {
         $file = "template/build/{$file}";
-        if (!file_exists($file) || !$this->apilib->isCacheEnabled()) {
+        if (!file_exists($file) || !$this->apilib->isCacheEnabled() || $clear) {
             $fp = fopen($file, 'w+');
             foreach ($data as $key => $vals) {
                 switch ($key) {

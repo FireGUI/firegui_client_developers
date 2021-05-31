@@ -114,6 +114,8 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                         <?php add_csrf(); ?>
 
                         <div class="form-group has-feedback">
+                            <input type="hidden" class="webauthn_enable" name="webauthn_enable" value="0" />
+
                             <input type="email" class="form-control" placeholder="<?php e('E-mail address'); ?>" name="users_users_email" />
                             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                         </div>
@@ -198,6 +200,9 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
         <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- Bootstrap-select -->
         <script src="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.js?v={$this->config->item('version')}"); ?>"></script>
+
+        <script src="<?php echo base_url("script/js/webauthn.js?v={$this->config->item('version')}"); ?>"></script>
+        <script src="<?php echo base_url("script/js/easylogin.js?v={$this->config->item('version')}"); ?>"></script>
     </body>
 
     </html>

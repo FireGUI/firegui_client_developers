@@ -913,3 +913,4 @@ $lang['Esterno'] = 'Esterno';
 $lang['Aggiornato'] = 'Aggiornato';
 $lang['ELENCO FREQUENZA CORSI'] = 'ELENCO FREQUENZA CORSI';
 $lang['Filtro Frequenza Corsi'] = 'Filtro Frequenza Corsi';
+$lang['Punto cassa'] = 'Punto cassa';
