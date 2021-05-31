@@ -113,3 +113,4 @@ $lang['Support table'] = 'Support table';
 $lang['Checkbox'] = 'Checkbox';
 $lang['Entity1 Grid'] = 'Entity1 Grid';
 $lang['Detail'] = 'Detail';
+$lang['User {log_crm_user_name} succesfully access'] = 'User {log_crm_user_name} succesfully access';

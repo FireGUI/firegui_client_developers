@@ -88,10 +88,16 @@ class Access extends MY_Controller
         //TODO: aggiungere gli auto right join in modo che se un utente è associato a un'altra entità (esempio: aziende che fanno login, dipendenti seven, ecc...)
         //prenda in automatico anche i dati delle entità collegate... Buttare ovviamente anche questi dati in sessione
         if ($success) {
-            $redirection_url = $this->auth->fetch_intended_url();
+            //debug($data, true);
+            if (!empty($data['webauthn_enable']) && $data['webauthn_enable'] == 1) {
+                $redirection_url = base_url("access/easylogin");
+                //debug($redirection_url, true);
+            } else {
+                $redirection_url = $this->auth->fetch_intended_url();
 
-            if (!$redirection_url or $redirection_url == base_url()) {
-                $redirection_url = base_url('main/dashboard');
+                if (!$redirection_url or $redirection_url == base_url()) {
+                    $redirection_url = base_url('main/dashboard');
+                }
             }
 
             $this->auth->reset_intended_url();
@@ -227,6 +233,16 @@ class Access extends MY_Controller
                 $this->session->unset_userdata('previous_user_id');
                 redirect(base_url());
             }
+        }
+    }
+
+    public function easylogin()
+    {
+        if ($id = $this->auth->get('id')) {
+
+            $this->load->view('layout/easylogin', array('id' => $id));
+        } else {
+            $this->logout();
         }
     }
 }

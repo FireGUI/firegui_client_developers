@@ -9,7 +9,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
 
 ?>
-<form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form" enctype="multipart/form-data">
+<form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form <?php echo ("form_{$form['forms']['forms_id']}"); ?>" enctype="multipart/form-data">
     <?php add_csrf(); ?>
     <div class="form-body">
         <div class="row">
@@ -19,21 +19,24 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                     <?php
 
                     $field_completo = $this->datab->get_field($field['id']);
-
-                    $value = !isset($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
+                    //debug($where_data);
+                    $sess_value = !isset($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];
                     } else {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'eq' : $where_data[$field['id']]['operator'];
                     }
 
-                    if (is_array($value)) {
+
+
+                    if (is_array($sess_value)) {
                         // Se per caso ho forzato questo valore ad essere array,
                         // intanto lo implodo, poi vedrò come gestirlo
-                        $value = implode(',', $value);
+                        $sess_value = implode(',', $sess_value);
                     }
-
-                    if (!$value && $value != '-1' && $field['datatype'] != DB_BOOL_IDENTIFIER) {
+                    //debug($sess_value);
+                    if ($sess_value === null && $sess_value !== '-1') {
+                        //debug('foo');
                         $form_field = $this->db
                             ->join('fields', 'fields_id = forms_fields_fields_id', 'LEFT')
                             ->get_where('forms_fields', [
@@ -43,8 +46,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             ->row_array();
 
                         $value = $this->datab->get_default_fields_value($form_field);
-
-                        if ($value) {
+                        //debug($value);
+                        if ($value !== null) {
+                            //debug('foo');
                             //If it has a default value, save into session
                             if (empty($sess_data[$filterSessionKey])) {
                                 $sess_data[$filterSessionKey] = [];
@@ -65,9 +69,13 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     ]
                                 ]
                             ), SORT_REGULAR);
+
                             $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
                         }
+                    } else {
+                        $value = $sess_value;
                     }
+
                     ?>
 
                     <div class="form-group">
@@ -86,7 +94,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         <?php elseif ($field['datatype'] == DB_BOOL_IDENTIFIER) : ?>
 
 
-
+                            <?php //debug($value); 
+                            ?>
 
                             <button type="button" class="btn-link" onclick="$('.field_<?php echo $field['id']; ?>', $('#<?php echo "form_{$form['forms']['forms_id']}" ?>')).attr('checked', false)" data-toggle="tooltip" title="<?php e('Remove selection'); ?>">
                                 <small><i class="fas fa-times"></i></small>
@@ -94,11 +103,11 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             <div class="col-xs-12">
                                 <label class="radio-inline">
 
-                                    <input type="radio" name="conditions[<?php echo $k; ?>][value]" class="toggle field_<?php echo $field['id']; ?>" value="<?php echo DB_BOOL_TRUE; ?>" <?php echo (($value == DB_BOOL_TRUE) ? 'checked' : ''); ?> />
+                                    <input type="radio" name="conditions[<?php echo $k; ?>][value]" class="toggle field_<?php echo $field['id']; ?>" value="<?php echo DB_BOOL_TRUE; ?>" <?php echo (($value === DB_BOOL_TRUE) ? 'checked' : ''); ?> />
                                     <?php e('Yes'); ?>
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="conditions[<?php echo $k; ?>][value]" class="toggle field_<?php echo $field['id']; ?>" value="<?php echo DB_BOOL_FALSE; ?>" <?php echo (($value == DB_BOOL_FALSE) ? 'checked' : ''); ?> />
+                                    <input type="radio" name="conditions[<?php echo $k; ?>][value]" class="toggle field_<?php echo $field['id']; ?>" value="<?php echo DB_BOOL_FALSE; ?>" <?php echo (($value === DB_BOOL_FALSE) ? 'checked' : ''); ?> />
                                     <?php e('No'); ?>
                                 </label>
                             </div>
@@ -247,8 +256,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
             <div class="pull-right">
 
                 <?php if ($where_data) : ?>
-                    <input type="hidden" id="clear-filters-<?php echo $form['forms']['forms_id']; ?>" name="clear-filters" value="" />
-                    <input type="button" onclick="javascript:$('#clear-filters-<?php echo $form['forms']['forms_id']; ?>').val('1');$('#form_<?php echo $form['forms']['forms_id']; ?>').trigger('submit');" class="btn red-intense" value="<?php e('Clear filters'); ?>" />
+                    <input type="hidden" class="clear-filters-<?php echo $form['forms']['forms_id']; ?>" name="clear-filters" value="" />
+                    <input type="button" onclick="javascript:$('.clear-filters-<?php echo $form['forms']['forms_id']; ?>').val('1');$('.form_<?php echo $form['forms']['forms_id']; ?>').trigger('submit');" class="btn red-intense" value="<?php e('Clear filters'); ?>" />
                 <?php endif; ?>
                 <button type="submit" class="btn btn-primary"><?php echo $where_data ? t('Filter') : t('Update filters'); ?></button>
             </div>
