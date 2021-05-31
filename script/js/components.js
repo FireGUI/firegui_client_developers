@@ -511,6 +511,9 @@ function initComponents(container, reset = false) {
      */
     $.event.trigger('init.crm.components');
 
+    $('.box').each(function () {
+        $.fn.boxWidget.call($(this));
+    });
     /**
      * Dopo aver inizializzato il tutto, trigger resize della finestra in
      * modo da attivare gestione dimensioni di grafici e varie
@@ -755,6 +758,7 @@ $(function () {
     });
 
     $('body').on('click', '.js_title_collapse', function () {
+        alert(1);
         $('.expand, .collapse', $(this)).click();
         $(window).trigger('resize');
     });

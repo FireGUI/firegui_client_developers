@@ -46,6 +46,10 @@ var handleSuccess = function (msg) {
 
             success(msg.txt);
             break;
+        case 7:
+            refreshAjaxLayoutBoxes();
+            success(msg.txt);
+            break;
         case 9:
             // Callback
             eval(msg.txt);
@@ -185,7 +189,11 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             }
             if (typeof msg.reset_form !== 'undefined' && msg.reset_form) {
                 form[0].reset();
-                initComponents(form, true);
+                try {
+                    initComponents(form, true);
+                } catch (err) {
+                    console.log(err.message);
+                }
             }
 
         },
@@ -260,6 +268,7 @@ function success(txt) {
                 }
             });
         }, 8000);
+        formAjaxShownMessage = null;
     } else {
         current.addClass('hide hidden');
     }
@@ -297,6 +306,7 @@ function refreshGridsByEntity(entity_name) {
     $('.js_fg_grid_' + entity_name).DataTable().ajax.reload();
 
 }
+
 function refreshVisibleAjaxGrids(table) {
     if (typeof table === 'undefined') {
         $('.js_ajax_datatable:visible').DataTable().ajax.reload();
@@ -305,6 +315,7 @@ function refreshVisibleAjaxGrids(table) {
     }
 
 }
+
 function refreshLayoutBox(lb_id, value_id) {
     var data = [];
     var selector = '.layout_box[data-layout-box="' + lb_id + '"]';
@@ -333,6 +344,7 @@ function refreshLayoutBox(lb_id, value_id) {
         },
     });
 }
+
 function refreshAjaxLayoutBoxes() {
     //refreshVisibleAjaxGrids();
     //TODO: check if box is refreshable

@@ -732,7 +732,8 @@ class Datab extends CI_Model
 
             /** Grid order_by * */
             if (is_null($order_by) && !empty($grid['grids']['grids_order_by']) && !$count) {
-                $order_by = $grid['grids']['grids_order_by'];
+                $replaces['value_id'] = $value_id;
+                $order_by = $this->replace_superglobal_data(str_replace_placeholders($grid['grids']['grids_order_by'], $replaces));
             }
 
             /** Grid group_by * */
@@ -1181,7 +1182,9 @@ class Datab extends CI_Model
 
 
                 foreach ($sess_where_data[$element[$element_type . "_filter_session_key"]] as $condition) {
-
+                    if (!array_key_exists('value', $condition) || $condition['value'] === '') {
+                        continue;
+                    }
                     $query_field = $this->db->join('fields_draw', 'fields_draw_fields_id = fields_id', 'left')->get_where('fields', array('fields_id' => (int) $condition['field_id']));
                     if ($query_field->num_rows() && $query_field->row()->fields_name) {
                         $field = $query_field->row();
@@ -2770,6 +2773,7 @@ class Datab extends CI_Model
 
     private function buildEvalGridCell($evalString, $data, $field)
     {
+        extract($data);
         ob_start();
         eval('?> ' . $evalString . '<?php ');
         return ob_get_clean();
@@ -2946,7 +2950,7 @@ class Datab extends CI_Model
                         if (is_numeric($subbox)) {
 
                             $subbox = $this->layout->getLayoutBox($subbox);
-        }
+                        }
                         $hookSuffix = $subbox['layouts_boxes_content_type'];
                         $hookRef = $subbox['layouts_boxes_content_ref'];
 
@@ -2994,7 +2998,7 @@ class Datab extends CI_Model
 
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
-                if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline'])) {
+                if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline', 'datatable_ajax_slim'])) {
 
                     $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], [], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
                 }

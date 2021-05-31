@@ -452,6 +452,17 @@ if (!function_exists('array_key_map')) {
     }
 }
 
+if (!function_exists('array_key_map_data')) {
+
+    function array_key_map_data(array $array, $key, $default = null)
+    {
+        $new_array = [];
+        foreach ($array as $k => $v) {
+            $new_array[$v[$key]] = $v;
+        }
+        return $new_array;
+    }
+}
 
 if (!function_exists('array_get')) {
 
@@ -733,7 +744,7 @@ if (!function_exists('is_development')) {
         } else {
             $ipAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR') ?: @$_SERVER['REMOTE_ADDR'];
         }
-        return ((!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])));
+        return ((!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) || @$_SERVER['SERVER_NAME'] == 'localhost');
     }
 }
 
@@ -1357,5 +1368,53 @@ function getReverseGeocoding($address)
         return json_decode($response, true);
     } else {
         return null;
+    }
+}
+
+if (!function_exists('curlRequest')) {
+    function curlRequest($url, $data = [], $isPost = false, $headers = [], $jsonPayload = false)
+    {
+        $ch = curl_init();
+
+        $params = null;
+        if (!$isPost && !empty($data)) {
+            $params = '?' . http_build_query($data);
+        } elseif ($isPost && !empty($data)) {
+            if ($jsonPayload) {
+                $data = json_encode($data);
+            }
+
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        } else {
+            // dump("isPost false");
+        }
+
+        $headers = array_merge(['Content-Type: application/json'], $headers);
+
+        // dump($url);
+        // dump($data);
+        // dump($isPost);
+
+        curl_setopt($ch, CURLOPT_URL, $url . $params);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 900);
+
+        $data = curl_exec($ch);
+
+        if ($data === false) {
+            dd(curl_error($ch));
+        }
+
+        curl_close($ch);
+
+        // dump('----------------------------');
+
+        return $data;
     }
 }
