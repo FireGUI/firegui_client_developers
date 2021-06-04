@@ -63,6 +63,7 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     define('LOGIN_SURNAME_FIELD',   'users_last_name');
     define('LOGIN_IMG_FIELD',       'users_avatar');
     define('LOGIN_LAST_PWD_CHANGE_FIELD', 'users_last_password_change');
+    define('LOGIN_WEBAUTHN_DATA', 'users_webauthn_data');
 
     define('LANG_ENTITY',       'languages');
     define('LANG_CODE_FIELD',   'languages_code');
@@ -113,10 +114,10 @@ $                   Match the end of the string.
     $regex_msg .= 'Require that at least one special character of following ones: @$!%*?&<br/>';
     $regex_msg .= 'The password must be at least 12 characters long<br/>';
 
-    define('PASSWORD_REGEX_VALIDATION', [
-        'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/',
-        'msg' => $regex_msg
-    ]);
+    // define('PASSWORD_REGEX_VALIDATION', [
+    //     'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/',
+    //     'msg' => $regex_msg
+    // ]);
 
     /*
  * ============================================================

@@ -1,7 +1,9 @@
 <?php
 
 namespace lbuchs\WebAuthn;
+
 use lbuchs\WebAuthn\Binary\ByteBuffer;
+
 require_once 'WebAuthnException.php';
 require_once 'Binary/ByteBuffer.php';
 require_once 'Attestation/AttestationObject.php';
@@ -21,7 +23,8 @@ require_once 'CBOR/CborDecoder.php';
  * @author Lukas Buchs
  * @license https://github.com/lbuchs/WebAuthn/blob/master/LICENSE MIT
  */
-class WebAuthn {
+class WebAuthn
+{
     // relying party
     private $_rpName;
     private $_rpId;
@@ -38,7 +41,8 @@ class WebAuthn {
      * @param bool $useBase64UrlEncoding true to use base64 url encoding for binary data in json objects. Default is a RFC 1342-Like serialized string.
      * @throws WebAuthnException
      */
-    public function __construct($rpName, $rpId, $allowedFormats=null, $useBase64UrlEncoding=false) {
+    public function __construct($rpName, $rpId, $allowedFormats = null, $useBase64UrlEncoding = false)
+    {
         $this->_rpName = $rpName;
         $this->_rpId = $rpId;
         $this->_rpIdHash = \hash('sha256', $rpId, true);
@@ -70,7 +74,8 @@ class WebAuthn {
      * add a root certificate to verify new registrations
      * @param string $path file path of / directory with root certificates
      */
-    public function addRootCertificates($path) {
+    public function addRootCertificates($path)
+    {
         if (!\is_array($this->_caFiles)) {
             $this->_caFiles = array();
         }
@@ -90,7 +95,8 @@ class WebAuthn {
      * Returns the generated challenge to save for later validation
      * @return ByteBuffer
      */
-    public function getChallenge() {
+    public function getChallenge()
+    {
         return $this->_challenge;
     }
 
@@ -114,7 +120,8 @@ class WebAuthn {
      * @param array $excludeCredentialIds a array of ids, which are already registered, to prevent re-registration
      * @return \stdClass
      */
-    public function getCreateArgs($userId, $userName, $userDisplayName, $timeout=20, $requireResidentKey=false, $requireUserVerification=false, $crossPlatformAttachment=null, $excludeCredentialIds=array()) {
+    public function getCreateArgs($userId, $userName, $userDisplayName, $timeout = 20, $requireResidentKey = false, $requireUserVerification = false, $crossPlatformAttachment = null, $excludeCredentialIds = array())
+    {
 
         // validate User Verification Requirement
         if (\is_bool($requireUserVerification)) {
@@ -153,13 +160,13 @@ class WebAuthn {
         $tmp->type = 'public-key';
         $tmp->alg = -7; // ES256
         $args->publicKey->pubKeyCredParams[] = $tmp;
-        unset ($tmp);
+        unset($tmp);
 
         $tmp = new \stdClass();
         $tmp->type = 'public-key';
         $tmp->alg = -257; // RS256
         $args->publicKey->pubKeyCredParams[] = $tmp;
-        unset ($tmp);
+        unset($tmp);
 
         // if there are root certificates added, we need direct attestation to validate
         // against the root certificate. If there are no root-certificates added,
@@ -185,7 +192,7 @@ class WebAuthn {
                 $tmp->type = 'public-key';
                 $tmp->transports = array('usb', 'ble', 'nfc', 'internal');
                 $args->publicKey->excludeCredentials[] = $tmp;
-                unset ($tmp);
+                unset($tmp);
             }
         }
 
@@ -209,7 +216,8 @@ class WebAuthn {
      *                                             string 'required' 'preferred' 'discouraged'
      * @return \stdClass
      */
-    public function getGetArgs($credentialIds=array(), $timeout=20, $allowUsb=true, $allowNfc=true, $allowBle=true, $allowInternal=true, $requireUserVerification=false) {
+    public function getGetArgs($credentialIds = array(), $timeout = 20, $allowUsb = true, $allowNfc = true, $allowBle = true, $allowInternal = true, $requireUserVerification = false)
+    {
 
         // validate User Verification Requirement
         if (\is_bool($requireUserVerification)) {
@@ -250,7 +258,7 @@ class WebAuthn {
 
                 $tmp->type = 'public-key';
                 $args->publicKey->allowCredentials[] = $tmp;
-                unset ($tmp);
+                unset($tmp);
             }
         }
 
@@ -262,7 +270,8 @@ class WebAuthn {
      * returns null if there is no counter
      * @return ?int
      */
-    public function getSignatureCounter() {
+    public function getSignatureCounter()
+    {
         return \is_int($this->_signatureCounter) ? $this->_signatureCounter : null;
     }
 
@@ -277,7 +286,8 @@ class WebAuthn {
      * @return \stdClass
      * @throws WebAuthnException
      */
-    public function processCreate($clientDataJSON, $attestationObject, $challenge, $requireUserVerification=false, $requireUserPresent=true, $failIfRootMismatch=true) {
+    public function processCreate($clientDataJSON, $attestationObject, $challenge, $requireUserVerification = false, $requireUserPresent = true, $failIfRootMismatch = true)
+    {
         $clientDataHash = \hash('sha256', $clientDataJSON, true);
         $clientData = \json_decode($clientDataJSON);
         $challenge = $challenge instanceof ByteBuffer ? $challenge : new ByteBuffer($challenge);
@@ -373,7 +383,8 @@ class WebAuthn {
      * @return boolean true if get is successful
      * @throws WebAuthnException
      */
-    public function processGet($clientDataJSON, $authenticatorData, $signature, $credentialPublicKey, $challenge, $prevSignatureCnt=null, $requireUserVerification=false, $requireUserPresent=true) {
+    public function processGet($clientDataJSON, $authenticatorData, $signature, $credentialPublicKey, $challenge, $prevSignatureCnt = null, $requireUserVerification = false, $requireUserPresent = true)
+    {
         $authenticatorObj = new Attestation\AuthenticatorData($authenticatorData);
         $clientDataHash = \hash('sha256', $clientDataJSON, true);
         $clientData = \json_decode($clientDataJSON);
@@ -471,7 +482,8 @@ class WebAuthn {
      * @return boolean
      * @throws WebAuthnException
      */
-    private function _checkOrigin($origin) {
+    private function _checkOrigin($origin)
+    {
         // https://www.w3.org/TR/webauthn/#rp-id
 
         // The origin's scheme must be https
@@ -494,7 +506,8 @@ class WebAuthn {
      * @return string
      * @throws WebAuthnException
      */
-    private function _createChallenge($length = 32) {
+    private function _createChallenge($length = 32)
+    {
         if (!$this->_challenge) {
             $this->_challenge = ByteBuffer::randomBuffer($length);
         }

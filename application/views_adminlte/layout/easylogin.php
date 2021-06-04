@@ -40,6 +40,15 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
         <!-- Bootstrap-select -->
         <link rel="stylesheet" href="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>">
 
+        <?php $this->layout->addDinamicJavascript([
+            "var base_url = '" . base_url() . "';",
+            "var base_url_admin = '" . base_url_admin() . "';",
+            "var base_url_template = '" . base_url_template() . "';",
+            "var base_url_scripts = '" . base_url_scripts() . "';",
+            "var base_url_uploads = '" . base_url_uploads() . "';",
+            "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
+            "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
+        ], 'config.js'); ?>
 
         <?php
         $data['custom'] = [
@@ -64,6 +73,7 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
         }
         $this->layout->addDinamicStylesheet($data, "easylogin.css", true);
         ?>
+
 
 
     </head>
@@ -103,7 +113,7 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
         <!-- Bootstrap-select -->
         <script src="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.js?v={$this->config->item('version')}"); ?>"></script>
 
-        <script src="<?php echo base_url("script/js/webauthn.js?v={$this->config->item('version')}"); ?>"></script>
+
         <script src="<?php echo base_url("script/js/easylogin.js?v={$this->config->item('version')}"); ?>"></script>
     </body>
 
