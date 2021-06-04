@@ -107,12 +107,12 @@ endif;
                         <p class="login-p"><?php e("Your new password has been sent to"); ?> <strong><?php echo $receiver; ?></strong></p>
                     </div>
                 <?php else : */ ?>
-                <form id="lost" class="forget-form rounded formAjax" action="<?php echo base_url('access/reset_password_request'); ?>" method="post" novalidate="novalidate">
+                <form id="lost" class="forget-form rounded formAjax" action="<?php echo base_url('access/change_expired_password'); ?>" method="post" novalidate="novalidate">
                     <?php add_csrf(); ?>
                     <h4 class="title login-p text-center"><?php e("Change password"); ?></h4>
                     <p class="login-p text-center"><?php e("Every six months you have to change your password."); ?></p>
                     <div class="form-group has-feedback">
-                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('Current password'); ?>" name="users_users_password">
+                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('Current password'); ?>" name="users_users_current_password">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
@@ -120,7 +120,7 @@ endif;
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('Confirm password'); ?>" name="users_users_password">
+                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('Confirm password'); ?>" name="users_users_confirm_password">
                         <span class="glyphicon glyphicon-ok form-control-feedback"></span>
                     </div>
 

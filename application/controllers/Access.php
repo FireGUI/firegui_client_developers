@@ -78,6 +78,8 @@ class Access extends MY_Controller
 
         $data = $this->apilib->runDataProcessing(LOGIN_ENTITY, 'pre-login', $data);
 
+        $this->session->unset_userdata('change_password_email');
+
         if (empty($data['users_users_email']) || empty($data['users_users_password'])) {
             echo json_encode(array('status' => 0, 'txt' => t('Insert a valid email and/or password')));
             die();
@@ -89,7 +91,23 @@ class Access extends MY_Controller
         //prenda in automatico anche i dati delle entità collegate... Buttare ovviamente anche questi dati in sessione
         if ($success) {
             //debug($data, true);
-            if (!empty($data['webauthn_enable']) && $data['webauthn_enable'] == 1) {
+
+            if (defined('PASSWORD_REGEX_VALIDATION') && !preg_match(PASSWORD_REGEX_VALIDATION['regex'], $data['users_users_password'])) {
+                $redirection_url = base_url("access/change_password");
+                // $this->session->set_userdata('change_password_email', $data['users_users_email']);
+                if ($this->input->is_ajax_request()) {
+                    echo json_encode(array('status' => 1, 'txt' => $redirection_url));;
+                } else {
+                    redirect($redirection_url);
+                }
+                exit;
+            }
+
+            $user_last_changed_days = 90; // @todo check ultima data di cambio pwd
+            if (false && $user_last_changed_days >= PASSWORD_EXPIRE_DAYS) { // 2021-06-03 - Per ora lo lascio if == false poi si vedrà
+                $redirection_url = base_url("access/change_password");
+                $this->session->set_userdata('change_password_email', $data['users_users_email']);
+            } else if (!empty($data['webauthn_enable']) && $data['webauthn_enable'] == 1) {
                 $redirection_url = base_url("access/easylogin");
                 //debug($redirection_url, true);
             } else {
@@ -121,6 +139,38 @@ class Access extends MY_Controller
                 echo t('Mail or password mismatch');
             }
         }
+    }
+
+    public function change_expired_password()
+    {
+        $this->load->library('form_validation');
+
+        $post = $this->input->post();
+
+        $email = $this->auth->get(LOGIN_USERNAME_FIELD);
+
+        if (empty($post) || empty($email)) {
+            echo json_encode(['status' => 1, 'txt' => base_url('access/login')]);
+            exit;
+        }
+
+        $this->form_validation->set_rules('users_users_current_password', t('Current Password'), 'required');
+        $this->form_validation->set_rules('users_users_password', t('Password'), 'required|regex_match[' . PASSWORD_REGEX_VALIDATION['regex'] . ']', ['regex_match' => t('The Password field does not match required security validation.') . '<br/>' . t(PASSWORD_REGEX_VALIDATION['msg'])]);
+        $this->form_validation->set_rules('users_users_confirm_password', t('Password Confirmation'), 'required|matches[users_users_password]');
+
+        if ($this->form_validation->run() == FALSE) {
+            echo json_encode(['status' => 0, 'txt' => validation_errors()]);
+            exit;
+        }
+
+        $user = $this->auth->change_password_attempt($email, $post['users_users_current_password'], $post['users_users_password']);
+
+        if (!$user) {
+            echo json_encode(['status' => 0, 'txt' => t('Password validation failed')]);
+            exit;
+        }
+
+        echo json_encode(['status' => 1, 'txt' => base_url('access/login')]);
     }
 
 

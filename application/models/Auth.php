@@ -194,6 +194,34 @@ class Auth extends CI_Model
             $this->rememberUser($query->row()->{LOGIN_ENTITY . '_id'}, $timeout);
         }
 
+        return $query->row();
+    }
+
+    public function change_password_attempt($email, $old_pwd, $new_pwd)
+    {
+        $old_pwd_md5 = md5($old_pwd);
+        $new_pwd_md5 = md5($new_pwd);
+
+        if ($old_pwd_md5 == $new_pwd_md5) {
+            return false;
+        }
+
+        if (defined('PASSWORD_REGEX_VALIDATION') && !preg_match(PASSWORD_REGEX_VALIDATION['regex'], $new_pwd)) {
+            return false;
+        }
+
+        $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $email, LOGIN_PASSWORD_FIELD => $old_pwd_md5));
+
+        if (!$query->num_rows()) {
+            // Nessun risultato? Allora esci...
+            return false;
+        }
+
+        $this->db->where(LOGIN_ENTITY . '_id', $query->row()->{LOGIN_ENTITY . '_id'})->update(LOGIN_ENTITY, [
+            LOGIN_PASSWORD_FIELD => $new_pwd_md5,
+            // LOGIN_LAST_PWD_CHANGE_FIELD => date('Y-m-d')
+        ]);
+
         return true;
     }
 
