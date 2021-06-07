@@ -24,11 +24,6 @@ var easylogin = {
                     this.checkRegistration(cookie_email);
                 }
             }
-
-
-
-
-
         } else {
             $form_field.val(0);
             log('Browser not supported.');
@@ -82,6 +77,7 @@ var easylogin = {
                     //window.alert(json.msg || 'registration success');
 
                     self.setEmailCookie(json.email);
+                    location.href = base_url;
                 } else {
                     throw new Error(json.msg);
                 }
@@ -139,7 +135,8 @@ var easylogin = {
         }).then(function (json) {
             if (json.success) {
 
-                window.alert(json.msg || 'login success');
+                //window.alert(json.msg || 'login success');
+                location.href = base_url;
             } else {
                 throw new Error(json.msg);
             }

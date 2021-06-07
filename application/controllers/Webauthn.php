@@ -5,7 +5,7 @@ class Webauthn extends MY_Controller
 
 
     var $WebAuthn = NULL;
-    var $userVerification = 'required';
+    var $userVerification = 'discouraged';
     var $requireResidentKey = true;
     var $typeUsb = true;
     var $typeNfc = true;
@@ -31,8 +31,6 @@ class Webauthn extends MY_Controller
         $formats[] = 'tpm';
 
         $this->WebAuthn = new lbuchs\WebAuthn\WebAuthn('WebAuthn Library', $server_name, $formats);
-        // Imposta il log di accesso giornaliero
-
     }
 
     public function getCreateArgs()
@@ -132,33 +130,37 @@ class Webauthn extends MY_Controller
         $authenticatorData = base64_decode($post->authenticatorData);
         $signature = base64_decode($post->signature);
         $id = base64_decode($post->id);
+        $credentialId = $post->id;
         $challenge = $this->session->userdata(SESS_WEBAUTHN);
         $credentialPublicKey = null;
-        debug($post);
-        die('COMPLETARE! :D');
 
+        $query = "SELECT * FROM " . LOGIN_ENTITY . " WHERE " . LOGIN_WEBAUTHN_DATA . '->"$.credentialId" = \'' . $credentialId . '\'';
 
-        // looking up correspondending public key of the credential id
-        // you should also validate that only ids of the given user name
-        // are taken for the login.
-        if (is_array($_SESSION['registrations'])) {
-            foreach ($_SESSION['registrations'] as $reg) {
-                if ($reg->credentialId === $id) {
-                    $credentialPublicKey = $reg->credentialPublicKey;
-                    break;
-                }
-            }
+        $user = $this->db->query($query);
+        if ($user === false) {
+            //DB does not support JSON data
+            $sql_escape_credential_id = str_ireplace('/', '%', $credentialId);
+            $query = "SELECT * FROM " . LOGIN_ENTITY . " WHERE " . LOGIN_WEBAUTHN_DATA . " LIKE '%{$sql_escape_credential_id}%'";
+
+            $user = $this->db->query($query);
         }
 
-        if ($credentialPublicKey === null) {
+        if ($user->num_rows() != 1) {
             throw new Exception('Public Key for credential ID not found!');
+        } else {
+            $user_data = $user->row_array();
+            $json_data = $user_data[LOGIN_WEBAUTHN_DATA];
+            $credentialPublicKey = json_decode($json_data)->credentialPublicKey;
+
+            // process the get request. throws WebAuthnException if it fails
+            $this->WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $credentialPublicKey, $challenge, null, $this->userVerification === 'required');
+
+            //Force login
+            $this->auth->login_force($user_data[LOGIN_ENTITY . '_id']);
+
+            $return = new stdClass();
+            $return->success = true;
+            e_json($return);
         }
-
-        // process the get request. throws WebAuthnException if it fails
-        $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $credentialPublicKey, $challenge, null, $userVerification === 'required');
-
-        $return = new stdClass();
-        $return->success = true;
-        print(json_encode($return));
     }
 }
