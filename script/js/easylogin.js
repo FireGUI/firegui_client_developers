@@ -1,11 +1,14 @@
 var easylogin = {
     form_field_selector: '.webauthn_enable',
-    box_login_selector: '.login_box',
+    login_box_selector: '.main_login_box',
     easylogin_box_selector: '.easylogin_box',
     proceed_btn_selector: '.js_easylogin_proceed',
     later_btn_selector: '.js_easylogin_later',
     never_btn_selector: '.js_easylogin_never',
     ask_for_easylogin_btn_selector: '.js_easylogin_ask',
+    easylogin_name_selector: '.js_easylogin_name',
+    easylogin_page_selector: '.js_easylogin_page',
+    easylogin_back_button_selector: '.js_easylogin_back',
 
     available: function () {
         return !(!window.fetch || !navigator.credentials || !navigator.credentials.create);
@@ -14,25 +17,29 @@ var easylogin = {
 
     init: function () {
         if (this.available) {
-            var $proceed_btn = $(this.proceed_btn_selector);
-            if ($proceed_btn.length) {
-                //I'm in the easylogin page
-                this.attachBtnListeners();
-            } else {
-                //I'm in the login page
-                var $form_field = $(this.form_field_selector);
-                $form_field.val(1);
 
-                var cookie_easylogin = this.getEasyloginCookie();
-                if (cookie_easylogin) {
-                    var $login_box = $(this.login_box_selector);
-                    $login_box.hide();
 
-                    var $easylogin_box = $(this.easylogin_box_selector);
-                    $easylogin_box.show();
-                    //this.checkRegistration(cookie_email);
-                }
+
+
+            //I'm in the login page
+            var $form_field = $(this.form_field_selector);
+            $form_field.val(1);
+
+            var cookie_easylogin = this.getEasyloginCookie();
+            if (cookie_easylogin) {
+                var $login_box = $(this.login_box_selector);
+                $login_box.hide();
+
+                var $easylogin_box = $(this.easylogin_box_selector);
+                $easylogin_box.show();
+
+                $(this.easylogin_name_selector).html(cookie_easylogin);
+
+
+                //this.checkRegistration(cookie_email);
             }
+            this.attachBtnListeners();
+
         } else {
             $form_field.val(0);
             log('Browser not supported.');
@@ -44,7 +51,21 @@ var easylogin = {
 
         var cookie_easylogin = this.getEasyloginCookie();
         var $ask_for_easylogin_btn = $(this.ask_for_easylogin_btn_selector);
-        $ask_for_easylogin_btn.on('click', function () { self.checkRegistration(cookie_easylogin); });
+        $ask_for_easylogin_btn.on('click', function () {
+
+            self.checkRegistration(cookie_easylogin);
+        });
+
+
+        var $backbutton = $(this.easylogin_back_button_selector);
+        $backbutton.on('click', function () {
+
+            var $login_box = $(self.login_box_selector);
+            $login_box.show();
+
+            var $easylogin_box = $(self.easylogin_box_selector);
+            $easylogin_box.hide();
+        });
 
         var $proceed_btn = $(this.proceed_btn_selector);
         $proceed_btn.on('click', function () {
@@ -90,7 +111,7 @@ var easylogin = {
                     //Create cookie for future access without password prompt
                     //window.alert(json.msg || 'registration success');
 
-                    self.setEasyloginCookie(json.id);
+                    self.setEasyloginCookie(json.email);
                     location.href = base_url;
                 } else {
                     throw new Error(json.msg);
