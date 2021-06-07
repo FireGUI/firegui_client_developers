@@ -56,27 +56,22 @@ class Webauthn extends MY_Controller
         if ($post) {
             $post = json_decode($post, true);
         }
-        $email = $post['email'];
-        $users = $this->apilib->search(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $email]);
+        $id = $post['id'];
+        $user = $this->apilib->view(LOGIN_ENTITY, $id);
 
 
 
         $ids = array();
-
-
-
-        foreach ($users as $user) {
-            $reg = json_decode($user['users_webauthn_data'], null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
-            //debug($reg, true);
-            $ids[] = base64_decode($reg->credentialId);
-        }
+        $reg = json_decode($user['users_webauthn_data'], null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+        //debug($reg, true);
+        $ids[] = base64_decode($reg->credentialId);
 
         if (count($ids) === 0) {
-            throw new Exception('no registrations in session.');
+            throw new Exception('User not authorized');
         }
 
 
-        $getArgs = $this->WebAuthn->getGetArgs($ids, 20, $this->typeUsb, $this->typeNfc, $this->typeBle, $this->typeInt, $this->userVerification);
+        $getArgs = $this->WebAuthn->getGetArgs($ids, 180, $this->typeUsb, $this->typeNfc, $this->typeBle, $this->typeInt, $this->userVerification);
         $this->session->set_userdata(SESS_WEBAUTHN, $this->WebAuthn->getChallenge());
         e_json($getArgs);
     }
@@ -116,7 +111,7 @@ class Webauthn extends MY_Controller
         $return = new stdClass();
         $return->success = true;
         $return->msg = $msg;
-        $return->email = $user[LOGIN_USERNAME_FIELD];
+        $return->id = $user[LOGIN_ENTITY . '_id'];
         e_json($return);
     }
 
