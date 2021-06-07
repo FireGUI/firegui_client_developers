@@ -5,7 +5,7 @@ class Webauthn extends MY_Controller
 
 
     var $WebAuthn = NULL;
-    var $userVerification = 'discouraged';
+    var $userVerification = 'required';
     var $requireResidentKey = true;
     var $typeUsb = true;
     var $typeNfc = true;
@@ -57,21 +57,26 @@ class Webauthn extends MY_Controller
             $post = json_decode($post, true);
         }
         $id = $post['id'];
-        $user = $this->apilib->view(LOGIN_ENTITY, $id);
+        $users = $this->apilib->search(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $id]);
 
 
 
         $ids = array();
-        $reg = json_decode($user['users_webauthn_data'], null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
-        //debug($reg, true);
-        $ids[] = base64_decode($reg->credentialId);
+        foreach ($users as $user) {
+            $reg = json_decode($user['users_webauthn_data']);
+            //debug($reg, true);
+            $ids[] = base64_decode($reg->credentialId);
+        }
 
+
+
+        //debug($ids);
         if (count($ids) === 0) {
             throw new Exception('User not authorized');
         }
 
 
-        $getArgs = $this->WebAuthn->getGetArgs($ids, 180, $this->typeUsb, $this->typeNfc, $this->typeBle, $this->typeInt, $this->userVerification);
+        $getArgs = $this->WebAuthn->getGetArgs($ids, 20, $this->typeUsb, $this->typeNfc, $this->typeBle, $this->typeInt, $this->userVerification);
         $this->session->set_userdata(SESS_WEBAUTHN, $this->WebAuthn->getChallenge());
         e_json($getArgs);
     }
@@ -111,7 +116,7 @@ class Webauthn extends MY_Controller
         $return = new stdClass();
         $return->success = true;
         $return->msg = $msg;
-        $return->id = $user[LOGIN_ENTITY . '_id'];
+        $return->email = $user[LOGIN_USERNAME_FIELD];
         e_json($return);
     }
 

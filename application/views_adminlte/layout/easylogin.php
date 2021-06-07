@@ -228,7 +228,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
     <body class="hold-transition login-page">
         <div class="background_img">
             <!-- New login -->
-            <div class="login-box login-box-security">
+            <div class="login-box login-box-security js_easylogin_page">
                 <div class="logo">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>

@@ -126,3 +126,11 @@ $lang['Require that at least one number<br/>Require that at least one lowercase 
 $lang['Password Confirmation'] = 'Password Confirmation';
 $lang['Fields %s are not accepted in entity \'users\''] = 'Fields %s are not accepted in entity \'users\'';
 $lang['Webauthn data'] = 'Webauthn data';
+$lang['Are you tired of passwords?'] = 'Are you tired of passwords?';
+$lang['Depending on your device you will be able to login with your fingerprint, face recognition or PIN.'] = 'Depending on your device you will be able to login with your fingerprint, face recognition or PIN.';
+$lang['Later'] = 'Later';
+$lang['Proceed'] = 'Proceed';
+$lang['Don\'t ask me again'] = 'Don\'t ask me again';
+$lang['Hi,'] = 'Hi,';
+$lang['Back to classic login page...'] = 'Back to classic login page...';
+$lang['Invalid API call'] = 'Invalid API call';

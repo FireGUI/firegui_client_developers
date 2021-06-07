@@ -155,7 +155,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
             .login_actions .main_actions {
                 width: 100%;
                 display: flex;
-                justify-content: space-between;
+                justify-content: center;
                 align-items: center;
                 margin-bottom: 20px
             }
@@ -180,7 +180,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                 width: 45%;
             }
 
-            .login_actions .main_actions .js_easylogin_proceed {
+            .login_actions .main_actions .js_easylogin_ask {
                 border: 0;
                 background: #3c8dbc;
                 color: #ffffff;
@@ -190,7 +190,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                 transition: all 0.25s ease-in;
             }
 
-            .login_actions .main_actions .js_easylogin_proceed:hover {
+            .login_actions .main_actions .js_easylogin_ask:hover {
                 background: #367fa9;
             }
 
@@ -209,7 +209,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                 color: #ffffff;
             }
 
-            .login_actions .last_action .js_easylogin_never {
+            .login_actions .last_action .js_easylogin_back {
                 background: #ffffff;
                 border: 0;
                 color: #3c8dbc;
@@ -218,7 +218,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                 transition: all 0.25s ease-in;
             }
 
-            .login_actions .last_action .js_easylogin_never:hover {
+            .login_actions .last_action .js_easylogin_back:hover {
                 color: #367fa9;
             }
         </style>
@@ -228,7 +228,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
 
     <body class="hold-transition login-page">
         <div class="background_img">
-            <div class="login-box">
+            <div class="login-box main_login_box">
                 <div class="logo">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>
@@ -324,7 +324,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
             </div>
 
             <!-- New login -->
-            <div class="login-box login-box-security">
+            <div class="login-box login-box-security easylogin_box" style="display:none;">
                 <div class="logo">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>
@@ -344,7 +344,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                         </div>
                         <div class="login_content">
                             <p class="login_heading text-center">
-                                <?php echo e('Are you tired of passwords?'); ?>
+                                <?php echo e('Hi,'); ?> <span class="js_easylogin_name"></span>!
                             </p>
                             <p class="login_text text-center">
                                 <?php echo e('Depending on your device you will be able to login with your fingerprint, face recognition or PIN.'); ?>
@@ -352,11 +352,11 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                         </div>
                         <div class="login_actions">
                             <div class="main_actions">
-                                <input type="button" class="js_easylogin_later" value="<?php echo e('Later'); ?>" />
-                                <input type="button" class="js_easylogin_proceed" value="<?php echo e('Proceed'); ?> " />
+
+                                <input type="button" class="js_easylogin_ask" value="<?php echo e('Proceed'); ?> " />
                             </div>
                             <div class="last_action">
-                                <input type="button" class="js_easylogin_never" value="<?php echo e('Don\'t ask me again'); ?>" />
+                                <input type="button" class="js_easylogin_back" value="<?php echo e('Back to classic login page...'); ?>" />
                             </div>
                         </div>
                     </div>
