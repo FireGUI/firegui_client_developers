@@ -41,6 +41,7 @@ class Apilib
     const LOG_EDIT          = 7;    // Apilib::edit action
     const LOG_DELETE        = 8;    // Apilib::delete action
 
+
     private $error = 0;
     private $errorMessage = '';
     private $errorMessages = [

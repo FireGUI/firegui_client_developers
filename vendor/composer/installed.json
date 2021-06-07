@@ -265,6 +265,55 @@
             "install-path": "../khanamiryan/qrcode-detector-decoder"
         },
         {
+            "name": "lbuchs/webauthn",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lbuchs/WebAuthn.git",
+                "reference": "ca2c66efb141a4f24a84aac27a94505cfa2e4323"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lbuchs/WebAuthn/zipball/ca2c66efb141a4f24a84aac27a94505cfa2e4323",
+                "reference": "ca2c66efb141a4f24a84aac27a94505cfa2e4323",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "time": "2021-02-17T09:53:55+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "lbuchs\\WebAuthn\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lukas Buchs",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple PHP WebAuthn (FIDO2) server library",
+            "homepage": "https://github.com/lbuchs/webauthn",
+            "keywords": [
+                "Authentication",
+                "webauthn"
+            ],
+            "support": {
+                "issues": "https://github.com/lbuchs/WebAuthn/issues",
+                "source": "https://github.com/lbuchs/WebAuthn/tree/master"
+            },
+            "install-path": "../lbuchs/webauthn"
+        },
+        {
             "name": "markbaker/complex",
             "version": "1.4.8",
             "version_normalized": "1.4.8.0",

@@ -14,7 +14,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.1.8');
+defined('VERSION') or define('VERSION', '2.1.8');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -51,6 +51,7 @@ define('DEFAULT_LAYOUT_MAP',        'map_standard');
 define('SESS_LOGIN',        'session_login');
 define('SESS_GRIDS_DATA',   'master_crm_grids');
 define('SESS_WHERE_DATA',   'master_crm_where_data');
+define('SESS_WEBAUTHN',        'session_webauthn');
 
 
 /*********** Operatori filtri *********/

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9b6a9cf64d1917cacc319856393b4d1",
+    "content-hash": "a643059b2498f58e5c1a0e066e038328",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -209,6 +209,52 @@
                 "zxing"
             ],
             "time": "2020-04-19T16:18:51+00:00"
+        },
+        {
+            "name": "lbuchs/webauthn",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lbuchs/WebAuthn.git",
+                "reference": "ca2c66efb141a4f24a84aac27a94505cfa2e4323"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lbuchs/WebAuthn/zipball/ca2c66efb141a4f24a84aac27a94505cfa2e4323",
+                "reference": "ca2c66efb141a4f24a84aac27a94505cfa2e4323",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "lbuchs\\WebAuthn\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lukas Buchs",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple PHP WebAuthn (FIDO2) server library",
+            "homepage": "https://github.com/lbuchs/webauthn",
+            "keywords": [
+                "Authentication",
+                "webauthn"
+            ],
+            "support": {
+                "issues": "https://github.com/lbuchs/WebAuthn/issues",
+                "source": "https://github.com/lbuchs/WebAuthn/tree/master"
+            },
+            "time": "2021-02-17T09:53:55+00:00"
         },
         {
             "name": "markbaker/complex",
@@ -2062,7 +2108,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "lbuchs/webauthn": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
