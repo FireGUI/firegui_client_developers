@@ -169,7 +169,13 @@ if (!function_exists('debug')) {
                     $out[] = '<strong>' . substr(str_replace(dirname(__FILE__), '', $calledFrom[0]['file']), 1) . '</strong>';
                     $out[] = ' (line <strong>' . $calledFrom[0]['line'] . '</strong>)';
                 }
-                $out[] = htmlspecialchars(print_r($var, true));
+                $print_r = print_r($var, true);
+                if (htmlspecialchars($print_r)) {
+                    $out[] = htmlspecialchars($print_r);
+                } else {
+                    $out[] = $print_r;
+                }
+
                 if (is_object($var)) {
                     $out[] = '-------- Class methods --------';
                     $out[] = print_r(get_class_methods(get_class($var)), true);
@@ -673,13 +679,25 @@ if (!function_exists('generateRandomPassword')) {
     }
 }
 
-
+if (!function_exists('remove_objects_from_array_recursive')) {
+    function remove_objects_from_array_recursive($arr)
+    {
+        foreach ($arr as $key => $foo) {
+            if (is_object($foo)) {
+                unset($arr[$key]);
+            } elseif (is_array($foo)) {
+                $arr[$key] = remove_objects_from_array_recursive($foo);
+            }
+        }
+        return $arr;
+    }
+}
 
 if (!function_exists('str_replace_placeholders')) {
 
     function str_replace_placeholders($string, array $replaces, $caseinsensitive = true, $clearunmatched = false)
     {
-
+        $replaces = remove_objects_from_array_recursive($replaces);
         // Passa da multidimensionale a unidimensionale
         $smoothreplaces = array_smooth($replaces, ' ');
         if ($clearunmatched) {

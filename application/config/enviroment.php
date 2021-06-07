@@ -62,6 +62,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     define('LOGIN_NAME_FIELD',      'users_first_name');
     define('LOGIN_SURNAME_FIELD',   'users_last_name');
     define('LOGIN_IMG_FIELD',       'users_avatar');
+    define('LOGIN_LAST_PWD_CHANGE_FIELD', 'users_last_password_change');
+    define('LOGIN_WEBAUTHN_DATA', 'users_webauthn_data');
 
     define('LANG_ENTITY',       'languages');
     define('LANG_CODE_FIELD',   'languages_code');
@@ -90,6 +92,32 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     define('TOPBAR_HOVER', '#222d32');
     define('LOGIN_COLOR', '#b22222');
     define('LOGIN_TITLE_COLOR', '#FFFFFF');
+
+    define('PASSWORD_EXPIRE_DAYS', 180);
+
+    /*
+REGEX EXPLAIN:
+
+^                   Match the beginning of the string
+(?=.*\d)            Require that at least one digit appear anywhere in the string
+(?=.*[a-z])         Require that at least one lowercase letter appear anywhere in the string
+(?=.*[A-Z])         Require that at least one uppercase letter appear anywhere in the string
+(?=.*[@$!%*?&])     Require that at least one special character appear anywhere in the string
+{12,}               The password must be at least 12 characters long {if set second parameter}, but no more than X {endif}
+$                   Match the end of the string.
+
+*/
+
+    $regex_msg = 'Require that at least one number<br/>';
+    $regex_msg .= 'Require that at least one lowercase letter<br/>';
+    $regex_msg .= 'Require that at least one uppercase letter<br/>';
+    $regex_msg .= 'Require that at least one special character of following ones: @$!%*?&<br/>';
+    $regex_msg .= 'The password must be at least 12 characters long<br/>';
+
+    // define('PASSWORD_REGEX_VALIDATION', [
+    //     'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/',
+    //     'msg' => $regex_msg
+    // ]);
 
     /*
  * ============================================================

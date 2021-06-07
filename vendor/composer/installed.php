@@ -65,6 +65,16 @@
       ),
       'reference' => '89b57f2d9939dd57394b83f6ccbd3e1a74659e34',
     ),
+    'lbuchs/webauthn' => 
+    array (
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
+      'aliases' => 
+      array (
+        0 => '9999999-dev',
+      ),
+      'reference' => 'ca2c66efb141a4f24a84aac27a94505cfa2e4323',
+    ),
     'markbaker/complex' => 
     array (
       'pretty_version' => '1.4.8',

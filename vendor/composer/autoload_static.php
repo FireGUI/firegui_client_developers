@@ -82,6 +82,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         array (
             'setasign\\Fpdi\\' => 14,
         ),
+        'l' => 
+        array (
+            'lbuchs\\WebAuthn\\' => 16,
+        ),
         'Z' => 
         array (
             'Zxing\\' => 6,
@@ -140,6 +144,10 @@ class ComposerStaticInit79970b80b6b8a8b3407d2aa31e24500f
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'lbuchs\\WebAuthn\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lbuchs/webauthn/src',
         ),
         'Zxing\\' => 
         array (
