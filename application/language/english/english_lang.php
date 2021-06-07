@@ -125,3 +125,4 @@ $lang['The Password field does not match required security validation.'] = 'The 
 $lang['Require that at least one number<br/>Require that at least one lowercase letter<br/>Require that at least one uppercase letter<br/>Require that at least one special character of following ones: @$!%*?&<br/>The password must be at least 12 characters long<br/>'] = 'Require that at least one number<br/>Require that at least one lowercase letter<br/>Require that at least one uppercase letter<br/>Require that at least one special character of following ones: @$!%*?&<br/>The password must be at least 12 characters long<br/>';
 $lang['Password Confirmation'] = 'Password Confirmation';
 $lang['Fields %s are not accepted in entity \'users\''] = 'Fields %s are not accepted in entity \'users\'';
+$lang['Webauthn data'] = 'Webauthn data';
