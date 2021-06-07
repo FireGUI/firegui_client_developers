@@ -916,3 +916,10 @@ $lang['Filtro Frequenza Corsi'] = 'Filtro Frequenza Corsi';
 $lang['Punto cassa'] = 'Punto cassa';
 $lang['Require that at least one number<br/>Require that at least one lowercase letter<br/>Require that at least one uppercase letter<br/>Require that at least one special character of following ones: @$!%*?&<br/>The password must be at least 12 characters long<br/>'] = 'Richiedi almeno un numero<br/>Richiedi almeno una lettera minuscola<br/>Richiedi almeno una lettera maiuscola<br/>Richiedi almeno un carattere speciale dei seguenti: @$!%*?& <br/>La password deve essere lunga almeno 12 caratteri<br/>';
 $lang['The Password field does not match required security validation.'] = 'Il campo Password non rispetta la sicurezza richiesta.';
+/* ====== Start Easylogin translation ====== */
+$lang['Are you tired of passwords?'] = 'Stanco di doverti ricordare le password?';
+$lang['Depending on your device you will be able to login with your fingerprint, face recognition or PIN.'] = 'In base al dispositivo potrai fare l\'accesso tramite impronta digitale, riconoscimento facciale o PIN.';
+$lang['Later'] = 'Forse più tardi';
+$lang['Proceed'] = 'Attiva';
+$lang['Don\'t ask me again'] = 'Non chiederlo ancora';
+/* ====== End Easylogin translation ====== */
