@@ -1,11 +1,35 @@
 <?php
-if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
-    $this->load->view('custom/layout/easylogin');
+if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
+    $this->load->view('custom/layout/login');
 } else {
-    $image = rand(1, 6) . '.jpeg';
+    // What is today's date - number
+    $day = date("z");
 
+    //  Days of spring
+    $spring_starts = date("z", strtotime("March 21"));
+    $spring_ends   = date("z", strtotime("June 20"));
 
+    //  Days of summer
+    $summer_starts = date("z", strtotime("June 21"));
+    $summer_ends   = date("z", strtotime("September 22"));
+
+    //  Days of autumn
+    $autumn_starts = date("z", strtotime("September 23"));
+    $autumn_ends   = date("z", strtotime("December 20"));
+
+    //  If $day is between the days of spring, summer, autumn, and winter
+    if ($day >= $spring_starts && $day <= $spring_ends) :
+        $season = "spring";
+    elseif ($day >= $summer_starts && $day <= $summer_ends) :
+        $season = "summer";
+    elseif ($day >= $autumn_starts && $day <= $autumn_ends) :
+        $season = "autumn";
+    else :
+        $season = "winter";
+    endif;
 ?>
+
+
     <!DOCTYPE html>
     <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
     <!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
@@ -53,7 +77,7 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
         <?php
         $data['custom'] = [
             '.background_img' => [
-                'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . base_url("images/easylogin/{$image}") . ")!important"
+                'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . ((!empty($season)) ? base_url("images/{$season}.jpg") : '') . ")!important"
             ]
         ];
 
@@ -137,6 +161,22 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
                 margin-bottom: 20px
             }
 
+            @media (max-width: 768px) {
+                .login_actions .main_actions {
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    flex-direction: column;
+                }
+
+                .login_actions .main_actions input {
+                    width: 100% !important;
+                    margin-bottom: 15px;
+                }
+            }
+
             .login_actions .main_actions input {
                 width: 45%;
             }
@@ -208,17 +248,19 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
                         </div>
                         <div class="login_content">
                             <p class="login_heading text-center">
-                                Are you tired of passwords?
+                                <?php echo e('Are you tired of passwords?'); ?>
                             </p>
-                            <p class="login_text text-center">Depending on your device you will be able to login with your fingreprint, face recognition or PIN.</p>
+                            <p class="login_text text-center">
+                                <?php echo e('Depending on your device you will be able to login with your fingerprint, face recognition or PIN.'); ?>
+                            </p>
                         </div>
                         <div class="login_actions">
                             <div class="main_actions">
-                                <input type="button" class="js_easylogin_later" value="Later" />
-                                <input type="button" class="js_easylogin_proceed" value="Proceed" />
+                                <input type="button" class="js_easylogin_later" value="<?php echo e('Later'); ?>" />
+                                <input type="button" class="js_easylogin_proceed" value="<?php echo e('Proceed'); ?> " />
                             </div>
                             <div class="last_action">
-                                <input type="button" class="js_easylogin_never" value="Don't ask me again" />
+                                <input type="button" class="js_easylogin_never" value="<?php echo e('Don\'t ask me again'); ?>" />
                             </div>
                         </div>
                     </div>
