@@ -1,8 +1,12 @@
 var easylogin = {
     form_field_selector: '.webauthn_enable',
+    box_login_selector: '.login_box',
+    easylogin_box_selector: '.easylogin_box',
     proceed_btn_selector: '.js_easylogin_proceed',
     later_btn_selector: '.js_easylogin_later',
     never_btn_selector: '.js_easylogin_never',
+    ask_for_easylogin_btn_selector: '.js_easylogin_ask',
+
     available: function () {
         return !(!window.fetch || !navigator.credentials || !navigator.credentials.create);
     },
@@ -19,9 +23,14 @@ var easylogin = {
                 var $form_field = $(this.form_field_selector);
                 $form_field.val(1);
 
-                var cookie_email = this.getEmailCookie();
-                if (cookie_email) {
-                    this.checkRegistration(cookie_email);
+                var cookie_easylogin = this.getEasyloginCookie();
+                if (cookie_easylogin) {
+                    var $login_box = $(this.login_box_selector);
+                    $login_box.hide();
+
+                    var $easylogin_box = $(this.easylogin_box_selector);
+                    $easylogin_box.show();
+                    //this.checkRegistration(cookie_email);
                 }
             }
         } else {
@@ -32,6 +41,11 @@ var easylogin = {
 
     attachBtnListeners: function () {
         var self = this;
+
+        var cookie_easylogin = this.getEasyloginCookie();
+        var $ask_for_easylogin_btn = $(this.ask_for_easylogin_btn_selector);
+        $ask_for_easylogin_btn.on('click', function () { self.checkRegistration(cookie_easylogin); });
+
         var $proceed_btn = $(this.proceed_btn_selector);
         $proceed_btn.on('click', function () {
             window.fetch(base_url + 'Webauthn/getCreateArgs', { method: 'GET', cache: 'no-cache' }).then(function (response) {
@@ -76,7 +90,7 @@ var easylogin = {
                     //Create cookie for future access without password prompt
                     //window.alert(json.msg || 'registration success');
 
-                    self.setEmailCookie(json.email);
+                    self.setEasyloginCookie(json.id);
                     location.href = base_url;
                 } else {
                     throw new Error(json.msg);
@@ -89,11 +103,11 @@ var easylogin = {
             });
         });
     },
-    checkRegistration: function (email) {
+    checkRegistration: function (id) {
         // get default args
         //alert(email);
         var self = this;
-        window.fetch(base_url + 'Webauthn/getGetArgs', { method: 'POST', body: JSON.stringify({ "email": email }), cache: 'no-cache' }).then(function (response) {
+        window.fetch(base_url + 'Webauthn/getGetArgs', { method: 'POST', body: JSON.stringify({ "id": id }), cache: 'no-cache' }).then(function (response) {
             return response.json();
 
             // convert base64 to arraybuffer
@@ -180,7 +194,7 @@ var easylogin = {
         }
         return window.btoa(binary);
     },
-    setEmailCookie: function (email) {
+    setEasyloginCookie: function (id) {
         var expires = "";
         var days = 365;
         if (days) {
@@ -188,10 +202,10 @@ var easylogin = {
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
         }
-        document.cookie = "webauthn_email=" + (email || "") + expires + "; path=/";
+        document.cookie = "webauthn_easylogin=" + (id || "") + expires + "; path=/";
     },
-    getEmailCookie: function () {
-        var nameEQ = "webauthn_email=";
+    getEasyloginCookie: function () {
+        var nameEQ = "webauthn_easylogin=";
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
