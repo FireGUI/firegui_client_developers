@@ -25,7 +25,7 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
         <!-- CORE LEVEL STYLES -->
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v={$this->config->item('version')}"); ?>" />
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/font-awesome/css/font-awesome.min.css?v={$this->config->item('version')}"); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/@fortawesome/fontawesome-free/css/all.min.css?v=" . VERSION); ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v={$this->config->item('version')}"); ?>" />
 
         <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v={$this->config->item('version')}"); ?>" />
@@ -81,7 +81,7 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
                 .login-box,
                 .register-box {
-                    width: 90%;
+                    width: 90% !important;
                     margin-top: 20px;
                 }
             }
@@ -100,7 +100,14 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
             .login_logo {
                 width: 100%;
-                height: 30px;
+                height: 45px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .login_logo i {
+                color: #3c8dbc;
+                font-size: 36px;
             }
 
             .login_content .login_heading {
@@ -173,7 +180,7 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
             }
 
             .login_actions .last_action .js_easylogin_never:hover {
-                color: ##367fa9;
+                color: #367fa9;
             }
         </style>
 
