@@ -66,6 +66,108 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
         ?>
 
 
+        <style>
+            /* Media query per login box width responsive */
+            @media (max-width: 768px) {
+
+                .login-box,
+                .register-box {
+                    width: 90%;
+                    margin-top: 20px;
+                }
+            }
+
+            .login-box {
+                width: 550px;
+            }
+
+            .login_container {
+                /*min-width: 450px;*/
+                background: #ffffff;
+                padding: 20px 30px;
+                border-radius: 3px;
+            }
+
+
+            .login_logo {
+                width: 100%;
+                height: 30px;
+            }
+
+            .login_content .login_heading {
+                font-weight: 600;
+                font-size: 2.2rem;
+                color: #000000;
+            }
+
+            .login_content .login_text {
+                font-size: 1.5rem;
+                color: #000000;
+            }
+
+            .login_actions {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                margin-top: 30px
+            }
+
+            .login_actions .main_actions {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px
+            }
+
+            .login_actions .main_actions input {
+                width: 45%;
+            }
+
+            .login_actions .main_actions .js_easylogin_proceed {
+                border: 0;
+                background: #3c8dbc;
+                color: #ffffff;
+                font-size: 1.5rem;
+                font-weight: 600;
+                padding: 10px 15px;
+                transition: all 0.25s ease-in;
+            }
+
+            .login_actions .main_actions .js_easylogin_proceed:hover {
+                background: #367fa9;
+            }
+
+            .login_actions .main_actions .js_easylogin_later {
+                background: #ffffff;
+                border: 1px solid #3c8dbc;
+                color: #3c8dbc;
+                font-size: 1.5rem;
+                font-weight: 600;
+                padding: 10px 15px;
+                transition: all 0.25s ease-in;
+            }
+
+            .login_actions .main_actions .js_easylogin_later:hover {
+                background: #3c8dbc;
+                color: #ffffff;
+            }
+
+            .login_actions .last_action .js_easylogin_never {
+                background: #ffffff;
+                border: 0;
+                color: #3c8dbc;
+                font-weight: 600;
+                padding: 5px 10px;
+                transition: all 0.25s ease-in;
+            }
+
+            .login_actions .last_action .js_easylogin_never:hover {
+                color: ##367fa9;
+            }
+        </style>
+
     </head>
 
     <body class="hold-transition login-page">
@@ -84,10 +186,30 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
                 </div>
 
                 <div class="login-box-body">
-                    <input type="button" class="js_easylogin_later" value="Later..." />
+                    <div class="login_container">
+                        <div class="login_logo">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <div class="login_content">
+                            <p class="login_heading text-center">
+                                Are you tired of passwords?
+                            </p>
+                            <p class="login_text text-center">Depending on your device you will be able to login with your fingreprint, face recognition or PIN.</p>
+                        </div>
+                        <div class="login_actions">
+                            <div class="main_actions">
+                                <input type="button" class="js_easylogin_later" value="Later" />
+                                <input type="button" class="js_easylogin_proceed" value="Proceed" />
+                            </div>
+                            <div class="last_action">
+                                <input type="button" class="js_easylogin_never" value="Don't ask me again" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--<input type="button" class="js_easylogin_later" value="Later..." />
                     <input type="button" class="js_easylogin_proceed" value="Proceed..." />
                     <br />
-                    <input type="button" class="js_easylogin_never" value="Don't ask me again..." />
+                    <input type="button" class="js_easylogin_never" value="Don't ask me again..." />-->
                 </div>
             </div>
         </div>
