@@ -228,7 +228,11 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
     <body class="hold-transition login-page">
         <div class="background_img">
             <!-- New login -->
-            <div class="login-box login-box-security js_easylogin_page">
+            <div class="login-box login-box-security js_easylogin_page" data-user="<?php echo base64_encode(json_encode([
+                                                                                        'id' => $this->auth->get('id'),
+                                                                                        'email' => $this->auth->get(LOGIN_USERNAME_FIELD),
+                                                                                        'display_name' => $this->auth->get(LOGIN_NAME_FIELD),
+                                                                                    ])); ?>">
                 <div class="logo">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>

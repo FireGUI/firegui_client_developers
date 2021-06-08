@@ -165,7 +165,15 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                         </li>
 
                     <?php endif; ?>
-
+                    <?php if (!empty($_COOKIE['webauthn_easylogin']) && $_COOKIE['webauthn_easylogin'] == '__never__') : ?>
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <a href="<?php echo base_url('access/easylogin'); ?>"><i class="fas fa-fingerprint"></i> <?php e('Enable Touch-Id'); ?></a>
+                                </div>
+                            </div>
+                        </li>
+                    <?php endif; ?>
                     <li class="user-footer">
                         <div class="pull-left">
                             <?php

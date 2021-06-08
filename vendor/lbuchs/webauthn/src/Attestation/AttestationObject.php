@@ -1,6 +1,7 @@
 <?php
 
 namespace lbuchs\WebAuthn\Attestation;
+
 use lbuchs\WebAuthn\WebAuthnException;
 use lbuchs\WebAuthn\CBOR\CborDecoder;
 use lbuchs\WebAuthn\Binary\ByteBuffer;
@@ -9,12 +10,14 @@ use lbuchs\WebAuthn\Binary\ByteBuffer;
  * @author Lukas Buchs
  * @license https://github.com/lbuchs/WebAuthn/blob/master/LICENSE MIT
  */
-class AttestationObject {
+class AttestationObject
+{
     private $_authenticatorData;
     private $_attestationFormat;
     private $_attestationFormatName;
 
-    public function __construct($binary , $allowedFormats) {
+    public function __construct($binary, $allowedFormats)
+    {
         $enc = CborDecoder::decode($binary);
         // validation
         if (!\is_array($enc) || !\array_key_exists('fmt', $enc) || !is_string($enc['fmt'])) {
@@ -39,14 +42,29 @@ class AttestationObject {
 
 
         switch ($this->_attestationFormatName) {
-            case 'android-key': $this->_attestationFormat = new Format\AndroidKey($enc, $this->_authenticatorData); break;
-            case 'android-safetynet': $this->_attestationFormat = new Format\AndroidSafetyNet($enc, $this->_authenticatorData); break;
-            case 'apple': $this->_attestationFormat = new Format\Apple($enc, $this->_authenticatorData); break;
-            case 'fido-u2f': $this->_attestationFormat = new Format\U2f($enc, $this->_authenticatorData); break;
-            case 'none': $this->_attestationFormat = new Format\None($enc, $this->_authenticatorData); break;
-            case 'packed': $this->_attestationFormat = new Format\Packed($enc, $this->_authenticatorData); break;
-            case 'tpm': $this->_attestationFormat = new Format\Tpm($enc, $this->_authenticatorData); break;
-            default: throw new WebAuthnException('invalid attestation format: ' . $enc['fmt'], WebAuthnException::INVALID_DATA);
+            case 'android-key':
+                $this->_attestationFormat = new Format\AndroidKey($enc, $this->_authenticatorData);
+                break;
+            case 'android-safetynet':
+                $this->_attestationFormat = new Format\AndroidSafetyNet($enc, $this->_authenticatorData);
+                break;
+            case 'apple':
+                $this->_attestationFormat = new Format\Apple($enc, $this->_authenticatorData);
+                break;
+            case 'fido-u2f':
+                $this->_attestationFormat = new Format\U2f($enc, $this->_authenticatorData);
+                break;
+            case 'none':
+                $this->_attestationFormat = new Format\None($enc, $this->_authenticatorData);
+                break;
+            case 'packed':
+                $this->_attestationFormat = new Format\Packed($enc, $this->_authenticatorData);
+                break;
+            case 'tpm':
+                $this->_attestationFormat = new Format\Tpm($enc, $this->_authenticatorData);
+                break;
+            default:
+                throw new WebAuthnException('invalid attestation format: ' . $enc['fmt'], WebAuthnException::INVALID_DATA);
         }
     }
 
@@ -54,7 +72,8 @@ class AttestationObject {
      * returns the attestation format name
      * @return string
      */
-    public function getAttestationFormatName() {
+    public function getAttestationFormatName()
+    {
         return $this->_attestationFormatName;
     }
 
@@ -62,7 +81,8 @@ class AttestationObject {
      * returns the attestation public key in PEM format
      * @return AuthenticatorData
      */
-    public function getAuthenticatorData() {
+    public function getAuthenticatorData()
+    {
         return $this->_authenticatorData;
     }
 
@@ -70,7 +90,8 @@ class AttestationObject {
      * returns the certificate chain as PEM
      * @return string|null
      */
-    public function getCertificateChain() {
+    public function getCertificateChain()
+    {
         return $this->_attestationFormat->getCertificateChain();
     }
 
@@ -78,7 +99,8 @@ class AttestationObject {
      * return the certificate issuer as string
      * @return string
      */
-    public function getCertificateIssuer() {
+    public function getCertificateIssuer()
+    {
         $pem = $this->getCertificatePem();
         $issuer = '';
         if ($pem) {
@@ -88,6 +110,9 @@ class AttestationObject {
                     $issuer .= \trim($certInfo['issuer']['CN']);
                 }
                 if ($certInfo['issuer']['O'] || $certInfo['issuer']['OU']) {
+                    if (empty($certInfo['issuer']['OU'])) {
+                        $certInfo['issuer']['OU'] = '';
+                    }
                     if ($issuer) {
                         $issuer .= ' (' . \trim($certInfo['issuer']['O'] . ' ' . $certInfo['issuer']['OU']) . ')';
                     } else {
@@ -104,7 +129,8 @@ class AttestationObject {
      * return the certificate subject as string
      * @return string
      */
-    public function getCertificateSubject() {
+    public function getCertificateSubject()
+    {
         $pem = $this->getCertificatePem();
         $subject = '';
         if ($pem) {
@@ -114,6 +140,9 @@ class AttestationObject {
                     $subject .= \trim($certInfo['subject']['CN']);
                 }
                 if ($certInfo['subject']['O'] || $certInfo['subject']['OU']) {
+                    if (empty($certInfo['subject']['OU'])) {
+                        $certInfo['subject']['OU'] = '';
+                    }
                     if ($subject) {
                         $subject .= ' (' . \trim($certInfo['subject']['O'] . ' ' . $certInfo['subject']['OU']) . ')';
                     } else {
@@ -130,7 +159,8 @@ class AttestationObject {
      * returns the key certificate in PEM format
      * @return string
      */
-    public function getCertificatePem() {
+    public function getCertificatePem()
+    {
         return $this->_attestationFormat->getCertificatePem();
     }
 
@@ -140,7 +170,8 @@ class AttestationObject {
      * @return bool
      * @throws WebAuthnException
      */
-    public function validateAttestation($clientDataHash) {
+    public function validateAttestation($clientDataHash)
+    {
         return $this->_attestationFormat->validateAttestation($clientDataHash);
     }
 
@@ -150,7 +181,8 @@ class AttestationObject {
      * @return boolean
      * @throws WebAuthnException
      */
-    public function validateRootCertificate($rootCas) {
+    public function validateRootCertificate($rootCas)
+    {
         return $this->_attestationFormat->validateRootCertificate($rootCas);
     }
 
@@ -159,7 +191,8 @@ class AttestationObject {
      * @param string$rpIdHash
      * @return bool
      */
-    public function validateRpIdHash($rpIdHash) {
+    public function validateRpIdHash($rpIdHash)
+    {
         return $rpIdHash === $this->_authenticatorData->getRpIdHash();
     }
 }

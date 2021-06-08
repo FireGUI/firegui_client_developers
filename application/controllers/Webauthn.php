@@ -7,7 +7,7 @@ class Webauthn extends MY_Controller
     var $WebAuthn = NULL;
     var $userVerification = 'required';
     var $requireResidentKey = true;
-    var $typeUsb = true;
+    var $typeUsb = false;
     var $typeNfc = true;
     var $typeBle = true;
     var $typeInt = true;
@@ -35,10 +35,18 @@ class Webauthn extends MY_Controller
 
     public function getCreateArgs()
     {
+        $post = trim(file_get_contents('php://input'));
 
+        if ($post) {
+            $post = json_decode($post, true);
+        }
+
+
+
+        //debug($post, true);
 
         $crossPlatformAttachment = null;
-        $createArgs = $this->WebAuthn->getCreateArgs('demo', 'demo', 'Demo Demolin', 20, $this->requireResidentKey, $this->userVerification, $crossPlatformAttachment);
+        $createArgs = $this->WebAuthn->getCreateArgs($post['id'], $post['email'], $post['display_name'], 20, $this->requireResidentKey, $this->userVerification, $crossPlatformAttachment);
 
         // save challange to session. you have to deliver it to processGet later.
         //$_SESSION['challenge'] = $this->WebAuthn->getChallenge();
@@ -56,8 +64,8 @@ class Webauthn extends MY_Controller
         if ($post) {
             $post = json_decode($post, true);
         }
-        $id = $post['id'];
-        $users = $this->apilib->search(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $id]);
+        $email = $post['email'];
+        $users = $this->apilib->search(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $email]);
 
 
 
@@ -116,7 +124,11 @@ class Webauthn extends MY_Controller
         $return = new stdClass();
         $return->success = true;
         $return->msg = $msg;
-        $return->email = $user[LOGIN_USERNAME_FIELD];
+        $return->data = json_encode([
+            'id' => $user[LOGIN_ENTITY . '_id'],
+            'email' => $user[LOGIN_USERNAME_FIELD],
+            'display_name' => $user[LOGIN_NAME_FIELD],
+        ]);
         e_json($return);
     }
 
