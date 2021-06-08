@@ -920,6 +920,9 @@ $lang['The Password field does not match required security validation.'] = 'Il c
 $lang['Are you tired of passwords?'] = 'Stanco di doverti ricordare le password?';
 $lang['Depending on your device you will be able to login with your fingerprint, face recognition or PIN.'] = 'In base al dispositivo potrai fare l\'accesso tramite impronta digitale, riconoscimento facciale o PIN.';
 $lang['Later'] = 'Forse più tardi';
-$lang['Proceed'] = 'Attiva';
+$lang['Proceed'] = 'Procedi';
 $lang['Don\'t ask me again'] = 'Non chiederlo ancora';
+$lang['Hi,'] = 'Ciao,';
+$lang['Back to classic login page...'] = 'Torna alla pagina di login classica...';
+$lang['Enable Touch-Id'] = 'Riattiva Touch-Id';
 /* ====== End Easylogin translation ====== */

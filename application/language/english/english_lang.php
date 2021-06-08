@@ -134,3 +134,4 @@ $lang['Don\'t ask me again'] = 'Don\'t ask me again';
 $lang['Hi,'] = 'Hi,';
 $lang['Back to classic login page...'] = 'Back to classic login page...';
 $lang['Invalid API call'] = 'Invalid API call';
+$lang['Enable Touch-Id'] = 'Enable Touch-Id';
