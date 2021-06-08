@@ -133,14 +133,20 @@ class Webauthn extends MY_Controller
         $credentialId = $post->id;
         $challenge = $this->session->userdata(SESS_WEBAUTHN);
         $credentialPublicKey = null;
+        $email = $post->email;
 
-        $query = "SELECT * FROM " . LOGIN_ENTITY . " WHERE " . LOGIN_WEBAUTHN_DATA . '->"$.credentialId" = \'' . $credentialId . '\'';
+        $query = "SELECT * FROM " . LOGIN_ENTITY . " WHERE JSON_EXTRACT(" . LOGIN_WEBAUTHN_DATA . ', \'$.credentialId\') = \'' . $credentialId . '\'';
+        try { //Run with try catch beacause JSON_EXTRACT function available only from MariaDB 10.3.*
+            $user = $this->db->query($query);
+        } catch (Exception $e) {
+            $user = false;
+            $db_error = $this->db->error();
+        }
 
-        $user = $this->db->query($query);
-        if ($user === false) {
+        if ($user === false || !empty($db_error)) { //If not supported, try a simple match with the credentialId and username
             //DB does not support JSON data
             $sql_escape_credential_id = str_ireplace('/', '%', $credentialId);
-            $query = "SELECT * FROM " . LOGIN_ENTITY . " WHERE " . LOGIN_WEBAUTHN_DATA . " LIKE '%{$sql_escape_credential_id}%'";
+            $query = "SELECT * FROM " . LOGIN_ENTITY . " WHERE " . LOGIN_USERNAME_FIELD . " = '$email' AND " . LOGIN_WEBAUTHN_DATA . " LIKE '%{$sql_escape_credential_id}%'";
 
             $user = $this->db->query($query);
         }

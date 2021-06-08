@@ -128,8 +128,10 @@ var easylogin = {
 
                 // catch errors
             }).catch(function (err) {
-
-                window.alert(err.message || 'unknown error occured');
+                self.deleteEasyLoginCookie();
+                console.log(err.message || 'unknown error occured');
+                alert('Unknown error occurred. Redirecting to dashboard...');
+                location.href = base_url;
             });
         });
     },
@@ -137,6 +139,7 @@ var easylogin = {
         // get default args
         //alert(email);
         var self = this;
+        var email = id;
         window.fetch(base_url + 'Webauthn/getGetArgs', { method: 'POST', body: JSON.stringify({ "id": id }), cache: 'no-cache' }).then(function (response) {
             return response.json();
 
@@ -163,7 +166,8 @@ var easylogin = {
                 id: cred.rawId ? self.arrayBufferToBase64(cred.rawId) : null,
                 clientDataJSON: cred.response.clientDataJSON ? self.arrayBufferToBase64(cred.response.clientDataJSON) : null,
                 authenticatorData: cred.response.authenticatorData ? self.arrayBufferToBase64(cred.response.authenticatorData) : null,
-                signature: cred.response.signature ? self.arrayBufferToBase64(cred.response.signature) : null
+                signature: cred.response.signature ? self.arrayBufferToBase64(cred.response.signature) : null,
+                email: email
             };
 
             // transfer to server
@@ -188,6 +192,8 @@ var easylogin = {
             // catch errors
         }).catch(function (err) {
             self.deleteEasyLoginCookie();
+            console.log(err.message || 'unknown error occured');
+            alert('Unknown error occurred. Redirecting to dashboard...');
             location.href = base_url;
         });
     },
