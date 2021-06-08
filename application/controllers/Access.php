@@ -107,7 +107,7 @@ class Access extends MY_Controller
             if (false && $user_last_changed_days >= PASSWORD_EXPIRE_DAYS) { // 2021-06-03 - Per ora lo lascio if == false poi si vedrà
                 $redirection_url = base_url("access/change_password");
                 $this->session->set_userdata('change_password_email', $data['users_users_email']);
-            } else if (!empty($data['webauthn_enable']) && $data['webauthn_enable'] == 1) {
+            } else if (!empty($data['webauthn_enable']) && $data['webauthn_enable'] == 1 && defined('LOGIN_WEBAUTHN_DATA')) {
                 $redirection_url = base_url("access/easylogin");
                 //debug($redirection_url, true);
             } else {
