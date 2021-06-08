@@ -1,4 +1,5 @@
 var easylogin = {
+    never_placeholder_cookie: '__never__',
     form_field_selector: '.webauthn_enable',
     login_box_selector: '.main_login_box',
     easylogin_box_selector: '.easylogin_box',
@@ -16,16 +17,13 @@ var easylogin = {
 
 
     init: function () {
-        if (this.available) {
-
-
-
+        var cookie_easylogin = this.getEasyloginCookie();
+        if (this.available && cookie_easylogin != this.never_placeholder_cookie) {
 
             //I'm in the login page
             var $form_field = $(this.form_field_selector);
             $form_field.val(1);
 
-            var cookie_easylogin = this.getEasyloginCookie();
             if (cookie_easylogin) {
                 var $login_box = $(this.login_box_selector);
                 $login_box.hide();
@@ -54,6 +52,17 @@ var easylogin = {
         $ask_for_easylogin_btn.on('click', function () {
 
             self.checkRegistration(cookie_easylogin);
+        });
+
+        var $later_btn = $(this.later_btn_selector);
+        $later_btn.on('click', function () {
+
+            location.href = base_url;
+        });
+        var $never_btn = $(this.never_btn_selector);
+        $never_btn.on('click', function () {
+            self.setEasyloginCookie(self.never_placeholder_cookie);
+            location.href = base_url;
         });
 
 
@@ -178,8 +187,8 @@ var easylogin = {
 
             // catch errors
         }).catch(function (err) {
-
-            window.alert(err.message || 'unknown error occured');
+            self.deleteEasyLoginCookie();
+            location.href = base_url;
         });
     },
     recursiveBase64StrToArrayBuffer: function (obj) {
@@ -234,6 +243,9 @@ var easylogin = {
             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
         }
         return false;
+    },
+    deleteEasyLoginCookie: function () {
+        document.cookie = "webauthn_easylogin=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
     }
 
 };
