@@ -476,7 +476,7 @@ $config['csrf_exclude_uris'] = array(
     'firegui/.*?',
     'custom/.*?',
     'db_ajax/multi_upload_async/.*?',
-
+    'Webauthn/.*?',
 );
 
 /*
