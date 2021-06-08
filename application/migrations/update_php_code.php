@@ -19,3 +19,6 @@ $updates['1.6.7.5'] = [
 $updates['1.8.9'] = [
     'include' => ['1.8.9_grids_action_migration.php'],
 ];
+$updates['2.1.9'] = [
+    'include' => ['2.1.9_field_user_webauthn_data.php'],
+];
