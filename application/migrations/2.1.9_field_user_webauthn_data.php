@@ -12,7 +12,7 @@ $this->db->insert('fields', [
     'fields_required' => '0',
     'fields_preview' => '0',
     'fields_visible' => '1',
-    'fields_multilangual' => '0',
+    'fields_multilingual' => '0',
 ]);
 $field_id = $this->db->insert_id();
 log_message('debug', 'Inserting webauthn_data field draw');
@@ -21,7 +21,7 @@ $this->db->insert('fields_draw', [
     'fields_draw_label' => 'Webauthn data',
     'fields_draw_html_type' => 'textarea',
     'fields_draw_display_none' => '0',
-    'fields_draw_enable' => '1',
+    'fields_draw_enabled' => '1',
 
 ]);
 log_message('debug', 'Alter table ' . $login_entity);
