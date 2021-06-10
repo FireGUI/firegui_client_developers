@@ -758,7 +758,6 @@ $(function () {
     });
 
     $('body').on('click', '.js_title_collapse', function () {
-        alert(1);
         $('.expand, .collapse', $(this)).click();
         $(window).trigger('resize');
     });
