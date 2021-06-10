@@ -232,6 +232,8 @@ class Firegui extends MY_Controller
                                         }
                                     }
                                 }
+                            } else {
+                                log_message('debug', "new version: $new_version, key: $key");
                             }
                         }
                     }
