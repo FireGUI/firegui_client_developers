@@ -229,7 +229,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
     <body class="hold-transition login-page">
         <div class="background_img">
             <div class="login-box main_login_box">
-                <div class="logo">
+                <div class="logo" style="max-width:none!important;">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>
                             <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
@@ -327,7 +327,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
 
             <!-- New login -->
             <div class="login-box login-box-security easylogin_box" style="display:none;">
-                <div class="logo">
+                <div class="logo" style="max-width:none!important;">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>
                             <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
