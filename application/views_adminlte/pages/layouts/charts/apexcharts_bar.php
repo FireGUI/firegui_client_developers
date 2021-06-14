@@ -6,9 +6,13 @@ $series = ['yaxis' => [], 'series' => []];
 //Column uniform
 foreach ($chart_data as $x => $chart_element_data) {
     foreach ($chart_element_data['data'] as $dato) {
-        $xes[$dato['x']] = $dato['x'];
+        if ($dato['x']) {
+            $xes[$dato['x']] = $dato['x'];
+        }
     }
 }
+
+
 
 //Fill empty columns for each chart's element
 foreach ($chart_data as $x => $chart_element_data) {
