@@ -174,8 +174,8 @@ var easylogin = {
                 // catch errors
             }).catch(function (err) {
                 self.deleteEasyLoginCookie();
-                console.log(err.message || 'unknown error occured');
-                alert('Unknown error occurred. Redirecting to dashboard...');
+                console.log(err.message || 'unknown error occured. Redirecting to dashboard...');
+
                 //alert('TODO: re-enable redirect');
                 location.href = base_url;
             });
