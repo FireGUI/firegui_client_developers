@@ -233,7 +233,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                                                                                         'email' => $this->auth->get(LOGIN_USERNAME_FIELD),
                                                                                         'display_name' => $this->auth->get(LOGIN_NAME_FIELD),
                                                                                     ])); ?>">
-                <div class="logo">
+                <div class="logo" style="max-width:none!important;">
                     <div class="text-center">
                         <?php if ($this->settings === array()) : ?>
                             <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
