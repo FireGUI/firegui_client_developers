@@ -12,7 +12,27 @@ var easylogin = {
     easylogin_back_button_selector: '.js_easylogin_back',
 
     available: function () {
-        return !(!window.fetch || !navigator.credentials || !navigator.credentials.create);
+        //return !(!window.fetch || !navigator.credentials || !navigator.credentials.create);
+
+        if (window.PublicKeyCredential) {
+            PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+                .then((available) => {
+                    if (available) {
+                        console.log("Supported.");
+                        return true
+                    } else {
+                        console.log(
+                            "WebAuthn supported, Platform Authenticator *not* supported."
+                        );
+                        return false
+                    }
+                })
+                .catch((err) => console.log("Something went wrong."));
+        } else {
+            console.log("Not supported.");
+            return false;
+        }
+        return false;
     },
 
 
