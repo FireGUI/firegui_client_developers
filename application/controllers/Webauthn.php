@@ -21,14 +21,15 @@ class Webauthn extends MY_Controller
         $server_name = explode('://', base_url())[1];
         $server_name = explode('/', $server_name)[0];
 
-        $formats = [];
-        $formats[] = 'android-key';
-        $formats[] = 'android-safetynet';
-        $formats[] = 'apple';
-        $formats[] = 'fido-u2f';
-        $formats[] = 'none';
-        $formats[] = 'packed';
-        $formats[] = 'tpm';
+        // $formats = [];
+        // $formats[] = 'android-key';
+        // $formats[] = 'android-safetynet';
+        // $formats[] = 'apple';
+        // $formats[] = 'fido-u2f';
+        // $formats[] = 'none';
+        // $formats[] = 'packed';
+        // $formats[] = 'tpm';
+        $formats = ['none'];
 
         $this->WebAuthn = new lbuchs\WebAuthn\WebAuthn('WebAuthn Library', $server_name, $formats);
     }
@@ -46,7 +47,17 @@ class Webauthn extends MY_Controller
         //debug($post, true);
 
         $crossPlatformAttachment = null;
+        if (($this->typeUsb || $this->typeNfc || $this->typeBle) && !$this->typeInt) {
+            $crossPlatformAttachment = true;
+        } else if (!$this->typeUsb && !$this->typeNfc && !$this->typeBle && $this->typeInt) {
+            $crossPlatformAttachment = false;
+        }
+        //Force false for beta testing
+        $crossPlatformAttachment = false;
+
         $createArgs = $this->WebAuthn->getCreateArgs($post['id'], $post['email'], $post['display_name'], 20, $this->requireResidentKey, $this->userVerification, $crossPlatformAttachment);
+
+        //debug($createArgs, true);
 
         // save challange to session. you have to deliver it to processGet later.
         //$_SESSION['challenge'] = $this->WebAuthn->getChallenge();
