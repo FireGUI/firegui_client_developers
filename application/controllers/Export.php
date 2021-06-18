@@ -59,9 +59,18 @@ class Export extends MY_Controller
 
         $data = $this->prepareData($grid_id, $value_id);
         $csv = $this->arrayToCsv($data, ',');
+
+        $filename = "grid{$grid_id}";
+
+        if (!empty($this->input->get('filename'))) {
+            $filename = $this->input->get('filename');
+            $filename = ucfirst($filename);
+            $filename = str_ireplace([' ', '-'], '_', $filename);
+        }
+
         header("Content-Type: text/csv");
         header("Content-Transfer-Encoding: Binary");
-        header("Content-disposition: attachment; filename=\"grid{$grid_id}.csv\"");
+        header("Content-disposition: attachment; filename=\"{$filename}.csv\"");
         echo $csv;
         exit;
     }
@@ -127,8 +136,16 @@ class Export extends MY_Controller
 
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
 
+        $filename = "grid{$grid_id}";
+
+        if (!empty($this->input->get('filename'))) {
+            $filename = $this->input->get('filename');
+            $filename = ucfirst($filename);
+            $filename = str_ireplace([' ', '-'], '_', $filename);
+        }
+
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=\"grid{$grid_id}.xlsx\"");
+        header("Content-Disposition: attachment;filename=\"{$filename}.xlsx\"");
         header('Cache-Control: max-age=0');
 
         // If you're serving to IE 9, then the following may be needed
