@@ -223,20 +223,31 @@ class Datab extends CI_Model
                     ")->result_array();
     }
 
-    public function get_field($field_id)
+    public function get_field($field_id, $full_data = false)
     {
+
         if (is_numeric($field_id)) {
-            return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_id = '{$field_id}'")->row_array();
+            if ($full_data) {
+                return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_id' => $field_id])->row_array();
+            } else {
+                return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_id = '{$field_id}'")->row_array();
+            }
         } else {
-            return $this->get_field_by_name($field_id);
+            return $this->get_field_by_name($field_id, $full_data);
         }
     }
 
-    public function get_field_by_name($field_name)
+    public function get_field_by_name($field_name, $full_data = false)
     {
-        $slashed = addslashes($field_name);
-        return $this->db->query("SELECT * FROM fields WHERE fields_name = '{$slashed}'")->row_array();
+
+        if ($full_data) {
+            return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_name' => $field_name])->row_array();
+        } else {
+            $slashed = addslashes($field_name);
+            return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_name = '{$slashed}'")->row_array();
+        }
     }
+
 
     /**
      * Forms
@@ -2821,6 +2832,9 @@ class Datab extends CI_Model
         $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] == DB_BOOL_TRUE && !trim($field['fields_default']));
         $baseShowLabel = $field['forms_fields_show_label'] ? $field['forms_fields_show_label'] == DB_BOOL_TRUE : true;    // Se è vuoto mostro sempre la label di default, altrimenti valuto il campo
         $baseOnclick = $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '';
+
+        $attr = (!empty($field['fields_draw_attr'])) ? $field['fields_draw_attr'] : '';
+
         $subform = $field['forms_fields_subform_id'] ?: null;
 
         $class = $field['fields_draw_css_extra'] . ' field_' . $field['fields_id'];
@@ -2872,6 +2886,7 @@ class Datab extends CI_Model
                 'placeholder' => $basePlaceholder,
                 'help' => $baseHelpText,
                 'class' => $class,
+                'attr' => $attr,
                 'onclick' => $baseOnclick,
                 'subform' => $subform
             ];
