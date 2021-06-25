@@ -200,6 +200,13 @@ if (!function_exists('debug')) {
     }
 }
 
+if (!function_exists('is_valid_json')) {
+    function is_valid_json($string)
+    {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+}
 
 if (!function_exists('json_message')) {
 
@@ -1389,8 +1396,9 @@ function getReverseGeocoding($address)
     }
 }
 
+
 if (!function_exists('curlRequest')) {
-    function curlRequest($url, $data = [], $isPost = false, $headers = [], $jsonPayload = false)
+    function curlRequest($url, $data = [], $isPost = false, $jsonPayload = false, $headers = [], $curlCustomOpts = [])
     {
         $ch = curl_init();
 
@@ -1413,14 +1421,22 @@ if (!function_exists('curlRequest')) {
         // dump($url);
         // dump($data);
         // dump($isPost);
+        // dump($jsonPayload);
+        // dump($curlCustomOpts);
 
         curl_setopt($ch, CURLOPT_URL, $url . $params);
+
+        if (!empty($curlCustomOpts)) {
+            foreach ($curlCustomOpts as $opt => $val) {
+                curl_setopt($ch, $opt, $val);
+            }
+        }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1');
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 900);
 
         $data = curl_exec($ch);
