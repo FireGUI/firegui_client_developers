@@ -121,13 +121,14 @@ class Main extends MY_Controller
             die();
         }
 
-        // Altrimenti posso procedere con il rendering della pagina. Due casi:
-        //  1) il layout è "pdffable"
-        //  2) il layout è normale
+        // I have 2 type of layouts: PDF or standard
         if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
-            $content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
 
-            $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+            if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
+                $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+            } else {
+                $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+            }
 
             $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
 
