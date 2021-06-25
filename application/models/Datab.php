@@ -2821,6 +2821,9 @@ class Datab extends CI_Model
         $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] == DB_BOOL_TRUE && !trim($field['fields_default']));
         $baseShowLabel = $field['forms_fields_show_label'] ? $field['forms_fields_show_label'] == DB_BOOL_TRUE : true;    // Se è vuoto mostro sempre la label di default, altrimenti valuto il campo
         $baseOnclick = $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '';
+
+        $attr = (!empty($field['fields_draw_attr'])) ? $field['fields_draw_attr'] : '';
+
         $subform = $field['forms_fields_subform_id'] ?: null;
 
         $class = $field['fields_draw_css_extra'] . ' field_' . $field['fields_id'];
@@ -2872,6 +2875,7 @@ class Datab extends CI_Model
                 'placeholder' => $basePlaceholder,
                 'help' => $baseHelpText,
                 'class' => $class,
+                'attr' => $attr,
                 'onclick' => $baseOnclick,
                 'subform' => $subform
             ];
