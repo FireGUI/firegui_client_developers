@@ -223,20 +223,31 @@ class Datab extends CI_Model
                     ")->result_array();
     }
 
-    public function get_field($field_id)
+    public function get_field($field_id, $full_data = false)
     {
+
         if (is_numeric($field_id)) {
-            return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_id = '{$field_id}'")->row_array();
+            if ($full_data) {
+                return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_id' => $field_id])->row_array();
+            } else {
+                return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_id = '{$field_id}'")->row_array();
+            }
         } else {
-            return $this->get_field_by_name($field_id);
+            return $this->get_field_by_name($field_id, $full_data);
         }
     }
 
-    public function get_field_by_name($field_name)
+    public function get_field_by_name($field_name, $full_data = false)
     {
-        $slashed = addslashes($field_name);
-        return $this->db->query("SELECT * FROM fields WHERE fields_name = '{$slashed}'")->row_array();
+
+        if ($full_data) {
+            return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_name' => $field_name])->row_array();
+        } else {
+            $slashed = addslashes($field_name);
+            return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_name = '{$slashed}'")->row_array();
+        }
     }
+
 
     /**
      * Forms

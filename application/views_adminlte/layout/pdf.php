@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-    <title>Layout PDF</title>
+    <title><?php echo $dati['layout_container']['layouts_title']; ?></title>
 
     <!-- CDN Stylesheets -->
     <link rel="stylesheet" href="<?php echo base_url("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css"); ?>" />
