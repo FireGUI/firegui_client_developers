@@ -9,8 +9,6 @@ $iconsMapForContentType = [
 
 $portletBgColorMap = [];
 ?>
-
-
 <?php echo $dati['pre-layout']; ?>
 
 <?php if ($dati['show_title']) : ?>
@@ -22,6 +20,9 @@ $portletBgColorMap = [];
         </h1>
         <ol class="breadcrumb">
             <li><a href="<?php echo base_url('main/layout/1'); ?>"><i class="fas fa-tachometer-alt"></i> Home</a></li>
+            <?php if (!empty($dati['layout_container']['modules_name'])) : ?>
+                <li><i class="fas fa-plug"></i> <?php echo $dati['layout_container']['modules_name'] . " (" . $dati['layout_container']['modules_version'] . ")"; ?></li>
+            <?php endif; ?>
             <li class="active"> <?php e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?></li>
         </ol>
     </section>
