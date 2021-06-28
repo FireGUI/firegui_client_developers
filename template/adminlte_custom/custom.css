@@ -669,6 +669,16 @@ th.w15 {
   border: none;
   margin: 10px 10px;
 }
+
+.layout_box .content {
+	min-height: auto;
+}
+
+table.dataTable.nowrap th,
+table.dataTable.nowrap td {
+  white-space: inherit!important;
+}
+
 /*Hide topbar with logo on mobile*/
 @media (max-width: 768px) {
   .wrapper .main-header .logo {
