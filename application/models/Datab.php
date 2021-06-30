@@ -471,10 +471,15 @@ class Datab extends CI_Model
                 ->join('fields_draw', 'forms_fields_fields_id = fields_draw_fields_id')
                 ->order_by('forms_fields_order')
                 ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id, 'fields_visible' => DB_BOOL_TRUE])->result_array();
-            if (is_array($value_id)) {
-                $form['action_url'] = base_url("db_ajax/save_form/{$form_id}/true");
+
+            if (!empty($form['forms_action'])) {
+                $form['action_url'] = str_ireplace(['{base_url}', '{value_id}'], [base_url(), ($value_id ?? null)], $form['forms_action']);
             } else {
-                $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}" : ''));
+                if (is_array($value_id)) {
+                    $form['action_url'] = base_url("db_ajax/save_form/{$form_id}/true");
+                } else {
+                    $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}" : ''));
+                }
             }
 
             foreach ($fields as $key => $field) {
