@@ -23,6 +23,11 @@ function initDropzones() {
         var campo = $('[data-name="' + fieldname + '"]');
         dzfiles[unique] = [];
 
+        let dropzoneControl = $(this)[0].dropzone;
+        if (dropzoneControl) {
+            dropzoneControl.destroy();
+        }
+
         myDropzones[unique] = new Dropzone($(this).get(0), { //queryselector before...
             url: url,
             autoProcessQueue: true,
