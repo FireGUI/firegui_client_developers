@@ -813,7 +813,7 @@ $(function () {
         }, 'fast');
     });
 
-    $('body').on('keyup', '.decimal', function () {
+    $('body').on('keyup', '.js_decimal', function () {
         var val = $(this).val().replace(',', '.');
         val = val.replace(' ', '.');
         if (isNaN(val)) {
@@ -821,6 +821,21 @@ $(function () {
             if (val.split('.').length > 2) val = val.replace(/\.+$/, '');
         }
         $(this).val(val);
+    });
+
+    $('body').on('keyup', '.js_money', function () {
+        var val = $(this).val();
+        val = val.replace(/[^\d,]/g, "")
+            .replace(/^(\d*\,)(.*)\,(.*)$/, '$1$2$3')
+            .replace(/\,(\d{2})\d+/, ',$1')
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        var first_char = val.charAt(0);
+        if (first_char === ',') {
+            $(this).val('0' + val);
+        } else {
+            $(this).val(val);
+        }
     });
 
     //jQuery in automatico appende ?_={timestamp} su tutti i js caricati da jquery.plugin. Così non lo fa...
