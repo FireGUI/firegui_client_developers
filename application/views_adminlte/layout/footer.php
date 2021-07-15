@@ -107,16 +107,23 @@
 <footer class="main-footer">
 
 <div class="left_side pull-left hidden-xs">
-<div class="btn-group">
-                      
-                  
-    <button id="buttonContactsWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Contacts List">
-        <i class="fa fa-address-book" ></i>
-    </button>
-    <button id="buttonProjectsNotesWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Projects notes">
-        <i class="fa fa-sticky-note" ></i>
-    </button>
+
+<div class="">
+        {pre-footer}
     </div>
+
+    <div class="btn-group">                       
+        <button id="buttonContactsWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Contacts List">
+            <i class="fa fa-address-book" ></i>
+        </button>
+        <button id="buttonProjectsNotesWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Projects notes">
+            <i class="fa fa-sticky-note" ></i>
+        </button>
+        </div>
+
+       
+
+
 </div>
 
 <div class="center_side pull-left hidden-xs">
@@ -124,7 +131,12 @@
 </div>
 
 <div class="right_side pull-right hidden-xs">
+<div class="">
+        {post-footer}
+    </div>
+
     <b><?php e('Version'); ?></b> <?php echo VERSION; ?>
+
 </div>
     
 </footer>

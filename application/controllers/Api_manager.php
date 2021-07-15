@@ -264,7 +264,7 @@ class Api_manager extends MY_Controller
 
     protected function generate_public_token($token_data)
     {
-        return md5(API_MANAGER_PRIVATE_KEY . serialize($token_data));
+        return md5(API_MANAGER_PRIVATE_KEY . serialize($token_data) . mktime());
     }
 
 

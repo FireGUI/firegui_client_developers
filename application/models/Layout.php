@@ -320,4 +320,19 @@ class Layout extends CI_Model
 
         echo '<script src="' . base_url($file) . '?v=' . VERSION . '" ></script>';
     }
+
+    public function replaceTemplateHooks($html, $value_id)
+    {
+        //debug($html, true);
+        preg_match_all("/\{[^\}]*\}/", $html, $matches);
+        foreach ($matches[0] as $placeholder) {
+
+            $hook_key = trim($placeholder, "{}");
+
+            $hooks_contents = $this->fi_events->getHooksContents($hook_key, $value_id);
+
+            $html = str_replace($placeholder, $hooks_contents, $html);
+        }
+        return $html;
+    }
 }

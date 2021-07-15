@@ -679,6 +679,10 @@ table.dataTable.nowrap td {
   white-space: inherit!important;
 }
 
+.navbar-right,.navbar-left {
+  height: 50px;
+}
+
 /*Hide topbar with logo on mobile*/
 @media (max-width: 768px) {
   .wrapper .main-header .logo {
