@@ -190,9 +190,8 @@ class Main extends MY_Controller
         }
 
         foreach ($this->template as $key => $html) {
-            if ($key == 'header') {
-                $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
-            }
+
+            $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
         }
 
         $this->load->view('layout/main', $this->template);

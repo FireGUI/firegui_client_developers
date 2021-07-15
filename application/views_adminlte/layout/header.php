@@ -74,6 +74,9 @@ $this->layout->addDinamicStylesheet($data, "header.css");
         <ul class="nav navbar-nav">
 
             <?php if (file_exists(__DIR__ . '/custom/header-menu.php')) $this->load->view('layout/custom/header-menu'); ?>
+
+
+
             <?php $this->load->view('box/notification_dropdown_list'); ?>
             <?php $this->hook->message_dropdown(); ?>
 
@@ -96,7 +99,9 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                         </p>
                     </li>
 
-
+                    <div class="">
+                        {pre-top_right_menu}
+                    </div>
                     <!-- Menu Body -->
 
                     <?php $profile_menu_list = $this->datab->get_menu('profile'); ?>
@@ -179,6 +184,11 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                             </div>
                         </li>
                     <?php endif; ?>
+
+                    <div class="">
+                        {post-top_right_menu}
+                    </div>
+
                     <li class="user-footer">
                         <div class="pull-left">
                             <?php
