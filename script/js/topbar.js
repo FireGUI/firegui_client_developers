@@ -11,30 +11,31 @@ $(function () {
     $('body').on('click', '#js_enable_dev', function () {
 
 
-        var data_post = [];
-        data_post.push({ name: "builderProjectHash", value: builderProjectHash });
+        // var data_post = [];
+        // data_post.push({ name: "builderProjectHash", value: builderProjectHash });
 
-        $.ajax(base_url_builder + 'public/client/checkClientConnection/', {
-            type: 'POST',
-            data: data_post,
-            dataType: 'json',
-
-            success: function (data) {
-                if (data.status == 1) {
-                    $('#builder_toolbar').show();
-                    var toolBarEnabled = true;
-                    localStorage.setItem('toolBarEnabled', 'true');
-                } else {
-                    $('#builder_toolbar').hide();
-                    var toolBarEnabled = false;
-                    if (data.msg) {
-                        alert(data.msg);
-                    }
-                }
+        $('#builder_toolbar').show();
+        var toolBarEnabled = true;
+        localStorage.setItem('toolBarEnabled', 'true');
 
 
-            },
-        });
+        // $.ajax(base_url + 'firegui/projectConnect/', {
+        //     type: 'POST',
+        //     data: data_post,
+        //     dataType: 'json',
+
+        //     success: function (data) {
+
+
+        //         $('#builder_toolbar').show();
+        //         var toolBarEnabled = true;
+        //         localStorage.setItem('toolBarEnabled', 'true');
+        //         localStorage.setItem('toolBarToken', data);
+
+
+
+        //     },
+        // });
     });
 
 
@@ -42,37 +43,39 @@ $(function () {
 
     $('body').on('click', '#js_toolbar_vblink', function () {
         var layout_id = $('#js_layout_content_wapper').data('layout-id');
-        window.open(base_url_builder + 'main/visual_builder/' + layout_id, '_blank');
+        //var token = localStorage.getItem('toolBarToken');
+        window.open(base_url_builder + 'main/visual_builder/' + layout_id + '?hash=' + builderProjectHash, '_blank');
     });
     $('body').on('click', '#js_toolbar_vbframe', function () {
         var layout_id = $('#js_layout_content_wapper').data('layout-id');
-        openBuilderFrame(base_url_builder + 'main/visual_builder/' + layout_id);
+        openBuilderFrame(base_url_builder + 'main/visual_builder/' + layout_id + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_events', function () {
         var layout_id = $('#js_layout_content_wapper').data('layout-id');
-        openBuilderFrame(base_url_builder + 'main/events_builder');
+        openBuilderFrame(base_url_builder + 'main/events_builder' + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_entities', function () {
         var layout_id = $('#js_layout_content_wapper').data('layout-id');
-        openBuilderFrame(base_url_builder + 'main/new_entity');
+        openBuilderFrame(base_url_builder + 'main/new_entity' + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_backup', function () {
         var layout_id = $('#js_layout_content_wapper').data('layout-id');
-        openBuilderFrame(base_url_builder + 'main/database_dumps');
+        openBuilderFrame(base_url_builder + 'main/database_dumps' + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_query', function () {
         var layout_id = $('#js_layout_content_wapper').data('layout-id');
-        openBuilderFrame(base_url_builder + 'main/query');
+        openBuilderFrame(base_url_builder + 'main/query' + '?hash=' + builderProjectHash);
     });
 
 
     // Exit dev mode
     $('body').on('click', '#js_toolbar_exit', function () {
         localStorage.removeItem("toolBarEnabled");
+        localStorage.removeItem('toolBarToken');
         $('#builder_toolbar').hide();
     });
 
@@ -96,7 +99,7 @@ $(function () {
         const string = JSON.stringify(json); // convert Object to a String
         const encodedString = btoa(string);
         //window.open(base_url_builder + 'main/visual_builder/'+layout_id+'/'+encodedString, '_blank');
-        openBuilderFrame(base_url_builder + 'main/visual_builder/' + layout_id + '/' + encodedString);
+        openBuilderFrame(base_url_builder + 'main/visual_builder/' + layout_id + '/' + encodedString + '?hash=' + builderProjectHash);
     });
 
 
@@ -109,4 +112,3 @@ function openBuilderFrame(link) {
 function closeBuilderFrame() {
     $('#builderFrameWrapper').hide();
 }
-
