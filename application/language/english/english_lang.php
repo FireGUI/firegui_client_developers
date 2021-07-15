@@ -199,3 +199,4 @@ $lang['List prodotti'] = 'List prodotti';
 $lang['Categorie'] = 'Categorie';
 $lang['New categorie'] = 'New categorie';
 $lang['List categorie'] = 'List categorie';
+$lang['Builder ToolBar'] = 'Builder ToolBar';

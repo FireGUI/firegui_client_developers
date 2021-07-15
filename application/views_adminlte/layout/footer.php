@@ -1,144 +1,143 @@
-
 <style>
+  /* CONTACTS */
+  #ContactsWidget {
+    width: 210px;
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+    z-index: 820;
+  }
 
-/* CONTACTS */
-#ContactsWidget {
-    width:210px;
-    position:absolute;
-    bottom:0px;
-    left:10px;
-    z-index:820;
-}
-/* END CONTACTS */
+  /* END CONTACTS */
 
-#ProjectsNotesWidget {
-    width:620px;
-    position:absolute;
-    bottom:0px;
-    left:10px;
-    z-index:820;
-}
-#ProjectsNotesWidget textarea {
-    width:95%;
-    min-height:300px;
+  #ProjectsNotesWidget {
+    width: 620px;
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+    z-index: 820;
+  }
+
+  #ProjectsNotesWidget textarea {
+    width: 95%;
+    min-height: 300px;
     border: solid 1px #cccccc;
-}
+  }
+</style>
 
-    </style>
+<script>
+  /* CONTACTS */
+  $('body').on('click', '#buttonContactsWidget', function() {
+    $('#ContactsWidget').toggleClass('hide');
+  });
+  /* END CONTACTS */
 
-    <script>
-        /* CONTACTS */
-        $('body').on('click', '#buttonContactsWidget', function() {
-            $('#ContactsWidget').toggleClass('hide');
-        });
-        /* END CONTACTS */
-
-        /* PROJECTS */
-        $('body').on('click', '#buttonProjectsNotesWidget', function() {
-            $('#ProjectsNotesWidget').toggleClass('hide');
-        });
-        </script>
+  /* PROJECTS */
+  $('body').on('click', '#buttonProjectsNotesWidget', function() {
+    $('#ProjectsNotesWidget').toggleClass('hide');
+  });
+</script>
 <!-- CONTACTS -->
 <div id="ContactsWidget" class="hide">
-          <!-- DIRECT CHAT SUCCESS -->
-          <div class="box box-success direct-chat direct-chat-success">
-            <div class="box-header with-border">
-              <h3 class="box-title">Contact list</h3>
+  <!-- DIRECT CHAT SUCCESS -->
+  <div class="box box-success direct-chat direct-chat-success">
+    <div class="box-header with-border">
+      <h3 class="box-title">Contact list</h3>
 
-              <div class="box-tools pull-right">
-                
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-            <form action="#" method="post">
-                <div class="input-group">
-                  <input type="text" name="message" placeholder="Search..." class="form-control">
-                </div>
-              </form>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer">
-                <ul class="nav nav-stacked">
-                    <li><a href="#">Mario Rossi <span class="pull-right badge bg-blue">12345456</span></a></li>
-                    <li><a href="#">Luigi Bianchi <span class="pull-right badge bg-aqua">5</span></a></li>
-                    <li><a href="#">Andre Verdi <span class="pull-right badge bg-green">12</span></a></li>
-                    <li><a href="#">Enrico Viola <span class="pull-right badge bg-red">842</span></a></li>
-                </ul>
-            </div>
-            <!-- /.box-footer-->
-          </div>
-          <!--/.direct-chat -->
+      <div class="box-tools pull-right">
+
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+
+      </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+      <form action="#" method="post">
+        <div class="input-group">
+          <input type="text" name="message" placeholder="Search..." class="form-control">
+        </div>
+      </form>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer">
+      <ul class="nav nav-stacked">
+        <li><a href="#">Mario Rossi <span class="pull-right badge bg-blue">12345456</span></a></li>
+        <li><a href="#">Luigi Bianchi <span class="pull-right badge bg-aqua">5</span></a></li>
+        <li><a href="#">Andre Verdi <span class="pull-right badge bg-green">12</span></a></li>
+        <li><a href="#">Enrico Viola <span class="pull-right badge bg-red">842</span></a></li>
+      </ul>
+    </div>
+    <!-- /.box-footer-->
+  </div>
+  <!--/.direct-chat -->
 </div>
 <!-- PROJECTS -->
 <div id="ProjectsNotesWidget" class="hide">
-          <!-- DIRECT CHAT SUCCESS -->
-          <div class="box box-success direct-chat direct-chat-success">
-            <div class="box-header with-border">
-              <h3 class="box-title">Generic Notes</h3>
+  <!-- DIRECT CHAT SUCCESS -->
+  <div class="box box-success direct-chat direct-chat-success">
+    <div class="box-header with-border">
+      <h3 class="box-title">Generic Notes</h3>
 
-              <div class="box-tools pull-right">
-                
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-            <form action="#" method="post">
-                <textarea>Type here...</textarea>
-              </form>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer">
-            <span class="input-group-btn">
-                        <button type="submit" class="btn btn-warning btn-flat">Save</button>
-                      </span>
-            </div>
-            <!-- /.box-footer-->
-          </div>
-          <!--/.direct-chat -->
+      <div class="box-tools pull-right">
+
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+
+      </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+      <form action="#" method="post">
+        <textarea>Type here...</textarea>
+      </form>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer">
+      <span class="input-group-btn">
+        <button type="submit" class="btn btn-warning btn-flat">Save</button>
+      </span>
+    </div>
+    <!-- /.box-footer-->
+  </div>
+  <!--/.direct-chat -->
 </div>
 
 <footer class="main-footer">
 
-<div class="left_side pull-left hidden-xs">
+  <div class="left_side pull-left hidden-xs">
 
-<div class="">
-        {pre-footer}
+    <div class="">
+      {tpl-pre-footer}
     </div>
 
-    <div class="btn-group">                       
-        <button id="buttonContactsWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Contacts List">
-            <i class="fa fa-address-book" ></i>
-        </button>
-        <button id="buttonProjectsNotesWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Projects notes">
-            <i class="fa fa-sticky-note" ></i>
-        </button>
-        </div>
-
-       
+    <div class="btn-group">
+      <button id="buttonContactsWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Contacts List">
+        <i class="fa fa-address-book"></i>
+      </button>
+      <button id="buttonProjectsNotesWidget" type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-original-title="Projects notes">
+        <i class="fa fa-sticky-note"></i>
+      </button>
+    </div>
 
 
-</div>
 
-<div class="center_side pull-left hidden-xs">
+
+  </div>
+
+  <div class="center_side pull-left hidden-xs">
     <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
-</div>
+  </div>
 
-<div class="right_side pull-right hidden-xs">
-<div class="">
-        {post-footer}
+  <div class="right_side pull-right hidden-xs">
+    <div class="">
+      {tpl-post-footer}
     </div>
 
     <b><?php e('Version'); ?></b> <?php echo VERSION; ?>
 
-</div>
-    
+  </div>
+
 </footer>
 
 <div id="js_modal_container"></div>
@@ -268,7 +267,7 @@
 <script src="<?php echo base_url_scripts("script/js/charts/chartjs_customizable.js?v=" . VERSION); ?>"></script>
 
 <?php if ($this->auth->check()) :  ?>
-    <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
+  <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
 <?php endif; ?>
 
 <script src="<?php echo base_url_scripts("script/js/topbar.js?v=" . VERSION); ?>"></script>
