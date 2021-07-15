@@ -178,8 +178,8 @@ define('FIELDS_PERMISSIONS', serialize([
     4 => 'Read/Write (insert & update)'
 ]));
 
-//define('FIREGUI_BUILDER_BASEURL', 'https://builder.firegui.com/');
-define('FIREGUI_BUILDER_BASEURL', 'http://localhost/firegui_builder/');
+define('FIREGUI_BUILDER_BASEURL', 'https://builder.firegui.com/');
+//define('FIREGUI_BUILDER_BASEURL', 'http://localhost/firegui_builder/');
 define('FIREGUI_ADMIN_BASEURL', 'https://admin.firegui.com/');
 
 /*
