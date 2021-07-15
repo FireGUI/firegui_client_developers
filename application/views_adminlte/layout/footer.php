@@ -1,8 +1,17 @@
 <footer class="main-footer">
+    <div class="">
+        {pre-footer}
+    </div>
+
+    <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
+    <div class="">
+        {post-footer}
+    </div>
     <div class="pull-right hidden-xs">
         <b><?php e('Version'); ?></b> <?php echo VERSION; ?>
     </div>
-    <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
+
+
 </footer>
 
 <div id="js_modal_container"></div>

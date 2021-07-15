@@ -18,7 +18,9 @@
             </div>
         </form>
     <?php endif; ?>
-
+    <div class="">
+        {pre-sidebar_menu}
+    </div>
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu" data-widget="tree">
         <!-- END RESPONSIVE QUICK SEARCH FORM -->
@@ -83,4 +85,7 @@
         endforeach;
         ?>
     </ul>
+    <div class="">
+        {post-sidebar_menu}
+    </div>
 </section>
