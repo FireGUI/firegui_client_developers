@@ -66,7 +66,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
     <!-- Sidebar toggle button-->
     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"></a>
     <div class="navbar-left">
-        {pre-top_bar}
+        {tpl-pre-top_bar}
     </div>
 
 
@@ -100,7 +100,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                     </li>
 
                     <div class="">
-                        {pre-top_right_menu}
+                        {tpl-pre-top_right_menu}
                     </div>
                     <!-- Menu Body -->
 
@@ -195,7 +195,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                     <?php endif; ?>
 
                     <div class="">
-                        {post-top_right_menu}
+                        {tpl-post-top_right_menu}
                     </div>
 
                     <li class="user-footer">
@@ -217,6 +217,6 @@ $this->layout->addDinamicStylesheet($data, "header.css");
         </ul>
     </div>
     <div class="navbar-right">
-        {post-top_bar}
+        {tpl-post-top_bar}
     </div>
 </nav>

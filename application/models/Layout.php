@@ -324,14 +324,20 @@ class Layout extends CI_Model
     public function replaceTemplateHooks($html, $value_id)
     {
         //debug($html, true);
-        preg_match_all("/\{[^\}]*\}/", $html, $matches);
+        preg_match_all("/\{tpl-[^\}]*\}/", $html, $matches);
         foreach ($matches[0] as $placeholder) {
 
+            //debug(strpos($placeholder, '{tpl-'), true);
+
+            //if (strpos($placeholder, '{tpl-') === 0) {
             $hook_key = trim($placeholder, "{}");
+            $hook_key = str_replace('tpl-', '', $hook_key);
+            //debug($hook_key, true);
 
             $hooks_contents = $this->fi_events->getHooksContents($hook_key, $value_id);
 
             $html = str_replace($placeholder, $hooks_contents, $html);
+            //}
         }
         return $html;
     }
