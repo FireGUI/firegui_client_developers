@@ -22,7 +22,8 @@ $classes = array_unique(array_merge($baseClasses, $userClasses));
 ?>
 
 <div class="<?php if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) : ?>box<?php endif; ?> <?php echo $layout['layouts_boxes_css'] . " " . $layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
-
+    
+   
     <?php if ($layout['layouts_boxes_titolable'] === DB_BOOL_TRUE) : ?>
 
         <div class="box-header with-border <?php echo ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) ? 'js_title_collapse' : ''; ?> ">
@@ -36,6 +37,22 @@ $classes = array_unique(array_merge($baseClasses, $userClasses));
             </div>
 
             <div class="box-tools">
+
+                <!-- Builder actions -->
+                <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="edit_layout_box" data-element-type="layout" data-element-ref="<?php echo $layout['layouts_boxes_id'] ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Edit box">
+                  <i class="fa fa-cogs" ></i>
+                </button>
+
+                <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="option" data-element-type="<?php echo $layout['layouts_boxes_content_type'] ?>" data-element-ref="<?php echo $layout['layouts_boxes_content_ref'] ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="<?php echo $layout['layouts_boxes_content_type'] ?> option">
+                  <i class="fa fa-edit" ></i>
+                </button>
+
+                <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="builder" data-element-type="<?php echo $layout['layouts_boxes_content_type'] ?>" data-element-ref="<?php echo $layout['layouts_boxes_content_ref'] ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="<?php echo $layout['layouts_boxes_content_type'] ?> builder">
+                  <i class="fa fa-hat-wizard" ></i>
+                </button>
+
+                <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-widget="remove"><i class="fa fa-times"></i></button>
+                <!-- End Builder actions -->
 
                 <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fas <?php if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) : ?>fa-plus<?php else : ?>fa-minus<?php endif; ?>"></i></button><?php endif; ?>
                 <?php if ($layout['layouts_boxes_discardable'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fas fa-times"></i></button><?php endif; ?>

@@ -688,3 +688,26 @@ table.dataTable.nowrap td {
     padding-top: 50px;
   }
 }
+
+.main-footer {
+  width: 100%;
+  position:fixed;
+  bottom:0;
+  z-index:820;
+  margin-left: 0px;
+  padding:4px;
+}
+.main-footer .left_side {
+  width:230px;
+}
+.main-footer .center_side {
+  min-width:300px;
+}
+.main-footer .right_side {
+  
+}
+
+.main-footer .left_side button {
+  width:50px;
+  border: solid 1px #cccccc;
+}

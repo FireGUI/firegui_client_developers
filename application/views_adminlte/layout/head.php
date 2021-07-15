@@ -56,6 +56,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <!-- CUSTOM CSS -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/topbar.css?v=" . VERSION); ?>" />
 
 <!-- STYLE OVERRIDE -->
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
@@ -92,7 +93,9 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     "var base_url_template = '" . base_url_template() . "';",
     "var base_url_scripts = '" . base_url_scripts() . "';",
     "var base_url_uploads = '" . base_url_uploads() . "';",
+    "var base_url_builder = '" . FIREGUI_BUILDER_BASEURL . "';",
     "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
+    "var builderProjectHash = '" . base64_encode(json_encode(array($this->db->database,$this->db->hostname,$this->db->username))) . "';",
     "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
 ], 'config.js'); ?>
 

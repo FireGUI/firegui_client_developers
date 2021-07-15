@@ -145,6 +145,7 @@ class Main extends MY_Controller
             $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
             $dati['current_page'] = "layout_{$layout_id}";
             $dati['show_title'] = true;
+            $dati['layout_id'] = $layout_id;
             $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
             $this->layout->setLayoutModule();
             $this->stampa($pagina);

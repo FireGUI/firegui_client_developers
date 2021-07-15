@@ -29,8 +29,23 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
     <div class="modal-dialog <?php echo $sizeClass; ?>">
         <div class="modal-content">
             <div class="modal-header">
+
+             
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span></button>
+                 
+                  <!-- Builder actions -->
+                  <button type="button" style="float:right" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Form builder">
+                  <i class="fa fa-hat-wizard" ></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Form option">
+                  <i class="fa fa-edit" ></i>
+                </button>
+
+                
+<!-- End Builder actions -->
+
+                    
                 <h4 class="modal-title" id="myModalLabel"><?php echo t(ucwords(str_replace('_', ' ', $form['forms']['forms_name']))); ?></h4>
             </div>
             <div class="modal-body">

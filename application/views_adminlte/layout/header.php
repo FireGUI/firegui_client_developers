@@ -136,6 +136,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                             </div>
                         </li>
 
+
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
@@ -164,6 +165,14 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                             </div>
                         </li>
 
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <a href="javascript:void(0)" id="js_enable_dev"><i class="fas fa-tools"></i>
+                                        <?php e('Builder ToolBar'); ?></a>
+                                </div>
+                            </div>
+                        </li>
                     <?php endif; ?>
                     <?php if (!empty($_COOKIE['webauthn_easylogin']) && $_COOKIE['webauthn_easylogin'] == '__never__') : ?>
                         <li class="user-body">
