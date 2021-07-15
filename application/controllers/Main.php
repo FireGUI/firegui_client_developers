@@ -101,7 +101,7 @@ class Main extends MY_Controller
         // permessi per accedervi"
         if (!$this->datab->can_access_layout($layout_id)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
-            $this->stampa($pagina);
+            $this->stampa($pagina, $value_id);
             die();
         }
 
@@ -116,39 +116,42 @@ class Main extends MY_Controller
         $dati = $this->datab->build_layout($layout_id, $value_id);
         if (is_null($dati)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
-            $this->stampa($pagina);
             $this->layout->setLayoutModule();
-            die();
-        }
-
-        // I have 2 type of layouts: PDF or standard
-        if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
-
-            if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
-                $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-            } else {
-                $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-            }
-
-            $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
-
-            $contents = file_get_contents($pdfFile, true);
-            $pdf_b64 = base64_encode($contents);
-
-            $file_name = url_title($dati['layout_container']['layouts_title'], '-', true) . '_';
-
-            header('Content-Type: application/pdf');
-            header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
-            $this->layout->setLayoutModule();
-            echo base64_decode($pdf_b64);
+            $this->stampa($pagina, $value_id);
         } else {
-            $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
-            $dati['current_page'] = "layout_{$layout_id}";
-            $dati['show_title'] = true;
-            $dati['layout_id'] = $layout_id;
-            $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
-            $this->layout->setLayoutModule();
-            $this->stampa($pagina);
+
+            // I have 2 type of layouts: PDF or standard
+            if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
+
+                if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
+                    $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+                } else {
+                    $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+                }
+
+                $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
+
+                $contents = file_get_contents($pdfFile, true);
+                $pdf_b64 = base64_encode($contents);
+
+                $file_name = url_title($dati['layout_container']['layouts_title'], '-', true) . '_';
+
+                header('Content-Type: application/pdf');
+                header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
+                $this->layout->setLayoutModule();
+                echo base64_decode($pdf_b64);
+            } else {
+                $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
+                $dati['current_page'] = "layout_{$layout_id}";
+                $dati['show_title'] = true;
+                $dati['layout_id'] = $layout_id;
+                $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
+
+
+
+                $this->layout->setLayoutModule();
+                $this->stampa($pagina, $value_id);
+            }
         }
     }
 
@@ -159,7 +162,7 @@ class Main extends MY_Controller
      *
      * @param string $pagina
      */
-    protected function stampa($pagina)
+    protected function stampa($pagina, $value_id = null)
     {
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/head.php")) {
             $this->template['head'] = $this->load->view('custom/layout/head', array(), true);
@@ -185,6 +188,11 @@ class Main extends MY_Controller
             $this->template['footer'] = $this->load->view('custom/layout/footer', null, true);
         } else {
             $this->template['footer'] = $this->load->view('layout/footer', null, true);
+        }
+
+        foreach ($this->template as $key => $html) {
+
+            $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
         }
 
         $this->load->view('layout/main', $this->template);
@@ -233,7 +241,7 @@ class Main extends MY_Controller
         if ($this->input->get('_raw')) {
             echo $content;
         } else {
-            $this->stampa($content);
+            $this->stampa($content, $value_id);
         }
     }
 
