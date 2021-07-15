@@ -1,3 +1,3 @@
-Changelog version 2.2.0
+Changelog version 2.2.1
  
-Bugfixes Webauthn
+Beta version with template hooks and builder toolbar
