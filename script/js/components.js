@@ -1,7 +1,56 @@
 'use strict';
+
+/* Load content ajax */
+
+
+$('body').on('click', '.js_ajax_content', function (e) {
+
+    // Check if has a layout id to open
+    var layout_id = $(this).data('layout-id');
+    var link_href = $(this).attr('href');
+    var that = $(this);
+    if (layout_id && !e.metaKey) {
+        e.preventDefault();
+        $.ajax(base_url + 'main/get_layout_content/' + layout_id, {
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 0) {
+                    console.log(data.msg);
+                }
+                if (data.status == 1) {
+                    $('#js_page_content').html(data.content);
+                    window.history.pushState("", "", link_href);
+                    initComponents($('#js_page_content'));
+
+                    // Fix for sidebar to active li
+                    if ($(that).parent().hasClass('js_sidebar_menu_item')) {
+
+                        $('.js_sidebar_menu_item').removeClass('active');
+                        $('.js_sidebar_menu_item').removeClass('menu-open');
+                        $('.treeview-menu').hide();
+                    }
+                    if ($(that).parent().hasClass('js_submenu_item')) {
+                        $('.js_sidebar_menu_item').removeClass('active');
+                        $('.js_sidebar_menu_item').removeClass('menu-open');
+                        $('.treeview-menu').hide();
+
+                        $(that).parent().addClass('active');
+                        $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
+                        $(that).closest('.treeview-menu').show();
+                    } else {
+                        $(that).parent().addClass('active');
+                    }
+                }
+            },
+        });
+        e.stopPropagation();
+    } else {
+
+    }
+});
+
 /* Variabile globale per tracciare tutte le mappe create */
-
-
 var token = JSON.parse(atob($('body').data('csrf')));
 var token_name = token.name;
 var token_hash = token.hash;

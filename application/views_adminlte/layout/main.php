@@ -39,8 +39,9 @@
                     </div>
                 </section>
             <?php endif; ?>
-            
-            <?php echo $page; ?>
+            <div id="js_page_content">
+                <?php echo $page; ?>
+            </div>
         </div>
         <?php echo $footer; ?>
     </div>

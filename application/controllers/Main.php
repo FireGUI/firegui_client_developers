@@ -66,6 +66,70 @@ class Main extends MY_Controller
     }
 
     /**
+     * Get Ajax Layout Content
+     */
+    public function get_layout_content($layout_id, $value_id = null)
+    {
+        
+        if (empty($layout_id)) {
+            die(json_encode(array('status' => 0, 'msg' => 'Layout id needed')));
+        }
+
+        //Se non è un numero, vuol dire che sto passando un url-key
+        if (!is_numeric($layout_id)) {
+            $result = $this->db->where('layouts_identifier', $layout_id)->get('layouts');
+
+            if ($result->num_rows() == 0) {
+                die(json_encode(array('status' => 0, 'msg' => 'Layout not found')));
+            } else {
+                $layout_id = $result->row()->layouts_id;
+            }
+        }
+        // $value_id must be a number
+        if (!is_numeric($value_id) && !is_null($value_id)) {
+            $value_id = null;
+        }
+
+        // Check permission
+        if (!$this->datab->can_access_layout($layout_id)) {
+            die(json_encode(array('status' => 0, 'msg' => 'Permission denied')));
+        }
+
+        //If layout is module dependent, preload translations
+        $layout = $this->layout->getLayout($layout_id);
+        if ($layout['layouts_module']) {
+            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], @array_values($this->lang->is_loaded)[0]));
+            $this->layout->setLayoutModule($layout['layouts_module']);
+        }
+
+        // Build layout, if null then layout is not accessible due to user permissions
+        $dati = $this->datab->build_layout($layout_id, $value_id);
+        if (is_null($dati)) {
+            $pagina = $this->load->view("pages/layout_unaccessible", null, true);
+            $this->layout->setLayoutModule();
+            echo json_encode(array('status' => 1, 'type'=> 'html', 'content' => $pagina, 'value_id' => $value_id));
+
+        } else {
+            // I have 2 type of layouts: PDF or standard. If PDF return type pdf and open in target blank by client
+            if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
+
+                echo json_encode(array('status' => 1, 'type'=> 'pdf'));
+
+            } else {
+                $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
+                $dati['current_page'] = "layout_{$layout_id}";
+                $dati['show_title'] = true;
+                $dati['layout_id'] = $layout_id;
+                $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
+                
+                $this->layout->setLayoutModule();
+                
+                echo json_encode(array('status' => 1, 'type'=> 'html', 'content' => $pagina, 'value_id' => $value_id));
+            }
+        }
+    }
+
+    /**
      * Render a layout item
      * @param int $layout_id
      * @param int $value_id
