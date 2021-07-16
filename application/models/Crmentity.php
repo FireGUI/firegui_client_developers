@@ -23,6 +23,7 @@ class Crmentity extends CI_Model
     private $languages;
 
     private $_default_grids = [];
+    private $_default_forms = [];
 
     /**
      * Class constructor
@@ -1238,6 +1239,7 @@ class Crmentity extends CI_Model
         }
     }
 
+    // Get default grid id by entity
     public function getDefaultGrid($entity)
     {
         if (!array_key_exists($entity, $this->_default_grids)) {
@@ -1252,4 +1254,28 @@ class Crmentity extends CI_Model
             return $this->_default_grids[$entity];
         }
     }
+
+    // Get default form id by entity
+    public function getDefaultForm($entity)
+    {
+        if (!array_key_exists($entity, $this->_default_forms)) {
+            $entity_id = $this->getEntity($entity)['entity_id'];
+            $query = $this->db->get_where('forms', array(
+                'forms_entity_id' => $entity_id, 'forms_default' => DB_BOOL_TRUE
+            ));
+
+            $this->_default_forms[$entity] = $query->row_array();
+            return $this->_default_forms[$entity];
+        } else {
+            return $this->_default_forms[$entity];
+        }
+    }
+
+    // Return all entities
+    public function getAllEntities() {
+        $entities = $this->db->order_by('entity_name')->get('entity')->result_array();
+        return $entities;
+    }
+
+  
 }
