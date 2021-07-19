@@ -1173,6 +1173,11 @@ class Datab extends CI_Model
             $arr[] = "(" . $element[$element_type . "_where"] . ")";
         }
 
+        if (!empty($element[$element_type . "_builder_where"])) {
+            // Aggiungo il suo where all'inizio del where che andrò a ritornare
+            $arr[] = "(" . $element[$element_type . "_builder_where"] . ")";
+        }
+
         //Ora verifico se c'è una filter session key assegnata e se esiste in sessione
         if (array_key_exists($element_type . "_filter_session_key", $element) && $element[$element_type . "_filter_session_key"]) {
 
@@ -1375,7 +1380,17 @@ class Datab extends CI_Model
             $arr[] = $this->replace_superglobal_data($grid['grids_where']);
         }
 
+        // If builder_where specified, proceed by adding these conditions to $arr
+        if (isset($value_id) && $value_id) {
+            if (!empty($grid['grids_builder_where'])) {
+                $arr[] = str_replace('{value_id}', $value_id, $grid['grids_builder_where']);
+            }
+        } else if (!empty($grid['grids_builder_where'])) {
+            // Per la grid è definito un where -> è plausibile che bisogni fare  il replace di variabili
+            $arr[] = $this->replace_superglobal_data($grid['grids_builder_where']);
+        }
 
+        debug($arr, true);
         // Applica il filtro => joinalo all'arr
         $sess_grid_data = $this->session->userdata(SESS_GRIDS_DATA);
         $operators = unserialize(OPERATORS);
