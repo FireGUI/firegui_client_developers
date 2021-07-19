@@ -8,10 +8,16 @@ $('body').on('click', '.js_ajax_content', function (e) {
     // Check if has a layout id to open
     var layout_id = $(this).data('layout-id');
     var link_href = $(this).attr('href');
+    var get_params = link_href.split('?');
+    if (get_params[1]) {
+        get_params = '?' + get_params[1];
+    } else {
+        get_params = '';
+    }
     var that = $(this);
     if (layout_id && !e.metaKey) {
         e.preventDefault();
-        $.ajax(base_url + 'main/get_layout_content/' + layout_id, {
+        $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
             type: 'GET',
             dataType: 'json',
             success: function (data) {
