@@ -22,7 +22,7 @@
         {tpl-pre-sidebar_menu}
     </div>
     <!-- sidebar menu: : style can be found in sidebar.less -->
-    <ul class="sidebar-menu" data-widget="tree">
+    <ul class="sidebar-menu js_sidebar_menu" data-widget="tree">
         <!-- END RESPONSIVE QUICK SEARCH FORM -->
         <li class="header"><?php e('MAIN SECTION'); ?></li>
         <?php
@@ -49,8 +49,8 @@
             ?>
 
             <?php if ($isLinkOrContainer) : ?>
-                <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
-                    <a href="<?php echo $link ?: 'javascript:;'; ?>">
+                <li class="js_sidebar_menu_item <?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
+                    <a href="<?php echo $link ?: 'javascript:;'; ?>" class="js_ajax_content" data-layout-id="<?php echo (!empty($menu['layouts_id'])) ? $menu['layouts_id'] : '';?>">
                         <i class="<?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i> <span class="title"><?php e($label, true, ['module_name' => $menu['menu_module']]); ?></span>
                         <?php if ($isCurrent) : ?><span class="selected"></span><?php endif; ?>
                         <?php if ($hasSubmenu) : ?><span class="pull-right-container"><i class="fas fa-angle-left pull-right"></i></span><?php endif; ?>
@@ -65,8 +65,8 @@
                                     $classes[] = 'active';
                                 }
                                 ?>
-                                <li class="<?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
-                                    <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>">
+                                <li class="js_submenu_item <?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
+                                    <a href="<?php echo $this->datab->generate_menu_link($sub_menu); ?>" class="js_ajax_content" data-layout-id="<?php echo (!empty($sub_menu['layouts_id'])) ? $sub_menu['layouts_id'] : '';?>">
                                         <i class="<?php echo $sub_menu['menu_icon_class'] ?: 'fas fa-empty'; ?>"></i>
                                         <?php e(ucfirst(str_replace(array('_', '-'), ' ', $sub_menu['menu_label'])), true, ['module_name' => $sub_menu['menu_module']]); ?>
                                     </a>
