@@ -554,6 +554,11 @@ function initComponents(container, reset = false) {
     tabsInit();
 
     /**
+     * Calendars
+     */
+    initCalendars();
+
+    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
      *
