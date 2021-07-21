@@ -29,6 +29,7 @@ $('body').on('click', '.js_ajax_content', function (e) {
                         //location.href = link_href;
                         window.open(link_href, '_blank');
                     } else {
+                        $('#js_layout_content_wrapper').data('layout-id', layout_id);
                         $('#js_page_content').html(data.content);
                         window.history.pushState("", "", link_href);
                         initComponents($('#js_page_content'));

@@ -42,32 +42,32 @@ $(function () {
     // ********* Toolbar buttons *************
 
     $('body').on('click', '#js_toolbar_vblink', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         //var token = localStorage.getItem('toolBarToken');
         window.open(base_url_builder + 'main/visual_builder/' + layout_id + '?hash=' + builderProjectHash, '_blank');
     });
     $('body').on('click', '#js_toolbar_vbframe', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         openBuilderFrame(base_url_builder + 'main/visual_builder/' + layout_id + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_events', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         openBuilderFrame(base_url_builder + 'main/events_builder' + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_entities', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         openBuilderFrame(base_url_builder + 'main/new_entity' + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_backup', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         openBuilderFrame(base_url_builder + 'main/database_dumps' + '?hash=' + builderProjectHash);
     });
 
     $('body').on('click', '#js_toolbar_query', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         openBuilderFrame(base_url_builder + 'main/query' + '?hash=' + builderProjectHash);
     });
 
@@ -89,8 +89,7 @@ $(function () {
     // Buttons actions
 
     $('body').on('click', '.js_builder_toolbar_btn', function () {
-        var layout_id = $('#js_layout_content_wapper').data('layout-id');
-
+        var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         var action = $(this).data('action');
         var element_type = $(this).data('element-type');
         var element_ref = $(this).data('element-ref');
