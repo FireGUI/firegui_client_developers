@@ -2274,6 +2274,23 @@ class Datab extends CI_Model
 
         return implode(' AND ', $outer_where);
     }
+    public function search_like_orderby($search = '', $fields = array())
+    {
+        $order_by = [];
+
+        //debug($search);
+        foreach ($fields as $field) {
+            if (!empty($field['fields_name'])) {
+                $order_by[] = "INSTR({$field['fields_name']}, '$search')";
+            } elseif (!empty($field['grids_fields_eval_cache_data'])) {
+                $order_by[] = "INSTR({$field['grids_fields_eval_cache_data']}, '$search')";
+            } else {
+                continue;
+            }
+        }
+
+        return implode(',', $order_by);
+    }
     private function is_layout_cachable($layout_id)
     {
         return $this->db->get_where('layouts', array('layouts_id' => $layout_id, 'layouts_cachable' => DB_BOOL_TRUE))->num_rows() == 1;
