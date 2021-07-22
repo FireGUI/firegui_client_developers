@@ -700,6 +700,9 @@ table.dataTable.nowrap td {
   z-index:820;
   margin-left: 0px;
   padding:4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .main-footer .left_side {
   width:230px;
@@ -714,4 +717,8 @@ table.dataTable.nowrap td {
 .main-footer .left_side button {
   width:50px;
   border: solid 1px #cccccc;
+}
+
+.btn-group {
+  width: 100%;
 }
