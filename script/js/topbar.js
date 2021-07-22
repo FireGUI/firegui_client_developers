@@ -110,4 +110,5 @@ function openBuilderFrame(link) {
 }
 function closeBuilderFrame() {
     $('#builderFrameWrapper').hide();
+    refreshAjaxLayoutBoxes();
 }
