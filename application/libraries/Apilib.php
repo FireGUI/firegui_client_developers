@@ -839,7 +839,7 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
 
             $where = [];
             if (isset($input['where'])) {
@@ -913,8 +913,9 @@ class Apilib
             try {
 
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
-
-                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                if ($this->apilib->isCacheEnabled()) {
+                    $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                }
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
                 throw new ApiException($ex->getMessage(), self::ERR_INTERNAL_DB, $ex);

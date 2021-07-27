@@ -563,8 +563,10 @@ function initComponents(container, reset = false) {
      * Calendars
      */
     initCalendars();
-
     /**
+         * Maps
+         */
+    mapsInit();    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
      *
