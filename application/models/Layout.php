@@ -44,6 +44,18 @@ class Layout extends CI_Model
         return array_pop($layouts);
     }
 
+    public function getLayoutByIdentifier($layout_identifier)
+    {
+        $result = $this->db->where('layouts_identifier', $layout_id)->get('layouts');
+
+        if ($result->num_rows() == 0) {
+            show_error("Layout '$layout_id' non trovato!");
+            return false;
+        } else {
+            $layout_id = $result->row()->layouts_id;
+        }
+        return $layout_id;
+    }
     /**
      * @return string|null
      */
