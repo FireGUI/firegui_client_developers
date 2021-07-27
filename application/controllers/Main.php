@@ -145,6 +145,10 @@ class Main extends MY_Controller
         //Se non è un numero, vuol dire che sto passando un url-key
         if (!is_numeric($layout_id)) {
             $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
+
+            if (!$layout_id) {
+                show_error("Layout non trovato!");
+            }
         }
 
         // $value_id ha senso sse è un numero
