@@ -1,11 +1,25 @@
 L.maps = {};
-function load_marker(map, url) {
+function load_marker(map, url, clusterize) {
     /***
      * CARICO I MARKER VIA AJAX
      */
 
     var data = [];
     data.push({ name: token_name, value: token_hash });
+
+    var zoom = map.getZoom();
+    if (clusterize) {
+        if (zoom < 13) {
+            markers = L.markerClusterGroup({
+                maxClusterRadius: 25
+            });
+        } else {
+            markers = L.layerGroup();
+        }
+    } else {
+        markers = L.layerGroup();
+    }
+
     $.ajax({
         type: "POST",
         dataType: "json",
@@ -13,7 +27,7 @@ function load_marker(map, url) {
         url: url,
         success: function (data) {
 
-            markers = L.layerGroup();
+
 
             // Ciclo i Marker
             var group = new Array();
@@ -61,10 +75,9 @@ function load_marker(map, url) {
                 var coor = L.latLng(val.lat, val.lon);
                 group.push(coor);
             });
+            console.log(markers);
+            map.addLayer(markers);
 
-            if (markers.getLayers().length > 0) {
-                map.addLayer(markers);
-            }
 
 
             if (group.length > 0) {
@@ -91,9 +104,12 @@ function mapsInit() {
     $(function () {
         'use strict';
 
-        $('.js_map').each(function () {
+        $('.js_map:visible').each(function () {
 
             var url = $(this).data('ajaxurl');
+            var clusterize = $(this).data('clusters');
+
+
             if (L.maps[$(this).attr('id')]) {
                 var map = L.maps[$(this).attr('id')];
                 map.off();
@@ -103,9 +119,12 @@ function mapsInit() {
                 scrollWheelZoom: false,
                 fullscreenControl: {
                     pseudoFullscreen: false
-                }
+                },
+                maxZoom: 16
             }).setView([40.730610, -73.935242], $(this).data('initzoom'));
             L.maps[$(this).attr('id')] = map;
+
+
 
 
             var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
@@ -125,7 +144,7 @@ function mapsInit() {
                 map.invalidateSize();
             });
 
-            load_marker(map, url);
+            load_marker(map, url, clusterize);
 
 
 
