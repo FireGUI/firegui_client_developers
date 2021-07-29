@@ -32,7 +32,7 @@ $('body').on('click', '.js_ajax_content', function (e) {
                         $('#js_layout_content_wrapper').data('layout-id', layout_id);
                         $('#js_page_content').html(data.content);
                         window.history.pushState("", "", link_href);
-                        initComponents($('#js_page_content'));
+                        initComponents($('#js_page_content'), true);
 
                         // Fix for sidebar to active li
                         if ($(that).parent().hasClass('js_sidebar_menu_item')) {
@@ -68,15 +68,19 @@ var token_name = token.name;
 var token_hash = token.hash;
 
 function destroyCkeditorInstances(instance = null) {
-    if (instance) {
-        var instance_name = instance.attr('id');
-        if (CKEDITOR.instances[instance_name]) {
-            CKEDITOR.instances[instance_name].destroy(true);
+    try {
+        if (instance) {
+            var instance_name = instance.attr('id');
+            if (CKEDITOR.instances[instance_name]) {
+                CKEDITOR.instances[instance_name].destroy(true);
+            }
+        } else {
+            for (instance_name in CKEDITOR.instances) {
+                CKEDITOR.instances[instance_name].destroy(true);
+            }
         }
-    } else {
-        for (name in CKEDITOR.instances) {
-            CKEDITOR.instances[name].destroy(true);
-        }
+    } catch (e) {
+
     }
 }
 
@@ -93,6 +97,7 @@ function initComponents(container, reset = false) {
         } catch (e) { }
 
         destroyCkeditorInstances($('textarea.js_ckeditor', container));
+
     }
 
     $('textarea.js_ckeditor', container).each(function () {
@@ -790,10 +795,10 @@ function openCreationForm(formId, entity, onSuccess) {
                 data: { _raw: 1 },
             },
             beforeShow: function () {
-                initComponents($('#form_' + formId));
+                initComponents($('#form_' + formId), true);
             },
             afterShow: function () {
-                initComponents($('#form_' + formId));
+                initComponents($('#form_' + formId), true);
             },
             beforeClose: function () {
                 $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
