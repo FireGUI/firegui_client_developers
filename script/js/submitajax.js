@@ -340,7 +340,7 @@ function refreshLayoutBox(lb_id, value_id) {
         async: true,
         success: function (html) {
             lb.html(html);
-            initComponents(lb);
+            initComponents(lb, true);
         },
     });
 }
