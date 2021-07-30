@@ -700,9 +700,6 @@ table.dataTable.nowrap td {
   z-index:820;
   margin-left: 0px;
   padding:4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 .main-footer .left_side {
   width:230px;
@@ -716,9 +713,27 @@ table.dataTable.nowrap td {
 
 .main-footer .left_side button {
   width:50px;
-  border: solid 1px #cccccc;
 }
 
-.btn-group {
-  width: 100%;
+.dropdown-menu-right {
+  left: 0!important;
+}
+
+.btn_footer {
+  width:50px;
+  border: solid 1px #cccccc;
+  background-color: transparent!important;
+  border: none!important;
+}
+.btn_footer:hover {
+  box-shadow: inset 0 0 100px rgb(0 0 0 / 15%)!important;
+}
+.btn_footer i {  
+  color: #ababab;
+  font-size: 20px;
+}
+.ul_multiple_key_values { 
+  margin:0px;
+  padding-left:10px;
+  list-style-type: circle;
 }
