@@ -453,6 +453,16 @@ class Datab extends CI_Model
         }
     }
 
+    public function get_grid_id_by_identifier($grid_identifier)
+    {
+        $grid = $this->db->where('grids_identifier', $grid_identifier)->get('grids')->row();
+        if ($grid) {
+            return $grid->grids_id;
+        } else {
+            return false;
+        }
+    }
+
     public function get_form($form_id, $value_id = null)
     {
 
