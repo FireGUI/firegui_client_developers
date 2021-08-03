@@ -599,11 +599,11 @@ class Get_ajax extends MY_Controller
             }
             //If $search is present, order by best match before ordering the rest of the data
             if ($search) {
-                $order_by_prepend =                $this->datab->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
+                $order_by_append =                $this->datab->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
                 if ($order_by) {
-                    $order_by = $order_by_prepend . ',' . $order_by;
+                    $order_by = $order_by . ',' . $order_by_append;
                 } else {
-                    $order_by = $order_by_prepend;
+                    $order_by = $order_by_append;
                 }
             }
             $group_by = ($grid['grids']['grids_group_by']) ?: null;

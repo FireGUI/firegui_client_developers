@@ -97,7 +97,6 @@ class MY_Cache_file extends CI_Driver
 	 */
 	public function save($id, $data, $ttl = 60, $tags = [])
 	{
-
 		$contents = array(
 			'time'		=> time(),
 			'ttl'		=> $ttl,
