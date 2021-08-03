@@ -114,6 +114,49 @@ function initComponents(container, reset = false) {
     });
 
     /*
+    * Form Multiple key values
+    */
+
+    $('.js_multiple_container').on('click', '.js_add_multiple_key_values', function (e) {
+        e.stopPropagation();
+
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+        var clone = $('.js_multiple_key_values_row').filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_key_values_row').length;
+
+        $('input', clone).each(function () {
+            $(this).val('');
+            var type = $(this).attr('data-type');
+            var name = $(this).attr('data-name');
+            $(this).attr('name', name + '[' + count + '][' + type + ']').removeAttr('data-name');
+        });
+        count++;
+    });
+
+    $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
+        var my_row_container = $(this).closest('.js_multiple_key_values_row');
+        my_row_container.remove();
+    });
+
+    $('.js_multiple_container').on('click', '.js_add_multiple_values', function (e) {
+        e.stopPropagation();
+
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+        var clone = $('.js_multiple_values_row').filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_values_row').length;
+
+        $('input', clone).each(function () {
+            $(this).val('');
+            var name = $(this).attr('data-name');
+            $(this).attr('name', name + '[' + count + ']').removeAttr('data-name');
+        });
+        count++;
+    });
+
+
+    /*
      * Form dates
      */
     if (typeof container === 'undefined') {
@@ -568,10 +611,13 @@ function initComponents(container, reset = false) {
      * Calendars
      */
     initCalendars();
+
     /**
-         * Maps
-         */
-    mapsInit();    /**
+     * Maps
+     */
+    mapsInit();
+
+    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
      *
