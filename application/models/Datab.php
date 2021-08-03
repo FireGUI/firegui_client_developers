@@ -90,8 +90,9 @@ class Datab extends CI_Model
                     }
                 }
             }
-
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            }
         }
         $this->_accessibleLayouts =  $dati['accessibleLayouts'];
         $this->_accessibleEntityLayouts = $dati['accessibleEntityLayouts'];
@@ -201,7 +202,9 @@ class Datab extends CI_Model
 
                 $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
+            }
         }
         return $dati;
     }
@@ -462,7 +465,9 @@ class Datab extends CI_Model
             $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
             if (!$form) {
                 $dati = false;
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                if ($this->apilib->isCacheEnabled()) {
+                    $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                }
                 return $dati;
             }
 
@@ -599,7 +604,9 @@ class Datab extends CI_Model
 
 
             $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
+            }
         }
         return $dati;
     }
@@ -780,7 +787,9 @@ class Datab extends CI_Model
                     $this->error = self::ERR_VALIDATION_FAILED;
                     $this->errorMessage = $ex->getMessage();
                     $dati = false;
-                    $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                    if ($this->apilib->isCacheEnabled()) {
+                        $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                    }
                     return $dati;
                 }
 
@@ -808,8 +817,9 @@ class Datab extends CI_Model
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $dati = $data;
-
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
+            }
         }
         return $dati;
     }
@@ -1877,7 +1887,11 @@ class Datab extends CI_Model
         }
 
         if (empty($perm)) {
-            throw new Exception(sprintf('Nessun utente o gruppo trovato per %s', $userOrGroup));
+            if ($throwException) {
+                throw new Exception(sprintf('Nessun utente o gruppo trovato per %s', $userOrGroup));
+            } else {
+                $perm = false;
+            }
         }
 
         return $perm;
@@ -2386,7 +2400,8 @@ class Datab extends CI_Model
                 $dati['layout_container']['layouts_subtitle'] = str_replace_placeholders($dati['layout_container']['layouts_subtitle'], $replaces);
             }
             $dati['layout_data_detail'] = $layout_data_detail;
-            if ($this->is_layout_cachable($layout_id)) {
+
+            if ($this->apilib->isCacheEnabled() && $this->is_layout_cachable($layout_id)) {
                 $this->cache->save($cache_key, $dati, self::CACHE_TIME);
             }
             // ========================================
