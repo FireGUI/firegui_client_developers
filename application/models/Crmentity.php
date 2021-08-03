@@ -74,7 +74,9 @@ class Crmentity extends CI_Model
 
         if ($result === false) {
             $result = $callback();
-            $this->cache->save($key, $result, self::CACHE_TIME, []);
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($key, $result, self::CACHE_TIME, []);
+            }
         }
 
         return $result;
@@ -1272,10 +1274,9 @@ class Crmentity extends CI_Model
     }
 
     // Return all entities
-    public function getAllEntities() {
+    public function getAllEntities()
+    {
         $entities = $this->db->order_by('entity_name')->get('entity')->result_array();
         return $entities;
     }
-
-  
 }
