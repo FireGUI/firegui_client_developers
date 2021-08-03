@@ -354,10 +354,12 @@ class Apilib
         }
 
         $cache_key = "apilib.list.{$entity}";
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, null, FALSE, $depth);
-            $tags = $this->buildTagsFromEntity($entity);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            if ($this->apilib->isCacheEnabled()) {
+                $tags = $this->buildTagsFromEntity($entity);
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            }
         }
 
         return $this->sanitizeList($out);
@@ -378,10 +380,13 @@ class Apilib
         }
 
         $cache_key = "apilib.item.{$entity}.{$id}";
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
-            $tags = $this->buildTagsFromEntity($entity);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            if ($this->apilib->isCacheEnabled()) {
+
+                $tags = $this->buildTagsFromEntity($entity);
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            }
         }
 
         return $this->sanitizeRecord($out);
@@ -495,6 +500,7 @@ class Apilib
             }
 
             $id = $this->db->insert_id();
+
             $this->savePendingRelations($id);
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
@@ -989,7 +995,7 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
 
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -1014,7 +1020,9 @@ class Apilib
             }
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+            }
         }
 
         return $out;
