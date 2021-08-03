@@ -2174,7 +2174,6 @@ class Datab extends CI_Model
 
         return $results;
     }
-
     public function search_like($search = '', $fields = array())
     {
         $outer_where = array();
@@ -2683,7 +2682,6 @@ class Datab extends CI_Model
                     if ($value) {
                         return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank', 'download' => ''));
                     }
-                    break;
 
                 case 'upload_image':
                     if ($value) {
@@ -2698,7 +2696,6 @@ class Datab extends CI_Model
                         $path = base_url_admin('images/no-image-50x50.gif');
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
-
                 case 'multi_upload':
                 case 'multi_upload_no_preview':
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
@@ -2798,6 +2795,34 @@ class Datab extends CI_Model
                 case 'color_palette':
 
                     return "<div style=\"background-color:{$value};width:20px;height:20px;\"></div>";
+
+                case 'multiple_values':
+                    if (is_array(json_decode(html_entity_decode($value), true))) {
+                        $values = json_decode(html_entity_decode($value), true);
+                        $val_string = "";
+                        foreach ($values as $val) {
+                            $val_string .= "<li>" . $val . "</li>";
+                        }
+                        return '<ul class="ul_multiple_key_values">' . $val_string . '</ul>';
+                    } else {
+                        return $value;
+                    }
+
+                case 'multiple_key_values':
+                    if (is_array(json_decode(html_entity_decode($value), true))) {
+                        $values = json_decode(html_entity_decode($value), true);
+                        $val_string = "";
+
+                        foreach ($values as $val) {
+                            if ($val['key'] && $val['key']) {
+                                $val_string .= "<li><strong>" . $val['key'] . "</strong>: " . $val['value'] . "</li>";
+                            }
+                        }
+                        return '<ul class="ul_multiple_key_values">' . $val_string . '</ul>';
+                    } else {
+                        return $value;
+                    }
+
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
                         // Formato daterange 
