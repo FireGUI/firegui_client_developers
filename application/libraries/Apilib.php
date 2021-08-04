@@ -722,6 +722,47 @@ class Apilib
         if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
             $this->db->where($entity . '_id', $id)->update($entity, [$entityCustomActions['soft_delete_flag'] => DB_BOOL_TRUE]);
         } else {
+            // $entity_fields = $this->db
+            //     ->join('entity', 'fields.fields_entity_id = entity.entity_id')
+            //     ->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id')
+            //     ->like('fields_draw_html_type', 'upload')
+            //     ->where('entity_name', $entity)
+            //     ->get('fields')->result_array();
+
+            // $content = $this->view($entity, $id);
+
+            // $files_to_delete = [];
+
+            // if (!empty($entity_fields)) {
+            //     foreach ($entity_fields as $field) {
+            //         $field_name = $field['fields_name'];
+
+            //         if (!empty($content[$field_name])) {
+            //             if (is_array($content[$field_name])) { // is multupload with relation
+            //                 foreach ($content[$field_name] as $file) {
+            //                     $files_to_delete[] = $file;
+            //                 }
+            //             } else {
+            //                 if (is_valid_json($content[$field_name])) { // is multupload json
+            //                     $files = json_decode($content[$field_name], true);
+
+            //                     foreach ($files as $file) {
+            //                         $files_to_delete[] = $file['path_local'];
+            //                     }
+            //                 } else { // is single file upload (normal/image)
+            //                     $files_to_delete[] = $content[$field_name];
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+
+            // if (!empty($files_to_delete)) {
+            //     $this->load->model('uploads');
+
+            //     $this->uploads->removeUploads($files_to_delete, false);
+            // }
+
             $this->db->delete($entity, [$entity . '_id' => $id]);
         }
         $this->runDataProcessing($entity, 'delete', ['id' => $id]);
@@ -1718,6 +1759,32 @@ class Apilib
                     foreach ($value as $key => $val) {
                         if (empty($val['key']) && empty($val['value'])) {
                             unset($value[$key]);
+                        }
+                    }
+                    if (count($value) > 0) {
+                        $value = json_encode($value);
+                    } else {
+                        $value = "";
+                    }
+                } else {
+                    $this->error = self::ERR_VALIDATION_FAILED;
+                    $this->errorMessage = "{$field['fields_draw_label']} must be an array";
+                    return false;
+                }
+                break;
+
+            case 'todo':
+                if (is_array($value)) {
+                    // Delete empty rows
+                    foreach ($value as $key => $val) {
+                        if (empty($val['checked'])) {
+                            $value[$key]['checked'] = DB_BOOL_FALSE;
+                        }
+
+                        if (empty($val['value'])) {
+                            unset($value[$key]);
+                        } else {
+                            $value[$key]['value'] = trim($value[$key]['value']);
                         }
                     }
                     if (count($value) > 0) {

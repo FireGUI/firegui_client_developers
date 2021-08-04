@@ -2184,6 +2184,7 @@ class Datab extends CI_Model
 
         return $results;
     }
+
     public function search_like($search = '', $fields = array())
     {
         $outer_where = array();
@@ -2829,6 +2830,15 @@ class Datab extends CI_Model
                             }
                         }
                         return '<ul class="ul_multiple_key_values">' . $val_string . '</ul>';
+                    } else {
+                        return $value;
+                    }
+
+                case 'todo':
+                    if (is_array(json_decode(html_entity_decode($value), true))) {
+                        $values = json_decode(html_entity_decode($value), true);
+
+                        return '<i>' . count($values) . ' ToDo items</i>';
                     } else {
                         return $value;
                     }
