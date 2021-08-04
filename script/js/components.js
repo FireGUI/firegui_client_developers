@@ -122,10 +122,10 @@ function initComponents(container, reset = false) {
 
         var my_multiple_container = $(this).closest('.js_multiple_container');
         var my_row_container = $('.js_multiple_row_container', my_multiple_container);
-        var clone = $('.js_multiple_key_values_row').filter(':first').clone().appendTo(my_row_container);
-        var count = $('.js_multiple_key_values_row').length;
+        var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_key_values_row', my_row_container).length;
 
-        $('input', clone).each(function () {
+        $('input,textarea', clone).each(function () {
             $(this).val('');
             var type = $(this).attr('data-type');
             var name = $(this).attr('data-name');
@@ -135,8 +135,11 @@ function initComponents(container, reset = false) {
     });
 
     $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
+        var my_multiple_container = $(this).closest('.js_multiple_container');
         var my_row_container = $(this).closest('.js_multiple_key_values_row');
-        my_row_container.remove();
+        if ($('.js_multiple_key_values_row', my_multiple_container).length > 1) {
+            my_row_container.remove();
+        }
     });
 
     $('.js_multiple_container').on('click', '.js_add_multiple_values', function (e) {
@@ -144,8 +147,8 @@ function initComponents(container, reset = false) {
 
         var my_multiple_container = $(this).closest('.js_multiple_container');
         var my_row_container = $('.js_multiple_row_container', my_multiple_container);
-        var clone = $('.js_multiple_values_row').filter(':first').clone().appendTo(my_row_container);
-        var count = $('.js_multiple_values_row').length;
+        var clone = $('.js_multiple_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_values_row', my_row_container).length;
 
         $('input', clone).each(function () {
             $(this).val('');
@@ -154,8 +157,77 @@ function initComponents(container, reset = false) {
         });
         count++;
     });
+    $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $(this).closest('.js_multiple_values_row');
+        if ($('.js_multiple_values_row', my_multiple_container).length > 1) {
+            my_row_container.remove();
+        }
+    });
 
+    /*
+   * Form Todo values
+   */
 
+    $('.js_todo_container').on('click', '.js_add_multiple_key_values', function (e) {
+        e.stopPropagation();
+
+        var my_multiple_container = $(this).closest('.js_todo_container');
+        var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+        var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_key_values_row', my_row_container).length;
+
+        $('input,textarea', clone).each(function () {
+            $(this).val('');
+            var type = $(this).attr('data-type');
+            var name = $(this).attr('data-name');
+            $(this).attr('name', name + '[' + count + '][' + type + ']').removeAttr('data-name');
+        });
+        $('.js_container-checkbox', clone).prop('checked', false);
+        $('textarea', clone).css('text-decoration', 'unset');
+        count++;
+    });
+
+    $('.js_todo_container').on('click', '.js_remove_row', function (e) {
+        var my_multiple_container = $(this).closest('.js_todo_container');
+        var my_row_container = $(this).closest('.js_multiple_key_values_row');
+        if ($('.js_multiple_key_values_row', my_multiple_container).length > 1) {
+            my_row_container.remove();
+        }
+    });
+
+    $(".js_todo_row_container").sortable();
+    $(".js_todo_row_container").disableSelection();
+
+    $(".js_multiple_row_container").on('keydown', '.js_todo_textarea', function (event) {
+
+        if (event.which == 9) {
+
+            //event.preventDefault();
+            var my_multiple_container = $(this).closest('.js_todo_container');
+            var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+            var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+            var count = $('.js_multiple_key_values_row', my_row_container).length;
+
+            $('input,textarea', clone).each(function () {
+                $(this).val('');
+                var type = $(this).attr('data-type');
+                var name = $(this).attr('data-name');
+                $(this).attr('name', name + '[' + count + '][' + type + ']').removeAttr('data-name');
+            });
+            $('.js_container-checkbox', clone).prop('checked', false);
+            $('textarea', clone).css('text-decoration', 'unset');
+            count++;
+        }
+    });
+    $('.js_todo_container').on('click', '.js_container-checkbox', function (e) {
+        var my_row_container = $(this).closest('.js_multiple_key_values_row');
+        if ($(this).is(':checked')) {
+            $('.js_todo_textarea', my_row_container).css('text-decoration', 'line-through');
+        } else {
+            $('.js_todo_textarea', my_row_container).css('text-decoration', 'unset');
+        }
+    });
     /*
      * Form dates
      */
@@ -611,13 +683,10 @@ function initComponents(container, reset = false) {
      * Calendars
      */
     initCalendars();
-
     /**
-     * Maps
-     */
-    mapsInit();
-
-    /**
+         * Maps
+         */
+    mapsInit();    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
      *

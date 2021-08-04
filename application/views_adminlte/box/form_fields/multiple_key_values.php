@@ -1,6 +1,5 @@
 <?php
 
-
 if (is_array(json_decode(html_entity_decode($value), true))) {
     $values = json_decode(html_entity_decode($value), true);
 } else {
@@ -33,7 +32,7 @@ $count = 1;
 
     <div class="row">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-info col-xs-12 js_add_multiple_key_values" style="margin-top:15px;"><?php e('+ Add'); ?></button>
+            <button type="button" class="btn btn-info col-xs-12 js_add_multiple_key_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
         </div>
     </div>
 </div>
