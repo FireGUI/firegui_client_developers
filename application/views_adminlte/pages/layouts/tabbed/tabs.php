@@ -14,7 +14,7 @@ if (isset($_COOKIE['tab-' . $tabs_id])) {
 $active = (is_numeric($index) && $index < count($tabs) && $index >= 0) ? array_keys($tabs)[$index] : null;
 
 ?>
-<div class="<?php echo $tabs_id; ?> tabbable-custom js-tabs" data-tabid="<?php echo $tabs_id; ?>">
+<div class="<?php echo $tabs_id; ?> tabbable-custom nav-tabs-custom js-tabs" data-tabid="<?php echo $tabs_id; ?>">
     <ul class="nav nav-tabs">
         <?php foreach ($tabs as $key => $tab) : ?>
             <li class="<?php echo $active === $key ? 'active' : ''; ?>"><a href="#<?php echo $key; ?>" data-toggle="tab"><?php e($tab['title']); ?></a></li>
