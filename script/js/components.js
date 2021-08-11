@@ -29,6 +29,8 @@ $('body').on('click', '.js_ajax_content', function (e) {
                         //location.href = link_href;
                         window.open(link_href, '_blank');
                     } else {
+                        $('.js_submenu_item.active').removeClass('active');
+
                         $('#js_layout_content_wrapper').data('layout-id', layout_id);
                         $('#js_page_content').html(data.content);
                         window.history.pushState("", "", link_href);
@@ -37,12 +39,12 @@ $('body').on('click', '.js_ajax_content', function (e) {
                         // Fix for sidebar to active li
                         if ($(that).parent().hasClass('js_sidebar_menu_item')) {
 
-                            $('.js_sidebar_menu_item').removeClass('active');
+
                             $('.js_sidebar_menu_item').removeClass('menu-open');
                             $('.treeview-menu').hide();
                         }
                         if ($(that).parent().hasClass('js_submenu_item')) {
-                            $('.js_sidebar_menu_item').removeClass('active');
+
                             $('.js_sidebar_menu_item').removeClass('menu-open');
                             $('.treeview-menu').hide();
 
