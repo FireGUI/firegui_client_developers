@@ -683,13 +683,20 @@ table.dataTable.nowrap td {
   height: 50px;
 }
 
-/*Hide topbar with logo on mobile*/
+/*Hide topbar with logo, timetracker and widget on mobile*/
 @media (max-width: 768px) {
   .wrapper .main-header .logo {
     display: none;
   }
   .main-sidebar {
     padding-top: 50px;
+  }
+
+  .navbar-left {
+    display: none;
+  }
+  .js_topbar_timetracker {
+    display: none;
   }
 }
 
