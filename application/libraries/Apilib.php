@@ -1018,6 +1018,19 @@ class Apilib
                     $where[] = $value;
                 }
             }
+            $entity_data = $this->crmEntity->getEntity($entity);
+            $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
+
+            //debug($entityCustomActions, true);
+
+            // Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+            if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
+                //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
+                //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
+                if (stripos(implode(' ', $where), $entityCustomActions['soft_delete_flag']) === FALSE) {
+                    $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                }
+            }
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
             if ($this->apilib->isCacheEnabled()) {
