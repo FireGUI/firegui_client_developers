@@ -597,15 +597,7 @@ class Get_ajax extends MY_Controller
             } else {
                 $order_by = null;
             }
-            //If $search is present, order by best match before ordering the rest of the data
-            if ($search) {
-                $order_by_append =                $this->datab->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
-                if ($order_by) {
-                    $order_by = $order_by . ',' . $order_by_append;
-                } else {
-                    $order_by = $order_by_append;
-                }
-            }
+
             $group_by = ($grid['grids']['grids_group_by']) ?: null;
 
             // Added where_append in get ajax
@@ -617,7 +609,7 @@ class Get_ajax extends MY_Controller
                 }
             }
 
-            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by, false, ['group_by' => $group_by]);
+            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by, false, ['group_by' => $group_by, 'search' => $search, 'preview_fields' => $preview_fields]);
 
 
 
