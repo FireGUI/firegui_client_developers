@@ -2275,9 +2275,14 @@ class Datab extends CI_Model
                                 break;
 
                             case 'INT':
+                            case 'INTEGER':
+                            case strtoupper(DB_INTEGER_IDENTIFIER):
+
+
                                 if (is_numeric($chunk) && $chunk <= $maxint4) {
                                     $i_chunk = (int) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$i_chunk}')";
+                                    //debug($inner_where, true);
                                 }
                                 break;
 
@@ -2286,6 +2291,10 @@ class Datab extends CI_Model
                                     $f_chunk = (float) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$f_chunk}')";
                                 }
+                                break;
+                            default:
+                                // debug($field['fields_type']);
+                                // debug($field);
                                 break;
                         }
                     } else {

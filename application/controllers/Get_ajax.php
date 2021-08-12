@@ -609,6 +609,8 @@ class Get_ajax extends MY_Controller
                 }
             }
 
+
+
             $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by, false, ['group_by' => $group_by, 'search' => $search, 'preview_fields' => $preview_fields]);
 
 

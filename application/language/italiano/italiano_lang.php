@@ -926,3 +926,14 @@ $lang['Hi,'] = 'Ciao,';
 $lang['Back to classic login page...'] = 'Torna alla pagina di login classica...';
 $lang['Enable Touch-Id'] = 'Riattiva Touch-Id';
 /* ====== End Easylogin translation ====== */
+$lang['Tipologia'] = 'Tipologia';
+$lang['Codice'] = 'Codice';
+$lang['Studio'] = 'Studio';
+$lang['Distributore'] = 'Distributore';
+$lang['Tipologia intervento'] = 'Tipologia intervento';
+$lang['Filtri Pratiche'] = 'Filtri Pratiche';
+$lang['Builder ToolBar'] = 'Builder ToolBar';
+$lang['Studi'] = 'Studi';
+$lang['Distributori'] = 'Distributori';
+$lang['Vademecum Tecnici'] = 'Vademecum Tecnici';
+$lang['Preventivatore'] = 'Preventivatore';
