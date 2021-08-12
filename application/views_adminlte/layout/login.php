@@ -227,7 +227,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
     </head>
 
     <body class="hold-transition login-page">
-        <div class="background_img">
+        <div class="background_img" style="overflow-y: scroll !important;">
             <div class="login-box main_login_box">
                 <div class="logo" style="max-width:none!important;">
                     <div class="text-center">
