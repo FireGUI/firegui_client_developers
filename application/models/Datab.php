@@ -750,6 +750,8 @@ class Datab extends CI_Model
         $cache_key = "datab.get_grid_data." . md5(serialize($grid)) . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
         if (!($dati = $this->cache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
+            $search = array_get($additional_parameters, 'search', null);
+            $preview_fields =            array_get($additional_parameters, 'preview_fields', []);
 
             //@TODO: Intervenire su questa funzione per estrarre eventuali eval cachable
             $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
@@ -778,6 +780,15 @@ class Datab extends CI_Model
 
             $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
 
+            //If $search is present, order by best match before ordering the rest of the data
+            if ($search) {
+                $order_by_prepend = $this->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
+                if ($order_by) {
+                    $order_by = $order_by_prepend . ',' . $order_by;
+                } else {
+                    $order_by = $order_by_prepend;
+                }
+            }
             // Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
             if (is_null($order_by) && !$count) {
                 $order_by = $grid['grids']['entity_name'] . '.' . $grid['grids']['entity_name'] . '_id DESC';
