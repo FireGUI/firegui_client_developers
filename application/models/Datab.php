@@ -2302,7 +2302,7 @@ class Datab extends CI_Model
     {
         $order_by = [];
 
-        //debug($search);
+        $search = $this->db->escape_str($search);
         foreach ($fields as $field) {
             if (!empty($field['fields_name'])) {
                 $order_by[] = "INSTR({$field['fields_name']}, '$search')";
