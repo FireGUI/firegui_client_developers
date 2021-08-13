@@ -1,3 +1,4 @@
+//array store for all maps
 L.maps = {};
 function load_marker(map, url, clusterize) {
     /***
@@ -75,19 +76,25 @@ function load_marker(map, url, clusterize) {
                 var coor = L.latLng(val.lat, val.lon);
                 group.push(coor);
             });
-            console.log(markers);
-            map.addLayer(markers);
+            //console.log(markers);
+            //In questo momento, la mappa potrebbe esser stata distrutta e non più disponibile... controllo...
+            //console.log(map._container.id);
+            //alert(map._container.id);
+            if ($('#' + map._container.id).length > 0) {
+                map.addLayer(markers);
 
 
 
-            if (group.length > 0) {
+                if (group.length > 0) {
 
-                map.fitBounds(group);
+                    map.fitBounds(group);
 
+                }
+
+
+                map.invalidateSize();
             }
 
-
-            map.invalidateSize();
 
 
         },
@@ -97,6 +104,13 @@ function load_marker(map, url, clusterize) {
     });
 }
 function mapsInit() {
+
+    //Destroy all maps
+    for (var i in L.maps) {
+        //console.log(L.maps[i]);
+    }
+
+
     var token = JSON.parse(atob($('body').data('csrf')));
     var token_name = token.name;
     var token_hash = token.hash;
@@ -140,14 +154,19 @@ function mapsInit() {
             //Set default
             osm.addTo(map); //  set as 
 
-            $(window).on('resize', function () {
-                map.invalidateSize();
-            });
+
 
             load_marker(map, url, clusterize);
 
 
 
+        });
+        $(window).on('resize', function () {
+            for (var i in L.maps) {
+                if ($('#' + L.maps[i]._container.id).length > 0) {
+                    L.maps[i].invalidateSize();
+                }
+            }
         });
     });
 }
