@@ -306,7 +306,8 @@ class Layout extends CI_Model
                         }
                         break;
                     default:
-                        log_message('error', "Key '$key' not recognized for dinamic stylesheet");
+                        // debug($vals);
+                        // log_message('error', "Key '$key' not recognized for dinamic stylesheet");
                         break;
                 }
             }

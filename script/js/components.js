@@ -17,13 +17,15 @@ $('body').on('click', '.js_ajax_content', function (e) {
     var that = $(this);
     if (layout_id && !e.metaKey) {
         e.preventDefault();
-        //$('#js_page_content').fadeOut();
+        $('#js_page_content').fadeOut();
         $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
             type: 'GET',
             dataType: 'json',
-            //complete: function () { $('#js_page_content').show(); },
+            complete: function () {
+                $('#js_page_content').stop(true, true).show();
+
+            },
             success: function (data) {
-                //$('#js_page_content').show();
                 if (data.status == 0) {
                     console.log(data.msg);
                 }
