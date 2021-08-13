@@ -76,7 +76,7 @@
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script>
 
 <!-- LEAFLET-JS -->
-<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet-src.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7.1/leaflet-src.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
 
 <script src="<?php echo base_url_scripts("script/js/leaflet.markercluster.min.js?v=" . VERSION); ?>"></script>
