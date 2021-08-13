@@ -3,6 +3,8 @@ Contributing to Leaflet.MarkerCluster
 
  1. [Reporting Bugs](#reporting-bugs)
  2. [Contributing Code](#contributing-code)
+ 3. [Building](#building)
+ 4. [Testing](#testing)
 
 ## Reporting Bugs
 
@@ -45,3 +47,24 @@ and ask yourself two questions:
 
 If your feature or API improvement did get merged into master,
 please consider submitting another pull request with the corresponding [documentation update](#improving-documentation).
+
+## Building
+
+Install the dependencies:
+```
+npm install -g jake
+npm install
+```
+
+Then to build:
+```
+jake
+```
+Output will be in the ```dist/``` directory
+
+## Testing
+
+To run unit tests:
+```
+jake test
+```
