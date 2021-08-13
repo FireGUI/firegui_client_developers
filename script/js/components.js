@@ -16,14 +16,15 @@ $('body').on('click', '.js_ajax_content', function (e) {
     }
     var that = $(this);
     if (layout_id && !e.metaKey) {
+
         e.preventDefault();
-        $('#js_page_content').fadeOut();
+        loading(true);
         $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
             type: 'GET',
             dataType: 'json',
             complete: function () {
-                $('#js_page_content').stop(true, true).show();
-
+                //$('#js_page_content').stop(true, true).show();
+                loading(false);
             },
             success: function (data) {
                 if (data.status == 0) {
