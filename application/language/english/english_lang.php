@@ -322,3 +322,4 @@ $lang['List provarecorddoppi'] = 'List provarecorddoppi';
 $lang['We\'re sorry! The page you requested does not exists or you don\'t have rights permissions.'] = 'We\'re sorry! The page you requested does not exists or you don\'t have rights permissions.';
 $lang['New entity2'] = 'New entity2';
 $lang['Field'] = 'Field';
+$lang['Loading'] = 'Loading';
