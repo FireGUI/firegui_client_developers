@@ -351,6 +351,73 @@ class Main extends MY_Controller
         $this->stampa($pagina);
     }
     /**
+     * Translations page
+     */
+    // Configure your module
+    public $LogPath = "../../../logs";
+    public function setPath($path)
+    {
+        $this->LogPath = $path;
+    }
+    private function getPath()
+    {
+        if (is_dir($this->LogPath)) {
+            return $this->LogPath;
+        } else {
+            die("Log directory: " . $this->LogPath . " is not a valid dir");
+        }
+    }
+    public function getFiles()
+    {
+        $path = $this->getPath();
+        $files = scandir($path);
+        $files = array_reverse($files);
+        return array_values($files);
+    }
+    public function getLastLogFile()
+    {
+        $files = $this->getFiles();
+        $path = $this->getPath();
+        $last_file = $path . "/" . $files[0];
+        if (is_file($last_file)) {
+            return $path . "/" . $files[0];
+        } else {
+            return false;
+        }
+    }
+    public function getLastLogs()
+    {
+        // Get files and open the lastest
+        $logFile = $this->getLastLogFile();
+        if ($logFile) {
+            $lines = file($logFile);
+            return $lines;
+        } else {
+            return false;
+        }
+    }
+    public function translations()
+    {
+        $dati['current_page'] = 'translations';
+        $data['settings'] = $this->db->query("SELECT * FROM settings LEFT JOIN languages ON settings_default_language = languages_id")->row_array();
+        $data['languages'] = $this->db->query("SELECT * FROM languages")->result_array();
+        /* Extract logs */
+        $path = FCPATH . "application/logs";
+        $files = scandir($path);
+        $files = array_reverse($files);
+        $log_files = array_values($files);
+        $last_file = $path . "/" . $log_files[0];
+        if (is_file($last_file)) {
+            $logFile = $path . "/" . $files[0];
+            $data['log_lines'] = file($logFile);
+        } else {
+            $data['log_file_error'] = "Log file not found";
+        }
+        $page = $this->load->view("pages/translations", array('data' => $data), true);
+        $this->stampa($page);
+    }
+
+    /**
      * Permissions page
      */
     public function permissions()
