@@ -323,3 +323,6 @@ $lang['We\'re sorry! The page you requested does not exists or you don\'t have r
 $lang['New entity2'] = 'New entity2';
 $lang['Field'] = 'Field';
 $lang['Loading'] = 'Loading';
+$lang['Clear'] = 'Clear';
+$lang['Description'] = 'Description';
+$lang['Support tables'] = 'Support tables';
