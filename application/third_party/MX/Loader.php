@@ -136,12 +136,24 @@ class MX_Loader extends CI_Loader
 		return $this;
 	}
 
+
 	/** Load a module language file **/
 	public function language($langfile, $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '')
 	{
 		CI::$APP->lang->load($langfile, $idiom, $return, $add_suffix, $alt_path, $this->_module);
 
-
+		//Now add modules translations files
+		$modules = scandir(APPPATH . 'modules/');
+		foreach ($modules as $module) {
+			if (is_dir(APPPATH . 'modules/' . $module)) {
+				if (file_exists(APPPATH . 'modules/' . $module . '/language/' . $langfile . '/' . "{$idiom}_lang.php")) {
+					include(APPPATH . 'modules/' . $module . '/language/' . $langfile . '/' . "{$idiom}_lang.php");
+					$module_lang = $lang;
+					CI::$APP->lang->language = array_merge(CI::$APP->lang->language, $module_lang);
+					$lang = [];
+				}
+			}
+		}
 
 		return $this;
 	}
@@ -213,13 +225,22 @@ class MX_Loader extends CI_Loader
 		list($path, $_model) = Modules::find(strtolower($model), $this->_module, 'models/');
 
 		if ($path == FALSE) {
-			$uc_model = ucfirst($model);
-			//201910170932 - Check if library exists eventually in a folder called "custom"
-			if (file_exists(APPPATH . "models/custom/{$uc_model}.php")) {
-				$model = "custom/$model";
+			if (strpos($model, '/')) {
+				log_message('error', "Missing model '{$model}'");
+
+				$this->$_model = false;
+				CI::$APP->$_model = false;
+				$this->_ci_models[] = $_model;
+				echo $this->load->view("box/errors/missing_model", ['model' => $model], true);
+			} else {
+				$uc_model = ucfirst($model);
+				//201910170932 - Check if library exists eventually in a folder called "custom"
+				if (file_exists(APPPATH . "models/custom/{$uc_model}.php")) {
+					$model = "custom/$model";
+				}
+				/* check application & packages */
+				parent::model($model, $object_name, $connect);
 			}
-			/* check application & packages */
-			parent::model($model, $object_name, $connect);
 		} else {
 			class_exists('CI_Model', FALSE) or load_class('Model', 'core');
 
@@ -418,7 +439,9 @@ class MX_Loader extends CI_Loader
 
 		if (empty($_ci_path)) {
 
-			show_error('Unable to load the requested file: ' . $_ci_file);
+			//show_error('Unable to load the requested file: ' . $_ci_file);
+			log_message('error', 'Unable to load the requested file: ' . $_ci_file);
+			$error =			$this->load->view("box/errors/missing_layout", ['layout' => $_ci_file], true);
 		}
 
 		if (isset($_ci_vars))
@@ -428,13 +451,18 @@ class MX_Loader extends CI_Loader
 
 		ob_start();
 
-		if ((bool) @ini_get('short_open_tag') === FALSE && CI::$APP->config->item('rewrite_short_tags') == TRUE) {
-			echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
-		} else {
-			include($_ci_path);
-		}
+		if (empty($error)) {
 
-		log_message('info', 'File loaded: ' . $_ci_path);
+			if ((bool) @ini_get('short_open_tag') === FALSE && CI::$APP->config->item('rewrite_short_tags') == TRUE) {
+				echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
+			} else {
+				include($_ci_path);
+			}
+
+			log_message('info', 'File loaded: ' . $_ci_path);
+		} else {
+			echo $error;
+		}
 
 		if ($_ci_return == TRUE) return ob_get_clean();
 
@@ -532,4 +560,5 @@ class MX_Loader extends CI_Loader
 	}
 }
 
-/** load the CI class for Modular Separation **/ (class_exists('CI', FALSE)) or require dirname(__FILE__) . '/Ci.php';
+/** load the CI class for Modular Separation **/
+(class_exists('CI', FALSE)) or require dirname(__FILE__) . '/Ci.php';

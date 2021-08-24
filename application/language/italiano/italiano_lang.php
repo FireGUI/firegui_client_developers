@@ -971,3 +971,4 @@ $lang['ID Prodotti Type'] = 'ID Prodotti Type';
 $lang['Prodotti Type'] = 'Prodotti Type';
 $lang['New prodotti'] = 'New prodotti';
 $lang['List prodotti'] = 'List prodotti';
+$lang['Unable to load the requested file: %s'] = 'Unable to load the requested file: %s';
