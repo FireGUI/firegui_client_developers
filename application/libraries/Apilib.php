@@ -354,10 +354,12 @@ class Apilib
         }
 
         $cache_key = "apilib.list.{$entity}";
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, null, FALSE, $depth);
-            $tags = $this->buildTagsFromEntity($entity);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            if ($this->apilib->isCacheEnabled()) {
+                $tags = $this->buildTagsFromEntity($entity);
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            }
         }
 
         return $this->sanitizeList($out);
@@ -378,10 +380,13 @@ class Apilib
         }
 
         $cache_key = "apilib.item.{$entity}.{$id}";
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
-            $tags = $this->buildTagsFromEntity($entity);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            if ($this->apilib->isCacheEnabled()) {
+
+                $tags = $this->buildTagsFromEntity($entity);
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+            }
         }
 
         return $this->sanitizeRecord($out);
@@ -495,6 +500,7 @@ class Apilib
             }
 
             $id = $this->db->insert_id();
+
             $this->savePendingRelations($id);
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
@@ -716,6 +722,47 @@ class Apilib
         if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
             $this->db->where($entity . '_id', $id)->update($entity, [$entityCustomActions['soft_delete_flag'] => DB_BOOL_TRUE]);
         } else {
+            // $entity_fields = $this->db
+            //     ->join('entity', 'fields.fields_entity_id = entity.entity_id')
+            //     ->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id')
+            //     ->like('fields_draw_html_type', 'upload')
+            //     ->where('entity_name', $entity)
+            //     ->get('fields')->result_array();
+
+            // $content = $this->view($entity, $id);
+
+            // $files_to_delete = [];
+
+            // if (!empty($entity_fields)) {
+            //     foreach ($entity_fields as $field) {
+            //         $field_name = $field['fields_name'];
+
+            //         if (!empty($content[$field_name])) {
+            //             if (is_array($content[$field_name])) { // is multupload with relation
+            //                 foreach ($content[$field_name] as $file) {
+            //                     $files_to_delete[] = $file;
+            //                 }
+            //             } else {
+            //                 if (is_valid_json($content[$field_name])) { // is multupload json
+            //                     $files = json_decode($content[$field_name], true);
+
+            //                     foreach ($files as $file) {
+            //                         $files_to_delete[] = $file['path_local'];
+            //                     }
+            //                 } else { // is single file upload (normal/image)
+            //                     $files_to_delete[] = $content[$field_name];
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+
+            // if (!empty($files_to_delete)) {
+            //     $this->load->model('uploads');
+
+            //     $this->uploads->removeUploads($files_to_delete, false);
+            // }
+
             $this->db->delete($entity, [$entity . '_id' => $id]);
         }
         $this->runDataProcessing($entity, 'delete', ['id' => $id]);
@@ -839,7 +886,7 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
 
             $where = [];
             if (isset($input['where'])) {
@@ -913,8 +960,9 @@ class Apilib
             try {
 
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
-
-                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                if ($this->apilib->isCacheEnabled()) {
+                    $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                }
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
                 throw new ApiException($ex->getMessage(), self::ERR_INTERNAL_DB, $ex);
@@ -947,7 +995,7 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
 
-        if (!($out = $this->mycache->get($cache_key))) {
+        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -970,9 +1018,24 @@ class Apilib
                     $where[] = $value;
                 }
             }
+            $entity_data = $this->crmEntity->getEntity($entity);
+            $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
+
+            //debug($entityCustomActions, true);
+
+            // Filtro per soft-delete se non viene specificato questo filtro nel where della grid
+            if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
+                //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
+                //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
+                if (stripos(implode(' ', $where), $entityCustomActions['soft_delete_flag']) === FALSE) {
+                    $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
+                }
+            }
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
-            $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+            }
         }
 
         return $out;
@@ -1646,7 +1709,7 @@ class Apilib
             case 'date_time':
                 if (($value = $this->filterInputDate($value, $typeHTML === 'date_time')) === false) {
                     $this->error = self::ERR_VALIDATION_FAILED;
-                    $this->errorMessage = "{$field['fields_draw_label']} non è una data valida";
+                    $this->errorMessage = "{$field['fields_draw_label']} is not a valid date";
                     return false;
                 }
                 break;
@@ -1685,6 +1748,67 @@ class Apilib
                     $value = '[' . implode(',', array_map(function ($date) {
                         return date_toDbFormat($date);
                     }, explode(' - ', $value))) . ']';
+                }
+                break;
+
+            case 'multiple_values':
+                if (is_array($value)) {
+
+                    foreach ($value as $key => $val) {
+                        if (empty($val)) {
+                            unset($value[$key]);
+                        }
+                    }
+                    if (count($value) > 0) {
+                        $value = json_encode($value);
+                    } else {
+                        $value = "";
+                    }
+                }
+                break;
+            case 'multiple_key_values':
+                if (is_array($value)) {
+                    // Delete empty rows
+                    foreach ($value as $key => $val) {
+                        if (empty($val['key']) && empty($val['value'])) {
+                            unset($value[$key]);
+                        }
+                    }
+                    if (count($value) > 0) {
+                        $value = json_encode($value);
+                    } else {
+                        $value = "";
+                    }
+                } else {
+                    $this->error = self::ERR_VALIDATION_FAILED;
+                    $this->errorMessage = "{$field['fields_draw_label']} must be an array";
+                    return false;
+                }
+                break;
+
+            case 'todo':
+                if (is_array($value)) {
+                    // Delete empty rows
+                    foreach ($value as $key => $val) {
+                        if (empty($val['checked'])) {
+                            $value[$key]['checked'] = DB_BOOL_FALSE;
+                        }
+
+                        if (empty($val['value'])) {
+                            unset($value[$key]);
+                        } else {
+                            $value[$key]['value'] = trim($value[$key]['value']);
+                        }
+                    }
+                    if (count($value) > 0) {
+                        $value = json_encode($value);
+                    } else {
+                        $value = "";
+                    }
+                } else {
+                    $this->error = self::ERR_VALIDATION_FAILED;
+                    $this->errorMessage = "{$field['fields_draw_label']} must be an array";
+                    return false;
                 }
                 break;
         }

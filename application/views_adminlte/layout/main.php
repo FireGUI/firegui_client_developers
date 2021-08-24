@@ -28,7 +28,7 @@
         </aside>
         <!-- Content Wrapper. Contains page content -->
 
-        <div id="js_layout_content_wapper" class="content-wrapper" data-layout-id="<?php echo (!empty($dati['layout_id'])) ? $dati['layout_id'] : ''; ?>">
+        <div id="js_layout_content_wrapper" class="content-wrapper" data-layout-id="<?php echo (!empty($dati['layout_id'])) ? $dati['layout_id'] : ''; ?>">
 
             <?php if (is_maintenance()) : ?>
                 <section class="content-header">
@@ -47,69 +47,36 @@
     </div>
 
 
-<!-- Vertical toolbar -->
-<div id="builder_toolbar" style="display:none">
-    <div class="btn-toolbar">
-     
-      <div class="btn-group-vertical" role="group" aria-label="...">
-        <button id="js_toolbar_vblink" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Open layout on Visual Builder">
-            <span class="fas fa-external-link-alt"></span></button>
+    <!-- Vertical toolbar -->
+    <div id="builder_toolbar" style="display:none">
+        <div class="btn-toolbar">
 
-            <button id="js_toolbar_vbframe" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Open on Frame Builder">
-            <span class="fas fa-tv"></span></button>
+            <div class="btn-group-vertical" role="group" aria-label="...">
+                <button id="js_toolbar_vblink" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Open layout on Visual Builder">
+                    <span class="fas fa-external-link-alt"></span></button>
 
-         <button id="js_toolbar_highlighter" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Highlight elements"><span class="fas fa-highlighter"></span></button>
-      </div>
-      <div class="btn-group-vertical" role="group" aria-label="...">
-        <button id="js_toolbar_events" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Events & Triggers"><span class="fas fa-random"></span></button>
+                <button id="js_toolbar_vbframe" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Open on Frame Builder">
+                    <span class="fas fa-tv"></span></button>
 
-          <button id="js_toolbar_entities" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Entities"><span class="fas fa-layer-group"></span></button>
+                <button id="js_toolbar_highlighter" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Highlight elements"><span class="fas fa-highlighter"></span></button>
+            </div>
+            <div class="btn-group-vertical" role="group" aria-label="...">
+                <button id="js_toolbar_events" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Events & Triggers"><span class="fas fa-random"></span></button>
 
-          <button id="js_toolbar_backup" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Backup & Restore"><span class="fas fa-download"></span></button>
-          
-            <button id="js_toolbar_query" class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Query"><span class="fas fa-pen"></span></button>
-         
-      </div>
+                <button id="js_toolbar_entities" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Entities"><span class="fas fa-layer-group"></span></button>
 
-      <div class="btn-group-vertical" role="group" aria-label="...">
-      <button id="js_toolbar_exit"
-                  class="btn btn-default" 
-                  data-toggle="tooltip" 
-                  data-placement="left" 
-                  data-container="body" 
-                  title="Close Toolbar"><span class="fas fa-sign-out-alt"></span></button>
-      </div>
+                <button id="js_toolbar_backup" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Backup & Restore"><span class="fas fa-download"></span></button>
+
+                <button id="js_toolbar_query" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Query"><span class="fas fa-pen"></span></button>
+
+            </div>
+
+            <div class="btn-group-vertical" role="group" aria-label="...">
+                <button id="js_toolbar_exit" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Close Toolbar"><span class="fas fa-sign-out-alt"></span></button>
+            </div>
 
 
-      <!--<div class="btn-group-vertical" role="group" aria-label="...">
+            <!--<div class="btn-group-vertical" role="group" aria-label="...">
         <div class="btn-group dropup" 
              data-toggle="tooltip" 
              data-placement="left" 
@@ -125,13 +92,13 @@
         </ul>
         </div>
       </div>-->
+        </div>
     </div>
-  </div>
 
-<div id="builderFrameWrapper">
-<button OnClick="closeBuilderFrame();">Hide Builder</button>
-<iframe id="builderFrame" src=""></iframe>
-</div>
+    <div id="builderFrameWrapper">
+        <button OnClick="closeBuilderFrame();">Hide Builder</button>
+        <iframe id="builderFrame" src=""></iframe>
+    </div>
 </body>
 <!-- END BODY -->
 

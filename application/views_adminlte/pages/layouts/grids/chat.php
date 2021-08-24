@@ -49,18 +49,22 @@ if (isset($grid_data['data'])) {
 <div class="direct-chat direct-chat-primary" <?php echo "id='{$itemId}'"; ?>>
     <div class="scroller" data-always-visible="1" data-rail-visible1="1">
         <ul class="direct-chat-messages chats">
-            <?php foreach ($items as $item) : ?>
-                <li class="direct-chat-msg <?php echo $item['class']; ?>">
-                    <div class="direct-chat-primary clearfix">
-                        <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
-                        <span class="direct-chat-timestamp pull-right datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
-                    </div>
-                    <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
-                    <div class="direct-chat-text body">
-                        <?php echo $item['body']; ?>
-                    </div>
-                </li>
-            <?php endforeach; ?>
+            <?php if (!empty($items)) : ?>
+                <?php foreach ($items as $item) : ?>
+                    <li class="direct-chat-msg <?php echo $item['class']; ?>">
+                        <div class="direct-chat-primary clearfix">
+                            <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
+                            <span class="direct-chat-timestamp pull-right datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
+                        </div>
+                        <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
+                        <div class="direct-chat-text body">
+                            <?php echo $item['body']; ?>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <div class="chat-info-message text-center"><img src="<?php echo base_url('images/messages.png'); ?>" style="height: 100px; width: 100px;" alt=""><br /><?php e('<h3><b>No messages yet</b></h3>'); ?></div>
+            <?php endif; ?>
         </ul>
 
         <form class="chat-form" action="<?php echo base_url("db_ajax/new_chat_message/{$grid['grids']['grids_id']}"); ?>">
@@ -122,6 +126,7 @@ if (isset($grid_data['data'])) {
             },
 
             appendMessage: function(message) {
+                $('.chat-info-message').remove();
                 var chatContainer = $('.chats', this.element);
                 var thisClass = 'direct-chat-msg right'; // I miei messaggi sono sempre a dx...
                 var listItem = $('<li/>').addClass(thisClass);

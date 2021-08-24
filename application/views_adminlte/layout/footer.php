@@ -76,7 +76,7 @@
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script>
 
 <!-- LEAFLET-JS -->
-<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7/leaflet.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/lib/leaflet-1.7.1/leaflet-src.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
 
 <script src="<?php echo base_url_scripts("script/js/leaflet.markercluster.min.js?v=" . VERSION); ?>"></script>
@@ -131,7 +131,7 @@
 <script src="<?php echo base_url_scripts("script/js/components.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/IE.missing.functions.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/inline_actions.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/js/map_standard.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/js/maps.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/multiupload.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/calendars/calendar_full_json_sidebar.js?v=" . VERSION); ?>"></script>
 

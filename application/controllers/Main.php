@@ -144,12 +144,10 @@ class Main extends MY_Controller
 
         //Se non è un numero, vuol dire che sto passando un url-key
         if (!is_numeric($layout_id)) {
-            $result = $this->db->where('layouts_identifier', $layout_id)->get('layouts');
+            $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
 
-            if ($result->num_rows() == 0) {
-                show_error("Layout '$layout_id' non trovato!");
-            } else {
-                $layout_id = $result->row()->layouts_id;
+            if (!$layout_id) {
+                show_error("Layout non trovato!");
             }
         }
 

@@ -73,11 +73,13 @@ $(document).ready(function () {
         e.preventDefault();
         var form = $(this);
         if (formAjaxShownMessage) {
-            formAjaxShownMessage.fadeOut('fast', function () {
+            formAjaxShownMessage.fadeOut(200, function () {
                 formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ display: '', opacity: '' });
+            });
+            setTimeout(function () {
                 formAjaxShownMessage = null;
                 formAjaxSend(form);
-            });
+            }, 200);
         } else {
             formAjaxSend(form);
         }
@@ -340,7 +342,7 @@ function refreshLayoutBox(lb_id, value_id) {
         async: true,
         success: function (html) {
             lb.html(html);
-            initComponents(lb);
+            initComponents(lb, true);
         },
     });
 }

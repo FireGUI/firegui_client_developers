@@ -44,6 +44,16 @@ class Layout extends CI_Model
         return array_pop($layouts);
     }
 
+    public function getLayoutByIdentifier($layout_identifier)
+    {
+        $result = $this->db->where('layouts_identifier', $layout_identifier)->get('layouts');
+
+        if ($result->num_rows() == 0) {
+            return false;
+        } else {
+            return $result->row()->layouts_id;
+        }
+    }
     /**
      * @return string|null
      */
@@ -296,7 +306,8 @@ class Layout extends CI_Model
                         }
                         break;
                     default:
-                        log_message('error', "Key '$key' not recognized for dinamic stylesheet");
+                        // debug($vals);
+                        // log_message('error', "Key '$key' not recognized for dinamic stylesheet");
                         break;
                 }
             }

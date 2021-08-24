@@ -61,6 +61,11 @@ if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
 $this->layout->addDinamicStylesheet($data, "header.css");
 ?>
 
+
+<div class="js_loading">
+    <img src="<?php echo base_url_admin('images/loading.gif'); ?>" width="40" />
+    <small><?php e("Loading"); ?></small>
+</div>
 <nav class="navbar navbar-static-top">
 
     <!-- Sidebar toggle button-->
