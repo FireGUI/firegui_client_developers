@@ -321,7 +321,35 @@ class Main extends MY_Controller
         $pagina = $this->load->view("pages/system_log", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
+    public function support_tables()
+    {
+        if (!$this->datab->is_admin()) {
+            $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
+            $this->stampa($pagina);
+            return;
+        }
 
+        $dati['current_page'] = 'support_tables';
+        //Get all grids related to support tables
+        $grids = $this->db
+            ->where('entity_type', ENTITY_TYPE_SUPPORT_TABLE)
+            ->join('entity', 'entity_id = grids_entity_id', 'LEFT')
+            ->get('grids')
+            ->result_array();
+        $grids_html = [];
+        foreach ($grids as $griddb) {
+            $fooBox = [
+                'layouts_boxes_content_type' => 'grid',
+                'layouts_boxes_content_ref' => $griddb['grids_id']
+            ];
+            $html = $this->datab->getBoxContent($fooBox);
+            $grids_html[$griddb['grids_id']] = $html;
+        }
+        $dati['grids'] = $grids;
+        $dati['grids_html'] = $grids_html;
+        $pagina = $this->load->view("pages/support_tables", array('dati' => $dati), true);
+        $this->stampa($pagina);
+    }
     /**
      * Permissions page
      */
