@@ -3130,7 +3130,8 @@ class Datab extends CI_Model
 
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
-                if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline', 'datatable_ajax_slim'])) {
+
+                if ($grid['grids']['grids_ajax'] == DB_BOOL_FALSE) {
 
                     $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], [], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
                 }
