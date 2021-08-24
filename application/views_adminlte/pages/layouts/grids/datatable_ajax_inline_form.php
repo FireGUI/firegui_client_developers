@@ -104,7 +104,8 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
 <?php
 $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null);
 
-if (!$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
+if (!$form || !$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
+
     return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
 }
 ?>
