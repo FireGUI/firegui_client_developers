@@ -47,8 +47,8 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/dropzone/css/dropzone.css?v=" . VERSION); ?>" />
 
 <!-- LEAFLET -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7/leaflet.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-1.7/Leaflet.draw/src/leaflet.draw.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7.1/leaflet.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-1.7.1/Leaflet.draw/src/leaflet.draw.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-fullscreen/leaflet.fullscreen.css?v=" . VERSION); ?>" />
 
 <link rel="stylesheet" href="<?php echo base_url_template("script/lib/Leaflet.markercluster/dist/MarkerCluster.css?v=" . VERSION); ?>" />
@@ -95,7 +95,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     "var base_url_uploads = '" . base_url_uploads() . "';",
     "var base_url_builder = '" . FIREGUI_BUILDER_BASEURL . "';",
     "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
-    "var builderProjectHash = '" . base64_encode(json_encode(array($this->db->database,$this->db->hostname,$this->db->username))) . "';",
+    "var builderProjectHash = '" . base64_encode(json_encode(array($this->db->database, $this->db->hostname, $this->db->username))) . "';",
     "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
 ], 'config.js'); ?>
 

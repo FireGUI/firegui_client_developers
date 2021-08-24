@@ -8,38 +8,60 @@ $('body').on('click', '.js_ajax_content', function (e) {
     // Check if has a layout id to open
     var layout_id = $(this).data('layout-id');
     var link_href = $(this).attr('href');
+    var get_params = link_href.split('?');
+    if (get_params[1]) {
+        get_params = '?' + get_params[1];
+    } else {
+        get_params = '';
+    }
     var that = $(this);
     if (layout_id && !e.metaKey) {
+
         e.preventDefault();
-        $.ajax(base_url + 'main/get_layout_content/' + layout_id, {
+        loading(true);
+        $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
             type: 'GET',
             dataType: 'json',
+            complete: function () {
+                //$('#js_page_content').stop(true, true).show();
+                loading(false);
+            },
             success: function (data) {
                 if (data.status == 0) {
                     console.log(data.msg);
                 }
                 if (data.status == 1) {
-                    $('#js_page_content').html(data.content);
-                    window.history.pushState("", "", link_href);
-                    initComponents($('#js_page_content'));
 
-                    // Fix for sidebar to active li
-                    if ($(that).parent().hasClass('js_sidebar_menu_item')) {
-
-                        $('.js_sidebar_menu_item').removeClass('active');
-                        $('.js_sidebar_menu_item').removeClass('menu-open');
-                        $('.treeview-menu').hide();
-                    }
-                    if ($(that).parent().hasClass('js_submenu_item')) {
-                        $('.js_sidebar_menu_item').removeClass('active');
-                        $('.js_sidebar_menu_item').removeClass('menu-open');
-                        $('.treeview-menu').hide();
-
-                        $(that).parent().addClass('active');
-                        $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
-                        $(that).closest('.treeview-menu').show();
+                    if (data.type == 'pdf') {
+                        //location.href = link_href;
+                        window.open(link_href, '_blank');
                     } else {
-                        $(that).parent().addClass('active');
+
+                        $('.js_submenu_item.active').removeClass('active');
+
+                        $('#js_layout_content_wrapper').data('layout-id', layout_id);
+                        $('#js_page_content').html(data.content);
+                        window.history.pushState("", "", link_href);
+                        initComponents($('#js_page_content'), true);
+
+                        // Fix for sidebar to active li
+                        if ($(that).parent().hasClass('js_sidebar_menu_item')) {
+
+
+                            $('.js_sidebar_menu_item').removeClass('menu-open');
+                            $('.treeview-menu').hide();
+                        }
+                        if ($(that).parent().hasClass('js_submenu_item')) {
+
+                            $('.js_sidebar_menu_item').removeClass('menu-open');
+                            $('.treeview-menu').hide();
+
+                            $(that).parent().addClass('active');
+                            $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
+                            $(that).closest('.treeview-menu').show();
+                        } else {
+                            $(that).parent().addClass('active');
+                        }
                     }
                 }
             },
@@ -56,15 +78,19 @@ var token_name = token.name;
 var token_hash = token.hash;
 
 function destroyCkeditorInstances(instance = null) {
-    if (instance) {
-        var instance_name = instance.attr('id');
-        if (CKEDITOR.instances[instance_name]) {
-            CKEDITOR.instances[instance_name].destroy(true);
+    try {
+        if (instance) {
+            var instance_name = instance.attr('id');
+            if (CKEDITOR.instances[instance_name]) {
+                CKEDITOR.instances[instance_name].destroy(true);
+            }
+        } else {
+            for (instance_name in CKEDITOR.instances) {
+                CKEDITOR.instances[instance_name].destroy(true);
+            }
         }
-    } else {
-        for (name in CKEDITOR.instances) {
-            CKEDITOR.instances[name].destroy(true);
-        }
+    } catch (e) {
+
     }
 }
 
@@ -81,6 +107,7 @@ function initComponents(container, reset = false) {
         } catch (e) { }
 
         destroyCkeditorInstances($('textarea.js_ckeditor', container));
+
     }
 
     $('textarea.js_ckeditor', container).each(function () {
@@ -96,6 +123,121 @@ function initComponents(container, reset = false) {
         ];
     });
 
+    /*
+    * Form Multiple key values
+    */
+
+    $('.js_multiple_container').on('click', '.js_add_multiple_key_values', function (e) {
+        e.stopPropagation();
+
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+        var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_key_values_row', my_row_container).length;
+
+        $('input,textarea', clone).each(function () {
+            $(this).val('');
+            var type = $(this).attr('data-type');
+            var name = $(this).attr('data-name');
+            $(this).attr('name', name + '[' + count + '][' + type + ']').removeAttr('data-name');
+        });
+        count++;
+    });
+
+    $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $(this).closest('.js_multiple_key_values_row');
+        if ($('.js_multiple_key_values_row', my_multiple_container).length > 1) {
+            my_row_container.remove();
+        }
+    });
+
+    $('.js_multiple_container').on('click', '.js_add_multiple_values', function (e) {
+        e.stopPropagation();
+
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+        var clone = $('.js_multiple_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_values_row', my_row_container).length;
+
+        $('input', clone).each(function () {
+            $(this).val('');
+            var name = $(this).attr('data-name');
+            $(this).attr('name', name + '[' + count + ']').removeAttr('data-name');
+        });
+        count++;
+    });
+    $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
+        var my_multiple_container = $(this).closest('.js_multiple_container');
+        var my_row_container = $(this).closest('.js_multiple_values_row');
+        if ($('.js_multiple_values_row', my_multiple_container).length > 1) {
+            my_row_container.remove();
+        }
+    });
+
+    /*
+   * Form Todo values
+   */
+
+    $('.js_todo_container').on('click', '.js_add_multiple_key_values', function (e) {
+        e.stopPropagation();
+
+        var my_multiple_container = $(this).closest('.js_todo_container');
+        var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+        var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+        var count = $('.js_multiple_key_values_row', my_row_container).length;
+
+        $('input,textarea', clone).each(function () {
+            $(this).val('');
+            var type = $(this).attr('data-type');
+            var name = $(this).attr('data-name');
+            $(this).attr('name', name + '[' + count + '][' + type + ']').removeAttr('data-name');
+        });
+        $('.js_container-checkbox', clone).prop('checked', false);
+        $('textarea', clone).css('text-decoration', 'unset');
+        count++;
+    });
+
+    $('.js_todo_container').on('click', '.js_remove_row', function (e) {
+        var my_multiple_container = $(this).closest('.js_todo_container');
+        var my_row_container = $(this).closest('.js_multiple_key_values_row');
+        if ($('.js_multiple_key_values_row', my_multiple_container).length > 1) {
+            my_row_container.remove();
+        }
+    });
+
+    $(".js_todo_row_container").sortable();
+    $(".js_todo_row_container").disableSelection();
+
+    $(".js_multiple_row_container").on('keydown', '.js_todo_textarea', function (event) {
+
+        if (event.which == 9) {
+
+            //event.preventDefault();
+            var my_multiple_container = $(this).closest('.js_todo_container');
+            var my_row_container = $('.js_multiple_row_container', my_multiple_container);
+            var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
+            var count = $('.js_multiple_key_values_row', my_row_container).length;
+
+            $('input,textarea', clone).each(function () {
+                $(this).val('');
+                var type = $(this).attr('data-type');
+                var name = $(this).attr('data-name');
+                $(this).attr('name', name + '[' + count + '][' + type + ']').removeAttr('data-name');
+            });
+            $('.js_container-checkbox', clone).prop('checked', false);
+            $('textarea', clone).css('text-decoration', 'unset');
+            count++;
+        }
+    });
+    $('.js_todo_container').on('click', '.js_container-checkbox', function (e) {
+        var my_row_container = $(this).closest('.js_multiple_key_values_row');
+        if ($(this).is(':checked')) {
+            $('.js_todo_textarea', my_row_container).css('text-decoration', 'line-through');
+        } else {
+            $('.js_todo_textarea', my_row_container).css('text-decoration', 'unset');
+        }
+    });
     /*
      * Form dates
      */
@@ -548,6 +690,13 @@ function initComponents(container, reset = false) {
     tabsInit();
 
     /**
+     * Calendars
+     */
+    initCalendars();
+    /**
+         * Maps
+         */
+    mapsInit();    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
      *
@@ -561,7 +710,12 @@ function initComponents(container, reset = false) {
     $.event.trigger('init.crm.components');
 
     $('.box').each(function () {
-        $.fn.boxWidget.call($(this));
+        try {
+            $.fn.boxWidget.call($(this));
+        } catch (e) {
+
+        }
+
     });
     /**
      * Dopo aver inizializzato il tutto, trigger resize della finestra in
@@ -766,10 +920,10 @@ function openCreationForm(formId, entity, onSuccess) {
                 data: { _raw: 1 },
             },
             beforeShow: function () {
-                initComponents($('#form_' + formId));
+                initComponents($('#form_' + formId), true);
             },
             afterShow: function () {
-                initComponents($('#form_' + formId));
+                initComponents($('#form_' + formId), true);
             },
             beforeClose: function () {
                 $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {

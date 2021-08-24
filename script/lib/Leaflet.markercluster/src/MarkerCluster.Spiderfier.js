@@ -5,7 +5,7 @@ L.MarkerCluster.include({
 
 	_2PI: Math.PI * 2,
 	_circleFootSeparation: 25, //related to circumference of circle
-	_circleStartAngle: Math.PI / 6,
+	_circleStartAngle: 0,
 
 	_spiralFootSeparation:  28, //related to size of spiral (experiment!)
 	_spiralLengthStart: 11,
@@ -19,7 +19,7 @@ L.MarkerCluster.include({
 			return;
 		}
 
-		var childMarkers = this.getAllChildMarkers(),
+		var childMarkers = this.getAllChildMarkers(null, true),
 			group = this._group,
 			map = group._map,
 			center = map.latLngToLayerPoint(this._latlng),
@@ -30,7 +30,9 @@ L.MarkerCluster.include({
 
 		//TODO Maybe: childMarkers order by distance to center
 
-		if (childMarkers.length >= this._circleSpiralSwitchover) {
+		if (this._group.options.spiderfyShapePositions) {
+			positions = this._group.options.spiderfyShapePositions(childMarkers.length, center);
+		} else if (childMarkers.length >= this._circleSpiralSwitchover) {
 			positions = this._generatePointsSpiral(childMarkers.length, center);
 		} else {
 			center.y += 10; // Otherwise circles look wrong => hack for standard blue icon, renders differently for other icons.
@@ -57,9 +59,11 @@ L.MarkerCluster.include({
 			res = [],
 			i, angle;
 
+		legLength = Math.max(legLength, 35); // Minimum distance to get outside the cluster icon.
+
 		res.length = count;
 
-		for (i = count - 1; i >= 0; i--) {
+		for (i = 0; i < count; i++) { // Clockwise, like spiral.
 			angle = this._circleStartAngle + i * angleStep;
 			res[i] = new L.Point(centerPt.x + legLength * Math.cos(angle), centerPt.y + legLength * Math.sin(angle))._round();
 		}
@@ -79,9 +83,13 @@ L.MarkerCluster.include({
 		res.length = count;
 
 		// Higher index, closer position to cluster center.
-		for (i = count - 1; i >= 0; i--) {
+		for (i = count; i >= 0; i--) {
+			// Skip the first position, so that we are already farther from center and we avoid
+			// being under the default cluster icon (especially important for Circle Markers).
+			if (i < count) {
+				res[i] = new L.Point(centerPt.x + legLength * Math.cos(angle), centerPt.y + legLength * Math.sin(angle))._round();
+			}
 			angle += separation / legLength + i * 0.0005;
-			res[i] = new L.Point(centerPt.x + legLength * Math.cos(angle), centerPt.y + legLength * Math.sin(angle))._round();
 			legLength += lengthFactor / angle;
 		}
 		return res;
@@ -91,8 +99,10 @@ L.MarkerCluster.include({
 		var group = this._group,
 			map = group._map,
 			fg = group._featureGroup,
-			childMarkers = this.getAllChildMarkers(),
+			childMarkers = this.getAllChildMarkers(null, true),
 			m, i;
+
+		group._ignoreMove = true;
 
 		this.setOpacity(1);
 		for (i = childMarkers.length - 1; i >= 0; i--) {
@@ -113,11 +123,12 @@ L.MarkerCluster.include({
 				delete m._spiderLeg;
 			}
 		}
-		
+
 		group.fire('unspiderfied', {
 			cluster: this,
 			markers: childMarkers
 		});
+		group._ignoreMove = false;
 		group._spiderfied = null;
 	}
 });
@@ -130,6 +141,8 @@ L.MarkerClusterNonAnimated = L.MarkerCluster.extend({
 			fg = group._featureGroup,
 			legOptions = this._group.options.spiderLegPolylineOptions,
 			i, m, leg, newPos;
+
+		group._ignoreMove = true;
 
 		// Traverse in ascending order to make sure that inner circleMarkers are on top of further legs. Normal markers are re-ordered by newPosition.
 		// The reverse order trick no longer improves performance on modern browsers.
@@ -152,6 +165,8 @@ L.MarkerClusterNonAnimated = L.MarkerCluster.extend({
 			fg.addLayer(m);
 		}
 		this.setOpacity(0.3);
+
+		group._ignoreMove = false;
 		group.fire('spiderfied', {
 			cluster: this,
 			markers: childMarkers
@@ -193,6 +208,8 @@ L.MarkerCluster.include({
 			legOptions.opacity = finalLegOpacity;
 		}
 
+		group._ignoreMove = true;
+
 		// Add markers and spider legs to map, hidden at our center point.
 		// Traverse in ascending order to make sure that inner circleMarkers are on top of further legs. Normal markers are re-ordered by newPosition.
 		// The reverse order trick no longer improves performance on modern browsers.
@@ -222,7 +239,7 @@ L.MarkerCluster.include({
 			if (m.clusterHide) {
 				m.clusterHide();
 			}
-
+			
 			// Vectors just get immediately added
 			fg.addLayer(m);
 
@@ -258,6 +275,8 @@ L.MarkerCluster.include({
 		}
 		this.setOpacity(0.3);
 
+		group._ignoreMove = false;
+
 		setTimeout(function () {
 			group._animationEnd();
 			group.fire('spiderfied', {
@@ -273,10 +292,11 @@ L.MarkerCluster.include({
 			map = group._map,
 			fg = group._featureGroup,
 			thisLayerPos = zoomDetails ? map._latLngToNewLayerPoint(this._latlng, zoomDetails.zoom, zoomDetails.center) : map.latLngToLayerPoint(this._latlng),
-			childMarkers = this.getAllChildMarkers(),
+			childMarkers = this.getAllChildMarkers(null, true),
 			svg = L.Path.SVG,
 			m, i, leg, legPath, legLength, nonAnimatable;
 
+		group._ignoreMove = true;
 		group._animationStart();
 
 		//Make us visible and bring the child markers back in
@@ -288,6 +308,9 @@ L.MarkerCluster.include({
 			if (!m._preSpiderfyLatlng) {
 				continue;
 			}
+
+			//Close any popup on the marker first, otherwise setting the location of the marker will make the map scroll
+			m.closePopup();
 
 			//Fix up the location to the real one
 			m.setLatLng(m._preSpiderfyLatlng);
@@ -316,6 +339,8 @@ L.MarkerCluster.include({
 				leg.setStyle({opacity: 0});
 			}
 		}
+
+		group._ignoreMove = false;
 
 		setTimeout(function () {
 			//If we have only <= one child left then that marker will be shown on the map so don't remove it!
@@ -363,6 +388,10 @@ L.MarkerClusterGroup.include({
 	//The MarkerCluster currently spiderfied (if any)
 	_spiderfied: null,
 
+	unspiderfy: function () {
+		this._unspiderfy.apply(this, arguments);
+	},
+
 	_spiderfierOnAdd: function () {
 		this._map.on('click', this._unspiderfyWrapper, this);
 
@@ -371,6 +400,13 @@ L.MarkerClusterGroup.include({
 		}
 		//Browsers without zoomAnimation or a big zoom don't fire zoomstart
 		this._map.on('zoomend', this._noanimationUnspiderfy, this);
+
+		if (!L.Browser.touch) {
+			this._map.getRenderer(this);
+			//Needs to happen in the pageload, not after, or animations don't work in webkit
+			//  http://stackoverflow.com/questions/8455200/svg-animate-with-dynamically-added-elements
+			//Disable on touch browsers as the animation messes up on a touch zoom and isn't very noticable
+		}
 	},
 
 	_spiderfierOnRemove: function () {
@@ -429,7 +465,7 @@ L.MarkerClusterGroup.include({
 			if (layer.clusterShow) {
 				layer.clusterShow();
 			}
-			//Position will be fixed up immediately in _animationUnspiderfy
+				//Position will be fixed up immediately in _animationUnspiderfy
 			if (layer.setZIndexOffset) {
 				layer.setZIndexOffset(0);
 			}

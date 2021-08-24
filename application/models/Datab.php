@@ -90,8 +90,9 @@ class Datab extends CI_Model
                     }
                 }
             }
-
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            }
         }
         $this->_accessibleLayouts =  $dati['accessibleLayouts'];
         $this->_accessibleEntityLayouts = $dati['accessibleEntityLayouts'];
@@ -201,7 +202,9 @@ class Datab extends CI_Model
 
                 $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
+            }
         }
         return $dati;
     }
@@ -450,6 +453,16 @@ class Datab extends CI_Model
         }
     }
 
+    public function get_grid_id_by_identifier($grid_identifier)
+    {
+        $grid = $this->db->where('grids_identifier', $grid_identifier)->get('grids')->row();
+        if ($grid) {
+            return $grid->grids_id;
+        } else {
+            return false;
+        }
+    }
+
     public function get_form($form_id, $value_id = null)
     {
 
@@ -462,7 +475,9 @@ class Datab extends CI_Model
             $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
             if (!$form) {
                 $dati = false;
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                if ($this->apilib->isCacheEnabled()) {
+                    $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                }
                 return $dati;
             }
 
@@ -599,7 +614,9 @@ class Datab extends CI_Model
 
 
             $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
+            }
         }
         return $dati;
     }
@@ -733,6 +750,8 @@ class Datab extends CI_Model
         $cache_key = "datab.get_grid_data." . md5(serialize($grid)) . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
         if (!($dati = $this->cache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
+            $search = array_get($additional_parameters, 'search', null);
+            $preview_fields =            array_get($additional_parameters, 'preview_fields', []);
 
             //@TODO: Intervenire su questa funzione per estrarre eventuali eval cachable
             $eval_cachable_fields = array_filter($grid['grids_fields'], function ($field) {
@@ -761,6 +780,15 @@ class Datab extends CI_Model
 
             $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
 
+            //If $search is present, order by best match before ordering the rest of the data
+            if ($search) {
+                $order_by_prepend = $this->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
+                if ($order_by) {
+                    $order_by = $order_by_prepend . ',' . $order_by;
+                } else {
+                    $order_by = $order_by_prepend;
+                }
+            }
             // Se è ancora null, vuol dire che non ho cliccato su nessuna colonna e che non c'è nemmeno un order by default. Di conseguenza ordino per id desc (che è la cosa più logica)
             if (is_null($order_by) && !$count) {
                 $order_by = $grid['grids']['entity_name'] . '.' . $grid['grids']['entity_name'] . '_id DESC';
@@ -780,7 +808,9 @@ class Datab extends CI_Model
                     $this->error = self::ERR_VALIDATION_FAILED;
                     $this->errorMessage = $ex->getMessage();
                     $dati = false;
-                    $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                    if ($this->apilib->isCacheEnabled()) {
+                        $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                    }
                     return $dati;
                 }
 
@@ -808,8 +838,9 @@ class Datab extends CI_Model
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $dati = $data;
-
-            $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
+            }
         }
         return $dati;
     }
@@ -1173,6 +1204,11 @@ class Datab extends CI_Model
             $arr[] = "(" . $element[$element_type . "_where"] . ")";
         }
 
+        if (!empty($element[$element_type . "_builder_where"])) {
+            // Aggiungo il suo where all'inizio del where che andrò a ritornare
+            $arr[] = "(" . $element[$element_type . "_builder_where"] . ")";
+        }
+
         //Ora verifico se c'è una filter session key assegnata e se esiste in sessione
         if (array_key_exists($element_type . "_filter_session_key", $element) && $element[$element_type . "_filter_session_key"]) {
 
@@ -1375,7 +1411,17 @@ class Datab extends CI_Model
             $arr[] = $this->replace_superglobal_data($grid['grids_where']);
         }
 
+        // If builder_where specified, proceed by adding these conditions to $arr
+        if (isset($value_id) && $value_id) {
+            if (!empty($grid['grids_builder_where'])) {
+                $arr[] = str_replace('{value_id}', $value_id, $grid['grids_builder_where']);
+            }
+        } else if (!empty($grid['grids_builder_where'])) {
+            // Per la grid è definito un where -> è plausibile che bisogni fare  il replace di variabili
+            $arr[] = $this->replace_superglobal_data($grid['grids_builder_where']);
+        }
 
+        debug($arr, true);
         // Applica il filtro => joinalo all'arr
         $sess_grid_data = $this->session->userdata(SESS_GRIDS_DATA);
         $operators = unserialize(OPERATORS);
@@ -1862,7 +1908,11 @@ class Datab extends CI_Model
         }
 
         if (empty($perm)) {
-            throw new Exception(sprintf('Nessun utente o gruppo trovato per %s', $userOrGroup));
+            if ($throwException) {
+                throw new Exception(sprintf('Nessun utente o gruppo trovato per %s', $userOrGroup));
+            } else {
+                $perm = false;
+            }
         }
 
         return $perm;
@@ -2225,9 +2275,14 @@ class Datab extends CI_Model
                                 break;
 
                             case 'INT':
+                            case 'INTEGER':
+                            case strtoupper(DB_INTEGER_IDENTIFIER):
+
+
                                 if (is_numeric($chunk) && $chunk <= $maxint4) {
                                     $i_chunk = (int) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$i_chunk}')";
+                                    //debug($inner_where, true);
                                 }
                                 break;
 
@@ -2236,6 +2291,10 @@ class Datab extends CI_Model
                                     $f_chunk = (float) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$f_chunk}')";
                                 }
+                                break;
+                            default:
+                                // debug($field['fields_type']);
+                                // debug($field);
                                 break;
                         }
                     } else {
@@ -2258,6 +2317,23 @@ class Datab extends CI_Model
         }
 
         return implode(' AND ', $outer_where);
+    }
+    public function search_like_orderby($search = '', $fields = array())
+    {
+        $order_by = [];
+
+        $search = $this->db->escape_str($search);
+        foreach ($fields as $field) {
+            if (!empty($field['fields_name'])) {
+                $order_by[] = "INSTR({$field['fields_name']}, '$search')";
+            } elseif (!empty($field['grids_fields_eval_cache_data'])) {
+                $order_by[] = "INSTR({$field['grids_fields_eval_cache_data']}, '$search')";
+            } else {
+                continue;
+            }
+        }
+
+        return implode(',', $order_by);
     }
     private function is_layout_cachable($layout_id)
     {
@@ -2354,7 +2430,8 @@ class Datab extends CI_Model
                 $dati['layout_container']['layouts_subtitle'] = str_replace_placeholders($dati['layout_container']['layouts_subtitle'], $replaces);
             }
             $dati['layout_data_detail'] = $layout_data_detail;
-            if ($this->is_layout_cachable($layout_id)) {
+
+            if ($this->apilib->isCacheEnabled() && $this->is_layout_cachable($layout_id)) {
                 $this->cache->save($cache_key, $dati, self::CACHE_TIME);
             }
             // ========================================
@@ -2636,7 +2713,6 @@ class Datab extends CI_Model
                     if ($value) {
                         return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank', 'download' => ''));
                     }
-                    break;
 
                 case 'upload_image':
                     if ($value) {
@@ -2651,7 +2727,6 @@ class Datab extends CI_Model
                         $path = base_url_admin('images/no-image-50x50.gif');
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
-
                 case 'multi_upload':
                 case 'multi_upload_no_preview':
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
@@ -2751,6 +2826,43 @@ class Datab extends CI_Model
                 case 'color_palette':
 
                     return "<div style=\"background-color:{$value};width:20px;height:20px;\"></div>";
+
+                case 'multiple_values':
+                    if (is_array(json_decode(html_entity_decode($value), true))) {
+                        $values = json_decode(html_entity_decode($value), true);
+                        $val_string = "";
+                        foreach ($values as $val) {
+                            $val_string .= "<li>" . $val . "</li>";
+                        }
+                        return '<ul class="ul_multiple_key_values">' . $val_string . '</ul>';
+                    } else {
+                        return $value;
+                    }
+
+                case 'multiple_key_values':
+                    if (is_array(json_decode(html_entity_decode($value), true))) {
+                        $values = json_decode(html_entity_decode($value), true);
+                        $val_string = "";
+
+                        foreach ($values as $val) {
+                            if ($val['key'] && $val['key']) {
+                                $val_string .= "<li><strong>" . $val['key'] . "</strong>: " . $val['value'] . "</li>";
+                            }
+                        }
+                        return '<ul class="ul_multiple_key_values">' . $val_string . '</ul>';
+                    } else {
+                        return $value;
+                    }
+
+                case 'todo':
+                    if (is_array(json_decode(html_entity_decode($value), true))) {
+                        $values = json_decode(html_entity_decode($value), true);
+
+                        return '<i>' . count($values) . ' ToDo items</i>';
+                    } else {
+                        return $value;
+                    }
+
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
                         // Formato daterange 
