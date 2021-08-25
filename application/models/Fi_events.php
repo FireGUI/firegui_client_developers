@@ -44,4 +44,11 @@ class Fi_events extends CI_Model
 
         return $content;
     }
+
+
+    public function getCrons()
+    {
+        $crons = $this->db->query("SELECT * FROM crons")->result_array();
+        return $crons;
+    }
 }

@@ -26,6 +26,8 @@ class Datab extends CI_Model
 
     private $_grids_data = [];
 
+    public $executed_hooks = [];
+
     function __construct()
     {
         parent::__construct();
@@ -776,9 +778,12 @@ class Datab extends CI_Model
                 $group_by = $grid['grids']['grids_group_by'];
             }
 
+
+
             /** Grid depth * */
 
             $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
+
 
             //If $search is present, order by best match before ordering the rest of the data
             if ($search) {
@@ -2275,14 +2280,9 @@ class Datab extends CI_Model
                                 break;
 
                             case 'INT':
-                            case 'INTEGER':
-                            case strtoupper(DB_INTEGER_IDENTIFIER):
-
-
                                 if (is_numeric($chunk) && $chunk <= $maxint4) {
                                     $i_chunk = (int) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$i_chunk}')";
-                                    //debug($inner_where, true);
                                 }
                                 break;
 
@@ -2291,10 +2291,6 @@ class Datab extends CI_Model
                                     $f_chunk = (float) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$f_chunk}')";
                                 }
-                                break;
-                            default:
-                                // debug($field['fields_type']);
-                                // debug($field);
                                 break;
                         }
                     } else {
@@ -2469,6 +2465,7 @@ class Datab extends CI_Model
      */
     public function getHookContent($hookType, $hookRef, $valueId = null)
     {
+
         $hooks_by_type = array_get($this->_precalcHooks(), $hookType, []);
         $hooks = array_filter($hooks_by_type, function ($hook) use ($hookRef) {
             return ($hook['hooks_ref'] == $hookRef or !$hook['hooks_ref']);
@@ -2478,6 +2475,8 @@ class Datab extends CI_Model
 
         if (!$plainHookContent) {
             return '';
+        } else {
+            $this->executed_hooks[] = array("type" => $hookType, "ref" => $hookRef, "value_id" => $valueId, 'hooks' => $hooks);
         }
 
         ob_start();
@@ -3131,8 +3130,8 @@ class Datab extends CI_Model
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
 
-                if ($grid['grids']['grids_ajax'] == DB_BOOL_FALSE) {
 
+                if ($grid['grids']['grids_ajax'] == DB_BOOL_FALSE) {
                     $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], [], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
                 }
 
