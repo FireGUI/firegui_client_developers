@@ -62,6 +62,8 @@
                     <span class="fas fa-tv"></span></button>
 
                 <button id="js_toolbar_highlighter" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Highlight elements"><span class="fas fa-highlighter"></span></button>
+
+                <button id="js_toolbar_console" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Dev Console"><span class="fas fa-terminal"></span></button>
             </div>
             <div class="btn-group-vertical" role="group" aria-label="...">
                 <button id="js_toolbar_events" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Events & Triggers"><span class="fas fa-random"></span></button>
