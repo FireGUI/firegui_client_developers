@@ -42,6 +42,9 @@
             <div id="js_page_content">
                 <?php echo $page; ?>
             </div>
+            <div class="js_loading">
+                <img src="<?php echo base_url_admin('images/loader.gif'); ?>" />
+            </div>
         </div>
         <?php echo $footer; ?>
     </div>

@@ -28,17 +28,17 @@
 
 .js_loading {
   position: fixed;
-  /*top: 50%;*/
-  left: 0;
-  right: 0;
+  right: 10px;
+  bottom: 40px;
   display: none;
-  width: 200px;
+  color: #ffffff;
+  z-index: 10002;
   margin: 0 auto;
   padding: 4px;
   text-align: center;
   color: #ffffff;
   z-index: 10002;
-}
+} 
 
 a {
   color: #4b77bf;
