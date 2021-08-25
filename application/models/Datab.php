@@ -472,7 +472,8 @@ class Datab extends CI_Model
         if (!($dati = $this->cache->get($cache_key))) {
             if (!$form_id) {
                 log_message('error', "Form id '$form_id' not found");
-                die('ERROR: Form ID not found');
+                echo $this->load->view("box/errors/missing_form", ['form_id' => $form_id], true);
+                return false;
             }
             $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
             if (!$form) {
