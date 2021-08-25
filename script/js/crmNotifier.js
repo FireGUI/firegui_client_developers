@@ -23,19 +23,15 @@ var CrmNotifier = {
                 notifier.number = json.count;
                 notifier.showUnread(json.view);
 
-                console.log(json.data);
-
                 $.each(json.data, function (index, notification) {
                     if (
                         notification.notifications_read == '0'
                         && notification.notifications_type == '5'
                     ) {
-                        console.log('ok');
                         notifier.readAndOpenModal(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message });
                     }
                 });
 
-                console.log(json);
                 if (notifier.number > 0) {
                     var baseSoundFolder = base_url_scripts + 'script/js/';
 
@@ -141,9 +137,9 @@ var CrmNotifier = {
         var notifier = this;
         notifier.fetch();
 
-        // setInterval(function () {
-        //     notifier.fetch();
-        // }, 1000 /*5 * 60 * 1000*/); // 5 min
+        setInterval(function () {
+            notifier.fetch();
+        }, 5 * 60 * 1000); // 5 min
 
         notifier.listContainer.on('click', '[data-notification]', function (e) {
             e.preventDefault();
