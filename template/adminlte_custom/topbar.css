@@ -72,14 +72,26 @@
   }
 
   .js_loading {
-  position: fixed;
-  /*top: 50%;*/
-  left: 50%;
-  display: none;
-  width: 200px;
-  margin: 0 auto;
-  padding: 4px;
-  text-align: center;
-  color: #ffffff;
-  z-index: 10002;
-}
+    position: fixed;
+    right: 10px;
+    bottom: 40px;
+    display: none;
+    color: #1d3f72;
+    margin: 0 auto;
+    padding: 4px;
+    text-align: center;
+    z-index: 10002;
+  }
+
+  #header_notification_bar li.footer a {
+    transition: color .25s ease-in;
+  }
+
+  #header_notification_bar li.footer a:hover {
+    color: #72afd2!important;
+  }
+
+  li.notification a h4,
+  li.notification a p {
+    margin-left: 0px!important;
+  }
