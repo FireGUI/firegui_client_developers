@@ -2,7 +2,7 @@
     <h2 class="headline text-yellow"> Oops!</h2>
 
     <div class="error-content">
-        <h3><i class="fa fa-warning text-yellow"></i><?php e('Form %s not found.', 0, [$form_id]); ?></h3>
+        <h3><i class="fa fa-warning text-yellow"></i><?php e("Form '%s' not found.", 0, [$form_id]); ?></h3>
 
         <p>
             <?php e('We don\'t find what your are looking for.'); ?><br />

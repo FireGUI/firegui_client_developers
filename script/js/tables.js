@@ -2,6 +2,7 @@
 
 
 function initTabelWithPars(grid, pars) {
+    //console.log(pars);
     var table = null;
     var oDataTable = grid;
     var valueID = grid.attr('data-value-id');
@@ -15,6 +16,9 @@ function initTabelWithPars(grid, pars) {
 
     var bEnableOrder = typeof grid.attr('data-prevent-order') === 'undefined';
     var defaultLimit = parseInt(grid.attr('data-default-limit'));
+
+
+
     var totalable = pars.totalable;
     if (typeof totalable === 'undefined') {
         totalable = 0;
@@ -56,6 +60,7 @@ function initTabelWithPars(grid, pars) {
                 [5, 10, 15, 25, 50, 100, 200, 500, 'All'],
             ],
             pageLength: defaultLimit,
+            searching: (pars.searchable) ? true : false,
             oLanguage: {
                 sUrl: base_url_scripts + 'script/dt_translations/datatable.' + lang_short_code + '.json',
             },
@@ -162,9 +167,14 @@ function initTabelWithPars(grid, pars) {
         table = datatable;
     } else {
         table = grid;
-        console.log('Gestire tabelle non datatable');
+        //console.log('Gestire tabelle non datatable');
     }
 
+    if (pars.inline) {
+
+        var dtInline = new CrmNewInlineTable(table);
+        dtInline.registerEvents();
+    }
 
     return table;
 
