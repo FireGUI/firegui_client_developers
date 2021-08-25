@@ -99,6 +99,13 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
   line-height: 1.5;
   border-radius: 4px;
 }
+.table-condensed .btn-grid-action-s {
+    padding: 2px 2px;
+    font-size: 10px;
+    line-height: 1;
+    border-radius: 2px;
+}
+}
 table th.sorting,
 table th.sorting_desc,
 table th.sorting_asc {
@@ -700,11 +707,17 @@ table.dataTable.nowrap td {
   }
 }
 
+@media (min-width: 768px) {
+  .sidebar-mini.sidebar-collapse .main-footer {
+    margin-left:0px !important;
+   }
+}
+
 .main-footer {
   width: 100%;
   position:fixed;
   bottom:0;
-  z-index:820;
+  z-index:1100;
   margin-left: 0px;
   padding:4px;
   display: flex;
@@ -907,4 +920,12 @@ table.dataTable.nowrap td {
 
 .js_todo_row_container {
   cursor:move;
+}
+
+#js_page_content section.content {
+  padding-bottom: 50px;
+} 
+
+td div.action-list {
+  min-width: 62px;
 }

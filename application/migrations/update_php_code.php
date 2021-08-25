@@ -22,3 +22,6 @@ $updates['1.8.9'] = [
 $updates['2.1.9'] = [
     'include' => ['2.1.9_field_user_webauthn_data.php'],
 ];
+$updates['2.2.3'] = [
+    'include' => ['2.2.3_fields_settings.php'],
+];

@@ -1,36 +1,25 @@
 'use strict';
 
 
-function initTableAjax(grid) {
+function initTabelWithPars(grid, pars) {
+    var table = null;
     var oDataTable = grid;
-    var valueID = oDataTable.attr('data-value-id');
-    var getParameters = oDataTable.data('get_pars'); //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
+    var valueID = grid.attr('data-value-id');
+    var getParameters = pars.get_pars; //Questu servono per portarsi dietro eventuali parametri get che non vengono passati al get_datatable_ajax (filtri o altro...)
 
-    var where_append = oDataTable.data('where_append');
+    var where_append = pars.where_append;
+
     if (typeof where_append === 'undefined') {
         where_append = '';
     }
 
-    var bEnableOrder = typeof oDataTable.attr('data-prevent-order') === 'undefined';
-    var defaultLimit = parseInt(oDataTable.attr('default-limit'));
-    var totalable = oDataTable.data('totalable');
+    var bEnableOrder = typeof grid.attr('data-prevent-order') === 'undefined';
+    var defaultLimit = parseInt(grid.attr('data-default-limit'));
+    var totalable = pars.totalable;
     if (typeof totalable === 'undefined') {
         totalable = 0;
     }
 
-    var aoColumns = [];
-    $('> thead > tr > th', oDataTable).each(function () {
-        var coldef = null;
-        coldef = {
-            bSortable: bEnableOrder && typeof $(this).attr('data-prevent-order') === 'undefined',
-        };
-
-        if ($(this).data('totalable')) {
-            coldef.className = 'dt-right';
-        }
-
-        aoColumns.push(coldef);
-    });
     try {
         var token = JSON.parse(atob(oDataTable.data('csrf')));
         var token_name = token.name;
@@ -40,28 +29,28 @@ function initTableAjax(grid) {
         var token_name = token.name;
         var token_hash = token.hash;
     }
-    var datatable = oDataTable
-        .on('error.dt', function (e, settings, techNote, message) {
 
-            if (typeof message !== 'undefined') {
-                $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
+
+    //Check if the table must be initialized with datatables
+    if (pars.datatable) {
+        var aoColumns = [];
+        $('> thead > tr > th', oDataTable).each(function () {
+            var coldef = null;
+            coldef = {
+                bSortable: bEnableOrder && typeof $(this).attr('data-prevent-order') === 'undefined',
+            };
+
+            if ($(this).data('totalable')) {
+                coldef.className = 'dt-right';
             }
-        })
-        // .on('draw.dt', function () {
-        //     $('html, body').animate({
-        //         scrollTop: oDataTable.closest(".dataTables_wrapper").offset().top - 80
-        //     }, 'fast');
-        // })ì
-        .dataTable({
+
+            aoColumns.push(coldef);
+        });
+        var datatableOptions = {
             stateSave: true,
             bSort: bEnableOrder,
             aoColumns: aoColumns,
             aaSorting: [],
-            bRetrieve: true,
-            bProcessing: true,
-            sServerMethod: 'POST',
-            bServerSide: true,
-            sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
             aLengthMenu: [
                 [5, 10, 15, 25, 50, 100, 200, 500, -1],
                 [5, 10, 15, 25, 50, 100, 200, 500, 'All'],
@@ -70,14 +59,9 @@ function initTableAjax(grid) {
             oLanguage: {
                 sUrl: base_url_scripts + 'script/dt_translations/datatable.' + lang_short_code + '.json',
             },
-
-            fnServerParams: function (aoData) {
-                aoData.push({ name: token_name, value: token_hash });
-            },
             drawCallback: function (settings) {
                 initComponents(oDataTable);
             },
-
             footerCallback: function (row, data, start, end, display) {
                 if (totalable == 1) {
                     var api = this.api(),
@@ -120,39 +104,47 @@ function initTableAjax(grid) {
                     });
                 }
             },
-            fnServerData: function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    dataType: 'json',
-                    type: 'POST',
-                    url: sSource,
-                    data: aoData,
-                    success: fnCallback,
-                    error: function (request, error) {
-                        //console.log(message);
-                        if (typeof request.responseText !== 'undefined') {
-                            $('.callout.callout-warning').remove();
-                            $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
-                        }
-                    },
-                });
-            },
-        });
+        };
 
-    return datatable;
-}
+        if (pars.ajax) {
+            var appendOptions = {
+                bRetrieve: true,
+                bProcessing: true,
+                sServerMethod: 'POST',
+                bServerSide: true,
+                sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
+                fnServerParams: function (aoData) {
+                    aoData.push({ name: token_name, value: token_hash });
+                },
+                fnServerData: function (sSource, aoData, fnCallback) {
+                    $.ajax({
+                        dataType: 'json',
+                        type: 'POST',
+                        url: sSource,
+                        data: aoData,
+                        success: fnCallback,
+                        error: function (request, error) {
+                            //console.log(message);
+                            if (typeof request.responseText !== 'undefined') {
+                                $('.callout.callout-warning').remove();
+                                $('.content-header:first').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + '\'.</p><a href="#" onclick="javascript:$(\'.js_error_code\').toggle();">Show/hide error</a><code class="js_error_code" style="display:none;">' + request.responseText + '</code></div>');
+                            }
+                        },
+                    });
+                },
+            };
+        } else {
+            var appendOptions = {};
+        }
 
-/** Init ajax datatables **/
-function startTables() {
-    $('.js_newTable:visible').each(function () {
-        var gridID = $(this).attr('data-grid-id');
-        var grid = $(this);
+        var datatable = oDataTable
+            .on('error.dt', function (e, settings, techNote, message) {
 
-
-        // TODO Agire da qui in giu.............. MANUEL
-
-        if (grid.data('ajaxTableInitialized') != true) {
-
-            initTableAjax(grid).on('init', function (e) {
+                if (typeof message !== 'undefined') {
+                    $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
+                }
+            })
+            .on('init', function (e) {
                 var wrapper = e.target.parent;
                 $('.dataTables_filter input', wrapper).addClass('form-control input-small'); // modify table search input
                 $('.dataTables_length select', wrapper).addClass('form-control input-xsmall input-sm'); // modify table per page dropdown
@@ -164,20 +156,37 @@ function startTables() {
                 });
                 $('.dataTables_filter label, .dataTables_length label', wrapper).css('padding-bottom', 0).css('margin-bottom', 0);
                 $('.dataTables_length', wrapper).parent().parent().height(0);
-            });
-        }
-    });
+            })
+            .dataTable({ ...datatableOptions, ...appendOptions });
 
-    $('.js_datatable_inline').each(function () {
+        table = datatable;
+    } else {
+        table = grid;
+        console.log('Gestire tabelle non datatable');
+    }
+
+
+    return table;
+
+}
+
+/** Init ajax datatables **/
+function initTables() {
+    $('.js_table:visible').each(function () {
         var grid = $(this);
+        if (grid.data('tableInitialized') != true) {
+            grid.data('tableInitialized', true);
+            var gridID = grid.attr('data-grid-id');
 
-        if (grid.data('ajaxTableInitialized') != true) {
-            initTable(grid);
 
-            var dtInline = new CrmInlineTable(grid);
-            dtInline.registerEvents();
+            //Get parameters
+            var gridParameters = grid.data();
+
+            initTabelWithPars(grid, gridParameters);
         }
     });
+
+
 }
 
 $.fn.dataTable.ext.errMode = 'none';
