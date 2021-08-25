@@ -1,34 +1,66 @@
 <!-- Logo -->
+
+
+<?php
+if ($this->settings['settings_topbar_logo']) {
+    $logo = $this->settings['settings_topbar_logo'];
+} else {
+    $logo = null;
+}
+if ($this->settings['settings_topbar_logo_small']) {
+    $logo_small = $this->settings['settings_topbar_logo_small'];
+} else {
+    $logo_small = null;
+}
+?>
+
+
 <a href="<?php echo base_url('main/dashboard'); ?>" class="logo">
-    <?php if (empty($this->settings['settings_company_logo'])) : ?>
-        <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini">
-            <?php echo empty($this->settings['settings_company_short_name']) ? 'Companny' : htmlspecialchars($this->settings['settings_company_short_name']); ?>
 
-        </span>
-        <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg">
+    <!-- mini logo for sidebar mini 50x50 pixels -->
+    <span class="logo-mini">
+        <?php if ($logo_small) : ?>
+            <img class="logo-default img-responsive" src="<?php echo base_url_uploads("uploads/{$logo_small}"); ?>">
+        <?php else : ?>
+            <?php echo empty($this->settings['settings_company_short_name']) ? 'Company' : htmlspecialchars($this->settings['settings_company_short_name']); ?>
+        <?php endif; ?>
+
+
+    </span>
+    <!-- logo for regular state and mobile devices -->
+    <span class="logo-lg">
+        <?php if ($logo) : ?>
+            <img class="logo-default img-responsive" src="<?php echo base_url_uploads("uploads/{$logo}"); ?>">
+        <?php else : ?>
             <?php echo empty($this->settings['settings_company_name']) ? 'Company Name' : htmlspecialchars($this->settings['settings_company_name']); ?>
+        <?php endif; ?>
 
-        </span>
+    </span>
 
-    <?php else : ?>
-        <img class="logo-default img-responsive" src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>">
-    <?php endif; ?>
+
+
+
 
 </a>
 
 <?php
 $data['custom'] = [];
+if ($this->settings['settings_topbar_color']) {
+    $topbar_color = $this->settings['settings_topbar_color'];
+} elseif (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) {
+    $topbar_color = TOPBAR_COLOR;
+} else {
+    $topbar_color = false;
+}
 
-if (defined('TOPBAR_COLOR') && !empty(TOPBAR_COLOR)) {
+if ($topbar_color) {
     $data['custom'] = array_merge([
         '.logo' => [
-            'background-color' => TOPBAR_COLOR . '!important',
+            'background-color' => $topbar_color . '!important',
             'box-shadow' => '0 4px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .35)'
         ],
         '.user-header, .navbar' => [
-            'background-color' => TOPBAR_COLOR . '!important',
+            'background-color' => $topbar_color . '!important',
 
         ]
     ], $data['custom']);
