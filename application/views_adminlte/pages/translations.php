@@ -1,6 +1,7 @@
 <?php
 
 $strings = [];
+
 ?>
 
 <section class="content-header">
@@ -18,8 +19,6 @@ $strings = [];
                 <div class="col-md-2">
                     <strong><?php e('Your language is: '); ?></strong>
                     <?php echo $data['settings']['languages_name']; ?>
-
-                    <?php echo $this->lang->line('hours'); ?>
                 </div>
             </div>
         </div>

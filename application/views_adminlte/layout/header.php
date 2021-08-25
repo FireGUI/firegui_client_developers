@@ -62,10 +62,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
 ?>
 
 
-<div class="js_loading">
-    <img src="<?php echo base_url_admin('images/loading.gif'); ?>" width="40" />
-    <small><?php e("Loading"); ?></small>
-</div>
+
 <nav class="navbar navbar-static-top">
 
     <!-- Sidebar toggle button-->
@@ -175,11 +172,18 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fas fa-trash-alt"></i> <?php e('Clean'); ?> cache</a>
+                                    <a href="<?php echo base_url('main/cache_control/clear'); ?>"><i class="fas fa-trash-alt"></i> <?php e('Clear'); ?> cache</a>
                                 </div>
                             </div>
                         </li>
-
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <a href="<?php echo base_url('main/support_tables'); ?>"><i class="fas fa-wrench"></i>
+                                        <?php e('Support tables'); ?></a>
+                                </div>
+                            </div>
+                        </li>
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">

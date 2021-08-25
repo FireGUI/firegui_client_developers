@@ -45,7 +45,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             ])
                             ->row_array();
 
-                        $value = $this->datab->get_default_fields_value($form_field);
+                        $value = $this->datab->get_default_fields_value($form_field, $value_id);
                         //debug($value);
                         if ($value !== null) {
                             //debug('foo');

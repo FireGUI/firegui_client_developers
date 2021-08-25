@@ -255,7 +255,7 @@ class Datab extends CI_Model
     /**
      * Forms
      */
-    public function get_default_fields_value($fields)
+    public function get_default_fields_value($fields, $value_id = null)
     {
 
         $value = $this->input->get_post($fields['fields_name']);
@@ -433,8 +433,8 @@ class Datab extends CI_Model
                     } else {
                         debug("NON GESTITA DEFAULT TYPE VARIABLE");
                     }
-                } else {
-                    debug("NON GESTITA DEFAULT TYPE VARIABLE");
+                } elseif ($str == 'value_id') {
+                    $value = $value_id;
                 }
 
                 break;
@@ -463,7 +463,7 @@ class Datab extends CI_Model
         }
     }
 
-    public function get_form($form_id, $value_id = null)
+    public function get_form($form_id, $edit_id = null, $value_id = null)
     {
 
         $cache_key = "datab.get_form.{$form_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
@@ -488,12 +488,12 @@ class Datab extends CI_Model
                 ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id, 'fields_visible' => DB_BOOL_TRUE])->result_array();
 
             if (!empty($form['forms_action'])) {
-                $form['action_url'] = str_ireplace(['{base_url}', '{value_id}'], [base_url(), ($value_id ?? null)], $form['forms_action']);
+                $form['action_url'] = str_ireplace(['{base_url}', '{value_id}'], [base_url(), ($edit_id ?? null)], $form['forms_action']);
             } else {
-                if (is_array($value_id)) {
+                if (is_array($edit_id)) {
                     $form['action_url'] = base_url("db_ajax/save_form/{$form_id}/true");
                 } else {
-                    $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($value_id ? "/true/{$value_id}" : ''));
+                    $form['action_url'] = base_url("db_ajax/save_form/{$form_id}" . ($edit_id ? "/true/{$edit_id}" : ''));
                 }
             }
 
@@ -515,7 +515,7 @@ class Datab extends CI_Model
             if ($form['forms_one_record'] == DB_BOOL_TRUE) {
                 $formData = $this->apilib->searchFirst($form['entity_name']);
             } else {
-                $formData = ($value_id && !is_array($value_id)) ? $this->apilib->view($form['entity_name'], $value_id, 1) : [];
+                $formData = ($edit_id && !is_array($edit_id)) ? $this->apilib->view($form['entity_name'], $edit_id, 1) : [];
 
 
 
@@ -525,7 +525,7 @@ class Datab extends CI_Model
 
                         $value_json = $this->db
                             ->select($field['fields_name'])
-                            ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $value_id])
+                            ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $edit_id])
                             ->row_array()[$field['fields_name']];
                         $formData[$field['fields_name']] = $value_json;
                     }
@@ -579,7 +579,7 @@ class Datab extends CI_Model
 
 
 
-                $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null);
+                $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id);
             }
 
             foreach ($shown as $k => $field) {
@@ -608,7 +608,7 @@ class Datab extends CI_Model
                     'datatype' => $field['fields_type'],
                     'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
                     'fields_source' => $field['fields_source'], // Computo il ref field da usare nel caso di form
-                    'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null)
+                    'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id)
                 ];
             }
 
@@ -2910,11 +2910,11 @@ class Datab extends CI_Model
     /**
      * Build del form input
      */
-    public function build_form_input(array $field, $value = null)
+    public function build_form_input(array $field, $value = null, $value_id = null)
     {
 
         if (!$value && !empty($field['forms_fields_default_value'])) {
-            $value = $this->get_default_fields_value($field);
+            $value = $this->get_default_fields_value($field, $value_id);
         }
 
         $output = '';
@@ -3130,7 +3130,8 @@ class Datab extends CI_Model
 
                 // Prendo i dati della grid: è inutile prendere i dati in una grid ajax
                 $grid_data = ['data' => [], 'sub_grid_data' => []];
-                if (!in_array($grid['grids']['grids_layout'], ['datatable_ajax', 'datatable_ajax_inline', 'datatable_ajax_slim'])) {
+
+                if ($grid['grids']['grids_ajax'] == DB_BOOL_FALSE) {
 
                     $grid_data['data'] = $this->get_grid_data($grid, empty($layoutEntityData) ? $value_id : ['value_id' => $value_id, 'additional_data' => $layoutEntityData], [], null, 0, null, false, ['depth' => $grid['grids']['grids_depth']]);
                 }

@@ -124,6 +124,7 @@
 
 <!-- CUSTOM COMPONENTS -->
 <script src="<?php echo base_url_scripts("script/js/submitajax.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/js/tables.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/ajax-tables.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/datatable_inline.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/data-tables.js?v=" . VERSION); ?>"></script>
