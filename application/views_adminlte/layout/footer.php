@@ -127,6 +127,7 @@
 <script src="<?php echo base_url_scripts("script/lib/timeline/build/js/storyjs-embed.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/lib/lightbox2/js/lightbox.min.js?v=" . VERSION); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_scripts("script/global/plugins/bootbox/bootbox.min.js?v=" . VERSION); ?>"></script>
 
 <!-- LEAFLET-JS -->
 <script src="<?php echo base_url_scripts("script/lib/leaflet-1.7.1/leaflet-src.js?v=" . VERSION); ?>"></script>

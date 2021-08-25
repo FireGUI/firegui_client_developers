@@ -1011,5 +1011,4 @@ $lang['Topbar color'] = 'Topbar color';
 $lang['Topbar logo small'] = 'Topbar logo small';
 $lang['Topbar logo'] = 'Topbar logo';
 $lang['Notification'] = 'Notification';
-$lang['Dddd'] = 'Dddd';
-$lang['Tasks settings'] = 'Tasks settings';
+$lang['Form \'%s\' not found.'] = 'Form \'%s\' not found.';

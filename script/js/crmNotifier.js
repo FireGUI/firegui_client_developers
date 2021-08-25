@@ -22,6 +22,16 @@ var CrmNotifier = {
             success: function (json) {
                 notifier.number = json.count;
                 notifier.showUnread(json.view);
+
+                $.each(json.data, function (index, notification) {
+                    if (
+                        notification.notifications_read == '0'
+                        && notification.notifications_type == '5'
+                    ) {
+                        notifier.readAndOpenModal(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message });
+                    }
+                });
+
                 if (notifier.number > 0) {
                     var baseSoundFolder = base_url_scripts + 'script/js/';
 
@@ -108,6 +118,21 @@ var CrmNotifier = {
         }
     },
 
+    readAndOpenModal: function (notificationId, data) {
+        var that = this;
+
+        var ajax = this.setRead(notificationId);
+        if (ajax !== null) {
+            ajax.success(function () {
+                'use strict';
+                bootbox.alert({
+                    title: data.title ?? 'New Notification',
+                    message: data.message,
+                });
+            });
+        }
+    },
+
     init: function () {
         var notifier = this;
         notifier.fetch();
@@ -115,11 +140,17 @@ var CrmNotifier = {
         setInterval(function () {
             notifier.fetch();
         }, 5 * 60 * 1000); // 5 min
+
         notifier.listContainer.on('click', '[data-notification]', function (e) {
             e.preventDefault();
 
             var $this = $(this);
-            notifier.readAndGoto($this.data('notification'), $('a', $this).attr('href'));
+            if ($('a', $this).attr('href')) {
+                notifier.readAndGoto($this.data('notification'), $('a', $this).attr('href'));
+            } else {
+                notifier.readAndOpenModal($this.data('notification'), $this.data());
+            }
+
         });
     },
 };
