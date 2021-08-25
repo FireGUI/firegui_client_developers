@@ -175,7 +175,7 @@ if ($grid['grids']['grids_pagination']) {
 
     if (!$form || !$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
 
-        return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+        return str_repeat('&nbsp;', 3) . t('You don\'t have permissions to write in this table');
     }
     ?>
     <div class="js_inline_hidden_form_container hidden" grid_id="<?php echo $grid['grids']['grids_id']; ?>">
