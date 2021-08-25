@@ -1010,3 +1010,5 @@ $lang['Ajax'] = 'Ajax';
 $lang['Topbar color'] = 'Topbar color';
 $lang['Topbar logo small'] = 'Topbar logo small';
 $lang['Topbar logo'] = 'Topbar logo';
+$lang['Notification'] = 'Notification';
+$lang['Form \'%s\' not found.'] = 'Form \'%s\' not found.';

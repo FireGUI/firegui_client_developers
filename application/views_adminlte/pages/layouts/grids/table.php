@@ -48,11 +48,27 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
 
     $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
 }
-//debug($grid['grids']);
+
+if ($grid['grids']['grids_pagination']) {
+    $limit = $grid['grids']['grids_pagination'];
+} elseif (defined('DEFAULT_GRID_LIMIT')) {
+    $limit = DEFAULT_GRID_LIMIT;
+} else {
+    $limit = 10;
+}
+
+
 ?>
 
 <div class="table-scrollable-borderless">
-    <table data-ajax="<?php echo $grid['grids']['grids_ajax']; ?>" data-design="<?php echo $grid['grids']['grids_design']; ?>" data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>" data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>" data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>" data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>" data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" data-default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_table js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $append_class; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
+    <?php if ($grid['grids']['grids_inline_edit']) : ?>
+
+        <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
+        <div class="clearfix"></div>
+        <br />
+    <?php endif; ?>
+
+    <table data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" data-ajax="<?php echo $grid['grids']['grids_ajax']; ?>" data-design="<?php echo $grid['grids']['grids_design']; ?>" data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>" data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>" data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>" data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>" data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" data-default-limit="<?php echo $limit; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_table js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $append_class; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>
@@ -61,7 +77,12 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
                     </th>
                 <?php endif; ?>
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
-                    <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" <?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?> <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
+
+                    <?php $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                    <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);  ?></th>
+
+
+
                 <?php endforeach; ?>
 
                 <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
@@ -107,6 +128,11 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
                         <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
                         <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
                         </th>
+
+
+
+
+
                     <?php endforeach; ?>
 
                     <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
@@ -141,3 +167,28 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
         </div>
     <?php endif; ?>
 </div>
+
+<?php if ($grid['grids']['grids_inline_edit']) : ?>
+    <?php
+
+    $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null, $value_id);
+
+    if (!$form || !$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
+
+        return str_repeat('&nbsp;', 3) . 'Non disponi dei permessi sufficienti per modificare i dati.';
+    }
+    ?>
+    <div class="js_inline_hidden_form_container hidden" grid_id="<?php echo $grid['grids']['grids_id']; ?>">
+        <?php
+        $this->load->view(
+            "pages/layouts/forms/form_{$form['forms']['forms_layout']}",
+            array(
+                'form' => $form,
+                'ref_id' => $grid['grids']['grids_inline_form'],
+                'value_id' => null,
+            ),
+            false
+        );
+        ?>
+    </div>
+<?php endif; ?>
