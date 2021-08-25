@@ -17,16 +17,21 @@ $links = $grid['grids']['links'];
 
 // Check if datatable and if ajax yes or not
 $grid_is_ajax = false;
-$datatable_class = "";
+
 
 if ($grid['grids']['grids_datatable'] == DB_BOOL_TRUE) {
     if ($grid['grids']['grids_ajax'] == DB_BOOL_TRUE) {
-        $datatable_class = 'js_ajax_datatable';
+
         $grid_is_ajax = true;
     } else {
-        $datatable_class = 'js_datatable';
+
         $grid_is_ajax = false;
     }
+}
+
+$append_class = '';
+if ($grid['grids']['grids_design'] == 2) { //Slim
+    $append_class .= ' table-condensed ';
 }
 
 // Actions
@@ -46,8 +51,8 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
 //debug($grid['grids']);
 ?>
 
-<div class="___table-scrollable table-scrollable-borderless">
-    <table data-ajax="<?php echo $grid['grids']['grids_ajax']; ?>" data-design="<?php echo $grid['grids']['grids_design']; ?>" data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>" data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>" data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>" data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>" data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_newTable js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
+<div class="table-scrollable-borderless">
+    <table data-ajax="<?php echo $grid['grids']['grids_ajax']; ?>" data-design="<?php echo $grid['grids']['grids_design']; ?>" data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>" data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>" data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>" data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>" data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" data-default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_table js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $append_class; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>

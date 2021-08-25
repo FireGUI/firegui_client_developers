@@ -14,6 +14,11 @@ foreach ($grid['grids_fields'] as $field) {
 }
 
 $links = $grid['grids']['links'];
+
+
+
+//TODO: qui basta semplicemente precompilare i parametri (fittizzi) che servono alla view table.php (quella nuova che fa tutto) e fare this->load->view di quel table.php coi parametri corretti, così da dismettere tutte le vecchie datatable e i relativi js...
+
 ?>
 
 
