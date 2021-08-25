@@ -169,6 +169,7 @@ define('NOTIFICATION_TYPE_INFO',    1);
 define('NOTIFICATION_TYPE_WARNING', 2);
 define('NOTIFICATION_TYPE_MESSAGE', 3);
 define('NOTIFICATION_TYPE_SYSTEM', 4);
+define('NOTIFICATION_TYPE_AUTO_OPEN', 5);
 
 define('FIELDS_PERMISSIONS', serialize([
     0 => 'No permission',
