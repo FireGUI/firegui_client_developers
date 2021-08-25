@@ -1532,7 +1532,7 @@ class Datab extends CI_Model
 
                 default:
                     // Non è stato inserito nessun link quindi metti un'azione vuota nell'href
-                    $href = 'javascript:void(0);';
+                    $href = null;
             }
 
 
