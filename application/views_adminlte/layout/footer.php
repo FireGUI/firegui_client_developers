@@ -1,3 +1,53 @@
+<!-- Builder console -->
+
+<div class="builder_console hide">
+  <div class=fakeMenu>
+    <div class="fakeButtons fakeClose"></div>
+    <div class="fakeButtons fakeMinimize"></div>
+    <div class="fakeButtons fakeZoom"></div>
+  </div>
+  <div class="fakeScreen">
+
+    <!-- Hooks -->
+    <p class="line1 js_console_command">$ get executed hooks</p>
+    <p class="line2 hide">
+      <?php foreach ($this->datab->executed_hooks as $hook) : ?>
+        - Type: <?php echo $hook['type']; ?> Ref: <?php echo $hook['ref']; ?> Value id: <?php echo $hook['value_id']; ?> <br />
+
+        <?php foreach ($hook['hooks'] as $single_hook) : ?>
+          |- [<?php echo $single_hook['hooks_id']; ?>] Title: <?php echo $single_hook['hooks_title']; ?> Module: <?php echo $single_hook['hooks_module']; ?> <span class="js_show_code">Show Code</span><br />
+          <span class="line4 hide"><br /><?php echo htmlentities($single_hook['hooks_content']); ?><br /><br /></span>
+        <?php endforeach; ?>
+        <br />
+      <?php endforeach; ?>
+    </p>
+
+    <!-- Queries -->
+    <p class="line1 js_console_command">$ get executed queries</p>
+    <p class="line2 hide">
+      <?php foreach ($this->db->queries as $query) : ?>
+        - <?php echo $query; ?> <br />
+      <?php endforeach; ?>
+    </p>
+
+    <!-- Crons -->
+    <p class="line1 js_console_command">$ get crons</p>
+    <p class="line2 hide">
+      <?php foreach ($this->fi_events->getCrons() as $cron) : ?>
+        - [<?php echo $cron['crons_id']; ?>] <?php echo $cron['crons_title']; ?> Type: <?php echo $cron['crons_type']; ?> Freq: <?php echo $cron['crons_frequency']; ?> min Active: <span class="line4"><?php echo $cron['crons_active']; ?></span> Last Exec: <?php echo $cron['crons_last_execution']; ?> Module: <?php echo $cron['crons_module']; ?> <span class="js_show_code">Show code/url</span><br />
+        <span class="line4 hide"><br /><code><?php echo ($cron['crons_text']) ? htmlentities($cron['crons_text']) : $cron['crons_file']; ?></code><br /><br /></span>
+      <?php endforeach; ?>
+    </p>
+
+
+
+    <p class="line3">[?] What are you looking for? (Click command to execute)<span class="cursor3">_</span></p>
+    <p class="line4">><span class="cursor4">_</span></p>
+  </div>
+
+</div>
+
+<!-- Fixed footer -->
 <footer class="main-footer">
 
   <div class="left_side pull-left hidden-xs">
