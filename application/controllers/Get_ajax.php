@@ -631,7 +631,7 @@ class Get_ajax extends MY_Controller
                 if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
                     $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
                     $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-                } elseif ($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
+                } elseif (($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' || $grid['grids']['grids_inline_edit']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/inline_form_actions', array(
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
                         'links' => $grid['grids']['links'],
@@ -977,7 +977,8 @@ class Get_ajax extends MY_Controller
                 'notifications_type' => NOTIFICATION_TYPE_SYSTEM,
                 'notifications_id' => null,
                 'notifications_user_id' => null,
-                'notifications_message' => "[System] There is a new client version available ({$version})!<br />Update now by clicking here.",
+                'notifications_title' => '[System] Update available',
+                'notifications_message' => "new version available ({$version})!<br />Click here to update.",
                 'notifications_read' => DB_BOOL_FALSE,
                 'notifications_date_creation' => date('Y-m-d h:i:s'),
                 'notifications_link' => base_url('firegui/updateClient/1'),
@@ -997,7 +998,8 @@ class Get_ajax extends MY_Controller
             })),
             'errors' => count(array_filter($unread, function ($n) {
                 return $n['notifications_type'] == 0;
-            }))
+            })),
+            'data' => $notifications
         ));
     }
 
