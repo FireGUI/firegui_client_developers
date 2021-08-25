@@ -674,6 +674,8 @@ function initComponents(container, reset = false) {
     /**
      * DataTables
      */
+    startTables();
+    // Old for retro-compatibility
     startDataTables();
     startAjaxTables();
     startNewDatatableInline();

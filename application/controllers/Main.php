@@ -207,8 +207,6 @@ class Main extends MY_Controller
                 $dati['layout_id'] = $layout_id;
                 $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
 
-
-
                 $this->layout->setLayoutModule();
                 $this->stampa($pagina, $value_id);
             }
