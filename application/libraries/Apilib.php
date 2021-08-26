@@ -503,7 +503,7 @@ class Apilib
 
             $this->savePendingRelations($id);
 
-            $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->getById($entity, $id)));
+            $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->view($entity, $id)));
 
             $this->clearEntityCache($entity);
 
@@ -2108,20 +2108,43 @@ class Apilib
         if (!empty($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype])) {
             foreach ($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype] as $function) {
                 try {
-                    eval($function['post_process_what']);
+                    if (empty($function['fi_events_post_process_id'])) {
+                        $this->runEvent($function, $data);
+                    } else {
+                            //TODO: deprecated... use onlu fi_events table
+                        eval($function['post_process_what']);
+                    }
                 } catch (Exception $ex) {
                     throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
                 }
             }
         }
-
+        
         return $data;
     }
+    private function runEvent($function, $data) {
+        switch ($function['fi_events_action']) {
+            case 'notify':
+                $this->load->model('fi_events/notify');
+                $this->notify->init($function, $data)->run();
+                break;
+            default:
+                debug("Event action '{$function['fi_events_action']}' not recognized!");
+                break;
 
+        }
+        
+    }
     private function preLoadDataProcessors()
     {
         if (empty($this->_loadedDataProcessors)) {
-            $process = $this->db->get('post_process')->result_array();
+            $process = $this->db
+                ->where('fi_events_type', 'database')
+                ->join('post_process', 'post_process_id = fi_events_post_process_id', 'LEFT')
+                ->get('fi_events')
+                ->result_array();
+
+
 
             $this->_loadedDataProcessors = [
                 self::MODE_DIRECT   => [],
@@ -2130,19 +2153,31 @@ class Apilib
             ];
 
             foreach ($process as $function) {
-
-                $e_id = $function['post_process_entity_id'];
-                $type = $function['post_process_when'];
-
-                if ($function['post_process_crm'] == DB_BOOL_TRUE) {
+                
+                if (empty($function['fi_events_post_process_id'])) { //New fi_events structure
+                    
+                    $e_id = $function['fi_events_ref_id'];
+                    $type = $function['fi_events_when'];
+                    $crm = $function['fi_events_crm'];
+                    $api = $function['fi_events_api'];
+                    $apilib = $function['fi_events_apilib'];
+                } else {
+                    $e_id = $function['post_process_entity_id'];
+                    $type = $function['post_process_when'];
+                    $crm = $function['post_process_crm'];
+                    $api = $function['post_process_api'];
+                    $apilib = $function['post_process_apilib'];
+                }                
+                
+                if ($crm == DB_BOOL_TRUE) {
                     $this->_loadedDataProcessors[self::MODE_CRM_FORM][$e_id][$type][] = $function;
                 }
 
-                if ($function['post_process_api'] == DB_BOOL_TRUE) {
+                if ($api == DB_BOOL_TRUE) {
                     $this->_loadedDataProcessors[self::MODE_API_CALL][$e_id][$type][] = $function;
                 }
 
-                if ($function['post_process_apilib'] == DB_BOOL_TRUE) {
+                if ($apilib == DB_BOOL_TRUE) {
                     $this->_loadedDataProcessors[self::MODE_DIRECT][$e_id][$type][] = $function;
                 }
             }
