@@ -109,7 +109,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array('auth', 'datab', 'hook', 'emails', 'mail_model', 'layout', 'module', 'fi_events');
+$autoload['model'] = array('auth', 'datab', 'hook', 'emails', 'mail_model', 'layout', 'module', 'fi_events', 'notifications');
 
 
 /* End of file autoload.php */
