@@ -46,8 +46,6 @@ class Notify extends CI_Model
                 break;
         }
 
-        //$this->replacePlaceholders();
-
         switch ($this->_what) {
             case 'email_custom':
             case 'email_tpl':
@@ -62,7 +60,7 @@ class Notify extends CI_Model
     private function buildEmailCustom()
     {
         $this->_message = $this->_actiondata['message'];
-        $this->_subject = $this->_actiondata['subject'];
+        $this->_subject = $this->_actiondata['title_subject'];
 
         $this->_email_from = $this->_actiondata['email_from'];
         $this->_email_cc = $this->_actiondata['email_cc'];
@@ -74,6 +72,7 @@ class Notify extends CI_Model
     {
 
         $this->_templateEmail = $this->_actiondata['email_template'];
+
         $this->buildEmailTo();
     }
     private function buildEmailTo()
@@ -143,23 +142,28 @@ class Notify extends CI_Model
 
         $this->_email_recipients[] = $this->_email_custom;
     }
-    private function replacePlaceholders()
-    {
-        $filteredData = array_filter($this->_data, 'is_scalar');
-
-        $this->_message = str_replace_placeholders($this->_message, $filteredData);
-
-        //TODO: sarà da fare anche per il subject della mail
-    }
 
     private function sendEmails()
     {
         foreach ($this->_email_recipients as $email) {
+            $headers = [];
+
+            if ($this->_email_from) {
+                $headers['From'] = $this->_email_from;
+            }
+
+            if ($this->_email_from) {
+                $headers['Cc'] = $this->_email_cc;
+            }
+
+            if ($this->_email_from) {
+                $headers['Bcc'] = $this->_email_bcc;
+            }
+
             if ($this->_what == 'email_custom') {
-                //TODO: aggiungere bcc, cc, from gestendo se sono vuoti
-                $this->mail_model->sendFromData('matteopuppis@gmail.com', ['template' => $this->_message, 'subject' => $this->_subject], $this->_data);
+                $this->mail_model->sendFromData($this->_to, ['template' => $this->_message, 'subject' => $this->_subject], $this->_data, $headers);
             } elseif ($this->_what == 'email_tpl') {
-                $this->mail_model->send('matteopuppis@gmail.com', $this->_templateEmail, '', $this->_data);
+                $this->mail_model->send($this->_to, $this->_templateEmail, '', $this->_data, $headers);
             } else {
                 debug("what '{$this->_what}' not supported!");
             }
