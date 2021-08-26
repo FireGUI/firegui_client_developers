@@ -7,7 +7,9 @@ class Notify extends CI_Model
     private $_data;
     private $_what;
     private $_to;
+    private $_subject;
     private $_message;
+    private $_templateEmail;
     private $_email_from;
     private $_email_cc;
     private $_email_bcc;
@@ -59,11 +61,22 @@ class Notify extends CI_Model
     private function buildEmailCustom()
     {
         $this->_message = $this->_actiondata['message'];
+        $this->_subject = $this->_actiondata['subject'];
 
         $this->_email_from = $this->_actiondata['email_from'];
         $this->_email_cc = $this->_actiondata['email_cc'];
         $this->_email_bcc = $this->_actiondata['email_bcc'];
 
+        $this->buildEmailTo();
+    }
+    private function buildEmailTpl()
+    {
+
+        $this->_templateEmail = $this->_actiondata['email_template'];
+        $this->buildEmailTo();
+    }
+    private function buildEmailTo()
+    {
         switch ($this->_to) {
             case 'group':
                 $this->buildEmailToGroup();
@@ -71,33 +84,14 @@ class Notify extends CI_Model
             case 'superadmin':
                 $this->buildEmailToSuperadmin();
                 break;
+            case 'single_user':
+                $this->buildEmailToSingleUser();
+                break;
             default:
-                debug("Action to '{$this->_to}' not recognized!");
+                debug("Action to '{$this->_to}' not recognized!", true);
                 break;
         }
     }
-    private function buildEmailTpl()
-    {
-        debug('TODO...', true);
-        // $this->_message = $this->_actiondata['message'];
-
-        // $this->_email_from = $this->_actiondata['email_from'];
-        // $this->_email_cc = $this->_actiondata['email_cc'];
-        // $this->_email_bcc = $this->_actiondata['email_bcc'];
-
-        // switch ($this->_to) {
-        //     case 'group':
-        //         $this->buildEmailToGroup();
-        //         break;
-        //     case 'superadmin':
-        //         $this->buildEmailToSuperadmin();
-        //         break;
-        //     default:
-        //         debug("Action to '{$this->_to}' not recognized!");
-        //         break;
-        // }
-    }
-
     private function buildEmailToGroup()
     {
         $this->_group = $this->_actiondata['group'];
@@ -112,9 +106,20 @@ class Notify extends CI_Model
             $this->_email_recipients[] = $email;
         }
     }
+    private function buildEmailToSingleUser()
+    {
+        $this->_single_user = $this->_actiondata['single_user'];
+        $user = $this->apilib->getById(LOGIN_ENTITY, $this->_single_user);
+
+        // $name = $user[LOGIN_NAME_FIELD];
+        // $surname = $user[LOGIN_SURNAME_FIELD];
+        $email = $user[LOGIN_USERNAME_FIELD];
+
+        $this->_email_recipients[] = $email;
+    }
     private function buildEmailToSuperadmin()
     {
-        $this->_group = $this->_actiondata['group'];
+
         $users = $this->apilib->search(LOGIN_ENTITY, [
             LOGIN_ENTITY . "_id IN (SELECT permissions_user_id FROM permissions WHERE permissions_admin = '" . DB_BOOL_TRUE . "')"
         ]);
@@ -139,7 +144,13 @@ class Notify extends CI_Model
     private function sendEmails()
     {
         foreach ($this->_email_recipients as $email) {
-            $this->mail_model->sendFromData('matteopuppis@gmail.com', ['template' => $this->_message, 'subject' => 'TEST per ' . $email], $this->_data);
+            if ($this->_what == 'email_custom') {
+                $this->mail_model->sendFromData('matteopuppis@gmail.com', ['template' => $this->_message, 'subject' => $this->_subject], $this->_data);
+            } elseif ($this->_what == 'email_tpl') {
+                $this->mail_model->send('matteopuppis@gmail.com', $this->_templateEmail, '', $this->_data);
+            } else {
+                debug("what '{$this->_what}' not supported!");
+            }
         }
     }
 }
