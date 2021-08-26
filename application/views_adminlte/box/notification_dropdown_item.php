@@ -1,5 +1,6 @@
 <?php foreach ($notifications as $notification) : ?>
     <?php
+    //debug($notification);
     echo sprintf(
         '<li class="notification" data-notification="%s" class="%s" data-title="%s" data-message="%s" data-type="%s">',
         $notification['notifications_id'],
