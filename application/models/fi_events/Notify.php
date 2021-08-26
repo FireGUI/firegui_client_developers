@@ -10,6 +10,7 @@ class Notify extends CI_Model
     private $_subject;
     private $_message;
     private $_templateEmail;
+    private $_single_user;
     private $_email_from;
     private $_email_cc;
     private $_email_bcc;
@@ -26,7 +27,7 @@ class Notify extends CI_Model
         $this->_data = $data;
         $this->_what = $this->_actiondata['what'];
         $this->_to = $this->_actiondata['to'];
-
+        $this->_email_recipients = [];
         return $this;
     }
 
@@ -87,6 +88,9 @@ class Notify extends CI_Model
             case 'single_user':
                 $this->buildEmailToSingleUser();
                 break;
+            case 'custom':
+                $this->buildEmailToCustom();
+                break;
             default:
                 debug("Action to '{$this->_to}' not recognized!", true);
                 break;
@@ -132,6 +136,13 @@ class Notify extends CI_Model
             $this->_email_recipients[] = $email;
         }
     }
+    private function buildEmailToCustom()
+    {
+        $this->_email_custom = $this->_actiondata['custom'];
+
+
+        $this->_email_recipients[] = $this->_email_custom;
+    }
     private function replacePlaceholders()
     {
         $filteredData = array_filter($this->_data, 'is_scalar');
@@ -145,6 +156,7 @@ class Notify extends CI_Model
     {
         foreach ($this->_email_recipients as $email) {
             if ($this->_what == 'email_custom') {
+                //TODO: aggiungere bcc, cc, from gestendo se sono vuoti
                 $this->mail_model->sendFromData('matteopuppis@gmail.com', ['template' => $this->_message, 'subject' => $this->_subject], $this->_data);
             } elseif ($this->_what == 'email_tpl') {
                 $this->mail_model->send('matteopuppis@gmail.com', $this->_templateEmail, '', $this->_data);
