@@ -69,8 +69,11 @@ class Mail_model extends CI_Model
         $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
 
         if (empty($email)) {
+            $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
 
-            return false;
+            if (empty($email)) {
+                return false;
+            }
         }
 
         $headers = array_merge(
