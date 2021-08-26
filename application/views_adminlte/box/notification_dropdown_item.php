@@ -1,5 +1,14 @@
 <?php foreach ($notifications as $notification) : ?>
-    <?php echo sprintf('<li class="notification" data-notification="%s" class="%s">', $notification['notifications_id'], ($notification['notifications_read'] === DB_BOOL_FALSE) ? 'unread' : ''); ?>
+    <?php
+    echo sprintf(
+        '<li class="notification" data-notification="%s" class="%s" data-title="%s" data-message="%s" data-type="%s">',
+        $notification['notifications_id'],
+        ($notification['notifications_read'] === DB_BOOL_FALSE) ? 'unread' : '',
+        $notification['notifications_title'],
+        $notification['notifications_message'],
+        $notification['notifications_type']
+    );
+    ?>
 
     <a href="<?php echo $notification['href']; ?>">
         <h4>
