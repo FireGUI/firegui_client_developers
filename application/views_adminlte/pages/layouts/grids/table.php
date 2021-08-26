@@ -1,10 +1,13 @@
 <?php
+
+// Bulk and export options
 $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
-
 $has_exportable = ($grid['grids']['grids_exportable'] == DB_BOOL_TRUE);
-
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 
+//debug($grid['grids']['links']);
+
+// Totals option
 $has_totalable = false;
 foreach ($grid['grids_fields'] as $field) {
     if ($field['grids_fields_totalable'] == DB_BOOL_TRUE) {
@@ -17,14 +20,10 @@ $links = $grid['grids']['links'];
 
 // Check if datatable and if ajax yes or not
 $grid_is_ajax = false;
-
-
 if ($grid['grids']['grids_datatable'] == DB_BOOL_TRUE) {
     if ($grid['grids']['grids_ajax'] == DB_BOOL_TRUE) {
-
         $grid_is_ajax = true;
     } else {
-
         $grid_is_ajax = false;
     }
 }
@@ -48,7 +47,6 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
 
     $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
 }
-
 if ($grid['grids']['grids_pagination']) {
     $limit = $grid['grids']['grids_pagination'];
 } elseif (defined('DEFAULT_GRID_LIMIT')) {
@@ -56,8 +54,6 @@ if ($grid['grids']['grids_pagination']) {
 } else {
     $limit = 10;
 }
-
-
 ?>
 
 <div class="table-scrollable-borderless">
@@ -80,8 +76,6 @@ if ($grid['grids']['grids_pagination']) {
 
                     <?php $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
                     <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);  ?></th>
-
-
 
                 <?php endforeach; ?>
 
@@ -128,11 +122,6 @@ if ($grid['grids']['grids_pagination']) {
                         <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
                         <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
                         </th>
-
-
-
-
-
                     <?php endforeach; ?>
 
                     <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
@@ -151,6 +140,11 @@ if ($grid['grids']['grids_pagination']) {
                     <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
                         <option value="" class="js-bulk-first-option" selected="selected"></option>
 
+                        <?php foreach ($grid['grids']['links']['custom'] as $bulk_action) : ?>
+                            <?php if ($bulk_action['grids_actions_show'] == "table") continue; ?>
+                            <option value="bulk_action" data-custom_code="<?php echo $bulk_action['grids_actions_html']; ?>" data-bulk_type="<?php echo $bulk_action['grids_actions_type']; ?>" data-form_id="<?php echo $bulk_action['grids_actions_form']; ?>" disabled="disabled"><?php echo $bulk_action['grids_actions_name']; ?></option>
+                        <?php endforeach; ?>
+                        <!-- old bulk actions (compatibility) -->
                         <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
                             <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
                         <?php endif; ?>

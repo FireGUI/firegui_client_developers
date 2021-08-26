@@ -51,12 +51,77 @@ $(document).ready(function () {
     $('.js-bulk-action').on('change', function () {
         var grid_container = $(this).closest('div[data-layout-box]');
         if ($(this).val() != '') {
+
             var chkbx_ids = $('input:checkbox.js_bulk_check:checked', grid_container)
                 .map(function () {
                     return $(this).val();
                 })
                 .get();
 
+
+            // ------------------ New bulk action ---------------
+            if ($(this).val() == 'bulk_action') {
+                var bulk_type = $(this).find(':selected').data('bulk_type');
+                var form_id = $(this).find(':selected').data('form_id');
+                var custom_code = $(this).find(':selected').data('custom_code');
+
+                // Get selected records
+                var data_post = [];
+
+                for (var i in chkbx_ids) {
+                    data_post.push({ name: 'ids[]', value: chkbx_ids[i] });
+                }
+
+                // Check type action and run the code
+                switch (bulk_type) {
+                    case 'custom':
+
+                        var url = base_url + custom_code + $(this).data('entity-name');
+                        data_post.push({ name: token_name, value: token_hash });
+                        loading(true);
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: data_post,
+                            dataType: 'json',
+                            success: function (json) {
+                                loading(false);
+                                handleSuccess(json);
+                            },
+                            error: function (msg) {
+                                loading(false);
+                                alert('Oh no... Something wrong');
+                                console.log(msg);
+                            }
+                        });
+
+                        break;
+                    case 'edit_form':
+                        loadModal(base_url + 'get_ajax/modal_form/' + form_id, data_post, null, 'POST');
+                        break;
+                    case 'delete':
+                        var r = confirm('Confermi di voler eliminare ' + chkbx_ids.length + ' righe?');
+                        if (r == true) {
+                            var url = base_url + 'db_ajax/generic_delete/' + $(this).data('entity-name');
+                            data_post.push({ name: token_name, value: token_hash });
+                            $.ajax({
+                                url: url,
+                                type: 'POST',
+                                data: data_post,
+                                success: function (json) {
+                                    location.reload();
+                                },
+                            });
+                        }
+                        break;
+                    default:
+                        alert('No bulk action found');
+                        break;
+                }
+
+            }
+
+            // ------------------ OLD bulk action ---------------
             if ($(this).val() == 'bulk_edit') {
                 var data_post = [];
 
@@ -66,6 +131,8 @@ $(document).ready(function () {
                 var form_id = $(this).find(':selected').data('form_id');
 
                 loadModal(base_url + 'get_ajax/modal_form/' + form_id, data_post, null, 'POST');
+
+
             } else if ($(this).val() == 'bulk_delete') {
                 var r = confirm('Confermi di voler eliminare ' + chkbx_ids.length + ' righe?');
                 if (r == true) {

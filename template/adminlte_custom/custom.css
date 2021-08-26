@@ -1,3 +1,7 @@
+.content-wrapper {
+  background-color:#f9f9f9;
+}
+
 #search_form input[name="search"] {
   margin: 5px 0;
 }
@@ -714,6 +718,7 @@ table.dataTable.nowrap td {
 }
 
 .main-footer {
+  height:43px;
   width: 100%;
   position:fixed;
   bottom:0;

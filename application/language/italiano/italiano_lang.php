@@ -1012,3 +1012,4 @@ $lang['Topbar logo small'] = 'Topbar logo small';
 $lang['Topbar logo'] = 'Topbar logo';
 $lang['Notification'] = 'Notification';
 $lang['Form \'%s\' not found.'] = 'Form \'%s\' not found.';
+$lang['solobulk'] = 'solobulk';
