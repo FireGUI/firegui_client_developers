@@ -222,16 +222,31 @@ class MX_Loader extends CI_Loader
 			return $this;
 
 		/* check module */
+		
 		list($path, $_model) = Modules::find(strtolower($model), $this->_module, 'models/');
 
 		if ($path == FALSE) {
 			if (strpos($model, '/')) {
-				log_message('error', "Missing model '{$model}'");
+				
+				//Check if exists module in folder, else is missing
+				try {
+					parent::model($model, $object_name, $connect);
+					
+				}catch(RuntimeException $e) {
+					log_message('error', "Missing model '{$model}'");
 
 				$this->$_model = false;
 				CI::$APP->$_model = false;
 				$this->_ci_models[] = $_model;
 				echo $this->load->view("box/errors/missing_model", ['model' => $model], true);
+				}
+				
+
+				
+				
+				
+
+				
 			} else {
 				$uc_model = ucfirst($model);
 				//201910170932 - Check if library exists eventually in a folder called "custom"
@@ -334,6 +349,7 @@ class MX_Loader extends CI_Loader
 	/** Load an array of models **/
 	public function models($models)
 	{
+		
 		foreach ($models as $model => $alias) {
 			(is_int($model)) ? $this->model($alias) : $this->model($model, $alias);
 		}

@@ -419,7 +419,7 @@ class Datab extends CI_Model
                         break;
                     default:
 
-                        debug("NON GESTITA DEFAULT TYPE FUNCTION");
+                        debug("NON GESTITA DEFAULT TYPE FUNCTION '{$func}'");
                         break;
                 }
                 break;
