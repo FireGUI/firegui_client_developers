@@ -14,7 +14,7 @@ function CrmInlineTable(grid) {
  * Get the datatable object
  * @returns {jQuery}
  */
-CrmInlineTable.prototype.getDatatableHandler = function() {
+CrmInlineTable.prototype.getDatatableHandler = function () {
     return this.grid.dataTable();
 };
 
@@ -22,7 +22,7 @@ CrmInlineTable.prototype.getDatatableHandler = function() {
  * Get the name of the entity
  * @returns {String}
  */
-CrmInlineTable.prototype.getEntityName = function() {
+CrmInlineTable.prototype.getEntityName = function () {
     return this.grid.data('entity');
 };
 
@@ -30,12 +30,13 @@ CrmInlineTable.prototype.getEntityName = function() {
  * Register event handlers
  * @returns {null}
  */
-CrmInlineTable.prototype.registerEvents = function() {
+CrmInlineTable.prototype.registerEvents = function () {
+    console.log('TODO: deprecated old inline tables');
     var inlineTable = this;
     var gridID = this.grid.data('grid-id');
 
     // Edit record
-    this.grid.on('click', '.js_edit', function(e) {
+    this.grid.on('click', '.js_edit', function (e) {
         e.preventDefault();
 
         /* Get the row as a parent of the link that was clicked on */
@@ -57,13 +58,13 @@ CrmInlineTable.prototype.registerEvents = function() {
     });
 
     // Cancel edit mode
-    this.grid.on('click', '.js_cancel', function(e) {
+    this.grid.on('click', '.js_cancel', function (e) {
         e.preventDefault();
         inlineTable.restoreRow();
     });
 
     // Delete record
-    this.grid.on('click', '.js_delete', function(e) {
+    this.grid.on('click', '.js_delete', function (e) {
         e.preventDefault();
 
         if (confirm('Vuoi davvero eliminare la riga?') == false) {
@@ -75,7 +76,7 @@ CrmInlineTable.prototype.registerEvents = function() {
     });
 
     // Create empty record
-    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function(e) {
+    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
         e.preventDefault();
         inlineTable.createRow();
     });
@@ -87,7 +88,7 @@ CrmInlineTable.prototype.registerEvents = function() {
  *
  * @returns {null}
  */
-CrmInlineTable.prototype.restoreRow = function() {
+CrmInlineTable.prototype.restoreRow = function () {
     var datatable = this.getDatatableHandler();
     var nRow = this.nEditing;
 
@@ -106,7 +107,7 @@ CrmInlineTable.prototype.restoreRow = function() {
  * @param {jQuery} nRow
  * @returns {null}
  */
-CrmInlineTable.prototype.editRow = function(nRow) {
+CrmInlineTable.prototype.editRow = function (nRow) {
     var datatable = this.getDatatableHandler();
 
     var aData = datatable.fnGetData(nRow);
@@ -129,7 +130,7 @@ CrmInlineTable.prototype.editRow = function(nRow) {
  *
  * @returns {null}
  */
-CrmInlineTable.prototype.saveRow = function() {
+CrmInlineTable.prototype.saveRow = function () {
     var datatable = this.getDatatableHandler();
 
     var jqInputs = $('input', this.nEditing);
@@ -137,7 +138,7 @@ CrmInlineTable.prototype.saveRow = function() {
 
     var data = {};
     var id = '';
-    jqInputs.each(function() {
+    jqInputs.each(function () {
         var input = $(this);
         var name = input.attr('name');
 
@@ -160,7 +161,7 @@ CrmInlineTable.prototype.saveRow = function() {
     data[token_name] = token_hash;
 
     // Save data
-    $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data).success(function() {
+    $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data).success(function () {
         var max = jqInputs.size();
         for (var i = 0; i < max; i++) {
             datatable.fnUpdate(jqInputs[i].value, this.nEditing, i, false);
@@ -177,7 +178,7 @@ CrmInlineTable.prototype.saveRow = function() {
  * Crea una record nuovo e inseriscilo nella tabella
  * @returns {undefined}
  */
-CrmInlineTable.prototype.createRow = function() {
+CrmInlineTable.prototype.createRow = function () {
     // Devo sapere quante colonne ho per prima cosa
     var sEntityName = this.grid.attr('data-entity');
     var jqThs = $('tr th', this.grid);
@@ -185,7 +186,7 @@ CrmInlineTable.prototype.createRow = function() {
 
     // Creo dei dati vuoti da inserire
     var data = {};
-    jqThs.each(function() {
+    jqThs.each(function () {
         var name = $(this).attr('data-name');
         if (typeof name !== 'undefined' && name && name !== sEntityName + '_id') {
             data[name] = '';
@@ -205,7 +206,7 @@ CrmInlineTable.prototype.createRow = function() {
     $.ajax(base_url + 'db_ajax/datatable_inline_insert/' + sEntityName, {
         data: data,
         type: 'POST',
-        success: function(msg) {
+        success: function (msg) {
             datatable.fnPageChange('last');
         },
     });
@@ -217,14 +218,14 @@ CrmInlineTable.prototype.createRow = function() {
  * @param {jQuery} nRow
  * @returns {undefined}
  */
-CrmInlineTable.prototype.deleteRow = function(nRow) {
+CrmInlineTable.prototype.deleteRow = function (nRow) {
     var datatable = this.getDatatableHandler();
     var aData = datatable.fnGetData(nRow);
 
     // TODO: ora si suppone che l'id sia sulla prima colonna... da rivedere per
     // generalizzare queste tabelle
     $.ajax(base_url + 'db_ajax/generic_delete/' + this.getEntityName() + '/' + aData[0], {
-        success: function() {
+        success: function () {
             datatable.fnDeleteRow(nRow);
         },
     });
@@ -234,7 +235,7 @@ CrmInlineTable.prototype.deleteRow = function(nRow) {
 // Test
 
 jQuery.extend({
-    isValidSelector: function(selector) {
+    isValidSelector: function (selector) {
         if (typeof selector !== 'string') {
             return false;
         }
@@ -265,7 +266,7 @@ function initTableAjax(grid) {
     }
 
     var aoColumns = [];
-    $('> thead > tr > th', oDataTable).each(function() {
+    $('> thead > tr > th', oDataTable).each(function () {
         var coldef = null;
         coldef = {
             bSortable: bEnableOrder && typeof $(this).attr('data-prevent-order') === 'undefined',
@@ -287,7 +288,7 @@ function initTableAjax(grid) {
         var token_hash = token.hash;
     }
     var datatable = oDataTable
-        .on('error.dt', function(e, settings, techNote, message) {
+        .on('error.dt', function (e, settings, techNote, message) {
 
             if (typeof message !== 'undefined') {
                 $('.content-header').append('<div class="callout callout-warning"><h4>Problem occurred</h4><p>A component of this page seems to be corrupted. Please check table \'' + oDataTable.data('grid-id') + "'.</p><code>" + message + '</code></div>');
@@ -317,20 +318,20 @@ function initTableAjax(grid) {
                 sUrl: base_url_scripts + 'script/dt_translations/datatable.' + lang_short_code + '.json',
             },
 
-            fnServerParams: function(aoData) {
+            fnServerParams: function (aoData) {
                 aoData.push({ name: token_name, value: token_hash });
             },
-            drawCallback: function(settings) {
+            drawCallback: function (settings) {
                 initComponents(oDataTable);
             },
 
-            footerCallback: function(row, data, start, end, display) {
+            footerCallback: function (row, data, start, end, display) {
                 if (totalable == 1) {
                     var api = this.api(),
                         data;
                     $(api.column(0).footer()).html('Totals:');
                     // converting to interger to find total
-                    var floatVal = function(i) {
+                    var floatVal = function (i) {
                         i = i.toString();
                         i = i.replace(/[^\d.-]/g, '');
                         if (i != '') {
@@ -340,7 +341,7 @@ function initTableAjax(grid) {
                         }
                     };
 
-                    api.columns().every(function() {
+                    api.columns().every(function () {
                         var values = this.data();
                         var footer = this.footer();
 
@@ -366,14 +367,14 @@ function initTableAjax(grid) {
                     });
                 }
             },
-            fnServerData: function(sSource, aoData, fnCallback) {
+            fnServerData: function (sSource, aoData, fnCallback) {
                 $.ajax({
                     dataType: 'json',
                     type: 'POST',
                     url: sSource,
                     data: aoData,
                     success: fnCallback,
-                    error: function(request, error) {
+                    error: function (request, error) {
                         //console.log(message);
                         if (typeof request.responseText !== 'undefined') {
                             $('.callout.callout-warning').remove();
@@ -389,12 +390,12 @@ function initTableAjax(grid) {
 
 /** Init ajax datatables **/
 function startAjaxTables() {
-    $('.js_ajax_datatable:visible:not(.dataTable)').each(function() {
+    $('.js_ajax_datatable:visible:not(.dataTable)').each(function () {
         var gridID = $(this).attr('data-grid-id');
         var grid = $(this);
 
         if (grid.data('ajaxTableInitialized') != true) {
-            initTableAjax(grid).on('init', function(e) {
+            initTableAjax(grid).on('init', function (e) {
                 var wrapper = e.target.parent;
                 $('.dataTables_filter input', wrapper).addClass('form-control input-small'); // modify table search input
                 $('.dataTables_length select', wrapper).addClass('form-control input-xsmall input-sm'); // modify table per page dropdown
@@ -410,7 +411,7 @@ function startAjaxTables() {
         }
     });
 
-    $('.js_datatable_inline').each(function() {
+    $('.js_datatable_inline').each(function () {
         var grid = $(this);
 
         if (grid.data('ajaxTableInitialized') != true) {

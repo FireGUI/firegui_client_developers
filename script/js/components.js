@@ -672,8 +672,10 @@ function initComponents(container, reset = false) {
     $('input[type=radio][onclick][checked]').click().click();
 
     /**
-     * DataTables
+     * Tables
      */
+    initTables();
+    // Old for retro-compatibility
     startDataTables();
     startAjaxTables();
     startNewDatatableInline();

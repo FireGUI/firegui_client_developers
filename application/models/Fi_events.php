@@ -44,4 +44,17 @@ class Fi_events extends CI_Model
 
         return $content;
     }
+
+
+    public function getCrons()
+    {
+        $events = $this->db
+            ->join('crons', "fi_events_cron_id = crons_id", "LEFT")
+            ->where('fi_events_type', 'cron')
+            ->order_by('fi_events_order ASC, fi_events_creation_date')
+            ->get('fi_events')
+            ->result_array();
+
+        return $events;
+    }
 }

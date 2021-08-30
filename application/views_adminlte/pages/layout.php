@@ -11,7 +11,7 @@ $portletBgColorMap = [];
 ?>
 <?php echo $dati['pre-layout']; ?>
 
-<?php if ($dati['show_title']) : ?>
+<?php if ($dati['layout_container']['layouts_show_header'] == DB_BOOL_TRUE) : ?>
 
     <section class="content-header page-title">
         <h1>

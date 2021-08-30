@@ -14,6 +14,9 @@
         $replace_to[] = $id;
         ?>
         <?php foreach ($links['custom'] as $custom_action) : ?>
+
+            <?php if ($custom_action['grids_actions_show'] == "bulk") continue; ?>
+
             <?php if (!empty($custom_action['grids_actions_html']) && (empty($custom_action['grids_actions_type']) || 'custom' == $custom_action['grids_actions_type'])) : ?>
                 <?php
                 ob_start();
@@ -72,14 +75,7 @@
                     <a class="js-action_button btn btn-grid-action-s 
                     bg<?php echo (md5($custom_action['grids_actions_color'])) ?: 'CCCCCC'; ?> 
                     <?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> 
-                    <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" 
-                    
-                    href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?> 
-                    <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" 
-                    data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> 
-                    data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" 
-                    <?php endif; ?>
-                    >
+                    <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?> <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
                         <span class="<?php echo $custom_action['grids_actions_icon']; ?>"></span>
                     </a>
                 </span>
