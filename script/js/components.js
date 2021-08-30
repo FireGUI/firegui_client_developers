@@ -47,12 +47,12 @@ $('body').on('click', '.js_ajax_content', function (e) {
                         // Fix for sidebar to active li
                         if ($(that).parent().hasClass('js_sidebar_menu_item')) {
 
-
+                            $('.js_sidebar_menu_item').removeClass('active');
                             $('.js_sidebar_menu_item').removeClass('menu-open');
                             $('.treeview-menu').hide();
                         }
                         if ($(that).parent().hasClass('js_submenu_item')) {
-
+                            $('.js_sidebar_menu_item').removeClass('active');
                             $('.js_sidebar_menu_item').removeClass('menu-open');
                             $('.treeview-menu').hide();
 
