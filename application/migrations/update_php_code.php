@@ -5,7 +5,10 @@
 $updates = array();
 
 $updates['1.6.6.6'] = [
-    'include' => ['1.6.6.6_fi_events_migration.php', '1.6.6.6_fontawesome_migration.php'],
+    'include' => [
+        '1.6.6.6_fi_events_migration.php',
+        '1.6.6.6_fontawesome_migration.php'
+    ],
 ];
 
 $updates['1.6.9.7'] = [
@@ -21,4 +24,10 @@ $updates['1.8.9'] = [
 ];
 $updates['2.1.9'] = [
     'include' => ['2.1.9_field_user_webauthn_data.php'],
+];
+$updates['2.2.3'] = [
+    'include' => [
+        '2.2.3_fields_settings.php',
+        '2.2.3_layouts_show_header_field.php'
+    ],
 ];

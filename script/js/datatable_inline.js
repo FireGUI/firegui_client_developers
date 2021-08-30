@@ -17,6 +17,8 @@ CrmNewInlineTable.prototype.getEntityName = function () {
     return this.grid.data('entity');
 };
 CrmNewInlineTable.prototype.createRow = function (id) {
+
+
     // Devo sapere quante colonne ho per prima cosa
     var sEntityName = this.grid.attr('data-entity');
 
@@ -24,7 +26,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     var parent_id = this.grid.attr('data-parent_id');
 
     var jqThs = $('> thead > tr > th', this.grid);
-    var datatable = this.getDatatableHandler();
+    //var datatable = this.getDatatableHandler();
 
     var tr = $('<tr data-id="' + id + '"></tr>');
 
@@ -98,6 +100,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
 };
 
 CrmNewInlineTable.prototype.editRow = function (tr, id) {
+
     var nRow = tr[0];
     var datatable = this.getDatatableHandler();
     var aData = datatable.fnGetData(nRow);
@@ -224,13 +227,28 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
             }
         }
     });
-
+    if (id) {
+        append = '/1/' + id;
+    } else {
+        append = '';
+    }
     // Save data
+    var form_container = $('.js_inline_hidden_form_container[grid_id="' + this.grid.data('grid-id') + '"]').first();
+    var form = $('form', form_container);
     //Perchè non postare direttamente alla save_form? Avremmo tutto potenzialmente...
-    $.post(base_url + 'db_ajax/datatable_inline_edit/' + sEntityName + '/' + id, data)
+
+    var grid = this.grid;
+
+    $.post(form.attr('action') + append, data)
         .success(function () {
-            row.remove();
-            datatable.fnDraw();
+            if (grid.ajax) {
+                row.remove();
+                datatable.fnDraw();
+            } else {
+                var lb_id = grid.closest('.layout_box').data('layout-box');
+                refreshLayoutBox(lb_id, grid.data('value-id'));
+            }
+
         })
         .error(function () {
             console.log('ERRORE...');
@@ -246,15 +264,17 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     });
 
     // Create empty record
-    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
-        e.preventDefault();
+    // this.grid.on('click', function (e) {
+    //     e.preventDefault();
 
-        inlineTable.createRow(0);
-    });
+    //     inlineTable.createRow(0);
+    // });
 
     // Edit record
     this.grid.on('click', '.js_edit', function (e) {
         e.preventDefault();
+
+
 
         /* Get the row as a parent of the link that was clicked on */
         var button = $(this);
@@ -275,9 +295,16 @@ CrmNewInlineTable.prototype.registerEvents = function () {
         var nRow = $(this).parents('tr')[0];
         inlineTable.deleteRow(nRow, id);
     });
+
+    // Create empty record
+    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
+        e.preventDefault();
+        inlineTable.createRow();
+    });
 };
 
 function initTable(grid) {
+
     grid.data('ajaxTableInitialized', true);
     var oDataTable = grid;
     var valueID = oDataTable.attr('data-value-id');

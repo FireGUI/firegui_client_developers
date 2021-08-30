@@ -13,16 +13,41 @@ $element_id = (isset($value_id) ? $value_id : NULL);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
+
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
+
 <script>
+    var updateCalendar = function(evt) {
+        var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
+        var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
+        var allDay = evt.event.allDay;
+        var event_id = evt.event.id;
+
+        var data = {
+            [token_name]: token_hash,
+            <?php echo json_encode($calendar_map['id']) . ' : event_id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+        };
+
+        $.ajax({
+            url: "<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>",
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function(data) {
+                if (parseInt(data.status) < 1) {
+                    alert(data.txt);
+                }
+            },
+            error: function() {
+                alert('There was an error while saving the event');
+            },
+        });
+    }
+
     $(function() {
         'use strict';
-        if (!jQuery().fullCalendar) {
-            throw Error('Calendar not loaded');
-        }
 
-        var jqCalendar = $('#<?php echo $calendarId; ?>');
         var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>";
         var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
         var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
@@ -31,132 +56,85 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
         var token_name = token.name;
         var token_hash = token.hash;
 
-        var date = new Date();
-        var d = date.getDate();
-        var m = date.getMonth();
-        var y = date.getFullYear();
-        var h = {};
-        if (jqCalendar.width() <= 400) {
-            jqCalendar.addClass("mobile");
-            h = {
-                right: 'title, prev, next',
-                center: '',
-                left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
-            };
-        } else {
-            jqCalendar.removeClass("mobile");
+        var calendarEl = document.getElementById('<?php echo $calendarId; ?>');
 
-            h = {
-                right: 'title',
-                center: '',
-                left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
-            };
-        }
-
-        jqCalendar.fullCalendar('destroy'); // destroy the calendar
-
-
-
-
-        jqCalendar.fullCalendar({
-            defaultView: 'agendaWeek',
+        var calendar = new FullCalendar.Calendar(calendarEl, {
             editable: true,
             selectable: true,
             disableDragging: false,
-            header: h,
             lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
             selectHelper: true,
             minTime: minTime,
             maxTime: maxTime,
-            timeFormat: 'H:mm',
-            axisFormat: 'H:mm',
+            timeFormat: 'HH:mm',
+            axisFormat: 'HH:mm',
 
-            select: function(start, end) {
-                var fStart = formatDate(start.toDate()); // formatted start
-                var fEnd = formatDate(end.toDate()); // formatted end
-                var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
+            plugins: ['interaction', 'dayGrid', 'timeGrid'],
+            defaultView: 'timeGridWeek',
+            defaultDate: moment().format('YYYY-MM-DD HH:mm'),
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+
+            select: function(date) {
+                var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
+                var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
+                var allDay = date.allDay;
+
                 var data = {
                     [token_name]: token_hash,
                     <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
                 };
                 loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
-                    jqCalendar.fullCalendar('refetchEvents');
+                    calendar.refetchEvents();
                 }, 'get');
             },
-            eventClick: function(event, jsEvent, view) {
-                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + event.id, {}, function() {
-                    jqCalendar.fullCalendar('refetchEvents');
+
+            eventClick: function(evt) {
+                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + evt.event.id, {}, function() {
+                    calendar.refetchEvents();
                 });
                 return false;
             },
-            eventDrop: function(event) {
-                var allDay = isAlldayEvent(event.start, event.end);
-                var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
-                var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
-                var data = {
-                    [token_name]: token_hash,
-                    <?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
-                };
 
-                $.ajax({
-                    url: "<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>",
-                    type: 'POST',
-                    dataType: 'json',
-                    data: data,
-                    success: function(data) {
-                        if (parseInt(data.status) < 1) {
-                            revertFunc();
-                            alert(data.txt);
-                        }
-                    },
-                    error: function() {
-                        revertFunc();
-                        alert('There was an error while saving the event');
-                    },
-                });
+            eventDrop: function(evt) {
+                updateCalendar(evt);
             },
-            eventResize: function(event, delta, revertFunc) {
-                var allDay = isAlldayEvent(event.start, event.end);
-                var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
-                var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
-                var data = {
-                    [token_name]: token_hash,
-                    <?php echo json_encode($calendar_map['id']) . ' : event.id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
-                };
 
-
-                $.ajax({
-                    url: "<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>",
-                    type: 'POST',
-                    dataType: 'json',
-                    data: data,
-                    success: function(data) {
-                        if (parseInt(data.status) < 1) {
-                            revertFunc();
-                            alert(data.txt);
-                        }
-                    },
-                    error: function() {
-                        revertFunc();
-                        alert('There was an error while saving the event');
-                    },
-                });
+            eventResize: function(evt, delta, revertFunc) {
+                updateCalendar(evt);
             },
+
             eventSources: [{
-                url: sourceUrl,
-                type: 'POST',
-                data: {
-                    [token_name]: token_hash
-                },
-                error: function(error) {
-                    console.log(error.responseText);
-                },
-                loading: function(bool) {
-                    $('#loading').fadeTo(bool ? 1 : 0);
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    $.ajax({
+                        type: 'POST',
+                        url: sourceUrl,
+                        dataType: 'json',
+                        data: {
+                            [token_name]: token_hash,
+                            "start": moment(fetchInfo.start).format('YYYY-MM-DD HH:mm'),
+                            "end": moment(fetchInfo.end).format('YYYY-MM-DD HH:mm')
+                        },
+                        loading: function(bool) {
+                            $('#loading').fadeTo(bool ? 1 : 0);
+                        },
+                        success: function(response) {
+                            successCallback(response);
+                        },
+                        error: function(response) {
+                            console.log(response);
+                            failureCallback(response);
+                        },
+                    });
                 },
                 color: '#4B8DF8', // a non-ajax option
                 textColor: 'white' // a non-ajax option
-            }]
+            }],
         });
+
+        calendar.render();
     });
 </script>
