@@ -7,7 +7,7 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
     }
 }
 
-if (empty($value)) {
+if (empty($value) && $field['fields_required'] == DB_BOOL_TRUE) {
     $value = date('d/m/Y');
 }
 
