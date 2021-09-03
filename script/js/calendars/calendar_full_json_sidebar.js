@@ -26,34 +26,24 @@ function initCalendars() {
             var d = date.getDate();
             var m = date.getMonth();
             var y = date.getFullYear();
-            var h = {};
-            if (jqCalendar.width() <= 400) {
-                jqCalendar.addClass("mobile");
-                h = {
-                    right: 'title, prev, next',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
-                };
-            } else {
-                jqCalendar.removeClass("mobile");
 
-                h = {
-                    right: 'title',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
-                };
-            }
+            var calendarEl = document.getElementById(jqCalendar.attr('id'));
 
-            jqCalendar.fullCalendar('destroy'); // destroy the calendar
-            jqCalendarView = jqCalendar.fullCalendar({
-                defaultView: 'agendaWeek',
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['interaction', 'dayGrid', 'timeGrid'],
+                defaultView: 'timeGridWeek',
+                defaultDate: moment().format('YYYY-MM-DD HH:mm'),
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+
                 editable: true,
                 selectable: true,
                 disableDragging: false,
                 height: 'auto',
-                header: h,
-                //            locale: 'it',
-                lang: language,
+                locale: language,
                 timeFormat: 'H:mm',
                 axisFormat: 'H:mm',
                 timeFormat: 'H:mm',
@@ -83,7 +73,7 @@ function initCalendars() {
                     };
 
                     loadModal(formurl, data, function () {
-                        jqCalendar.fullCalendar('refetchEvents');
+                        calendar.refetchEvents();
                     }, 'get');
 
                     if (allDay) {
@@ -93,7 +83,7 @@ function initCalendars() {
                 },
                 eventClick: function (event, jsEvent, view) {
                     loadModal(formedit + '/' + event.id, {}, function () {
-                        jqCalendar.fullCalendar('refetchEvents');
+                        calendar.refetchEvents();
                     });
                     return false;
                 },
@@ -156,53 +146,88 @@ function initCalendars() {
                         },
                     });
                 },
+
                 eventSources: [{
-                    url: sourceUrl,
-                    type: 'POST',
-                    data: function () {
+                    events: function (fetchInfo, successCallback, failureCallback) {
                         var values = [];
                         $('.js_check_filter').filter('[type=checkbox]:checked').each(function () {
                             values.push($(this).val());
                         });
-                        return {
-                            filters: values,
-                            [token_name]: token_hash
-                        };
-                    },
-                    error: function (error) {
-                        console.log(error.responseText);
-                    },
-                    loading: function (bool) {
-                        $('#loading').fadeTo(bool ? 1 : 0);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: sourceUrl,
+                            dataType: 'json',
+                            data: {
+                                filters: values,
+                                [token_name]: token_hash
+                            },
+                            loading: function (bool) {
+                                $('#loading').fadeTo(bool ? 1 : 0);
+                            },
+                            success: function (response) {
+                                successCallback(response);
+                            },
+                            error: function (response) {
+                                console.log(response);
+                                failureCallback(response);
+                            },
+                        });
                     },
                     color: '#4B8DF8', // a non-ajax option
                     textColor: 'white' // a non-ajax option
                 }],
+
+                // eventSources: [{
+                //     url: sourceUrl,
+                //     type: 'POST',
+                //     data: function () {
+                //         var values = [];
+                //         $('.js_check_filter').filter('[type=checkbox]:checked').each(function () {
+                //             values.push($(this).val());
+                //         });
+                //         return {
+                //             filters: values,
+                //             [token_name]: token_hash
+                //         };
+                //     },
+                //     error: function (error) {
+                //         console.log(error.responseText);
+                //     },
+                //     loading: function (bool) {
+                //         $('#loading').fadeTo(bool ? 1 : 0);
+                //     },
+                //     success: function (res) {
+
+                //         successCallback(res);
+                //     },
+                //     color: '#4B8DF8', // a non-ajax option
+                //     textColor: 'white' // a non-ajax option
+                // }],
                 viewRender: function (view) {
-                    window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
-                        view: view.name,
-                        date: jqCalendar.fullCalendar('getDate').toISOString()
-                    }));
+                    // window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
+                    //     view: view.name,
+                    //     date: jqCalendar.fullCalendar('getDate').toISOString()
+                    // }));
                 }
             });
-
-
+            calendar.render();
 
             $('.js_check_filter').on('change', function () {
-                jqCalendar.fullCalendar('refetchEvents');
+                calendar.refetchEvents();
             });
 
 
             // Ripristina sessione
             var sessionStorageKey = jqCalendar.attr('id');
 
-            try {
-                var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
-                jqCalendar.fullCalendar('changeView', calendarSession.view);
-                jqCalendar.fullCalendar('gotoDate', calendarSession.date);
-            } catch (e) {
-                // ... skip ...
-            }
+            // try {
+            //     var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
+            //     jqCalendar.fullCalendar('changeView', calendarSession.view);
+            //     jqCalendar.fullCalendar('gotoDate', calendarSession.date);
+            // } catch (e) {
+            //     // ... skip ...
+            // }
 
         });
     });
