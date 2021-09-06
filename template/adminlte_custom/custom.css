@@ -19,7 +19,8 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
 .datetimepicker,
 .datepicker,
 .daterangepicker,
-.datepicker-dropdown {
+.datepicker-dropdown,
+.bootstrap-timepicker-widget {
   z-index: 9999999 !important;
 }
 

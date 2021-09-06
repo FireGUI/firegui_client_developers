@@ -14,7 +14,7 @@ function initCalendars() {
             var allday = $(this).data('allday');
             var formurl = $(this).data('formurl');
             var formedit = $(this).data('formedit');
-            var fieldid = $(this).data('formedit');
+            var fieldid = $(this).data('fieldid');
             var updateurl = $(this).data('updateurl');
             // ============================
 
@@ -26,34 +26,56 @@ function initCalendars() {
             var d = date.getDate();
             var m = date.getMonth();
             var y = date.getFullYear();
-            var h = {};
-            if (jqCalendar.width() <= 400) {
-                jqCalendar.addClass("mobile");
-                h = {
-                    right: 'title, prev, next',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
-                };
-            } else {
-                jqCalendar.removeClass("mobile");
 
-                h = {
-                    right: 'title',
-                    center: '',
-                    left: 'prev,next,today,month,agendaWeek,agendaBusinessWeek,agendaDay'
+            var updateCalendar = function (evt) {
+                var allDay = isAlldayEvent(evt.event.start, evt.event.end);
+                var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
+                var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
+                var data = {
+                    [token_name]: token_hash,
+                    [fieldid]: evt.event.id,
+                    [startField]: fStart,
+                    [endField]: fEnd
+                    //TODO: manage all days events
                 };
+
+                $.ajax({
+                    url: updateurl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        if (parseInt(data.status) < 1) {
+                            // revertFunc();
+                            alert(data.txt);
+                        }
+                    },
+                    error: function () {
+                        // revertFunc();
+                        alert('There was an error while saving the event');
+                    },
+                });
             }
 
-            jqCalendar.fullCalendar('destroy'); // destroy the calendar
-            jqCalendarView = jqCalendar.fullCalendar({
-                defaultView: 'agendaWeek',
+            var calendarEl = document.getElementById(jqCalendar.attr('id'));
+
+            $('#' + jqCalendar.attr('id')).html('');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['interaction', 'dayGrid', 'timeGrid'],
+                defaultView: 'timeGridWeek',
+                defaultDate: moment().format('YYYY-MM-DD HH:mm'),
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+
                 editable: true,
                 selectable: true,
                 disableDragging: false,
                 height: 'auto',
-                header: h,
-                //            locale: 'it',
-                lang: language,
+                locale: language,
                 timeFormat: 'H:mm',
                 axisFormat: 'H:mm',
                 timeFormat: 'H:mm',
@@ -64,16 +86,16 @@ function initCalendars() {
                 minTime: minTime,
                 maxTime: maxTime,
                 allDayHtml: "<i class='far fa-clock'></i>",
-                eventRender: function (event, element) {
-                    element.attr('data-id', event.id).css({
-                        'margin-bottom': '1px',
-                        'border': '1px solid #aaa'
-                    });
-                },
+                // eventRender: function (event, element) {
+                //     element.attr('data-id', event.id).css({
+                //         'margin-bottom': '1px',
+                //         'border': '1px solid #aaa'
+                //     });
+                // },
                 selectHelper: true,
                 select: function (start, end, allDay) {
-                    var fStart = formatDate(start.toDate()); // formatted start
-                    var fEnd = formatDate(end.toDate()); // formatted end
+                    var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
+                    var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
                     var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
                     var data = {
                         [token_name]: token_hash,
@@ -83,7 +105,7 @@ function initCalendars() {
                     };
 
                     loadModal(formurl, data, function () {
-                        jqCalendar.fullCalendar('refetchEvents');
+                        calendar.refetchEvents();
                     }, 'get');
 
                     if (allDay) {
@@ -93,116 +115,72 @@ function initCalendars() {
                 },
                 eventClick: function (event, jsEvent, view) {
                     loadModal(formedit + '/' + event.id, {}, function () {
-                        jqCalendar.fullCalendar('refetchEvents');
+                        calendar.refetchEvents();
                     });
                     return false;
                 },
-                eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
-                    var allDay = isAlldayEvent(event.start, event.end);
-                    var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
-                    var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
-                    var data = {
-                        [token_name]: token_hash,
-                        [fieldid]: event.id,
-                        [startField]: fStart,
-                        [endField]: fEnd
-                        //TODO: manage all days events
-                    };
 
-                    $.ajax({
-                        url: updateurl,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: data,
-                        success: function (data) {
-                            if (parseInt(data.status) < 1) {
-                                revertFunc();
-                                alert(data.txt);
-                            }
-                        },
-                        error: function () {
-                            revertFunc();
-                            alert('There was an error while saving the event');
-                        },
-                    });
+                eventDrop: function (evt) {
+                    updateCalendar(evt);
                 },
-                eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
-                    var allDay = isAlldayEvent(event.start, event.end);
-                    var fStart = event.start.format('DD/MM/YYYY HH:mm'); // formatted start
-                    var fEnd = event.end.format('DD/MM/YYYY HH:mm'); // formatted end
-                    var data = {
-                        [token_name]: token_hash,
-                        [fieldid]: event.id,
-                        [startField]: fStart,
-                        [endField]: fEnd
-                        //TODO: manage all days events
-                    };
 
-
-                    $.ajax({
-                        url: updateurl,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: data,
-                        success: function (data) {
-                            if (parseInt(data.status) < 1) {
-                                revertFunc();
-                                alert(data.txt);
-                            }
-                        },
-                        error: function () {
-                            revertFunc();
-                            alert('There was an error while saving the event');
-                        },
-                    });
+                eventResize: function (evt, delta, revertFunc) {
+                    updateCalendar(evt);
                 },
                 eventSources: [{
-                    url: sourceUrl,
-                    type: 'POST',
-                    data: function () {
+                    events: function (fetchInfo, successCallback, failureCallback) {
                         var values = [];
                         $('.js_check_filter').filter('[type=checkbox]:checked').each(function () {
                             values.push($(this).val());
                         });
-                        return {
-                            filters: values,
-                            [token_name]: token_hash
-                        };
-                    },
-                    error: function (error) {
-                        console.log(error.responseText);
-                    },
-                    loading: function (bool) {
-                        $('#loading').fadeTo(bool ? 1 : 0);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: sourceUrl,
+                            dataType: 'json',
+                            data: {
+                                filters: values,
+                                [token_name]: token_hash
+                            },
+                            loading: function (bool) {
+                                $('#loading').fadeTo(bool ? 1 : 0);
+                            },
+                            success: function (response) {
+                                successCallback(response);
+                            },
+                            error: function (response) {
+                                console.log(response);
+                                failureCallback(response);
+                            },
+                        });
                     },
                     color: '#4B8DF8', // a non-ajax option
                     textColor: 'white' // a non-ajax option
                 }],
                 viewRender: function (view) {
-                    window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
-                        view: view.name,
-                        date: jqCalendar.fullCalendar('getDate').toISOString()
-                    }));
+                    // window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
+                    //     view: view.name,
+                    //     date: jqCalendar.fullCalendar('getDate').toISOString()
+                    // }));
                 }
             });
 
-
+            calendar.render();
 
             $('.js_check_filter').on('change', function () {
-                jqCalendar.fullCalendar('refetchEvents');
+                calendar.refetchEvents();
             });
-
 
             // Ripristina sessione
             var sessionStorageKey = jqCalendar.attr('id');
 
-            try {
-                var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
-                jqCalendar.fullCalendar('changeView', calendarSession.view);
-                jqCalendar.fullCalendar('gotoDate', calendarSession.date);
-            } catch (e) {
-                // ... skip ...
-            }
+            // try {
+            //     var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
+            //     jqCalendar.fullCalendar('changeView', calendarSession.view);
+            //     jqCalendar.fullCalendar('gotoDate', calendarSession.date);
+            // } catch (e) {
+            //     // ... skip ...
+            // }
 
         });
     });
