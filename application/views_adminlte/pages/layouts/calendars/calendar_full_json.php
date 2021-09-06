@@ -9,7 +9,7 @@ if (!isset($calendar_map['id']) || !$calendar_map['id']) {
     $calendar_map['id'] = $data['calendars']['entity_name'] . "_id";
 }
 
-$element_id = (isset($value_id) ? $value_id : NULL);
+$element_id = (isset($value_id) ? '/' . $value_id : NULL);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
@@ -48,7 +48,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
     $(function() {
         'use strict';
 
-        var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>";
+        var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}" . $element_id); ?>";
         var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
         var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
 
@@ -62,7 +62,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             editable: true,
             selectable: true,
             disableDragging: false,
-            lang: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
+            locale: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
             selectHelper: true,
             minTime: minTime,
             maxTime: maxTime,
