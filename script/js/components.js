@@ -40,6 +40,7 @@ $('body').on('click', '.js_ajax_content', function (e) {
                         $('.js_submenu_item.active').removeClass('active');
 
                         $('#js_layout_content_wrapper').data('layout-id', layout_id);
+                        document.title = data.dati.title_prefix;
                         $('#js_page_content').html(data.content);
                         window.history.pushState("", "", link_href);
                         initComponents($('#js_page_content'), true);

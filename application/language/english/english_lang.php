@@ -326,3 +326,4 @@ $lang['Loading'] = 'Loading';
 $lang['Clear'] = 'Clear';
 $lang['Description'] = 'Description';
 $lang['Support tables'] = 'Support tables';
+$lang['Notification'] = 'Notification';
