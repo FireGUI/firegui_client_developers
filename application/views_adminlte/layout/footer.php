@@ -98,6 +98,7 @@
 
 <!-- Full Calendar 4 -->
 <script src='<?php echo base_url_scripts('script/lib/fullcalendar-4/core/main.js') ?>'></script>
+<script src='<?php echo base_url_scripts('script/lib/fullcalendar-4/core/locales-all.js') ?>'></script>
 <script src='<?php echo base_url_scripts('script/lib/fullcalendar-4/interaction/main.js') ?>'></script>
 <script src='<?php echo base_url_scripts('script/lib/fullcalendar-4/daygrid/main.js') ?>'></script>
 <script src='<?php echo base_url_scripts('script/lib/fullcalendar-4/timegrid/main.js') ?>'></script>
