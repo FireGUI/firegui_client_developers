@@ -785,7 +785,7 @@ class Datab extends CI_Model
 
             $depth = ($grid['grids']['grids_depth'] > 0) ? $grid['grids']['grids_depth'] : 2;
 
-
+            //debug($grid['grids_fields']);
             //If $search is present, order by best match before ordering the rest of the data
             if ($search) {
                 $order_by_prepend = $this->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
@@ -866,6 +866,7 @@ class Datab extends CI_Model
                     FROM grids_fields
                         LEFT JOIN grids ON grids.grids_id = grids_fields.grids_fields_grids_id
                         LEFT JOIN fields ON fields.fields_id = grids_fields.grids_fields_fields_id 
+                        LEFT JOIN entity ON fields.fields_entity_id = entity.entity_id 
                         LEFT JOIN fields_draw ON grids_fields.grids_fields_fields_id = fields_draw.fields_draw_fields_id
                     WHERE grids_id = ? AND (fields_id IS NULL OR NOT fields_draw_display_none)
                     ORDER BY grids_fields_order ASC
@@ -2246,7 +2247,7 @@ class Datab extends CI_Model
         $search = $this->db->escape_str($search);
         foreach ($fields as $field) {
             if (!empty($field['fields_name'])) {
-                $order_by[] = "INSTR({$field['fields_name']}, '$search')";
+                $order_by[] = "INSTR({$field['entity_name']}.{$field['fields_name']}, '$search')";
             } elseif (!empty($field['grids_fields_eval_cache_data'])) {
                 $order_by[] = "INSTR({$field['grids_fields_eval_cache_data']}, '$search')";
             } else {

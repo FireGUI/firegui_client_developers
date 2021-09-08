@@ -464,6 +464,8 @@ class Apilib
             return false;
         }
 
+        //debug($data, true);
+
         $success = $this->db->update($entity, $data, [$entity . '_id' => $id]);
 
         return $success;

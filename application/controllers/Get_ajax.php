@@ -561,7 +561,11 @@ class Get_ajax extends MY_Controller
 
             $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
 
-            $preview_fields = $this->db->get_where('fields', array('fields_entity_id' => $grid['grids']['grids_entity_id'], 'fields_preview' => DB_BOOL_TRUE))->result_array();
+            $preview_fields = $this->db->join('entity', 'fields_entity_id = entity_id')->get_where(
+                'fields',
+                array('fields_entity_id' => $grid['grids']['grids_entity_id'], 'fields_preview' => DB_BOOL_TRUE)
+            )
+                ->result_array();
 
             $where = $this->datab->search_like($search, array_merge($grid['grids_fields'], $preview_fields));
 
