@@ -92,7 +92,8 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 		} elseif ($this->_db->pconnect) {
 			throw new Exception('Configured database connection is persistent. Aborting.');
 		} elseif ($this->_db->cache_on) {
-			throw new Exception('Configured database connection has cache enabled. Aborting.');
+			//20210908 - MP - Removed check on cache active. Managed to disabled cache just before running session queries, reactivating cache after that
+			//throw new Exception('Configured database connection has cache enabled. Aborting.');
 		}
 
 		$db_driver = $this->_db->dbdriver . (empty($this->_db->subdriver) ? '' : '_' . $this->_db->subdriver);
@@ -140,6 +141,10 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 	 */
 	public function read($session_id)
 	{
+		if ($cache_enabled = $this->_db->cache_on) {
+
+			$this->_db->cache_off();
+		}
 		if ($this->_get_lock($session_id) !== FALSE) {
 			// Prevent previous QB calls from messing with our queries
 			$this->_db->reset_query();
@@ -162,6 +167,10 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 				// FALSE instead of relying on the default ...
 				$this->_row_exists = FALSE;
 				$this->_fingerprint = md5('');
+
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return '';
 			}
 
@@ -174,10 +183,16 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 
 			$this->_fingerprint = md5($result);
 			$this->_row_exists = TRUE;
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return $result;
 		}
 
 		$this->_fingerprint = md5('');
+		if ($cache_enabled) {
+			$this->_db->cache_on();
+		}
 		return '';
 	}
 
@@ -194,18 +209,27 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 	 */
 	public function write($session_id, $session_data)
 	{
+		if ($cache_enabled = $this->_db->cache_on) {
+			$this->_db->cache_off();
+		}
 		// Prevent previous QB calls from messing with our queries
 		$this->_db->reset_query();
 
 		// Was the ID regenerated?
 		if (isset($this->_session_id) && $session_id !== $this->_session_id) {
 			if (!$this->_release_lock() or !$this->_get_lock($session_id)) {
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return $this->_fail();
 			}
 
 			$this->_row_exists = FALSE;
 			$this->_session_id = $session_id;
 		} elseif ($this->_lock === FALSE) {
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return $this->_fail();
 		}
 
@@ -220,9 +244,14 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 			if ($this->_db->insert($this->_config['save_path'], $insert_data)) {
 				$this->_fingerprint = md5($session_data);
 				$this->_row_exists = TRUE;
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return $this->_success;
 			}
-
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return $this->_fail();
 		}
 
@@ -240,9 +269,14 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 
 		if ($this->_db->update($this->_config['save_path'], $update_data)) {
 			$this->_fingerprint = md5($session_data);
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return $this->_success;
 		}
-
+		if ($cache_enabled) {
+			$this->_db->cache_on();
+		}
 		return $this->_fail();
 	}
 
@@ -274,6 +308,9 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 	 */
 	public function destroy($session_id)
 	{
+		if ($cache_enabled = $this->_db->cache_on) {
+			$this->_db->cache_off();
+		}
 		if ($this->_lock) {
 			// Prevent previous QB calls from messing with our queries
 			$this->_db->reset_query();
@@ -284,15 +321,23 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 			}
 
 			if (!$this->_db->delete($this->_config['save_path'])) {
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return $this->_fail();
 			}
 		}
 
 		if ($this->close() === $this->_success) {
 			$this->_cookie_destroy();
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return $this->_success;
 		}
-
+		if ($cache_enabled) {
+			$this->_db->cache_on();
+		}
 		return $this->_fail();
 	}
 
@@ -308,10 +353,16 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 	 */
 	public function gc($maxlifetime)
 	{
+		if ($cache_enabled = $this->_db->cache_on) {
+			$this->_db->cache_off();
+		}
 		// Prevent previous QB calls from messing with our queries
 		$this->_db->reset_query();
-
-		return ($this->_db->delete($this->_config['save_path'], 'timestamp < ' . (time() - $maxlifetime)))
+		$ret = $this->_db->delete($this->_config['save_path'], 'timestamp < ' . (time() - $maxlifetime));
+		if ($cache_enabled) {
+			$this->_db->cache_on();
+		}
+		return ($ret)
 			? $this->_success
 			: $this->_fail();
 	}
@@ -328,24 +379,39 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 	 */
 	protected function _get_lock($session_id)
 	{
+		if ($cache_enabled = $this->_db->cache_on) {
+			$this->_db->cache_off();
+		}
 		if ($this->_platform === 'mysql') {
 			$arg = md5($session_id . ($this->_config['match_ip'] ? '_' . $_SERVER['REMOTE_ADDR'] : ''));
 			if ($this->_db->query("SELECT GET_LOCK('" . $arg . "', 300) AS ci_session_lock")->row()->ci_session_lock) {
 				$this->_lock = $arg;
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return TRUE;
 			}
-
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return FALSE;
 		} elseif ($this->_platform === 'postgre') {
 			$arg = "hashtext('" . $session_id . "')" . ($this->_config['match_ip'] ? ", hashtext('" . $_SERVER['REMOTE_ADDR'] . "')" : '');
 			if ($this->_db->simple_query('SELECT pg_advisory_lock(' . $arg . ')')) {
 				$this->_lock = $arg;
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return TRUE;
 			}
-
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return FALSE;
 		}
-
+		if ($cache_enabled) {
+			$this->_db->cache_on();
+		}
 		return parent::_get_lock($session_id);
 	}
 
@@ -363,10 +429,15 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 		if (!$this->_lock) {
 			return TRUE;
 		}
-
+		if ($cache_enabled = $this->_db->cache_on) {
+			$this->_db->cache_off();
+		}
 		if ($this->_platform === 'mysql') {
 			if ($this->_db->query("SELECT RELEASE_LOCK('" . $this->_lock . "') AS ci_session_lock")->row()->ci_session_lock) {
 				$this->_lock = FALSE;
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return TRUE;
 			}
 
@@ -374,12 +445,19 @@ class CI_Session_database_driver extends CI_Session_driver implements SessionHan
 		} elseif ($this->_platform === 'postgre') {
 			if ($this->_db->simple_query('SELECT pg_advisory_unlock(' . $this->_lock . ')')) {
 				$this->_lock = FALSE;
+				if ($cache_enabled) {
+					$this->_db->cache_on();
+				}
 				return TRUE;
 			}
-
+			if ($cache_enabled) {
+				$this->_db->cache_on();
+			}
 			return FALSE;
 		}
-
+		if ($cache_enabled) {
+			$this->_db->cache_on();
+		}
 		return parent::_release_lock();
 	}
 }

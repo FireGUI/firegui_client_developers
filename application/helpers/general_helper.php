@@ -1327,8 +1327,22 @@ if (!function_exists('get_csrf')) {
     }
 }
 if (!function_exists('e_json')) {
-    function e_json($data)
+    function json_recursive_cast($arr)
     {
+        foreach ($arr as $key => $el) {
+            if (is_array($el)) {
+                $arr[$key] = json_recursive_cast($el);
+            } else {
+                $arr[$key] = (string)$el;
+            }
+        }
+        return $arr;
+    }
+    function e_json($data, $force_string_cast = false)
+    {
+        if ($force_string_cast) {
+            $data = json_recursive_cast($data);
+        }
         echo json_encode($data);
     }
 }
