@@ -1,6 +1,5 @@
 Changelog version 2.2.3
  
-Added init_set serialize_precision 2 to avoid bad float conversion
 Forced default date only if field is required
 New option layout header yes/no
 fix export button position
@@ -52,3 +51,19 @@ Bugfix current menu active in sidebar
 Hide widget and timetracker on mobile
 Bugfix apilib count now excludes soft deleted records
 added nav-tabs-custom to tabs
+swapped password-lost buttons
+Added entity table join in preview_fields variable extract
+Added json_recursive_cast option in e_json function to avoid issue with float and serialize precision
+Bugfix in session driver to work also with cache enabled
+form save now returns data
+Added layout title in get_layout_content ajax
+Added cache delete_all in apilib cache
+Bugfix for datatable ajax
+Bugfix for apexcharts_bar layout
+Restored large action icon in datatable slim
+Fix backgorund color
+Fix “events” events
+Fix reinit
+Changed loader position
+Update fullcalendar to fullcalendar 4
+Fixed z-index for timepicker
