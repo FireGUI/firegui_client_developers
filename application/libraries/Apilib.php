@@ -285,12 +285,14 @@ class Apilib
     public function clearCache($drop_template_files = false)
     {
         // Fix che riscrive il file cache-controller resettato da $this->mycache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
-
         $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
         $this->mycache->clean();
         file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
 
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
 
         //Remove also css generated files from template cache
         if ($drop_template_files) {
@@ -308,6 +310,10 @@ class Apilib
     {
         $tags = $this->buildTagsFromEntity($entity);
         $this->clearCacheTags($tags);
+
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
     }
 
     public function clearCacheKey($key = null)
@@ -317,6 +323,10 @@ class Apilib
         }
 
         $this->mycache->delete($key);
+
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
     }
 
     public function clearCacheTags($tags)
@@ -326,6 +336,10 @@ class Apilib
         }
 
         $this->mycache->deleteByTags($tags);
+
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
     }
 
     public function clearCacheRecord($entity = null, $id = null)
@@ -340,7 +354,6 @@ class Apilib
     /***********************************
      * Rest actions
      */
-
 
     /**
      * Mostra una lista di record dell'entità richiesta
@@ -450,6 +463,8 @@ class Apilib
         if (!is_numeric($id) or $id < 1) {
             return false;
         }
+
+        //debug($data, true);
 
         $success = $this->db->update($entity, $data, [$entity . '_id' => $id]);
 
@@ -2111,7 +2126,7 @@ class Apilib
                     if (empty($function['fi_events_post_process_id'])) {
                         $this->runEvent($function, $data);
                     } else {
-                            //TODO: deprecated... use onlu fi_events table
+                        //TODO: deprecated... use onlu fi_events table
                         eval($function['post_process_what']);
                     }
                 } catch (Exception $ex) {
@@ -2119,10 +2134,11 @@ class Apilib
                 }
             }
         }
-        
+
         return $data;
     }
-    private function runEvent($function, $data) {
+    private function runEvent($function, $data)
+    {
         switch ($function['fi_events_action']) {
             case 'notify':
                 $this->load->model('fi_events/notify');
@@ -2131,9 +2147,7 @@ class Apilib
             default:
                 debug("Event action '{$function['fi_events_action']}' not recognized!");
                 break;
-
         }
-        
     }
     private function preLoadDataProcessors()
     {
@@ -2153,9 +2167,9 @@ class Apilib
             ];
 
             foreach ($process as $function) {
-                
+
                 if (empty($function['fi_events_post_process_id'])) { //New fi_events structure
-                    
+
                     $e_id = $function['fi_events_ref_id'];
                     $type = $function['fi_events_when'];
                     $crm = $function['fi_events_crm'];
@@ -2167,8 +2181,8 @@ class Apilib
                     $crm = $function['post_process_crm'];
                     $api = $function['post_process_api'];
                     $apilib = $function['post_process_apilib'];
-                }                
-                
+                }
+
                 if ($crm == DB_BOOL_TRUE) {
                     $this->_loadedDataProcessors[self::MODE_CRM_FORM][$e_id][$type][] = $function;
                 }

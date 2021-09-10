@@ -114,7 +114,7 @@ class Main extends MY_Controller
 
                 echo json_encode(array('status' => 1, 'type' => 'pdf'));
             } else {
-                $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
+                $dati['title_prefix'] = ucfirst(t(trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])))));
                 $dati['current_page'] = "layout_{$layout_id}";
                 $dati['show_title'] = true;
                 $dati['layout_id'] = $layout_id;
@@ -122,7 +122,7 @@ class Main extends MY_Controller
 
                 $this->layout->setLayoutModule();
 
-                echo json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id));
+                echo json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id, 'dati' => $dati));
             }
         }
     }
