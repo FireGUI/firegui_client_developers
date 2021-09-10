@@ -1826,7 +1826,7 @@ class Datab extends CI_Model
         $this->fixPermissions();
     }
 
-    public function getPermission($userOrGroup)
+    public function getPermission($userOrGroup, $throwException = false)
     {
 
         if (is_numeric($userOrGroup)) {
