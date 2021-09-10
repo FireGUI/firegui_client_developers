@@ -93,7 +93,9 @@ if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
 $this->layout->addDinamicStylesheet($data, "header.css");
 ?>
 
-
+<div class="js_loading">
+    <img src="<?php echo base_url_admin('images/loader.gif'); ?>" />
+</div>
 
 <nav class="navbar navbar-static-top">
 
