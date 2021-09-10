@@ -26,23 +26,6 @@
   margin: 0 auto;
 }
 
-.js_loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0,0,0, .15);
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
-  padding: 4px;
-  text-align: center;
-  color: #ffffff;
-  z-index: 10002;
-}
-
 a {
   color: #4b77bf;
 }
