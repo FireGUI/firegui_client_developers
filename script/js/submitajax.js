@@ -58,11 +58,10 @@ var handleSuccess = function (msg) {
 };
 
 function loading(bShow) {
-    console.log(bShow)
     if (bShow) {
-        $('.js_loading').css('display', 'flex').fadeIn();
+        $('.js_loading').fadeIn();
         // Se in 4 secondi non ho ottenuto una risposta, nascondo automaticamente il loader
-        setTimeout(loading, 2000, false);
+        setTimeout(loading, 4000, false);
     } else {
         $('.js_loading').fadeOut();
     }
