@@ -67,3 +67,7 @@ Fix reinit
 Changed loader position
 Update fullcalendar to fullcalendar 4
 Fixed z-index for timepicker
+Fix getPermission
+Fix for ajax_allowed layouts
+Changed loader position from main to header
+Fix undefined variable in getPermission method in datab
