@@ -611,7 +611,8 @@ class Datab extends CI_Model
                     'datatype' => $field['fields_type'],
                     'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
                     'fields_source' => $field['fields_source'], // Computo il ref field da usare nel caso di form
-                    'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id)
+                    'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id),
+                    'original_field' => $field,
                 ];
             }
 
