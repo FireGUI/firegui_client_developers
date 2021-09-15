@@ -83,8 +83,8 @@ class Mail_model extends CI_Model
 
         // Usa come replacement i parametri che non sono array, object e risorse
         $filteredData = array_filter($data, 'is_scalar');
-        $subject = str_replace_placeholders($email['emails_subject'],  $filteredData);
-        $message = str_replace_placeholders($email['emails_template'], $filteredData);
+        $subject = str_replace_placeholders($email['emails_subject'],  $filteredData, true, true);
+        $message = str_replace_placeholders($email['emails_template'], $filteredData, true, true);
 
         if (is_development()) { //Meglio questo dell'is_development
             $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";

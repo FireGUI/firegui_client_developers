@@ -79,10 +79,13 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    padding: 4px;
     text-align: center;
     color: #ffffff;
     z-index: 10002;
+}
+
+.js_loading img {
+  max-height: 50px;
 }
 
 
