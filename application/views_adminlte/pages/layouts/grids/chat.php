@@ -72,7 +72,7 @@ if (isset($grid_data['data'])) {
             <input type="hidden" name="user" value="<?php echo $this->auth->get('id'); ?>" />
 
             <?php if (isset($grid['replaces']['value_id'])) : ?>
-                <input type="hidden" name="value_id" value="<?php echo (array_key_exists($grid['replaces']['value_id']['fields_name'], $layout_data_detail)) ? $layout_data_detail[$grid['replaces']['value_id']['fields_name']] : $value_id; ?>" />
+                <input type="hidden" name="value_id" value="<?php echo (!empty($layout_data_detail)) ? ((array_key_exists($grid['replaces']['value_id']['fields_name'], $layout_data_detail)) ? $layout_data_detail[$grid['replaces']['value_id']['fields_name']] : $value_id) : $value_id; ?>" />
             <?php endif; ?>
             <div class="input-group">
                 <input class="form-control" name="text" placeholder="<?php e('Write a message...') ?>">
