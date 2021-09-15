@@ -476,7 +476,8 @@ abstract class CI_DB_driver
 	 * @return	void
 	 */
 	public function reconnect()
-	{ }
+	{
+	}
 
 	// --------------------------------------------------------------------
 
@@ -610,8 +611,10 @@ abstract class CI_DB_driver
 		if ($binds !== FALSE) {
 			$sql = $this->compile_binds($sql, $binds);
 		}
-
-		// Is query caching enabled? If the query is a "read type"
+		// Save the query for debugging
+		if ($this->save_queries === TRUE) {
+			$this->queries[] = $sql;
+		}		// Is query caching enabled? If the query is a "read type"
 		// we will load the caching class and return the previously
 		// cached query if it exists
 		if ($this->cache_on === TRUE && $return_object === TRUE && $this->_cache_init()) {
@@ -621,10 +624,7 @@ abstract class CI_DB_driver
 			}
 		}
 
-		// Save the query for debugging
-		if ($this->save_queries === TRUE) {
-			$this->queries[] = $sql;
-		}
+
 
 		// Start the Query Timer
 		$time_start = microtime(TRUE);
@@ -1851,5 +1851,6 @@ abstract class CI_DB_driver
 	 * @return	void
 	 */
 	protected function _reset_select()
-	{ }
+	{
+	}
 }
