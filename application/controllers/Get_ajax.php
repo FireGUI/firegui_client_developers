@@ -569,6 +569,8 @@ class Get_ajax extends MY_Controller
 
             $where = $this->datab->search_like($search, array_merge($grid['grids_fields'], $preview_fields));
 
+            //debug($where, true);
+
             if (preg_match('/(\()+(\))+/', $where)) {
                 $where = '';
             }

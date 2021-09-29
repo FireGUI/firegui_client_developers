@@ -19,7 +19,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                     <?php
 
                     $field_completo = $this->datab->get_field($field['id']);
-                    //debug($where_data);
+
                     $sess_value = !isset($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];

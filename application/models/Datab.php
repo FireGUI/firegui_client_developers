@@ -2186,7 +2186,9 @@ class Datab extends CI_Model
                     return $chunk && strlen($chunk) > (defined('MIN_SEARCH_CHARS') ? (MIN_SEARCH_CHARS - 1) : 2);
                 }));
             }
-
+            if (empty($search_chunks)) {
+                $search_chunks[] = trim($search);
+            }
 
             // Sono interessato ai record che contengono TUTTI i chunk in uno o più campi
             foreach ($search_chunks as $_chunk) {
