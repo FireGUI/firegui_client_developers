@@ -3033,9 +3033,9 @@ class Datab extends CI_Model
                 // prendo i dati e se non ci sono allora ritorno un content
                 // vuoto
                 $chart_data = $this->get_chart_data($chart, $value_id);
-                if (empty($chart_data[0]['series']) || !is_array($chart_data[0]['series'])) {
-                    return '';
-                }
+                // if (empty($chart_data[0]['series']) || !is_array($chart_data[0]['series'])) {
+                //     return '';
+                // }
 
                 $chart_layout = $chart['charts_layout'] ?: DEFAULT_LAYOUT_CHART;
                 return $this->load->view("pages/layouts/charts/{$chart_layout}", array('chart' => $chart, 'chart_data' => $chart_data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);

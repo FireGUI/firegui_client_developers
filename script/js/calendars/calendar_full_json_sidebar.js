@@ -113,8 +113,8 @@ function initCalendars() {
                         end.minutes(end.minutes() - 1);
                     }
                 },
-                eventClick: function (event, jsEvent, view) {
-                    loadModal(formedit + '/' + event.id, {}, function () {
+                eventClick: function (evt, jsEvent, view) {
+                    loadModal(formedit + '/' + evt.event.id, {}, function () {
                         calendar.refetchEvents();
                     });
                     return false;
