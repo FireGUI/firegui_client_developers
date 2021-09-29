@@ -227,14 +227,14 @@ class Db_ajax extends MY_Controller
 
         // Processo le condizioni da salvare in input
         $conditions = [];
-        //debug($this->input->post('conditions'), true);
+        $where_data = $this->session->userdata(SESS_WHERE_DATA);
         // Se clicchiamo il pulsante pulisci filtri, allora ignoro l'input
         if (!$this->input->post('clear-filters')) {
 
             // Se invece ho fatto un submit normale, valuto le condizioni valide
             // da tenere in sessione
             foreach ($this->input->post('conditions') as $conditional) {
-                //debug($conditional);
+
                 if (!array_key_exists($conditional['field_id'], $visible_fields)) {
                     //TODO Wrong! Field id can be in another left joined table, so get the field information direct from the field_id to check his type... 
                     //throw new Exception("Missing field '{$conditional['field_id']}' in entity '{$entity['entity']['entity_name']}'.");
@@ -258,14 +258,15 @@ class Db_ajax extends MY_Controller
                 if (
                     !empty($conditional['operator']) &&
                     !empty($conditional['field_id']) &&
-                    (!array_key_exists('value', $conditional) ||
-                        $conditional['value'] !== '-1')
+                    (array_key_exists('value', $conditional))
                 ) {
+
                     if (!array_key_exists('value', $conditional)) {
                         $conditional['value'] = '';
                     }
                     $conditions[$conditional['field_id']] = $conditional;
                 } else {
+                    //unset($where_data[$filterSessionKey][$conditional['field_id']]);
                 }
             }
         }
@@ -275,11 +276,15 @@ class Db_ajax extends MY_Controller
         // Aggiorno i dati da sessione mettendo alla chiave corretta le 
         // condizioni processate. Nel caso in cui siano vuote, queste verranno 
         // rimosse con un array_filter
-        $where_data = $this->session->userdata(SESS_WHERE_DATA);
+
 
         $where_data[$filterSessionKey] = $conditions;
 
+
+
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
+
+        //debug($this->session->userdata(SESS_WHERE_DATA));
 
         // Mando output
         //        json_refresh();

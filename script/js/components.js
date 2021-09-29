@@ -794,7 +794,8 @@ function loadModal(url, data, callbackSuccess, method) {
                 .on('shown.bs.modal', function (e) {
                     loading(false);
                     reset_theme_components();
-
+                    console.log('Check here...');
+                    //initComponents(modalContainer);
                     // Disable by default the confirmation request
                     $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
 

@@ -141,7 +141,7 @@ if ($grid['grids']['grids_pagination']) {
                         <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                         <?php foreach ($grid['grids']['links']['custom'] as $bulk_action) : ?>
-                            <?php if ($bulk_action['grids_actions_show'] == "table") continue; ?>
+                            <?php if ($bulk_action['grids_actions_show'] == "table" || empty($bulk_action['grids_actions_show'])) continue; ?>
                             <option value="bulk_action" data-custom_code="<?php echo $bulk_action['grids_actions_html']; ?>" data-bulk_type="<?php echo $bulk_action['grids_actions_type']; ?>" data-form_id="<?php echo $bulk_action['grids_actions_form']; ?>" disabled="disabled"><?php echo $bulk_action['grids_actions_name']; ?></option>
                         <?php endforeach; ?>
                         <!-- old bulk actions (compatibility) -->
