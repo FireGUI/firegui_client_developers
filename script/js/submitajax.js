@@ -114,18 +114,21 @@ $(document).ready(function () {
                 handleSuccess(msg);
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                var errorContainerID = 'ajax-error-container';
-                var errorContainer = $('#' + errorContainerID);
+                if (typeof xhr.responseText !== 'undefined') {
+                    var errorContainerID = 'ajax-error-container';
+                    var errorContainer = $('#' + errorContainerID);
 
-                if (errorContainer.size() === 0) {
-                    errorContainer = $('<div/>').attr('id', errorContainerID).css({
-                        'z-index': 99999999,
-                        'background-color': '#fff',
-                    });
-                    $('body').prepend(errorContainer);
+                    if (errorContainer.size() === 0) {
+                        errorContainer = $('<div/>').attr('id', errorContainerID).css({
+                            'z-index': 99999999,
+                            'background-color': '#fff',
+                        });
+                        $('body').prepend(errorContainer);
+                    }
+
+                    errorContainer.html('Errore ajax:' + xhr.responseText);
                 }
 
-                errorContainer.html('Errore ajax:' + xhr.responseText);
             },
         });
     });
@@ -200,6 +203,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
 
         },
         error: function (xhr, ajaxOptions, thrownError) {
+
             var msg = { status: 0, txt: 'Oh no! Something wrong. Please try again' };
             handleSuccess(msg);
             if (formEvents && formEvents.hasOwnProperty('form-ajax-error')) {

@@ -42,7 +42,7 @@ function tabsInit() {
                 //     .columns.adjust()
                 //     .draw();
 
-                startAjaxTables();
+                //startAjaxTables();
                 $.each($.fn.dataTable.tables(), function () {
                     if ($(this).parents('.tab-pane.active').length > 0) {
                         var parentTabContainer = $(this).parents('.tab-pane.active');
@@ -50,7 +50,7 @@ function tabsInit() {
 
                     }
                 });
-                //initComponents($('.tab-pane.active'));
+                initComponents($('.tab-pane.active'));
             });
         });
     });
