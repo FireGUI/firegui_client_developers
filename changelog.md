@@ -16,3 +16,5 @@ Added original_field in form_fields
 Bugfix on codeigniter 3 DB_Driver.php for cache database enabled issue
 Fixed ajax logo
 Allowed removal of placeholder if empty in mail_model
+Changed default image width to 100px
+Added default language to the mail_model
