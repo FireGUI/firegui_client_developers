@@ -66,6 +66,16 @@ class Mail_model extends CI_Model
             $headers_json = json_encode($additional_headers);
         }
 
+        if (empty($lang)) {
+            $settings = $this->db->join('languages', 'settings_default_language = languages_id')->get('settings')->row_array();
+            if (!empty($settings)) {
+                $langcode = $settings['languages_code'] ?? 'en-EN';
+
+                $ex = explode('-', $langcode);
+                $lang = $ex[0];
+            }
+        }
+
         $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
 
         if (empty($email)) {

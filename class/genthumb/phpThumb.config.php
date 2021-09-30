@@ -154,7 +154,7 @@ $PHPTHUMB_CONFIG['output_maxheight'] = 0;      // default maximum thumbnail heig
 $PHPTHUMB_CONFIG['output_interlace'] = true;   // if true: interlaced output for GIF/PNG, progressive output for JPEG; if false: non-interlaced for GIF/PNG, baseline for JPEG.
 
 // * Error message configuration
-$PHPTHUMB_CONFIG['error_image_width']           = 400;      // default width for error images
+$PHPTHUMB_CONFIG['error_image_width']           = 100;      // default width for error images
 $PHPTHUMB_CONFIG['error_image_height']          = 100;      // default height for error images
 $PHPTHUMB_CONFIG['error_message_image_default'] = '';       // Set this to the name of a generic error image (e.g. '/images/error.png') that you want displayed in place of any error message that may occur. This setting is overridden by the 'err' parameter, which does the same thing.
 $PHPTHUMB_CONFIG['error_bgcolor']               = 'CCCCFF'; // background color of error message images
