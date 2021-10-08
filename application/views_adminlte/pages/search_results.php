@@ -9,7 +9,35 @@
         <section class="content">
             <div class="row">
                 <?php /* Cicla tutte le entità su cui ho ottenuto risultati */ ?>
-                <?php foreach ($dati['results'] as $entity_result) : ?>
+                <?php foreach ($dati['results'] as $entity_result) :
+                    $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']);
+                    usort($entity_result['visible_fields'], function ($f1, $f2) {
+                        if ($f2['fields_preview'] == DB_BOOL_TRUE) {
+                            return 1;
+                        } elseif ($f1['fields_preview'] == DB_BOOL_TRUE) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    });
+
+
+
+                    $fields = array_values(array_filter($entity_result['visible_fields'], function ($field) {
+                        return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'varchar', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
+                    }));
+                    foreach ($fields as $i => $field) {
+
+                        // Show only preview fields
+                        if ($field['fields_preview'] != DB_BOOL_TRUE) {
+                            unset($fields[$i]);
+                        }
+                    }
+                    if (empty($entity_result['data']) || empty($fields) || empty($link)) {
+                        continue;
+                    };
+
+                ?>
                     <div class="col-md-12">
                         <div class="box box-primary">
                             <div class="box-header">
@@ -22,19 +50,7 @@
                                 <?php
                                 // Mostro solo i campi che hanno qualcosa da mostrare...
 
-                                $link = $this->datab->get_detail_layout_link($entity_result['entity']['entity_id']);
-                                usort($entity_result['visible_fields'], function ($f1, $f2) {
-                                    if ($f2['fields_preview'] == DB_BOOL_TRUE) {
-                                        return 1;
-                                    } elseif ($f1['fields_preview'] == DB_BOOL_TRUE) {
-                                        return -1;
-                                    } else {
-                                        return 0;
-                                    }
-                                });
-                                $fields = array_values(array_filter($entity_result['visible_fields'], function ($field) {
-                                    return $field['fields_draw_label'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT', 'VARCHAR', 'varchar', 'FLOAT', 'TIMESTAMP WITHOUT TIME ZONE']);
-                                }));
+
                                 ?>
                                 <table class="table table-condensed table-bordered table-hover table-scrollable table-scrollable-borderless js_search_datatable">
                                     <thead>
@@ -66,12 +82,14 @@
                                     </thead>
                                     <tbody>
                                         <?php foreach ($entity_result['data'] as $data) : ?>
+
+
                                             <tr>
                                                 <?php foreach ($fields as $i => $field) : ?>
                                                     <td>
                                                         <?php
                                                         echo ($link && !$i) ? //Mostro per le prime 4 colonne il link al dettaglio
-                                                            anchor($link . '/' . $data[$entity_result['entity']['entity_name'] . '_id'], $data[$field['fields_name']]) : $this->datab->build_grid_cell($field, $data);
+                                                            anchor($link . '/' . $data[$entity_result['entity']['entity_name'] . '_id'], ($data[$field['fields_name']]) ? $data[$field['fields_name']] : ' ') : $this->datab->build_grid_cell($field, $data);
                                                         ?>
                                                     </td>
                                                 <?php endforeach; ?>
