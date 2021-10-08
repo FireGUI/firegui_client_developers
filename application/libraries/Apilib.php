@@ -574,6 +574,7 @@ class Apilib
         }
 
         if ($this->processData($entity, $_data, true, $id)) {
+
             $oldData = $this->getById($entity, $id);
 
             if (!$this->updateById($entity, $id, $_data)) {
@@ -1235,96 +1236,102 @@ class Apilib
         foreach ($fields as $field) {
             $rule = [];
 
-            // Enter the required rule for the fields that require it
-            // (a password is required only if creating the record for the
-            // first time)
-            if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
-                switch ($field['fields_draw_html_type']) {
-                        // this because upload is made after validation rules
-                    case 'upload':
-                    case 'upload_image':
-                        if (!array_key_exists($field['fields_name'], $_FILES)) {
-                            $rule[] = 'required';
-                        }
-                        break;
+            if (in_array($field['fields_name'], array_keys($originalData))) { //Valido solo i nuovi campi passati dal form, non quelli vecchi già salvati
 
-                        // password is valuated as required only if not in edit mode,
-                        //because in edit it doesnt mean that i want to change it
-                    case 'input_password':
-                        if (!$editMode) {
-                            $rule[] = 'required';
-                        }
-                        break;
 
-                        // By default field will be required
-                    default:
-                        $rule[] = 'required';
-                        break;
+
+                // Enter the required rule for the fields that require it
+                // (a password is required only if creating the record for the
+                // first time)
+                if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
+                    switch ($field['fields_draw_html_type']) {
+                            // this because upload is made after validation rules
+                        case 'upload':
+                        case 'upload_image':
+                            if (!array_key_exists($field['fields_name'], $_FILES)) {
+                                $rule[] = 'required';
+                            }
+                            break;
+
+                            // password is valuated as required only if not in edit mode,
+                            //because in edit it doesnt mean that i want to change it
+                        case 'input_password':
+                            if (!$editMode) {
+                                $rule[] = 'required';
+                            }
+                            break;
+
+                            // By default field will be required
+                        default:
+                            $rule[] = 'required';
+                            break;
+                    }
+                }
+
+
+                // Inserisci le altre regole di validazione
+                foreach ($field['validations'] as $validation) {
+                    switch ($validation['fields_validation_type']) {
+
+                            //Le validazioni che non richiedono parametri particolari
+                        case 'valid_email':
+                        case 'valid_emails':
+                        case 'integer':
+                        case 'numeric':
+                        case 'is_natural':
+                        case 'is_natural_no_zero':
+                        case 'alpha':
+                        case 'alpha_numeric':
+                        case 'alpha_dash':
+                            $rule[] = $validation['fields_validation_type'];
+                            break;
+
+                            //Le validazioni che hanno parametri semplici
+                        case 'is_unique':
+                            // Il caso unique ha una particolarità:
+                            // nel caso di edit se uno NON ha cambiato il valore del campo,
+                            // allora non includo la regola di unicità, perché fallirebbe sempre
+                            // e il form validator di CI non è così intelligente da poter determinare che
+                            // il valore inserito fa riferimento all'entità
+                            if (!$editMode || $dataDb[$field['fields_name']] != $data[$field['fields_name']]) {
+                                $rule[] = "is_unique[{$validation['fields_validation_extra']}]";
+                            }
+                            break;
+
+                        case 'decimal':
+                        case 'min_length':
+                        case 'max_length':
+                        case 'exact_length':
+                        case 'greater_than':
+                        case 'less_than':
+                            $rule[] = "{$validation['fields_validation_type']}[{$validation['fields_validation_extra']}]";
+                            break;
+
+                            // Validazioni complesse
+                        case 'date_before':
+                            $rules_date_before[] = [
+                                'before' => $field['fields_name'],
+                                'after' => $validation['fields_validation_extra'],
+                                'message' => $validation['fields_validation_message'] ?: null
+                            ];
+                            break;
+
+                        case 'date_after':
+                            $rules_date_before[] = [
+                                'before' => $validation['fields_validation_extra'],
+                                'after' => $field['fields_name'],
+                                'message' => $validation['fields_validation_message'] ?: null
+                            ];
+                            break;
+                    }
                 }
             }
-
-
-            // Inserisci le altre regole di validazione
-            foreach ($field['validations'] as $validation) {
-                switch ($validation['fields_validation_type']) {
-
-                        //Le validazioni che non richiedono parametri particolari
-                    case 'valid_email':
-                    case 'valid_emails':
-                    case 'integer':
-                    case 'numeric':
-                    case 'is_natural':
-                    case 'is_natural_no_zero':
-                    case 'alpha':
-                    case 'alpha_numeric':
-                    case 'alpha_dash':
-                        $rule[] = $validation['fields_validation_type'];
-                        break;
-
-                        //Le validazioni che hanno parametri semplici
-                    case 'is_unique':
-                        // Il caso unique ha una particolarità:
-                        // nel caso di edit se uno NON ha cambiato il valore del campo,
-                        // allora non includo la regola di unicità, perché fallirebbe sempre
-                        // e il form validator di CI non è così intelligente da poter determinare che
-                        // il valore inserito fa riferimento all'entità
-                        if (!$editMode || $dataDb[$field['fields_name']] != $data[$field['fields_name']]) {
-                            $rule[] = "is_unique[{$validation['fields_validation_extra']}]";
-                        }
-                        break;
-
-                    case 'decimal':
-                    case 'min_length':
-                    case 'max_length':
-                    case 'exact_length':
-                    case 'greater_than':
-                    case 'less_than':
-                        $rule[] = "{$validation['fields_validation_type']}[{$validation['fields_validation_extra']}]";
-                        break;
-
-                        // Validazioni complesse
-                    case 'date_before':
-                        $rules_date_before[] = [
-                            'before' => $field['fields_name'],
-                            'after' => $validation['fields_validation_extra'],
-                            'message' => $validation['fields_validation_message'] ?: null
-                        ];
-                        break;
-
-                    case 'date_after':
-                        $rules_date_before[] = [
-                            'before' => $validation['fields_validation_extra'],
-                            'after' => $field['fields_name'],
-                            'message' => $validation['fields_validation_message'] ?: null
-                        ];
-                        break;
-                }
-            }
-
             if (!empty($rule)) {
                 $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
             }
         }
+
+
 
         /**
          * Eseguo il process di pre-validation
@@ -1350,6 +1357,8 @@ class Apilib
             }
             // Col passaggio a CI3, non viene più verificato il $_POST dal form validator, ma direttamente il CI->input->method (che nel caso di "change_value" è GET, non POST).
             //Fortunatamente hanno previsto la possibilità di dire al form validator che non deve valutare $_POST, ma un array "validation_data" che si può settare con set_data. Ecco il perchè di questa modifica.
+
+
             $this->form_validation->set_data($_POST);
             $this->form_validation->set_rules($rules);
 
