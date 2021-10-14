@@ -1466,3 +1466,10 @@ if (!function_exists('curlRequest')) {
         return $data;
     }
 }
+
+if (!function_exists('e_money')) {
+    function e_money($number)
+    {
+        echo number_format($number, 2, ',', '.');
+    }
+}
