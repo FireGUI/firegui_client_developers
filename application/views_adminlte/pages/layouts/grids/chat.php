@@ -63,7 +63,7 @@ if (isset($grid_data['data'])) {
                     </li>
                 <?php endforeach; ?>
             <?php else : ?>
-                <div class="chat-info-message text-center"><img src="<?php echo base_url('images/messages.png'); ?>" style="height: 100px; width: 100px;" alt=""><br /><?php e('<h3><b>No messages yet</b></h3>'); ?></div>
+                <div class="chat-info-message text-center"><img src="<?php echo base_url('images/messages.png'); ?>" style="height: 100px; width: 100px; margin: 0 auto;" alt=""><br /><?php e('<h3><b>No messages yet</b></h3>'); ?></div>
             <?php endif; ?>
         </ul>
 
