@@ -188,9 +188,9 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
                 closeContainingPopups(form);
             }
-            if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids) {
-                //refreshGridsByEntity(msg.related_entity);
-                refreshAjaxLayoutBoxes();
+            if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids && msg.related_entity) {
+                refreshGridsByEntity(msg.related_entity);
+                //refreshAjaxLayoutBoxes();
             }
             if (typeof msg.reset_form !== 'undefined' && msg.reset_form) {
                 form[0].reset();
@@ -354,18 +354,23 @@ function refreshLayoutBox(lb_id, value_id) {
 function refreshAjaxLayoutBoxes() {
     //refreshVisibleAjaxGrids();
     //TODO: check if box is refreshable
-    $('.layout_box:visible').each(function () {
+    if ($('.layout_box:visible').length > 5) {
+        location.reload();
+    } else {
+        $('.layout_box:visible').each(function () {
 
-        if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
-            refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
-        } else {
-            var lb = $(this);
-            var lb_id = $(this).data('layout-box');
-            var value_id = $(this).data('value_id');
-            refreshLayoutBox(lb_id, value_id);
-        }
+            if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
+                refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
+            } else {
+                var lb = $(this);
+                var lb_id = $(this).data('layout-box');
+                var value_id = $(this).data('value_id');
 
-    });
+                refreshLayoutBox(lb_id, value_id);
+            }
+
+        });
+    }
 
 
 }
