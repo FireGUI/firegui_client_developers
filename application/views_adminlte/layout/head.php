@@ -95,7 +95,7 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     "var base_url_uploads = '" . base_url_uploads() . "';",
     "var base_url_builder = '" . FIREGUI_BUILDER_BASEURL . "';",
     "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
-    "var builderProjectHash = '" . base64_encode(json_encode(array($this->db->database, $this->db->hostname, $this->db->username))) . "';",
+    "var builderProjectHash = '" . base64_encode(json_encode(array($this->db->database, $this->db->hostname, $this->db->username, md5($this->db->password)))) . "';",
     "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
 ], 'config.js'); ?>
 
