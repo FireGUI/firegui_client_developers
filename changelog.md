@@ -1,20 +1,13 @@
-Changelog version 2.2.4
+Changelog version 2.2.5
  
-Bugfix undefined xhr.responseText on ajax interrupted
-Bugfix tabs.js now force reinit on all visible dataTables
-Bugfix when filter empty
-Better search when searching with only 1 or 2 characters
-Bugfix for new native bulk actions
-initComponents when show modal invoked
-Download file now open in new tab
-restored skebby_sms module
-Fix calendar sidebar
-Fix charts
-Bugfix apilib undefined index
-fix chat grid layout detail association
-Added original_field in form_fields
-Bugfix on codeigniter 3 DB_Driver.php for cache database enabled issue
-Fixed ajax logo
-Allowed removal of placeholder if empty in mail_model
-Changed default image width to 100px
-Added default language to the mail_model
+New function php e_money to print money fields
+Bugfix for postgres order by
+Changed builderProjectHash
+Changed how submit ajax refresh boxes
+Forced refresh page when more then 5 boxes needs to be refreshed
+Bugfix for multiple tabs refresh
+fix chat image placeholder
+Fix bulk edit for required fields
+Better search results page
+changed timepicker form field
+Removed ssl verify cron
