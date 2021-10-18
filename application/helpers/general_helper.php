@@ -1418,7 +1418,7 @@ if (!function_exists('curlRequest')) {
 
         $params = null;
         if (!$isPost && !empty($data)) {
-            $params = '?' . http_build_query($data);
+            $params = '?' . (is_array($data) || is_object($data) ? http_build_query($data) : $data);
         } elseif ($isPost && !empty($data)) {
             if ($jsonPayload) {
                 $data = json_encode($data);
