@@ -168,6 +168,27 @@ class Cron extends MY_Controller
             mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
         }
 
+        //Clear logs folder
+        $files = scandir(APPPATH . 'logs/');
+        foreach ($files as $file) {
+            if (in_array($file, ['.', '..', 'index.html'])) {
+                continue;
+            } else {
+                $file_no_ext = explode('.', $file)[0];
+                $file_expl = explode('-', $file_no_ext);
+                $data_txt = "{$file_expl[1]}-{$file_expl[2]}-{$file_expl[3]}";
+                $date = DateTime::createFromFormat('Y-m-d', $data_txt);
+
+                if ($date->diff(new DateTime())->format('%a') > 7) {
+                    //debug("Cancello il file " . APPPATH . 'logs/' . $file);
+                    unlink(APPPATH . 'logs/' . $file);
+                    log_message("info", "Cancello il file " . APPPATH . 'logs/' . $file);
+                } else {
+                    //debug("Mantengo il file " . APPPATH . 'logs/' . $file);
+                }
+            }
+        }
+
         //Send output to the browser if running cron check from client (not cli) and user is logged in as admin
         if ($this->auth->is_admin()) {
             echo $out;
