@@ -2248,15 +2248,13 @@ class Datab extends CI_Model
         $order_by = [];
 
         $search = $this->db->escape_str($search);
-        if ($this->db->dbdriver != 'postgre') {
-            foreach ($fields as $field) {
-                if (!empty($field['fields_name'])) {
-                    $order_by[] = "INSTR({$field['entity_name']}.{$field['fields_name']}, '$search')";
-                } elseif (!empty($field['grids_fields_eval_cache_data'])) {
-                    $order_by[] = "INSTR({$field['grids_fields_eval_cache_data']}, '$search')";
-                } else {
-                    continue;
-                }
+        foreach ($fields as $field) {
+            if (!empty($field['fields_name'])) {
+                $order_by[] = "COALESCE(INSTR({$field['entity_name']}.{$field['fields_name']}, '$search'), 0)";
+            } elseif (!empty($field['grids_fields_eval_cache_data'])) {
+                $order_by[] = "COALESCE(INSTR({$field['grids_fields_eval_cache_data']}, '$search'), 0)";
+            } else {
+                continue;
             }
         }
 

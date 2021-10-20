@@ -93,7 +93,7 @@
 <script src="<?php echo base_url_template("template/adminlte/dist/js/adminlte.min.js?v=" . VERSION); ?>"></script>
 
 <!-- DataTables -->
-<script src="<?php echo base_url_template("template/adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_template("template/adminlte/bower_components/datatables.net/js/jquery.dataTables.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js?v=" . VERSION); ?>"></script>
 
 <!-- Full Calendar 4 -->

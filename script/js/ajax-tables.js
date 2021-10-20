@@ -308,6 +308,7 @@ function initTableAjax(grid) {
             bProcessing: true,
             sServerMethod: 'POST',
             bServerSide: true,
+            searchDelay: 500,
             sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
             aLengthMenu: [
                 [5, 10, 15, 25, 50, 100, 200, 500, -1],
