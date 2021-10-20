@@ -890,8 +890,20 @@ function changeStarsStatus(el) {
 }
 
 function changeLanguage(langId) {
+    var data = { language: langId };
+    try {
+        var token = JSON.parse(atob(datatable.data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    } catch (e) {
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
+    }
+    data[token_name] = token_hash;
+
     $.post(
-        base_url + 'db_ajax/changeLanguage', { language: langId },
+        base_url + 'db_ajax/changeLanguage', data,
         function (out) {
             if (out.success) {
                 changeLanguageTemplate(langId);
@@ -975,9 +987,9 @@ $(function () {
     });
 
     $('body').tooltip({ selector: '[data-toggle=tooltip]', container: 'body' });
-
+    //alert('todo');
     var list = $('<ul class="language-switch pull-right list-inline">');
-    $('.page-content > .layout-container > .page-title').append(list);
+    $('.page-content > .layout-container > .page-title,#js_page_content > .page-title').append(list);
     $.getJSON(base_url + 'get_ajax/langInfo', {}, function (json) {
         var curr = json.current;
         $.each(json.languages, function (i, lang) {

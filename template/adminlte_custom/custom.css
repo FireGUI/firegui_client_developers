@@ -929,3 +929,12 @@ table.dataTable.nowrap td {
 td div.action-list {
   min-width: 62px;
 }
+
+.language-switch.floating {
+    position: absolute;
+    background: #fff;
+    padding: 1px 5px;
+    border: 1px solid #cacaca;
+    border-radius: 5px;
+    top: -2px;
+}
