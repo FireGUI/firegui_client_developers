@@ -26,7 +26,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
     ?>
 
     <div class="table-scrollable table-scrollable-borderless">
-        <table id="<?php echo $grid_id; ?>" class="table table-striped table-condensed">
+        <table id="<?php echo $grid_id; ?>" class="table table-striped table-condensed js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $grid['grids']['grids_append_class']; ?>">
             <thead>
                 <tr>
                     <?php if ($has_bulk) : ?>
