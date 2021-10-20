@@ -101,8 +101,7 @@ class Mail_model extends CI_Model
         }
 
         if ($this->isDeferred()) {
-
-            return $this->queueEmail($to, $headers, $subject, $message); // @todo da mettere gli attachments
+            return $this->queueEmail($to, $headers, $subject, $message, true, $attachments);
         } else {
 
             return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
@@ -119,7 +118,7 @@ class Mail_model extends CI_Model
      * @param array $additional_headers
      * @return bool
      */
-    public function sendFromData($to = '', $template, array $data = [], array $additional_headers = [])
+    public function sendFromData($to = '', $template, array $data = [], array $additional_headers = [], array $attachments = [])
     {
 
         if (empty($template['subject']) || empty($template['template'])) {
@@ -141,11 +140,9 @@ class Mail_model extends CI_Model
         $message = str_replace_placeholders($template['template'], $filteredData);
 
         if ($this->isDeferred()) {
-
-            return $this->queueEmail($to, $headers, $subject, $message);
+            return $this->queueEmail($to, $additional_headers, $subject, $message, true, $attachments);
         } else {
-
-            return $this->sendEmail($to, $headers, $subject, $message);
+            return $this->sendEmail($to, $additional_headers, $subject, $message, true, [], $attachments);
         }
     }
 
@@ -163,7 +160,7 @@ class Mail_model extends CI_Model
      * @param string $subject
      * @return bool
      */
-    public function sendFromView($to, $path, array $data = [], array $additional_headers = [], $subject = null)
+    public function sendFromView($to, $path, array $data = [], array $additional_headers = [], $subject = null, array $attachments = [])
     {
 
         $message = $this->load->view($path, ['data' => $data], true);
@@ -178,9 +175,9 @@ class Mail_model extends CI_Model
         }
         //Verifico se è impostato email_deferred
         if ($this->isDeferred()) {
-            return $this->queueEmail($to, $additional_headers, $subject, $message);
+            return $this->queueEmail($to, $additional_headers, $subject, $message, true, $attachments);
         } else {
-            return $this->sendEmail($to, $additional_headers, $subject, $message);
+            return $this->sendEmail($to, $additional_headers, $subject, $message, true, [], $attachments);
         }
     }
 
@@ -205,13 +202,13 @@ class Mail_model extends CI_Model
      * @param array $additionalHeaders
      * @return bool
      */
-    public function sendMessage($to, $subject, $message, $isHtml = false, array $additionalHeaders = [])
+    public function sendMessage($to, $subject, $message, $isHtml = false, array $additionalHeaders = [], array $attachments = [])
     {
         //Verifico se è impostato email_deferred
         if ($this->isDeferred()) {
-            return $this->queueEmail($to, $additionalHeaders, $subject, $message, $isHtml);
+            return $this->queueEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
         } else {
-            return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml);
+            return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
         }
     }
 
@@ -225,7 +222,7 @@ class Mail_model extends CI_Model
      * @param bool $isHtml
      * @return type
      */
-    private function queueEmail($to, array $headers, $subject, $message, $isHtml = true)
+    private function queueEmail($to, array $headers, $subject, $message, $isHtml = true, array $attachments = [])
     {
         $email_queue_data = [
             'mail_subject' => $subject,
@@ -233,7 +230,8 @@ class Mail_model extends CI_Model
             'mail_to' => $to,
             'mail_headers' => json_encode($headers),
             'mail_is_html' => ($isHtml) ? DB_BOOL_TRUE : DB_BOOL_FALSE,
-            'mail_user' => $this->auth->get(LOGIN_ENTITY . '_id') ? $this->auth->get(LOGIN_ENTITY . '_id') : null
+            'mail_user' => $this->auth->get(LOGIN_ENTITY . '_id') ? $this->auth->get(LOGIN_ENTITY . '_id') : null,
+            'mail_attachments' => ($attachments) ? json_encode($attachments) : null,
         ];
 
         return $this->db->insert('mail_queue', $email_queue_data);
@@ -377,7 +375,9 @@ class Mail_model extends CI_Model
             $body    = $email['mail_body'];
             $is_html = $email['mail_is_html'] == DB_BOOL_TRUE;
 
-            $is_sent = $this->sendEmail($to, $headers, $subject, $body, $is_html);
+            $attachments = ($email['mail_attachments']) ? json_decode($email['mail_attachments'], true) : null;
+
+            $is_sent = $this->sendEmail($to, $headers, $subject, $body, $is_html, $attachments);
 
             // Salvo sempre la data di tentato invio e il log solo se l'invio è fallito
             $this->db->where('mail_id', $email['mail_id'])->update('mail_queue', [
