@@ -788,7 +788,7 @@ class Datab extends CI_Model
 
             //debug($grid['grids_fields']);
             //If $search is present, order by best match before ordering the rest of the data
-            if ($search) {
+            if ($search && defined('USE_INSTR_ORDERBY') && USE_INSTR_ORDERBY === true) {
                 $order_by_prepend = $this->search_like_orderby($search, array_merge($grid['grids_fields'], $preview_fields));
                 if ($order_by) {
                     $order_by = $order_by_prepend . ',' . $order_by;
