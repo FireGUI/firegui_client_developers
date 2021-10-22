@@ -527,6 +527,10 @@ class Apilib
 
             // Inserisco il log
             $this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
+
+            $entity_data =            $this->crmentity->getEntity($entity);
+
+            $this->logActivity(self::LOG_CREATE, ['entity_data' => $entity_data, 'data_id' => $id, 'json_data' => json_encode(['data' => $_data, ['post' => $_POST]])]);
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -584,6 +588,10 @@ class Apilib
 
             $this->savePendingRelations($id);
 
+            if ($this->db->CACHE) {
+                $this->db->CACHE->delete_all();
+            }
+
             // Al pp save non arrivavano i dati old. Li mergio coi dati dell'entità
             $newData = $this->runDataProcessing(
                 $entity,
@@ -593,12 +601,13 @@ class Apilib
                     ['old' => $oldData,]
                 )
             );
-            $this->runDataProcessing($entity, 'update', [
+            $data_for_processing = [
                 'new' => $newData,
                 'old' => $oldData,
                 'diff' => array_diff_assoc_recursive($newData, $oldData),
                 'value_id' => $id
-            ]);
+            ];
+            $this->runDataProcessing($entity, 'update', $data_for_processing);
 
             //TODO: change with specific tags
             $this->clearEntityCache($entity);
@@ -607,6 +616,18 @@ class Apilib
 
             // Inserisco il log
             $this->logSystemAction(self::LOG_EDIT, ['entity' => $entity, 'id' => $id]);
+
+            $entity_data =            $this->crmentity->getEntity($entity);
+
+            $this->logActivity(self::LOG_EDIT, [
+                'entity_data' => $entity_data,
+                'data_id' => $id,
+                'json_data' => json_encode(array_merge(
+                    ['data' => $_data, 'post' => $_POST],
+                    $data_for_processing
+                ))
+            ]);
+
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -2390,6 +2411,19 @@ class Apilib
         $this->addLogEntry($type, t($this->logTitlePatterns[$type]), true, $extra);
     }
 
+    public function logActivity($type, array $extra = [])
+    {
+
+
+        // Il tipo è valido?
+        if (!isset($this->logTitlePatterns[$type])) {
+            throw new UnexpectedValueException(t("Type '%s' not valid", 0, [$type]));
+        }
+
+        // Siamo ok, possiamo inserire
+        $this->addLogActivity($type, true, $extra);
+    }
+
     /**
      * @param int $type
      * @param string $title
@@ -2434,6 +2468,54 @@ class Apilib
         $logEntry['log_crm_extra'] = $logEntry['log_crm_extra'] ? json_encode($logEntry['log_crm_extra']) : null;
 
         $this->db->insert('log_crm', $logEntry);
+    }
+
+    private function addLogActivity($type, $system, array $extra)
+    {
+
+        if (!is_numeric($type)) {
+            throw new InvalidArgumentException('Cannot log the activity: type must be numeric');
+        }
+
+        if (isset(get_instance()->auth) && defined('LOGIN_NAME_FIELD')) {
+            $uid = $this->auth->get('id');
+            $uname = trim(implode(' ', [$this->auth->get(LOGIN_NAME_FIELD), $this->auth->get(LOGIN_SURNAME_FIELD)])) ?: null;
+        } else {
+            $uid = $uname = null;
+        }
+        extract($extra);
+        if ($type == self::LOG_CREATE) {
+            $description = $this->fi_activity->getDescriptionCreate($uname);
+        } elseif ($type == self::LOG_EDIT) {
+            $decode = json_decode($json_data, true);
+            $new = $decode['new'];
+            $old = $decode['old'];
+            $diff = $decode['diff'];
+
+            $description = $this->fi_activity->getDescriptionEditFull($uname, $decode);
+        }
+
+        // Preparo array base
+        $logactivity = [
+            'fi_activities_user_id' => $uid,
+            'fi_activities_user_name' => $uname,
+            'fi_activities_entity_id' => $entity_data['entity_id'],
+            'fi_activities_entity_name' => $entity_data['entity_name'],
+            'fi_activities_data_id' => $data_id,
+            'fi_activities_description' => $description,
+            'fi_activities_ip_addr' => filter_input(INPUT_SERVER, 'REMOTE_ADDR') ?: 'N/A',
+            'fi_activities_user_agent' => filter_input(INPUT_SERVER, 'HTTP_USER_AGENT') ?: null,
+            'fi_activities_referer' => filter_input(INPUT_SERVER, 'HTTP_REFERER') ?: null,
+
+            'fi_activities_date' => date('Y-m-d H:i:s'),  // Server time
+            'fi_activities_type' => (int) $type,
+
+            'fi_activities_json_data' => $json_data,
+        ];
+
+
+
+        $this->db->insert('fi_activities', $logactivity);
     }
 
     /**
