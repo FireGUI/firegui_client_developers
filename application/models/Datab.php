@@ -2209,6 +2209,7 @@ class Datab extends CI_Model
                                 break;
 
                             case 'INT':
+                            case 'INTEGER':
                                 if (is_numeric($chunk) && $chunk <= $maxint4) {
                                     $i_chunk = (int) $chunk;
                                     $inner_where[] = "({$field['fields_name']} = '{$i_chunk}')";
