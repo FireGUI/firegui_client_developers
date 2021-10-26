@@ -339,8 +339,11 @@ function refreshLayoutBox(lb_id, value_id) {
 
     var data_post = [];
     data_post.push({ name: token_name, value: token_hash });
-
-    $.ajax(base_url + 'get_ajax/get_layout_box_content/' + lb_id + '/' + value_id, {
+    var get_params = lb.data('get_pars');
+    if (get_params) {
+        get_params = '?' + get_params;
+    }
+    $.ajax(base_url + 'get_ajax/get_layout_box_content/' + lb_id + '/' + value_id + get_params, {
         data: data_post,
         type: 'POST',
         async: true,
