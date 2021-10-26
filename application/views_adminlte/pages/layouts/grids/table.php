@@ -104,6 +104,14 @@ if ($grid['grids']['grids_pagination']) {
                             ?>
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
+                        <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                            <td><?php $this->load->view('box/grid/actions', array(
+                                    'links' => $grid['grids']['links'],
+                                    'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                                    'row_data' => $dato,
+                                    'grid' => $grid['grids'],
+                                )); ?></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
