@@ -755,7 +755,7 @@ class Apilib
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
         $this->db->trans_start();
-        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id]);
+        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id, 'entity' => $entity]);
         if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
             $this->db->where($entity . '_id', $id)->update($entity, [$entityCustomActions['soft_delete_flag'] => DB_BOOL_TRUE]);
         } else {
@@ -802,7 +802,7 @@ class Apilib
 
             $this->db->delete($entity, [$entity . '_id' => $id]);
         }
-        $this->runDataProcessing($entity, 'delete', ['id' => $id]);
+        $this->runDataProcessing($entity, 'delete', ['id' => $id, 'entity' => $entity]);
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
@@ -2150,8 +2150,14 @@ class Apilib
         }
 
         $this->preLoadDataProcessors();
-        if (!empty($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype])) {
-            foreach ($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype] as $function) {
+
+        $dataProcessToRun = array_merge(
+            !empty($this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype]) ? $this->_loadedDataProcessors[$this->processMode][$entity_id][$pptype] : [],
+            !empty($this->_loadedDataProcessors[$this->processMode]['-1'][$pptype]) ? $this->_loadedDataProcessors[$this->processMode]['-1'][$pptype] : [],
+        );
+
+        if (!empty($dataProcessToRun)) {
+            foreach ($dataProcessToRun as $function) {
                 try {
                     if (empty($function['fi_events_post_process_id'])) {
                         $this->runEvent($function, $data);
@@ -2211,6 +2217,10 @@ class Apilib
                     $crm = $function['post_process_crm'];
                     $api = $function['post_process_api'];
                     $apilib = $function['post_process_apilib'];
+                }
+
+                if (empty($e_id)) {
+                    $e_id = '-1';
                 }
 
                 if ($crm == DB_BOOL_TRUE) {
