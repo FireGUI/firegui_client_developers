@@ -526,11 +526,18 @@ class Apilib
             $_POST = $this->originalPost;
 
             // Inserisco il log
-            $this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
+            //20211028 - Deprecated bcause now creations are managed by logActivity
+            //$this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
 
             $entity_data =            $this->crmentity->getEntity($entity);
 
-            $this->logActivity(self::LOG_CREATE, ['entity_data' => $entity_data, 'data_id' => $id, 'json_data' => json_encode(['data' => $_data, ['post' => $_POST]])]);
+            $this->logActivity(self::LOG_CREATE, [
+                'entity_data' => $entity_data,
+                'data_id' => $id,
+                'json_data' => json_encode(['data' => $_data, ['post' => $_POST]]),
+                'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
+
+            ]);
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -615,7 +622,8 @@ class Apilib
             $_POST = $this->originalPost;
 
             // Inserisco il log
-            $this->logSystemAction(self::LOG_EDIT, ['entity' => $entity, 'id' => $id]);
+            //20211028 - Deprecated and managed by logActivity
+            //$this->logSystemAction(self::LOG_EDIT, ['entity' => $entity, 'id' => $id]);
 
             $entity_data =            $this->crmentity->getEntity($entity);
 
@@ -625,7 +633,8 @@ class Apilib
                 'json_data' => json_encode(array_merge(
                     ['data' => $_data, 'post' => $_POST],
                     $data_for_processing
-                ))
+                )),
+                'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
             ]);
 
             return $returnRecord ? $this->view($entity, $id) : $id;
@@ -2494,6 +2503,9 @@ class Apilib
             $uid = $uname = null;
         }
         extract($extra);
+
+
+
         if ($type == self::LOG_CREATE) {
             $description = $this->fi_activity->getDescriptionCreate($uname);
         } elseif ($type == self::LOG_EDIT) {
@@ -2502,7 +2514,7 @@ class Apilib
             $old = $decode['old'];
             $diff = $decode['diff'];
 
-            $description = $this->fi_activity->getDescriptionEditFull($uname, $decode);
+            $description = $this->fi_activity->getDescriptionEditFull($uname, $decode, $extra);
         }
 
         // Preparo array base
