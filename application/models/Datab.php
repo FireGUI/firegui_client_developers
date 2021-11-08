@@ -523,7 +523,7 @@ class Datab extends CI_Model
 
 
                 foreach ($fields as $field) {
-                    if ($field['fields_multilingual'] == DB_BOOL_TRUE) { //If multilanguage, override value with original json
+                    if ($field['fields_multilingual'] == DB_BOOL_TRUE && $edit_id) { //If multilanguage, override value with original json
                         $entity = $this->crmentity->getEntity($field['fields_entity_id']);
 
                         $value_json = $this->db
