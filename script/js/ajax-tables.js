@@ -287,6 +287,9 @@ function initTableAjax(grid) {
         var token_name = token.name;
         var token_hash = token.hash;
     }
+    var custom_url = oDataTable.data('custom_url');
+    var ajaxSourceUrl = (custom_url) ? custom_url : base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append;
+
     var datatable = oDataTable
         .on('error.dt', function (e, settings, techNote, message) {
 
@@ -309,7 +312,7 @@ function initTableAjax(grid) {
             sServerMethod: 'POST',
             bServerSide: true,
             searchDelay: 500,
-            sAjaxSource: base_url + 'get_ajax/get_datatable_ajax/' + oDataTable.data('grid-id') + '/' + valueID + '?' + getParameters + '&where_append=' + where_append,
+            sAjaxSource: ajaxSourceUrl,
             aLengthMenu: [
                 [5, 10, 15, 25, 50, 100, 200, 500, -1],
                 [5, 10, 15, 25, 50, 100, 200, 500, 'All'],
