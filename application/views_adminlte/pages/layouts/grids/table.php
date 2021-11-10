@@ -79,7 +79,7 @@ if ($grid['grids']['grids_pagination']) {
 
                 <?php endforeach; ?>
 
-                <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                <?php if (grid_has_action($grid['grids'])) : ?>
                     <th data-prevent-order><?php e('Actions'); ?></th>
                 <?php endif; ?>
             </tr>
@@ -104,7 +104,7 @@ if ($grid['grids']['grids_pagination']) {
                             ?>
                             <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
                         <?php endforeach; ?>
-                        <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                        <?php if (grid_has_action($grid['grids'])) : ?>
                             <td><?php $this->load->view('box/grid/actions', array(
                                     'links' => $grid['grids']['links'],
                                     'id' => $dato[$grid['grids']['entity_name'] . "_id"],
@@ -132,7 +132,7 @@ if ($grid['grids']['grids_pagination']) {
                         </th>
                     <?php endforeach; ?>
 
-                    <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                    <?php if (grid_has_action($grid['grids'])) : ?>
                         <th data-prevent-order>&nbsp;</th>
                     <?php endif; ?>
 
