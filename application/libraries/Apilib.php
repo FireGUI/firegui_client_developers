@@ -529,15 +529,18 @@ class Apilib
             //20211028 - Deprecated bcause now creations are managed by logActivity
             //$this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
 
-            $entity_data =            $this->crmentity->getEntity($entity);
+            if (defined('LOG_ENTITIES_ARRAY') && in_array($entity, LOG_ENTITIES_ARRAY)) {
+                $entity_data =            $this->crmentity->getEntity($entity);
 
-            $this->logActivity(self::LOG_CREATE, [
-                'entity_data' => $entity_data,
-                'data_id' => $id,
-                'json_data' => json_encode(['data' => $_data, ['post' => $_POST]]),
-                'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
+                $this->logActivity(self::LOG_CREATE, [
+                    'entity_data' => $entity_data,
+                    'data_id' => $id,
+                    'json_data' => json_encode(['data' => $_data, ['post' => $_POST]]),
+                    'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
 
-            ]);
+                ]);
+            }
+
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -624,18 +627,21 @@ class Apilib
             // Inserisco il log
             //20211028 - Deprecated and managed by logActivity
             //$this->logSystemAction(self::LOG_EDIT, ['entity' => $entity, 'id' => $id]);
+            if (
+                defined('LOG_ENTITIES_ARRAY') && in_array($entity, LOG_ENTITIES_ARRAY)
+            ) {
+                $entity_data =            $this->crmentity->getEntity($entity);
 
-            $entity_data =            $this->crmentity->getEntity($entity);
-
-            $this->logActivity(self::LOG_EDIT, [
-                'entity_data' => $entity_data,
-                'data_id' => $id,
-                'json_data' => json_encode(array_merge(
-                    ['data' => $_data, 'post' => $_POST],
-                    $data_for_processing
-                )),
-                'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
-            ]);
+                $this->logActivity(self::LOG_EDIT, [
+                    'entity_data' => $entity_data,
+                    'data_id' => $id,
+                    'json_data' => json_encode(array_merge(
+                        ['data' => $_data, 'post' => $_POST],
+                        $data_for_processing
+                    )),
+                    'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
+                ]);
+            }
 
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
@@ -2532,7 +2538,7 @@ class Apilib
             'fi_activities_date' => date('Y-m-d H:i:s'),  // Server time
             'fi_activities_type' => (int) $type,
 
-            'fi_activities_json_data' => $json_data,
+            //'fi_activities_json_data' => $json_data,
         ];
 
 

@@ -162,53 +162,53 @@ class Main extends MY_Controller
         if (!$this->datab->can_access_layout($layout_id)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->stampa($pagina, $value_id);
-            die();
-        }
-
-        //If layout is module dependent, preload translations
-        $layout = $this->layout->getLayout($layout_id);
-        if ($layout['layouts_module']) {
-            $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], @array_values($this->lang->is_loaded)[0]));
-            $this->layout->setLayoutModule($layout['layouts_module']);
-        }
-
-        // Build layout, if null then layout is not accessible due to user permissions
-        $dati = $this->datab->build_layout($layout_id, $value_id);
-        if (is_null($dati)) {
-            $pagina = $this->load->view("pages/layout_unaccessible", null, true);
-            $this->layout->setLayoutModule();
-            $this->stampa($pagina, $value_id);
         } else {
 
-            // I have 2 type of layouts: PDF or standard
-            if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
+            //If layout is module dependent, preload translations
+            $layout = $this->layout->getLayout($layout_id);
+            if ($layout['layouts_module']) {
+                $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], @array_values($this->lang->is_loaded)[0]));
+                $this->layout->setLayoutModule($layout['layouts_module']);
+            }
 
-                if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
-                    $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-                } else {
-                    $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-                }
-
-                $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
-
-                $contents = file_get_contents($pdfFile, true);
-                $pdf_b64 = base64_encode($contents);
-
-                $file_name = url_title($dati['layout_container']['layouts_title'], '-', true) . '_';
-
-                header('Content-Type: application/pdf');
-                header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
-                $this->layout->setLayoutModule();
-                echo base64_decode($pdf_b64);
-            } else {
-                $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
-                $dati['current_page'] = "layout_{$layout_id}";
-                $dati['show_title'] = true;
-                $dati['layout_id'] = $layout_id;
-                $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
-
+            // Build layout, if null then layout is not accessible due to user permissions
+            $dati = $this->datab->build_layout($layout_id, $value_id);
+            if (is_null($dati)) {
+                $pagina = $this->load->view("pages/layout_unaccessible", null, true);
                 $this->layout->setLayoutModule();
                 $this->stampa($pagina, $value_id);
+            } else {
+
+                // I have 2 type of layouts: PDF or standard
+                if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
+
+                    if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
+                        $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+                    } else {
+                        $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+                    }
+
+                    $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
+
+                    $contents = file_get_contents($pdfFile, true);
+                    $pdf_b64 = base64_encode($contents);
+
+                    $file_name = url_title($dati['layout_container']['layouts_title'], '-', true) . '_';
+
+                    header('Content-Type: application/pdf');
+                    header('Content-disposition: inline; filename="' . $file_name . time() . '.pdf"');
+                    $this->layout->setLayoutModule();
+                    echo base64_decode($pdf_b64);
+                } else {
+                    $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
+                    $dati['current_page'] = "layout_{$layout_id}";
+                    $dati['show_title'] = true;
+                    $dati['layout_id'] = $layout_id;
+                    $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
+
+                    $this->layout->setLayoutModule();
+                    $this->stampa($pagina, $value_id);
+                }
             }
         }
     }
