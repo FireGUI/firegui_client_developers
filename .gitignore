@@ -31,22 +31,19 @@ custom_views/*
 controllers/custom/*
 
 uploads/*
-.idea/*
-.AppleDouble/*
+.idea
 .AppleDouble
 .DS_Store
-.history/*
-nbproject/*
+.history
+.vscode
+nbproject
 
 .project
 .buildpath
 .travis.yml
-/TMP/firegui_client_release107/nbproject/private/
 
 application/tests/*
 
 
 template/build/*
 !template/build/.gitkeep 
-
-vendor/kenjis/*
