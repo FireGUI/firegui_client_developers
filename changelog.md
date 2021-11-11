@@ -1,10 +1,20 @@
-Changelog version 2.2.6
+Changelog version 2.2.7
  
-Restored multilingual support for adminlte theme
-Added classes to simple table action
-Added attachements to queue deferred
-Bugfix for order by when search like enabled
-Added 500ms delay to datatable search
-Bugfix datatable DataTable.util.throttle function
-Added delete of logs files older than 7 days
-Fix general helper
+Moved javascript variables with base url in body as data attribute to avoid cross domain problems
+Added possibility to specified entities to log in enviroment
+Bugfix for layout unaccesbile showing blank page
+Removed json_data from activity
+Bugfix in standard tables for column actions
+fix full calendar json sidebar date filter
+Removed builder_console toolbar when not admin
+Added possibility to specify custom url in grids
+Fix datab edit multilanguage field
+Removed loSystemAction for creation and edit
+Better logActivity function to avoid long descriptions with text area fields
+logActivity now joins tables referred from an integer field
+Added possibility to create events for every entity
+Added get parameters in refreshLayoutBox function
+Added grids actions in table view
+Bugfix for column missing in edit mode when bulk mode is active
+Bugfix when search in integer values
+New activity log functionality - Beta
