@@ -14,7 +14,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.2.7');
+defined('VERSION') or define('VERSION', '2.2.7');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -78,6 +78,7 @@ define('CRON_TYPES', serialize(array(
  * Colors palette field
  * ============ */
 define('COLORS_PALETTE', array(
+    'Blue default' => '#222d32',
     'Blue speech' => '#3c40c6',
     'Blue disco' => '#0fbcf9',
     'Blue devil' => '#227093',
