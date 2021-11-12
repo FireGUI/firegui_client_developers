@@ -73,16 +73,6 @@ $('body').on('click', '.js_ajax_content', function (e) {
     }
 });
 
-/* Variabile globale per tracciare tutte le mappe create */
-var token = JSON.parse(atob($('body').data('csrf')));
-var token_name = token.name;
-var token_hash = token.hash;
-
-var base_url = $('body').data('base_url');
-var base_url_template = $('body').data('base_url_template');
-var base_url_scripts = $('body').data('base_url_scripts');
-var base_url_uploads = $('body').data('base_url_uploads');
-var base_url_builder = $('body').data('base_url_builder');
 
 function destroyCkeditorInstances(instance = null) {
     try {
@@ -100,9 +90,12 @@ function destroyCkeditorInstances(instance = null) {
 
     }
 }
-
+var initializing = false;
 function initComponents(container, reset = false) {
-
+    if (initializing && !reset) {
+        return;
+    }
+    initializing = true;
     if (reset) {
         try {
             $('select', container).each(function () {
@@ -705,6 +698,7 @@ function initComponents(container, reset = false) {
     /**
          * Maps
          */
+
     mapsInit();    /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...
@@ -731,6 +725,8 @@ function initComponents(container, reset = false) {
      * modo da attivare gestione dimensioni di grafici e varie
      */
     $(window).trigger('resize');
+
+    initializing = false;
 }
 
 /*

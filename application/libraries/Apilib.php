@@ -485,8 +485,12 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
+
+
         //rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
+
+        $this->autoFillSourceFields($fields, $_data);
 
         foreach ($fields as $field) {
             if ($field['fields_draw_html_type'] == 'input_password' && empty($_data[$field['fields_name']])) {
@@ -566,7 +570,7 @@ class Apilib
 
         // rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
-
+        $this->autoFillSourceFields($fields, $_data);
         foreach ($fields as $field) {
             if ($field['fields_draw_html_type'] == 'input_password' && empty($_data[$field['fields_name']])) {
                 unset($_data[$field['fields_name']]);
@@ -742,8 +746,66 @@ class Apilib
 
         return $data;
     }
+    private function getFieldSourceValue($field, $value, $fields)
+    {
+        $entity_id = $field['fields_entity_id'];
+        $entity = $this->datab->get_entity($entity_id); //field referencing entity
+        //$entity_fields = $this->datab->get_entity_fields($entity_id); //field referencing entity fields
+        $field_ref = $field['fields_ref']; //projects
+        $field_source = $field['fields_source']; //tickets_customer_id
+        $field_source_data = false;
+        foreach ($fields as $_field) {
+            if ($_field['fields_name'] == $field_source) {
+                $field_source_data = $_field;
+                break;
+            }
+        }
+        if (!$field_source_data) {
+            throw new ApilibException("Field source '{$field_source}' not found in entity {$entity['entity_name']}.");
+        }
+        $field_source_ref = $field_source_data['fields_ref'];
 
+        if (!$field_source_ref) {
+            throw new ApilibException("Field source ref of {$field_source_data['fields_name']} not found.");
+        }
+        //debug($field_ref, true);
+        //Search the field in $field_ref that reference $field_source_ref
+        $field_referencing_source_ref = false;
+        foreach ($this->datab->get_entity_fields($field_ref) as $_field) {
+            if ($_field['fields_ref'] == $field_source_ref) {
+                $field_referencing_source_ref = $_field;
+            }
+        }
+        if (!$field_referencing_source_ref) {
+            throw new ApilibException("Field referencing '$field_source_ref' not found.");
+        }
+        $field_referencing_source_ref_name = $field_referencing_source_ref['fields_name'];
+        $ref_value = $this->db
+            ->select($field_referencing_source_ref['fields_name'])
+            ->where($field_ref . '_id', $value)
+            ->get($field_ref)
+            ->row()->$field_referencing_source_ref_name;
 
+        return $ref_value;
+    }
+    private function autoFillSourceFields($fields, &$data)
+    {
+        foreach ($fields as $field) {
+            if ($field['fields_source'] && empty($data[$field['fields_source']])) {
+                if (!empty($data[$field['fields_name']])) {
+                    $fill_value =
+                        $this->getFieldSourceValue($field, $data[$field['fields_name']], $fields);
+                    $data[$field['fields_source']] = $fill_value;
+                    //Retry for all fields because now &$data has changed and potential has more fields values
+                    if ($fill_value) {
+                        $this->autoFillSourceFields($fields, $data);
+                    }
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
 
     /**
      * Cancella il record selezionate
@@ -1273,9 +1335,6 @@ class Apilib
             $rule = [];
 
             if (in_array($field['fields_name'], array_keys($originalData))) { //Valido solo i nuovi campi passati dal form, non quelli vecchi già salvati
-
-
-
                 // Enter the required rule for the fields that require it
                 // (a password is required only if creating the record for the
                 // first time)

@@ -630,7 +630,7 @@ if (!function_exists('normalize_path')) {
 }
 if (!function_exists('echo_flush')) {
 
-    function echo_flush($str)
+    function echo_flush($str, $new_line = '')
     {
         $CI = get_instance();
         if (!$CI->input->is_cli_request()) {
@@ -645,6 +645,11 @@ if (!function_exists('echo_flush')) {
             );
             $str = str_ireplace($newlineTags, PHP_EOL, $str);
             echo $str;
+            if ($new_line === 1) {
+                echo '<br />';
+            } else {
+                echo $new_line;
+            }
             flush();
             ob_flush();
         }

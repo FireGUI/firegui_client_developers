@@ -7,7 +7,7 @@ function tabsInit() {
             // volta
 
             var tabId = $(this).data('tabid');
-            console.log(tabId);
+            //console.log(tabId);
 
 
             var tabToggles = $('> ul > li > a', $(this));
@@ -54,7 +54,7 @@ function tabsInit() {
 
                     //     }
                     // });
-                    console.log($(this).attr('href'));
+                    //console.log($(this).attr('href'));
                     initComponents($($(this).attr('href')));
                 });
             }

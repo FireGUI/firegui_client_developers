@@ -1132,3 +1132,9 @@ $lang['<img src=\"http://localhost/firegui_client_developers/template/common/img
 $lang['<img src=\"http://localhost/firegui_client_developers/template/common/img/flags/es.png\" alt=\"Español\" class=\"lang-flag\" /> Textarea multi'] = '<img src=\"http://localhost/firegui_client_developers/template/common/img/flags/es.png\" alt=\"Español\" class=\"lang-flag\" /> Textarea multi';
 $lang['<img src=\"http://localhost/firegui_client_developers/template/common/img/flags/de.png\" alt=\"Deutsch\" class=\"lang-flag\" /> Textarea multi'] = '<img src=\"http://localhost/firegui_client_developers/template/common/img/flags/de.png\" alt=\"Deutsch\" class=\"lang-flag\" /> Textarea multi';
 $lang['Sviluppo'] = 'Sviluppo';
+$lang['Ordini Cliente'] = 'Ordini Cliente';
+$lang['Ordini Fornitore'] = 'Ordini Fornitore';
+$lang['Riepilogativa materiali'] = 'Riepilogativa materiali';
+$lang['Template Documenti'] = 'Template Documenti';
+$lang['Dashboard Tasks'] = 'Dashboard Tasks';
+$lang['Dashboard Timesheets'] = 'Dashboard Timesheets';

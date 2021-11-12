@@ -65,9 +65,12 @@ class Fi_activity extends CI_Model
                 //Check for fields_ref table
                 if ($field_data['fields_ref']) {
                     $idField = $field_data['fields_ref'] . '_id';
-
-                    $val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val))[$val];
-                    $oldval = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $oldval))[$oldval];
+                    if ($val) {
+                        $val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val))[$val];
+                    }
+                    if ($oldval) {
+                        $oldval = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $oldval))[$oldval];
+                    }
                 }
 
                 if (in_array($field_type, self::LOG_NUMBER_FORMAT_FIELD_TYPES)) {
