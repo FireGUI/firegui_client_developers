@@ -138,6 +138,7 @@
 
 <!-- tinymce -->
 <script src="<?php echo base_url_scripts('script/global/plugins/tinymce/') ?>tinymce.min.js"></script>
+<script src="<?php echo base_url_scripts('script/global/plugins/tinymce/') ?>themes/silver/theme.min.js"></script>
 <script src="<?php echo base_url_scripts('script/global/plugins/tinymce/') ?>jquery.tinymce.min.js"></script>
 
 <!-- ADMINLTE SCRIPTS -->
