@@ -136,6 +136,9 @@
 
 <script src="<?php echo base_url_template('script/global/plugins/dropzone/dropzone.js'); ?>"></script>
 
+<!-- tinymce -->
+<script src="<?php echo base_url_scripts('script/global/plugins/tinymce/') ?>tinymce.min.js"></script>
+<script src="<?php echo base_url_scripts('script/global/plugins/tinymce/') ?>jquery.tinymce.min.js"></script>
 
 <!-- ADMINLTE SCRIPTS -->
 <script src="<?php echo base_url_template("template/adminlte/dist/js/adminlte_components.js?v=" . VERSION); ?>"></script>
@@ -168,6 +171,8 @@
 <script src="<?php echo base_url_scripts("script/js/charts/funnel_chart.js?v=" . VERSION); ?>"></script>
 
 <script src="<?php echo base_url_scripts("script/js/charts/chartjs_customizable.js?v=" . VERSION); ?>"></script>
+
+
 
 <?php if ($this->auth->check()) :  ?>
   <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
