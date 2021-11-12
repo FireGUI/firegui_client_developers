@@ -26,7 +26,7 @@
                     continue;
                 }
                 ?>
-                <span class="custom-action" <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='{$custom_action['grids_actions_name']}'" : null; ?>><?php echo $action; ?></span>
+                <span class="custom-action" <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='" . t($custom_action['grids_actions_name']) . "'" : null; ?>><?php echo $action; ?></span>
             <?php else : ?>
 
                 <?php
