@@ -25,6 +25,7 @@ function load_marker(map, url, clusterize) {
         type: "POST",
         dataType: "json",
         data: data,
+        async: false,
         url: url,
         success: function (data) {
 
@@ -81,18 +82,23 @@ function load_marker(map, url, clusterize) {
             //console.log(map._container.id);
             //alert(map._container.id);
             if ($('#' + map._container.id).length > 0) {
-                map.addLayer(markers);
+                try {
+                    map.addLayer(markers);
 
 
 
-                if (group.length > 0) {
+                    if (group.length > 0) {
 
-                    map.fitBounds(group);
+                        map.fitBounds(group);
 
+                    }
+
+
+                    map.invalidateSize();
+                } catch (e) {
+                    setTimeout(function () { mapsInit(); }, 500);
                 }
 
-
-                map.invalidateSize();
             }
 
 
@@ -105,68 +111,72 @@ function load_marker(map, url, clusterize) {
 }
 function mapsInit() {
 
-    //Destroy all maps
-    for (var i in L.maps) {
-        //console.log(L.maps[i]);
-    }
+    $(() => {
+        //Destroy all maps
+        for (var i in L.maps) {
+            //console.log(L.maps[i]);
+        }
 
 
-    var token = JSON.parse(atob($('body').data('csrf')));
-    var token_name = token.name;
-    var token_hash = token.hash;
+        var token = JSON.parse(atob($('body').data('csrf')));
+        var token_name = token.name;
+        var token_hash = token.hash;
 
-    $(function () {
-        'use strict';
+        $(function () {
+            'use strict';
 
-        $('.js_map:visible').each(function () {
+            $('.js_map:visible').each(function () {
 
-            var url = $(this).data('ajaxurl');
-            var clusterize = $(this).data('clusters');
-
-
-            if (L.maps[$(this).attr('id')]) {
-                var map = L.maps[$(this).attr('id')];
-                map.off();
-                map.remove();
-            }
-            var map = L.map($(this).attr('id'), {
-                scrollWheelZoom: false,
-                fullscreenControl: {
-                    pseudoFullscreen: false
-                },
-                maxZoom: 16
-            }).setView([40.730610, -73.935242], $(this).data('initzoom'));
-            L.maps[$(this).attr('id')] = map;
+                var url = $(this).data('ajaxurl');
+                var clusterize = $(this).data('clusters');
 
 
-
-
-            var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-
-            var baseMaps = {
-                "OpenStreetMap": osm,
-            };
-            var overlays = {};
-            L.control.layers(baseMaps, overlays, {
-                position: 'bottomleft'
-            }).addTo(map);
-
-            //Set default
-            osm.addTo(map); //  set as 
-
-
-
-            load_marker(map, url, clusterize);
-
-
-
-        });
-        $(window).on('resize', function () {
-            for (var i in L.maps) {
-                if ($('#' + L.maps[i]._container.id).length > 0) {
-                    L.maps[i].invalidateSize();
+                if (L.maps[$(this).attr('id')]) {
+                    var map = L.maps[$(this).attr('id')];
+                    map.off();
+                    map.remove();
                 }
-            }
+
+                var map = L.map($(this).attr('id'), {
+                    scrollWheelZoom: false,
+                    fullscreenControl: {
+                        pseudoFullscreen: false
+                    },
+                    maxZoom: 16
+                }).setView([40.730610, -73.935242], $(this).data('initzoom'));
+                L.maps[$(this).attr('id')] = map;
+
+
+
+
+                var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+
+                var baseMaps = {
+                    "OpenStreetMap": osm,
+                };
+                var overlays = {};
+                L.control.layers(baseMaps, overlays, {
+                    position: 'bottomleft'
+                }).addTo(map);
+
+                //Set default
+                osm.addTo(map); //  set as 
+
+
+
+                load_marker(map, url, clusterize);
+
+
+
+            });
+            $(window).on('resize', function () {
+                for (var i in L.maps) {
+                    if ($('#' + L.maps[i]._container.id).length > 0) {
+                        L.maps[i].invalidateSize();
+                    }
+                }
+            });
         });
     });
+
 }

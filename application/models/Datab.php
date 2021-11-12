@@ -3089,7 +3089,16 @@ class Datab extends CI_Model
                 }
 
                 $grid_layout = $grid['grids']['grids_layout'] ?: DEFAULT_LAYOUT_GRID;
-                return $this->load->view("pages/layouts/grids/{$grid_layout}", array('grid' => $grid, 'sub_grid' => $sub_grid, 'grid_data' => $grid_data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
+
+
+                return $this->load->view("pages/layouts/grids/{$grid_layout}", array(
+                    'grid' => $grid,
+                    'sub_grid' => $sub_grid,
+                    'grid_data' => $grid_data,
+                    'value_id' => $value_id,
+                    'layout_data_detail' => $layoutEntityData,
+                    'where' => false,
+                ), true);
 
             case "form":
                 $form_id = $contentRef;

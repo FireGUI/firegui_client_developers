@@ -65,11 +65,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
         <link rel="stylesheet" href="<?php echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.css?v={$this->config->item('version')}"); ?>">
 
         <?php $this->layout->addDinamicJavascript([
-            "var base_url = '" . base_url() . "';",
-            "var base_url_admin = '" . base_url_admin() . "';",
-            "var base_url_template = '" . base_url_template() . "';",
-            "var base_url_scripts = '" . base_url_scripts() . "';",
-            "var base_url_uploads = '" . base_url_uploads() . "';",
+
             "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
             "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
         ], 'config.js'); ?>
@@ -225,7 +221,8 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
 
     </head>
 
-    <body class="hold-transition login-page">
+    <body class="hold-transition login-page" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-base_url="<?php echo base_url(); ?>" data-base_url_admin="<?php echo base_url_admin(); ?>" data-base_url_template="<?php echo base_url_template(); ?>" data-base_url_scripts="<?php echo base_url_scripts(); ?>" data-base_url_uploads="<?php echo base_url_uploads(); ?>" data-base_url_builder="<?php echo FIREGUI_BUILDER_BASEURL; ?>">
+
         <div class="background_img">
             <!-- New login -->
             <div class="login-box login-box-security js_easylogin_page" data-user="<?php echo base64_encode(json_encode([
@@ -280,6 +277,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
 
         <!-- COMMON PLUGINS -->
         <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v={$this->config->item('version')}"); ?>"></script>
+        <script src="<?php echo base_url_scripts("script/js/grep_config.js?v=" . VERSION); ?>"></script>
         <script src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . $this->config->item('version')); ?>"></script>
         <script src="<?php echo base_url_template("template/adminlte/plugins/iCheck/icheck.min.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- CUSTOM COMPONENTS -->
