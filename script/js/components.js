@@ -127,7 +127,8 @@ function initComponents(container, reset = false) {
 
     var tinymce_config = {
         selector: 'textarea.js_tinymce',
-        height: 700,
+        height: 400,
+        resize: true,
         autosave_ask_before_unload: false,
         powerpaste_allow_local_images: true,
         plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons',
