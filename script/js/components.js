@@ -91,6 +91,51 @@ function destroyCkeditorInstances(instance = null) {
     }
 }
 
+function fillEditor(selector, content) {
+    if (!(selector instanceof jQuery)) {
+        selector = $(selector);
+    }
+
+    var selector_id = selector.attr('id');
+
+    if (tinymce.get(selector_id)) {
+        tinymce.activeEditor.setContent(content);
+    } else {
+        selector.val(content);
+    }
+}
+
+function initTinymce(container = null) {
+    if (!container) {
+        container = $('body');
+    }
+
+    var tinymce_config = {
+        selector: 'textarea.js_tinymce',
+        height: 400,
+        resize: true,
+        autosave_ask_before_unload: false,
+        powerpaste_allow_local_images: true,
+        plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons',
+        menubar: 'file edit view insert format tools table',
+        toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+        toolbar_sticky: true,
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+    };
+
+    $('textarea.js_tinymce', container).each(function() {
+        var tinymce_id = $(this).attr('id');
+
+        if (tinymce.get(tinymce_id)) {
+            tinymce.remove();
+        }
+
+        tinymce_config.selector = 'textarea#' + tinymce_id;
+
+        tinymce.init(tinymce_config);
+    });
+}
+
 var initializing = false;
 
 function initComponents(container, reset = false) {
@@ -125,29 +170,7 @@ function initComponents(container, reset = false) {
         ];
     });
 
-    var tinymce_config = {
-        selector: 'textarea.js_tinymce',
-        height: 700,
-        autosave_ask_before_unload: false,
-        powerpaste_allow_local_images: true,
-        plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons',
-        menubar: 'file edit view insert format tools table',
-        toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-        toolbar_sticky: true,
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-    };
-
-    $('textarea.js_tinymce', container).each(function() {
-        var tinymce_id = $(this).attr('id');
-
-        if (tinymce.get(tinymce_id)) {
-            tinymce.remove();
-        }
-
-        tinymce_config.selector = 'textarea#' + tinymce_id;
-
-        tinymce.init(tinymce_config);
-    });
+    initTinymce(container);
 
     /*
      * Form Multiple key values
