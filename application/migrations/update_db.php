@@ -40,3 +40,6 @@ if ($this->db->dbdriver != 'postgres') {
     //Pg
     $updates['2.0.0'] = ["ALTER TABLE menu ADD COLUMN menu_html_attr VARCHAR;"];
 }
+$updates['2.2.7'] = [
+    "UPDATE layouts SET layouts_show_header = '" . DB_BOOL_FALSE . "' WHERE layouts_show_header IS NULL",
+];
