@@ -18,3 +18,18 @@ Added grids actions in table view
 Bugfix for column missing in edit mode when bulk mode is active
 Bugfix when search in integer values
 New activity log functionality - Beta
+fix tinymce removed deprecated plugin option
+tinymce assets
+replaced wysiwyg ckeditor with tinymce 5
+Edited echo_flush function
+  Added LOG_ENTITIES_ARRAY as constants in enviroment
+  Added possibility to choose entities to be logged
+  Bugfix for autofilling fields_source records
+  Bugfix for where_append in grid table standard
+  Added baseurl variable in easylogin
+  Bugfix for simple pie chart
+  Optimized initComponents and mapsInit functions
+  Removed uneusefull console.log
+Added Blue default hex code in COLORS_PALETTE
+new error page
+fix custom entity (type custom) title translation
