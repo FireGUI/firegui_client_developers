@@ -93,9 +93,11 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             },
 
             eventClick: function(evt) {
-                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + evt.event.id, {}, function() {
-                    calendar.refetchEvents();
-                });
+                <?php if (!empty($data['update_form'])) : ?>
+                    loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + evt.event.id, {}, function() {
+                        calendar.refetchEvents();
+                    });
+                <?php endif; ?>
                 return false;
             },
 
