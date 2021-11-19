@@ -65,6 +65,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             locale: '<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>',
             selectHelper: true,
             minTime: minTime,
+            forceEventDuration: true, // @links: https://github.com/fullcalendar/fullcalendar/issues/2655#issuecomment-223838926
             maxTime: maxTime,
             timeFormat: 'HH:mm',
             axisFormat: 'HH:mm',
