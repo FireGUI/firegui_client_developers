@@ -22,14 +22,26 @@ fix tinymce removed deprecated plugin option
 tinymce assets
 replaced wysiwyg ckeditor with tinymce 5
 Edited echo_flush function
-  Added LOG_ENTITIES_ARRAY as constants in enviroment
-  Added possibility to choose entities to be logged
-  Bugfix for autofilling fields_source records
-  Bugfix for where_append in grid table standard
-  Added baseurl variable in easylogin
-  Bugfix for simple pie chart
-  Optimized initComponents and mapsInit functions
-  Removed uneusefull console.log
+Added LOG_ENTITIES_ARRAY as constants in enviroment
+Added possibility to choose entities to be logged
+Bugfix for autofilling fields_source records
+Bugfix for where_append in grid table standard
+Added baseurl variable in easylogin
+Bugfix for simple pie chart
+Optimized initComponents and mapsInit functions
+Removed uneusefull console.log
 Added Blue default hex code in COLORS_PALETTE
 new error page
 fix custom entity (type custom) title translation
+New check in clear logs files
+Bugfix for ajax inline edit and show action parameter
+Support tables now order by entity name
+Added possibility to override profile layout
+Added lengthMenu of 20
+fix Undefined index: series in simple_pie_legend chart
+fix calendar date end on dragging
+Fix calendar full json event click permission
+Added data attributes to select and select ajax
+Forced show header 0 in layouts when null
+centralized inittinymce and filleditor
+Fix tinymce height
