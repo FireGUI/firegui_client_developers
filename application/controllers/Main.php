@@ -332,6 +332,7 @@ class Main extends MY_Controller
         $grids = $this->db
             ->where('entity_type', ENTITY_TYPE_SUPPORT_TABLE)
             ->join('entity', 'entity_id = grids_entity_id', 'LEFT')
+            ->order_by('entity_name')
             ->get('grids')
             ->result_array();
         $grids_html = [];

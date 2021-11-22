@@ -632,7 +632,7 @@ class Get_ajax extends MY_Controller
                 if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
                     $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
                     $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-                } elseif (($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' || $grid['grids']['grids_inline_edit']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
+                } elseif (($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' || $grid['grids']['grids_inline_edit'] == DB_BOOL_TRUE) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/inline_form_actions', array(
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
                         'links' => $grid['grids']['links'],

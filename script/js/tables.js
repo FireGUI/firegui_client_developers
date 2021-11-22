@@ -56,8 +56,8 @@ function initTabelWithPars(grid, pars) {
             aoColumns: aoColumns,
             aaSorting: [],
             aLengthMenu: [
-                [5, 10, 15, 25, 50, 100, 200, 500, -1],
-                [5, 10, 15, 25, 50, 100, 200, 500, 'All'],
+                [5, 10, 15, 20, 25, 50, 100, 200, 500, -1],
+                [5, 10, 15, 20, 25, 50, 100, 200, 500, 'All'],
             ],
             pageLength: defaultLimit,
             searching: (pars.searchable) ? true : false,
