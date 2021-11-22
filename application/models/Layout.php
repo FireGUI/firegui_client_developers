@@ -143,6 +143,7 @@ class Layout extends CI_Model
             $header = array_get($options, 'mpdfHeader', '');
             $footer = array_get($options, 'mpdfFooter', '');
             $css = array_get($options, 'mpdfCss', '');
+            $pdfTitle = array_get($options, 'mpdfTitle', '');
             $filename = '';
 
             if (!empty($header)) $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
