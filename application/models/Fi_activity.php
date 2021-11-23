@@ -71,7 +71,13 @@ class Fi_activity extends CI_Model
                 if ($field_data['fields_ref']) {
                     $idField = $field_data['fields_ref'] . '_id';
                     if ($val) {
-                        $val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val))[$val];
+                        // dump($val);
+                        $_val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val));
+                        if (array_key_exists($val, $_val)) {
+                            $val = $_val[$_val];
+                        } else {
+                            continue;
+                        }
                     }
                     if ($oldval) {
                         $oldval = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $oldval))[$oldval];
