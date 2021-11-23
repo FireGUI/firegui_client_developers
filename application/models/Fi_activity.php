@@ -49,7 +49,12 @@ class Fi_activity extends CI_Model
         $visible_fields = array_key_map_data($extra['entity_full_data']['visible_fields'], 'fields_name');
         $fields_modified_without_old_and_new_value = [];
         foreach ($data['diff'] as $field => $val) {
-            if (is_array($val) || stripos($field, 'modified_date') || ($val == $old[$field])) {
+            if (
+                is_array($val)
+                || stripos($field, 'modified_date')
+                || (isset($old[$field]) && $val == $old[$field])
+                || !isset($visible_fields[$field])
+            ) {
                 continue;
             }
 
