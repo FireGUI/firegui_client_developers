@@ -267,6 +267,7 @@ class Get_ajax extends MY_Controller
         if ($referer) {
             $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
             if (!empty($fReferer->fields_select_where)) {
+
                 $where_referer = $this->datab->replace_superglobal_data(trim($fReferer->fields_select_where));
             }
         }
@@ -1310,6 +1311,7 @@ class Get_ajax extends MY_Controller
             $where_referer[] = "{$field_name_filter} = '{$from_val}'";
         }
         if (!empty($field_to['fields_select_where'])) {
+
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
 
