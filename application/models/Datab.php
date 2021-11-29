@@ -690,6 +690,7 @@ class Datab extends CI_Model
 
         // Prendo la field select where
         if (($fieldWhere = trim($field['fields_select_where']))) {
+
             $wheres[] = $this->replace_superglobal_data($fieldWhere);
         }
 
@@ -999,6 +1000,10 @@ class Datab extends CI_Model
                     $query_group_by = "";
                     $gr_by = "";
                 }
+
+
+                //TODO: joinare tutte le tabelle fino al 3° livello
+
 
                 $order = ($element['charts_elements_order']) ? "ORDER BY " . $element['charts_elements_order'] : '';
                 $data = array();

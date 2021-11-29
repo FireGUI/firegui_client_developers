@@ -79,6 +79,7 @@ function initCalendars() {
                 timeFormat: 'H:mm',
                 axisFormat: 'H:mm',
                 timeFormat: 'H:mm',
+                forceEventDuration: true, // @links: https://github.com/fullcalendar/fullcalendar/issues/2655#issuecomment-223838926
                 columnFormat: {
                     agendaWeek: 'ddd D MMMM'
                 },
@@ -93,9 +94,10 @@ function initCalendars() {
                 //     });
                 // },
                 selectHelper: true,
-                select: function(start, end, allDay) {
+                select: function(date, allDay) {
                     var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
                     var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
+
                     var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
                     var data = {
                         [token_name]: token_hash,

@@ -761,12 +761,14 @@ class Apilib
             }
         }
         if (!$field_source_data) {
-            throw new ApilibException("Field source '{$field_source}' not found in entity {$entity['entity_name']}.");
+            return false;
+            //throw new ApiException("Field source '{$field_source}' not found in entity {$entity['entity_name']}.");
         }
         $field_source_ref = $field_source_data['fields_ref'];
 
         if (!$field_source_ref) {
-            throw new ApilibException("Field source ref of {$field_source_data['fields_name']} not found.");
+            return false;
+            //throw new ApiException("Field source ref of {$field_source_data['fields_name']} not found.");
         }
         //debug($field_ref, true);
         //Search the field in $field_ref that reference $field_source_ref
@@ -777,7 +779,8 @@ class Apilib
             }
         }
         if (!$field_referencing_source_ref) {
-            throw new ApilibException("Field referencing '$field_source_ref' not found.");
+            return false;
+            //throw new ApiException("Field referencing '$field_source_ref' not found.");
         }
         $field_referencing_source_ref_name = $field_referencing_source_ref['fields_name'];
         $ref_value = $this->db
@@ -795,9 +798,10 @@ class Apilib
                 if (!empty($data[$field['fields_name']])) {
                     $fill_value =
                         $this->getFieldSourceValue($field, $data[$field['fields_name']], $fields);
-                    $data[$field['fields_source']] = $fill_value;
+
                     //Retry for all fields because now &$data has changed and potential has more fields values
                     if ($fill_value) {
+                        $data[$field['fields_source']] = $fill_value;
                         $this->autoFillSourceFields($fields, $data);
                     }
                 } else {

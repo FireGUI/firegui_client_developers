@@ -267,6 +267,7 @@ class Get_ajax extends MY_Controller
         if ($referer) {
             $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
             if (!empty($fReferer->fields_select_where)) {
+
                 $where_referer = $this->datab->replace_superglobal_data(trim($fReferer->fields_select_where));
             }
         }
@@ -632,7 +633,7 @@ class Get_ajax extends MY_Controller
                 if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
                     $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
                     $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-                } elseif (($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' || $grid['grids']['grids_inline_edit']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
+                } elseif (($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' || $grid['grids']['grids_inline_edit'] == DB_BOOL_TRUE) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/inline_form_actions', array(
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
                         'links' => $grid['grids']['links'],
@@ -1310,6 +1311,7 @@ class Get_ajax extends MY_Controller
             $where_referer[] = "{$field_name_filter} = '{$from_val}'";
         }
         if (!empty($field_to['fields_select_where'])) {
+
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
 
