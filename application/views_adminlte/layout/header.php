@@ -244,11 +244,18 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                     <li class="user-footer">
                         <div class="pull-left">
                             <?php
-                            $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
 
-                            if ($form_user_default->num_rows() != 0) :
-                            ?>
-                                <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal"><?php e('Profile'); ?></a>
+                            $layout_profile = $this->db->where('layouts_identifier', 'profile-page')->get('layouts')->num_rows();
+                            if ($layout_profile) : ?>
+                                <a href="<?php echo base_url("main/layout/profile-page"); ?>" class="btn btn-default btn-flat"><?php e('Profile'); ?></a>
+                                <?php else :
+
+                                $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
+
+                                if ($form_user_default->num_rows() != 0) :
+                                ?>
+                                    <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-default btn-flat js_open_modal"><?php e('Profile'); ?></a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                         <div class="pull-right">

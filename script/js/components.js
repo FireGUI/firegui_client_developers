@@ -3,7 +3,7 @@
 /* Load content ajax */
 
 
-$('body').on('click', '.js_ajax_content', function(e) {
+$('body').on('click', '.js_ajax_content', function (e) {
 
     // Check if has a layout id to open
     var layout_id = $(this).data('layout-id');
@@ -22,11 +22,11 @@ $('body').on('click', '.js_ajax_content', function(e) {
         $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
             type: 'GET',
             dataType: 'json',
-            complete: function() {
+            complete: function () {
                 //$('#js_page_content').stop(true, true).show();
                 loading(false);
             },
-            success: function(data) {
+            success: function (data) {
                 if (data.status == 0) {
                     console.log(data.msg);
                 }
@@ -123,7 +123,7 @@ function initTinymce(container = null) {
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
     };
 
-    $('textarea.js_tinymce', container).each(function() {
+    $('textarea.js_tinymce', container).each(function () {
         var tinymce_id = $(this).attr('id');
 
         if (tinymce.get(tinymce_id)) {
@@ -145,19 +145,19 @@ function initComponents(container, reset = false) {
     initializing = true;
     if (reset) {
         try {
-            $('select', container).each(function() {
+            $('select', container).each(function () {
                 if ($(this).hasClass("select2-hidden-accessible")) {
                     // Select2 has been initialized
                     $(this).select2('destroy');
                 }
             });
-        } catch (e) {}
+        } catch (e) { }
 
         // destroyCkeditorInstances($('textarea.js_ckeditor', container));
 
     }
 
-    $('textarea.js_ckeditor', container).each(function() {
+    $('textarea.js_ckeditor', container).each(function () {
         var ckeditor_id = $(this).attr('id');
 
         destroyCkeditorInstances($(this));
@@ -176,7 +176,7 @@ function initComponents(container, reset = false) {
      * Form Multiple key values
      */
 
-    $('.js_multiple_container').on('click', '.js_add_multiple_key_values', function(e) {
+    $('.js_multiple_container').on('click', '.js_add_multiple_key_values', function (e) {
         e.stopPropagation();
 
         var my_multiple_container = $(this).closest('.js_multiple_container');
@@ -184,7 +184,7 @@ function initComponents(container, reset = false) {
         var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
         var count = $('.js_multiple_key_values_row', my_row_container).length;
 
-        $('input,textarea', clone).each(function() {
+        $('input,textarea', clone).each(function () {
             $(this).val('');
             var type = $(this).attr('data-type');
             var name = $(this).attr('data-name');
@@ -193,7 +193,7 @@ function initComponents(container, reset = false) {
         count++;
     });
 
-    $('.js_multiple_container').on('click', '.js_remove_row', function(e) {
+    $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
         var my_multiple_container = $(this).closest('.js_multiple_container');
         var my_row_container = $(this).closest('.js_multiple_key_values_row');
         if ($('.js_multiple_key_values_row', my_multiple_container).length > 1) {
@@ -201,7 +201,7 @@ function initComponents(container, reset = false) {
         }
     });
 
-    $('.js_multiple_container').on('click', '.js_add_multiple_values', function(e) {
+    $('.js_multiple_container').on('click', '.js_add_multiple_values', function (e) {
         e.stopPropagation();
 
         var my_multiple_container = $(this).closest('.js_multiple_container');
@@ -209,14 +209,14 @@ function initComponents(container, reset = false) {
         var clone = $('.js_multiple_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
         var count = $('.js_multiple_values_row', my_row_container).length;
 
-        $('input', clone).each(function() {
+        $('input', clone).each(function () {
             $(this).val('');
             var name = $(this).attr('data-name');
             $(this).attr('name', name + '[' + count + ']').removeAttr('data-name');
         });
         count++;
     });
-    $('.js_multiple_container').on('click', '.js_remove_row', function(e) {
+    $('.js_multiple_container').on('click', '.js_remove_row', function (e) {
         var my_multiple_container = $(this).closest('.js_multiple_container');
         var my_row_container = $(this).closest('.js_multiple_values_row');
         if ($('.js_multiple_values_row', my_multiple_container).length > 1) {
@@ -228,7 +228,7 @@ function initComponents(container, reset = false) {
      * Form Todo values
      */
 
-    $('.js_todo_container').on('click', '.js_add_multiple_key_values', function(e) {
+    $('.js_todo_container').on('click', '.js_add_multiple_key_values', function (e) {
         e.stopPropagation();
 
         var my_multiple_container = $(this).closest('.js_todo_container');
@@ -236,7 +236,7 @@ function initComponents(container, reset = false) {
         var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
         var count = $('.js_multiple_key_values_row', my_row_container).length;
 
-        $('input,textarea', clone).each(function() {
+        $('input,textarea', clone).each(function () {
             $(this).val('');
             var type = $(this).attr('data-type');
             var name = $(this).attr('data-name');
@@ -247,7 +247,7 @@ function initComponents(container, reset = false) {
         count++;
     });
 
-    $('.js_todo_container').on('click', '.js_remove_row', function(e) {
+    $('.js_todo_container').on('click', '.js_remove_row', function (e) {
         var my_multiple_container = $(this).closest('.js_todo_container');
         var my_row_container = $(this).closest('.js_multiple_key_values_row');
         if ($('.js_multiple_key_values_row', my_multiple_container).length > 1) {
@@ -258,7 +258,7 @@ function initComponents(container, reset = false) {
     $(".js_todo_row_container").sortable();
     $(".js_todo_row_container").disableSelection();
 
-    $(".js_multiple_row_container").on('keydown', '.js_todo_textarea', function(event) {
+    $(".js_multiple_row_container").on('keydown', '.js_todo_textarea', function (event) {
 
         if (event.which == 9) {
 
@@ -268,7 +268,7 @@ function initComponents(container, reset = false) {
             var clone = $('.js_multiple_key_values_row', my_row_container).filter(':first').clone().appendTo(my_row_container);
             var count = $('.js_multiple_key_values_row', my_row_container).length;
 
-            $('input,textarea', clone).each(function() {
+            $('input,textarea', clone).each(function () {
                 $(this).val('');
                 var type = $(this).attr('data-type');
                 var name = $(this).attr('data-name');
@@ -279,7 +279,7 @@ function initComponents(container, reset = false) {
             count++;
         }
     });
-    $('.js_todo_container').on('click', '.js_container-checkbox', function(e) {
+    $('.js_todo_container').on('click', '.js_container-checkbox', function (e) {
         var my_row_container = $(this).closest('.js_multiple_key_values_row');
         if ($(this).is(':checked')) {
             $('.js_todo_textarea', my_row_container).css('text-decoration', 'line-through');
@@ -322,7 +322,7 @@ function initComponents(container, reset = false) {
         language: lang_short_code,
     });
 
-    $('.js_form_daterangepicker', container).each(function() {
+    $('.js_form_daterangepicker', container).each(function () {
         var jqDateRange = $(this);
         var sDate = $('input', jqDateRange).val();
 
@@ -337,35 +337,35 @@ function initComponents(container, reset = false) {
         }
 
         jqDateRange.daterangepicker({
+            format: 'DD/MM/YYYY',
+            separator: ' to ',
+            startDate: start,
+            endDate: end,
+            opens: 'left',
+            locale: {
+                applyLabel: 'Applica',
+                cancelLabel: 'Annulla',
+                fromLabel: 'Da',
+                toLabel: 'A',
+                weekLabel: 'W',
+                customRangeLabel: 'Range custom',
+                daysOfWeek: ['Do', 'Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa'],
+                monthNames: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
                 format: 'DD/MM/YYYY',
-                separator: ' to ',
-                startDate: start,
-                endDate: end,
-                opens: 'left',
-                locale: {
-                    applyLabel: 'Applica',
-                    cancelLabel: 'Annulla',
-                    fromLabel: 'Da',
-                    toLabel: 'A',
-                    weekLabel: 'W',
-                    customRangeLabel: 'Range custom',
-                    daysOfWeek: ['Do', 'Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa'],
-                    monthNames: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-                    format: 'DD/MM/YYYY',
-                    firstDay: 1,
-                },
-                ranges: {
-                    'Oggi': [moment(), moment()],
-                    'Ieri': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Ultimi 7 Giorni': [moment().subtract(6, 'days'), moment()],
-                    'Ultimi 30 Giorni': [moment().subtract(29, 'days'), moment()],
-                    'Mese corrente': [moment().startOf('month'), moment().endOf('month')],
-                    'Mese precedente': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Anno corrente': [moment().startOf('year'), moment().endOf('year')],
-                    'Anno precedente': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
-                },
+                firstDay: 1,
             },
-            function(start, end) {
+            ranges: {
+                'Oggi': [moment(), moment()],
+                'Ieri': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Ultimi 7 Giorni': [moment().subtract(6, 'days'), moment()],
+                'Ultimi 30 Giorni': [moment().subtract(29, 'days'), moment()],
+                'Mese corrente': [moment().startOf('month'), moment().endOf('month')],
+                'Mese precedente': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Anno corrente': [moment().startOf('year'), moment().endOf('year')],
+                'Anno precedente': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
+            },
+        },
+            function (start, end) {
                 $('input', this.element).val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
             }
         );
@@ -377,14 +377,14 @@ function initComponents(container, reset = false) {
      * Grid-filtering forms
      */
     var forms = $('.js_filter_form', container);
-    forms.each(function() {
+    forms.each(function () {
         var form = $(this);
-        var btn = $('.js_filter_form_add_row', form).on('click', function() {
+        var btn = $('.js_filter_form_add_row', form).on('click', function () {
             var container = $('.js_filter_form_rows_container', form),
                 rows = $('.js_filter_form_row', container);
             var size = rows.size();
             var obj = rows.filter(':first').clone();
-            $('input, select', obj).each(function() {
+            $('input, select', obj).each(function () {
                 var name = 'conditions[' + size + '][' + $(this).attr('data-name') + ']';
                 $(this).attr('name', name).removeAttr('data-name');
             });
@@ -396,7 +396,7 @@ function initComponents(container, reset = false) {
      * Select, Multiselect e AjaxSelect
      */
     try {
-        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)', container).each(function() {
+        $('.js_multiselect:not(.select2-offscreen):not(.select2-container)', container).each(function () {
             var that = $(this);
             var minInput = that.data('minimum-input-length');
             that.select2({
@@ -406,7 +406,7 @@ function initComponents(container, reset = false) {
         });
 
         $('.select2me', container).select2({ allowClear: true });
-    } catch (e) {}
+    } catch (e) { }
 
     $('.select2_standard', container).select2();
 
@@ -416,7 +416,11 @@ function initComponents(container, reset = false) {
      * Select ajax
      */
 
-    $('.js_select_ajax_new', container).each(function() {
+    $('.js_select_ajax_new', container).each(function () {
+        var get_params = $(this).closest('.layout_box').data('get_pars');
+        if (get_params) {
+            get_params = '?' + get_params;
+        }
         var input = $(this);
 
         var $allow_clear = false;
@@ -428,11 +432,11 @@ function initComponents(container, reset = false) {
 
         input.select2({
             ajax: {
-                url: base_url + 'get_ajax/select_ajax_search',
+                url: base_url + 'get_ajax/select_ajax_search' + get_params,
                 dataType: 'json',
                 delay: 250,
                 type: 'POST',
-                data: function(term, page) {
+                data: function (term, page) {
                     // C'è un attributo data-referer che identifica il campo che richiede i dati?
                     // Se non c'è prendi il name...
                     var referer = input.data('referer');
@@ -449,9 +453,9 @@ function initComponents(container, reset = false) {
 
                     return data_post;
                 },
-                processResults: function(data) {
+                processResults: function (data) {
                     return {
-                        results: $.map(data, function(item) {
+                        results: $.map(data, function (item) {
                             return {
                                 text: item.name,
                                 id: item.id,
@@ -463,7 +467,7 @@ function initComponents(container, reset = false) {
                 cache: false,
             },
             placeholder: 'Ricerca...',
-            escapeMarkup: function(markup) {
+            escapeMarkup: function (markup) {
                 return markup;
             }, // let our custom formatter work
             minimumInputLength: 1,
@@ -474,7 +478,7 @@ function initComponents(container, reset = false) {
     });
 
     var fieldsSources = [];
-    $('[data-source-field]:not([data-source-field=""])', container).each(function() {
+    $('[data-source-field]:not([data-source-field=""])', container).each(function () {
         // Prendo il form dell'elemento
         var jsMultiselect = $(this);
         var jqForm = jsMultiselect.parents('form');
@@ -484,7 +488,7 @@ function initComponents(container, reset = false) {
         // Prendo il campo da osservare
         var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"],[data-field_name="' + sSourceField + '"]', jqForm);
 
-        jqField.on('change', function() {
+        jqField.on('change', function () {
             var previousValue = jsMultiselect.attr('data-val').split(',');
             jsMultiselect.select2('val', '');
 
@@ -518,14 +522,14 @@ function initComponents(container, reset = false) {
                 type: 'POST',
                 data: data_post,
                 dataType: 'json',
-                complete: function() {
+                complete: function () {
                     loading(false);
                 },
-                success: function(data) {
+                success: function (data) {
                     $('option', jsMultiselect).remove();
                     $('<option></option>').appendTo(jsMultiselect);
                     var previousValueFound = false;
-                    $.each(data, function(k, v) {
+                    $.each(data, function (k, v) {
                         var jqOption = $('<option></option>').val(k).text(v);
 
                         if ($.inArray(k, previousValue) > -1) {
@@ -553,7 +557,7 @@ function initComponents(container, reset = false) {
         }
     });
 
-    $.each(fieldsSources, function(k, selector) {
+    $.each(fieldsSources, function (k, selector) {
         var field = selector;
 
         if (field.val() !== '') {
@@ -592,7 +596,7 @@ function initComponents(container, reset = false) {
         return repo.full_name || repo.text;
     }
 
-    $('.js_select_ajax').each(function() {
+    $('.js_select_ajax').each(function () {
         var input = $(this);
 
         input.select2({
@@ -603,7 +607,7 @@ function initComponents(container, reset = false) {
                 url: base_url + 'get_ajax/select_ajax_search',
                 dataType: 'json',
                 type: 'POST',
-                data: function(term, page) {
+                data: function (term, page) {
                     // C'è un attributo data-referer che identifica il campo che richiede i dati?
                     // Se non c'è prendi il name...
                     var referer = input.data('referer');
@@ -618,12 +622,12 @@ function initComponents(container, reset = false) {
                     data_post.push({ name: 'referer', value: referer });
                     return data_post;
                 },
-                results: function(data, page) {
+                results: function (data, page) {
                     return { results: data };
                 },
             },
 
-            initSelection: function(element, callback) {
+            initSelection: function (element, callback) {
                 var id = element.val();
                 if (id !== '') {
                     var data_post = [];
@@ -635,25 +639,25 @@ function initComponents(container, reset = false) {
                         type: 'POST',
                         dataType: 'json',
                         data: data_post,
-                    }).done(function(data) {
+                    }).done(function (data) {
                         callback(data);
                     });
                 }
             },
 
-            formatResult: function(rowData, container, query, escapeMarkup) {
+            formatResult: function (rowData, container, query, escapeMarkup) {
                 var markup = [];
                 window.Select2.util.markMatch(rowData.name, query.term, markup, escapeMarkup);
                 return markup.join('');
             },
 
-            formatSelection: function(rowData) {
+            formatSelection: function (rowData) {
                 return rowData.name;
             },
         });
     });
 
-    $('.js_select_ajax_distinct').each(function() {
+    $('.js_select_ajax_distinct').each(function () {
         $(this).select2({
             allowClear: true,
             placeholder: 'Cerca',
@@ -662,7 +666,7 @@ function initComponents(container, reset = false) {
                 url: base_url + 'get_ajax/get_distinct_values',
                 dataType: 'json',
                 type: 'POST',
-                data: function(term, page) {
+                data: function (term, page) {
                     var data_post = [];
                     data_post.push({ name: token_name, value: token_hash });
                     data_post.push({ name: 'q', value: term });
@@ -673,11 +677,11 @@ function initComponents(container, reset = false) {
                     });
                     return data_post;
                 },
-                results: function(data, page) {
+                results: function (data, page) {
                     return { results: data };
                 },
             },
-            initSelection: function(element, callback) {
+            initSelection: function (element, callback) {
                 var id = $(element).val();
                 if (id !== '') {
                     var data_post = [];
@@ -694,15 +698,15 @@ function initComponents(container, reset = false) {
                         type: 'POST',
                         dataType: 'json',
                         data: data_post,
-                    }).done(function(data) {
+                    }).done(function (data) {
                         callback(data);
                     });
                 }
             },
-            formatResult: function(rowData) {
+            formatResult: function (rowData) {
                 return rowData.name;
             },
-            formatSelection: function(rowData) {
+            formatSelection: function (rowData) {
                 return rowData.name;
             },
         });
@@ -762,7 +766,7 @@ function initComponents(container, reset = false) {
      */
     $.event.trigger('init.crm.components');
 
-    $('.box').each(function() {
+    $('.box').each(function () {
         try {
             $.fn.boxWidget.call($(this));
         } catch (e) {
@@ -811,7 +815,7 @@ function loadModal(url, data, callbackSuccess, method) {
     var modalLoaded = modalContainer.find('> .modal');
     if (modalLoaded.length > 0 && modalLoaded.is(':visible')) {
         // Chiudila e apri la nuova.. valutare riapertura
-        modalLoaded.modal('hide').on('hidden.bs.modal', function(e) {
+        modalLoaded.modal('hide').on('hidden.bs.modal', function (e) {
             // Una volta che la vecchia modale è realmente nascosta, richiama
             // questa funzione
             loadModal(url, data, callbackSuccess, method);
@@ -830,7 +834,7 @@ function loadModal(url, data, callbackSuccess, method) {
         type: method ? method.toUpperCase() : 'POST',
         data: data,
         dataType: 'html',
-        success: function(data) {
+        success: function (data) {
             // Salva i vecchi argomenti per riapertura
             var oldModalArgs = mArgs;
             mArgs = {
@@ -843,7 +847,7 @@ function loadModal(url, data, callbackSuccess, method) {
             modalContainer.html(data);
             $('.modal', modalContainer)
                 .modal()
-                .on('shown.bs.modal', function(e) {
+                .on('shown.bs.modal', function (e) {
                     loading(false);
                     reset_theme_components();
                     console.log('Check here...');
@@ -852,12 +856,12 @@ function loadModal(url, data, callbackSuccess, method) {
                     $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = false;
 
                     if ($('form', modalContainer).length > 0) {
-                        $('input:not([type=hidden]), select, textarea', modalContainer).on('change', function() {
+                        $('input:not([type=hidden]), select, textarea', modalContainer).on('change', function () {
                             $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose = true;
                         });
                     }
                 })
-                .on('hide.bs.modal', function(e) {
+                .on('hide.bs.modal', function (e) {
                     // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
                     if ($('.modal', modalContainer).is(e.target)) {
                         var askConfirmationOnClose = $('.modal', modalContainer).data('bs.modal').askConfirmationOnClose;
@@ -870,7 +874,7 @@ function loadModal(url, data, callbackSuccess, method) {
                         }
                     }
                 })
-                .on('hidden.bs.modal', function(e) {
+                .on('hidden.bs.modal', function (e) {
                     mArgs = oldModalArgs;
                     if (typeof callbackSuccess === 'function') {
                         callbackSuccess();
@@ -878,14 +882,14 @@ function loadModal(url, data, callbackSuccess, method) {
                 });
             mAjaxCall = null;
         },
-        error: function() {
+        error: function () {
             mAjaxCall = null;
         },
     });
 }
 
 /** Fix per focus su select in modale **/
-$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+$.fn.modal.Constructor.prototype.enforceFocus = function () { };
 
 function formatDate(dateTime, ignoreTimezone) {
     if (!ignoreTimezone) {
@@ -930,7 +934,7 @@ function changeStarsStatus(el) {
     var star = $(el);
     var val = parseInt(star.attr('data-val'));
     $('input', star.parent()).val(val);
-    $('.star', star.parent()).each(function() {
+    $('.star', star.parent()).each(function () {
         if (parseInt($(this).attr('data-val')) <= val) {
             // Stella prima da attivare
             $('i', $(this)).removeClass('fa fa-star-o').addClass('fa fa-star');
@@ -956,7 +960,7 @@ function changeLanguage(langId) {
 
     $.post(
         base_url + 'db_ajax/changeLanguage', data,
-        function(out) {
+        function (out) {
             if (out.success) {
                 changeLanguageTemplate(langId);
             } else {
@@ -975,7 +979,7 @@ function changeLanguageTemplate(langId) {
 }
 
 function openCreationForm(formId, entity, onSuccess) {
-    $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function(json) {
+    $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
         var currentLastId = json.data.id;
 
         $.fancybox.open({
@@ -987,14 +991,14 @@ function openCreationForm(formId, entity, onSuccess) {
             ajax: {
                 data: { _raw: 1 },
             },
-            beforeShow: function() {
+            beforeShow: function () {
                 initComponents($('#form_' + formId), true);
             },
-            afterShow: function() {
+            afterShow: function () {
                 initComponents($('#form_' + formId), true);
             },
-            beforeClose: function() {
-                $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function(json) {
+            beforeClose: function () {
+                $.getJSON(base_url + 'get_ajax/getLastRecord', { entity: entity }, function (json) {
                     if (json.status === 0 && json.data.id && currentLastId != json.data.id) {
                         onSuccess(json.data.id, json.data.preview);
                     }
@@ -1004,8 +1008,8 @@ function openCreationForm(formId, entity, onSuccess) {
     });
 }
 
-$(function() {
-    $('body').on('click', '.js_open_modal', function(e) {
+$(function () {
+    $('body').on('click', '.js_open_modal', function (e) {
         e.preventDefault();
         e.stopPropagation();
         var sUrl = $(this).attr('href');
@@ -1028,12 +1032,12 @@ $(function() {
         }
     });
 
-    $('body').on('click', '.js_title_collapse', function() {
+    $('body').on('click', '.js_title_collapse', function () {
         $('.expand, .collapse', $(this)).click();
         $(window).trigger('resize');
     });
 
-    $('body').on('click', '.expand, .collapse', function(e) {
+    $('body').on('click', '.expand, .collapse', function (e) {
         e.stopPropagation();
         $(window).trigger('resize');
     });
@@ -1042,9 +1046,9 @@ $(function() {
     //alert('todo');
     var list = $('<ul class="language-switch pull-right list-inline">');
     $('.page-content > .layout-container > .page-title,#js_page_content > .page-title').append(list);
-    $.getJSON(base_url + 'get_ajax/langInfo', {}, function(json) {
+    $.getJSON(base_url + 'get_ajax/langInfo', {}, function (json) {
         var curr = json.current;
-        $.each(json.languages, function(i, lang) {
+        $.each(json.languages, function (i, lang) {
             var toggle = $('<a href="javascript:void(0)">');
             toggle.append($('<img>').attr('src', lang.flag).attr('alt', lang.name));
             toggle.appendTo($('<li>').appendTo(list));
@@ -1056,7 +1060,7 @@ $(function() {
                 placement: 'bottom',
             });
 
-            toggle.on('click', function() {
+            toggle.on('click', function () {
                 changeLanguage(lang.id);
             });
         });
@@ -1066,17 +1070,17 @@ $(function() {
         }
     });
 
-    $('body').on('click', '.lang-flag', function() {
+    $('body').on('click', '.lang-flag', function () {
         var inlinelist = list.clone().addClass('floating').insertAfter($(this));
         var flags = $('[data-toggle-lang]', inlinelist);
 
-        flags.on('click', function() {
+        flags.on('click', function () {
             var id = $(this).data('toggle-lang');
             changeLanguage(parseInt(id));
             inlinelist.remove();
         });
     });
-    $('body').on('click', '.paginate_button', function() {
+    $('body').on('click', '.paginate_button', function () {
         var table_container = $(this).closest('.dataTables_wrapper');
 
         $('html, body').animate({
@@ -1084,7 +1088,7 @@ $(function() {
         }, 'fast');
     });
 
-    $('body').on('keyup', '.js_decimal', function() {
+    $('body').on('keyup', '.js_decimal', function () {
         var val = $(this).val().replace(',', '.');
         val = val.replace(' ', '.');
         if (isNaN(val)) {
@@ -1094,7 +1098,7 @@ $(function() {
         $(this).val(val);
     });
 
-    $('body').on('keyup', '.js_money', function() {
+    $('body').on('keyup', '.js_money', function () {
         var val = $(this).val();
         val = val.replace(/[^\d,]/g, "")
             .replace(/^(\d*\,)(.*)\,(.*)$/, '$1$2$3')

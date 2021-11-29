@@ -49,7 +49,12 @@ class Fi_activity extends CI_Model
         $visible_fields = array_key_map_data($extra['entity_full_data']['visible_fields'], 'fields_name');
         $fields_modified_without_old_and_new_value = [];
         foreach ($data['diff'] as $field => $val) {
-            if (is_array($val) || stripos($field, 'modified_date') || ($val == $old[$field])) {
+            if (
+                is_array($val)
+                || stripos($field, 'modified_date')
+                || (isset($old[$field]) && $val == $old[$field])
+                || !isset($visible_fields[$field])
+            ) {
                 continue;
             }
 
@@ -66,7 +71,13 @@ class Fi_activity extends CI_Model
                 if ($field_data['fields_ref']) {
                     $idField = $field_data['fields_ref'] . '_id';
                     if ($val) {
-                        $val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val))[$val];
+                        // dump($val);
+                        $_val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val));
+                        if (array_key_exists($val, $_val)) {
+                            $val = $_val[$_val];
+                        } else {
+                            continue;
+                        }
                     }
                     if ($oldval) {
                         $oldval = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $oldval))[$oldval];

@@ -171,7 +171,7 @@ class Cron extends MY_Controller
         //Clear logs folder
         $files = scandir(APPPATH . 'logs/');
         foreach ($files as $file) {
-            if (in_array($file, ['.', '..', 'index.html'])) {
+            if (in_array($file, ['.', '..', 'index.html']) || count(explode('-', $file)) != 4) {
                 continue;
             } else {
                 $file_no_ext = explode('.', $file)[0];
