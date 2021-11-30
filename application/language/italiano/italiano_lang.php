@@ -1138,3 +1138,5 @@ $lang['Riepilogativa materiali'] = 'Riepilogativa materiali';
 $lang['Template Documenti'] = 'Template Documenti';
 $lang['Dashboard Tasks'] = 'Dashboard Tasks';
 $lang['Dashboard Timesheets'] = 'Dashboard Timesheets';
+$lang['TEST CHARTS'] = 'TEST CHARTS';
+$lang['TEST CHART'] = 'TEST CHART';

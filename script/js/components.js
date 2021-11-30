@@ -420,6 +420,8 @@ function initComponents(container, reset = false) {
         var get_params = $(this).closest('.layout_box').data('get_pars');
         if (get_params) {
             get_params = '?' + get_params;
+        } else {
+            get_params = '';
         }
         var input = $(this);
 
