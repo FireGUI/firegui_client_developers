@@ -1140,3 +1140,7 @@ $lang['Dashboard Tasks'] = 'Dashboard Tasks';
 $lang['Dashboard Timesheets'] = 'Dashboard Timesheets';
 $lang['TEST CHARTS'] = 'TEST CHARTS';
 $lang['TEST CHART'] = 'TEST CHART';
+$lang['Assegnami'] = 'Assegnami';
+$lang['Create Ticket Report'] = 'Create Ticket Report';
+$lang['Travel time'] = 'Travel time';
+$lang['Pdf Report'] = 'Pdf Report';
