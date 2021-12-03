@@ -1,6 +1,7 @@
 <?php
 $chartId = "container_chartjs_{$chart['charts_id']}";
 
+debug($chart);
 
 ?>
 

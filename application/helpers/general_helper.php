@@ -1478,3 +1478,24 @@ if (!function_exists('e_money')) {
         echo number_format($number, 2, ',', '.');
     }
 }
+
+if (!function_exists('progress')) {
+    function progress($current, $total, $selector_id = 'js_progress')
+    {
+
+        $perc = number_format(100 * $current / $total, 2);
+        echo_flush(
+            '
+        <script>
+            var progress_div = document.getElementById("' . $selector_id . '");
+            if (!progress_div) {
+                var progress_div = document.createElement("div");
+                progress_div.setAttribute("id", "' . $selector_id . '");
+                document.write(progress_div.outerHTML);
+            }
+            progress_div.innerText = "' . $perc . ' of 100%";
+        </script>
+        '
+        );
+    }
+}
