@@ -56,7 +56,7 @@
   .label_highlight {
     position:absolute;
     top:-10px;
-    left:20%;
+    right:0px;
     background-color:white;
     font-size:11px;
     z-index:999999

@@ -243,8 +243,11 @@ function initBuilderTools() {
             my_container.data('cols', new_cols);
             update_cols(my_layout_box_id, new_cols, my_container);
         }
-        if (cols > 2) {
-            //*****$('.kt-portlet__head-title', my_container).show();
+
+        if (new_cols >= 3) {
+            $('.label_highlight', my_container).show();
+        } else {
+            $('.label_highlight', my_container).hide();
         }
     });
 
@@ -262,8 +265,11 @@ function initBuilderTools() {
             my_container.data('cols', new_cols);
             update_cols(my_layout_box_id, new_cols, my_container);
         }
-        if (cols <= 3) {
-            $('.kt-portlet__head-title', my_container).hide();
+
+        if (new_cols >= 3) {
+            $('.label_highlight', my_container).show();
+        } else {
+            $('.label_highlight', my_container).hide();
         }
     });
 
