@@ -1,6 +1,12 @@
 .content-wrapper {
   background-color:#f5f5f5;
 }
+.content {
+  position:relative;
+}
+.js_layout_box {
+  position:relative;
+}
 
 #search_form input[name="search"] {
   margin: 5px 0;
@@ -10,7 +16,11 @@ table {
   vertical-align: middle;
   width: 100% !important;
 }
-
+.ui-state-highlight {
+	border: 1px dotted black;
+	margin: 1em 1em 1em 1em;
+	height: 50px;
+}
 /*
 Fix z-index per i date picker, che vanno sotto le modali in safari.
 */
