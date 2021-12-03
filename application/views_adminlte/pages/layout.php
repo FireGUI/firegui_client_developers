@@ -29,35 +29,24 @@ $portletBgColorMap = [];
 
 <?php endif; ?>
 
-<section class="content">
-    <?php foreach ($dati['layout'] as $row) : ?>
+<section class="content js_layout" data-layout_id="<?php echo $dati['layout_container']['layouts_id']; ?>">
+    <label class="label_highlight hide label_highlight_l">Layout #<?php echo $dati['layout_container']['layouts_id'] . " " . $dati['layout_container']['layouts_title'] . " Ident: " . $dati['layout_container']['layouts_identifier'] . " Module: " . $dati['layout_container']['layouts_module']; ?></label>
 
-        <div class="row">
-            <?php $max_col = 0; ?>
+    <?php foreach ($dati['layout'] as $row_num => $row) : ?>
+
+        <div class="row connectedSortable" data-row="<?php echo $row_num; ?>" data-layout_id="<?php echo $dati['layout_container']['layouts_id']; ?>">
+
+            <!-- Load layouts boxes -->
             <?php foreach ($row as $layout) : ?>
 
-                <?php
-                // =============================================================
-                // Calcolo se andare alla prossima riga
-                $max_col += $layout['layouts_boxes_cols'];
-                if ($max_col > 12) {
-                    $max_col = $layout['layouts_boxes_cols'];
-                    echo '</div><div class="row">';
-                }
-
-                // =============================================================
-                // Calcolo classi e colori
-
-                ?>
-                <div class="<?php echo sprintf('col-md-%s', $layout['layouts_boxes_cols']); ?> ">
+                <div id="<?php echo $layout['layouts_boxes_id']; ?>" data-cols="<?php echo $layout['layouts_boxes_cols']; ?> " class="js_container_layout_box <?php echo sprintf('col-md-%s', $layout['layouts_boxes_cols']); ?> ">
 
                     <?php $this->load->view('pages/layout_box', ['layout' => $layout]); ?>
 
                 </div>
             <?php endforeach; ?>
         </div>
-    <?php endforeach; ?>
-
+    <?php endforeach;  ?>
 
     <?php echo $dati['post-layout']; ?>
 

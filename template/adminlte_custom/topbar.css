@@ -41,8 +41,34 @@
   /* Elements */
   .box_highlight {
       border: solid 2px #db7107!important;
+      background-color:#FFFFFF;
+      margin:8px;
   }
-  .js_builder_toolbar_btn i {
+   .layout_highlight {
+      border: solid 2px #0763db!important;
+      padding:30px!important;
+  }
+  .row_highlight {
+    border: dotted 1px #585858;
+    background-image: linear-gradient(#c7c7c7, #f5f5f5);
+    padding:20px;
+  }
+  .label_highlight {
+    position:absolute;
+    top:-10px;
+    left:20%;
+    background-color:white;
+    font-size:11px;
+    z-index:999999
+  }
+  .label_highlight_l{
+    color:#0763db!important;
+  }
+  .label_highlight_lb{
+    color:#db7107;
+  }
+  
+  .builder_toolbar_actions, .builder_toolbar_actions i {
       color:#db7107;
   }
   .layoutbox_toolbar {
