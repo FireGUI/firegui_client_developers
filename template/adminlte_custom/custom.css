@@ -559,6 +559,7 @@ th.w15 {
 }
 .logo {
   max-width: 360px;
+  max-height: 200px;
 }
 .firegui-box {
   margin-top: 100px;
