@@ -948,3 +948,7 @@ td div.action-list {
     border-radius: 5px;
     top: -2px;
 }
+
+.menu_group {
+  margin-bottom: 20px;
+}
