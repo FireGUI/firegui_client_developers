@@ -20,22 +20,39 @@ if ($isLight or $isGren or $isBox) {
 
 $classes = array_unique(array_merge($baseClasses, $userClasses));
 ?>
+<div data-id="<?php echo $layout['layouts_boxes_id']; ?>" data-row="<?php echo $layout['layouts_boxes_row']; ?>" class="js_layout_box <?php if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) : ?>box<?php endif; ?> <?php echo $layout['layouts_boxes_css'] . " " . $layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
+    <label class="label_highlight hide label_highlight_lb"> Layout Box #<?php echo $layout['layouts_boxes_id']; ?> <?php echo $layout['layouts_boxes_title'] . " [" . $layout['layouts_boxes_content_type'] . "]"; ?></label>
 
-<div class="<?php if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) : ?>box<?php endif; ?> <?php echo $layout['layouts_boxes_css'] . " " . $layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
-
-    <div class="builder_toolbar_actions">
+    <div class="builder_toolbar_actions hide">
         <!-- Builder actions -->
-        <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="edit_layout_box" data-element-type="layout" data-element-ref="<?php echo $layout['layouts_boxes_id'] ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Edit box">
-            <i class="fa fa-cogs"></i>
+        <button type="button" class="btn btn-box-tool js_builder_toolbar_btn" data-action="edit_layout_box" data-element-type="layout" data-element-ref="<?php echo $layout['layouts_boxes_id'] ?>" data-toggle="tooltip" title="" data-original-title="Edit box">
+            <i class="fas fa-cogs"></i>
         </button>
 
-        <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="option" data-element-type="<?php echo $layout['layouts_boxes_content_type'] ?>" data-element-ref="<?php echo $layout['layouts_boxes_content_ref'] ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="<?php echo $layout['layouts_boxes_content_type'] ?> option">
-            <i class="fa fa-edit"></i>
+        <button type="button" class="btn btn-box-tool js_builder_toolbar_btn" data-action="option" data-element-type="<?php echo $layout['layouts_boxes_content_type'] ?>" data-element-ref="<?php echo $layout['layouts_boxes_content_ref'] ?>" data-toggle="tooltip" title="" data-original-title="<?php echo $layout['layouts_boxes_content_type'] ?> option">
+            <i class="fas fa-edit"></i>
         </button>
 
-        <button type="button" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="builder" data-element-type="<?php echo $layout['layouts_boxes_content_type'] ?>" data-element-ref="<?php echo $layout['layouts_boxes_content_ref'] ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="<?php echo $layout['layouts_boxes_content_type'] ?> builder">
-            <i class="fa fa-hat-wizard"></i>
+        <button type="button" class="btn btn-box-tool js_builder_toolbar_btn " data-action="builder" data-element-type="<?php echo $layout['layouts_boxes_content_type'] ?>" data-element-ref="<?php echo $layout['layouts_boxes_content_ref'] ?>" data-toggle="tooltip" title="" data-original-title="<?php echo $layout['layouts_boxes_content_type'] ?> builder">
+            <i class="fas fa-hat-wizard"></i>
         </button>
+
+        <button href="javascript:void(0);" class="btn btn-box-tool js_btn_minus" data-toggle="tooltip" data-original-title="- columns">
+            <i class="fas fa-caret-left"></i>
+        </button>
+        Size
+        <button href="javascript:void(0);" class="btn btn-box-tool js_btn_plus" data-toggle="tooltip" data-original-title="+ columns">
+            <i class="fas fa-caret-right"></i>
+        </button>
+
+        <button href="javascript:void(0);" class="btn btn-box-tool js_confirm_button js_btn_delete" data-toggle="tooltip" data-original-title="delete box">
+            <i class="fas fa-trash"></i>
+        </button>
+
+        <button href="javascript:void(0);" class="btn btn-box-tool js_btn_move_to_layout" data-toggle="tooltip" data-original-title="Move to another layout">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+
     </div>
 
     <!-- End Builder actions -->
@@ -46,7 +63,7 @@ $classes = array_unique(array_merge($baseClasses, $userClasses));
 
             <div class="box-title">
                 <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
-                <span class="<?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
+                <span data-layou_box_id="<?php echo $layout['layouts_boxes_id']; ?>" class="js_layouts_boxes_title <?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
 
                     <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])), true, ['module_name' => $layout['layouts_module']]); ?>
                 </span>

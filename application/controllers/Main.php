@@ -214,6 +214,26 @@ class Main extends MY_Controller
     }
 
     /**
+     * Custom page
+     * ---
+     * @param string $page
+     */
+    public function custom($page)
+    {
+        // Only admin can use this method
+        if (!$this->datab->is_admin()) {
+            die("Only Admin can use this method!");
+        }
+        // Load custom view if exists
+        if (file_exists(FCPATH . "application/views_adminlte/custom/$page.php")) {
+            $pagina = $this->load->view("custom/$page", null, true);
+            $this->stampa($pagina);
+        } else {
+            die("Oh no! Your custom view does not exists in custom directory.");
+        }
+    }
+
+    /**
      * Template renderer
      * ---
      * Accept a string in html format

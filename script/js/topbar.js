@@ -4,6 +4,7 @@ $(function () {
     'use strict';
 
     var toolBarEnabled = false;
+    var myArguments;
 
     jQuery(document).keydown(function (event) {
         // If Control or Command key is pressed and the S key is pressed
@@ -129,9 +130,14 @@ $(function () {
 
     $('body').on('click', '#js_toolbar_highlighter', function () {
 
-        $('.box').toggleClass('box_highlight');
+        $('.js_layout').toggleClass('layout_highlight');
+        $('.js_layout_box').toggleClass('box_highlight');
+        $('.connectedSortable').toggleClass('row_highlight');
         $('.modal-content').toggleClass('box_highlight');
-        $('.js_builder_toolbar_btn').toggleClass('hide');
+
+        $('.label_highlight').toggleClass('hide');
+        $('.builder_toolbar_actions').toggleClass('hide');
+        initBuilderTools();
     });
 
     $('body').on('click', '#js_toolbar_console', function () {
@@ -140,7 +146,6 @@ $(function () {
     });
 
     // Buttons actions
-
     $('body').on('click', '.js_builder_toolbar_btn', function () {
         var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         var action = $(this).data('action');
@@ -155,7 +160,212 @@ $(function () {
     });
 
 
+
 });
+
+// For resize boxes
+function update_cols(layout_boxes_id, cols) {
+    $.ajax({
+        url: base_url + "builder/update_layout_box_cols/" + layout_boxes_id + "/" + cols,
+        dataType: 'json',
+        cache: false,
+    });
+}
+
+function initBuilderTools() {
+
+    /* */
+    $('.js_layouts_boxes_title').each(function () {
+        var title = $(this).text().trim();
+        var layou_box_id = $(this).data('layou_box_id');
+        $(this).replaceWith('<input data-layou_box_id="' + layou_box_id + '" class="form-control input-sm js_update_layout_box_title" type="text" name="title" value="' + title + '" />');
+    });
+
+    $('body').on('change', '.js_update_layout_box_title', function () {
+        var my_layout_box_id = my_layout_box.data("layou_box_id");
+        var new_title = $(this).val();
+        alert(new_title);
+        $.ajax({
+            url: base_url + "builder/update_layout_box_title/" + my_layout_box_id,
+            data: { title: new_title },
+            dataType: 'json',
+            cache: false,
+        });
+        my_container.remove();
+    });
+
+    /* Move to another layout */
+    $('body').on('click', '.js_btn_move_to_layout', function () {
+
+        var new_layout_id = prompt("Please enter the new layout ID where you want to move the box", "");
+        if (!new_layout_id) {
+            return false;
+        } else {
+            var my_container = $(this).closest('.js_container_layout_box');
+            var my_layout_box = $('.js_layout_box', my_container);
+            var my_layout_box_id = my_layout_box.data("id");
+
+            $.ajax({
+                url: base_url + "builder/move_layout_box/" + my_layout_box_id + "/" + new_layout_id,
+                dataType: 'json',
+                cache: false,
+            });
+            my_container.remove();
+        }
+
+    });
+
+    /* Resize Boxes */
+    $('body').on('click', '.js_btn_delete', function () {
+        var my_container = $(this).closest('.js_container_layout_box');
+        var my_layout_box = $('.js_layout_box', my_container);
+        var my_layout_box_id = my_layout_box.data("id");
+        $.ajax({
+            url: base_url + "builder/delete_layout_box/" + my_layout_box_id,
+            dataType: 'json',
+            cache: false,
+        });
+        my_container.remove();
+    });
+
+    /* Resize Boxes */
+    $('body').on('click', '.js_btn_plus', function () {
+        var my_container = $(this).closest('.js_container_layout_box');
+        var my_layout_box = $('.js_layout_box', my_container);
+        console.log(my_layout_box);
+        cols = parseInt(my_container.data('cols'));
+        var my_layout_box_id = my_layout_box.data("id");
+
+        if (cols < 12) {
+            new_cols = cols + 1;
+            my_container.removeClass("col-md-" + cols);
+            my_container.addClass("col-md-" + new_cols);
+            my_container.data('cols', new_cols);
+            update_cols(my_layout_box_id, new_cols, my_container);
+        }
+        if (cols > 2) {
+            //*****$('.kt-portlet__head-title', my_container).show();
+        }
+    });
+
+    $('body').on('click', '.js_btn_minus', function () {
+        var my_container = $(this).closest('.js_container_layout_box');
+        var my_layout_box = $('.js_layout_box', my_container);
+        console.log(my_layout_box);
+        cols = parseInt(my_container.data('cols'));
+        var my_layout_box_id = my_layout_box.data("id");
+
+        if (cols > 1) {
+            new_cols = cols - 1;
+            my_container.removeClass("col-md-" + cols);
+            my_container.addClass("col-md-" + new_cols);
+            my_container.data('cols', new_cols);
+            update_cols(my_layout_box_id, new_cols, my_container);
+        }
+        if (cols <= 3) {
+            $('.kt-portlet__head-title', my_container).hide();
+        }
+    });
+
+
+
+    /* Sort layoutboxes */
+    console.log("start Sortable");
+    $(".connectedSortable").sortable({
+        placeholder: 'ui-state-highlight',
+        connectWith: '.connectedSortable',
+        handle: '.js_layout_box',
+        forcePlaceholderSize: true,
+        forceHelperSize: true,
+        tolerance: 'pointer',
+        revert: 'invalid',
+        /* That's fired first */
+        start: function (event, ui) {
+            myArguments = {};
+            //ui.placeholder.width(ui.item.width());
+            //ui.placeholder.height(ui.item.height() - 20);
+
+            ui.placeholder.css({
+                width: ui.item.innerWidth() - 30 + 1,
+                height: ui.item.innerHeight() - 15 + 1,
+                padding: ui.item.css("padding"),
+                marginTop: 0
+            });
+        },
+        /* That's fired second */
+        remove: function (event, ui) {
+            /* Get array of items in the list where we removed the item */
+            myArguments = assembleData(this, myArguments);
+        },
+        /* That's fired thrird */
+        receive: function (event, ui) {
+            /* Get array of items where we added a new item */
+            myArguments = assembleData(this, myArguments);
+        },
+        update: function (e, ui) {
+            if (this === ui.item.parent()[0]) {
+                /* In case the change occures in the same container */
+                if (ui.sender == null) {
+                    myArguments = assembleData(this, myArguments);
+                }
+            }
+        },
+        /* That's fired last */
+        stop: function (event, ui) {
+            try {
+                var token = JSON.parse(atob(datatable.data('csrf')));
+                var token_name = token.name;
+                var token_hash = token.hash;
+            } catch (e) {
+                var token = JSON.parse(atob($('body').data('csrf')));
+                var token_name = token.name;
+                var token_hash = token.hash;
+            }
+            myArguments[token_name] = token_hash;
+            /* Send JSON to the server */
+            console.log("Send JSON to the server:<pre>" + JSON.stringify(myArguments) + "</pre>");
+
+            var current_layout_id = ui.item.closest('.js_layout').attr('data-layout_id');
+            var last_box_moved = ui.item.attr('id');
+
+            $.ajax({
+                url: base_url + "builder/update_layout_box_position/" + current_layout_id + "/" + last_box_moved,
+                type: 'post',
+                dataType: 'json',
+                data: myArguments,
+                cache: false
+            });
+            console.log(myArguments);
+        },
+    });
+
+    $('.connectedSortable .box-header, .connectedSortable .js_layout_box').css('cursor', 'move');
+
+    // END Sortable
+}
+
+// Sortable function
+function assembleData(object, arguments) {
+    var data = $(object).sortable('toArray'); // Get array data
+    var row_id = $(object).data("row"); // Get step_id and we will use it as property name
+    var arrayLength = data.length; // no need to explain
+    var current_layout_id = $(object).closest('.js_layout').attr('data-layout_id');
+
+    /* Create step_id property if it does not exist */
+    if (!arguments.hasOwnProperty(row_id)) {
+        arguments[row_id] = new Array();
+    }
+
+    /* Loop through all items */
+    for (var i = 0; i < arrayLength; i++) {
+        if (data[i]) {
+            var task_id = data[i];
+            /* push all image_id onto property step_id (which is an array) */
+            arguments[row_id].push(task_id);
+        }
+    }
+    return arguments;
+}
 
 function openBuilderFrame(link) {
     $('#builderFrame').attr('src', link);
