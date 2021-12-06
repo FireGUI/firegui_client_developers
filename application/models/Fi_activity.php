@@ -74,7 +74,7 @@ class Fi_activity extends CI_Model
                         // dump($val);
                         $_val = $this->crmentity->getEntityPreview($field_data['fields_ref'], sprintf('%s = %d', $idField, $val));
                         if (array_key_exists($val, $_val)) {
-                            $val = $_val[$_val];
+                            $val = $_val[$val];
                         } else {
                             continue;
                         }
@@ -93,7 +93,9 @@ class Fi_activity extends CI_Model
 
 
 
-                $fields_li .= "<li>$field from '$oldval' to '$val'</li>";
+                if ($oldval != $val) {
+                    $fields_li .= "<li>$field from '$oldval' to '$val'</li>";
+                }
             }
         }
         //debug($fields_modified_without_old_and_new_value, true);
