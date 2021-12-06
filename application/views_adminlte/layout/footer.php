@@ -159,6 +159,7 @@
 <script src="<?php echo base_url_scripts("script/js/calendars/calendar_full_json_sidebar.js?v=" . VERSION); ?>"></script>
 
 <!-- CHARTS -->
+<script src="<?php echo base_url_scripts("script/js/charts/apexcharts.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/charts/apexcharts_bar.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/charts/apexcharts_line_smooth.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url_scripts("script/js/charts/apexcharts_customizable.js?v=" . VERSION); ?>"></script>
