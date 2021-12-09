@@ -781,7 +781,10 @@ class Datab extends CI_Model
                 $group_by = $grid['grids']['grids_group_by'];
             }
 
-
+            /** GRID LIMIT (Michael, 2021-12-09) */
+            if (!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) {
+                $limit = $grid['grids']['grids_limit'];
+            }
 
             /** Grid depth * */
 
