@@ -90,6 +90,31 @@ $(function () {
 
     // ********* Toolbar buttons *************
 
+
+    $('body').on('change', '#js_toolbar_maintenance', function () {
+        console.log("Switch maintenance");
+        $.ajax({
+            url: base_url + "builder/switch_maintenance/",
+            success: function (data) {
+                window.location.reload();
+            },
+        });
+    });
+
+    $('body').on('click', '#js_toolbar_download_dump', function () {
+        var sys_password = prompt("Please enter system password");
+        if (sys_password != null) {
+            window.location.href = base_url + 'builder/download_dump/' + sys_password;
+        }
+    });
+
+    $('body').on('click', '#js_toolbar_download_zip', function () {
+        var sys_password = prompt("Please enter system password");
+        if (sys_password != null) {
+            window.location.href = base_url + 'builder/download_zip/' + sys_password;
+        }
+    });
+
     $('body').on('click', '#js_toolbar_vblink', function () {
         var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         //var token = localStorage.getItem('toolBarToken');
@@ -126,6 +151,12 @@ $(function () {
         localStorage.removeItem("toolBarEnabled");
         localStorage.removeItem('toolBarToken');
         $('#builder_toolbar').hide();
+    });
+
+
+    // Init components
+    $('body').on('click', '.js_init_sortableform', function () {
+        initBuilderForm();
     });
 
     $('body').on('click', '#js_toolbar_highlighter', function () {
@@ -172,9 +203,78 @@ function update_cols(layout_boxes_id, cols) {
     });
 }
 
+function initBuilderForm() {
+
+    console.log("Start form sortable");
+
+    /* Form fields drag */
+    //var form = $('.form-body');
+    //$('.row', form).addClass('sortableForm');
+
+    $(".sortableForm").sortable({
+        connectWith: '.sortableForm',
+        cancel: null,
+
+        /* That's fired first */
+        start: function (event, ui) {
+            myArguments = {};
+            ui.placeholder.width(ui.item.width());
+            ui.placeholder.height(ui.item.height() - 20);
+        },
+        /* That's fired second */
+        remove: function (event, ui) {
+            /* Get array of items in the list where we removed the item */
+            myArguments = assembleData(this, myArguments);
+        },
+        /* That's fired thrird */
+        receive: function (event, ui) {
+            /* Get array of items where we added a new item */
+            myArguments = assembleData(this, myArguments);
+        },
+        update: function (e, ui) {
+            if (this === ui.item.parent()[0]) {
+                /* In case the change occures in the same container */
+                if (ui.sender == null) {
+                    myArguments = assembleData(this, myArguments);
+                }
+            }
+        },
+        /* That's fired last */
+        stop: function (event, ui) {
+            try {
+                var token = JSON.parse(atob(datatable.data('csrf')));
+                var token_name = token.name;
+                var token_hash = token.hash;
+            } catch (e) {
+                var token = JSON.parse(atob($('body').data('csrf')));
+                var token_name = token.name;
+                var token_hash = token.hash;
+            }
+            myArguments[token_name] = token_hash;
+            /* Send JSON to the server */
+            console.log("Send JSON to the server:<pre>" + JSON.stringify(myArguments) + "</pre>");
+
+            var current_form_id = ui.item.closest('.js_layout').attr('data-form_id');
+            var last_box_moved = ui.item.attr('id');
+
+            $.ajax({
+                url: base_url + "builder/update_layout_form_fields/" + current_form_id + "/" + last_box_moved,
+                type: 'post',
+                dataType: 'json',
+                data: myArguments,
+                cache: false
+            });
+            console.log(myArguments);
+        },
+    });
+    $('.formColumn').css('cursor', 'move');
+}
+
 function initBuilderTools() {
 
-    /* */
+
+
+    /* Change title layout box */
     $('.js_layouts_boxes_title').each(function () {
         var title = $(this).text().trim();
         var layou_box_id = $(this).data('layou_box_id');
@@ -182,16 +282,26 @@ function initBuilderTools() {
     });
 
     $('body').on('change', '.js_update_layout_box_title', function () {
-        var my_layout_box_id = my_layout_box.data("layou_box_id");
+        var my_layout_box_id = $(this).data("layou_box_id");
         var new_title = $(this).val();
-        alert(new_title);
+
+        try {
+            var token = JSON.parse(atob(datatable.data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        } catch (e) {
+            var token = JSON.parse(atob($('body').data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        }
+
         $.ajax({
             url: base_url + "builder/update_layout_box_title/" + my_layout_box_id,
-            data: { title: new_title },
+            type: 'post',
+            data: { title: new_title, token_name: token_hash },
             dataType: 'json',
             cache: false,
         });
-        my_container.remove();
     });
 
     /* Move to another layout */
@@ -276,7 +386,6 @@ function initBuilderTools() {
 
 
     /* Sort layoutboxes */
-    console.log("start Sortable");
     $(".connectedSortable").sortable({
         placeholder: 'ui-state-highlight',
         connectWith: '.connectedSortable',
@@ -374,8 +483,14 @@ function assembleData(object, arguments) {
 }
 
 function openBuilderFrame(link) {
-    $('#builderFrame').attr('src', link);
-    $('#builderFrameWrapper').show();
+
+    if ($('#builderFrameWrapper').is(':visible')) {
+        $('#builderFrameWrapper').hide();
+    } else {
+
+        $('#builderFrame').attr('src', link);
+        $('#builderFrameWrapper').show();
+    }
 }
 function closeBuilderFrame() {
     $('#builderFrameWrapper').hide();
