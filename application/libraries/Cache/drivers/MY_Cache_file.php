@@ -160,7 +160,7 @@ class MY_Cache_file extends CI_Driver
 	 */
 	public function delete($id)
 	{
-		return is_file($this->_cache_path . $id) ? unlink($this->_cache_path . $id) : FALSE;
+		return is_file($this->_cache_path . $id) ? @unlink($this->_cache_path . $id) : FALSE;
 	}
 
 	/**
