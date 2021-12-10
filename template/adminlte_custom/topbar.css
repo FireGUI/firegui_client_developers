@@ -28,17 +28,21 @@
   #builder_toolbar .btn-toolbar {
     display:inline-block;
   }
+  #builder_toolbar .btn-toolbar .btn {
+    font-size:12px;
+    padding: 4px 10px;
+  }
   
   /* Vertical toolbar */
   #builder_toolbar {
 position: fixed;
-    left: 45%;
+    left: 42%;
     top: 0;
     background-color: #03baff;
     margin: 0;
     padding: 8px 20px 8px 20px;
     border-radius: 0 0 20px 20px;
-    z-index: 9999999;
+    z-index: 999999;
   }
 
   #builder_toolbar .material-switch {
@@ -350,4 +354,27 @@ text-align: left;
   li.notification a h4,
   li.notification a p {
     margin-left: 0px!important;
+  }
+
+  .inline_input_text {
+    display:inline-block;
+    width:190px;
+  }
+
+  /* Sortable */
+
+  .formColumn_highlights {
+    border: solid 1px #ffbe69;
+  }
+
+  .builder_formcolumns_buttons {
+    position: absolute;
+    right: 12px;
+    top: -3px;
+    font-size: 10px;
+    color: #db7107;
+    display:none;
+  }
+  .builder_formcolumns_buttons i {
+    color: #db7107;
   }
