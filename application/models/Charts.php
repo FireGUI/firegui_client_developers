@@ -190,7 +190,9 @@ class Charts extends CI_Model
         foreach ($data as $key => $element) {
             foreach ($element['data'] as $Ym => $xy) {
                 $fisrt_day_of_month =                new DateTime($Ym . '-01');
-                $categories[] = $fisrt_day_of_month->format('M Y');
+                if (!in_array($fisrt_day_of_month->format('M Y'), $categories)) {
+                    $categories[] = $fisrt_day_of_month->format('M Y');
+                }
             }
             $data[$key]['categories'] = $categories;
         }
