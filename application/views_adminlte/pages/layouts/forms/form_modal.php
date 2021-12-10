@@ -1,9 +1,7 @@
 <?php
 $form_id = "form_{$form['forms']['forms_id']}";
 $bulk_mode = (is_array($value_id));
-$rowStart = '<div class="row sortableForm">';
-$rowEnd = '</div>';
-$rowCol = 0;
+
 ?>
 
 <?php
@@ -68,29 +66,37 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                 <div class="form-body">
                                     <div class="row sortableForm">
                                         <?php foreach ($form['forms_fields'] as $field) : ?>
-                                            <?php
-                                            // Stampa la prima row
-                                            echo $rowCol ? '' : $rowStart;
-                                            $col = $field['size'] ?: 6;
-                                            $rowCol += $col;
 
-                                            //debug($rowCol);
-
-                                            if ($rowCol > 12) {
-                                                $rowCol = $col;
-                                                echo $rowEnd, $rowStart;
-                                            }
-                                            ?>
                                             <?php if ($bulk_mode) : ?>
+
                                                 <div class="js_field_container">
                                                     <div class="col-lg-3">
                                                         <label>Edit this:</label>
                                                         <input type="checkbox" class="_form-control js_field_check" name="edit_fields[]" value="<?php echo $field['name']; ?>" />
                                                     </div>
                                                     <div class="col-lg-9">
+
                                                     <?php else : ?>
-                                                        <div class="formColumn <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>">
+                                                        <div id="<?php echo $field['id']; ?>" data-form_id="<?php echo $form['forms']['forms_id']; ?>" class=" formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>" data-id="<?php echo $field['id']; ?>" data-cols="<?php echo $field['size']; ?>">
+
+                                                            <!-- Builder buttons -->
+                                                            <div class="builder_formcolumns_buttons">
+                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_minus" data-toggle="tooltip" data-original-title="- columns">
+                                                                    <i class="fas fa-caret-left"></i>
+                                                                </a>
+                                                                Size
+                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_plus" data-toggle="tooltip" data-original-title="+ columns">
+                                                                    <i class="fas fa-caret-right"></i>
+                                                                </a>
+
+                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_delete btn-space" data-toggle="tooltip" data-original-title="Remove field">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </div>
+                                                            <!-- End Builder buttons -->
+
                                                         <?php endif; ?>
+
                                                         <?php echo $field['html']; ?>
 
                                                         </div>

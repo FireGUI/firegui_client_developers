@@ -69,6 +69,9 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
 .select2-container--open {
   z-index: 9999 !important;
 }
+.modal-dialog {
+  margin:55px auto;
+}
 
 @keyframes blinker {
   50% {

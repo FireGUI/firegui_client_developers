@@ -70,8 +70,8 @@
 
                     <button id="js_toolbar_console" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Dev Console"><span class="fas fa-terminal"></span></button>
 
-                    <button id="js_toolbar_download_dump" class="btn btn-default btn-spaced" data-toggle="tooltip" data-placement="left" data-container="body" title="Download Dump"><span class="fas fa-download"></span></button>
-                    <button id="js_toolbar_download_zip" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Download Full Zip"><span class="fas fa-cloud-download-alt"></span></button>
+                    <button id="js_toolbar_download_dump" class="btn btn-default btn-spaced" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Download Dump"><span class="fas fa-download"></span></button>
+                    <button id="js_toolbar_download_zip" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Download Full Zip"><span class="fas fa-cloud-download-alt"></span></button>
                     <!--
                     <button id="js_toolbar_backup" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Backup & Restore"><span class="fas fa-download"></span></button>
                     <button id="js_toolbar_query" class="btn btn-default" data-toggle="tooltip" data-placement="left" data-container="body" title="Query"><span class="fas fa-pen"></span></button>

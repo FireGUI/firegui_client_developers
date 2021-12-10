@@ -59,7 +59,39 @@ class Builder extends MY_Controller
         }
     }
 
+    /*
+    *   ----- FORMS ------
+    */
+    // Form position
+    public function update_form_fields_position($form_id)
+    {
 
+        $data = $this->input->post('undefined');
+
+        foreach ($data as $pos => $form_field_id) {
+            $this->db
+                ->where('forms_fields_forms_id', $form_id)
+                ->where('forms_fields_fields_id', $form_field_id)
+                ->update('forms_fields', [
+                    'forms_fields_order' => $pos,
+                ]);
+        }
+    }
+    // Form remove position
+    public function remove_form_field($field_id, $form_id)
+    {
+        $this->db->where('forms_fields_forms_id', $form_id)->where('forms_fields_fields_id', $field_id)->delete('forms_fields');
+    }
+
+    // Resize form fields
+    public function update_field_cols($field_id, $cols)
+    {
+        $this->db->where('forms_fields_fields_id', $field_id)->update("forms_fields", array("forms_fields_override_colsize" => $cols));
+    }
+
+    /*
+    *   ----- LAYOUT BOXES ------
+    */
 
     // Resize layout boxes
     public function update_layout_box_cols($layouts_boxes_id, $cols)
@@ -84,6 +116,24 @@ class Builder extends MY_Controller
         $title = $this->input->get('title');
         if ($title) {
             $this->db->where('layouts_boxes_id', $layout_box_id)->update("layouts_boxes", array("layouts_boxes_title" => $title));
+        }
+    }
+
+    /*
+    *   ----- SIDEBAR MENU ------
+    */
+
+    public function update_menu_item_position()
+    {
+
+        $data = $this->input->post('undefined');
+
+        foreach ($data as $pos => $menu_id) {
+            $this->db
+                ->where('menu_id', $menu_id)
+                ->update('menu', [
+                    'menu_order' => $pos,
+                ]);
         }
     }
 
