@@ -128,6 +128,12 @@ $(function () {
         $('#builder_toolbar').hide();
     });
 
+
+    // Init components
+    $('body').on('click', '.js_init_sortableform', function () {
+        initBuilderForm();
+    });
+
     $('body').on('click', '#js_toolbar_highlighter', function () {
 
         $('.js_layout').toggleClass('layout_highlight');
@@ -172,26 +178,93 @@ function update_cols(layout_boxes_id, cols) {
     });
 }
 
+function initBuilderForm() {
+
+    console.log("Start form sortable");
+
+    /* Form fields drag */
+    //var form = $('.form-body');
+    //$('.row', form).addClass('sortableForm');
+
+    $(".sortableForm").sortable({
+        connectWith: '.sortableForm',
+        cancel: null,
+
+        /* That's fired first */
+        start: function (event, ui) {
+            myArguments = {};
+            ui.placeholder.width(ui.item.width());
+            ui.placeholder.height(ui.item.height() - 20);
+        },
+        /* That's fired second */
+        remove: function (event, ui) {
+            /* Get array of items in the list where we removed the item */
+            myArguments = assembleData(this, myArguments);
+        },
+        /* That's fired thrird */
+        receive: function (event, ui) {
+            /* Get array of items where we added a new item */
+            myArguments = assembleData(this, myArguments);
+        },
+        update: function (e, ui) {
+            if (this === ui.item.parent()[0]) {
+                /* In case the change occures in the same container */
+                if (ui.sender == null) {
+                    myArguments = assembleData(this, myArguments);
+                }
+            }
+        },
+        /* That's fired last */
+        stop: function (event, ui) {
+            try {
+                var token = JSON.parse(atob(datatable.data('csrf')));
+                var token_name = token.name;
+                var token_hash = token.hash;
+            } catch (e) {
+                var token = JSON.parse(atob($('body').data('csrf')));
+                var token_name = token.name;
+                var token_hash = token.hash;
+            }
+            myArguments[token_name] = token_hash;
+            /* Send JSON to the server */
+            console.log("Send JSON to the server:<pre>" + JSON.stringify(myArguments) + "</pre>");
+
+            var current_form_id = ui.item.closest('.js_layout').attr('data-form_id');
+            var last_box_moved = ui.item.attr('id');
+
+            $.ajax({
+                url: base_url + "builder/update_layout_form_fields/" + current_form_id + "/" + last_box_moved,
+                type: 'post',
+                dataType: 'json',
+                data: myArguments,
+                cache: false
+            });
+            console.log(myArguments);
+        },
+    });
+    $('.formColumn').css('cursor', 'move');
+}
+
 function initBuilderTools() {
 
-    /* */
+
+
+    /* Change title layout box */
     $('.js_layouts_boxes_title').each(function () {
         var title = $(this).text().trim();
         var layou_box_id = $(this).data('layou_box_id');
         $(this).replaceWith('<input data-layou_box_id="' + layou_box_id + '" class="form-control input-sm js_update_layout_box_title" type="text" name="title" value="' + title + '" />');
     });
 
-    $('body').on('change', '.js_update_layout_box_title', function () {
-        var my_layout_box_id = my_layout_box.data("layou_box_id");
+    $('body').on('keyup', '.js_update_layout_box_title', function () {
+        var my_layout_box_id = $(this).data("layou_box_id");
         var new_title = $(this).val();
-        alert(new_title);
         $.ajax({
             url: base_url + "builder/update_layout_box_title/" + my_layout_box_id,
             data: { title: new_title },
             dataType: 'json',
             cache: false,
         });
-        my_container.remove();
     });
 
     /* Move to another layout */
@@ -276,7 +349,6 @@ function initBuilderTools() {
 
 
     /* Sort layoutboxes */
-    console.log("start Sortable");
     $(".connectedSortable").sortable({
         placeholder: 'ui-state-highlight',
         connectWith: '.connectedSortable',
