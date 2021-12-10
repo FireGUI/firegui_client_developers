@@ -25,6 +25,14 @@ class Db_ajax extends MY_Controller
             show_error('Usage: save_form/{formId}/{editMode? true:false}/{valueId?}');
         }
 
+        /**
+         * 2021-12-09 - Michael E., Matteo P.
+         * Queste 3 righe di codice son state fatte perchè per qualche motivo, sul crm di efficient driving, form di modifica trainer (layout 8, form 9) c'è questo parametro '0' sulla global $_POST.
+         */
+        if (isset($_POST[0])) {
+            unset($_POST[0]);
+        }
+
         // ==========================
         // Load form related infos
         // ==========================

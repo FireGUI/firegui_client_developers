@@ -49,6 +49,13 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
 
 ?>
+
+<style>
+    .scrollable {
+        max-height: 600px;
+        overflow-y: scroll;
+    }
+</style>
 <div class="row">
     <div class="col-lg-2 col-md-3">
         <?php if ($data['calendars']['calendars_filter_entity_id']) : ?>
@@ -77,23 +84,25 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
             natcasesort($filter_data);
             ?>
-            <?php foreach ($filter_data as $id => $nome) : ?>
-                <?php if ($detailsLink) : ?>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
-                            <?php echo anchor($detailsLink . '/' . $id, $nome, ['data-toggle' => 'tooltip', 'title' => 'Visualizza ' . $nome]); ?>
-                        </label>
-                    </div>
-                <?php else : ?>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
-                            <?php echo $nome; ?>
-                        </label>
-                    </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
+            <div class="scrollable">
+                <?php foreach ($filter_data as $id => $nome) : ?>
+                    <?php if ($detailsLink) : ?>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
+                                <?php echo anchor($detailsLink . '/' . $id, $nome, ['data-toggle' => 'tooltip', 'title' => 'Visualizza ' . $nome]); ?>
+                            </label>
+                        </div>
+                    <?php else : ?>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
+                                <?php echo $nome; ?>
+                            </label>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
         <div class="calendar_custom_area"></div>
     </div>
