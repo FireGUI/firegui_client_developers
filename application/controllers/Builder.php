@@ -81,8 +81,10 @@ class Builder extends MY_Controller
     // Update layout title
     public function update_layout_box_title($layout_box_id)
     {
-        $title = $this->input->post('title');
-        $this->db->where('layouts_boxes_id', $layout_box_id)->update("layouts_boxes", array("layouts_boxes_title" => $title));
+        $title = $this->input->get('title');
+        if ($title) {
+            $this->db->where('layouts_boxes_id', $layout_box_id)->update("layouts_boxes", array("layouts_boxes_title" => $title));
+        }
     }
 
 

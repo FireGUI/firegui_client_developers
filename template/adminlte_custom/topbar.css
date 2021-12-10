@@ -68,7 +68,7 @@ position: fixed;
     right:0px;
     background-color:white;
     font-size:11px;
-    z-index:999999
+    z-index:999999;
   }
   .label_highlight_l{
     color:#0763db!important;
