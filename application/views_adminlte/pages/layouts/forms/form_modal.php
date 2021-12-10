@@ -1,7 +1,7 @@
 <?php
 $form_id = "form_{$form['forms']['forms_id']}";
 $bulk_mode = (is_array($value_id));
-$rowStart = '<div class="row">';
+$rowStart = '<div class="row sortableForm">';
 $rowEnd = '</div>';
 $rowCol = 0;
 ?>
@@ -30,26 +30,28 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
         <div class="modal-content">
             <div class="modal-header">
 
-             
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
-                 
-                  <!-- Builder actions -->
-                  <button type="button" style="float:right" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Form builder">
-                  <i class="fa fa-hat-wizard" ></i>
-                </button>
-                <button type="button" style="float:right" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Form option">
-                  <i class="fa fa-edit" ></i>
+                    <span aria-hidden="true">×</span>
                 </button>
 
-                
-<!-- End Builder actions -->
+                <!-- Builder actions -->
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form builder">
+                    <i class="fas fa-hat-wizard"></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form option">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_init_sortableform hide">
+                    <i class="fas fa-arrows-alt"></i>
+                </button>
+                <!-- End Builder actions -->
 
-                    
+
                 <h4 class="modal-title" id="myModalLabel"><?php echo t(ucwords(str_replace('_', ' ', $form['forms']['forms_name']))); ?></h4>
             </div>
             <div class="modal-body">
-                <div class="container-fluid">
+                <div class="container-fluid" data-form_id="<?php echo $form['forms']['forms_id']; ?>">
                     <div class="row">
                         <div class="col-xs-12">
 
@@ -64,7 +66,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                 <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
 
                                 <div class="form-body">
-                                    <div class="row">
+                                    <div class="row sortableForm">
                                         <?php foreach ($form['forms_fields'] as $field) : ?>
                                             <?php
                                             // Stampa la prima row
@@ -87,7 +89,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                                     </div>
                                                     <div class="col-lg-9">
                                                     <?php else : ?>
-                                                        <div class="<?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>">
+                                                        <div class="formColumn <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>">
                                                         <?php endif; ?>
                                                         <?php echo $field['html']; ?>
 
