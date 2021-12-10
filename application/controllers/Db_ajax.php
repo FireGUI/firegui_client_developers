@@ -928,22 +928,31 @@ class Db_ajax extends MY_Controller
             if ($relations->num_rows() == 0) { //Allora il campo non punta a una relazione ma a una tabella diretta
                 //Cerco allora la tabella
 
-                $entity_data = $this->datab->get_entity_by_name($field['fields_ref']);
+                $file_table = $field['fields_ref'];
+                $entity_data = $this->datab->get_entity_by_name($file_table);
 
                 //Cerco il campo file e lo uso per inserire
                 $field_insert = false;
                 foreach ($entity_data['fields'] as $_field) {
-                    if (in_array($_field['fields_draw_html_type'], ['upload_image', 'upload'])) {
+                    if (in_array(
+                        $_field['fields_draw_html_type'],
+                        ['upload_image', 'upload']
+                    )) {
                         $field_insert = $_field;
                     }
                 }
                 if (!$field_insert) {
+                    //debug($file_table);
                     echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
                     exit;
                 }
+                //debug($_FILES, true);
+                $_FILES[$field_insert['fields_name']] = $_FILES[$field['fields_name']];
+                unset($_FILES[$field['fields_name']]);
 
                 $data = $this->apilib->create($field['fields_ref'], [], true);
-                echo json_encode(['status' => 1, 'file' => $data[$field['fields_ref']] . '_id']);
+                //debug($data);
+                echo json_encode(['status' => 1, 'file' => $data[$field['fields_ref'] . '_id']]);
             } else {
 
 
