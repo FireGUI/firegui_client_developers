@@ -90,6 +90,31 @@ $(function () {
 
     // ********* Toolbar buttons *************
 
+
+    $('body').on('change', '#js_toolbar_maintenance', function () {
+        console.log("Switch maintenance");
+        $.ajax({
+            url: base_url + "builder/switch_maintenance/",
+            success: function (data) {
+                window.location.reload();
+            },
+        });
+    });
+
+    $('body').on('click', '#js_toolbar_download_dump', function () {
+        var sys_password = prompt("Please enter system password");
+        if (sys_password != null) {
+            window.location.href = base_url + 'builder/download_dump/' + sys_password;
+        }
+    });
+
+    $('body').on('click', '#js_toolbar_download_zip', function () {
+        var sys_password = prompt("Please enter system password");
+        if (sys_password != null) {
+            window.location.href = base_url + 'builder/download_zip/' + sys_password;
+        }
+    });
+
     $('body').on('click', '#js_toolbar_vblink', function () {
         var layout_id = $('#js_layout_content_wrapper').data('layout-id');
         //var token = localStorage.getItem('toolBarToken');
@@ -182,16 +207,26 @@ function initBuilderTools() {
     });
 
     $('body').on('change', '.js_update_layout_box_title', function () {
-        var my_layout_box_id = my_layout_box.data("layou_box_id");
+        var my_layout_box_id = $(this).data("layou_box_id");
         var new_title = $(this).val();
-        alert(new_title);
+
+        try {
+            var token = JSON.parse(atob(datatable.data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        } catch (e) {
+            var token = JSON.parse(atob($('body').data('csrf')));
+            var token_name = token.name;
+            var token_hash = token.hash;
+        }
+
         $.ajax({
             url: base_url + "builder/update_layout_box_title/" + my_layout_box_id,
-            data: { title: new_title },
+            type: 'post',
+            data: { title: new_title, token_name: token_hash },
             dataType: 'json',
             cache: false,
         });
-        my_container.remove();
     });
 
     /* Move to another layout */
@@ -374,8 +409,14 @@ function assembleData(object, arguments) {
 }
 
 function openBuilderFrame(link) {
-    $('#builderFrame').attr('src', link);
-    $('#builderFrameWrapper').show();
+
+    if ($('#builderFrameWrapper').is(':visible')) {
+        $('#builderFrameWrapper').hide();
+    } else {
+
+        $('#builderFrame').attr('src', link);
+        $('#builderFrameWrapper').show();
+    }
 }
 function closeBuilderFrame() {
     $('#builderFrameWrapper').hide();
