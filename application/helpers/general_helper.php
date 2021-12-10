@@ -1497,5 +1497,44 @@ if (!function_exists('progress')) {
         </script>
         '
         );
+        return $perc;
+    }
+}
+if (!function_exists('createFolderRecursive')) {
+    function createFolderRecursive($path, $remove_last_chunk = false)
+    {
+        $exploded = explode('/', $path);
+        $parents = '';
+        foreach ($exploded as $key => $folder) {
+            if (!($remove_last_chunk && ($key + 1 == count($exploded)))) {
+                if (!is_dir($parents . $folder)) {
+                    mkdir($parents . $folder, 0755, true);
+                }
+                $parents .= $folder . '/';
+            }
+        }
+    }
+}
+
+if (!function_exists('imagecreatefromany')) {
+    function imagecreatefromany($src)
+    {
+        // switch (strtolower(substr($src, -4))) {
+        //     case '.jpg':
+        //     case 'jpeg':
+        //         $img = imagecreatefromjpeg($src);
+        //         break;
+        //     case '.png':
+        //         $img = imagecreatefrompng($src);
+        //         break;
+        //     case '.gif':
+        //         $img = imagecreatefromgif($src);
+        //         break;
+        //     default:
+        //         debug("Formato immagine '$src' non riconosciuto!", true);
+        //         break;
+        // }
+        $img = imagecreatefromstring(file_get_contents($src));
+        return $img;
     }
 }
