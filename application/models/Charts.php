@@ -169,13 +169,149 @@ class Charts extends CI_Model
     {
         switch ($chart['charts_x_datatype']) {
             case 'dates':
-
+                $data = $this->processDates($chart, $data);
+                break;
+            case 'month':
+                $data = $this->processMonths($chart, $data);
+                $data = $this->addMonthsCategories($data);
                 break;
             default:
-                throw new Exception("Charts x datatype '{$chart['charts_x_datatype']}' not recognized!");
+                //throw new Exception("Charts x datatype '{$chart['charts_x_datatype']}' not recognized!");
                 break;
         }
-        debug($chart);
-        debug($data, true);
+        $data = $this->processX($data);
+        $data = $this->processSeries($data);
+        //debug($data, true);
+        return $data;
+    }
+    private function addMonthsCategories($data)
+    {
+        $categories = [];
+        foreach ($data as $key => $element) {
+            foreach ($element['data'] as $Ym => $xy) {
+                $fisrt_day_of_month =                new DateTime($Ym . '-01');
+                $categories[] = $fisrt_day_of_month->format('M Y');
+            }
+            $data[$key]['categories'] = $categories;
+        }
+
+        return $data;
+    }
+    private function processX($data)
+    {
+        //debug($data);
+        foreach ($data as $key => $element) {
+
+            $element['x'] = array_keys($element['data']);
+            $data[$key] = $element;
+        }
+        return $data;
+    }
+    private function processSeries($data)
+    {
+        foreach ($data as $key => $element) {
+            $element['series'] = [];
+            //debug($element['data'], true);
+            foreach ($element['data'] as $key2 => $xy) {
+
+                $element['series'][$xy['x']] = $xy['y'];
+            }
+            $data[$key] = $element;
+            //$data['series'][] = $element['series'];
+        }
+        return $data;
+    }
+    private static function sortByDate($a, $b)
+    {
+        return ($a['x'] < $b['x']) ? -1 : 1;
+    }
+    private function fillDateColumns($data)
+    {
+
+        $dates = $dataFilled = [];
+        foreach ($data as $key => $xy) {
+            $dates[$xy['x']] = $xy;
+        }
+        if ($dates) {
+            $min_date = new DateTime(min(array_keys($dates)));
+            $max_date = new DateTime(max(array_keys($dates)));
+            $startDate = $min_date;
+            while ($startDate <= $max_date) {
+                $formattedStart = $startDate->format('Y-m-d');
+                $dataFilled[$formattedStart] = (empty($dates[$formattedStart])) ? ['x' => $formattedStart, 'y' => 0] : ['x' => $formattedStart, 'y' => $dates[$formattedStart]['y']];
+                $startDate->modify('+1 day');
+            }
+        }
+        //debug($dataFilled, true);
+        return $dataFilled;
+    }
+    private function fillMonthColumns($data)
+    {
+
+        $dates = $dataFilled = [];
+        foreach ($data as $key => $xy) {
+            $dates[$xy['x']] = $xy;
+        }
+        if ($dates) {
+            $min_date = new DateTime(min(array_keys($dates)));
+            $max_date = new DateTime(max(array_keys($dates)));
+            $startDate = $min_date;
+            while ($startDate <= $max_date) {
+                $formattedStart = $startDate->format('Y-m');
+                $dataFilled[$formattedStart] = (empty($dates[$formattedStart])) ? ['x' => $formattedStart, 'y' => 0] : ['x' => $formattedStart, 'y' => $dates[$formattedStart]['y']];
+                $startDate->modify('+1 month');
+            }
+        }
+        //debug($dataFilled, true);
+        return $dataFilled;
+        //$min_date =
+    }
+    public function processDates($chart, $data)
+    {
+        //debug($chart, true);
+        foreach ($data as $key => $element) {
+            //debug($element);
+            foreach ($element['data'] as $key2 => $xy) {
+                //debug($xy, true);
+                if (empty($xy['x'])) {
+                    unset($element['data'][$key2]);
+                } else {
+                    $element['data'][$key2]['x'] = dateFormat($xy['x']);
+                }
+            }
+
+            usort($element['data'], array('Charts', 'sortByDate'));
+
+            if ($chart['charts_fill_columns'] == DB_BOOL_TRUE) {
+                $element['data'] = $this->fillDateColumns($element['data']);
+            }
+
+            $data[$key] = $element;
+        }
+        return $data;
+    }
+    public function processMonths($chart, $data)
+    {
+        //debug($chart, true);
+        foreach ($data as $key => $element) {
+            //debug($element);
+            foreach ($element['data'] as $key2 => $xy) {
+                //debug($xy, true);
+                if (empty($xy['x'])) {
+                    unset($element['data'][$key2]);
+                } else {
+                    $element['data'][$key2]['x'] = dateFormat($xy['x'], 'Y-m');
+                }
+            }
+
+            usort($element['data'], array('Charts', 'sortByDate'));
+
+            if ($chart['charts_fill_columns'] == DB_BOOL_TRUE) {
+                $element['data'] = $this->fillMonthColumns($element['data']);
+            }
+
+            $data[$key] = $element;
+        }
+        return $data;
     }
 }
