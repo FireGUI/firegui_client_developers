@@ -39,7 +39,7 @@ $portletBgColorMap = [];
             <!-- Load layouts boxes -->
             <?php foreach ($row as $layout) : ?>
 
-                <div id="<?php echo $layout['layouts_boxes_id']; ?>" data-cols="<?php echo $layout['layouts_boxes_cols']; ?> " class="js_container_layout_box <?php echo sprintf('col-md-%s', $layout['layouts_boxes_cols']); ?> ">
+                <div data-id="<?php echo $layout['layouts_boxes_id']; ?>" data-cols="<?php echo $layout['layouts_boxes_cols']; ?> " class="js_container_layout_box <?php echo sprintf('col-md-%s', $layout['layouts_boxes_cols']); ?> ">
 
                     <?php $this->load->view('pages/layout_box', ['layout' => $layout]); ?>
 

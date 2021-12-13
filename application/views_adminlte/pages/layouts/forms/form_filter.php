@@ -5,6 +5,8 @@ $sess_data = $this->session->userdata(SESS_WHERE_DATA) ?: [];
 $_sess_where_data = array_get($sess_data, $form['forms']['forms_filter_session_key'], []);
 $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess_where_data);
 ?>
+
+
 <form <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form" enctype="multipart/form-data">
 
     <?php add_csrf(); ?>
