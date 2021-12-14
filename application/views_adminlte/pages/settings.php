@@ -42,12 +42,18 @@
                     <h3 class="box-title">Settings Pages</h3>
                 </div>
                 <div class="box-body">
-                    <ul>
-                        <?php foreach ($dati['settings_layouts'] as $layout) : ?>
-                            <li><a href="<?php echo base_url('main/layout/' . $layout['layouts_id']); ?>"><?php e(ucfirst(str_replace(array('_', '-'), ' ', $layout['layouts_title']))); ?></a></li>
-                        <?php endforeach; ?>
 
-                    </ul>
+                    <?php foreach ($dati['settings_layout'] as $key => $layouts) : ?>
+                        <h5><?php echo ($key) ? $key : t('Generic settings'); ?></h5>
+                        <ul>
+                            <?php foreach ($layouts as $layout) : ?>
+                                <li><a href="<?php echo base_url('main/layout/' . $layout['layouts_id']); ?>"><?php e(ucfirst(str_replace(array('_', '-'), ' ', $layout['layouts_title']))); ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endforeach; ?>
+
+
+
                 </div>
             </div>
         </div>
