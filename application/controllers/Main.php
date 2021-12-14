@@ -369,6 +369,37 @@ class Main extends MY_Controller
         $pagina = $this->load->view("pages/support_tables", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
+
+    /*
+    * General settings
+    */
+    public function settings()
+    {
+        if (!$this->datab->is_admin()) {
+            $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
+            $this->stampa($pagina);
+            return;
+        }
+
+        $dati['current_page'] = 'settings';
+
+        //Get all settings layout
+        $layouts = $this->db
+            ->where('layouts_settings', DB_BOOL_TRUE)
+            ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
+            ->order_by('layouts_title')
+
+            ->get('layouts')
+            ->result_array();
+
+        foreach ($layouts as $layout) {
+            $dati['settings_layout'][$layout['modules_name']][] = $layout;
+        }
+        debug($dati['settings_layout']);
+
+        $pagina = $this->load->view("pages/settings", array('dati' => $dati), true);
+        $this->stampa($pagina);
+    }
     /**
      * Translations page
      */

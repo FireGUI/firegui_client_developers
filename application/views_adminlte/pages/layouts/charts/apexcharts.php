@@ -4,6 +4,8 @@ $series = [];
 $categories = [];
 $labels = [];
 
+//debug($processed_data);
+
 foreach ($processed_data as $element) {
     if ($chart['charts_type'] == 'pie') { //Pie needs a different series structure
 
@@ -12,8 +14,12 @@ foreach ($processed_data as $element) {
             $labels[] = $xy['x'];
         }
     } else {
-        $serie = ['data' => []];
+
+        $serie = ['data' => [], 'name' => $element['element']['charts_elements_label']];
         foreach ($element['data'] as $key => $xy) {
+            if (!$xy['x']) {
+                $xy['x'] = ' ';
+            }
             $serie['data'][] = $xy;
         }
         $series[] = $serie;

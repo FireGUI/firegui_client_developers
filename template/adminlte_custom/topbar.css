@@ -6,6 +6,9 @@
   #builder_toolbar .btn-group {
     margin-right: 2px;
   }
+  #builder_toolbar .btn-spaced {
+    margin-left:10px;
+  }
   
   #builder_toolbar .btn-group-vertical {
     margin-bottom: 6px;
@@ -22,20 +25,30 @@
   #builder_toolbar .btn-group-vertical .btn {
       width:43px;
   }
+  #builder_toolbar .btn-toolbar {
+    display:inline-block;
+  }
+  #builder_toolbar .btn-toolbar .btn {
+    font-size:12px;
+    padding: 4px 10px;
+  }
   
   /* Vertical toolbar */
   #builder_toolbar {
-    position: fixed;
-    bottom: 100px;
-    width: 60px;
-    right: 0;
-    background-color: #f57100;
+position: fixed;
+    left: 42%;
+    top: 0;
+    background-color: #03baff;
     margin: 0;
-    padding-top: 10px;
-    padding-bottom: 6px;
-    padding-left: 12px;
-    border-radius: 0 0 0 6px;
-    z-index: 9999999;
+    padding: 8px 20px 8px 20px;
+    border-radius: 0 0 20px 20px;
+    z-index: 999999;
+  }
+
+  #builder_toolbar .material-switch {
+    display: inline-block;
+    margin-top: 7px;
+
   }
   
   /* Elements */
@@ -59,7 +72,7 @@
     right:0px;
     background-color:white;
     font-size:11px;
-    z-index:999999
+    z-index:999999;
   }
   .label_highlight_l{
     color:#0763db!important;
@@ -86,7 +99,7 @@
       width:90%;
       height:800px;
       position: absolute;
-      top:30px;
+      top:50px;
       right:70px;
       z-index:9999999;
       text-align:center;
@@ -114,10 +127,13 @@
   max-height: 50px;
 }
 
-
 .builder_console {
-  padding: 0px 0px 0px 230px;
+    padding: 0px 0px 0px 230px;
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
 }
+
 .builder_console.full_size {
   padding: 0px 0px 0px 0px;
   height: 845px;
@@ -338,4 +354,27 @@ text-align: left;
   li.notification a h4,
   li.notification a p {
     margin-left: 0px!important;
+  }
+
+  .inline_input_text {
+    display:inline-block;
+    width:190px;
+  }
+
+  /* Sortable */
+
+  .formColumn_highlights {
+    border: solid 1px #ffbe69;
+  }
+
+  .builder_formcolumns_buttons {
+    position: absolute;
+    right: 12px;
+    top: -3px;
+    font-size: 10px;
+    color: #db7107;
+    display:none;
+  }
+  .builder_formcolumns_buttons i {
+    color: #db7107;
   }

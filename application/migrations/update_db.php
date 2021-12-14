@@ -43,3 +43,9 @@ if ($this->db->dbdriver != 'postgres') {
 $updates['2.2.7'] = [
     "UPDATE layouts SET layouts_show_header = '" . DB_BOOL_FALSE . "' WHERE layouts_show_header IS NULL",
 ];
+
+
+$updates['2.2.9'] = [
+    "UPDATE layouts SET layouts_settings = '" . DB_BOOL_FALSE . "' WHERE layouts_identifier = 'system_settings'",
+    "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
+];

@@ -1,9 +1,7 @@
 <?php
 $form_id = "form_{$form['forms']['forms_id']}";
 $bulk_mode = (is_array($value_id));
-$rowStart = '<div class="row">';
-$rowEnd = '</div>';
-$rowCol = 0;
+
 ?>
 
 <?php
@@ -30,26 +28,28 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
         <div class="modal-content">
             <div class="modal-header">
 
-             
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span></button>
-                 
-                  <!-- Builder actions -->
-                  <button type="button" style="float:right" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Form builder">
-                  <i class="fa fa-hat-wizard" ></i>
-                </button>
-                <button type="button" style="float:right" class="btn btn-box-tool js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Form option">
-                  <i class="fa fa-edit" ></i>
+                    <span aria-hidden="true">×</span>
                 </button>
 
-                
-<!-- End Builder actions -->
+                <!-- Builder actions -->
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form builder">
+                    <i class="fas fa-hat-wizard"></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form option">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_init_sortableform hide">
+                    <i class="fas fa-arrows-alt"></i>
+                </button>
+                <!-- End Builder actions -->
 
-                    
+
                 <h4 class="modal-title" id="myModalLabel"><?php echo t(ucwords(str_replace('_', ' ', $form['forms']['forms_name']))); ?></h4>
             </div>
             <div class="modal-body">
-                <div class="container-fluid">
+                <div class="container-fluid" data-form_id="<?php echo $form['forms']['forms_id']; ?>">
                     <div class="row">
                         <div class="col-xs-12">
 
@@ -64,31 +64,39 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                 <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
 
                                 <div class="form-body">
-                                    <div class="row">
+                                    <div class="row sortableForm">
                                         <?php foreach ($form['forms_fields'] as $field) : ?>
-                                            <?php
-                                            // Stampa la prima row
-                                            echo $rowCol ? '' : $rowStart;
-                                            $col = $field['size'] ?: 6;
-                                            $rowCol += $col;
 
-                                            //debug($rowCol);
-
-                                            if ($rowCol > 12) {
-                                                $rowCol = $col;
-                                                echo $rowEnd, $rowStart;
-                                            }
-                                            ?>
                                             <?php if ($bulk_mode) : ?>
+
                                                 <div class="js_field_container">
                                                     <div class="col-lg-3">
                                                         <label>Edit this:</label>
                                                         <input type="checkbox" class="_form-control js_field_check" name="edit_fields[]" value="<?php echo $field['name']; ?>" />
                                                     </div>
                                                     <div class="col-lg-9">
+
                                                     <?php else : ?>
-                                                        <div class="<?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>">
+                                                        <div id="<?php echo $field['id']; ?>" data-form_id="<?php echo $form['forms']['forms_id']; ?>" class=" formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>" data-id="<?php echo $field['id']; ?>" data-cols="<?php echo $field['size']; ?>">
+
+                                                            <!-- Builder buttons -->
+                                                            <div class="builder_formcolumns_buttons">
+                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_minus" data-toggle="tooltip" data-original-title="- columns">
+                                                                    <i class="fas fa-caret-left"></i>
+                                                                </a>
+                                                                Size
+                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_plus" data-toggle="tooltip" data-original-title="+ columns">
+                                                                    <i class="fas fa-caret-right"></i>
+                                                                </a>
+
+                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_delete btn-space" data-toggle="tooltip" data-original-title="Remove field">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </div>
+                                                            <!-- End Builder buttons -->
+
                                                         <?php endif; ?>
+
                                                         <?php echo $field['html']; ?>
 
                                                         </div>

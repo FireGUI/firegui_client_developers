@@ -22,7 +22,7 @@
         {tpl-pre-sidebar_menu}
     </div>
     <!-- sidebar menu: : style can be found in sidebar.less -->
-    <ul class="sidebar-menu js_sidebar_menu" data-widget="tree">
+    <ul class="sidebar-menu sortableMenu js_sidebar_menu" data-widget="tree">
         <!-- END RESPONSIVE QUICK SEARCH FORM -->
         <li class="header"><?php e('MAIN SECTION'); ?></li>
         <?php
@@ -49,7 +49,7 @@
             ?>
 
             <?php if ($isLinkOrContainer) : ?>
-                <li class="js_sidebar_menu_item <?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
+                <li data-id="<?php echo $menu['menu_id']; ?>" class="js_sidebar_menu_item <?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
 
                     <a href="<?php echo $link ?: 'javascript:;'; ?>" class="<?php if ($menu['layouts_ajax_allowed'] == DB_BOOL_TRUE) : ?>js_ajax_content<?php endif; ?>" data-layout-id="<?php echo (!empty($menu['layouts_id'])) ? $menu['layouts_id'] : ''; ?>">
                         <i class="<?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i> <span class="title"><?php e($label, true, ['module_name' => $menu['menu_module']]); ?></span>

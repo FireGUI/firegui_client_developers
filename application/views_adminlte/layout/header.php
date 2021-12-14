@@ -145,6 +145,16 @@ $this->layout->addDinamicStylesheet($data, "header.css");
 
                     <?php if (!empty($profile_menu_list)) : ?>
 
+                        <!-- New general Settings -->
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <a href="<?php echo base_url('main/settings'); ?>"><i class="fas fa-cog"></i>
+                                        <?php e('General Settings'); ?></a>
+                                </div>
+                            </div>
+                        </li>
+
                         <?php foreach ($profile_menu_list as $menu) : ?>
                             <li class="user-body">
                                 <div class="row">
@@ -162,34 +172,8 @@ $this->layout->addDinamicStylesheet($data, "header.css");
 
 
                     <?php if ($this->datab->is_admin()) : ?>
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/permissions'); ?>"><i class="fas fa-lock"></i>
-                                        <?php e('Permissions'); ?></a>
-                                </div>
-                            </div>
 
 
-                        </li>
-
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/system_log'); ?>"><i class="fas fa-history"></i>
-                                        <?php e('System Log'); ?></a>
-                                </div>
-                            </div>
-                        </li>
-
-
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('api_manager'); ?>"><i class="fas fa-cubes"></i> <?php e('API Manager'); ?></a>
-                                </div>
-                            </div>
-                        </li>
 
                         <li class="user-body">
                             <div class="row">
@@ -210,14 +194,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                                 </div>
                             </div>
                         </li>
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/support_tables'); ?>"><i class="fas fa-wrench"></i>
-                                        <?php e('Support tables'); ?></a>
-                                </div>
-                            </div>
-                        </li>
+
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-12 text-center">
