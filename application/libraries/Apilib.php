@@ -476,8 +476,14 @@ class Apilib
      * Crea un nuovo record con il post passato e lo ritorna via json
      * @param string $entity
      */
-    public function create($entity = null, $data = null, $returnRecord = true)
+    public function create($entity = null, $data = null, $returnRecord = true, $direct_db = false)
     {
+
+        if ($direct_db) {
+            $output = $this->db->insert($entity, $data);
+            $this->apilib->clearCacheTags([$entity]);
+            return $output;
+        }
 
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -559,8 +565,13 @@ class Apilib
      * Ritorna i nuovi dati via json
      * @param string $entity
      */
-    public function edit($entity = null, $id = null, $data = null, $returnRecord = true)
+    public function edit($entity = null, $id = null, $data = null, $returnRecord = true, $direct_db = false)
     {
+        if ($direct_db) {
+            $output = $this->db->where($entity . '_id', $id)->update($entity, $data);
+            $this->apilib->clearCacheTags([$entity]);
+            return $output;
+        }
 
         if (!$entity or !$id) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -601,6 +612,7 @@ class Apilib
 
 
             $this->savePendingRelations($id);
+            $this->updateMultiuploadsRef($entity, $id, $_data);
 
             if ($this->db->CACHE) {
                 $this->db->CACHE->delete_all();
@@ -1745,7 +1757,49 @@ class Apilib
 
         return false;
     }
+    private function updateMultiuploadsRef($entity_name, $record_id, $data)
+    {
+        $entity = $this->datab->get_entity($entity_name);
+        $fields = $entity['fields'];
+        foreach ($fields as $field) {
+            //debug($field);
+            if (in_array($field['fields_draw_html_type'], ['multi_upload'])) {
+                if ($field['fields_ref'] && $data[$field['fields_name']]) {
+                    $relations = $this->db->where('relations_name', $field['fields_ref'])->get('relations');
 
+                    if ($relations->num_rows() == 0) { //Allora il campo non punta a una relazione ma a una tabella diretta
+                        //Cerco allora la tabella
+                        $file_table = $field['fields_ref'];
+                        $entity_data = $this->datab->get_entity_by_name($file_table);
+                        //Cerco il campo file e lo uso per inserire
+                        $field_related = false;
+                        foreach ($entity_data['fields'] as $_field) {
+                            if ($_field['fields_ref'] == $entity_name) {
+                                $field_related = $_field;
+                            }
+                        }
+                        if (!$field_related) {
+                            //debug($file_table);
+                            echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field related to '$entity_name')!"]);
+                            exit;
+                        }
+                        $files_ids = json_decode($data[$field['fields_name']], true);
+                        //debug($files_ids, true);
+                        foreach ($files_ids as $file_id) {
+                            $this->db
+                                ->where($file_table . '_id', $file_id)
+                                ->update($file_table, [
+                                    $field_related['fields_name'] => $record_id
+                                ]);
+                        }
+                    } else {
+                        //Already managed by savePendingRelations method
+                    }
+                }
+            }
+        }
+        //debug($entity, true);
+    }
 
     /**
      * Inserisci i dati delle relazioni pendenti sull'id passato

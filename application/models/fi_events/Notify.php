@@ -45,7 +45,7 @@ class Notify extends CI_Model
                 debug("Action what '{$this->_what}' not recognized!");
                 break;
         }
-
+        //debug($this, true);
         switch ($this->_what) {
             case 'email_custom':
             case 'email_tpl':
@@ -145,6 +145,7 @@ class Notify extends CI_Model
 
     private function sendEmails()
     {
+        //debug($this->_data, true);
         foreach ($this->_email_recipients as $email) {
             $headers = [];
 
@@ -161,9 +162,11 @@ class Notify extends CI_Model
             }
 
             if ($this->_what == 'email_custom') {
-                $this->mail_model->sendFromData($this->_to, ['template' => $this->_message, 'subject' => $this->_subject], $this->_data, $headers);
+                //debug($this);
+                $return = $this->mail_model->sendFromData($email, ['template' => $this->_message, 'subject' => $this->_subject], array_merge($this->_data, @(array)$this->_data['new']), $headers);
+                //debug($return, true);
             } elseif ($this->_what == 'email_tpl') {
-                $this->mail_model->send($this->_to, $this->_templateEmail, '', $this->_data, $headers);
+                $this->mail_model->send($email, $this->_templateEmail, '', $this->_data, $headers);
             } else {
                 debug("what '{$this->_what}' not supported!");
             }
