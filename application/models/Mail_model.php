@@ -208,7 +208,7 @@ class Mail_model extends CI_Model
         if ($this->isDeferred()) {
             return $this->queueEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
         } else {
-            return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
+            return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml, [], $attachments);
         }
     }
 
@@ -377,7 +377,7 @@ class Mail_model extends CI_Model
 
             $attachments = ($email['mail_attachments']) ? json_decode($email['mail_attachments'], true) : null;
 
-            $is_sent = $this->sendEmail($to, $headers, $subject, $body, $is_html, $attachments);
+            $is_sent = $this->sendEmail($to, $headers, $subject, $body, $is_html, [], $attachments);
 
             // Salvo sempre la data di tentato invio e il log solo se l'invio è fallito
             $this->db->where('mail_id', $email['mail_id'])->update('mail_queue', [
