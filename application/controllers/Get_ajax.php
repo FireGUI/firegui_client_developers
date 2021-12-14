@@ -1441,4 +1441,34 @@ class Get_ajax extends MY_Controller
 
         echo json_encode($out);
     }
+
+    public function image_from_base64()
+    {
+        $post = $this->input->post();
+
+        if (empty($postt) || empty($post['base64'])) {
+            die(json_encode(['status' => 0, 'txt' => t('No base64 given')]));
+        }
+
+        $b64 = $post['base64'];
+
+        $image = base64_decode($b64);
+
+        if ($data = getimagesizefromstring($image)) {
+            $ext = mime2ext($data['mime']);
+
+            if (!file_exists(FCPATH . 'uploads/editor') || !is_dir(FCPATH . 'uploads/editor')) {
+                @mkdir(FCPATH . 'uploads/editor');
+            }
+
+            $basepath = 'uploads/editor/' . md5($image) . '.' . $ext;
+            $filepath = FCPATH . $basepath;
+
+            file_put_contents($filepath, $image);
+
+            die(json_encode(['status' => 0, 'txt' => base_url($basepath)]));
+        } else {
+            die(json_encode(['status' => 0, 'txt' => t('Error')]));
+        }
+    }
 }
