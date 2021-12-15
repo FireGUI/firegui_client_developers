@@ -45,7 +45,7 @@ $updates['2.2.7'] = [
 ];
 
 
-$updates['2.2.9'] = [
-    "UPDATE layouts SET layouts_settings = '" . DB_BOOL_FALSE . "' WHERE layouts_identifier = 'system_settings'",
+$updates['2.2.8'] = [
+    "UPDATE layouts SET layouts_settings = '" . DB_BOOL_FALSE . "', layouts_title = 'General Settings' WHERE layouts_identifier = 'system_settings'",
     "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
 ];
