@@ -1446,13 +1446,11 @@ class Get_ajax extends MY_Controller
     {
         $post = $this->input->post();
 
-        if (empty($postt) || empty($post['base64'])) {
+        if (empty($post) || empty($post['base64'])) {
             die(json_encode(['status' => 0, 'txt' => t('No base64 given')]));
         }
 
-        $b64 = $post['base64'];
-
-        $image = base64_decode($b64);
+        $image = base64_decode($post['base64']);
 
         if ($data = getimagesizefromstring($image)) {
             $ext = mime2ext($data['mime']);
