@@ -131,7 +131,7 @@ function initTinymce(container = null) {
                 async: false,
                 data: {
                     [token_name]: token_hash,
-                    b64: blobInfo.base64()
+                    base64: blobInfo.base64()
                 },
                 success: function(res) {
                     success(res.location);
