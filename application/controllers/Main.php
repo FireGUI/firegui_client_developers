@@ -388,14 +388,12 @@ class Main extends MY_Controller
             ->where('layouts_settings', DB_BOOL_TRUE)
             ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
             ->order_by('layouts_title')
-
             ->get('layouts')
             ->result_array();
 
         foreach ($layouts as $layout) {
             $dati['settings_layout'][$layout['modules_name']][] = $layout;
         }
-        debug($dati['settings_layout']);
 
         $pagina = $this->load->view("pages/settings", array('dati' => $dati), true);
         $this->stampa($pagina);
