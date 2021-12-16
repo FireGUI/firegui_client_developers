@@ -395,7 +395,7 @@ class Main extends MY_Controller
         foreach ($layouts as $layout) {
             $dati['settings_layout'][$layout['modules_name']][] = $layout;
         }
-        debug($dati['settings_layout']);
+
 
         $pagina = $this->load->view("pages/settings", array('dati' => $dati), true);
         $this->stampa($pagina);
