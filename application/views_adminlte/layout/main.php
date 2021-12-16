@@ -48,8 +48,11 @@
         <?php echo $footer; ?>
     </div>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 4c85999b1ec768e39a270e04d6649ca19ee52dec
     <div id="builderFrameWrapper">
         <iframe id="builderFrame" src=""></iframe>
     </div>
