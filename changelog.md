@@ -1,3 +1,3 @@
-Changelog version 2.2.8
+Changelog version 2.2.9
  
-Beta builder in client
+Beta
