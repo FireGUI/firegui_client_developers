@@ -31,7 +31,7 @@ if (isset($grid_data['data'])) {
                 if (!empty($dato[$grid['replaces']['thumbnail']['fields_name']])) {
                     $item['thumb'] = base_url_uploads('uploads/' . $dato[$grid['replaces']['thumbnail']['fields_name']]);
                 } else {
-                    base_url('/images/user.png');
+                    $item['thumb'] = base_url('/images/user.png');
                 }
             }
         }
