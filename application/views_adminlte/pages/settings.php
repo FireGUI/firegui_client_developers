@@ -70,6 +70,7 @@
                         <li><a href="<?php echo base_url('main/system_log'); ?>"><?php e('System logs'); ?></a></li>
                         <li><?php e('Email logs'); ?></li>
                         <li><a href=""><?php e('API logs'); ?></a></li>
+                        <li><a href="<?php echo base_url('main/layout/changelog'); ?>"><?php e('Changelog'); ?></a></li>
                     </ul>
                 </div>
             </div>
