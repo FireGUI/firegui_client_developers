@@ -956,3 +956,21 @@ td div.action-list {
 .menu_group {
   margin-bottom: 20px;
 }
+
+
+  .js_loading {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    text-align: center;
+    color: #ffffff;
+    z-index: 10002;
+}
+
+.js_loading img {
+  max-height: 50px;
+}

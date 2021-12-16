@@ -31,3 +31,7 @@ $updates['2.2.3'] = [
         '2.2.3_layouts_show_header_field.php'
     ],
 ];
+
+$updates['2.2.9'] = [
+    'include' => ['2.2.9_fields_settings_email.php'],
+];
