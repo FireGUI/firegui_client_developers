@@ -338,17 +338,18 @@ class CI_Input
 	 * Accepts an arbitrary number of parameters (up to 7) or an associative
 	 * array in the first parameter containing all the values.
 	 *
-	 * @param	string|mixed[]	$name		Cookie name or an array containing parameters
-	 * @param	string		$value		Cookie value
-	 * @param	int		$expire		Cookie expiration time in seconds
-	 * @param	string		$domain		Cookie domain (e.g.: '.yourdomain.com')
-	 * @param	string		$path		Cookie path (default: '/')
-	 * @param	string		$prefix		Cookie name prefix
-	 * @param	bool		$secure		Whether to only transfer cookies via SSL
-	 * @param	bool		$httponly	Whether to only makes the cookie accessible via HTTP (no javascript)
-	 * @return	void
+	 * @param   string|mixed[]  $name       Cookie name or an array containing parameters
+	 * @param   string      $value      Cookie value
+	 * @param   int     $expire     Cookie expiration time in seconds
+	 * @param   string      $domain     Cookie domain (e.g.: '.yourdomain.com')
+	 * @param   string      $path       Cookie path (default: '/')
+	 * @param   string      $prefix     Cookie name prefix
+	 * @param   bool        $secure     Whether to only transfer cookies via SSL
+	 * @param   bool        $httponly   Whether to only makes the cookie accessible via HTTP (no javascript)
+	 * @param   string|NULL $samesite   The SameSite cookie setting (Possible values: 'Lax', 'Strict', 'None', NULL, default: NULL)
+	 * @return  void
 	 */
-	public function set_cookie($name, $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $secure = NULL, $httponly = NULL)
+	public function set_cookie($name, $value = '', $expire = 0, $domain = '', $path = '/', $prefix = '', $secure = NULL, $httponly = NULL, $samesite = NULL)
 	{
 		if (is_array($name)) {
 			// always leave 'name' in last place, as the loop will break otherwise, due to $$item
@@ -379,13 +380,47 @@ class CI_Input
 			? (bool) config_item('cookie_httponly')
 			: (bool) $httponly;
 
-		if (!is_numeric($expire)) {
-			$expire = time() - 86500;
+		if (!is_numeric($expire) or $expire < 0) {
+			$expire =			time() - 86500;;
 		} else {
 			$expire = ($expire > 0) ? time() + $expire : 0;
 		}
 
-		setcookie($prefix . $name, $value, $expire, $path, $domain, $secure, $httponly);
+		if ($samesite === '' && config_item('cookie_samesite') !== '') {
+			$samesite = config_item('cookie_samesite');
+		}
+
+		$samesite = is_string($samesite) ? ucfirst($samesite) : $samesite;
+
+		if (!in_array($samesite, array('Lax', 'Strict', 'None', NULL), true)) {
+			show_error("The SameSite cookie setting should be one of: 'Lax', 'Strict', 'None' or NULL.");
+		}
+
+		// Issue: https://github.com/bcit-ci/CodeIgniter/issues/5791
+		// Reference: https://stackoverflow.com/questions/39750906/php-setcookie-samesite-strict
+		if (PHP_VERSION_ID < 70300) {
+			setcookie(
+				$prefix . $name,
+				$value,
+				$expire,
+				$path . '; samesite=' . $samesite,
+				$domain,
+				$secure,
+				$httponly
+			);
+		} else {
+			setcookie(
+				$prefix . $name,
+				$value,
+				array(
+					'path' => $path,
+					'domain' => $domain,
+					'secure' => $secure,
+					'httponly' => $httponly,
+					'samesite' => $samesite
+				)
+			);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -579,9 +614,11 @@ class CI_Input
 			// but that when present will trip our 'Disallowed Key Characters' alarm
 			// http://www.ietf.org/rfc/rfc2109.txt
 			// note that the key names below are single quoted strings, and are not PHP variables
-			unset($_COOKIE['$Version'],
-			$_COOKIE['$Path'],
-			$_COOKIE['$Domain']);
+			unset(
+				$_COOKIE['$Version'],
+				$_COOKIE['$Path'],
+				$_COOKIE['$Domain']
+			);
 
 			foreach ($_COOKIE as $key => $val) {
 				if (($cookie_key = $this->_clean_input_keys($key)) !== FALSE) {
