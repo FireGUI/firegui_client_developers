@@ -49,3 +49,7 @@ $updates['2.2.8'] = [
     "UPDATE layouts SET layouts_settings = '" . DB_BOOL_FALSE . "', layouts_title = 'General Settings' WHERE layouts_identifier = 'system_settings'",
     "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
 ];
+
+$updates['2.2.9'] = [
+    "ALTER TABLE settings ADD COLUMN settings_company_email_update_notifications VARCHAR(250);",
+];
