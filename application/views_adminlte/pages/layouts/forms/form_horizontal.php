@@ -28,7 +28,7 @@ $form_id = "form_{$form['forms']['forms_id']}";
                 <div data-form_id="<?php echo $form['forms']['forms_id']; ?>" class="formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size']); ?>" data-id="<?php echo $field['id']; ?>" data-cols="<?php echo $field['size']; ?>">
 
                     <!-- Builder buttons -->
-                    <div class="builder_formcolumns_buttons">
+                    <div class="builder_formcolumns_buttons hide">
                         <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_minus" data-toggle="tooltip" data-original-title="- columns">
                             <i class="fas fa-caret-left"></i>
                         </a>
