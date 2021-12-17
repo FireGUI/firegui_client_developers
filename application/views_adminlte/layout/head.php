@@ -57,7 +57,6 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <!-- CUSTOM CSS -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/topbar.css?v=" . VERSION); ?>" />
 
 <!-- STYLE OVERRIDE -->
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
