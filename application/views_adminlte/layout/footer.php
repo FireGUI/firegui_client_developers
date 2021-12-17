@@ -179,5 +179,3 @@
 <?php if ($this->auth->check()) :  ?>
   <script src="<?php echo base_url_template("script/js/crmNotifier.js?v=" . VERSION); ?>"></script>
 <?php endif; ?>
-
-<script src="<?php echo base_url_scripts("script/js/topbar.js?v=" . VERSION); ?>"></script>
