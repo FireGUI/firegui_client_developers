@@ -10,13 +10,13 @@ try {
     var token_name = token.name;
     var token_hash = token.hash;
 }
-CrmNewInlineTable.prototype.getDatatableHandler = function () {
+CrmNewInlineTable.prototype.getDatatableHandler = function() {
     return this.grid.dataTable();
 };
-CrmNewInlineTable.prototype.getEntityName = function () {
+CrmNewInlineTable.prototype.getEntityName = function() {
     return this.grid.data('entity');
 };
-CrmNewInlineTable.prototype.createRow = function (id) {
+CrmNewInlineTable.prototype.createRow = function(id) {
 
 
     // Devo sapere quante colonne ho per prima cosa
@@ -35,7 +35,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     var form = $('form', form_container);
 
     //Inserisco un nuovo TR con i vari TD
-    jqThs.each(function () {
+    jqThs.each(function() {
         var name = $(this).attr('data-name');
 
         if (name == '_foo') {
@@ -68,7 +68,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                     cloned_field.find('span').remove();
                     cloned_field.attr('placeholder', $(this).html());
 
-                    if (field_container.hasClass('js_form_datetimepicker')) {
+                    if (field_container.hasClass('js_form_datetimepicker') || field_container.hasClass('js_form_datepicker')) {
                         field_html += field_container.prop('outerHTML');
                     } else {
                         field_html += cloned_field.prop('outerHTML');
@@ -85,7 +85,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     tr.append($('<td>' + button_save.prop('outerHTML') + '</td>'));
 
     //Aggiungo comunque gli hidden
-    $('[type="hidden"]', form).each(function () {
+    $('[type="hidden"]', form).each(function() {
         if ($(this).attr('name') == parent_field) {
             $(this).val(parent_id);
         }
@@ -100,7 +100,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
     initComponents(tr, true);
 };
 
-CrmNewInlineTable.prototype.editRow = function (tr, id) {
+CrmNewInlineTable.prototype.editRow = function(tr, id) {
 
     var nRow = tr[0];
     var datatable = this.getDatatableHandler();
@@ -117,9 +117,9 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     //Step 2: popolo i valori del form clonato in base ai valori dell'attuale riga (faccio un ajax per avere i dati completi, più sicuro)
     $.ajax(base_url + 'get_ajax/getJsonRecord/' + entityName + '/' + id, {
         dataType: 'json',
-        success: function (data) {
+        success: function(data) {
             var selects_vals = [];
-            $(':input', row_with_form).each(function () {
+            $(':input', row_with_form).each(function() {
                 //Se il name contiene [] allora è una multiselect
                 if ($(this).attr('name') && $(this).attr('name').endsWith('[]')) {
                     var field_name = $(this)
@@ -173,7 +173,7 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
                 .append('<input type="hidden" name="' + entityName + '_id" value="' + data.data[entityName + '_id'] + '" />');
 
             //Hidden fields must be always cloned (ex.: csrf field...)
-            $('[type="hidden"]', form).each(function () {
+            $('[type="hidden"]', form).each(function() {
                 if ($('[name="' + $(this).attr('name') + '"]', row_with_form).length == 0) {
                     $('td', row_with_form).first().append($(this).clone());
                 }
@@ -186,12 +186,12 @@ CrmNewInlineTable.prototype.editRow = function (tr, id) {
     tr.replaceWith(row_with_form);
 };
 
-CrmNewInlineTable.prototype.deleteRow = function (nRow, id) {
+CrmNewInlineTable.prototype.deleteRow = function(nRow, id) {
     var datatable = this.getDatatableHandler();
     var aData = datatable.fnGetData(nRow);
 
     $.ajax(base_url + 'db_ajax/generic_delete/' + this.getEntityName() + '/' + id, {
-        success: function () {
+        success: function() {
             datatable.fnDeleteRow(nRow);
         },
     });
@@ -202,7 +202,7 @@ CrmNewInlineTable.prototype.deleteRow = function (nRow, id) {
  *
  * @returns {null}
  */
-CrmNewInlineTable.prototype.saveRow = function (button) {
+CrmNewInlineTable.prototype.saveRow = function(button) {
     var row = button.closest('tr');
     var datatable = this.getDatatableHandler();
 
@@ -212,7 +212,7 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
     var data = {};
     var id = '';
 
-    jqInputs.each(function () {
+    jqInputs.each(function() {
         var input = $(this);
         var name = input.attr('name');
 
@@ -241,7 +241,7 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
     var grid = this.grid;
 
     $.post(form.attr('action') + append, data)
-        .success(function () {
+        .success(function() {
             if (grid.ajax) {
                 row.remove();
                 datatable.fnDraw();
@@ -251,16 +251,16 @@ CrmNewInlineTable.prototype.saveRow = function (button) {
             }
 
         })
-        .error(function () {
+        .error(function() {
             console.log('ERRORE...');
         });
 };
-CrmNewInlineTable.prototype.registerEvents = function () {
+CrmNewInlineTable.prototype.registerEvents = function() {
     var inlineTable = this;
     var gridID = this.grid.data('grid-id');
 
     // Edit record
-    this.grid.on('click', '.js_save_row', function (e) {
+    this.grid.on('click', '.js_save_row', function(e) {
         inlineTable.saveRow($(this));
     });
 
@@ -272,7 +272,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     // });
 
     // Edit record
-    this.grid.on('click', '.js_edit', function (e) {
+    this.grid.on('click', '.js_edit', function(e) {
         e.preventDefault();
 
 
@@ -286,7 +286,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     });
 
     // Delete record
-    this.grid.on('click', '.js_delete', function (e) {
+    this.grid.on('click', '.js_delete', function(e) {
         e.preventDefault();
 
         if (confirm('Are you sure?') == false) {
@@ -298,7 +298,7 @@ CrmNewInlineTable.prototype.registerEvents = function () {
     });
 
     // Create empty record
-    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function (e) {
+    $('.js_datatable_inline_add[data-grid-id="' + gridID + '"]').on('click', function(e) {
 
         e.preventDefault();
         inlineTable.createRow();
@@ -337,7 +337,7 @@ function initTable(grid) {
     var defaultLimit = parseInt(oDataTable.attr('default-limit'));
 
     var aoColumns = [];
-    $('> thead > tr > th', oDataTable).each(function () {
+    $('> thead > tr > th', oDataTable).each(function() {
         var coldef = null;
         coldef = {
             bSortable: bEnableOrder && typeof $(this).attr('data-prevent-order') === 'undefined',
@@ -352,7 +352,7 @@ function initTable(grid) {
             [10, 50, 100, 200, 500, -1],
             [10, 50, 100, 200, 500, 'Tutti'],
         ] :
-            JSON.parse(oDataTable.attr('data-lengthmenu'));
+        JSON.parse(oDataTable.attr('data-lengthmenu'));
 
     var datatable = oDataTable.dataTable({
         stateSave: true,
@@ -371,7 +371,7 @@ function initTable(grid) {
         oLanguage: {
             sUrl: base_url_scripts + 'script/datatable.transl.json',
         },
-        fnServerParams: function (aoData) {
+        fnServerParams: function(aoData) {
             aoData.push({ name: token_name, value: token_hash });
             //console.log(aoData);
         },
@@ -381,7 +381,7 @@ function initTable(grid) {
 }
 
 function startNewDatatableInline() {
-    $('.js_datatable_new_inline:not(.disabled)').each(function () {
+    $('.js_datatable_new_inline:not(.disabled)').each(function() {
         var grid = $(this);
         if (!grid.data('inline_initializated')) {
             grid.data('inline_initializated', true);
