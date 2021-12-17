@@ -48,9 +48,7 @@
         <?php echo $footer; ?>
     </div>
 
-    <div id="builderFrameWrapper">
-        <iframe id="builderFrame" src=""></iframe>
-    </div>
+
 </body>
 <!-- END BODY -->
 
