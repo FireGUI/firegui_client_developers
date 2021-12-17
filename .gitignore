@@ -22,13 +22,6 @@ application/config/database.php
 #application/config/crm_configurations.php
 
 /.htaccess
-.htaccess
-
-modules/*
-!modules/.gitkeep 
-
-custom_views/*
-controllers/custom/*
 
 uploads/*
 .idea
@@ -44,7 +37,11 @@ nbproject
 
 application/tests/*
 
+!.gitkeep
+
 stats
 error
 template/build/*
-!template/build/.gitkeep 
+!template/build/.gitkeep
+class/genthumb/cache/*
+class/easythumb/writable/*
