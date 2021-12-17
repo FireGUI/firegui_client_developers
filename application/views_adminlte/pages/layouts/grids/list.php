@@ -20,12 +20,7 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
         <?php foreach ($grid_data['data'] as $dato) : ?>
             <li>
                 <div class="col1">
-                    <div class="cont">
-                        <div class="cont-col1">
-                            <div class="label label-sm label-info">
-                                <i class="fas fa-list"></i>
-                            </div>
-                        </div>
+                    <div class="cont" style="border-bottom: solid 1px #ccc;padding-bottom: 15px;margin-bottom: 15px;">
                         <div class="cont-col2">
                             <div class="desc">
                                 <?php
