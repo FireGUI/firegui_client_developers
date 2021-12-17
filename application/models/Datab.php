@@ -2505,7 +2505,7 @@ class Datab extends CI_Model
                         if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                             $_url = base_url_uploads("uploads/{$value}");
                         } else {
-                            $_url = base_url_admin("imgn/1/50/50/uploads/{$value}");
+                            $_url = base_url_admin("thumb/50/50/1/uploads/{$value}");
                         }
 
                         return anchor(base_url_uploads("uploads/{$value}"), "<img src='" . $_url . "' />", array('class' => 'fancybox',));
@@ -2523,7 +2523,7 @@ class Datab extends CI_Model
                                 if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                                     $_url = base_url_uploads("uploads/{$item['path_local']}");
                                 } else {
-                                    $_url = base_url_admin("imgn/1/50/50/uploads/{$item['path_local']}");
+                                    $_url = base_url_admin("thumb/50/50/1/uploads/{$item['path_local']}");
                                 }
                                 return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                             } else {
@@ -2540,7 +2540,7 @@ class Datab extends CI_Model
                             if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                                 $_url = base_url_uploads("uploads/{$item}");
                             } else {
-                                $_url = base_url_admin("imgn/1/50/50/uploads/{$item}");
+                                $_url = base_url_admin("thumb/50/50/1/uploads/{$item}");
                             }
                             return anchor(base_url_uploads("uploads/{$item}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px'));
                         }, $value);
