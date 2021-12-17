@@ -43,16 +43,16 @@
                 </div>
                 <div class="box-body">
 
-                    <?php foreach ($dati['settings_layout'] as $key => $layouts) : ?>
-                        <h5><?php echo ($key) ? $key : t('Generic settings'); ?></h5>
-                        <ul>
-                            <?php foreach ($layouts as $layout) : ?>
-                                <li><a href="<?php echo base_url('main/layout/' . $layout['layouts_id']); ?>"><?php e(ucfirst(str_replace(array('_', '-'), ' ', $layout['layouts_title']))); ?></a></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endforeach; ?>
-
-
+                    <?php if (!empty($dati['settings_layout'])) : ?>
+                        <?php foreach ($dati['settings_layout'] as $key => $layouts) : ?>
+                            <h5><?php echo ($key) ? $key : t('Generic settings'); ?></h5>
+                            <ul>
+                                <?php foreach ($layouts as $layout) : ?>
+                                    <li><a href="<?php echo base_url('main/layout/' . $layout['layouts_id']); ?>"><?php e(ucfirst(str_replace(array('_', '-'), ' ', $layout['layouts_title']))); ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
 
                 </div>
             </div>
