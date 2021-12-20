@@ -14,7 +14,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.2.9');
+defined('VERSION') or define('VERSION', '2.2.9');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -225,6 +225,6 @@ defined('EXIT__AUTO_MAX')      or define('EXIT__AUTO_MAX', 125); // highest auto
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
 
-if (file_exists(APPPATH . './config/constants.php')) {
-    include_once APPPATH . './config/constants_custom.php';
+if (file_exists(APPPATH . 'config/constants_custom.php')) {
+    include_once APPPATH . 'config/constants_custom.php';
 }
