@@ -112,7 +112,7 @@ function initTinymce(container = null) {
 
     var tinymce_config = {
         selector: 'textarea.js_tinymce',
-        height: 400,
+        height: 250,
         resize: true,
         autosave_ask_before_unload: false,
         powerpaste_allow_local_images: true,
