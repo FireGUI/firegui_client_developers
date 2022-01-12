@@ -1508,7 +1508,7 @@ if (!function_exists('createFolderRecursive')) {
         foreach ($exploded as $key => $folder) {
             if (!($remove_last_chunk && ($key + 1 == count($exploded)))) {
                 if (!is_dir($parents . $folder)) {
-                    mkdir($parents . $folder, 0755, true);
+                    @mkdir($parents . $folder, 0755, true);
                 }
                 $parents .= $folder . '/';
             }
