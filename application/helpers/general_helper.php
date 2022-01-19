@@ -1484,8 +1484,10 @@ if (!function_exists('progress')) {
     {
 
         $perc = number_format(100 * $current / $total, 2);
-        echo_flush(
-            '
+
+        if (!is_cli()) {
+            echo_flush(
+                '
         <script>
             var progress_div = document.getElementById("' . $selector_id . '");
             if (!progress_div) {
@@ -1496,7 +1498,12 @@ if (!function_exists('progress')) {
             progress_div.innerText = "' . $perc . ' of 100%";
         </script>
         '
-        );
+            );
+        } else {
+            echo "\r{$perc} of 100%";
+        }
+
+
         return $perc;
     }
 }
