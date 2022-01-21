@@ -3,7 +3,7 @@ $chartId = "container_chartjs_{$chart['charts_id']}";
 // --- Series
 $series = ['labels' => [], 'datasets' => []];
 $colors = ['blue', 'red', 'green', 'yellowgreen', 'black', 'orange', 'grey'];
-
+$xes = [];
 //Column uniform
 foreach ($chart_data as $x => $chart_element_data) {
     foreach ($chart_element_data['data'] as $dato) {
