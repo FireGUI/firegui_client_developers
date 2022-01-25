@@ -2,7 +2,7 @@
 var formAjaxSubmittedFormId = null;
 var formAjaxShownMessage = null;
 
-var handleSuccess = function(msg, container = null) {
+var handleSuccess = function (msg, container = null) {
     switch (parseInt(msg.status)) {
         case 0:
             //Show message
@@ -28,7 +28,7 @@ var handleSuccess = function(msg, container = null) {
             //Alert e refresh
             alert(msg.txt);
             if (msg.hasOwnProperty('timeout')) {
-                setTimeout(function() {
+                setTimeout(function () {
                     window.location.reload();
                 }, msg.timeout);
             } else {
@@ -70,16 +70,16 @@ function loading(bShow) {
     }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     'use strict';
-    $('body').on('submit', '.formAjax', function(e) {
+    $('body').on('submit', '.formAjax', function (e) {
         e.preventDefault();
         var form = $(this);
         if (formAjaxShownMessage) {
-            formAjaxShownMessage.fadeOut(200, function() {
+            formAjaxShownMessage.fadeOut(200, function () {
                 formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ display: '', opacity: '' });
             });
-            setTimeout(function() {
+            setTimeout(function () {
                 formAjaxShownMessage = null;
                 formAjaxSend(form);
             }, 200);
@@ -89,7 +89,7 @@ $(document).ready(function() {
         return false;
     });
 
-    $('body').on('click', '.js_confirm_button', function(e) {
+    $('body').on('click', '.js_confirm_button', function (e) {
         var text = $(this).data('confirm-text');
         if (!confirm(text ? text : 'Confermi?')) {
             e.preventDefault(); // Prevent follow links
@@ -99,7 +99,7 @@ $(document).ready(function() {
         }
     });
 
-    $('body').on('click', '.js_link_ajax', function(e) {
+    $('body').on('click', '.js_link_ajax', function (e) {
         e.preventDefault(); // Prevent follow links
         e.stopPropagation(); // Prevent propagation on parent DOM elements
         e.stopImmediatePropagation(); // Prevent other handlers to be fired
@@ -111,13 +111,13 @@ $(document).ready(function() {
             url: url,
             dataType: 'json',
             timeout: 0,
-            complete: function() {
+            complete: function () {
                 loading(false);
             },
-            success: function(msg) {
+            success: function (msg) {
                 handleSuccess(msg, container);
             },
-            error: function(xhr, ajaxOptions, thrownError) {
+            error: function (xhr, ajaxOptions, thrownError) {
                 if (typeof xhr.responseText !== 'undefined') {
                     var errorContainerID = 'ajax-error-container';
                     var errorContainer = $('#' + errorContainerID);
@@ -175,11 +175,11 @@ function formAjaxSend(form, ajaxOverrideOptions) {
         timeout: 0,
 
         dataType: 'json',
-        complete: function() {
+        complete: function () {
             form.trigger('form-ajax-complete');
             loading(false);
         },
-        success: function(msg) {
+        success: function (msg) {
             if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
@@ -206,7 +206,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             }
 
         },
-        error: function(xhr, ajaxOptions, thrownError) {
+        error: function (xhr, ajaxOptions, thrownError) {
 
             var msg = { status: 0, txt: 'Oh no! Something wrong. Please try again' };
             handleSuccess(msg);
@@ -223,10 +223,10 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 errorBox.html('Errore ajax:<br/>' + xhr.responseText);
                 errorBox.append(
                     $('<button>')
-                    .text('Chiudi')
-                    .on('click', function() {
-                        errorBox.remove();
-                    })
+                        .text('Chiudi')
+                        .on('click', function () {
+                            errorBox.remove();
+                        })
                 );
             }
         },
@@ -269,8 +269,8 @@ function success(txt) {
 
     if (txt) {
         current.removeClass('hide hidden alert-danger').addClass('alert-success');
-        setTimeout(function() {
-            current.fadeOut(function() {
+        setTimeout(function () {
+            current.fadeOut(function () {
                 current.addClass('hide hidden').html('');
 
                 if (current === formAjaxShownMessage) {
@@ -301,7 +301,7 @@ function closeContainingPopups(el) {
     if (bsModalParent.size()) {
         try {
             bsModalParent.data('bs.modal').askConfirmationOnClose = false;
-        } catch (e) {}
+        } catch (e) { }
         bsModalParent.modal('hide');
     }
 
@@ -351,20 +351,28 @@ function refreshLayoutBox(lb_id, value_id) {
         data: data_post,
         type: 'POST',
         async: true,
-        success: function(html) {
+        success: function (html) {
             lb.html(html);
             initComponents(lb, true);
         },
     });
 }
 
+
 function refreshAjaxLayoutBoxes() {
     //refreshVisibleAjaxGrids();
     //TODO: check if box is refreshable
-    if ($('.layout_box:visible').length > 5) {
+
+    var is_modal = $('.modal:visible').length;
+    if ($('.layout_box:visible').length > 5 && !is_modal) {
         location.reload();
     } else {
-        $('.layout_box:visible').each(function() {
+        if (is_modal) {
+            var container = $('.modal:visible');
+        } else {
+            var container = $('body');
+        }
+        $('.layout_box:visible', container).each(function () {
 
             if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
                 refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
