@@ -974,3 +974,7 @@ td div.action-list {
 .js_loading img {
   max-height: 50px;
 }
+
+.sf-dump  {
+  max-height: 500px !important;
+}
