@@ -2,7 +2,7 @@
 $chartId = "container_chartjs_{$chart['charts_id']}";
 // --- Series
 $series = ['yaxis' => [], 'series' => []];
-
+$xes = [];
 //Column uniform
 foreach ($chart_data as $x => $chart_element_data) {
     foreach ($chart_element_data['data'] as $dato) {
