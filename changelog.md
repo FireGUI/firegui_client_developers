@@ -1,3 +1,4 @@
-Changelog version 2.2.9
+Changelog version 2.3.0
  
-Beta per builder toolbar
+Background image field on settings
+Bugfix for failed migration process in beta 2.2.9

@@ -1472,10 +1472,12 @@ if (!function_exists('curlRequest')) {
     }
 }
 
+
 if (!function_exists('e_money')) {
-    function e_money($number)
+    function e_money($number, $format = '{number}')
     {
-        echo number_format($number, 2, ',', '.');
+        $return = str_ireplace('{number}', number_format($number, 2, ',', '.'), $format);
+        echo $return;
     }
 }
 
