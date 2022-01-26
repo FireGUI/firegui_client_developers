@@ -35,3 +35,7 @@ $updates['2.2.3'] = [
 $updates['2.2.9'] = [
     'include' => ['2.2.9_fields_settings_email.php'],
 ];
+
+$updates['2.3.0'] = [
+    'include' => ['2.3.0_login_background.php'],
+];
