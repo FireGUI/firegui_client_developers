@@ -978,3 +978,6 @@ td div.action-list {
 .sf-dump  {
   max-height: 500px !important;
 }
+input:invalid {
+  border: red solid 1px;
+}
