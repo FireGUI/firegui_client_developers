@@ -51,11 +51,10 @@ $updates['2.2.8'] = [
     "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
 ];
 
-
 $updates['2.2.9'] = [
     "ALTER TABLE settings ADD COLUMN settings_company_email_update_notifications VARCHAR(250);",
     "UPDATE settings SET settings_company_email_update_notifications = settings_company_email;",
-    "UPDATE fields_draw SET fields_draw_html_type = 'hidden' WHERE fields_draw_label = 'Webauthn data';",
+    "UPDATE fields_draw SET fields_draw_html_type = 'hidden' WHERE fields_name = 'Webauthn data';",
     "UPDATE layouts SET layouts_settings = '" . DB_BOOL_TRUE . "', layouts_title = 'General Settings' WHERE layouts_identifier = 'system_settings'",
     "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
 ];
