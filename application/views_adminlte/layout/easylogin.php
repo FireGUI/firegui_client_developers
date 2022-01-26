@@ -1,6 +1,6 @@
 <?php
-if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
-    $this->load->view('custom/layout/login');
+if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
+    $this->load->view('custom/layout/easylogin');
 } else {
     // What is today's date - number
     $day = date("z");
