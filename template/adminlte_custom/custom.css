@@ -954,11 +954,14 @@ td div.action-list {
 }
 
 .menu_group {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
+.connectedSortable  {
+  min-height: unset !important;
+}
 
-  .js_loading {
+.js_loading {
     position: absolute;
     top: 0;
     left: 50%;
@@ -980,4 +983,8 @@ td div.action-list {
 }
 input:invalid {
   border: red solid 1px;
+}
+
+.mt10 {
+  margin-top: 10px !important;
 }
