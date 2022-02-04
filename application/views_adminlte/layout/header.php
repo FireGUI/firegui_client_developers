@@ -116,6 +116,20 @@ $this->layout->addDinamicStylesheet($data, "header.css");
             <?php $this->load->view('box/notification_dropdown_list'); ?>
             <?php $this->hook->message_dropdown(); ?>
 
+            <!-- BEGIN LANGUAGES DROPDOWN -->
+            <li class="dropdown languages" id="languages">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <?php if (!empty($this->datab->getLanguage())) : ?>
+                        <img src="<?php echo $this->datab->getLanguage()['flag'] ?>" class="language-flag">
+                    <?php else : ?>
+                        <img style="display:none" class="language-flag">
+                        <i class="fas fa-globe-europe language-icon"></i>
+                    <?php endif; ?>
+                </a>
+            </li>
+            <!-- END LANGUAGES DROPDOWN -->
+
+
             <!-- User Account: style can be found in dropdown.less -->
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
