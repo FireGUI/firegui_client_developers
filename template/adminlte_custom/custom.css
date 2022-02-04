@@ -981,3 +981,8 @@ td div.action-list {
 input:invalid {
   border: red solid 1px;
 }
+
+/* Overwrite adminlte rules */
+.connectedSortable {
+  min-height: 5px!important;
+}
