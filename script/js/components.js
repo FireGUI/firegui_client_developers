@@ -985,7 +985,7 @@ function changeLanguage(langId) {
         base_url + 'db_ajax/changeLanguage', data,
         function (out) {
             if (out.success) {
-                changeLanguageTemplate(langId);
+                changeLanguageTemplate(out.lang);
             } else {
                 alert('Impossibile impostare la lingua: ' + langId);
             }
@@ -994,11 +994,17 @@ function changeLanguage(langId) {
     );
 }
 
-function changeLanguageTemplate(langId) {
+function changeLanguageTemplate(lang) {
+    var langId = lang.id;
+
     $('[data-lang]').hide();
     $('[data-lang="' + langId + '"]').show();
     $('[data-toggle-lang]').removeClass('current');
     $('[data-toggle-lang="' + langId + '"]').addClass('current');
+
+    $('.language-icon').hide();
+
+    $('.language-flag').attr('src', lang.flag).show();
 }
 
 function openCreationForm(formId, entity, onSuccess) {
@@ -1067,13 +1073,14 @@ $(function () {
 
     $('body').tooltip({ selector: '[data-toggle=tooltip]', container: 'body' });
     //alert('todo');
-    var list = $('<ul class="language-switch pull-right list-inline">');
-    $('.page-content > .layout-container > .page-title,#js_page_content > .page-title').append(list);
+    var list = $('<ul class="language-switch dropdown-menu">');
+    $('.page-content > .layout-container > .page-title, .navbar-custom-menu > .nav > #languages').append(list);
     $.getJSON(base_url + 'get_ajax/langInfo', {}, function (json) {
         var curr = json.current;
         $.each(json.languages, function (i, lang) {
             var toggle = $('<a href="javascript:void(0)">');
-            toggle.append($('<img>').attr('src', lang.flag).attr('alt', lang.name));
+            toggle.html('&nbsp;' + lang.name);
+            toggle.prepend($('<img>').attr('src', lang.flag).attr('alt', lang.name));
             toggle.appendTo($('<li>').appendTo(list));
             toggle.attr('data-toggle-lang', lang.id);
 
