@@ -19,6 +19,19 @@ if ($isLight or $isGren or $isBox) {
 }
 
 $classes = array_unique(array_merge($baseClasses, $userClasses));
+//If is a filter form and a filter is setup, bypass collapsed parameter
+if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE && $layout['layouts_boxes_content_type'] == 'form') {
+    $form = $this->datab->get_form($layout['layouts_boxes_content_ref']);
+    if ($form['forms']['forms_layout'] == 'filter_select') {
+        $sess_data = $this->session->userdata(SESS_WHERE_DATA) ?: [];
+        $filterSessionKey = $form['forms']['forms_filter_session_key'];
+        $_sess_where_data = array_get($sess_data, $filterSessionKey, []);
+
+        if (!empty($_sess_where_data)) {
+            $layout['layouts_boxes_collapsed'] = DB_BOOL_FALSE;
+        }
+    }
+}
 ?>
 <div data-id="<?php echo $layout['layouts_boxes_id']; ?>" data-row="<?php echo $layout['layouts_boxes_row']; ?>" class="js_layout_box <?php if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) : ?>box<?php endif; ?> <?php echo $layout['layouts_boxes_css'] . " " . $layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-box' : ''; ?>">
     <label class="label_highlight hide label_highlight_lb"> Layout Box #<?php echo $layout['layouts_boxes_id']; ?> <?php echo $layout['layouts_boxes_title'] . " [" . $layout['layouts_boxes_content_type'] . "]"; ?></label>
@@ -70,6 +83,9 @@ $classes = array_unique(array_merge($baseClasses, $userClasses));
             </div>
 
             <div class="box-tools">
+
+
+
                 <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fas <?php if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) : ?>fa-plus<?php else : ?>fa-minus<?php endif; ?>"></i></button><?php endif; ?>
                 <?php if ($layout['layouts_boxes_discardable'] === DB_BOOL_TRUE) : ?><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fas fa-times"></i></button><?php endif; ?>
                 <?php if ($layout['layouts_boxes_reloadable'] === DB_BOOL_TRUE) : ?><a href="javascript:;" class="reload"></a><?php endif; ?>
@@ -77,7 +93,7 @@ $classes = array_unique(array_merge($baseClasses, $userClasses));
         </div>
     <?php endif; ?>
 
-    <div class="<?php echo ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) ? 'box-body' : 'mt10'; ?> layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
+    <div class="box-body layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
         <?php echo $layout['content'] ?>
     </div>
 </div>
