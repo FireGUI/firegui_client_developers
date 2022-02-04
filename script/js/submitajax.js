@@ -358,7 +358,6 @@ function refreshLayoutBox(lb_id, value_id) {
     });
 }
 
-
 function refreshAjaxLayoutBoxes() {
     //refreshVisibleAjaxGrids();
     //TODO: check if box is refreshable
