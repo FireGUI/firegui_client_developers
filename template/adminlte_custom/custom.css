@@ -987,4 +987,7 @@ input:invalid {
 
 .mt10 {
   margin-top: 10px !important;
+/* Overwrite adminlte rules */
+.connectedSortable {
+  min-height: 5px!important;
 }
