@@ -2298,12 +2298,17 @@ class Datab extends CI_Model
         $type = isset($field['grids_fields_replace_type']) ? $field['grids_fields_replace_type'] : 'field';
 
         switch ($type) {
-            case 'placeholder':
-                $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
-                break;
+                // case 'placeholder':
+                //     $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+                //     break;
 
             case 'eval':
+            case 'placeholder':
+                $field['grids_fields_replace'] = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
                 $return = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
+
+                //debug($return);
+
                 break;
             case 'field':
             default:
