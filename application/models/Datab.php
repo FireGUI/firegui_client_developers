@@ -174,11 +174,11 @@ class Datab extends CI_Model
             if ($count) {
                 $query = $this->removeLimitOffsetGroupBy($query);
                 $query = $this->replaceSelectWithCount($query);
-
+                $query = str_ireplace('{order_by}', '', $query);
                 $out = $this->db->query($query)->row()->c;
             } else {
 
-
+                $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
                 $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
 
                 $out = $this->db->query($query)->result_array();
@@ -2435,8 +2435,10 @@ class Datab extends CI_Model
 
             case 'eval':
             case 'placeholder':
+
                 $field['grids_fields_replace'] = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
                 $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
+                //debug($return);
 
                 break;
             case 'field':
