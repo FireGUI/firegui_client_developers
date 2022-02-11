@@ -117,7 +117,126 @@ class Datab extends CI_Model
         $entity['fields'] = $this->crmentity->getFields($entity_name);
         return $entity;
     }
+    public function getDataEntityByQuery($query, $input = NULL, $limit = NULL, $offset = 0, $orderBy = NULL, $count = FALSE, $eval_cachable_fields = [], $additional_parameters = [])
+    {
+        $unique = md5($query);
+        $cache_key = "datab.getDataEntity.{$unique}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
+        if (!($dati = $this->cache->get($cache_key))) {
+            $group_by = array_get($additional_parameters, 'group_by', null);
+            //debug($input);
+            $where = [];
+            if (isset($input['where'])) {
+                $where[] = $input['where'];
+                unset($input['where']);
+            }
+            // Preparo il where: accetto sia stringa che array, però dopo questo
+            // punto dovrà essere per forza un array di condizioni in AND
+            if ($input && !is_array($input)) {
+                $input = [$input];
+            }
 
+            foreach ($input as $key => $value) {
+                if (is_array($value) && is_string($key)) {
+
+                    // La chiave se è stringa indica il nome del campo,
+                    // mentre il value se è array (fattibile solo da POST o PROCESS)
+                    // fa un WHERE IN
+                    $values = "'" . implode("','", $value) . "'";
+                    $where[] = "{$key} IN ({$values})";
+                } elseif (is_string($key)) {
+                    $where[$key] = $value;
+                } else {
+                    // Ho una chiave numerica che potrebbe essere stata inserita
+                    // da pre-process...
+                    $where[] = $value;
+                }
+            }
+
+
+            $func = function (&$value, $key) {
+                if (is_numeric($key)) {
+                } elseif (is_string($key)) {
+                    $return = "({$key} = {$value})";
+                    foreach (['<', '<=', '>', '>=', '=', '<>'] as $operator) {
+                        if (stripos($key, $operator) === false) {
+                            $return = "({$key} {$value})";
+                            break;
+                        }
+                    }
+                    $value = $return;
+                }
+            };
+
+            array_walk($where, $func);
+
+            $query = str_ireplace('{where}', $this->buildWhereString($where, $query), $query);
+
+            if ($count) {
+                $query = $this->removeLimitOffsetGroupBy($query);
+                $query = $this->replaceSelectWithCount($query);
+
+                $out = $this->db->query($query)->row()->c;
+            } else {
+
+
+                $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
+
+                $out = $this->db->query($query)->result_array();
+            }
+            if ($this->apilib->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $out);
+            }
+            $dati = $out;
+        }
+        return $dati;
+    }
+    public function replaceSelectWithCount($query)
+    {
+        if (strpos($query, 'SELECT') !== false) {
+            $select_identifier = 'SELECT';
+        } elseif (strpos($query, 'select') !== false) {
+            $select_identifier = 'select';
+        } else {
+            throw new Exception("String 'SELECT' not found in query '$query';");
+        }
+        if (strpos($query, 'FROM') !== false) {
+            $from_identifier = 'FROM';
+        } elseif (strpos($query, 'from') !== false) {
+            $from_identifier = 'from';
+        } else {
+            throw new Exception("String 'FROM' not found in query '$query';");
+        }
+        $after_select = explode($select_identifier, $query)[1];
+        $select_part = explode($from_identifier, $after_select)[0];
+
+        $query_count = str_ireplace($select_part, " COUNT(1) as c ", $query);
+
+        return $query_count;
+    }
+    public function removeLimitOffsetGroupBy($query)
+    {
+        return explode('LIMIT', $query)[0];
+    }
+    public function buildWhereString($where, $query)
+    {
+        if ($where) {
+            if (!$where_pos = stripos($query, 'where ')) {
+                $return = " WHERE " . implode(' AND ', $where);
+            } else {
+                $right_str = explode('{where}', $query)[0];
+                $where_str = substr($right_str, $where_pos + 6);
+                if (trim($where_str)) {
+                    $return = " AND " . implode(' AND ', $where) . " ";
+                } else {
+                    $return = " " . implode(' AND ', $where) . " ";
+                }
+            }
+        } else {
+            $return = '';
+        }
+
+        return $return;
+    }
     /**
      * Cerca una lista di dati. Wrapper del search/count apilib, ma che tiene
      * conto della sessione del crm e dei permessi
@@ -208,6 +327,7 @@ class Datab extends CI_Model
                 $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
             }
         }
+        //debug($dati, true);
         return $dati;
     }
 
@@ -841,9 +961,14 @@ class Datab extends CI_Model
 
             $this->apilib->setLanguage();
 
+            if (!empty($grid['grids']['grids_custom_query'])) {
+
+                $data = $this->getDataEntityByQuery($grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
+            } else {
+                $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
+            }
 
 
-            $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
 
             // Riabilita sistema traduzioni
             $this->apilib->setLanguage($clanguage, $flanguage);
@@ -866,6 +991,10 @@ class Datab extends CI_Model
             }
 
             $dati['grids'] = $this->db->query("SELECT * FROM grids LEFT JOIN entity ON entity.entity_id = grids.grids_entity_id WHERE grids_id = ?", [$grid_id])->row_array();
+
+
+
+
             $dati['grids_fields'] = $this->db->query("
                     SELECT *
                     FROM grids_fields
@@ -897,6 +1026,8 @@ class Datab extends CI_Model
                     ));
                 }
             }
+
+
 
             //TODO: will be deprecated as soon as new actions features will become stable
             $dati['grids']['links'] = array(

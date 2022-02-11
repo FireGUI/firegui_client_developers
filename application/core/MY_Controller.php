@@ -48,7 +48,7 @@ class MY_Controller extends MX_Controller
         $this->settings = $this->db->get('settings')->row_array();
         $this->isAdmin = $this->auth->is_admin();
         $this->isDev = is_development();
-
+        $this->output->set_header('Cache-Control: max-age=31536000');
         // Profiler se richiesto da amministratori (oppure se in modalità sviluppo)
         $this->output->enable_profiler($this->input->get('_profiler') && ($this->isAdmin or $this->isDev));
 
