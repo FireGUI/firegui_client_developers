@@ -2435,10 +2435,8 @@ class Datab extends CI_Model
 
             case 'eval':
             case 'placeholder':
-                $field['grids_fields_replace'] = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
-                $return = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
-
-                //debug($return);
+                $field['grids_fields_replace'] = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
+                $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
 
                 break;
             case 'field':
