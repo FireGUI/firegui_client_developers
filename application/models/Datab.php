@@ -1186,7 +1186,11 @@ class Datab extends CI_Model
     public function generate_where($element_type, $element_id, $value_id = NULL, $other_where = null, $additional_data = array())
     {
         $arr = array();
-
+        if (!is_numeric($element_id)) {
+            $func = "get_{$element_type}_id_by_identifier";
+            $element_id = $this->$func($element_id);
+            //debug($element, true);
+        }
         $element = $this->db->get_where($element_type, array($element_type . "_id" => $element_id))->row_array();
         $entity = $this->get_entity($element[$element_type . '_entity_id']);
 
