@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-md-6">
 
-        <select id="<?php echo $color_palette_id; ?>" name="<?php echo $field['fields_name']; ?>">
+        <select id="<?php echo $color_palette_id; ?>" class="<?php echo $class ?? null ?>" name="<?php echo $field['fields_name']; ?>">
             <?php foreach (COLORS_PALETTE as $key => $val) : ?>
                 <option value="<?php echo $val; ?>" data-color="<?php echo $val; ?>"><?php echo $key; ?></option>
             <?php endforeach; ?>
