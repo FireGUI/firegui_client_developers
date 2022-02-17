@@ -23,7 +23,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
     <!-- End Builder actions -->
 </div>
 
-<form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax js_filter_form <?php echo ("form_{$form['forms']['forms_id']}"); ?>" enctype="multipart/form-data">
+<form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax <?php echo ($form['forms']['forms_css_extra']) ?? null; ?> js_filter_form <?php echo ("form_{$form['forms']['forms_id']}"); ?>" enctype="multipart/form-data">
     <?php add_csrf(); ?>
     <div class="form-body">
         <div class="row sortableForm">
