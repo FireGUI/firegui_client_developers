@@ -6,7 +6,7 @@ function resize_image($path, $thumb_width, $thumb_height, $config)
    $width = $size[0];
    $height = $size[1];
 
-   $mode = $config['mode'];
+   $mode = $config['mode'] ?? IMG_BILINEAR_FIXED;
 
    list($new_width, $new_height) = calculateDestinationWidthHeight($size, $thumb_width, $thumb_height, $mode);
    if ($type = getImageType($path)) {

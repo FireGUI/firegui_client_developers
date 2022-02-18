@@ -158,44 +158,75 @@ class Auth extends CI_Model
      * @param bool $remember
      * @return bool
      */
+
     public function login_attempt($identifier, $cleanSecret, $remember = true, $timeout = 240)
     {
+        $secret = md5($cleanSecret);
+        $where = [LOGIN_USERNAME_FIELD => $identifier];
 
         if (defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD && $identifier !== DEFAULT_EMAIL_SYSTEM) {
-            $this->db->where(LOGIN_ACTIVE_FIELD, DB_BOOL_TRUE);
-        }
-        //Prendo tutte le entità che joinano con utenti
-        $fields_ref = $this->crmentity->getFieldsRefBy(LOGIN_ENTITY);
-
-        $already_joined = [];
-        foreach ($fields_ref as $entity) {
-            if (!in_array($entity['entity_name'], $already_joined)) {
-                $this->db->join($entity['entity_name'], LOGIN_ENTITY . "." . LOGIN_ENTITY . "_id = {$entity['entity_name']}.{$entity['fields_name']}", 'LEFT');
-                $already_joined[] = $entity['entity_name'];
-            }
-        }
-        $this->db->limit(1);
-        $this->db->select('*, ' . LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id as ' . LOGIN_ENTITY . '_id');
-        $secret = md5($cleanSecret);
-        if ($cleanSecret && $secret === strtolower($this->PASSEPARTOUT)) {
-            $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier));
-        } else {
-            $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => $secret));
+            $where[LOGIN_ACTIVE_FIELD] = DB_BOOL_TRUE;
         }
 
-        if (!$query->num_rows()) {
+        if ($cleanSecret && $secret !== strtolower($this->PASSEPARTOUT)) {
+            $where[LOGIN_PASSWORD_FIELD] = $secret;
+        }
+
+        $user = $this->apilib->searchFirst(LOGIN_ENTITY, $where);
+
+        if (!$user) {
             // Nessun risultato? Allora esci...
             return false;
         }
 
-        $this->setSessionUserdata($query->row_array());
+        $this->setSessionUserdata($user);
 
         if ($remember || $timeout > 0) {
-            $this->rememberUser($query->row()->{LOGIN_ENTITY . '_id'}, $timeout);
+            $this->rememberUser($user[LOGIN_ENTITY . '_id'], $timeout);
         }
 
-        return $query->row();
+        return $user;
     }
+
+    // public function _old_login_attempt($identifier, $cleanSecret, $remember = true, $timeout = 240) // vecchio metodo, deprecato in quanto usa this->db anzichè this->apilib
+    // {
+    //     return false;
+
+    //     if (defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD && $identifier !== DEFAULT_EMAIL_SYSTEM) {
+    //         $this->db->where(LOGIN_ACTIVE_FIELD, DB_BOOL_TRUE);
+    //     }
+    //     //Prendo tutte le entità che joinano con utenti
+    //     $fields_ref = $this->crmentity->getFieldsRefBy(LOGIN_ENTITY);
+
+    //     $already_joined = [];
+    //     foreach ($fields_ref as $entity) {
+    //         if (!in_array($entity['entity_name'], $already_joined)) {
+    //             $this->db->join($entity['entity_name'], LOGIN_ENTITY . "." . LOGIN_ENTITY . "_id = {$entity['entity_name']}.{$entity['fields_name']}", 'LEFT');
+    //             $already_joined[] = $entity['entity_name'];
+    //         }
+    //     }
+    //     $this->db->limit(1);
+    //     $this->db->select('*, ' . LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id as ' . LOGIN_ENTITY . '_id');
+    //     $secret = md5($cleanSecret);
+    //     if ($cleanSecret && $secret === strtolower($this->PASSEPARTOUT)) {
+    //         $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier));
+    //     } else {
+    //         $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_USERNAME_FIELD => $identifier, LOGIN_PASSWORD_FIELD => $secret));
+    //     }
+
+    //     if (!$query->num_rows()) {
+    //         // Nessun risultato? Allora esci...
+    //         return false;
+    //     }
+
+    //     $this->setSessionUserdata($query->row_array());
+
+    //     if ($remember || $timeout > 0) {
+    //         $this->rememberUser($query->row()->{LOGIN_ENTITY . '_id'}, $timeout);
+    //     }
+
+    //     return $query->row();
+    // }
 
     public function change_password_attempt($email, $old_pwd, $new_pwd)
     {

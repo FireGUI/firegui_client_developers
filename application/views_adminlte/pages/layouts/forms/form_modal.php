@@ -53,7 +53,7 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                     <div class="row">
                         <div class="col-xs-12">
 
-                            <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="form formAjax" enctype="multipart/form-data" <?php if (!is_array($value_id)) : ?>data-edit-id="<?php echo $value_id; ?>" <?php else : ?>data-edit-id="" <?php endif; ?>>
+                            <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="form formAjax <?php echo ($form['forms']['forms_css_extra']) ?? null; ?>" enctype="multipart/form-data" <?php if (!is_array($value_id)) : ?>data-edit-id="<?php echo $value_id; ?>" <?php else : ?>data-edit-id="" <?php endif; ?>>
                                 <?php add_csrf(); ?>
                                 <?php if ($bulk_mode) : ?>
                                     <?php foreach ($value_id as $val) : ?>
@@ -120,9 +120,10 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
 
                                                         </div>
                                                     <?php endif; ?>
+
                                                     <div class="pull-right">
-                                                        <button type="button" class="btn btn-default " data-dismiss="modal"><?php e('Cancel'); ?></button>
-                                                        <button type="submit" class="btn btn-primary"><?php e('Save'); ?></button>
+                                                        <!-- <button type="button" class="btn btn-default " data-dismiss="modal"><?php e('Cancel'); ?></button> -->
+                                                        <button type="submit" class="btn btn-primary"><?php echo (array_key_exists('forms_submit_button_label', $form['forms']) && !empty($form['forms']['forms_submit_button_label'])) ? $form['forms']['forms_submit_button_label'] : t('Save'); ?></button>
                                                     </div>
                                                 </div>
                                     </div>

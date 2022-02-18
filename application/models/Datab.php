@@ -2074,7 +2074,7 @@ class Datab extends CI_Model
 
     public function module_installed($name)
     {
-        $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where('modules_name', $name)->get();
+        $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where('modules_name', $name)->or_where('modules_identifier', $name)->get();
         return $query->num_rows() > 0;
     }
 
@@ -2891,7 +2891,7 @@ class Datab extends CI_Model
 
         $subform = $field['forms_fields_subform_id'] ?: null;
 
-        $class = $field['fields_draw_css_extra'] . ' field_' . $field['fields_id'];
+        $class = $field['fields_draw_css_extra'] . ' ' . ($field['forms_fields_extra_class'] ?? null) . ' field_' . $field['fields_id'];
         $name = $field['fields_name'];
         if ($isMultilingual) {
 

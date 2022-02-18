@@ -1,5 +1,5 @@
 <?php $form_id = "form_{$form['forms']['forms_id']}"; ?>
-<form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="formAjax" enctype="multipart/form-data" data-edit-id="<?php echo $value_id; ?>">
+<form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="formAjax <?php echo ($form['forms']['forms_css_extra']) ?? null; ?>" enctype="multipart/form-data" data-edit-id="<?php echo $value_id; ?>">
     <?php add_csrf(); ?>
     <!-- FORM HIDDEN DATA -->
     <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
@@ -35,7 +35,7 @@
     </div>
 
     <div class="form-actions pull-right">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Cancel'); ?></button>
-        <button type="submit" class="btn btn-primary"><?php e('Save'); ?></button>
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Cancel'); ?></button> -->
+        <button type="submit" class="btn btn-primary"><?php echo (array_key_exists('forms_submit_button_label', $form['forms']) && !empty($form['forms']['forms_submit_button_label'])) ? $form['forms']['forms_submit_button_label'] : t('Save'); ?></button>
     </div>
 </form>
