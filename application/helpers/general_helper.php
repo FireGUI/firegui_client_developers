@@ -1487,6 +1487,12 @@ if (!function_exists('progress')) {
 
         $perc = number_format(100 * $current / $total, 2);
 
+        if ($selector_id != 'js_progress') {
+            $prepend = "$selector_id: ";
+        } else {
+            $prepend = '';
+        }
+
         if (!is_cli()) {
             echo_flush(
                 '
@@ -1497,7 +1503,7 @@ if (!function_exists('progress')) {
                 progress_div.setAttribute("id", "' . $selector_id . '");
                 document.write(progress_div.outerHTML);
             }
-            progress_div.innerText = "' . $perc . ' of 100%";
+            progress_div.innerText = "' . $prepend . $perc . ' of 100%";
         </script>
         '
             );

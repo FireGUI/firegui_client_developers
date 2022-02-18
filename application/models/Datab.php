@@ -134,7 +134,9 @@ class Datab extends CI_Model
             if ($input && !is_array($input)) {
                 $input = [$input];
             }
-
+            if (empty($input)) {
+                $input = [];
+            }
             foreach ($input as $key => $value) {
                 if (is_array($value) && is_string($key)) {
 
@@ -179,7 +181,12 @@ class Datab extends CI_Model
             } else {
 
                 $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
-                $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
+                if ($limit) {
+                    $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
+                } else {
+                    $limit = 9999999;
+                    $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
+                }
 
                 $out = $this->db->query($query)->result_array();
             }
@@ -2464,8 +2471,12 @@ class Datab extends CI_Model
             $grid = $this->datab->get_grid($grid_id);
         } elseif (array_key_exists('grids_fields_grids_id', $field)) {
             $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
-            $id_record = $dato[$grid['grids']['entity_name'] . "_id"];
-            $skip_delete = false;
+            if (!empty($dato[$grid['grids']['entity_name'] . "_id"])) {
+                $id_record = $dato[$grid['grids']['entity_name'] . "_id"];
+                $skip_delete = false;
+            } else {
+                return '';
+            }
         } else {
             return '';
         }
