@@ -24,3 +24,5 @@ fix barcode grid multiple barcodes
 Bugfix migration 2.2.9 and 2.3.0
 Fix easylogin custom view
 Added style for invalid input
+Bugfix json_encode on save_form with no-utf8 characters
+Added background custom image from settings entity
