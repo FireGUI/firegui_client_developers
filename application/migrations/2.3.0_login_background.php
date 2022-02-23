@@ -1,4 +1,5 @@
 <?php
+
 log_message('debug', 'Started migration 2.3.0...');
 
 $entity_id = $this->db->get_where('entity', ['entity_name' => 'settings'])->row()->entity_id;
@@ -10,10 +11,10 @@ $this->db->insert('fields', [
     'fields_entity_id' => $entity_id,
     'fields_name' => 'settings_login_background',
     'fields_type' => 'varchar',
-    'fields_required' => '0',
-    'fields_preview' => '0',
-    'fields_visible' => '1',
-    'fields_multilingual' => '0',
+    'fields_required' => DB_BOOL_FALSE,
+    'fields_preview' => DB_BOOL_FALSE,
+    'fields_visible' => DB_BOOL_TRUE,
+    'fields_multilingual' => DB_BOOL_FALSE,
 ]);
 $field_id = $this->db->insert_id();
 
@@ -23,11 +24,13 @@ $this->db->insert('fields_draw', [
     'fields_draw_fields_id' => $field_id,
     'fields_draw_label' => 'Background login page',
     'fields_draw_html_type' => 'upload_image',
-    'fields_draw_display_none' => '0',
-    'fields_draw_enabled' => '1',
+    'fields_draw_display_none' => DB_BOOL_FALSE,
+    'fields_draw_enabled' => DB_BOOL_TRUE,
 
 ]);
 log_message('debug', 'Alter table settings');
+
+$this->db->query("ALTER TABLE settings ADD COLUMN settings_login_background VARCHAR(250);");
 
 log_message('debug', 'Search settings form');
 
@@ -49,5 +52,5 @@ $this->db->insert('forms_fields', $dati);
 log_message('debug', 'Update layout box General settings');
 $layout_box_id = $this->db->query("SELECT * FROM layouts_boxes WHERE layouts_boxes_title = 'General settings' ORDER BY layouts_boxes_id ASC LIMIT 1")->row()->layouts_boxes_id;
 if ($layout_box_id) {
-    $this->db->query("UPDATE layouts_boxes SET layouts_boxes_show_container = 1 WHERE layouts_boxes_id = $layout_box_id");
+    $this->db->query("UPDATE layouts_boxes SET layouts_boxes_show_container = " . DB_BOOL_TRUE . " WHERE layouts_boxes_id = $layout_box_id");
 }

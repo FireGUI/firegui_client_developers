@@ -61,4 +61,5 @@ $updates['2.3.0'] = [
     "UPDATE fields_draw SET fields_draw_html_type = 'hidden' WHERE fields_draw_label = 'Webauthn data';",
     "UPDATE layouts SET layouts_settings = '" . DB_BOOL_TRUE . "', layouts_title = 'General Settings' WHERE layouts_identifier = 'system_settings'",
     "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
+
 ];

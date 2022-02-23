@@ -9,8 +9,8 @@ $this->db->insert('fields', [
     'fields_entity_id' => $entity_id,
     'fields_name' => $login_entity . '_webauthn_data',
     'fields_type' => 'LONGTEXT',
-    'fields_required' => '0',
-    'fields_preview' => '0',
+    'fields_required' => DB_BOOL_FALSE,
+    'fields_preview' => DB_BOOL_FALSE,
     'fields_visible' => '1',
     'fields_multilingual' => '0',
 ]);
