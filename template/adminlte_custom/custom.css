@@ -978,9 +978,6 @@ td div.action-list {
   max-height: 50px;
 }
 
-.sf-dump  {
-  max-height: 500px !important;
-}
 input:invalid {
   border: red solid 1px;
 }
