@@ -300,6 +300,9 @@ function initComponents(container, reset = false) {
             count++;
         }
     });
+    $('.js_todo_textarea').each(function () {
+        this.parentNode.dataset.replicatedValue = this.value
+    });
     $('.js_todo_container').on('click', '.js_container-checkbox', function (e) {
         var my_row_container = $(this).closest('.js_multiple_key_values_row');
         if ($(this).is(':checked')) {
