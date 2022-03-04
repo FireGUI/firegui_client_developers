@@ -848,7 +848,8 @@ class Apilib
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
         $this->db->trans_start();
-        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id, 'entity' => $entity]);
+        $record = $this->apilib->view($entity, $id);
+        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id, 'data' => $record, 'entity' => $entity]);
         if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
             $this->db->where($entity . '_id', $id)->update($entity, [$entityCustomActions['soft_delete_flag'] => DB_BOOL_TRUE]);
         } else {
@@ -895,7 +896,7 @@ class Apilib
 
             $this->db->delete($entity, [$entity . '_id' => $id]);
         }
-        $this->runDataProcessing($entity, 'delete', ['id' => $id, 'entity' => $entity]);
+        $this->runDataProcessing($entity, 'delete', ['id' => $id, 'data' => $record, 'entity' => $entity]);
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
@@ -1210,6 +1211,7 @@ class Apilib
         }
 
         // Creo l'oggetto eccezione
+        //debug('foo');
         $exception = new ApiException($this->errorMessage, $this->error);
 
         // Genero report per gli internal server error `misteriosi`
