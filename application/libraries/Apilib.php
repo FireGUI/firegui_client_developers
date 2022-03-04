@@ -848,7 +848,8 @@ class Apilib
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
         $this->db->trans_start();
-        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id, 'entity' => $entity]);
+        $record = $this->apilib->view($entity, $id);
+        $this->runDataProcessing($entity, 'pre-delete', ['id' => $id, 'data' => $record, 'entity' => $entity]);
         if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
             $this->db->where($entity . '_id', $id)->update($entity, [$entityCustomActions['soft_delete_flag'] => DB_BOOL_TRUE]);
         } else {
@@ -895,7 +896,7 @@ class Apilib
 
             $this->db->delete($entity, [$entity . '_id' => $id]);
         }
-        $this->runDataProcessing($entity, 'delete', ['id' => $id, 'entity' => $entity]);
+        $this->runDataProcessing($entity, 'delete', ['id' => $id, 'data' => $record, 'entity' => $entity]);
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
@@ -1014,6 +1015,8 @@ class Apilib
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
+        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers' 
+        unset($input['entity']);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
@@ -1123,6 +1126,8 @@ class Apilib
         }
 
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
+        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers' 
+        unset($input['entity']);
         $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
 
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
@@ -1206,6 +1211,7 @@ class Apilib
         }
 
         // Creo l'oggetto eccezione
+        //debug('foo');
         $exception = new ApiException($this->errorMessage, $this->error);
 
         // Genero report per gli internal server error `misteriosi`
@@ -2274,11 +2280,16 @@ class Apilib
         }
 
         if (!is_numeric($entity_id) && is_string($entity_id)) {
+
             $entity = $this->crmEntity->getEntity($entity_id);
             if (!$entity) {
                 return $data;
             }
             $entity_id = $entity['entity_id'];
+        }
+        //debug($data);
+        if (empty($data['entity'])) {
+            $data['entity'] = $entity['entity_name'] ?? $entity_id;
         }
 
         $this->preLoadDataProcessors();
@@ -2302,7 +2313,7 @@ class Apilib
                 }
             }
         }
-
+        unset($data['entity']);
         return $data;
     }
     private function runEvent($function, $data)

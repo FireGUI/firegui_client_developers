@@ -112,10 +112,11 @@ function initTinymce(container = null) {
 
     var tinymce_config = {
         selector: 'textarea.js_tinymce',
-        height: 250,
+        height: 500,
         resize: true,
         autosave_ask_before_unload: false,
         powerpaste_allow_local_images: true,
+        paste_data_images: true,
         relative_urls: false,
         remove_script_host: false,
         plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons',
@@ -134,7 +135,7 @@ function initTinymce(container = null) {
                     base64: blobInfo.base64()
                 },
                 success: function (res) {
-                    success(res.location);
+                    success(res.txt);
                 },
                 error: function (request, status, error) {
 
