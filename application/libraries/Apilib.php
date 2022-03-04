@@ -1014,6 +1014,8 @@ class Apilib
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
+        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers' 
+        unset($input['entity']);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
@@ -1123,6 +1125,8 @@ class Apilib
         }
 
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
+        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers' 
+        unset($input['entity']);
         $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
 
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
@@ -2274,11 +2278,16 @@ class Apilib
         }
 
         if (!is_numeric($entity_id) && is_string($entity_id)) {
+
             $entity = $this->crmEntity->getEntity($entity_id);
             if (!$entity) {
                 return $data;
             }
             $entity_id = $entity['entity_id'];
+        }
+
+        if (empty($data['entity'])) {
+            $data['entity'] = $entity['entity_name'] ?? $entity_id;
         }
 
         $this->preLoadDataProcessors();

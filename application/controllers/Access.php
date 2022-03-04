@@ -123,7 +123,7 @@ class Access extends MY_Controller
             // Imposta il log di login
             $this->apilib->logSystemAction(Apilib::LOG_LOGIN);
             $output = json_encode(array('status' => 1, 'txt' => $redirection_url));
-            $output = $this->apilib->runDataProcessing(LOGIN_ENTITY, 'login', $output);
+            $this->apilib->runDataProcessing(LOGIN_ENTITY, 'login', (array) $success);
             if ($this->input->is_ajax_request()) {
                 echo $output;
             } else {
