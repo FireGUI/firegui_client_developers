@@ -581,7 +581,10 @@ class Datab extends CI_Model
             return false;
         }
     }
-
+    public function get_grids_id_by_identifier($grid_identifier)
+    {
+        return $this->get_grid_id_by_identifier($grid_identifier);
+    }
     public function get_grid_id_by_identifier($grid_identifier)
     {
         $grid = $this->db->where('grids_identifier', $grid_identifier)->get('grids')->row();
