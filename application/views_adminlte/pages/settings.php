@@ -10,8 +10,9 @@
     </ol>
 </section>
 
-<?php //debug($dati, true); 
-?>
+
+<?php $settings_menu_list = $this->datab->get_menu('settings'); ?>
+
 <section class="content">
 
 
@@ -24,12 +25,22 @@
                 <div class="box-header with-border">
                     <i class="fa fa-user-cog"></i>
 
-                    <h3 class="box-title">Users Tools / Settings</h3>
+                    <h3 class="box-title">Main Settings</h3>
                 </div>
                 <div class="box-body">
                     <ul>
-                        <li><a href="<?php echo base_url('main/layout/users-manager'); ?>"><?php e('Users manager'); ?></a></li>
-                        <li><a href="<?php echo base_url('main/permissions'); ?>"><?php e('Permissions'); ?></a></li>
+                        <li><a href="<?php echo base_url('main/permissions'); ?>"><?php e('User permissions'); ?></a></li>
+                        <?php if (!empty($settings_menu_list)) : ?>
+                            <?php foreach ($settings_menu_list as $menu) : ?>
+                                <li>
+                                    <a href="<?php echo $this->datab->generate_menu_link($menu); ?>" <?php echo ($menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?> class="<?php echo ($menu['menu_modal'] == DB_BOOL_TRUE) ? 'js_open_modal' : ''; ?>">
+                                        <?php echo ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label'])); ?>
+                                    </a>
+
+                                </li>
+                            <?php endforeach; ?>
+
+                        <?php endif; ?>
                         <li><?php e('Send notifications'); ?></li>
                         <li><?php e('Send emails'); ?></li>
                         </li>
