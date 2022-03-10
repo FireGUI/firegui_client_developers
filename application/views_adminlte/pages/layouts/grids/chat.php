@@ -24,7 +24,8 @@ if (isset($grid_data['data'])) {
                 'date' => $thisDate,
                 'body' => '',
                 'user' => $thisUser,
-                'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right')
+                'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right'),
+                'id' => $dato[$grid['replaces']['value_id']['fields_name']]
             );
 
             if (isset($grid['replaces']['thumbnail'])) {
@@ -51,7 +52,7 @@ if (isset($grid_data['data'])) {
         <ul class="direct-chat-messages chats">
             <?php if (!empty($items)) : ?>
                 <?php foreach ($items as $item) : ?>
-                    <li class="direct-chat-msg <?php echo $item['class']; ?>">
+                    <li class="direct-chat-msg <?php echo $item['class']; ?>" data-id="<?php echo $item['id'] ?? null ?>">
                         <div class="direct-chat-primary clearfix">
                             <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
                             <span class="direct-chat-timestamp pull-right datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
