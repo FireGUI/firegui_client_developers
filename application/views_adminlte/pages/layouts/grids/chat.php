@@ -10,7 +10,7 @@ if (isset($grid_data['data'])) {
         $thisUser = $userField ? $dato[$userField] : null;
         $thisDate = $dateField ? strtotime($dato[$dateField]) : null;
 
-        if (empty($item) or $item['user'] != $thisUser or is_null($thisDate) or is_null($item['date']) or ($thisDate - $item['date']) > 300) {    // Se sono passati più di 5 min tra un messaggio e l'altro non raggruppare
+        if (empty($item) or $item['user'] != $thisUser or is_null($thisDate) or is_null($item['date']) or ($thisDate - $item['date']) > 60) {    // Se sono passati più di 1 min tra un messaggio e l'altro non raggruppare
             if ($item) {
                 $items[] = $item;
             }
