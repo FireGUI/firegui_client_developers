@@ -55,7 +55,7 @@ if (isset($grid_data['data'])) {
                     <li class="direct-chat-msg <?php echo $item['class']; ?>" data-id="<?php echo $item['id'] ?? null ?>">
                         <div class="direct-chat-primary clearfix">
                             <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
-                            <span class="direct-chat-timestamp pull-right actions"><span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>&nbsp;<span class="actions"></span></span>
+                            <span class="direct-chat-timestamp pull-right"><span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>&nbsp;<span class="actions"></span></span>
                         </div>
                         <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
                         <div class="direct-chat-text body">
