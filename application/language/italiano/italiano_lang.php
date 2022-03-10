@@ -1190,3 +1190,4 @@ $lang['Users manager'] = 'Users manager';
 $lang['Send notifications'] = 'Send notifications';
 $lang['Send emails'] = 'Send emails';
 $lang['Background login page'] = 'Background login page';
+$lang['GeneralDDD Settings'] = 'GeneralDDD Settings';

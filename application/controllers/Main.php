@@ -375,11 +375,6 @@ class Main extends MY_Controller
     */
     public function settings()
     {
-        if (!$this->datab->is_admin()) {
-            $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
-            $this->stampa($pagina);
-            return;
-        }
 
         $dati['current_page'] = 'settings';
 

@@ -17,7 +17,26 @@
 
     <div class="row">
 
+
         <div class="col-md-4">
+
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <i class="fa fa-user-cog"></i>
+
+                    <h3 class="box-title">Users Tools / Settings</h3>
+                </div>
+                <div class="box-body">
+                    <ul>
+                        <li><a href="<?php echo base_url('main/layout/users-manager'); ?>"><?php e('Users manager'); ?></a></li>
+                        <li><a href="<?php echo base_url('main/permissions'); ?>"><?php e('Permissions'); ?></a></li>
+                        <li><?php e('Send notifications'); ?></li>
+                        <li><?php e('Send emails'); ?></li>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <i class="fa fa-cog"></i>
@@ -32,9 +51,33 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <i class="fa fa-life-ring"></i>
+
+                    <h3 class="box-title">Logs</h3>
+                </div>
+                <div class="box-body">
+                    <ul>
+                        <?php if ($this->auth->is_admin()) : ?>
+                            <li><a href="<?php echo base_url('main/system_log'); ?>"><?php e('System logs'); ?></a></li>
+                            <li><?php e('Email logs'); ?></li>
+                            <li><a href=""><?php e('API logs'); ?></a></li>
+                        <?php endif; ?>
+                        <li><a href="<?php echo base_url('main/layout/changelog'); ?>"><?php e('Changelog'); ?></a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+
         </div>
 
+
+
         <div class="col-md-4">
+
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <i class="fa fa-cogs"></i>
@@ -56,48 +99,12 @@
 
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="box box-solid">
-                <div class="box-header with-border">
-                    <i class="fa fa-life-ring"></i>
-
-                    <h3 class="box-title">Logs</h3>
-                </div>
-                <div class="box-body">
-                    <ul>
-                        <li><a href="<?php echo base_url('main/system_log'); ?>"><?php e('System logs'); ?></a></li>
-                        <li><?php e('Email logs'); ?></li>
-                        <li><a href=""><?php e('API logs'); ?></a></li>
-                        <li><a href="<?php echo base_url('main/layout/changelog'); ?>"><?php e('Changelog'); ?></a></li>
-                    </ul>
-                </div>
-            </div>
         </div>
 
 
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="box box-solid">
-                <div class="box-header with-border">
-                    <i class="fa fa-user-cog"></i>
 
-                    <h3 class="box-title">Users Tools / Settings</h3>
-                </div>
-                <div class="box-body">
-                    <ul>
-                        <li><a href=""><?php e('Users manager'); ?></a></li>
-                        <li><a href="<?php echo base_url('main/permissions'); ?>"><?php e('Permissions'); ?></a></li>
-                        <li><?php e('Send notifications'); ?></li>
-                        <li><?php e('Send emails'); ?></li>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </section>

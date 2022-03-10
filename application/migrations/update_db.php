@@ -63,3 +63,7 @@ $updates['2.3.0'] = [
     "DELETE FROM menu WHERE menu_label = 'Settings' AND menu_position = 'profile'",
 
 ];
+
+$updates['2.3.1'] = [
+    "UPDATE layouts SET layouts_identifier = 'users' WHERE layouts_id = 3"
+];

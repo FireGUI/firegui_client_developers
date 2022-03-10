@@ -157,18 +157,18 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                     <?php $profile_menu_list = $this->datab->get_menu('profile'); ?>
 
 
-                    <?php if (!empty($profile_menu_list)) : ?>
 
-                        <!-- New general Settings -->
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-xs-12 text-center">
-                                    <a href="<?php echo base_url('main/settings'); ?>"><i class="fas fa-cog"></i>
-                                        <?php e('General Settings'); ?></a>
-                                </div>
+                    <!-- New general Settings -->
+                    <li class="user-body">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <a href="<?php echo base_url('main/settings'); ?>"><i class="fas fa-cog"></i>
+                                    <?php e('General Settings'); ?></a>
                             </div>
-                        </li>
+                        </div>
+                    </li>
 
+                    <?php if (!empty($profile_menu_list)) : ?>
                         <?php foreach ($profile_menu_list as $menu) : ?>
                             <li class="user-body">
                                 <div class="row">
