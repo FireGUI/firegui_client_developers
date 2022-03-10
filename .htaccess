@@ -42,3 +42,9 @@
 
     ErrorDocument 404 /index.php
 </IfModule>
+
+<IfModule mod_env.c>
+    #testing
+    SetEnv CI_ENV development
+    SetEnv FIREGUI_CLIENT_TEMPLATE views_adminlte3
+</IfModule>
