@@ -10,7 +10,7 @@ if (isset($grid_data['data'])) {
         $thisUser = $userField ? $dato[$userField] : null;
         $thisDate = $dateField ? strtotime($dato[$dateField]) : null;
 
-        if (empty($item) or $item['user'] != $thisUser or is_null($thisDate) or is_null($item['date']) or ($thisDate - $item['date']) > 300) {    // Se sono passati più di 5 min tra un messaggio e l'altro non raggruppare
+        if (empty($item) or $item['user'] != $thisUser or is_null($thisDate) or is_null($item['date']) or ($thisDate - $item['date']) > 60) {    // Se sono passati più di 1 min tra un messaggio e l'altro non raggruppare
             if ($item) {
                 $items[] = $item;
             }
@@ -24,7 +24,8 @@ if (isset($grid_data['data'])) {
                 'date' => $thisDate,
                 'body' => '',
                 'user' => $thisUser,
-                'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right')
+                'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right'),
+                'id' => $dato[$grid['replaces']['value_id']['fields_name']]
             );
 
             if (isset($grid['replaces']['thumbnail'])) {
@@ -51,10 +52,10 @@ if (isset($grid_data['data'])) {
         <ul class="direct-chat-messages chats">
             <?php if (!empty($items)) : ?>
                 <?php foreach ($items as $item) : ?>
-                    <li class="direct-chat-msg <?php echo $item['class']; ?>">
+                    <li class="direct-chat-msg <?php echo $item['class']; ?>" data-id="<?php echo $item['id'] ?? null ?>">
                         <div class="direct-chat-primary clearfix">
                             <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
-                            <span class="direct-chat-timestamp pull-right datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>
+                            <span class="direct-chat-timestamp pull-right actions"><span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>&nbsp;<span class="actions"></span></span>
                         </div>
                         <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
                         <div class="direct-chat-text body">

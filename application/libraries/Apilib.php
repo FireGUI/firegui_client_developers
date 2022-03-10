@@ -900,8 +900,9 @@ class Apilib
         $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
         $this->db->trans_complete();
 
-
-        $this->clearEntityCache($entity);
+        //TODO: clear only cache entity could work only if entity tags will be related to grids pointing (or left joining) this entity, to enable clear also grid data cache
+        //        $this->clearEntityCache($entity);
+        $this->clearCache();
     }
 
     /**
