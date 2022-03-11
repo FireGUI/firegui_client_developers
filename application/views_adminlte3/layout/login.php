@@ -37,31 +37,88 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>AdminLTE 3 | Log in</title>
+        <title>Log in</title>
 
         <!-- Google Font: Source Sans Pro -->
         <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"> -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
         <!-- Font Awesome -->
-        <link rel="stylesheet" href="<?php echo base_url("assets/plugin/core/fontawesome-free/all.min.css"); ?>">
+        <link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css"); ?>">
         <!-- icheck bootstrap -->
-        <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+        <!--<link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">-->
         <!-- Theme style -->
-        <link rel="stylesheet" href="<?php echo base_url("assets/plugin/core/css/adminlte.min.css"); ?>">
+        <link rel="stylesheet" href="<?php echo base_url("assets/plugins/core/css/adminlte.min.css"); ?>">
+        <!-- Select2  -->
+        <link rel="stylesheet" href="<?php echo base_url("assets/plugins/select2/css/select2.min.css"); ?>">
+
+        <?php $this->layout->addDinamicJavascript([
+            //"var base_url = '" . base_url() . "';",
+            //"var base_url_admin = '" . base_url_admin() . "';",
+            //"var base_url_template = '" . base_url_template() . "';",
+            //"var base_url_scripts = '" . base_url_scripts() . "';",
+            //"var base_url_uploads = '" . base_url_uploads() . "';",
+            "var lang_code = '" . ((!empty($lang['languages_code'])) ? $lang['languages_code'] : 'en-EN') . "';",
+            "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
+        ], 'config.js'); ?>
+
+        <?php
+        if ($this->settings['settings_login_background']) {
+            $data['custom'] = [
+                '.background_img' => [
+                    'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . base_url("uploads/" . $this->settings['settings_login_background']) . ")!important"
+                ]
+            ];
+        } else {
+            $data['custom'] = [
+                '.background_img' => [
+                    'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . ((!empty($season)) ? base_url("images/{$season}.jpg") : '') . ")!important"
+                ]
+            ];
+        }
+
+
+
+        if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) {
+            $data['custom'] = array_merge([
+                '.login-page, .register-page' => [
+                    'background' => LOGIN_COLOR
+                ]
+            ], $data['custom']);
+        }
+        if (defined('LOGIN_TITLE_COLOR') && !empty(LOGIN_TITLE_COLOR)) {
+            $data['custom'] = array_merge([
+                '.logo h2' => [
+                    'color' => LOGIN_TITLE_COLOR
+                ]
+            ], $data['custom']);
+
+            $this->layout->addDinamicStylesheet($data, "login.css");
+        }
+        ?>
+
+
     </head>
 
-    <body class="hold-transition login-page">
+    <body class="hold-transition login-page background_img" style=" background-repeat: no-repeat; background-size: cover;">
         <div class="login-box">
             <div class="login-logo">
-                <a href="../../index2.html"><b>Admin</b>LTE</a>
+                <!-- <a href="../../index2.html"><b>Admin</b>LTE</a> -->
+                <?php if ($this->settings === array()) : ?>
+                    <h2 class="login-logo"><?php e('La tua azienda'); ?></h2>
+                <?php elseif ($this->settings['settings_company_logo']) : ?>
+                    <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" class="logo" />
+                <?php else : ?>
+                    <h2 class=" text-danger"><?php echo $this->settings['settings_company_short_name']; ?></h2>
+                <?php endif; ?>
             </div>
             <!-- /.login-logo -->
             <div class="card">
                 <div class="card-body login-card-body">
-                    <p class="login-box-msg">Sign in to start your session</p>
+                    <p class="login-box-msg"><?php e('Enter in your profile'); ?></p>
 
-                    <form action="<?php echo base_url('access/login_start'); ?>" method="POST" class="formAjax">
+                    <form method="POST" action="<?php echo base_url('access/login_start'); ?>" class="formAjax" id="login">
                         <?php add_csrf(); ?>
+
                         <div class="input-group mb-3">
                             <input type="hidden" class="webauthn_enable" name="webauthn_enable" value="0" />
 
@@ -80,52 +137,70 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
-                            <div class="col-8">
-                                <div class="icheck-primary">
-                                    <input type="checkbox" id="remember">
-                                    <label for="remember">
-                                        Remember Me
-                                    </label>
-                                </div>
+                            <div class="col-12">
+                                <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
+                                <select name="timeout" class="select2">
+                                    <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
+                                    <option value="10" class="input-sm option_style">10 <?php e('minutes'); ?></option>
+                                    <option value="30" class="input-sm option_style">30 <?php e('minutes'); ?></option>
+                                    <option value="60" class="input-sm option_style">1 <?php e('hour'); ?></option>
+                                    <option value="120" class="input-sm option_style">2 <?php e('hours'); ?></option>
+                                    <option value="240" class="input-sm option_style" selected="selected">4 <?php e('hours'); ?></option>
+                                    <option value="480" class="input-sm option_style">8 <?php e('hours'); ?></option>
+                                    <option value="720" class="input-sm option_style">12 <?php e('hours'); ?></option>
+                                    <option value="1440" class="input-sm option_style">1 <?php e('day'); ?></option>
+                                    <option value="10080" class="input-sm option_style">7 <?php e('days'); ?></option>
+                                    <option value="43200" class="input-sm option_style">1 <?php e('month'); ?></option>
+                                    <option value="518400" class="input-sm option_style"><?php e('Never'); ?></option>
+                                </select>
                             </div>
-                            <!-- /.col -->
-                            <div class="col-4">
-                                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-block my-2">Sign In</button>
                             </div>
                             <!-- /.col -->
                         </div>
                     </form>
 
-                    <div class="social-auth-links text-center mb-3">
-                        <p>- OR -</p>
-                        <a href="#" class="btn btn-block btn-primary">
-                            <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
-                        </a>
-                        <a href="#" class="btn btn-block btn-danger">
-                            <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
-                        </a>
+                    <div class="mt-3">
+                        <div><?php e('Forgot your password?'); ?></div>
+                        <div><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></div>
+                        <!-- <a href="forgot-password.html">I forgot my password</a> -->
                     </div>
-                    <!-- /.social-auth-links -->
-
-                    <p class="mb-1">
-                        <a href="forgot-password.html">I forgot my password</a>
-                    </p>
-                    <p class="mb-0">
-                        <a href="register.html" class="text-center">Register a new membership</a>
-                    </p>
+                    <!-- /.login-card-body -->
                 </div>
-                <!-- /.login-card-body -->
             </div>
         </div>
         <!-- /.login-box -->
 
         <!-- jQuery -->
-        <script src="../../plugins/jquery/jquery.min.js"></script>
+        <script src="<?php echo base_url("assets/plugins/jquery/jquery.min.js"); ?>"></script>
         <!-- Bootstrap 4 -->
-        <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="<?php echo base_url("assets/plugins/core/js/bootstrap.bundle.min.js"); ?>"></script>
         <!-- AdminLTE App -->
-        <script src="../../dist/js/adminlte.min.js"></script>
+        <script src="<?php echo base_url("assets/plugins/core/js/adminlte.min.js"); ?>"></script>
+        <!-- Select2 -->
+        <script src="<?php //echo base_url("assets/plugins/select2/js/select2.min.js"); 
+                        ?>"></script>
+        <!-- Bootstrap-select -->
+        <script src="<?php //echo base_url("script/global/plugins/bootstrap-select/bootstrap-select.min.js?v={$this->config->item('version')}"); 
+                        ?>"></script>
+
+        <!-- Custom Components -->
+        <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
+        <!-- Easylogin -->
+        <script src="<?php echo base_url("script/js/easylogin.js?v={$this->config->item('version')}"); ?>"></script>
+
+        <script>
+            /* $(function() {
+                $('select').select2();
+            })*/
+        </script>
+
     </body>
 
     </html>
