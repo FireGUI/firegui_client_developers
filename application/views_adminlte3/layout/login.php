@@ -96,7 +96,11 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
         }
         ?>
 
-
+        <style>
+            .hide {
+                display: none;
+            }
+        </style>
     </head>
 
     <body class="hold-transition login-page background_img" style=" background-repeat: no-repeat; background-size: cover;">
@@ -140,6 +144,12 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
 
                         <div class="row">
                             <div class="col-12">
+                                <div id="msg_login" class="alert alert-danger mb-4 hide"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
                                 <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
                                 <select name="timeout" class="select2">
                                     <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
@@ -169,11 +179,11 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                     <div class="mt-3">
                         <div><?php e('Forgot your password?'); ?></div>
                         <div><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></div>
-                        <!-- <a href="forgot-password.html">I forgot my password</a> -->
                     </div>
                     <!-- /.login-card-body -->
                 </div>
             </div>
+
         </div>
         <!-- /.login-box -->
 

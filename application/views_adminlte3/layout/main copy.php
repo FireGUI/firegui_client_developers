@@ -14,7 +14,7 @@
 <!-- BEGIN BODY -->
 
 
-<body class="sidebar-mini layout-fixed" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-base_url="<?php echo base_url(); ?>" data-base_url_admin="<?php echo base_url_admin(); ?>" data-base_url_template="<?php echo base_url_template(); ?>" data-base_url_scripts="<?php echo base_url_scripts(); ?>" data-base_url_uploads="<?php echo base_url_uploads(); ?>" data-base_url_builder="<?php echo FIREGUI_BUILDER_BASEURL; ?>">
+<body class="hold-transition skin-blue sidebar-mini" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-base_url="<?php echo base_url(); ?>" data-base_url_admin="<?php echo base_url_admin(); ?>" data-base_url_template="<?php echo base_url_template(); ?>" data-base_url_scripts="<?php echo base_url_scripts(); ?>" data-base_url_uploads="<?php echo base_url_uploads(); ?>" data-base_url_builder="<?php echo FIREGUI_BUILDER_BASEURL; ?>">
     <script src="<?php echo base_url_scripts("script/js/grep_config.js?v=" . VERSION); ?>"></script>
     <div class="wrapper">
 
@@ -22,13 +22,14 @@
 
             <?php echo $header; ?>
         </header>
-
         <!-- Left side column. contains the logo and sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <?php echo $sidebar; ?>
-        </aside>
+        <aside class="main-sidebar">
 
+            <?php echo $sidebar; ?>
+
+        </aside>
         <!-- Content Wrapper. Contains page content -->
+
         <div id="js_layout_content_wrapper" class="content-wrapper" data-layout-id="<?php echo (!empty($dati['layout_id'])) ? $dati['layout_id'] : ''; ?>">
 
             <?php if (is_maintenance()) : ?>
