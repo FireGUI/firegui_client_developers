@@ -39,3 +39,7 @@ $updates['2.2.9'] = [
 $updates['2.3.0'] = [
     'include' => ['2.3.0_login_background.php'],
 ];
+
+$updates['2.3.1'] = [
+    'include' => ['2.3.1_users_deleted.php'],
+];
