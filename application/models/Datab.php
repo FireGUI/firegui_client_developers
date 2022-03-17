@@ -2130,6 +2130,46 @@ class Datab extends CI_Model
         return $results;
     }
 
+    /**
+     * Trash results
+     */
+    public function get_trash_results()
+    {
+        // Get entity with soft delete
+        $entities = $this->db->query("SELECT *, JSON_UNQUOTE(JSON_EXTRACT(entity_action_fields,'$.soft_delete_flag')) AS entity_soft_delete_field FROM entity WHERE JSON_EXTRACT(entity_action_fields,'$.soft_delete_flag') IS NOT NULL")->result_array();
+
+        $e_ids = array_map(function ($entity) {
+            return $entity['entity_id'];
+        }, $entities);
+
+        $results = array();
+        if (!empty($e_ids)) {
+            $_all_fields = $this->db->where_in('fields_entity_id', $e_ids)->get('fields')->result_array();
+
+            $all_fields = array();
+            foreach ($_all_fields as $field) {
+                $all_fields[$field['fields_entity_id']][] = $field;
+            }
+
+            foreach ($entities as $entity) {
+                $fields = $all_fields[$entity['entity_id']];
+                $where = $entity['entity_soft_delete_field'] . " = " . DB_BOOL_TRUE;
+
+                //Calcola risultato e consideralo sse ha dati effettivi
+                $result = $this->getDataEntity($entity['entity_id'], $where, null, 0, null, 1, false, [], ['group_by' => null]);
+                if ($result) {
+                    $results[] = [
+                        'entity' => $entity,
+                        'visible_fields' => $this->crmentity->getVisibleFields($entity['entity_id']),
+                        'data' => $result
+                    ];
+                }
+            }
+        }
+
+        return $results;
+    }
+
     public function search_like($search = '', $fields = array())
     {
         $outer_where = array();
