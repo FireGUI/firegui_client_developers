@@ -617,9 +617,7 @@ class Main extends MY_Controller
             $pagina = $this->load->view("pages/trash", array('dati' => $dati), true);
             $this->stampa($pagina);
         } else {
-
             set_status_header(403);
-
             die('Nope...not allowed');
         }
     }

@@ -2157,6 +2157,7 @@ class Datab extends CI_Model
             }
 
             foreach ($entities as $entity) {
+                debug($entity);
                 $fields = $all_fields[$entity['entity_id']];
                 $where = $entity['entity_soft_delete_field'] . " = " . DB_BOOL_TRUE;
 

@@ -66,6 +66,5 @@ $updates['2.3.0'] = [
 
 $updates['2.3.1'] = [
     "UPDATE layouts SET layouts_identifier = 'users' WHERE layouts_id = 3",
-    "ALTER TABLE notifications ADD COLUMN notification_desktop_notified TINYINT DEFAULT " . DB_BOOL_FALSE . ";",
     "UPDATE notifications SET notification_desktop_notified = '" . DB_BOOL_TRUE . "'",
 ];
