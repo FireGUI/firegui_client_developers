@@ -243,6 +243,7 @@ class Cron extends MY_Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $output = curl_exec($ch);
         curl_close($ch);
+        echo $output;
     }
 
     public function cron_email($cron)
