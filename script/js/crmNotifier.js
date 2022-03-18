@@ -14,6 +14,30 @@ var CrmNotifier = {
     audio: null,
     played: false,
 
+    showDesktopNotification: function (notificationId, data) {
+        var ajax = this.setDesktopNotified(notificationId);
+        if (ajax !== null) {
+            ajax.success(function () {
+                'use strict';
+                if (!data.title) {
+                    var title = "CRM Notification";
+                } else {
+                    var title = data.title;
+                }
+                var icon_url = "";
+                var notification = new Notification(title, { body: data.message, icon: icon_url });
+                notification.onclick = () => {
+                    notification.close();
+                    window.parent.focus();
+                    if (data.link) {
+                        window.parent.location.href = base_url + link;
+                    }
+
+                }
+            });
+        }
+    },
+
     fetch: function () {
         var notifier = this;
         $.ajax({
@@ -24,10 +48,15 @@ var CrmNotifier = {
                 notifier.showUnread(json.view);
 
                 $.each(json.data, function (index, notification) {
-                    if (
-                        notification.notifications_read == '0'
-                        && notification.notifications_type == '5'
-                    ) {
+
+                    // For all notification
+                    if (notification.notification_desktop_notified == '0') {
+                        console.log("show desk notification");
+                        notifier.showDesktopNotification(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message, link: notification.notifications_link });
+                    }
+
+                    // Notification with modal
+                    if (notification.notifications_read == '0' && notification.notifications_type == '5') {
                         notifier.readAndOpenModal(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message });
                     }
                 });
@@ -85,11 +114,19 @@ var CrmNotifier = {
     },
 
     setRead: function (notificationId) {
-        if (this.number < 1 && !notificationId) {
-            return null;
+        if (this.number < 1 || !notificationId) {
+            return false;
         }
 
         return $.ajax(base_url + 'db_ajax/notify_read/' + (typeof notificationId === 'undefined' ? '' : notificationId));
+    },
+
+    setDesktopNotified: function (notificationId) {
+        if (this.number < 1 || !notificationId) {
+            return false;
+        }
+
+        return $.ajax(base_url + 'db_ajax/notify_desktop_notified/' + (typeof notificationId === 'undefined' ? '' : notificationId));
     },
 
     readAll: function () {
@@ -133,6 +170,19 @@ var CrmNotifier = {
         }
     },
 
+    // Desktop notification
+    deskNotifyPerm: function () {
+        let permission = Notification.permission;
+
+        if (permission === "default") {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    showNotification();
+                }
+            });
+        }
+    },
+
     init: function () {
         var notifier = this;
         notifier.fetch();
@@ -150,12 +200,13 @@ var CrmNotifier = {
             } else {
                 notifier.readAndOpenModal($this.data('notification'), $this.data());
             }
-
         });
+        notifier.deskNotifyPerm();
     },
 };
 
 $(document).ready(function () {
     'use strict';
     CrmNotifier.init();
+
 });

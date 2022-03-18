@@ -600,9 +600,26 @@ class Main extends MY_Controller
             }
         }
 
-
         $pagina = $this->load->view("pages/search_results", array('dati' => $dati), true);
         $this->stampa($pagina);
+    }
+
+    /**
+     * Trash results
+     */
+    public function trash()
+    {
+        if ($this->auth->is_admin()) {
+            $dati['current_page'] = 'trash';
+            $dati['count_total'] = "1";
+            $dati['results'] = $this->datab->get_trash_results();
+
+            $pagina = $this->load->view("pages/trash", array('dati' => $dati), true);
+            $this->stampa($pagina);
+        } else {
+            set_status_header(403);
+            die('Nope...not allowed');
+        }
     }
 
     /**

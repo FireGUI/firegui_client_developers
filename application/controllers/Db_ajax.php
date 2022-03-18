@@ -894,6 +894,13 @@ class Db_ajax extends MY_Controller
         }
     }
 
+    public function notify_desktop_notified($notificationId = null)
+    {
+        if ($notificationId && is_numeric($notificationId)) {
+            $this->datab->readDesktopNotified($notificationId);
+        }
+    }
+
     public function ck_uploader()
     {
         $url = './uploads/' . time() . "_" . strtolower(str_replace(' ', '_', $_FILES['upload']['name']));
