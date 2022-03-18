@@ -249,14 +249,26 @@ class Firegui extends MY_Controller
             }
         }
     }
+
     public function test_migration($migration_file)
     {
         if ($this->auth->is_admin()) {
+            $do_rollback = $this->input->get('rollback') ? true : false;
+
+            $this->db->trans_begin();
+
             include(FCPATH . 'application/migrations/' . $migration_file . '.php');
+
+            if ($this->db->trans_status() === FALSE || $do_rollback) {
+                $this->db->trans_rollback();
+            } else {
+                $this->db->trans_commit();
+            }
         } else {
             die('Must be logged in');
         }
     }
+
     public function get_client_version()
     {
         $check = $this->db->where('meta_data_key', 'db_version')->get('meta_data')->row_array();

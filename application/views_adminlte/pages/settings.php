@@ -58,6 +58,10 @@
                     <ul>
                         <li><a href="<?php echo base_url('api_manager'); ?>"><?php e('API Manager'); ?></a></li>
                         <li><a href="<?php echo base_url('main/support_tables'); ?>"><?php e('Support Tables'); ?></a></li>
+
+                        <?php if ($this->auth->is_admin()) : ?>
+                            <li><a href="<?php echo base_url('main/trash'); ?>"><?php e('Trash'); ?></a></li>
+                        <?php endif; ?>
                         <li><?php e('SMTP Configuration'); ?></li>
                     </ul>
                 </div>
