@@ -100,11 +100,26 @@ class Mail_model extends CI_Model
             $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";
         }
 
-        if ($this->isDeferred()) {
-            return $this->queueEmail($to, $headers, $subject, $message, true, $attachments);
-        } else {
+        $module_mail_installed = false;
+        $settings = $this->db->get('settings')->row();
+        if (!empty($settings->settings_mail_module_identifier)) {
+            $mail_module_identifier = $settings->settings_mail_module_identifier;
+            $this->load->model($mail_module_identifier, 'mailmodule');
+            $module_mail_installed = true;
+        }
 
-            return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
+        if ($this->isDeferred()) {
+            if ($module_mail_installed) {
+                return $this->mailmodule->queueEmail($to, $headers, $subject, $message, true, $attachments);
+            } else {
+                return $this->queueEmail($to, $headers, $subject, $message, true, $attachments);
+            }
+        } else {
+            if ($module_mail_installed) {
+                return $this->mailmodule->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
+            } else {
+                return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
+            }
         }
     }
 
