@@ -13,7 +13,7 @@
 
     <a href="<?php echo $notification['href']; ?>">
         <h4>
-            <?php echo e('Notification'); ?>
+            <?php echo ($notification['notifications_title']) ?  $notification['notifications_title'] : 'Notification'; ?>
             <small><i class="fa fa-clock-o"></i><?php echo $notification['datespan']; ?></small>
         </h4>
         <p class="notification_text"><?php echo preg_replace('|<br\s*/?>|i', '&nbsp; ', $notification['notifications_message']); ?></p>

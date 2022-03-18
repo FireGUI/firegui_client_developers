@@ -57,7 +57,7 @@ var CrmNotifier = {
 
                     // Notification with modal
                     if (notification.notifications_read == '0' && notification.notifications_type == '5') {
-                        notifier.readAndOpenModal(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message });
+                        notifier.readAndOpenModal(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message, link: notification.notifications_link });
                     }
                 });
 
@@ -114,10 +114,6 @@ var CrmNotifier = {
     },
 
     setRead: function (notificationId) {
-        if (this.number < 1 || !notificationId) {
-            return false;
-        }
-
         return $.ajax(base_url + 'db_ajax/notify_read/' + (typeof notificationId === 'undefined' ? '' : notificationId));
     },
 
@@ -130,7 +126,7 @@ var CrmNotifier = {
     },
 
     readAll: function () {
-        var ajax = this.setRead();
+        var ajax = this.setRead('');
         if (ajax !== null) {
             var notifier = this;
             ajax.success(function () {
@@ -158,13 +154,16 @@ var CrmNotifier = {
     readAndOpenModal: function (notificationId, data) {
         var that = this;
 
+        if (data.link) {
+            data.message += '<br /><br /><a class="btn btn-primary" href="' + base_url + data.link + '">Open now</a><br />';
+        }
         var ajax = this.setRead(notificationId);
         if (ajax !== null) {
             ajax.success(function () {
                 'use strict';
                 bootbox.alert({
-                    title: data.title ?? 'New Notification',
-                    message: data.message,
+                    title: 'IMPORTANT Notification: ' + data.title ?? '',
+                    message: '<center>' + data.message + '</center>',
                 });
             });
         }
