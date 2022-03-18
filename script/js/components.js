@@ -1131,7 +1131,10 @@ $(function () {
         }
         $(this).val(val);
     });
-
+    $('body').on('keyup', '.js_integer', function () {
+        var val = $(this).val().replace(/\D+/g, '');
+        $(this).val(val);
+    });
     $('body').on('keyup', '.js_money', function () {
         var val = $(this).val();
         val = val.replace(/[^\d,]/g, "")

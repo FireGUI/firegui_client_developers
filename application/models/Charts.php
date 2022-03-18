@@ -77,7 +77,18 @@ class Charts extends CI_Model
                         break;
                 }
             } else {
-                $data['data'] = $this->db->query($this->datab->replace_superglobal_data(str_replace('{value_id}', $value_id, $element['charts_elements_full_query'])))->result_array();
+                $where = $this->datab->generate_where("charts_elements", $element['charts_elements_id'], $value_id);
+                $query = str_replace('{value_id}', $value_id, $element['charts_elements_full_query']);
+                if (stripos($query, ' where ')) {
+                    $query = str_ireplace('{where}', ' AND ' . $where, $query);
+                } else {
+                    $query = str_ireplace('{where}', ' WHERE ' . $where, $query);
+                }
+                $query = $this->datab->replace_superglobal_data($query);
+
+
+                //debug($query);
+                $data['data'] = $this->db->query($query)->result_array();
             }
 
             // Precalcolo tutte le x, perché ogni serie deve avere lo stesso numero di valori

@@ -2,6 +2,9 @@
 $chartId = "container_hightcharts_{$chart['charts_id']}";
 // --- Series
 $series = [];
+
+
+
 if (!empty($chart_data[0]['series'])) {
     foreach ($chart_data[0]['series'] as $name => $data) {
         $pdata = [];
