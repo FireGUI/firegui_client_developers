@@ -41,5 +41,5 @@ $updates['2.3.0'] = [
 ];
 
 $updates['2.3.1'] = [
-    'include' => ['2.3.1_users_deleted.php'],
+    'include' => ['2.3.1_users_deleted.php', '2.3.1_users_last_password_change.php'],
 ];
