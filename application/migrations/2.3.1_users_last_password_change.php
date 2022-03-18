@@ -12,7 +12,7 @@ $this->db->insert('fields', [
     'fields_entity_id' => $entity_id,
     'fields_name' => LOGIN_ENTITY . '_last_password_change',
     'fields_type' => 'DATETIME',
-    'fields_default' => DB_BOOL_FALSE,
+    'fields_default' => 180,
     'fields_required' => '0',
     'fields_preview' => '0',
     'fields_visible' => '1',
