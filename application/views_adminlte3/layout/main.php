@@ -1,21 +1,22 @@
 <html lang="en" class="" style="height: auto;">
 
+<!-- BEGIN HEAD -->
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
-    <title></title>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
-    <link rel="stylesheet" href="<?php echo base_url('assets/plugins/fontawesome-free/css/all.css'); ?>">
-    <link rel="stylesheet" href="<?php echo base_url('assets/plugins/core/css/adminlte.min.css'); ?>">
+    <?php echo $head; ?>
 </head>
+<!-- END HEAD -->
 
-<body class="layout-navbar-fixed layout-fixed text-sm layout-footer-fixed" style="height: auto;">
+<body class="layout-navbar-fixed layout-fixed layout-footer-fixed" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-base_url="<?php echo base_url(); ?>" data-base_url_admin="<?php echo base_url_admin(); ?>" data-base_url_template="<?php echo base_url_template(); ?>" data-base_url_scripts="<?php echo base_url_scripts(); ?>" data-base_url_uploads="<?php echo base_url_uploads(); ?>" data-base_url_builder="<?php echo FIREGUI_BUILDER_BASEURL; ?>">
+    <script src="<?php //echo base_url_scripts("script/js/grep_config.js?v=" . VERSION); 
+                    ?>"></script>
 
     <div class="wrapper">
 
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light text-sm">
+        <?php echo $header;
+        ?>
+
+        <!--         <nav class="main-header navbar navbar-expand navbar-white navbar-light text-sm">
 
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -30,6 +31,11 @@
             </ul>
 
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link toggleDark" href="#" role="button">
+                        <i class="fas fa-adjust"></i>
+                    </a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-bell"></i>
@@ -62,83 +68,30 @@
                     </a>
                 </li>
             </ul>
-        </nav>
-
+        </nav> -->
 
         <aside class="main-sidebar sidebar-dark-primary elevation-2">
-            <a href="index3.html" class="brand-link">
-                <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">AdminLTE 3</span>
-            </a>
-
-            <div class="sidebar" style="overflow-y: auto;">
-
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="image">
-                        <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-                    </div>
-                    <div class="info">
-                        <a href="#" class="d-block">Alexander Pierce</a>
-                    </div>
-                </div>
-
-                <!-- <div class="form-inline">
-                    <div class="input-group" data-widget="sidebar-search">
-                        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-sidebar">
-                                <i class="fas fa-search fa-fw"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="sidebar-search-results">
-                        <div class="list-group"><a href="#" class="list-group-item">
-                                <div class="search-title"><strong class="text-light"></strong>N<strong class="text-light"></strong>o<strong class="text-light"></strong> <strong class="text-light"></strong>e<strong class="text-light"></strong>l<strong class="text-light"></strong>e<strong class="text-light"></strong>m<strong class="text-light"></strong>e<strong class="text-light"></strong>n<strong class="text-light"></strong>t<strong class="text-light"></strong> <strong class="text-light"></strong>f<strong class="text-light"></strong>o<strong class="text-light"></strong>u<strong class="text-light"></strong>n<strong class="text-light"></strong>d<strong class="text-light"></strong>!<strong class="text-light"></strong></div>
-                                <div class="search-path"></div>
-                            </a></div>
-                    </div>
-                </div> -->
-
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column text-sm nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-header">EXAMPLES</li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Dashboard
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview" style="display: none;">
-                                <li class="nav-item">
-                                    <a href="../../index.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Dashboard v1</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../../index2.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Dashboard v2</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../../index3.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Dashboard v3</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-
-            </div>
-
+            <?php
+            echo $sidebar;
+            ?>
         </aside>
 
-        <div class="content-wrapper" style="min-height: 494.016px;">
+        <div id="js_layout_content_wrapper" class="content-wrapper" data-layout-id="<?php echo (!empty($dati['layout_id'])) ? $dati['layout_id'] : ''; ?>">
+            <?php if (is_maintenance()) : ?>
+                <section class="content-header">
+                    <div class="alert alert-warning mb-0">
+                        <h5><?php e('Updates in progress'); ?></h5>
+
+                        <div><?php e('Dear customer, we are making updates to your platform, the service may be subject to slight interruptions, we apologize for the inconvenience.'); ?></div>
+                    </div>
+                </section>
+            <?php endif; ?>
+            <div id="js_page_content">
+                <?php echo $page; ?>
+            </div>
+        </div>
+
+        <!--         <div class="content-wrapper">
 
             <section class="content-header">
                 <div class="container-fluid">
@@ -182,14 +135,16 @@
 
             </section>
 
-        </div>
+        </div> -->
 
-        <footer class="main-footer text-sm">
+        <?php echo $footer; ?>
+
+        <!--         <footer class="main-footer text-sm">
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> 3.2.0
             </div>
             <strong>Copyright © 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
-        </footer>
+        </footer> -->
 
         <div id="sidebar-overlay"></div>
     </div>

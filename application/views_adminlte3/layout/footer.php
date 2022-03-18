@@ -51,7 +51,28 @@
     </div>
   </div>
 <?php endif; ?>
+
+<footer class="main-footer text-sm">
+  <div class="float-right d-none d-sm-block">
+    <b><?php e('Version'); ?></b> <?php echo VERSION; ?>
+  </div>
+  <div class="center_side pull-left hidden-xs">
+    <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
+  </div>
+
+  <div class="left_side pull-left hidden-xs">
+    <div class="btn-group">
+      <div class="">
+        <?php /* {tpl-pre-footer} */ ?>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
 <!-- Fixed footer -->
+<?php
+/*
 <footer class="main-footer">
 
   <div class="left_side pull-left hidden-xs">
@@ -60,11 +81,6 @@
         {tpl-pre-footer}
       </div>
     </div>
-  </div>
-
-
-  <div class="center_side pull-left hidden-xs">
-    <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
   </div>
 
   <div class="right_side pull-right hidden-xs">
@@ -77,14 +93,24 @@
   </div>
 
 </footer>
+*/
+?>
 
 <div id="js_modal_container"></div>
+
+<!-- CORE  -->
+<script src="<?php echo base_url_template("assets/plugins/jquery/jquery.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_template("assets/plugins/core/js/bootstrap.bundle.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url_template("assets/plugins/core/js/adminlte.min.js?v=" . VERSION); ?>"></script>
+
+
 
 <!-- COMMON PLUGINS -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/jquery-ui/jquery-ui.min.js?v=" . VERSION); ?>"></script>
 
 <!-- Bootstrap 3.3.7 -->
-<script src="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php //echo base_url_template("template/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js?v=" . VERSION); 
+              ?>"></script>
 
 <!-- Morris.js charts -->
 <script src="<?php echo base_url_template("template/adminlte/bower_components/moment/min/moment.min.js?v=" . VERSION); ?>"></script>

@@ -149,7 +149,7 @@ endif;
                     <div class="row">
                         <div class="col-12">
                             <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
-                            <select name="timeout" class="selectpicker form-control form-control-sm" data-width="50%" data-size="5">
+                            <select name="timeout" class="form-control form-control-sm" data-width="50%" data-size="5">
                                 <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
                                 <option value="10" class="input-sm option_style">10 <?php e('minutes'); ?></option>
                                 <option value="30" class="input-sm option_style">30 <?php e('minutes'); ?></option>

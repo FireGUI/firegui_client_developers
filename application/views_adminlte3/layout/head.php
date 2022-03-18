@@ -21,52 +21,24 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
 
+<!-- jQuery -->
+<script src="<?php echo base_url("assets/plugins/jquery/jquery.min.js?v=" . VERSION); ?>"></script>
+
+<!-- CORE LEVEL STYLES -->
+<!-- Bootstrap 4 -->
+<script src="<?php echo base_url_scripts("assets/plugins/core/js/bootstrap.bundle.min.js?v=" . VERSION); ?>"></script>
+<!-- Theme style (AdminLTE App) -->
+<script src="<?php echo base_url_template("assets/plugins/core/js/adminlte.min.js?v=" . VERSION); ?>"></script>
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/core/css/adminlte.min.css?v=" . VERSION); ?>">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css"); ?>">
 
 <!-- Select2  -->
 <link rel="stylesheet" href="<?php echo base_url("assets/plugins/select2/css/select2.min.css"); ?>">
 
 
-
-<!-- CORE LEVEL STYLES -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.css?v=" . VERSION); ?>" />
-<!-- Font Awesome -->
-<link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css?v=" . VERSION); ?>">
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/Ionicons/css/ionicons.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("template/adminlte/bower_components/select2/dist/css/select2.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/css/components-md.css.map?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.css"); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.theme.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/AdminLTE.min.css?v=" . VERSION); ?>" />
-<!-- Theme style -->
-<link rel="stylesheet" href="<?php echo base_url("assets/plugins/core/css/adminlte.min.css?v=" . VERSION); ?>">
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/dist/css/skins/_all-skins.min.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/dropzone/css/dropzone.css?v=" . VERSION); ?>" />
-
-<!-- LEAFLET -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/lib/leaflet-1.7.1/leaflet.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-1.7.1/Leaflet.draw/src/leaflet.draw.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" href="<?php echo base_url_scripts("script/lib/leaflet-fullscreen/leaflet.fullscreen.css?v=" . VERSION); ?>" />
-
-<link rel="stylesheet" href="<?php echo base_url_template("script/lib/Leaflet.markercluster/dist/MarkerCluster.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" href="<?php echo base_url_template("script/lib/Leaflet.markercluster/dist/MarkerCluster.Default.css?v=" . VERSION); ?>" />
-
-<!-- FullCalendar 4 -->
-<link href='<?php echo base_url_scripts('script/lib/fullcalendar-4/core/main.css') ?>' rel='stylesheet' />
-<link href='<?php echo base_url_scripts('script/lib/fullcalendar-4/daygrid/main.css') ?>' rel='stylesheet' />
-<link href='<?php echo base_url_scripts('script/lib/fullcalendar-4/timegrid/main.css') ?>' rel='stylesheet' />
-
 <!-- CUSTOM CSS -->
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" />
+<!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" /> -->
 
 <!-- STYLE OVERRIDE -->
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
@@ -94,10 +66,6 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     <link rel="shortcut icon" href="<?php echo base_url('/favicon.ico'); ?>" />
 <?php endif; ?>
 
-<!-- AdminLTE App -->
-<script src="<?php echo base_url_template("assets/plugins/core/js/adminlte.min.js?v=" . VERSION); ?>"></script>
-<!--<script src="<?php echo base_url_template("template/adminlte/bower_components/jquery/dist/jquery.min.js?v=" . VERSION); ?>"></script> -->
-
 <?php $this->layout->addDinamicJavascript([
     //"var base_url = '" . base_url() . "';",
     //"var base_url_admin = '" . base_url_admin() . "';",
@@ -110,23 +78,5 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
 ], 'config.js'); ?>
 
-<script src="<?php echo base_url_scripts("script/lib/moment.min.js?v=" . VERSION); ?>"></script>
-<!-- CHARTS -->
-<script src="<?php echo base_url_template("script/js/jquery-migrate-3.0.0.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/exporting.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/modules/funnel.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/highcharts-3.0.9/js/highcharts_options.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url_scripts("script/lib/chart.js-2.9.3/dist/Chart.js?v=" . VERSION); ?>"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/chart.js-2.9.3/dist/Chart.css?v=" . VERSION); ?>" />
-<script src="<?php echo base_url_scripts("script/lib/apexcharts-bundle/dist/apexcharts.min.js?v=" . VERSION); ?>"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/apexcharts-bundle/dist/apexcharts.css?v=" . VERSION); ?>" />
-
 <!-- GENERIC -->
-<script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>
-
-
-<!-- jQuery -->
-<script src="<?php echo base_url_scripts("assets/plugins/jquery/jquery.min.js?v=" . VERSION); ?>"></script>
-<!-- Bootstrap 4 -->
-<script src="<?php echo base_url_scripts("assets/plugins/core/js/bootstrap.bundle.min.js?v=" . VERSION); ?>"></script>
+<!-- <script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script> -->
