@@ -60,45 +60,6 @@ class Mail_model extends CI_Model
     public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [])
     {
 
-        if (is_development()) {
-            $old_to = $to;
-            $to = '*******@gmail.com';
-            $headers_json = json_encode($additional_headers);
-        }
-
-        if (empty($lang)) {
-            $settings = $this->db->join('languages', 'settings_default_language = languages_id')->get('settings')->row_array();
-            if (!empty($settings)) {
-                $langcode = $settings['languages_code'] ?? 'en-EN';
-
-                $ex = explode('-', $langcode);
-                $lang = $ex[0];
-            }
-        }
-
-        $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
-
-        if (empty($email)) {
-            $email = $this->db->get_where('emails', array('emails_key' => trim($key)))->row_array();
-
-            if (empty($email)) {
-                return false;
-            }
-        }
-
-        $headers = array_merge(
-            array_filter(unserialize($email['emails_headers'])),
-            array_filter($additional_headers)
-        );
-
-        // Usa come replacement i parametri che non sono array, object e risorse
-        $filteredData = array_filter($data, 'is_scalar');
-        $subject = str_replace_placeholders($email['emails_subject'],  $filteredData, true, true);
-        $message = nl2br(str_replace_placeholders($email['emails_template'], $filteredData, true, true));
-
-        if (is_development()) { //Meglio questo dell'is_development
-            $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";
-        }
 
         $module_mail_installed = false;
         $settings = $this->db->get('settings')->row();
@@ -108,16 +69,56 @@ class Mail_model extends CI_Model
             $module_mail_installed = true;
         }
 
-        if ($this->isDeferred()) {
-            if ($module_mail_installed) {
-                return $this->mailmodule->queueEmail($to, $headers, $subject, $message, true, $attachments);
-            } else {
-                return $this->queueEmail($to, $headers, $subject, $message, true, $attachments);
-            }
+        // Use send mail method of module
+        if ($module_mail_installed) {
+
+            $this->mailmodule->send($to, $key, $lang, $data, $additional_headers, $attachments);
         } else {
-            if ($module_mail_installed) {
-                return $this->mailmodule->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
+
+            if (is_development()) {
+                $old_to = $to;
+                $to = '*******@gmail.com';
+                $headers_json = json_encode($additional_headers);
+            }
+
+            if (empty($lang)) {
+                $settings = $this->db->join('languages', 'settings_default_language = languages_id')->get('settings')->row_array();
+                if (!empty($settings)) {
+                    $langcode = $settings['languages_code'] ?? 'en-EN';
+
+                    $ex = explode('-', $langcode);
+                    $lang = $ex[0];
+                }
+            }
+
+            $email = $this->db->get_where('emails', array('emails_key' => trim($key), 'emails_language' => $lang))->row_array();
+
+            if (empty($email)) {
+                $email = $this->db->get_where('emails', array('emails_key' => trim($key)))->row_array();
+
+                if (empty($email)) {
+                    return false;
+                }
+            }
+
+            $headers = array_merge(
+                array_filter(unserialize($email['emails_headers'])),
+                array_filter($additional_headers)
+            );
+
+            // Usa come replacement i parametri che non sono array, object e risorse
+            $filteredData = array_filter($data, 'is_scalar');
+            $subject = str_replace_placeholders($email['emails_subject'],  $filteredData, true, true);
+            $message = nl2br(str_replace_placeholders($email['emails_template'], $filteredData, true, true));
+
+            if (is_development()) { //Meglio questo dell'is_development
+                $message = "(Messaggio da inviare a: {$old_to}) (headers: {$headers_json}) $message";
+            }
+
+            if ($this->isDeferred()) {
+                return $this->queueEmail($to, $headers, $subject, $message, true, $attachments);
             } else {
+
                 return $this->sendEmail($to, $headers, $subject, $message, true, [], $attachments);
             }
         }
