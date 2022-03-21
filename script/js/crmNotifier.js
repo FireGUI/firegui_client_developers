@@ -25,7 +25,11 @@ var CrmNotifier = {
                     var title = data.title;
                 }
                 var icon_url = "";
-                var notification = new Notification(title, { body: data.message, icon: icon_url });
+
+                // Strip tags
+                let decodedMessage = data.message.replace(/(<([^>]+)>)/gi, "");
+
+                var notification = new Notification(title, { body: decodedMessage, icon: icon_url });
                 notification.onclick = () => {
                     notification.close();
                     window.parent.focus();
@@ -162,7 +166,7 @@ var CrmNotifier = {
             ajax.success(function () {
                 'use strict';
                 bootbox.alert({
-                    title: 'IMPORTANT Notification: ' + data.title ?? '',
+                    title: data.title ?? '',
                     message: '<center>' + data.message + '</center>',
                 });
             });
