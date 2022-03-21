@@ -76,7 +76,7 @@ $profile_menu_list = $this->datab->get_menu('profile');
                 <i class="far fa-bell"></i>
                 <span class="badge badge-warning navbar-badge">15</span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
 
                 <?php if (!empty($profile_menu_list)) : ?>
@@ -111,12 +111,14 @@ $profile_menu_list = $this->datab->get_menu('profile');
                         <span><?php e('Builder ToolBar'); ?></span>
                     </a>
                 <?php endif; ?>
+
                 <?php if (!empty($_COOKIE['webauthn_easylogin']) && $_COOKIE['webauthn_easylogin'] == '__never__') : ?>
                     <a href="<?php echo base_url('access/easylogin'); ?>" class="dropdown-item p-3">
                         <i class="fas fa-fingerprint mr-2"></i>
                         <span><?php e('Enable Touch-Id'); ?></span>
                     </a>
                 <?php endif; ?>
+
                 <div class="dropdown-divider"></div>
                 <a href="#" class="dropdown-item dropdown-footer">
                     <div class="row">
@@ -142,6 +144,7 @@ $profile_menu_list = $this->datab->get_menu('profile');
                 </a>
             </div>
         </li>
+
         <li class="nav-item">
             <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                 <i class="fas fa-expand-arrows-alt"></i>
