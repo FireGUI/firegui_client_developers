@@ -44,11 +44,11 @@
     <script>
       // Replace Math.random() with a pseudo-random number generator to get reproducible results in e2e tests
       // Based on https://gist.github.com/blixt/f17b47c62508be59987b
-      var _seed = 42
+      var _seed = 42;
       Math.random = function() {
-        _seed = (_seed * 16807) % 2147483647
-        return (_seed - 1) / 2147483646
-      }
+        _seed = _seed * 16807 % 2147483647;
+        return (_seed - 1) / 2147483646;
+      };
     </script>
 
     <script src="../../assets/stock-prices.js"></script>
@@ -155,6 +155,15 @@
                     },
               
                     text: 'Point Annotation',
+                  }
+                }, {
+                  x: new Date('08 Dec 2017').getTime(),
+                  y: 9340.85,
+                  marker: {
+                    size: 0
+                  },
+                  image: {
+                    path: '../../assets/images/ico-instagram.png'
                   }
                 }]
               },
