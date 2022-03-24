@@ -824,7 +824,7 @@ class Apilib
     }
 
     /**
-     * Cancella il record selezionate
+     * Delete selected record
      * @param string $entity
      */
     public function delete($entity = null, $id = null)
@@ -897,7 +897,7 @@ class Apilib
             $this->db->delete($entity, [$entity . '_id' => $id]);
         }
         $this->runDataProcessing($entity, 'delete', ['id' => $id, 'data' => $record, 'entity' => $entity]);
-        $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id]);
+        $this->logSystemAction(self::LOG_DELETE, ['entity' => $entity, 'id' => $id, 'data' => json_encode($record)]);
         $this->db->trans_complete();
 
         //TODO: clear only cache entity could work only if entity tags will be related to grids pointing (or left joining) this entity, to enable clear also grid data cache

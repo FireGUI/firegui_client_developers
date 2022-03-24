@@ -1217,3 +1217,4 @@ $lang['SW   Support Tables Management'] = 'SW   Support Tables Management';
 $lang['World Countries'] = 'World Countries';
 $lang['DDT'] = 'DDT';
 $lang['Statistiche'] = 'Statistiche';
+$lang['Create task'] = 'Create task';

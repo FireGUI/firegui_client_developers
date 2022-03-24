@@ -261,8 +261,11 @@ $pprev = $page - 1;
                                     if (is_array($val)) {
                                         $val = implode(', ', $val);
                                     }
-
-                                    echo "<strong>{$key}</strong>: {$val}<br/>";
+                                    if ($key == 'data') {
+                                        echo "<strong>Data</strong>: check it on db...";
+                                    } else {
+                                        echo "<strong>{$key}</strong>: {$val}<br/>";
+                                    }
                                 }
                             }
                             ?></td>
