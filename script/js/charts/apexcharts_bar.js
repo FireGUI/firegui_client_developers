@@ -3,6 +3,11 @@ var series = [];
 var options = [];
 var categories = [];
 
+
+const isValidDate = function (date) {
+    return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
+}
+
 $(function () {
     'use strict';
 
@@ -59,7 +64,7 @@ $(function () {
                 categories: categories.chartId,
                 labels: {
                     formatter: function (value, timestamp, index) {
-                        if (moment(value).isValid()) {
+                        if (isValidDate(value)) {
                             return moment(value).format('DD MMM YYYY');
                         } else {
                             return value;

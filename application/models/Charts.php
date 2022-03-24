@@ -178,6 +178,7 @@ class Charts extends CI_Model
 
     public function process_data($chart, $data)
     {
+
         switch ($chart['charts_x_datatype']) {
             case 'dates':
                 $data = $this->processDates($chart, $data);
