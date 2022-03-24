@@ -856,7 +856,6 @@ if (!function_exists('crm_exception_handler')) {
 
             // Vai di mail
             mail(DEFAULT_EMAIL_SYSTEM, 'Eccezione non catturata su host ' . $_SERVER['HTTP_HOST'], implode('<hr>', $m), implode(PHP_EOL, $h));
-            log_error_slack(implode('<hr>', $m));
         }
 
         $out .= '</div>';
@@ -931,33 +930,6 @@ if (!function_exists('array_diff_assoc_recursive')) {
 }
 
 
-if (!function_exists('send_telegram_message')) {
-
-    function send_telegram_message($botid, $chatid, $text)
-    {
-        $ch = curl_init();
-        //Bot id must start with "bot".
-        if (strpos($botid, 'bot') !== 0) {
-            $botid = 'bot' . $botid;
-        }
-        $params = ['chat_id' => $chatid, 'text' => $text, 'parse_mode' => 'HTML'];
-        curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/$botid/sendmessage");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
-    }
-}
-
-if (!function_exists('log_error_slack')) {
-
-    function log_error_slack($message, $channel = '#log_crm')
-    {
-        return false;
-    }
-}
 
 if (!function_exists('mese_testuale')) {
 
