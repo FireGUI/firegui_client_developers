@@ -13,7 +13,7 @@ $this->db->insert('fields', [
     'fields_name' => LOGIN_ENTITY . '_deleted',
     'fields_type' => 'boolean',
     'fields_default' => DB_BOOL_FALSE,
-    'fields_required' => '0',
+    'fields_required' => '1',
     'fields_preview' => '0',
     'fields_visible' => '1',
     'fields_multilingual' => '0',
