@@ -65,7 +65,7 @@ $updates['2.3.0'] = [
 ];
 
 $updates['2.3.1'] = [
-    "ALTER TABLE " . LOGIN_ENTITY . " ADD COLUMN " . LOGIN_ENTITY . "_deleted INT DEFAULT 0;",
     "UPDATE layouts SET layouts_identifier = 'users' WHERE layouts_id = 3",
     "UPDATE notifications SET notification_desktop_notified = '" . DB_BOOL_TRUE . "'",
+    "ALTER TABLE " . LOGIN_ENTITY . " ADD COLUMN " . LOGIN_ENTITY . "_deleted INT DEFAULT 0;",
 ];
