@@ -3096,6 +3096,7 @@ class Datab extends CI_Model
 
 
                 $chart_layout = $chart['charts_layout'] ?: DEFAULT_LAYOUT_CHART;
+                //debug($chart_layout);
                 return $this->load->view("pages/layouts/charts/{$chart_layout}", array(
                     'chart' => $chart,
                     'chart_data' => $chart_data,

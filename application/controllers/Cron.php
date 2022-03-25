@@ -144,8 +144,8 @@ class Cron extends MY_Controller
         //Execute only on time a day
         if (date('H') == 11) {
             if ($this->db->dbdriver != 'postgre') {
-                $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
-                $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
+                $this->db->where("log_api_date < now() - interval 280 day", null, false)->delete('log_api');
+                $this->db->where("log_crm_time < now() - interval 280 day", null, false)->delete('log_crm');
                 $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 7 DAY", null, false)->delete('ci_sessions');
             } else {
                 $this->db
