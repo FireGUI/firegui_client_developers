@@ -47,6 +47,7 @@ CREATE TABLE `settings_mail_module_identifier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ");
 
+
 log_message('debug', 'Inserting settings_mail_module_identifier into entity table');
 $this->db->query("
     INSERT INTO `entity` 
@@ -54,6 +55,38 @@ $this->db->query("
     VALUES 
     ('settings_mail_module_identifier',	1,	0,	0,	2,	NULL,	NULL)
 ");
+$entity_settings_mail_module_identifier_id = $this->db->insert_id();
+
+log_message('DEBUG', 'Adding fields and fields_draw for entity settings_mail_module_identifier');
+
+
+$this->db->query("
+    INSERT INTO `fields` (`fields_entity_id`, `fields_default`, `fields_name`, `fields_type`, `fields_size`, `fields_required`, `fields_preview`, `fields_visible`, `fields_ref`, `fields_ref_auto_left_join`, `fields_ref_auto_right_join`, `fields_source`, `fields_select_where`, `fields_multilingual`) VALUES  
+    ($entity_settings_mail_module_identifier_id,	'',	'settings_mail_module_identifier_id',	'INT',	NULL,	0,	0,	1,	NULL,	1,	1,	NULL,	NULL,	0)
+");
+
+$this->db->insert('fields', [
+    'fields_entity_id' => $entity_settings_mail_module_identifier_id,
+    'fields_name' => 'settings_mail_module_identifier_value',
+    'fields_type' => 'VARCHAR',
+    'fields_required' => '0',
+    'fields_preview' => '1',
+    'fields_visible' => '1',
+    'fields_multilingual' => '0',
+    'fields_ref_auto_left_join' => DB_BOOL_TRUE,
+    'fields_ref' => '',
+    'fields_default' => ''
+]);
+$settings_mail_module_identifier_value_id = $this->db->insert_id();
+$this->db->insert('fields_draw', [
+    'fields_draw_fields_id' => $settings_mail_module_identifier_value_id,
+    'fields_draw_label' => 'Settings Mail Module Identifier',
+    'fields_draw_html_type' => 'input_text',
+    'fields_draw_display_none' => '0',
+    'fields_draw_enabled' => '1',
+]);
+
+
 
 log_message('debug', 'Inserting default value in settings_mail_module_identifier');
 $this->db->query("

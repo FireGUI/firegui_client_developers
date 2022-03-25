@@ -220,11 +220,27 @@ class Mail_model extends CI_Model
      */
     public function sendMessage($to, $subject, $message, $isHtml = false, array $additionalHeaders = [], array $attachments = [])
     {
-        //Verifico se è impostato email_deferred
-        if ($this->isDeferred()) {
-            return $this->queueEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
+
+        $module_mail_installed = false;
+        $settings = $this->db->get('settings')->row();
+        if (!empty($settings->settings_mail_module_identifier)) {
+            $mail_module_identifier = $settings->settings_mail_module_identifier;
+            $this->load->model($mail_module_identifier, 'mailmodule');
+            $module_mail_installed = true;
+        }
+
+        // Use send mail method of module
+        if ($module_mail_installed) {
+
+            $this->mailmodule->sendMessage($to, $subject, $message, $isHtml, $additional_headers, $attachments);
         } else {
-            return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml, [], $attachments);
+
+            //Verifico se è impostato email_deferred
+            if ($this->isDeferred()) {
+                return $this->queueEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
+            } else {
+                return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml, [], $attachments);
+            }
         }
     }
 

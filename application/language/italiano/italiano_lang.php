@@ -1218,3 +1218,4 @@ $lang['World Countries'] = 'World Countries';
 $lang['DDT'] = 'DDT';
 $lang['Statistiche'] = 'Statistiche';
 $lang['Create task'] = 'Create task';
+$lang['Mail module'] = 'Mail module';
