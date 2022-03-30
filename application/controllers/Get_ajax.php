@@ -45,7 +45,7 @@ class Get_ajax extends MY_Controller
 
             if ($gets) {
                 foreach ($gets as $k => $v) {
-                    $suffix .= "{$k}={$v}";
+                    $suffix .= "{$k}={$v}&";
                 }
             }
 
@@ -679,7 +679,7 @@ class Get_ajax extends MY_Controller
         $data = $this->datab->get_map($map_id);
 
         $where = array_filter((array) $this->datab->generate_where("maps", $map_id, $value_id));
-
+        //debug($where, true);
         $fields = array();
         $isSearchMode = false;
         $post_where = (array) $this->input->post('where');

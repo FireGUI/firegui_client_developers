@@ -2,8 +2,10 @@
 $mapFormId = "clusered_map_form_{$data['maps']['maps_id']}";
 $mapId = "map_clusters{$data['maps']['maps_id']}";
 
+//debug($_SERVER['QUERY_STRING']);
+
 $passedId = isset($value_id) ? $value_id : null;
-$ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passedId}");
+$ajaxURL = base_url("get_ajax/get_map_markers/{$data['maps']['maps_id']}/{$passedId}?{$_SERVER['QUERY_STRING']}");
 ?>
 <div id="results">
     <div class="row mt-30">
