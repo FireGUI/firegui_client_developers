@@ -20,6 +20,7 @@ $form_id = "form_{$form['forms']['forms_id']}";
     <?php add_csrf(); ?>
     <!-- FORM HIDDEN DATA -->
     <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
+    <?php dump($form); ?>
 
     <div class="card-body">
         <div class="row sortableForm">
