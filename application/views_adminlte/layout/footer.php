@@ -1,5 +1,37 @@
 <!-- Builder console -->
 <?php if ($this->auth->is_admin()) : ?>
+
+  <?php
+  if (is_maintenance()) {
+    //write long query
+    if (!$slow_queries = $this->session->userdata('slow_queries')) {
+      $slow_queries = [];
+    }
+
+    foreach ($this->db->queries as $key => $query) {
+      $time = @$this->db->query_times[$key];
+      if (!$time) {
+        continue;
+      }
+      if (array_key_exists($query, $slow_queries)) {
+        if ($time > $slow_queries[$query]) {
+          $slow_queries[$query] = $time;
+        }
+      } else {
+        $slow_queries[$query] = $time;
+      }
+    }
+
+    arsort($slow_queries);
+    $slow_queries = array_slice($slow_queries, 0, 10);
+
+    $this->session->set_userdata('slow_queries', $slow_queries);
+    //debug($this->session->userdata('slow_queries'), true);
+  } else {
+    $this->session->set_userdata('slow_queries', []);
+  }
+  ?>
+
   <div class="builder_console hide">
     <div class=fakeMenu>
       <div class="fakeButtons fakeClose"></div>
@@ -19,6 +51,14 @@
             <span class="line4 hide"><br /><?php echo htmlentities($single_hook['hooks_content']); ?><br /><br /></span>
           <?php endforeach; ?>
           <br />
+        <?php endforeach; ?>
+      </p>
+
+      <!-- Queries -->
+      <p class="line1 js_console_command">$ get lowest queries</p>
+      <p class="line2 hide">
+        <?php foreach ($this->session->userdata('slow_queries') as $query => $execution_time) : ?>
+          - (<?php echo $execution_time; ?>s) <?php echo $query; ?> <br />
         <?php endforeach; ?>
       </p>
 
