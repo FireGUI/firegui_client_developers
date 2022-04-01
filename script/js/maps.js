@@ -25,11 +25,9 @@ function load_marker(map, url, clusterize) {
         type: "POST",
         dataType: "json",
         data: data,
-        async: false,
+        async: true,
         url: url,
         success: function (data) {
-
-
 
             // Ciclo i Marker
             var group = new Array();

@@ -1301,9 +1301,6 @@ class Datab extends CI_Model
                             $where_suffix = '';
                         }
 
-
-
-
                         // Metto in pratica i filtri e li aggiungo all'array
                         // delle condizioni del where
                         if (in_array($field->fields_draw_html_type, array('date', 'date_time'))) {
@@ -1317,8 +1314,10 @@ class Datab extends CI_Model
                                         $other_entity = $this->get_entity($field->fields_entity_id);
                                         $other_field_select = $this->db->get_where('fields', array('fields_entity_id' => $field->fields_entity_id, 'fields_ref' => $entity['entity_name']))->row();
                                         if (isset($other_field_select->fields_name)) {
+                                            //debug($entity['entity_name'], true);
+
                                             // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
-                                            $arr[] = "{$entity['entity_name']}._id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
+                                            $arr[] = "{$entity['entity_name']}.{$entity['entity_name']}_id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
                                         } else {
                                             // Caso 2: è questa entità che sta ha il ref nell'altra entità
                                             // devo trovare codesto field

@@ -56,141 +56,146 @@ if ($grid['grids']['grids_pagination']) {
 }
 ?>
 
-<div class="table-scrollable-borderless">
-    <?php if ($grid['grids']['grids_inline_edit']) : ?>
+<?php if (!$grid_is_ajax && empty($grid_data['data'])) : ?>
+    <p><?php e('No records found'); ?></p>
+<?php else : ?>
 
-        <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
-        <div class="clearfix"></div>
-        <br />
-    <?php endif; ?>
+    <div class="table-scrollable-borderless">
+        <?php if ($grid['grids']['grids_inline_edit']) : ?>
 
-    <table data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" data-ajax="<?php echo $grid['grids']['grids_ajax']; ?>" data-design="<?php echo $grid['grids']['grids_design']; ?>" data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>" data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>" data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>" data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>" data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" data-default-limit="<?php echo $limit; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_table js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $append_class; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
-        <thead>
-            <tr>
-                <?php if ($has_bulk) : ?>
-                    <th data-prevent-order>
-                        <input type="checkbox" class="js-bulk-select-all" />
-                    </th>
-                <?php endif; ?>
-                <?php foreach ($grid['grids_fields'] as $field) : ?>
+            <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
+            <div class="clearfix"></div>
+            <br />
+        <?php endif; ?>
 
-                    <?php $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
-                    <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);  ?></th>
-
-                <?php endforeach; ?>
-
-                <?php if (grid_has_action($grid['grids'])) : ?>
-                    <th data-prevent-order><?php e('Actions'); ?></th>
-                <?php endif; ?>
-            </tr>
-        </thead>
-
-        <tbody>
-            <?php if ($grid_is_ajax == false) : ?>
-                <?php foreach ($grid_data['data'] as $dato) : ?>
-                    <tr class="odd gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
-                        <?php if ($has_bulk) : ?>
-                            <td>
-                                <input type="checkbox" class="js_bulk_check" value="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>" />
-                            </td>
-                        <?php endif; ?>
-                        <?php foreach ($grid['grids_fields'] as $field) : ?>
-                            <?php
-                            if ($field['grids_fields_totalable'] == DB_BOOL_TRUE) {
-                                if (!empty($this->datab->build_grid_cell($field, $dato))) {
-                                    @$sums[$field['grids_fields_id']] += (float) ($this->datab->build_grid_cell($field, $dato));
-                                }
-                            }
-                            ?>
-                            <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
-                        <?php endforeach; ?>
-                        <?php if (grid_has_action($grid['grids'])) : ?>
-                            <td><?php $this->load->view('box/grid/actions', array(
-                                    'links' => $grid['grids']['links'],
-                                    'id' => $dato[$grid['grids']['entity_name'] . "_id"],
-                                    'row_data' => $dato,
-                                    'grid' => $grid['grids'],
-                                )); ?></td>
-                        <?php endif; ?>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-
-        <?php if ($has_totalable) : ?>
-            <tfoot>
+        <table data-entity="<?php echo $grid['grids']['entity_name']; ?>" data-form="<?php echo $grid['grids']['grids_inline_form']; ?>" data-ajax="<?php echo $grid['grids']['grids_ajax']; ?>" data-design="<?php echo $grid['grids']['grids_design']; ?>" data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>" data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>" data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>" data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>" data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" data-default-limit="<?php echo $limit; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_table js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $append_class; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
+            <thead>
                 <tr>
                     <?php if ($has_bulk) : ?>
-                        <th data-prevent-order data-name="_foo">
+                        <th data-prevent-order>
                             <input type="checkbox" class="js-bulk-select-all" />
                         </th>
                     <?php endif; ?>
-
                     <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
-                        <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
-                        </th>
+
+                        <?php $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                        <th <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?><?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);  ?></th>
+
                     <?php endforeach; ?>
 
                     <?php if (grid_has_action($grid['grids'])) : ?>
-                        <th data-prevent-order>&nbsp;</th>
+                        <th data-prevent-order><?php e('Actions'); ?></th>
                     <?php endif; ?>
-
                 </tr>
-            </tfoot>
-        <?php endif; ?>
-    </table>
+            </thead>
 
-    <?php if ($has_bulk or $has_exportable) : ?>
-        <div class="row">
-            <?php if ($has_bulk) : ?>
-                <div class="col-md-<?php echo $cols; ?>">
-                    <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
-                        <option value="" class="js-bulk-first-option" selected="selected"></option>
+            <tbody>
+                <?php if ($grid_is_ajax == false) : ?>
+                    <?php foreach ($grid_data['data'] as $dato) : ?>
+                        <tr class="odd gradeX" data-id="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>">
+                            <?php if ($has_bulk) : ?>
+                                <td>
+                                    <input type="checkbox" class="js_bulk_check" value="<?php echo $dato[$grid['grids']['entity_name'] . "_id"]; ?>" />
+                                </td>
+                            <?php endif; ?>
+                            <?php foreach ($grid['grids_fields'] as $field) : ?>
+                                <?php
+                                if ($field['grids_fields_totalable'] == DB_BOOL_TRUE) {
+                                    if (!empty($this->datab->build_grid_cell($field, $dato))) {
+                                        @$sums[$field['grids_fields_id']] += (float) ($this->datab->build_grid_cell($field, $dato));
+                                    }
+                                }
+                                ?>
+                                <td><?php echo $this->datab->build_grid_cell($field, $dato); ?></td>
+                            <?php endforeach; ?>
+                            <?php if (grid_has_action($grid['grids'])) : ?>
+                                <td><?php $this->load->view('box/grid/actions', array(
+                                        'links' => $grid['grids']['links'],
+                                        'id' => $dato[$grid['grids']['entity_name'] . "_id"],
+                                        'row_data' => $dato,
+                                        'grid' => $grid['grids'],
+                                    )); ?></td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
 
-                        <?php foreach ($grid['grids']['links']['custom'] as $bulk_action) : ?>
-                            <?php if ($bulk_action['grids_actions_show'] == "table" || empty($bulk_action['grids_actions_show'])) continue; ?>
-                            <option value="bulk_action" data-custom_code="<?php echo $bulk_action['grids_actions_html']; ?>" data-bulk_type="<?php echo $bulk_action['grids_actions_type']; ?>" data-form_id="<?php echo $bulk_action['grids_actions_form']; ?>" disabled="disabled"><?php echo $bulk_action['grids_actions_name']; ?></option>
+            <?php if ($has_totalable) : ?>
+                <tfoot>
+                    <tr>
+                        <?php if ($has_bulk) : ?>
+                            <th data-prevent-order data-name="_foo">
+                                <input type="checkbox" class="js-bulk-select-all" />
+                            </th>
+                        <?php endif; ?>
+
+                        <?php foreach ($grid['grids_fields'] as $field) : ?>
+                            <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                            <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
+                            </th>
                         <?php endforeach; ?>
-                        <!-- old bulk actions (compatibility) -->
-                        <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
-                            <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
-                        <?php endif; ?>
-                        <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
-                            <option value="bulk_delete" disabled="disabled">Delete</option>
-                        <?php endif; ?>
-                    </select>
-                </div>
-            <?php endif; ?>
 
-            <?php if ($has_exportable) : ?>
-                <?php $this->load->view('pages/layouts/grids/export_button', ['grid' => $grid, 'cols' => $cols]); ?>
+                        <?php if (grid_has_action($grid['grids'])) : ?>
+                            <th data-prevent-order>&nbsp;</th>
+                        <?php endif; ?>
+
+                    </tr>
+                </tfoot>
             <?php endif; ?>
+        </table>
+
+        <?php if ($has_bulk or $has_exportable) : ?>
+            <div class="row">
+                <?php if ($has_bulk) : ?>
+                    <div class="col-md-<?php echo $cols; ?>">
+                        <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
+                            <option value="" class="js-bulk-first-option" selected="selected"></option>
+
+                            <?php foreach ($grid['grids']['links']['custom'] as $bulk_action) : ?>
+                                <?php if ($bulk_action['grids_actions_show'] == "table" || empty($bulk_action['grids_actions_show'])) continue; ?>
+                                <option value="bulk_action" data-custom_code="<?php echo $bulk_action['grids_actions_html']; ?>" data-bulk_type="<?php echo $bulk_action['grids_actions_type']; ?>" data-form_id="<?php echo $bulk_action['grids_actions_form']; ?>" disabled="disabled"><?php echo $bulk_action['grids_actions_name']; ?></option>
+                            <?php endforeach; ?>
+                            <!-- old bulk actions (compatibility) -->
+                            <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
+                                <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
+                            <?php endif; ?>
+                            <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
+                                <option value="bulk_delete" disabled="disabled">Delete</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($has_exportable) : ?>
+                    <?php $this->load->view('pages/layouts/grids/export_button', ['grid' => $grid, 'cols' => $cols]); ?>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($grid['grids']['grids_inline_edit']) : ?>
+        <?php
+
+        $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null, $value_id);
+
+        if (!$form || !$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
+
+            return str_repeat('&nbsp;', 3) . t('You don\'t have permissions to write in this table');
+        }
+        ?>
+        <div class="js_inline_hidden_form_container hidden" grid_id="<?php echo $grid['grids']['grids_id']; ?>">
+            <?php
+            $this->load->view(
+                "pages/layouts/forms/form_{$form['forms']['forms_layout']}",
+                array(
+                    'form' => $form,
+                    'ref_id' => $grid['grids']['grids_inline_form'],
+                    'value_id' => null,
+                ),
+                false
+            );
+            ?>
         </div>
     <?php endif; ?>
-</div>
-
-<?php if ($grid['grids']['grids_inline_edit']) : ?>
-    <?php
-
-    $form = $this->datab->get_form($grid['grids']['grids_inline_form'], null, $value_id);
-
-    if (!$form || !$this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
-
-        return str_repeat('&nbsp;', 3) . t('You don\'t have permissions to write in this table');
-    }
-    ?>
-    <div class="js_inline_hidden_form_container hidden" grid_id="<?php echo $grid['grids']['grids_id']; ?>">
-        <?php
-        $this->load->view(
-            "pages/layouts/forms/form_{$form['forms']['forms_layout']}",
-            array(
-                'form' => $form,
-                'ref_id' => $grid['grids']['grids_inline_form'],
-                'value_id' => null,
-            ),
-            false
-        );
-        ?>
-    </div>
 <?php endif; ?>
