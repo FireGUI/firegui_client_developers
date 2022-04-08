@@ -67,4 +67,39 @@ class MY_Controller extends MX_Controller
             $this->apilib->setLanguage($currentLang['id'], $fallbackLang['id']);
         }
     }
+
+    public function __destruct()
+    {
+
+        // if (is_maintenance()) {
+        //     //write long query
+        //     if (!$slow_queries = $this->session->userdata('slow_queries')) {
+        //         $slow_queries = [];
+        //     }
+
+        //     foreach ($this->db->queries as $key => $query) {
+        //         $time = @$this->db->query_times[$key];
+        //         if (!$time) {
+        //             continue;
+        //         }
+        //         if (array_key_exists($query, $slow_queries)) {
+        //             if ($time > $slow_queries[$query]) {
+        //                 $slow_queries[$query] = $time;
+        //             }
+        //         } else {
+        //             $slow_queries[$query] = $time;
+        //         }
+        //     }
+
+        //     arsort($slow_queries);
+        //     $slow_queries = array_slice($slow_queries, 0, 10);
+        //     //debug($slow_queries, true);
+        //     $this->session->set_userdata('slow_queries', $slow_queries);
+        //     //debug($this->session->userdata('slow_queries'), true);
+        // } else {
+        //     $this->session->set_userdata('slow_queries', []);
+        // }
+
+        // //parent::__destruct();
+    }
 }
