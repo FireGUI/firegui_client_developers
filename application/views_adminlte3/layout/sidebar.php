@@ -128,23 +128,6 @@ if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
                 </div>
             </form>
         </div>
-
-        <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
-        <?php
-        /*
-        <form class="sidebar-form firegui_sidebar-form" action="<?php echo base_url('main/search'); ?>" method="POST" id="search_form">
-            <?php add_csrf(); ?>
-            <div class="input-group">
-                <input tabindex="0" type="text" name="search" placeholder="<?php e("Search..."); ?>" value="<?php echo isset($dati['search_string']) ? $dati['search_string'] : ''; ?>" class="form-control"> <span class="input-group-btn">
-                    <button type="submit" name="___search" id="search-btn" class="btn btn-flat" onclick="document.getElementById('search_form').submit();">
-                        <i class="fas fa-search"></i>
-                    </button>
-
-                </span>
-            </div>
-        </form>
-        */
-        ?>
     <?php endif; ?>
     <div class="">
         {tpl-pre-sidebar_menu}
@@ -178,14 +161,15 @@ if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
                 <?php if ($isLinkOrContainer) : ?>
                     <li data-id="<?php echo $menu['menu_id']; ?>" class="nav-item js_sidebar_menu_item <?php echo implode(' ', $classes); ?>" <?php echo $menu['menu_html_attr'] ? $menu['menu_html_attr'] : ''; ?>>
                         <a href="<?php echo $link ?: 'javascript:;'; ?>" class="nav-link <?php if ($menu['layouts_ajax_allowed'] == DB_BOOL_TRUE) : ?>js_ajax_content<?php endif; ?>" data-layout-id="<?php echo (!empty($menu['layouts_id'])) ? $menu['layouts_id'] : ''; ?>">
-                            <i class="<?php echo $menu['menu_icon_class'] ?: 'nav-icon fas fa-list'; ?>"></i>
+                            <!-- <i class="<?php echo $menu['menu_icon_class'] ?: 'nav-icon fas fa-list'; ?>"></i> -->
+                            <i class="nav-icon <?php echo $menu['menu_icon_class'] ?: 'fas fa-list'; ?>"></i>
                             <p>
                                 <?php e($label, true, ['module_name' => $menu['menu_module']]); ?>
                                 <?php if ($isCurrent) : ?>
                                     <span class="selected"></span>
                                 <?php endif; ?>
                                 <?php if ($hasSubmenu) : ?>
-                                    <i class="fas fa-angle-left right"></i>
+                                    <i class="right fas fa-angle-left"></i>
                                 <?php endif; ?>
                             </p>
                         </a>

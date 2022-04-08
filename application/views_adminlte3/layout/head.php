@@ -79,4 +79,4 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 ], 'config.js'); ?>
 
 <!-- GENERIC -->
-<!-- <script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script> -->
+<script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>
