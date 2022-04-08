@@ -36,4 +36,39 @@ class Init_hook
 
         $this->ci->load->language($language, $language);
     }
+
+    public function pre_destruct()
+    {
+        //debug('test', true);
+        if (is_maintenance()) {
+            //write long query
+            if (!$slow_queries = $this->ci->session->userdata('slow_queries')) {
+                $slow_queries = [];
+            }
+
+            foreach ($this->ci->db->queries as $key => $query) {
+                $time = @$this->ci->db->query_times[$key];
+                if (!$time) {
+                    continue;
+                }
+                if (array_key_exists($query, $slow_queries)) {
+                    if ($time > $slow_queries[$query]) {
+                        $slow_queries[$query] = $time;
+                    }
+                } else {
+                    $slow_queries[$query] = $time;
+                }
+            }
+
+            arsort($slow_queries);
+            $slow_queries = array_slice($slow_queries, 0, 10);
+            //debug($slow_queries, true);
+            $this->ci->session->set_userdata('slow_queries', $slow_queries);
+            //debug($this->session->userdata('slow_queries'), true);
+        } else {
+            $this->ci->session->set_userdata('slow_queries', []);
+        }
+        //$_SESSION['slow_queries'] = $this->ci->session->userdata('slow_queries');
+        //parent::__destruct();
+    }
 }

@@ -18,3 +18,11 @@ $hook['post_controller_constructor'] = array(
     'filepath' => 'hooks',
     'params' => array()
 );
+
+$hook['post_controller'] = [
+    'class' => 'Init_hook',
+    'function' => 'pre_destruct',
+    'filename' => 'crm_initialization.php',
+    'filepath' => 'hooks',
+    'params' => array()
+];

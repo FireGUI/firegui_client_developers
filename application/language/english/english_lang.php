@@ -924,3 +924,4 @@ $lang['Buyers Map'] = 'Buyers Map';
 $lang['Dashboard Match-Day'] = 'Dashboard Match-Day';
 $lang['Dashboard Match Day'] = 'Dashboard Match Day';
 $lang['Dashboard Stagionale'] = 'Dashboard Stagionale';
+$lang['Inserimento manuale Ticketone'] = 'Inserimento manuale Ticketone';

@@ -1219,3 +1219,5 @@ $lang['DDT'] = 'DDT';
 $lang['Statistiche'] = 'Statistiche';
 $lang['Create task'] = 'Create task';
 $lang['Mail module'] = 'Mail module';
+$lang['Anomalie Ticket Sedi navision'] = 'Anomalie Ticket Sedi navision';
+$lang['Dashboard Amministrativa'] = 'Dashboard Amministrativa';
