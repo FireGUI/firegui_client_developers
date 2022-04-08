@@ -66,9 +66,8 @@ function initCalendars() {
                 defaultView: 'timeGridWeek',
                 defaultDate: moment().format('YYYY-MM-DD HH:mm'),
                 header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    left: 'title',
+                    right: 'prev,next,dayGridMonth,timeGridWeek,timeGridDay'
                 },
 
                 editable: true,

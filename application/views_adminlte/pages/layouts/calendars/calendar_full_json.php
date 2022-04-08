@@ -17,6 +17,17 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
 
+<style>
+    .fc-scroller {
+        height: 100% !important;
+    }
+
+    .total-label {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+</style>
+
 <script>
     var updateCalendar = function(evt) {
         var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
@@ -74,9 +85,8 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             defaultView: 'timeGridWeek',
             defaultDate: moment().format('YYYY-MM-DD HH:mm'),
             header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                left: 'title',
+                right: 'prev,next,dayGridMonth,timeGridWeek,timeGridDay'
             },
 
             select: function(date) {

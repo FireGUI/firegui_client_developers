@@ -56,6 +56,16 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
         overflow-y: scroll;
     }
 </style>
+<style>
+    .fc-scroller {
+        height: 100% !important;
+    }
+
+    .total-label {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+</style>
 <div class="row">
     <div class="col-lg-2 col-md-3">
         <?php if ($data['calendars']['calendars_filter_entity_id']) : ?>
