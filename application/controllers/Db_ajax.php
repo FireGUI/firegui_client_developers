@@ -85,36 +85,41 @@ class Db_ajax extends MY_Controller
         $entityIdField = $entity . '_id';
 
         try {
-
-            if ($edit) {
-                // In questo caso devo controllare se ci sono i dati perché
-                // potrebbe essere che abbia aggiornato solamente una relazione
-                // e quindi non devo fare un update sull'entità puntata dal
-                // form. In ogni caso mi assicuro che $saved contenga il record
-                // in questione
-
-                if (!is_array($value_id)) {
-                    $savedId = $this->apilib->edit($entity, $value_id, $dati, false);
+            if ($isOneRecord) {
+                $old_record = $this->apilib->searchFirst($entity);
+                if ($old_record) {
+                    $savedId = $old_record[$entityIdField];
+                    $this->apilib->edit($entity, $savedId, $dati);
                 } else {
-                    //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
-                    foreach ($dati as $key => $val) {
-
-                        if (!in_array($key, (array)$this->input->post('edit_fields'))) {
-                            unset($dati[$key]);
-                        }
-                    }
-                    foreach ($value_id as $val) {
-
-                        $savedId = $this->apilib->edit($entity, $val, $dati, false);
-                    }
+                    $savedId = $this->apilib->create($entity, $dati, false);
                 }
             } else {
+                if ($edit) {
+                    // In questo caso devo controllare se ci sono i dati perché
+                    // potrebbe essere che abbia aggiornato solamente una relazione
+                    // e quindi non devo fare un update sull'entità puntata dal
+                    // form. In ogni caso mi assicuro che $saved contenga il record
+                    // in questione
 
+                    if (!is_array($value_id)) {
+                        $savedId = $this->apilib->edit($entity, $value_id, $dati, false);
+                    } else {
+                        //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
+                        foreach ($dati as $key => $val) {
 
+                            if (!in_array($key, (array)$this->input->post('edit_fields'))) {
+                                unset($dati[$key]);
+                            }
+                        }
+                        foreach ($value_id as $val) {
 
-                $savedId = $this->apilib->create($entity, $dati, false);
+                            $savedId = $this->apilib->edit($entity, $val, $dati, false);
+                        }
+                    }
+                } else {
+                    $savedId = $this->apilib->create($entity, $dati, false);
+                }
             }
-
             if (empty($savedId)) {
                 throw new Exception('Non è stato possibile salvare i dati');
             }
@@ -123,12 +128,6 @@ class Db_ajax extends MY_Controller
         } catch (Exception $ex) {
             die(json_encode(['status' => 0, 'txt' => $ex->getMessage()]));
         }
-
-        if ($isOneRecord) {
-            // Se è One Record cancello tutti gli eventuali dati associati
-            $this->db->where($entityIdField . ' <>', $savedId)->delete($entity);
-        }
-
 
         // ==========================
         // Finalization
