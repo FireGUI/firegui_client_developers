@@ -17,7 +17,16 @@ $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 ?>
 <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar"></div>
+<style>
+    .fc-scroller {
+        height: 100% !important;
+    }
 
+    .total-label {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+</style>
 
 <script>
     $(function() {
