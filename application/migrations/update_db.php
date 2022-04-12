@@ -70,3 +70,10 @@ $updates['2.3.1'] = [
     "UPDATE notifications SET notification_desktop_notified = '" . DB_BOOL_TRUE . "'",
     "ALTER TABLE " . LOGIN_ENTITY . " ADD COLUMN " . LOGIN_ENTITY . "_deleted BOOLEAN DEFAULT 0;",
 ];
+
+$updates['2.3.2'] = [
+
+    
+    "UPDATE notifications SET notifications_desktop_notified = '" . DB_BOOL_TRUE . "'",
+    
+];

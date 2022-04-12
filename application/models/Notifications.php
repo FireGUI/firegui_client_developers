@@ -48,7 +48,7 @@ class Notifications extends CI_Model
     {
         $this->db->update(
             'notifications',
-            array('notification_desktop_notified' => ($read) ? DB_BOOL_TRUE : DB_BOOL_FALSE),
+            array('notifications_desktop_notified' => ($read) ? DB_BOOL_TRUE : DB_BOOL_FALSE),
             array(
                 'notifications_user_id' => $this->auth->get('id'),
                 'notifications_id' => $notification_id,

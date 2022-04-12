@@ -54,7 +54,7 @@ var CrmNotifier = {
                 $.each(json.data, function (index, notification) {
 
                     // For all notification
-                    if (notification.notification_desktop_notified == '0') {
+                    if (notification.notifications_desktop_notified == '0') {
                         console.log("show desk notification");
                         notifier.showDesktopNotification(notification.notifications_id, { title: notification.notifications_title, message: notification.notifications_message, link: notification.notifications_link });
                     }
