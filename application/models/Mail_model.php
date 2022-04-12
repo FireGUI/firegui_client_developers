@@ -30,7 +30,7 @@ class Mail_model extends CI_Model
     /**
      * Imposta l'invio come deferred, cioè inserisce nella coda le mail anziché
      * inviarle direttamente
-     * 
+     *
      * @param bool $is_deferred
      */
     public function setDeferred($is_deferred)
@@ -49,7 +49,7 @@ class Mail_model extends CI_Model
 
     /**
      * Invia e-mail prendendola dai template su database
-     * 
+     *
      * @param string $to
      * @param string $key
      * @param string $lang
@@ -62,10 +62,10 @@ class Mail_model extends CI_Model
 
 
         $module_mail_installed = false;
-        $settings = $this->db->get('settings')->row();
-        if (!empty($settings->settings_mail_module_identifier)) {
-            $mail_module_identifier = $settings->settings_mail_module_identifier;
-            $this->load->model($mail_module_identifier, 'mailmodule');
+        $settings = $this->apilib->searchFirst('settings');
+        if (!empty($settings['settings_mail_module_identifier_value'])) {
+            $mail_module_identifier = strtolower($settings['settings_mail_module_identifier_value']);
+            $this->load->model([$mail_module_identifier.'/mailer' => 'mailmodule']);
             $module_mail_installed = true;
         }
 
@@ -126,7 +126,7 @@ class Mail_model extends CI_Model
 
     /**
      * Invia e-mail prendendola da un template passato come secondo parametro (un array key=>value con chiavi predefinite)
-     * 
+     *
      * @param string $to
      * @param array $template Contiene un array chiave=>valore. Obbligatorie chiavi subject e template.
      * @param string $lang
@@ -168,7 +168,7 @@ class Mail_model extends CI_Model
      *   1) Passandolo come argomento
      *   2) Usando $this->mail_model->setSubject('...');
      *   3) Automaticamente, a partire dal nome della view
-     * 
+     *
      * @param string $to
      * @param string $path
      * @param array $data
@@ -200,7 +200,7 @@ class Mail_model extends CI_Model
     /**
      * Imposta l'oggetto della mail per le e-mail da vista. Si può usare anche
      * da dentro il view file per motivi di traduzione
-     * 
+     *
      * @param type $subject
      */
     public function setSubject($subject)
@@ -210,7 +210,7 @@ class Mail_model extends CI_Model
 
     /**
      * Metodo per l'invio di messaggi via e-mail
-     * 
+     *
      * @param type $to
      * @param type $subject
      * @param type $message
@@ -222,10 +222,10 @@ class Mail_model extends CI_Model
     {
 
         $module_mail_installed = false;
-        $settings = $this->db->get('settings')->row();
-        if (!empty($settings->settings_mail_module_identifier)) {
-            $mail_module_identifier = $settings->settings_mail_module_identifier;
-            $this->load->model($mail_module_identifier, 'mailmodule');
+        $settings = $this->apilib->searchFirst('settings');
+        if (!empty($settings['settings_mail_module_identifier_value'])) {
+            $mail_module_identifier = strtolower($settings['settings_mail_module_identifier_value']);
+            $this->load->model([$mail_module_identifier.'/mailer' => 'mailmodule']);
             $module_mail_installed = true;
         }
 
@@ -246,7 +246,7 @@ class Mail_model extends CI_Model
 
     /**
      * Metodo interno per inserire le mail nella mail_queue
-     * 
+     *
      * @param string $to
      * @param array $headers
      * @param string $subject
@@ -271,7 +271,7 @@ class Mail_model extends CI_Model
 
     /**
      * Metodo interno per invio mail
-     * 
+     *
      * @param string $to
      * @param array $headers
      * @param string $subject
@@ -350,13 +350,13 @@ class Mail_model extends CI_Model
 
     /**
      * Metodo interno per parsare gli indirizzi nel formato
-     * 
+     *
      *          Nome <email@addr.ess>
-     * 
+     *
      * Viene ritornato un array con chiavi
      *  - mail
      *  - name
-     * 
+     *
      * @param string $address
      * @return array
      */
@@ -392,7 +392,7 @@ class Mail_model extends CI_Model
 
 
         // Segno la data di invio della coda in modo tale da proteggermi da
-        // invii lenti, se sto tanto ad inviare, al prox cron non verranno 
+        // invii lenti, se sto tanto ad inviare, al prox cron non verranno
         // prese le stesse email che sto processando con tutta la mia calma
         $this->db->where_in('mail_id', $emailsIds);
         $this->db->update('mail_queue', ['mail_date_sent' => date('Y-m-d H:i:s')]);
