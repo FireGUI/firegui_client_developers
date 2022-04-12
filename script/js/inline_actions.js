@@ -21,7 +21,9 @@ $(document).ready(function () {
             complete: function () {
                 loading(false);
             },
-            success: function (msg) { },
+            success: function (msg) {
+                handleSuccess(msg);
+            },
             error: function (xhr, ajaxOptions, thrownError) {
                 var errorContainerID = 'ajax-error-container';
                 var errorContainer = $('#' + errorContainerID);
