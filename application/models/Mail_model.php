@@ -63,9 +63,16 @@ class Mail_model extends CI_Model
 
         $module_mail_installed = false;
         $settings = $this->db->get('settings')->row();
-        if (!empty($settings->settings_mail_module_identifier)) {
+        if (!empty($settings->settings_mail_module_identifier) && $settings->settings_mail_module_identifier != 1) {
+            if (is_numeric($settings->settings_mail_module_identifier)) {
+                $settings->settings_mail_module_identifier = $this->db
+                    ->get_where('settings_mail_module_identifier', [
+                        'settings_mail_module_identifier_id' => $settings->settings_mail_module_identifier
+                        ])
+                    ->row()->settings_mail_module_identifier_value;
+            }
             $mail_module_identifier = $settings->settings_mail_module_identifier;
-            $this->load->model($mail_module_identifier, 'mailmodule');
+            $this->load->model($mail_module_identifier.'/'.$mail_module_identifier, 'mailmodule');
             $module_mail_installed = true;
         }
 
