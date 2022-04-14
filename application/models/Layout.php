@@ -181,7 +181,7 @@ class Layout extends CI_Model
             } else {
                 $options = "-T '5mm' -B '5mm'";
             }
-
+//die("wkhtmltopdf {$options} -O {$orientation} --footer-right \"Page [page] of [topage]\" --viewport-size 1024 {$tmpHtml} {$pdfFile}");
             exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
 
             return $pdfFile;

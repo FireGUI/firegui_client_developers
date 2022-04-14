@@ -1301,6 +1301,9 @@ class Datab extends CI_Model
                             $where_suffix = '';
                         }
 
+
+
+
                         // Metto in pratica i filtri e li aggiungo all'array
                         // delle condizioni del where
                         if (in_array($field->fields_draw_html_type, array('date', 'date_time'))) {
@@ -1314,8 +1317,6 @@ class Datab extends CI_Model
                                         $other_entity = $this->get_entity($field->fields_entity_id);
                                         $other_field_select = $this->db->get_where('fields', array('fields_entity_id' => $field->fields_entity_id, 'fields_ref' => $entity['entity_name']))->row();
                                         if (isset($other_field_select->fields_name)) {
-                                            //debug($entity['entity_name'], true);
-
                                             // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
                                             $arr[] = "{$entity['entity_name']}.{$entity['entity_name']}_id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
                                         } else {
@@ -2134,47 +2135,6 @@ class Datab extends CI_Model
         return $results;
     }
 
-    /**
-     * Trash results
-     */
-    public function get_trash_results()
-    {
-        // Get entity with soft delete
-        $entities = $this->db->query("SELECT *, JSON_UNQUOTE(JSON_EXTRACT(entity_action_fields,'$.soft_delete_flag')) AS entity_soft_delete_field FROM entity WHERE JSON_EXTRACT(entity_action_fields,'$.soft_delete_flag') IS NOT NULL")->result_array();
-
-        $e_ids = array_map(function ($entity) {
-            return $entity['entity_id'];
-        }, $entities);
-
-        $results = array();
-        if (!empty($e_ids)) {
-            $_all_fields = $this->db->where_in('fields_entity_id', $e_ids)->get('fields')->result_array();
-
-            $all_fields = array();
-            foreach ($_all_fields as $field) {
-                $all_fields[$field['fields_entity_id']][] = $field;
-            }
-
-            foreach ($entities as $entity) {
-                $fields = $all_fields[$entity['entity_id']];
-                $where = $entity['entity_soft_delete_field'] . " = " . DB_BOOL_TRUE;
-
-                //Calcola risultato e consideralo sse ha dati effettivi
-                $result = $this->getDataEntity($entity['entity_id'], $where, null, 0, null, 1, false, [], ['group_by' => null]);
-                if ($result) {
-                    $results[] = [
-                        'entity' => $entity,
-                        'visible_fields' => $this->crmentity->getVisibleFields($entity['entity_id']),
-                        'data' => $result
-                    ];
-                }
-            }
-        }
-
-        return $results;
-    }
-
-
     public function search_like($search = '', $fields = array())
     {
         $outer_where = array();
@@ -2362,8 +2322,15 @@ class Datab extends CI_Model
 
             $layouts = $this->layout->getBoxes($layout_id);
 
-            $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id);
-            $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id);
+                if ($dati['layout_container']['layouts_pdf'] != DB_BOOL_TRUE) {
+                $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id);
+                            $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id);
+                } else {
+                    $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id,false);
+                            $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id,false);
+                }
+
+            
 
             $dati['layout'] = array();
 
@@ -2440,12 +2407,18 @@ class Datab extends CI_Model
      * @param int|null $valueId
      * @return string
      */
-    public function getHookContent($hookType, $hookRef, $valueId = null)
+    public function getHookContent($hookType, $hookRef, $valueId = null, $include_every_layouts = true)
     {
 
+
+
         $hooks_by_type = array_get($this->_precalcHooks(), $hookType, []);
-        $hooks = array_filter($hooks_by_type, function ($hook) use ($hookRef) {
-            return ($hook['hooks_ref'] == $hookRef or !$hook['hooks_ref']);
+        $hooks = array_filter($hooks_by_type, function ($hook) use ($hookRef,$include_every_layouts) {
+
+                return ($hook['hooks_ref'] == $hookRef or (!$hook['hooks_ref'] && $include_every_layouts));
+            
+
+            
         });
 
         $plainHookContent = trim(implode(PHP_EOL, array_key_map($hooks, 'hooks_content', '')));
@@ -3095,7 +3068,6 @@ class Datab extends CI_Model
 
 
                 $chart_layout = $chart['charts_layout'] ?: DEFAULT_LAYOUT_CHART;
-                //debug($chart_layout);
                 return $this->load->view("pages/layouts/charts/{$chart_layout}", array(
                     'chart' => $chart,
                     'chart_data' => $chart_data,
