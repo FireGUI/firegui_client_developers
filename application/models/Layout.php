@@ -161,6 +161,8 @@ class Layout extends CI_Model
             //TODO: return true?
         } else {
             $physicalDir = FCPATH . "/uploads";
+            // 2022-04-19 - Added random_int because it can happen that a generation of pdf deriving from an array,
+            // is done in the same second. so this guarantees a little more uniqueness ... Would microseconds be better?
             $filename = date('Ymd_His').'_'.random_int(1,100);
             $pdfFile = "{$physicalDir}/{$filename}.pdf";
 
