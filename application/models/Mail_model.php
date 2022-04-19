@@ -65,7 +65,7 @@ class Mail_model extends CI_Model
         $settings = $this->apilib->searchFirst('settings');
         if (!empty($settings['settings_mail_module_identifier_value']) && $settings['settings_mail_module_identifier'] !== '1') {
             $mail_module_identifier = strtolower($settings['settings_mail_module_identifier_value']);
-            $this->load->model([$mail_module_identifier . '/'.$mail_module_identifier => 'mailmodule']);
+            $this->load->model([$mail_module_identifier . '/' . $mail_module_identifier => 'mailmodule']);
             $module_mail_installed = true;
         }
 
@@ -218,14 +218,14 @@ class Mail_model extends CI_Model
      * @param array $additionalHeaders
      * @return bool
      */
-    public function sendMessage($to, $subject, $message, $isHtml = false, array $additionalHeaders = [], array $attachments = [])
+    public function sendMessage($to, $subject, $message, $isHtml = false, array $additional_headers = [], array $attachments = [])
     {
 
         $module_mail_installed = false;
         $settings = $this->apilib->searchFirst('settings');
-        if (!empty($settings['settings_mail_module_identifier_value'])) {
+        if (!empty($settings['settings_mail_module_identifier_value']) && $settings['settings_mail_module_identifier'] !== '1') {
             $mail_module_identifier = strtolower($settings['settings_mail_module_identifier_value']);
-            $this->load->model([$mail_module_identifier . '/mailer' => 'mailmodule']);
+            $this->load->model([$mail_module_identifier . '/' . $mail_module_identifier => 'mailmodule']);
             $module_mail_installed = true;
         }
 
