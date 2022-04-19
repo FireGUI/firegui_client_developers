@@ -1244,7 +1244,7 @@ class Datab extends CI_Model
 
 
                 foreach ($sess_where_data[$element[$element_type . "_filter_session_key"]] as $condition) {
-                    if (!array_key_exists('value', $condition) || $condition['value'] === '') {
+                    if (!array_key_exists('value', $condition) || $condition['value'] === '' || $condition['value'] === []) {
                         continue;
                     }
                     $query_field = $this->db->join('fields_draw', 'fields_draw_fields_id = fields_id', 'left')->get_where('fields', array('fields_id' => (int) $condition['field_id']));

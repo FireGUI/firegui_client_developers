@@ -10,6 +10,9 @@ foreach ($processed_data as $element) {
     if ($chart['charts_type'] == 'pie') { //Pie needs a different series structure
 
         foreach ($element['data'] as $key => $xy) {
+            if (!$xy['x']) {
+                $xy['x'] = t('Other');
+            }
             $series[] = (float)($xy['y']);
             $labels[] = $xy['x'];
         }
@@ -28,7 +31,8 @@ foreach ($processed_data as $element) {
         $categories = $element['categories'];
     }
 }
-//debug($series);
+// debug($series);
+// debug($categories);
 ?>
 
 <div class="row">
