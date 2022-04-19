@@ -161,7 +161,7 @@ class Layout extends CI_Model
             //TODO: return true?
         } else {
             $physicalDir = FCPATH . "/uploads";
-            $filename = date('Ymd-H-i-s');
+            $filename = date('Ymd_His').'_'.random_int(1,100);
             $pdfFile = "{$physicalDir}/{$filename}.pdf";
 
             // Create a temporary file with the view html
