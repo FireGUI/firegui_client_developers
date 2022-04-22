@@ -1221,3 +1221,6 @@ $lang['Create task'] = 'Create task';
 $lang['Mail module'] = 'Mail module';
 $lang['Anomalie Ticket Sedi navision'] = 'Anomalie Ticket Sedi navision';
 $lang['Dashboard Amministrativa'] = 'Dashboard Amministrativa';
+$lang['Start time'] = 'Start time';
+$lang['End time'] = 'End time';
+$lang['Increment'] = 'Increment';
