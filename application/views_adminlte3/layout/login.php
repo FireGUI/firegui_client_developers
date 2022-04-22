@@ -199,7 +199,7 @@ endif;
     <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
 
     <!-- Easylogin -->
-    <script src="<?php echo base_url("script/js/easylogin.js?v={$this->config->item('version')}"); ?>"></script>
+    <script src="<?php echo base_url("assets/js/core/easylogin.js?v={$this->config->item('version')}"); ?>"></script>
 </body>
 
 </html>

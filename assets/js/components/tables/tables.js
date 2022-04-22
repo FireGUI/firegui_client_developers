@@ -1,8 +1,8 @@
 'use strict';
 
 
-function initTabelWithPars(grid, pars) {
-    //console.log(pars);
+function initTableWithPars(grid, pars) {
+    console.log(pars);
     var table = null;
     var oDataTable = grid;
     var valueID = grid.attr('data-value-id');
@@ -192,7 +192,7 @@ function initTables() {
             //Get parameters
             var gridParameters = grid.data();
 
-            initTabelWithPars(grid, gridParameters);
+            initTableWithPars(grid, gridParameters);
         }
     });
 

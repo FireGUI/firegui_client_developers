@@ -98,89 +98,104 @@
 
 <div id="js_modal_container"></div>
 
-<!-- Core Components -->
-<script src="<?php echo base_url("assets/js/core/submitajax.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("assets/js/core/components.js?v=" . VERSION); ?>"></script>
-
 <!-- DataTables -->
 <link rel="stylesheet" href="<?php echo base_url('assets/plugins/datatables/datatables.min.css?v='.VERSION) ?>">
 <script src="<?php echo base_url('assets/plugins/datatables/datatables.min.js?v='.VERSION) ?>"></script>
 
+<!-- Generic -->
+<script src="<?php echo base_url("assets/plugins/jquery/jquery-ui.min.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url("template/adminlte/bower_components/moment/min/moment.min.js?v=" . VERSION); ?>"></script>
+
+<!-- INPUT DATA PLUGINS -->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . VERSION); ?>" />
+<script src="<?php echo base_url("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("template/adminlte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.it.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.it.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/lib/lightbox2/js/lightbox.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/global/plugins/bootbox/bootbox.min.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("script/lib/fancybox-2.1.5/jquery.fancybox.pack.js?v=" . VERSION); ?>"></script>
+
+<!-- CHARTS -->
+<script src="<?php echo base_url("assets/js/components/charts/apexcharts.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/apexcharts_bar.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/apexcharts_line_smooth.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/apexcharts_customizable.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url("assets/js/components/charts/simple_pie.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/simple_pie_legend.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/simple_line.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/simple_column.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/charts/semi_donut.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url("assets/js/components/charts/funnel_chart.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url("assets/js/components/charts/chartjs_customizable.js?v=" . VERSION); ?>"></script>
+
+<!-- Select2 -->
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/select2/css/select2.min.css?v=" . VERSION); ?>" />
+<script src="<?php echo base_url("assets/plugins/select2/js/select2.full.min.js?v=" . VERSION); ?>"></script>
+
+<!-- LEAFLET -->
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/leaflet/leaflet.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/leaflet/MarkerCluster.css?v=" . VERSION); ?>" />
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/leaflet/MarkerCluster.Default.css?v=" . VERSION); ?>" />
+
+<script src="<?php echo base_url("assets/plugins/leaflet/leaflet-src.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/plugins/leaflet/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/plugins/leaflet/leaflet.markercluster.min.js?v=" . VERSION); ?>"></script>
+
+<!-- Full Calendar 4 -->
+<link href='<?php echo base_url_scripts('assets/plugins/fullcalendar/core/main.css') ?>' rel='stylesheet' />
+<link href='<?php echo base_url_scripts('assets/plugins/fullcalendar/daygrid/main.css') ?>' rel='stylesheet' />
+<link href='<?php echo base_url_scripts('assets/plugins/fullcalendar/timegrid/main.css') ?>' rel='stylesheet' />
+
+<script src='<?php echo base_url('assets/plugins/fullcalendar/core/main.js') ?>'></script>
+<script src='<?php echo base_url('assets/plugins/fullcalendar/core/locales-all.js') ?>'></script>
+<script src='<?php echo base_url('assets/plugins/fullcalendar/interaction/main.js') ?>'></script>
+<script src='<?php echo base_url('assets/plugins/fullcalendar/daygrid/main.js') ?>'></script>
+<script src='<?php echo base_url('assets/plugins/fullcalendar/timegrid/main.js') ?>'></script>
+
+<!-- TinyMCE -->
+<script src="<?php echo base_url('assets/plugins/tinymce/tinymce.min.js') ?>"></script>
+<script src="<?php echo base_url('assets/plugins/tinymce/themes/silver/theme.min.js') ?>"></script>
+<script src="<?php echo base_url('assets/plugins/tinymce/jquery.tinymce.min.js') ?>"></script>
+
+<!-- DropzoneJS -->
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/dropzone/css/dropzone.css?v=" . VERSION); ?>" />
+<script src="<?php echo base_url('assets/plugins/dropzone/dropzone.js'); ?>"></script>
+
+<?php if ($this->auth->check()) :  ?>
+  <script src="<?php echo base_url("assets/js/core/crmNotifier.js?v=" . VERSION); ?>"></script>
+<?php endif; ?>
+
+<!-- Core Components -->
+<script src="<?php echo base_url("assets/js/core/submitajax.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/client.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url("assets/js/components/tables/inline_actions.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/maps.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/calendars/calendar_full_json_sidebar.js?v=" . VERSION); ?>"></script>
+
+<script src="<?php echo base_url_template("assets/js/components/tabs.js?v=" . VERSION); ?>"></script>
+
+<!-- <script src="<?php echo base_url("assets/js/components/multiupload.js?v=" . VERSION); ?>"></script> -->
+
 <script src="<?php echo base_url("assets/js/components/tables/tables.js?v=" . VERSION); ?>"></script>
+<script src="<?php echo base_url("assets/js/components/tables/data-tables.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url("assets/js/components/tables/ajax-tables.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url("assets/js/components/tables/datatable_inline.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url("assets/js/components/tables/bulk-grid.js?v=" . VERSION); ?>"></script>
 
-<!-- COMMON PLUGINS -->
-<!-- <script src="<?php echo base_url("template/adminlte/bower_components/jquery-ui/jquery-ui.min.js?v=" . VERSION); ?>"></script> -->
-
-<!-- Morris.js charts -->
-<!-- <script src="<?php echo base_url("template/adminlte/bower_components/moment/min/moment.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("template/adminlte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("template/adminlte/bower_components/fastclick/lib/fastclick.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("template/adminlte/dist/js/adminlte.min.js?v=" . VERSION); ?>"></script> -->
-
-<!-- Full Calendar 4 -->
-<!-- <script src='<?php echo base_url('script/lib/fullcalendar-4/core/main.js') ?>'></script>
-<script src='<?php echo base_url('script/lib/fullcalendar-4/core/locales-all.js') ?>'></script>
-<script src='<?php echo base_url('script/lib/fullcalendar-4/interaction/main.js') ?>'></script>
-<script src='<?php echo base_url('script/lib/fullcalendar-4/daygrid/main.js') ?>'></script>
-<script src='<?php echo base_url('script/lib/fullcalendar-4/timegrid/main.js') ?>'></script> -->
-
-<!-- INPUT DATA PLUGINS -->
-<!-- <script src="<?php echo base_url("script/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.it.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.it.js?v=" . VERSION); ?>"></script> -->
-
-<!-- LIBRARIES -->
-<!-- <script src="<?php echo base_url("script/lib/ckeditor/ckeditor.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/lib/fancybox-2.1.5/jquery.fancybox.pack.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/lib/timeline/build/js/storyjs-embed.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/lib/lightbox2/js/lightbox.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/global/plugins/bootbox/bootbox.min.js?v=" . VERSION); ?>"></script> -->
-
-<!-- LEAFLET-JS -->
-<!-- <script src="<?php echo base_url("script/lib/leaflet-1.7.1/leaflet-src.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/leaflet.geocoding.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/leaflet.markercluster.min.js?v=" . VERSION); ?>"></script> -->
-
-<!-- DropzoneJS -->
-<!-- <script src="<?php echo base_url('script/global/plugins/dropzone/dropzone.js'); ?>"></script> -->
-
-<!-- tinymce -->
-<!-- <script src="<?php echo base_url('script/global/plugins/tinymce/') ?>tinymce.min.js"></script>
-<script src="<?php echo base_url('script/global/plugins/tinymce/') ?>themes/silver/theme.min.js"></script>
-<script src="<?php echo base_url('script/global/plugins/tinymce/') ?>jquery.tinymce.min.js"></script> -->
-
-<!-- CUSTOM COMPONENTS -->
-<!-- <script src="<?php echo base_url("script/js/IE.missing.functions.js?v=" . VERSION); ?>"></script> -->
-<!-- <script src="<?php echo base_url("script/js/inline_actions.js?v=" . VERSION); ?>"></script> -->
-<!-- <script src="<?php echo base_url("script/js/maps.js?v=" . VERSION); ?>"></script> -->
-<!-- <script src="<?php echo base_url("script/js/multiupload.js?v=" . VERSION); ?>"></script> -->
-<!-- <script src="<?php echo base_url("script/js/calendars/calendar_full_json_sidebar.js?v=" . VERSION); ?>"></script> -->
-
-<!-- CHARTS -->
-<!-- <script src="<?php echo base_url("script/js/charts/apexcharts.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/apexcharts_bar.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/apexcharts_line_smooth.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/apexcharts_customizable.js?v=" . VERSION); ?>"></script>
-
-<script src="<?php echo base_url("script/js/charts/simple_pie.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/simple_pie_legend.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/simple_line.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/simple_column.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/js/charts/semi_donut.js?v=" . VERSION); ?>"></script>
-
-<script src="<?php echo base_url("script/js/charts/funnel_chart.js?v=" . VERSION); ?>"></script>
-
-<script src="<?php echo base_url("script/js/charts/chartjs_customizable.js?v=" . VERSION); ?>"></script> -->
-
-
-
-<?php if ($this->auth->check()) :  ?>
-  <!-- <script src="<?php echo base_url("script/js/crmNotifier.js?v=" . VERSION); ?>"></script> -->
-<?php endif; ?>
+<script src="<?php echo base_url("assets/js/core/client.js?v=" . VERSION); ?>"></script>

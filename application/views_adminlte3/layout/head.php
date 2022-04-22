@@ -33,14 +33,15 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <script src="<?php echo base_url_template("assets/plugins/core/js/adminlte.min.js?v=" . VERSION); ?>"></script>
 
 <!-- Font Awesome -->
-<link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css"); ?>">
+<link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome/css/all.min.css"); ?>">
+<script src="<?php echo base_url("assets/plugins/fontawesome/js/all.min.js"); ?>"></script>
 
 <!-- CUSTOM CSS -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/css/custom.css?v=" . VERSION); ?>" />
 
 <!-- STYLE OVERRIDE -->
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
-    <!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" /> -->
+    <link rel="stylesheet" type="text/css" href="<?php echo base_url(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" />
 <?php endif; ?>
 
 <?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON) : ?>
@@ -75,6 +76,3 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
     "var builderProjectHash = '" . base64_encode(json_encode(array($this->db->database, $this->db->hostname, $this->db->username, md5($this->db->password)))) . "';",
     "var lang_short_code = '" . ((!empty($lang['languages_code'])) ? (explode('-', $lang['languages_code'])[0]) : 'en') . "';",
 ], 'config.js'); ?>
-
-<!-- GENERIC -->
-<script src="<?php echo base_url_template("script/js/tabs.js?v=" . VERSION); ?>"></script>
