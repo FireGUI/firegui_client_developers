@@ -2670,6 +2670,8 @@ class Datab extends CI_Model
                 case 'upload':
                     if ($value) {
                         return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank'));
+                    } else {
+                        return "";
                     }
 
                 case 'upload_image':
