@@ -99,8 +99,8 @@
 <div id="js_modal_container"></div>
 
 <!-- DataTables -->
-<link rel="stylesheet" href="<?php echo base_url('assets/plugins/datatables/datatables.min.css?v='.VERSION) ?>">
-<script src="<?php echo base_url('assets/plugins/datatables/datatables.min.js?v='.VERSION) ?>"></script>
+<link rel="stylesheet" href="<?php echo base_url('assets/plugins/datatables/datatables.min.css?v=' . VERSION) ?>">
+<script src="<?php echo base_url('assets/plugins/datatables/datatables.min.js?v=' . VERSION) ?>"></script>
 
 <!-- Generic -->
 <script src="<?php echo base_url("assets/plugins/jquery/jquery-ui.min.js?v=" . VERSION); ?>"></script>
@@ -174,7 +174,7 @@
 
 <!-- DropzoneJS -->
 <link rel="stylesheet" href="<?php echo base_url("assets/plugins/dropzone/css/dropzone.css?v=" . VERSION); ?>" />
-<script src="<?php echo base_url('assets/plugins/dropzone/dropzone.js'); ?>"></script>
+<script src="<?php echo base_url('assets/plugins/dropzone/dropzone.min.js'); ?>"></script>
 
 <?php if ($this->auth->check()) :  ?>
   <script src="<?php echo base_url("assets/js/core/crmNotifier.js?v=" . VERSION); ?>"></script>
