@@ -45,7 +45,7 @@ class Get_ajax extends MY_Controller
 
             if ($gets) {
                 foreach ($gets as $k => $v) {
-                    $suffix .= "{$k}={$v}&";
+                    $suffix .= "{$k}={$v}";
                 }
             }
 
@@ -587,7 +587,12 @@ class Get_ajax extends MY_Controller
                 if (isset($grid['grids_fields'][$order_col]['fields_name'])) {
                     //Se il campo è multilingua, forzo l'ordinamento per chiave lingua corrente
                     if ($grid['grids_fields'][$order_col]['fields_multilingual'] == DB_BOOL_TRUE) {
-                        $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
+                        if ($this->db->dbdriver == 'postgre') {
+$order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
+                        } else {
+$order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"$.{$this->datab->getLanguage()['id']}\") {$order_dir}";
+                        }
+                        
                     } elseif ($grid['grids_fields'][$order_col]['fields_type'] == 'JSON') {
                         $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}::TEXT {$order_dir}";
                     } else {
@@ -679,7 +684,7 @@ class Get_ajax extends MY_Controller
         $data = $this->datab->get_map($map_id);
 
         $where = array_filter((array) $this->datab->generate_where("maps", $map_id, $value_id));
-        //debug($where, true);
+
         $fields = array();
         $isSearchMode = false;
         $post_where = (array) $this->input->post('where');
