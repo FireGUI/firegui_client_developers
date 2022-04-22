@@ -148,27 +148,27 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                             <small><?php echo $this->auth->get('users_email'); ?></small>
                         </p>
                     </li>
-
-                    <div class="">
+                    
+                    
                         {tpl-pre-top_right_menu}
-                    </div>
+                    
                     <!-- Menu Body -->
 
                     <?php $profile_menu_list = $this->datab->get_menu('profile'); ?>
 
 
-
-                    <!-- New general Settings -->
-                    <li class="user-body">
-                        <div class="row">
-                            <div class="col-xs-12 text-center">
-                                <a href="<?php echo base_url('main/settings'); ?>"><i class="fas fa-cog"></i>
-                                    <?php e('General Settings'); ?></a>
-                            </div>
-                        </div>
-                    </li>
-
                     <?php if (!empty($profile_menu_list)) : ?>
+
+                        <!-- New general Settings -->
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-12 text-center">
+                                    <a href="<?php echo base_url('main/settings'); ?>"><i class="fas fa-cog"></i>
+                                        <?php e('General Settings'); ?></a>
+                                </div>
+                            </div>
+                        </li>
+
                         <?php foreach ($profile_menu_list as $menu) : ?>
                             <li class="user-body">
                                 <div class="row">
@@ -228,9 +228,9 @@ $this->layout->addDinamicStylesheet($data, "header.css");
                         </li>
                     <?php endif; ?>
 
-                    <div class="">
+                    
                         {tpl-post-top_right_menu}
-                    </div>
+                    
 
                     <li class="user-footer">
                         <div class="pull-left">
