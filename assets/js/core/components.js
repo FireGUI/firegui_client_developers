@@ -41,9 +41,9 @@ $('body').on('click', '.js_ajax_content', function (e) {
 
                         $('#js_layout_content_wrapper').data('layout-id', layout_id);
                         document.title = data.dati.title_prefix;
-                        $('#js_page_content').html(data.content);
+                        $('#js_page_content,.js_page_content').html(data.content); // 2022-04-22 - Added class because of Adminlte3
                         window.history.pushState("", "", link_href);
-                        initComponents($('#js_page_content'), true);
+                        initComponents($('#js_page_content,.js_page_content'), true); // 2022-04-22 - Added class because of Adminlte3
 
                         // Fix for sidebar to active li
                         if ($(that).parent().hasClass('js_sidebar_menu_item')) {
@@ -769,17 +769,17 @@ function initComponents(container, reset = false) {
     /**
      * Tabs
      */
-    tabsInit();
+    // tabsInit();
 
     /**
      * Calendars
      */
-    initCalendars();
+    // initCalendars();
     /**
      * Maps
      */
 
-    mapsInit();
+    // mapsInit();
     /**
      * Lancia evento `init.crm.components` per permettere ad eventuali hook
      * caricati nella pagina di inizializzarsi...

@@ -3,7 +3,7 @@ $(document).ready(function () {
     'use strict';
     $('.js-bulk-action > option[value=""]').attr('selected', 'selected').trigger('change');
     $('input:checkbox.js_bulk_check,.js-bulk-select-all').removeAttr('checked').trigger('change');
-    $.uniform.update();
+
     $('.content-wrapper,.page-content-wrapper').on('click', '.js-bulk-select-all', function () {
 
         var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
@@ -13,7 +13,6 @@ $(document).ready(function () {
             $('input[type="checkbox"].js_bulk_check', grid_container).prop('checked', false).trigger('change');
         }
         //Questo ridisegna le checkbox metronic
-        $.uniform.update();
 
         var chkbx_ids = $('input:checkbox.js_bulk_check:checked', grid_container)
             .map(function () {
@@ -32,7 +31,6 @@ $(document).ready(function () {
 
     $('.content-wrapper,.page-content-wrapper').on('click', 'input:checkbox.js_bulk_check', function () {
         //Questo ridisegna le checkbox metronic
-        $.uniform.update();
         var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
         var chkbx_ids = $('input:checkbox.js_bulk_check:checked', grid_container)
             .map(function () {

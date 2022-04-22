@@ -2,21 +2,6 @@
 $titleColor = '';
 $baseClasses = [$layout['layouts_boxes_content_type']];
 $userClasses = array_filter(explode(' ', $layout['layouts_boxes_css']));
-$isLight = in_array('light', $userClasses);
-$isGren = in_array('gren', $userClasses);
-$isBox = in_array('box', $userClasses);
-
-if ($isLight or $isGren) {
-    // Devo colorare il titolo
-    $titleColor = $layout['layouts_boxes_color'];
-} else {
-    // Devo colorare il portlet
-    $userClasses[] = $layout['layouts_boxes_color'];
-}
-
-if ($isLight or $isGren or $isBox) {
-    $baseClasses[] = 'portlet';
-}
 
 $classes = array_unique(array_merge($baseClasses, $userClasses));
 //If is a filter form and a filter is setup, bypass collapsed parameter
@@ -33,15 +18,25 @@ if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE && $layout['layouts_boxe
     }
 }
 
-//dump($layout);
+if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) {
+    $classes[] = 'card';
+}
+
+if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) {
+    $classes[] = 'collapsed-card';
+}
+
+$classes[] = $layout['layouts_boxes_color'];
+
 ?>
+
 <style>
     .hide {
         display: none;
     }
 </style>
 
-<div data-id="<?php echo $layout['layouts_boxes_id']; ?>" data-row="<?php echo $layout['layouts_boxes_row']; ?>" class="js_layout_box <?php if ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) : ?>card<?php endif; ?> <?php echo $layout['layouts_boxes_css'] . " " . $layout['layouts_boxes_color']; ?> <?php echo ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) ? 'collapsed-card' : ''; ?>">
+<div data-id="<?php echo $layout['layouts_boxes_id']; ?>" data-row="<?php echo $layout['layouts_boxes_row']; ?>" class="js_layout_box <?php echo implode(' ', $classes); ?>">
     <label class="label_highlight hide label_highlight_lb"> Layout Box #<?php echo $layout['layouts_boxes_id']; ?> <?php echo $layout['layouts_boxes_title'] . " [" . $layout['layouts_boxes_content_type'] . "]"; ?></label>
 
     <div class="builder_toolbar_actions hide">
@@ -79,37 +74,35 @@ if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE && $layout['layouts_boxe
     <!-- End Builder actions -->
 
     <?php if ($layout['layouts_boxes_titolable'] === DB_BOOL_TRUE) : ?>
-        <!-- <div class="card card-outline card-primary"> -->
         <div class="card-header">
             <h3 class="card-title">
-                <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars'; ?>"></i>
-                <span data-layou_box_id="<?php echo $layout['layouts_boxes_id']; ?>" class="js_layouts_boxes_title <?php echo ($titleColor ? 'font-' . $titleColor : '') . ' ' . ($isLight ? 'caption-subject bold uppercase' : ''); ?>">
+                <i class="<?php echo $titleColor ? 'font-' . $titleColor : ''; ?> <?php echo isset($iconsMapForContentType[$layout['layouts_boxes_content_type']]) ? $iconsMapForContentType[$layout['layouts_boxes_content_type']] : 'fas fa-bars fa-fw'; ?>"></i>
+                <span data-layou_box_id="<?php echo $layout['layouts_boxes_id']; ?>" class="js_layouts_boxes_title <?php echo ($titleColor ? 'font-' . $titleColor : ''); ?>">
                     <?php e(ucfirst(str_replace('_', ' ', $layout['layouts_boxes_title'])), true, ['module_name' => $layout['layouts_module']]); ?>
                 </span>
             </h3>
+            
             <div class="card-tools">
-
                 <?php if ($layout['layouts_boxes_collapsible'] === DB_BOOL_TRUE) : ?>
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas <?php if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) : ?>fa-plus<?php else : ?>fa-minus<?php endif; ?>"></i>
+                        <i class="fas <?php if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE) : ?>fa-plus<?php else : ?>fa-minus<?php endif; ?> fa-fw"></i>
                     </button>
                 <?php endif; ?>
+
                 <?php if ($layout['layouts_boxes_discardable'] === DB_BOOL_TRUE) : ?>
                     <button type="button" class="btn btn-tool" data-card-widget="remove">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times fa-fw"></i>
                     </button>
                 <?php endif; ?>
+
                 <?php if ($layout['layouts_boxes_reloadable'] === DB_BOOL_TRUE) : ?>
                     <a href="javascript:;" class="reload"></a>
                 <?php endif; ?>
             </div>
-
         </div>
-
     <?php endif; ?>
-
-
-    <div class="card-body layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
+            
+    <div class="<?php echo ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) ? 'card-body' : 'pb-3'; ?> layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
         <?php echo $layout['content'] ?>
     </div>
 </div>

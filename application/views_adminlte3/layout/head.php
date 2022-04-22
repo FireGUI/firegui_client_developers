@@ -27,22 +27,20 @@ $lang = $this->db->join('languages', 'languages_id = settings_default_language',
 <!-- CORE LEVEL STYLES -->
 <!-- Bootstrap 4 -->
 <script src="<?php echo base_url_scripts("assets/plugins/core/js/bootstrap.bundle.min.js?v=" . VERSION); ?>"></script>
+
 <!-- Theme style (AdminLTE App) -->
-<script src="<?php echo base_url_template("assets/plugins/core/js/adminlte.min.js?v=" . VERSION); ?>"></script>
 <link rel="stylesheet" href="<?php echo base_url("assets/plugins/core/css/adminlte.min.css?v=" . VERSION); ?>">
+<script src="<?php echo base_url_template("assets/plugins/core/js/adminlte.min.js?v=" . VERSION); ?>"></script>
+
 <!-- Font Awesome -->
 <link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css"); ?>">
 
-<!-- Select2  -->
-<link rel="stylesheet" href="<?php echo base_url("assets/plugins/select2/css/select2.min.css"); ?>">
-
-
 <!-- CUSTOM CSS -->
-<!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v=" . VERSION); ?>" /> -->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url("assets/css/custom.css?v=" . VERSION); ?>" />
 
 <!-- STYLE OVERRIDE -->
 <?php if (defined('CUSTOM_CSS_PATH') && CUSTOM_CSS_PATH) : ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" />
+    <!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url_admin(CUSTOM_CSS_PATH . "?v=" . VERSION); ?>" /> -->
 <?php endif; ?>
 
 <?php if (defined('CUSTOM_FAVICON') && CUSTOM_FAVICON) : ?>

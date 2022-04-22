@@ -1,5 +1,3 @@
-
-
 /* Variabile globale per tracciare tutte le mappe create */
 var token = JSON.parse(atob($('body').data('csrf')));
 var token_name = token.name;

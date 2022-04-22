@@ -134,7 +134,7 @@ if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
     </div>
 
     <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <ul class="nav nav-pills nav-sidebar flex-column nav-compact nav-child-indent text-sm" data-widget="treeview" role="menu" data-accordion="false">
             <li class="nav-header"><?php e('MAIN SECTION'); ?></li>
             <?php
             $first = true;
