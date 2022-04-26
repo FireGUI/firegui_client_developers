@@ -278,13 +278,24 @@ class Get_ajax extends MY_Controller
                 $result_json = array('id' => $row[$table . '_id'], 'name' => $row[$table . '_value']);
             } else {
                 // Il value di una support table è sempre una stringa quindi posso fare tranquillamente l'ilike
-                $where = implode(' AND ', array_filter([
-                    "{$table}_value ILIKE '%{$search}%'",
-                    $where_limit,
-                    $where_referer
-                ]));
+                if ($this->db->dbdriver != 'postgre') {
+                    $where = implode(' AND ', array_filter([
+                        "{$table}_value LIKE '%{$search}%'",
+                        $where_limit,
+                        $where_referer
+                    ]));
 
-                $result_array = $this->db->query("SELECT * FROM {$table} WHERE {$where} ORDER BY {$table}_value ILIKE '{$search}' DESC, {$table}_value LIMIT {$limit}")->result_array();
+                    $result_array = $this->db->query("SELECT * FROM {$table} WHERE {$where} ORDER BY {$table}_value LIKE '{$search}' DESC, {$table}_value LIMIT {$limit}")->result_array();
+                } else {
+                    $where = implode(' AND ', array_filter([
+                        "{$table}_value ILIKE '%{$search}%'",
+                        $where_limit,
+                        $where_referer
+                    ]));
+
+                    $result_array = $this->db->query("SELECT * FROM {$table} WHERE {$where} ORDER BY {$table}_value ILIKE '{$search}' DESC, {$table}_value LIMIT {$limit}")->result_array();
+                }
+                
                 $result_json = array();
                 foreach ($result_array as $row) {
                     //Ho solo due campi per un record di support table: id e value
