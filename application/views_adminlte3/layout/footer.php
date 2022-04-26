@@ -112,8 +112,8 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("script/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css?v=" . VERSION); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css?v=" . VERSION); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css?v=" . VERSION); ?>" />
+<!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url_template('template/adminlte/dist/css/jquery-ui.min.css'); ?>" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/lightbox2/css/lightbox.css?v=" . VERSION); ?>" /> -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url_scripts("script/lib/fancybox-2.1.5/jquery.fancybox.css?v=" . VERSION); ?>" />
 <script src="<?php echo base_url("template/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url("template/adminlte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js?v=" . VERSION); ?>"></script>
@@ -122,9 +122,8 @@
 <script src="<?php echo base_url("script/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url("script/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js?v=" . VERSION); ?>"></script>
 <script src="<?php echo base_url("script/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.it.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/lib/lightbox2/js/lightbox.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script>
-<script src="<?php echo base_url("script/global/plugins/bootbox/bootbox.min.js?v=" . VERSION); ?>"></script>
+<!-- <script src="<?php echo base_url("script/lib/lightbox2/js/lightbox.min.js?v=" . VERSION); ?>"></script> -->
+<!-- <script src="<?php echo base_url("script/lib/bootstrap-colorselector/dist/bootstrap-colorselector.min.js?v=" . VERSION); ?>"></script> -->
 <script src="<?php echo base_url("script/lib/fancybox-2.1.5/jquery.fancybox.pack.js?v=" . VERSION); ?>"></script>
 
 <!-- CHARTS -->
