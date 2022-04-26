@@ -1,0 +1,1 @@
+<a href="#" class="js_delete"><?php e('Delete'); ?></a>
