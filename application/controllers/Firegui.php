@@ -207,7 +207,7 @@ class Firegui extends MY_Controller
                         foreach ($updates as $key => $value) {
 
                             // Check if the version number is old or new
-                            if ($key == $new_version) {
+                            if ($key == $new_version ) {
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
                                         eval($code);
@@ -295,7 +295,7 @@ class Firegui extends MY_Controller
 
                     foreach ($updates as $key => $value) {
                         $version_compare_old = version_compare($key, $old_version);
-                        if ($version_compare_old) { //1 se old è < di key
+                        if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
                             foreach ($value as $key_type => $code) {
                                 if ($key_type == 'eval') {
                                     eval($code);
