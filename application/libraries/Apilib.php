@@ -1936,37 +1936,41 @@ class Apilib
                 break;
 
             case 'multiple_values':
-                if (is_array($value)) {
+                if (!empty($value)) {
+                    if (is_array($value)) {
 
-                    foreach ($value as $key => $val) {
-                        if (empty($val)) {
-                            unset($value[$key]);
+                        foreach ($value as $key => $val) {
+                            if (empty($val)) {
+                                unset($value[$key]);
+                            }
                         }
-                    }
-                    if (count($value) > 0) {
-                        $value = json_encode($value);
-                    } else {
-                        $value = "";
+                        if (count($value) > 0) {
+                            $value = json_encode($value);
+                        } else {
+                            $value = "";
+                        }
                     }
                 }
                 break;
             case 'multiple_key_values':
-                if (is_array($value)) {
-                    // Delete empty rows
-                    foreach ($value as $key => $val) {
-                        if (empty($val['key']) && empty($val['value'])) {
-                            unset($value[$key]);
+                if (!empty($value)) {
+                    if (is_array($value)) {
+                        // Delete empty rows
+                        foreach ($value as $key => $val) {
+                            if (empty($val['key']) && empty($val['value'])) {
+                                unset($value[$key]);
+                            }
                         }
-                    }
-                    if (count($value) > 0) {
-                        $value = json_encode($value);
+                        if (count($value) > 0) {
+                            $value = json_encode($value);
+                        } else {
+                            $value = "";
+                        }
                     } else {
-                        $value = "";
+                        $this->error = self::ERR_VALIDATION_FAILED;
+                        $this->errorMessage = "{$field['fields_draw_label']} must be an array";
+                        return false;
                     }
-                } else {
-                    $this->error = self::ERR_VALIDATION_FAILED;
-                    $this->errorMessage = "{$field['fields_draw_label']} must be an array";
-                    return false;
                 }
                 break;
 
