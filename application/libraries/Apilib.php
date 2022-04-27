@@ -1771,7 +1771,7 @@ class Apilib
         foreach ($fields as $field) {
             //debug($field);
             if (in_array($field['fields_draw_html_type'], ['multi_upload'])) {
-                if ($field['fields_ref'] && $data[$field['fields_name']]) {
+                if ($field['fields_ref'] && !empty($data[$field['fields_name']]) && $data[$field['fields_name']]) {
                     $relations = $this->db->where('relations_name', $field['fields_ref'])->get('relations');
 
                     if ($relations->num_rows() == 0) { //Allora il campo non punta a una relazione ma a una tabella diretta
