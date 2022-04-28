@@ -75,5 +75,6 @@ $updates['2.3.2'] = [
 
     
     "UPDATE notifications SET notifications_desktop_notified = '" . DB_BOOL_TRUE . "'",
-    
+    "ALTER TABLE charts_elements DROP COLUMN IF EXISTS charts_elemets_type;",
+    "ALTER TABLE charts_elements DROP COLUMN IF EXISTS charts_elemets_fill_columns;",
 ];
