@@ -46,8 +46,6 @@ if (defined('SIDEBAR_ELEMENT') && !empty(SIDEBAR_ELEMENT)) {
     ], $data['custom']);
 }
 //$this->layout->addDinamicStylesheet($data, "header.css");
-
-$profile_menu_list = $this->datab->get_menu('profile');
 ?>
 
 
@@ -79,69 +77,7 @@ $profile_menu_list = $this->datab->get_menu('profile');
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
 
-                <?php if (!empty($profile_menu_list)) : ?>
-                    <?php foreach ($profile_menu_list as $menu) : ?>
-                        <div class="dropdown-divider"></div>
-                        <a href="<?php echo $this->datab->generate_menu_link($menu); ?>" <?php echo ($menu['layouts_pdf'] == DB_BOOL_TRUE) ? 'target="_blank"' : ''; ?> class="dropdown-item p-3 <?php echo ($menu['menu_modal'] == DB_BOOL_TRUE) ? 'js_open_modal' : ''; ?>">
-                            <i class="mr-2 <?php echo ($menu['menu_icon_class'] ? $menu['menu_icon_class'] : 'fas fa-list') ?>"></i>
-                            <?php echo ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label'])); ?>
-                        </a>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-
-                <?php if ($this->datab->is_admin()) : ?>
-                    <?php if ($this->apilib->isCacheEnabled()) : ?>
-                        <a href="<?php echo base_url('main/cache_control/off'); ?>" class="dropdown-item p-3">
-                            <i class="fas fa-cogs mr-2"></i> <span><?php e('Disable'); ?> cache</span>
-                        </a>
-                    <?php else : ?>
-                        <a href="<?php echo base_url('main/cache_control/on'); ?>" class="dropdown-item p-3">
-                            <i class="fas fa-cogs mr-2"></i>
-                            <span><?php e('Enable'); ?> cache</span>
-                        </a>
-                    <?php endif; ?>
-                    <div class="dropdown-divider"></div>
-                    <a href="<?php echo base_url('main/cache_control/clear'); ?>" class="dropdown-item p-3">
-                        <i class="fas fa-trash-alt mr-2"></i>
-                        <span><?php e('Clear'); ?> cache</span>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="javascript:void(0)" id="js_enable_dev" class="dropdown-item p-3">
-                        <i class="fas fa-tools mr-2"></i>
-                        <span><?php e('Builder ToolBar'); ?></span>
-                    </a>
-                <?php endif; ?>
-
-                <?php if (!empty($_COOKIE['webauthn_easylogin']) && $_COOKIE['webauthn_easylogin'] == '__never__') : ?>
-                    <a href="<?php echo base_url('access/easylogin'); ?>" class="dropdown-item p-3">
-                        <i class="fas fa-fingerprint mr-2"></i>
-                        <span><?php e('Enable Touch-Id'); ?></span>
-                    </a>
-                <?php endif; ?>
-
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">
-                    <div class="row">
-                        <div class="col-6">
-                            <?php
-                            $layout_profile = $this->db->where('layouts_identifier', 'profile-page')->get('layouts')->num_rows();
-                            if ($layout_profile) :
-                            ?>
-                                <a href="<?php echo base_url("main/layout/profile-page"); ?>" class="btn btn-outline-info"><?php e('Profile'); ?></a>
-                                <?php else :
-                                $form_user_default = $this->db->query("SELECT * FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "' AND forms_entity_id = (SELECT entity_id FROM entity WHERE entity_name = '" . LOGIN_ENTITY . "')");
-
-                                if ($form_user_default->num_rows() != 0) :
-                                ?>
-                                    <a href="<?php echo base_url("get_ajax/modal_form/" . $form_user_default->row()->forms_id . "/" . $this->auth->get('id')); ?>" class="btn btn-outline-info js_open_modal"><?php e('Profile'); ?></a>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </div>
-                        <div class="col-6">
-                            <a href="<?php echo base_url("access/logout"); ?>" class="btn btn-danger"><?php e('Sign out'); ?></a>
-                        </div>
-                    </div>
-                </a>
+                
             </div>
         </li>
 
@@ -158,10 +94,26 @@ $profile_menu_list = $this->datab->get_menu('profile');
     $(function() {
         const toggle = $('.toggleDark');
         const body = $('body');
+        const header = $('.main-header', body);
+
+        if (localStorage.getItem('dark_mode') == 1) {
+            header.removeClass('navbar-white').addClass('navbar-dark');
+            body.addClass('dark-mode');
+        } else if (!localStorage.getItem('dark_mode') || localStorage.getItem('dark_mode') == 0) {
+            header.removeClass('navbar-dark').addClass('navbar-white');
+            body.removeClass('dark-mode');
+        }
 
         toggle.on('click', function() {
+            header.toggleClass('navbar-white navbar-dark');
             body.toggleClass('dark-mode');
-        })
+
+            if (body.hasClass('dark-mode')) {
+                localStorage.setItem('dark_mode', 1);
+            } else {
+                localStorage.setItem('dark_mode', 0);
+            }
+        });
     })
 </script>
 ?>
