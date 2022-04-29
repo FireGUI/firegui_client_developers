@@ -15,10 +15,10 @@ $count = 1;
         <?php foreach ($values as $single_value) : ?>
 
             <div class="row js_multiple_values_row" style="margin-top:10px">
-                <div class="col-xs-10" style="margin-right:0px">
+                <div class="col-sm-10" style="margin-right:0px">
                     <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>]" data-name="<?php echo $field['fields_name']; ?>" data-type="value" class="form-control <?php echo $class ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $single_value; ?>" autocomplete="off" />
                 </div>
-                <div class="col-xs-2">
+                <div class="col-sm-2">
                     <button type="button" class="btn js_remove_row"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
@@ -28,8 +28,8 @@ $count = 1;
 
 
     <div class="row">
-        <div class="col-xs-12">
-            <button type="button" class="btn btn-info col-xs-12 js_add_multiple_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-info col-sm-12 js_add_multiple_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
         </div>
     </div>
 </div>

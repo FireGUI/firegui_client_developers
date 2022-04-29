@@ -15,13 +15,13 @@ $count = 1;
         <?php foreach ($values as $single_value) : ?>
 
             <div class="row js_multiple_key_values_row" style="margin-top:10px">
-                <div class="col-xs-5">
+                <div class="col-sm-5">
                     <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][key]" data-name="<?php echo $field['fields_name']; ?>" data-type="key" class="form-control <?php echo $class ?>" placeholder="<?php e('Key'); ?>" value="<?php echo $single_value['key']; ?>" autocomplete="off" />
                 </div>
-                <div class="col-xs-5">
+                <div class="col-sm-5">
                     <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][value]" data-name="<?php echo $field['fields_name']; ?>" data-type="value" class="form-control <?php echo $class ?>" placeholder="<?php e('Value'); ?>" value="<?php echo $single_value['value']; ?>" autocomplete="off" />
                 </div>
-                <div class="col-xs-1">
+                <div class="col-sm-1">
                     <button type="button" class="btn js_remove_row"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
@@ -31,8 +31,8 @@ $count = 1;
 
 
     <div class="row">
-        <div class="col-xs-12">
-            <button type="button" class="btn btn-info col-xs-12 js_add_multiple_key_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-info col-sm-12 js_add_multiple_key_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
         </div>
     </div>
 </div>

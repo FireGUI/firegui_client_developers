@@ -85,7 +85,7 @@ foreach ($table_data_attributes as $data => $value) {
 <div class="table-scrollable-borderless">
     <?php if ($grid['grids']['grids_inline_edit']) : ?>
 
-        <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
+        <a class="js_datatable_inline_add btn btn-success btn-sm float-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
         <div class="clearfix"></div>
         <br />
     <?php endif; ?>

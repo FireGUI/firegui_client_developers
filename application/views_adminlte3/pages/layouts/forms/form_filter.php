@@ -81,7 +81,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
     <div class="form-actions fluid">
         <div class="col-md-12">
-            <div class="pull-right">
+            <div class="float-right">
                 <?php if ($where_data) : ?><input type="submit" class="btn red-intense" name="clear-filters" value="<?php e('Clear filters'); ?>"><?php endif; ?>
                 <button type="submit" class="btn btn-primary"><?php echo $where_data ? t('Filter') : t('Update filters'); ?></button>
             </div>

@@ -56,11 +56,11 @@
   <div class="float-right d-none d-sm-block">
     <b><?php e('Version'); ?></b> <?php echo VERSION; ?>
   </div>
-  <div class="center_side pull-left hidden-xs">
+  <div class="center_side pull-left hidden-sm">
     <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
   </div>
 
-  <div class="left_side pull-left hidden-xs">
+  <div class="left_side pull-left hidden-sm">
     <div class="btn-group">
       <div class="">
         <?php /* {tpl-pre-footer} */ ?>
@@ -75,7 +75,7 @@
 /*
 <footer class="main-footer">
 
-  <div class="left_side pull-left hidden-xs">
+  <div class="left_side pull-left hidden-sm">
     <div class="btn-group">
       <div class="">
         {tpl-pre-footer}
@@ -83,7 +83,7 @@
     </div>
   </div>
 
-  <div class="right_side pull-right hidden-xs">
+  <div class="right_side float-right hidden-sm">
     <div class="">
       {tpl-post-footer}
     </div>
