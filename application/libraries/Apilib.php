@@ -1109,6 +1109,9 @@ class Apilib
 
     public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1, $additional_parameters = [])
     {
+        if (!is_array($input)) {
+            throw new ApiException("Passed input is not an array!");
+        }
         // aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
         $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth, [], $additional_parameters);
         return array_shift($out) ?: [];
