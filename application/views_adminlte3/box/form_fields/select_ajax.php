@@ -1,7 +1,7 @@
 <?php echo $label; ?>
 
 <?php if ($subform) : ?>
-    <button <?php echo sprintf('id="%s"', ($randId = uniqid('form-opener'))); ?> type="button" class="btn-xs btn-link js-form-opener"><?php e('Create new') ?></button>
+    <button <?php echo sprintf('id="%s"', ($randId = uniqid('form-opener'))); ?> type="button" class="btn-sm btn-link js-form-opener"><?php e('Create new') ?></button>
     <script>
         $(function() {
             'use strict';

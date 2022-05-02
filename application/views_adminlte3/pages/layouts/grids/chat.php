@@ -55,7 +55,7 @@ if (isset($grid_data['data'])) {
                     <li class="direct-chat-msg <?php echo $item['class']; ?>" data-id="<?php echo $item['id'] ?? null ?>">
                         <div class="direct-chat-primary clearfix">
                             <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
-                            <span class="direct-chat-timestamp pull-right"><span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>&nbsp;<span class="actions"></span></span>
+                            <span class="direct-chat-timestamp float-right"><span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>&nbsp;<span class="actions"></span></span>
                         </div>
                         <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
                         <div class="direct-chat-text body">
@@ -134,7 +134,7 @@ if (isset($grid_data['data'])) {
                 listItem.append(
                     $('<div/>').addClass('direct-chat-primary clearfix').append(
                         $('<a/>').addClass('direct-chat-name pull-left name').attr('href', '#').html(message.username),
-                        $('<span/>').addClass('direct-chat-timestamp pull-right datetime').html(message.date),
+                        $('<span/>').addClass('direct-chat-timestamp float-right datetime').html(message.date),
                     ),
                     (typeof value !== "undefined" ? $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive') : ''),
                     $('<div/>').addClass('direct-chat-text body').append(

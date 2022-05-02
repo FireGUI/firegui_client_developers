@@ -72,7 +72,7 @@ class Mail_model extends CI_Model
         // Use send mail method of module
         if ($module_mail_installed) {
 
-            $this->mailmodule->send($to, $key, $lang, $data, $additional_headers, $attachments);
+            return $this->mailmodule->send($to, $key, $lang, $data, $additional_headers, $attachments);
         } else {
 
             if (is_development()) {
@@ -232,7 +232,7 @@ class Mail_model extends CI_Model
         // Use send mail method of module
         if ($module_mail_installed) {
 
-            $this->mailmodule->sendMessage($to, $subject, $message, $isHtml, $additional_headers, $attachments);
+            return $this->mailmodule->sendMessage($to, $subject, $message, $isHtml, $additional_headers, $attachments);
         } else {
 
             //Verifico se è impostato email_deferred

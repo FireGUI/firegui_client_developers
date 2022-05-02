@@ -15,7 +15,7 @@ foreach ($grid['grids_fields'] as $field) {
 
 $cols = ($has_bulk && $has_exportable) ? 6 : 12;
 ?>
-<a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
+<a class="js_datatable_inline_add btn btn-success btn-sm float-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
 <div class="clearfix"></div>
 <br />
 
