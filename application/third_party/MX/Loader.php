@@ -222,31 +222,23 @@ class MX_Loader extends CI_Loader
 			return $this;
 
 		/* check module */
-		
+
 		list($path, $_model) = Modules::find(strtolower($model), $this->_module, 'models/');
 
 		if ($path == FALSE) {
 			if (strpos($model, '/')) {
-				
+
 				//Check if exists module in folder, else is missing
 				try {
 					parent::model($model, $object_name, $connect);
-					
-				}catch(RuntimeException $e) {
+				} catch (RuntimeException $e) {
 					log_message('error', "Missing model '{$model}'");
 
-				$this->$_model = false;
-				CI::$APP->$_model = false;
-				$this->_ci_models[] = $_model;
-				echo $this->load->view("box/errors/missing_model", ['model' => $model], true);
+					$this->$_model = false;
+					CI::$APP->$_model = false;
+					$this->_ci_models[] = $_model;
+					echo $this->load->view("box/errors/missing_model", ['model' => $model], true);
 				}
-				
-
-				
-				
-				
-
-				
 			} else {
 				$uc_model = ucfirst($model);
 				//201910170932 - Check if library exists eventually in a folder called "custom"
@@ -349,7 +341,7 @@ class MX_Loader extends CI_Loader
 	/** Load an array of models **/
 	public function models($models)
 	{
-		
+
 		foreach ($models as $model => $alias) {
 			(is_int($model)) ? $this->model($alias) : $this->model($model, $alias);
 		}
@@ -400,25 +392,26 @@ class MX_Loader extends CI_Loader
 	}
 
 	/** Load a module view **/
-	public function view($view, $vars = array(), $return = FALSE)
-	{
-		list($path, $_view) = Modules::find($view, $this->_module, 'views/');
+	// public function view($view, $vars = array(), $return = FALSE)
+	// {
+	// 	list($path, $_view) = Modules::find($view, $this->_module, 'views/');
 
-		if ($path != FALSE) {
-			$this->_ci_view_paths = array($path => TRUE) + $this->_ci_view_paths;
-			$view = $_view;
-		}
+	// 	if ($path != FALSE) {
+	// 		$this->_ci_view_paths = array($path => TRUE) + $this->_ci_view_paths;
+	// 		$view = $_view;
+	// 	}
+		
 
-		// Fixed by stackoverflow  https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error
-		// Original
-		//return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
-		// Fixed
-		if (method_exists($this, '_ci_object_to_array')) {
-			return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
-		} else {
-			return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_prepare_view_vars($vars), '_ci_return' => $return));
-		}
-	}
+	// 	// Fixed by stackoverflow  https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error
+	// 	// Original
+	// 	//return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
+	// 	// Fixed
+	// 	if (method_exists($this, '_ci_object_to_array')) {
+	// 		return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
+	// 	} else {
+	// 		return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_prepare_view_vars($vars), '_ci_return' => $return));
+	// 	}
+	// }
 
 	protected function &_ci_get_component($component)
 	{
@@ -457,7 +450,8 @@ class MX_Loader extends CI_Loader
 
 			//show_error('Unable to load the requested file: ' . $_ci_file);
 			log_message('error', 'Unable to load the requested file: ' . $_ci_file);
-			$error =			$this->load->view("box/errors/missing_layout", ['layout' => $_ci_file], true);
+			//$error =			$this->load->view("box/errors/missing_layout", ['layout' => $_ci_file], true);
+			$error = "Missing layout!";
 		}
 
 		if (isset($_ci_vars))

@@ -5,9 +5,6 @@ class Access extends MY_Controller
 {
     const SALT = 'ofuh249fh97H98UG876GHOICUYEGRF98ygdfds';
 
-    var $settings = NULL;
-
-
     function __construct()
     {
         parent::__construct();
@@ -16,7 +13,6 @@ class Access extends MY_Controller
             @header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
         }
 
-        $this->settings = $this->db->get('settings')->row_array();
     }
 
 

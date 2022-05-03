@@ -5,6 +5,49 @@ require APPPATH . "third_party/MX/Loader.php";
 
 class MY_Loader extends MX_Loader
 {
+
+
+    /** HMVC Fix and template view manager **/
+	public function view($view, $vars = array(), $return = FALSE)
+	{
+		list($path, $_view) = Modules::find($view, $this->_module, 'views/');
+
+		if ($path != FALSE) {
+			$this->_ci_view_paths = array($path => TRUE) + $this->_ci_view_paths;
+			$view = $_view;
+		}
+
+        // debug($this->controller->settings['settings_template_folder']);
+        //  debug($view);
+         // debug(get_object_vars($this));
+     // debug($this->_ci_get_component('controller'));
+        // Define template from settings or set base template
+        if (isset($this->controller)){
+        $template = (!empty($this->controller->settings['settings_template_folder'])) ? $this->controller->settings['settings_template_folder'] : 'base';
+        
+        } else {
+        $template = 'base';
+        }
+        // Check custom file
+        if (file_exists(FCPATH . "application/views/custom/".$view)) {
+            $view = 'custom/'.$view;
+        } else if (file_exists(FCPATH . "application/views/".$template."/".$view)) {
+            $view = $template.'/'.$view;
+        } else {
+            $view = 'base/'.$view;
+        }
+		// Fixed by stackoverflow  https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error
+		// Original
+		//return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
+		// Fixed
+		if (method_exists($this, '_ci_object_to_array')) {
+			return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
+		} else {
+			return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_prepare_view_vars($vars), '_ci_return' => $return));
+		}
+	}
+
+
     function module_view($folder, $view, $vars = array(), $return = FALSE)
     {
         $CI = get_instance();
