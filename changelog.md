@@ -1,3 +1,4 @@
 Changelog version 2.3.2
  
-Beta
+Add multi-view structure
+Add multi-template settings
