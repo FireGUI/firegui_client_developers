@@ -17,17 +17,13 @@ class MY_Loader extends MX_Loader
 			$view = $_view;
 		}
 
-        // debug($this->controller->settings['settings_template_folder']);
-        //  debug($view);
-         // debug(get_object_vars($this));
-     // debug($this->_ci_get_component('controller'));
         // Define template from settings or set base template
-        if (isset($this->controller)){
-        $template = (!empty($this->controller->settings['settings_template_folder'])) ? $this->controller->settings['settings_template_folder'] : 'base';
-        
+        if (isset($this->controller) && isset($this->controller->settings['settings_template_folder'])) {
+            $template = (!empty($this->controller->settings['settings_template_folder'])) ? $this->controller->settings['settings_template_folder'] : 'base';
         } else {
-        $template = 'base';
+            $template = 'base';
         }
+
         // Check custom file
         if (file_exists(FCPATH . "application/views/custom/".$view)) {
             $view = 'custom/'.$view;
