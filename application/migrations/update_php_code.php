@@ -47,3 +47,7 @@ $updates['2.3.1'] = [
         '2.3.1_settings_mail_module.php'
     ],
 ];
+
+$updates['2.3.2'] = [
+    'include' => ['2.3.2_settings_template.php'],
+];
