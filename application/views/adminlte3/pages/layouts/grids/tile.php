@@ -25,7 +25,7 @@ if (isset($grid_data['data'])) {
 
 <div class="row">
     <?php foreach ($items as $id => $item) : ?>
-        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+        <div class="col-sm-12 col-sm-12 col-md-4 col-lg-3">
             <div class="dashboard-stat blue big-tile-list-item">
                 <a href="<?php echo (empty($grid['grids']['links']['view']) ? 'javascript:void(0);' : $grid['grids']['links']['view'] . $id) ?>">
                     <div class="details">

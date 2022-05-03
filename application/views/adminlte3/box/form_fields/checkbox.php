@@ -12,7 +12,7 @@ $inline = count($choiches) < 4;
 ?>
 <?php echo $label; ?>
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-sm-12">
         <?php if ($is_bool): ?>
             <input type="hidden" value="<?php echo DB_BOOL_FALSE; ?>" name="<?php echo $field['fields_name']; ?>" data-notmodifiable="1" />
         <?php endif; ?>

@@ -66,7 +66,7 @@ $cols = ($has_bulk && $has_exportable) ? 6 : 12;
                             <?php endif; ?>
                             <?php if ($sub_data) : ?>
 
-                                <a onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-xs dt-subdata-btn" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
+                                <a onclick="javascript:setTimeout(function () {initComponents();}, 500);" class="btn btn-primary btn-sm dt-subdata-btn" data-toggle="collapse" href="#<?php echo ($collapse_id = "collapser{$grid['grids']['grids_id']}_{$sub_grid['grids']['grids_id']}_{$key}"); ?>">
                                     <?php e('expand'); ?> <span data-toggle="tooltip" class="caret"></span>
                                 </a>
                             <?php endif; ?>

@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <div class="form-actions pull-right">
+    <div class="form-actions float-right">
         <!-- <button type="button" class="btn btn-default" data-dismiss="modal"><?php e('Cancel'); ?></button> -->
         <button type="submit" class="btn btn-primary"><?php echo (array_key_exists('forms_submit_button_label', $form['forms']) && !empty($form['forms']['forms_submit_button_label'])) ? $form['forms']['forms_submit_button_label'] : t('Save'); ?></button>
     </div>

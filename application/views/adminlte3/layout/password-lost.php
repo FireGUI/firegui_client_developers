@@ -124,13 +124,13 @@ endif;
 
                         <div class="form-actions">
                             <div class="row">
-                                <div class="col-xs-12 text-right">
+                                <div class="col-sm-12 text-right">
                                     <button type="submit" class="btn btn-success rounded_btn">
                                         <?php e('Reset Password'); ?>
                                     </button>
                                 </div>
 
-                                <div class="col-xs-12">
+                                <div class="col-sm-12">
                                     <a class="btn btn-primary rounded_btn" href="<?php echo base_url('access/login'); ?>">
                                         <?php e('Login'); ?>
                                     </a>
