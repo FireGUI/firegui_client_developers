@@ -45,8 +45,10 @@ class MY_Controller extends MX_Controller
         parent::__construct();
 
         // Inizializza le variabili d'istanza del controller
-        // $this->settings = $this->db->join('settings_template', 'settings.settings_template = settings_template.settings_template_id')->get('settings')->row_array();
-        $this->settings = $this->db->get('settings')->row_array();
+        $this->settings = $this->db
+            ->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT')
+            ->get('settings')->row_array();
+        //$this->settings = $this->db->get('settings')->row_array();
         $this->isAdmin = $this->auth->is_admin();
         $this->isDev = is_development();
         //$this->output->set_header('Cache-Control: max-age=31536000');
