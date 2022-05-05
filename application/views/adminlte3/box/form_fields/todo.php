@@ -16,7 +16,7 @@ $count = 1;
 
             <div class="row js_multiple_key_values_row" style="margin-top:10px">
 
-                <div class="col-sm-1 text-center" style="padding-top:5px">
+                <div class="col-xs-1 text-center" style="padding-top:5px">
                     <label class="container-checkbox ">
                         <input type="checkbox" value="<?php echo DB_BOOL_TRUE; ?>" class="js_container-checkbox" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][checked]" <?php if ($single_value['checked'] == DB_BOOL_TRUE) : ?>checked="checked" <?php endif; ?> />
                         <span class="checkmark"></span>
@@ -24,14 +24,14 @@ $count = 1;
 
                 </div>
 
-                <div class="col-sm-9" style="margin-right:0px;padding:0px">
+                <div class="col-xs-9" style="margin-right:0px;padding:0px">
                     <?php $textarea_rows = substr_count($single_value['value'], PHP_EOL); ?>
                     <div class="grow-wrap">
                         <textarea rows="<?php echo ($textarea_rows > 0) ? $textarea_rows + 1 : 1; ?>" style="<?php if ($single_value['checked'] == DB_BOOL_TRUE) : ?>text-decoration:line-through<?php endif; ?>" onInput="this.parentNode.dataset.replicatedValue = this.value" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][value]" data-name="<?php echo $field['fields_name']; ?>" data-type="value" class="form-control js_todo_textarea <?php echo $class ?>" placeholder="<?php echo $placeholder; ?>" autocomplete="off"><?php echo $single_value['value']; ?></textarea>
                     </div>
                 </div>
 
-                <div class="col-sm-1">
+                <div class="col-xs-1">
                     <button type="button" class="btn js_remove_row"><i class="fas fa-trash-alt"></i></button>
                 </div>
 
@@ -43,8 +43,8 @@ $count = 1;
 
 
     <div class="row">
-        <div class="col-sm-12">
-            <button type="button" class="btn btn-info col-sm-12 js_add_multiple_key_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
+        <div class="col-xs-12">
+            <button type="button" class="btn btn-info col-xs-12 js_add_multiple_key_values" style="margin-top:15px;"><i class="fas fa-plus-square"></i> <?php e('Add'); ?></button>
         </div>
     </div>
 </div>

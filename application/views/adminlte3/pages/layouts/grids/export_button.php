@@ -1,6 +1,6 @@
 <div class="col-md-<?php echo $cols; ?>">
-    <div class="btn-group float-right">
-        <button type="button" class="btn btn-fit-height float-right grey dropdown-toggle export_grid_data" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-fit-height pull-right grey dropdown-toggle export_grid_data" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
             <?php e('Export'); ?> <i class="fas fa-angle-down"></i>
         </button>
         <ul class="dropdown-menu " role="menu">

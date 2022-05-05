@@ -284,7 +284,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
     <div class="form-actions fluid">
         <div class="col-md-12">
-            <div class="float-right">
+            <div class="pull-right">
 
                 <?php if ($where_data) : ?>
                     <input type="hidden" class="clear-filters-<?php echo $form['forms']['forms_id']; ?>" name="clear-filters" value="" />

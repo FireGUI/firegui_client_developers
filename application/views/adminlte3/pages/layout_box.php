@@ -102,7 +102,7 @@ $classes[] = $layout['layouts_boxes_color'];
         </div>
     <?php endif; ?>
             
-    <div class="<?php echo ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) ? 'card-body p-2' : 'pb-3'; ?> layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
+    <div class="<?php echo ($layout['layouts_boxes_show_container'] === DB_BOOL_TRUE) ? 'card-body' : 'pb-3'; ?> layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>" data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
         <?php echo $layout['content'] ?>
     </div>
 </div>
