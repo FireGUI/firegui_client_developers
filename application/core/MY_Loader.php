@@ -23,12 +23,12 @@ class MY_Loader extends MX_Loader
         } else {
             $template = 'base';
         }
+        
         // Check extension
         $_ci_ext = pathinfo($view, PATHINFO_EXTENSION);
         $view_file = ($_ci_ext === '') ? $view.'.php' : $view;
 
         // Check custom file
-
         if (file_exists(FCPATH . "application/views/custom/".$view_file)) {
             $view = 'custom/'.$view;
         } else if (file_exists(FCPATH . "application/views/".$template."/".$view_file)) {
