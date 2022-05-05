@@ -25,13 +25,25 @@ class MY_Loader extends MX_Loader
         }
 
         // Check custom file
-        if (file_exists(FCPATH . "application/views/custom/".$view)) {
-            $view = 'custom/'.$view;
-        } else if (file_exists(FCPATH . "application/views/".$template."/".$view)) {
-            $view = $template.'/'.$view;
-        } else {
-            $view = 'base/'.$view;
-        }
+        if (stripos($view,'contatori') !== false) {
+//debug($view,true);
+}
+
+if (!file_exists(FCPATH . "application/views/".$view.'.php') && !file_exists(FCPATH . "application/views/".$view)) {
+
+    
+
+    if (file_exists(FCPATH . "application/views/custom/".$view.'.php')) {
+        $view = 'custom/'.$view;
+    } else if (file_exists(FCPATH . "application/views/".$template."/".$view.'.php')) {
+        $view = $template.'/'.$view;
+    } else {
+        $view = 'base/'.$view;
+    }
+}
+
+
+        
 		// Fixed by stackoverflow  https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error
 		// Original
 		//return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
