@@ -23,27 +23,22 @@ class MY_Loader extends MX_Loader
         } else {
             $template = 'base';
         }
+        
+        // Check extension
+        $_ci_ext = pathinfo($view, PATHINFO_EXTENSION);
+        $view_file = ($_ci_ext === '') ? $view.'.php' : $view;
 
         // Check custom file
-        if (stripos($view,'contatori') !== false) {
-//debug($view,true);
-}
-
-if (!file_exists(FCPATH . "application/views/".$view.'.php') && !file_exists(FCPATH . "application/views/".$view)) {
-
-    
-
-    if (file_exists(FCPATH . "application/views/custom/".$view.'.php')) {
-        $view = 'custom/'.$view;
-    } else if (file_exists(FCPATH . "application/views/".$template."/".$view.'.php')) {
-        $view = $template.'/'.$view;
-    } else {
-        $view = 'base/'.$view;
-    }
-}
-
-
-        
+        if (file_exists(FCPATH . "application/views/custom/".$view_file)) {
+            $view = 'custom/'.$view;
+        } else if (file_exists(FCPATH . "application/views/".$template."/".$view_file)) {
+            $view = $template.'/'.$view;
+        } else {
+            $view = 'base/'.$view;
+            if ($template != ' base') {
+                log_message('error', 'Template file not found: '. $view_file.' Loaded base file');
+            }
+        }
 		// Fixed by stackoverflow  https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error
 		// Original
 		//return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));

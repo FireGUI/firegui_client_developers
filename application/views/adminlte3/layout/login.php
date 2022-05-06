@@ -47,15 +47,13 @@ endif;
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome/css/all.min.css"); ?>">
+    <link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css"); ?>">
 
     <!-- Theme style -->
     <link rel="stylesheet" href="<?php echo base_url("assets/plugins/core/css/adminlte.min.css"); ?>">
 
     <!-- Bootstrap Select 1.14  -->
     <link rel="stylesheet" href="<?php echo base_url("assets/plugins/bootstrap-select/css/bootstrap-select.min.css"); ?>">
-
-    <link rel="shortcut icon" href="<?php echo base_url('favicon.ico'); ?>" type="image/x-icon">
 
     <?php
     $this->layout->addDinamicJavascript([
