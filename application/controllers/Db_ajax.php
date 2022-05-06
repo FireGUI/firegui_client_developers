@@ -84,6 +84,8 @@ class Db_ajax extends MY_Controller
         $entity = $form['entity_name'];
         $entityIdField = $entity . '_id';
 
+
+
         try {
             if ($isOneRecord) {
                 $old_record = $this->apilib->searchFirst($entity);
@@ -112,7 +114,7 @@ class Db_ajax extends MY_Controller
                             }
                         }
                         foreach ($value_id as $val) {
-
+                            
                             $savedId = $this->apilib->edit($entity, $val, $dati, false);
                         }
                     }

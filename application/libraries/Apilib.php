@@ -1,7 +1,8 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 include_once __DIR__ . '/../helpers/general_helper.php';
 
@@ -160,7 +161,6 @@ class Apilib
      */
     public function setProcessingMode($mode)
     {
-
         if (!in_array($mode, array(self::MODE_API_CALL, self::MODE_DIRECT, self::MODE_CRM_FORM))) {
             die(t('Post-process method not valid. Call setProcessingMode with parameters Apilib::MODE_API_CALL, Apilib::MODE_DIRECT o Apilib::MODE_CRM_FORM'));
         }
@@ -205,13 +205,12 @@ class Apilib
 
     /**
      * Traduci un valore in json con le impostazioni lingua correnti
-     * 
+     *
      * @param type $jsonEncodedValue
      * @return mixed
      */
     public function translate($jsonEncodedValue)
     {
-
         if (!$this->currentLanguage && !$this->fallbackLanguage) {
             return false;
         }
@@ -297,9 +296,7 @@ class Apilib
         //Remove also css generated files from template cache
         if ($drop_template_files) {
             foreach (@scandir(APPPATH . '../template/build/') as $file) {
-
                 if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . '../template/build/' . $file)) {
-
                     unlink(APPPATH . '../template/build/' . $file);
                 }
             }
@@ -361,14 +358,13 @@ class Apilib
      */
     public function index($entity = null, $depth = 2)
     {
-
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
         $cache_key = "apilib.list.{$entity}";
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
-            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], NULL, 0, NULL, null, FALSE, $depth);
+            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], null, 0, null, null, false, $depth);
             if ($this->apilib->isCacheEnabled()) {
                 $tags = $this->buildTagsFromEntity($entity);
                 $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
@@ -387,7 +383,6 @@ class Apilib
      */
     public function view($entity = null, $id = null, $maxDepthLevel = 2)
     {
-
         if (!$entity || !$id || !is_numeric($id)) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -396,7 +391,6 @@ class Apilib
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
             if ($this->apilib->isCacheEnabled()) {
-
                 $tags = $this->buildTagsFromEntity($entity);
                 $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
             }
@@ -407,13 +401,12 @@ class Apilib
 
     /**
      * Esegue una query pulita su database prendendo l'entità per id
-     * 
+     *
      * @param string $entity
      * @param int $id
      */
     public function getById($entity, $id)
     {
-
         if (!is_numeric($id) or !$id) {
             return [];
         }
@@ -429,18 +422,17 @@ class Apilib
     /**
      * Esegue una query pulita su database prendendo l'entità per un array di
      * id entità. Se l'array è vuoto non esegue la query
-     * 
+     *
      * @param string $entity
      * @param int $ids
      * @return array
      */
     public function getByIds($entity, array $ids)
     {
-
         if (!$ids) {
             return [];
         }
-
+ 
         $query = $this->db->where_in($entity . '_id', $ids)->get($entity);
         if ($query instanceof CI_DB_result) {
             return $query->result_array();
@@ -452,7 +444,7 @@ class Apilib
     /**
      * Esegue un update diretto sul database utilizzando l'id passato e i dati.
      * Al termine torna un booleano che indica l'esito dell'operazione
-     * 
+     *
      * @param string $entity
      * @param int $id
      * @param array $data
@@ -478,7 +470,6 @@ class Apilib
      */
     public function create($entity = null, $data = null, $returnRecord = true, $direct_db = false)
     {
-
         if ($direct_db) {
             $output = $this->db->insert($entity, $data);
             $this->apilib->clearCacheTags([$entity]);
@@ -579,6 +570,8 @@ class Apilib
 
         $_data = $this->extractInputData($data);
 
+
+
         // rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
         $this->autoFillSourceFields($fields, $_data);
@@ -603,7 +596,6 @@ class Apilib
         }
 
         if ($this->processData($entity, $_data, true, $id)) {
-
             $oldData = $this->getById($entity, $id);
 
             if (!$this->updateById($entity, $id, $_data)) {
@@ -686,7 +678,6 @@ class Apilib
         $groups = [];
 
         foreach ($_data as &$_item) {
-
             if (!is_array($_item)) {
                 $this->showError(self::ERR_INVALID_API_CALL);
             }
@@ -737,7 +728,6 @@ class Apilib
      */
     private function extractInputData($data)
     {
-
         $this->originalPost = $this->input->post();
         if (empty($data) or !is_array($data)) {
             // Non ho passato dati, quindi prendo il post normalmente
@@ -829,7 +819,6 @@ class Apilib
      */
     public function delete($entity = null, $id = null)
     {
-
         if (!$entity || !$id) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -919,7 +908,6 @@ class Apilib
      */
     public function describe($entity = null)
     {
-
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -1005,7 +993,7 @@ class Apilib
 
 
 
-    public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC',  $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
+    public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
     {
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
@@ -1016,12 +1004,11 @@ class Apilib
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
-        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers' 
+        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
         $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
         if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
-
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -1060,7 +1047,7 @@ class Apilib
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
                 //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
-                if (stripos(implode(' ', $where), $entityCustomActions['soft_delete_flag']) === FALSE) {
+                if (stripos(implode(' ', $where), $entityCustomActions['soft_delete_flag']) === false) {
                     $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                 }
             }
@@ -1092,7 +1079,6 @@ class Apilib
             $order = empty($order_array) ? null : implode(', ', $order_array);
 
             try {
-
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
                 if ($this->apilib->isCacheEnabled()) {
                     $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
@@ -1130,7 +1116,7 @@ class Apilib
         }
 
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
-        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers' 
+        // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
         $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
 
@@ -1166,7 +1152,7 @@ class Apilib
             if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
                 //Essendo $where un array di condizioni, senza perdere tempo a ciclare, lo implodo così analizzo la stringa (che poi di fatto è quello che fa dopo implodendo su " AND "
-                if (stripos(implode(' ', $where), $entityCustomActions['soft_delete_flag']) === FALSE) {
+                if (stripos(implode(' ', $where), $entityCustomActions['soft_delete_flag']) === false) {
                     $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                 }
             }
@@ -1194,7 +1180,6 @@ class Apilib
      */
     private function showError($errorCode = null)
     {
-
         if (!is_null($errorCode) && is_numeric($errorCode)) {
             $this->error = $errorCode;
         }
@@ -1255,7 +1240,7 @@ class Apilib
     }
 
     /**
-     * Per ogni elemento ci metto 
+     * Per ogni elemento ci metto
      * ci metto solo i dati se presenti, eliminando quindi
      * le informazioni sui fields - per farlo faccio un sanitize list
      * @deprecated since 06/06/2016     Sistemato crmentity affinché non torni più un sottoarray `data`
@@ -1276,10 +1261,10 @@ class Apilib
 
     /**
      * Prepara i dati all'inserimento nel database
-     * 
+     *
      * @param string|int $entity    Entity name/id sul quale effettuare le modifiche
      * @param array $data           Data to be processed
-     * @param int|null $id          Eventuale id con 
+     * @param int|null $id          Eventuale id con
      * @param bool $exec_preprocess
      * @return array
      */
@@ -1307,7 +1292,7 @@ class Apilib
      */
     private function processData($entity, array &$data, $editMode = false, $value_id = null)
     {
-
+        
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -1328,7 +1313,6 @@ class Apilib
         $originalData = $data;
 
         if ($editMode) {
-
             if (is_array($value_id)) {
                 // Value id deve contenere il mio record per intero. Estraggo
                 // quindi l'id
@@ -1506,7 +1490,7 @@ class Apilib
          * Con il parametro true, man mano che il sistema fa l'upload dei file,
          * unsetta la relativa chiave nella superglobal $_FILES per prevenire
          * errori di validazione in eventuali post process successivi
-         * 
+         *
          * $result è il risultato dell'operazione: se è un array, allora posso
          * unirlo all'array $data, altrimenti se è avvenuto un qualche errore di
          * upload, allora questo sarà === false (nota che gli errori sono già
@@ -1525,7 +1509,7 @@ class Apilib
         /*
          * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
          * es: password => md5($data['password'])
-         * 
+         *
          * Mi salvo i cossiddetti relation bundles (pacchetti di dati con i
          * quali gestisco le relazioni NxN) in una variabile locale in modo da
          * tenerla al sicuro da possibili update ricorsivi (cioè lanciati da
@@ -1535,7 +1519,6 @@ class Apilib
          */
         $relationBundles = [];
         foreach ($fields as $field) {
-
             $name = $field['fields_name'];
             $value = isset($data[$name]) ? $data[$name] : null;
             $multilingual = $field['fields_multilingual'] == DB_BOOL_TRUE;
@@ -1552,7 +1535,7 @@ class Apilib
             // Evito di processare il campo se il campo non è stato passato
             // nell'input, perché significa che è già stato processato
             // precedentemente (questo dovrebbe velocizzare l'apilib)
-            // per questa ottimizzazione non devo prendere i campi multilingua, 
+            // per questa ottimizzazione non devo prendere i campi multilingua,
             // perchè altrimenti non avrei il merge
             if ($editMode && !array_key_exists($name, $originalData) && !$multilingual) {
                 continue;
@@ -1587,7 +1570,7 @@ class Apilib
 
                     // Quando inserisco i nuovi parametri, devo ciclarli e
                     // inserirli manualmente con la chiave corretta, in quanto
-                    // un array_merge cambierebbe le chiavi numeriche (che per 
+                    // un array_merge cambierebbe le chiavi numeriche (che per
                     // noi sono essenziali dato che contengono il language_id)
                     foreach ($value as $langId => $lValue) {
                         //(attenzione $lValue è per riferimento)
@@ -1604,7 +1587,7 @@ class Apilib
                 // stato modificato da com'è salvato in db)
                 $value = isset($originalData[$name]) ? json_encode($toSaveJSON) : $value;
 
-                // Per i campi non multilingua semplicemente processo il valore
+            // Per i campi non multilingua semplicemente processo il valore
                 // normalmente (attenzione $value è per riferimento)
             } elseif (!$this->sanitizeInput($field, $value, isset($originalData[$name]) ? $originalData[$name] : null)) {
                 return false;
@@ -1715,18 +1698,17 @@ class Apilib
      * dati passati mi devono generare un inserimento di dati nella relazione.
      * Questo metodo controlla anche se esistono delle "relazioni finte" cioè
      * field_ref inseriti su campi STRINGA..
-     * 
+     *
      * Nel qual caso esista una relazione "vera" associata al field, il metodo
      * torna true e modifica il valore originale con i dati della relazione e
      * i dati da inserire in db
-     * 
+     *
      * @param string $field
      * @param array $dataToInsert
      * @return boolean
      */
     private function checkRelationsOnField($field, &$dataToInsert)
     {
-
         if (!$field['fields_ref']) {
             return false;
         }
@@ -1813,20 +1795,19 @@ class Apilib
 
     /**
      * Inserisci i dati delle relazioni pendenti sull'id passato
-     * 
+     *
      * @param int $savedId
      * @return null
      */
     private function savePendingRelations($savedId)
     {
-
         if (!$this->pendingRelations or !$savedId) {
             return;
         }
 
         foreach ($this->pendingRelations as $relationBundle) {
             /* ==========================================================
-             * Prima di inserire i dati nella relazione faccio un delete 
+             * Prima di inserire i dati nella relazione faccio un delete
              * dei record con relations_field_1 uguale al mio insert id
              * che corrispondono ai valori vecchi.
              * --
@@ -1878,7 +1859,7 @@ class Apilib
      * Il valore passato per riferimento, quindi se necessario effettuare
      * aggiustamenti per renderlo salvabile su database viene manipolato
      * direttamente da qui
-     * 
+     *
      * @param array $field
      * @param mixed $value
      * @param array $originalValue
@@ -1886,7 +1867,6 @@ class Apilib
      */
     protected function sanitizeInput(array $field, &$value, $originalValue)
     {
-
         $typeSQL = strtoupper($field['fields_type']);
         $typeHTML = $field['fields_draw_html_type'];
 
@@ -1941,7 +1921,6 @@ class Apilib
             case 'multiple_values':
                 if (!empty($value)) {
                     if (is_array($value)) {
-
                         foreach ($value as $key => $val) {
                             if (empty($val)) {
                                 unset($value[$key]);
@@ -2020,7 +1999,7 @@ class Apilib
                 }
 
                 if ($value && !preg_match('/^-?\d+$/', $value)) {
-                    // Il valore non contiene solo numeri, quindi non è un 
+                    // Il valore non contiene solo numeri, quindi non è un
                     // intero valido
                     throw new ApiException(sprintf("Il campo %s dev'essere inserito senza caratteri speciali (ad es. `,` e `.`)", $field['fields_draw_label']));
                 }
@@ -2080,6 +2059,7 @@ class Apilib
                 } else {
                     $value = null;
                 }
+                // no break
             case 'JSON':
                 if ($value === '') {
                     // Il json non mi accetta stringhe vuote
@@ -2093,7 +2073,7 @@ class Apilib
 
     /**
      * Formattazione corretta di un input in una stringa date/datetime
-     * 
+     *
      * @param mixed $value
      * @param boolean $withTime
      * @return string
@@ -2118,15 +2098,14 @@ class Apilib
 
     /**
      * Formattazione corretta di un tipo geography
-     * 
+     *
      * @param mixed $value
      * @return string|null
-     * 
+     *
      * @todo Manca il controlloche il value passato non sia già una geography pronta. Verificare la presenza o meno del separatore tra lat e lon
      */
     protected function filterInputGeo($value)
     {
-
         if (isset($value['geo'])) {
             return $value['geo'];
         }
@@ -2158,8 +2137,8 @@ class Apilib
 
     /**
      * Formattazione di un tipo di dato "Multipolygon"
-     * 
-     * 
+     *
+     *
      * @param mixed $value Attenzione che value deve essere nel formato array, con poligoni espressi in lon lat e non lat lon
      * @return string|null
      */
@@ -2172,7 +2151,6 @@ class Apilib
         if (!is_array($value) || $value == array()) {
             return null;
         } else {
-
             $collections = array();
 
             if (array_key_exists('polygons', $value)) { //Processo prima i poligoni
@@ -2234,7 +2212,7 @@ class Apilib
 
             $multipolygon = "MULTIPOLYGON((" . implode(',', $merged_polygons) . "))";
 
-            //Infine metto tutto dentro un unico calderone GEOMETRYCOLLECTION    
+            //Infine metto tutto dentro un unico calderone GEOMETRYCOLLECTION
             if ($merged_polygons != array()) {
 
                 // V3
@@ -2263,8 +2241,8 @@ class Apilib
 
     /**
      * Formattazione di un tipo di dato "GEOMETRYCOLLECTION"
-     * 
-     * 
+     *
+     *
      * @param array $value Attenzione che value deve essere nel formato array, con poligoni espressi in lon lat e non lat lon
      * @return string|null
      */
@@ -2288,7 +2266,6 @@ class Apilib
         }
 
         if (!is_numeric($entity_id) && is_string($entity_id)) {
-
             $entity = $this->crmEntity->getEntity($entity_id);
             if (!$entity) {
                 return $data;
@@ -2354,7 +2331,6 @@ class Apilib
             ];
 
             foreach ($process as $function) {
-
                 if (empty($function['fi_events_post_process_id'])) { //New fi_events structure
 
                     $e_id = $function['fi_events_ref_id'];
@@ -2395,13 +2371,12 @@ class Apilib
     /**
      * Upload di tutti i file dentro all'array $_FILES e opzionalmente rimuovili
      * dalla superglobal
-     * 
+     *
      * @param type $clearFilesSuperglobal
      * @return boolean
      */
     private function uploadAll($clearFilesSuperglobal = false)
     {
-
         if (!$_FILES) {
             return [];
         }
@@ -2415,7 +2390,6 @@ class Apilib
         ]);
 
         foreach ($_FILES as $fieldName => $fileData) {
-
             if (empty($fileData['name'])) {
                 continue;
             }
@@ -2514,7 +2488,7 @@ class Apilib
     /**
      * Aggiungi una nuova voce al log di sistema con il flag system = false.
      * Metodo userland
-     * 
+     *
      * @param int $type
      * @param string $titlePattern
      * @param array $extra
@@ -2527,11 +2501,11 @@ class Apilib
 
     /**
      * Aggiungi una nuova voce al log di sistema con il flag system = true
-     * 
+     *
      * @internal Attenzione, questo metodo non andrebbe utilizzato, è pensato
      *           per il core del crm, in quanto il parametro extra deve essere
      *           riempito opportunamente. Usare Apilib::log piuttosto
-     * 
+     *
      * @param int $type
      * @param array $extra
      * @throws UnexpectedValueException
@@ -2593,7 +2567,6 @@ class Apilib
      */
     private function addLogEntry($type, $title, $system, array $extra)
     {
-
         if (!is_numeric($type)) {
             throw new InvalidArgumentException('Cannot log the action: type must be numeric');
         }
@@ -2633,7 +2606,6 @@ class Apilib
 
     private function addLogActivity($type, $system, array $extra)
     {
-
         if (!is_numeric($type)) {
             throw new InvalidArgumentException('Cannot log the activity: type must be numeric');
         }
@@ -2684,7 +2656,7 @@ class Apilib
 
     /**
      * CrmEntity Factory
-     * 
+     *
      * @param string $entity
      * @return \Crmentity
      */
@@ -2697,8 +2669,6 @@ class Apilib
     }
     public function buildTagsFromEntity($entity)
     {
-
-
         $entity_data = $this->crmEntity->getEntity($entity);
         $tags = [$entity_data['entity_name']];
         $fields = $this->crmEntity->getFields($entity);

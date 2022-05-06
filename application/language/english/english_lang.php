@@ -948,3 +948,4 @@ $lang['User permissions'] = 'User permissions';
 $lang['Trash'] = 'Trash';
 $lang['Title'] = 'Title';
 $lang['posts'] = 'posts';
+$lang['Created by'] = 'Created by';
