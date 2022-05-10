@@ -1,4 +1,6 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -37,7 +39,7 @@
 |
 */
 
-$autoload['packages'] = array();
+$autoload['packages'] = [];
 
 
 /*
@@ -96,7 +98,7 @@ $autoload['config'] = array('enviroment');
 |
 */
 
-$autoload['language'] = array();
+$autoload['language'] = [];
 
 
 /*
@@ -109,7 +111,19 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array('auth', 'datab', 'hook', 'emails', 'mail_model', 'layout', 'module', 'fi_events', 'fi_activity', 'notifications');
+$autoload['model'] = [
+    'auth',
+    'datab',
+    'hook',
+    'emails',
+    'mail_model',
+    'layout',
+    'module',
+    'fi_events',
+    'fi_activity',
+    'notifications',
+    'conditions'
+];
 
 
 /* End of file autoload.php */
