@@ -56,7 +56,7 @@ function do_post_request($url, $data, $optional_headers = null)
 
 function skebbyGatewaySendSMS($username, $password, $recipients, $text, $sms_type = SMS_TYPE_CLASSIC, $sender_number = '', $sender_string = '', $user_reference = '', $charset = '', $optional_headers = null)
 {
-    $url = 'http://gateway.skebby.it/api/send/smseasy/advanced/http.php';
+    $url = 'https://gateway.skebby.it/api/send/smseasy/advanced/http.php';
 
     switch ($sms_type) {
         case SMS_TYPE_CLASSIC:
@@ -116,7 +116,7 @@ function skebbyGatewaySendSMS($username, $password, $recipients, $text, $sms_typ
 
 function skebbyGatewayGetCredit($username, $password, $charset = '')
 {
-    $url = "http://gateway.skebby.it/api/send/smseasy/advanced/http.php";
+    $url = "https://gateway.skebby.it/api/send/smseasy/advanced/http.php";
     $method = "get_credit";
 
     $parameters = 'method='
