@@ -1,14 +1,14 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 /**
  * @property-read Crmentity $crmentity
  */
 class Datab extends CI_Model
 {
-
     const LANG_SESSION_KEY = 'master_crm_language';
     const CACHE_TIME = 3600;
     private $_accessibleLayouts = [];
@@ -28,7 +28,7 @@ class Datab extends CI_Model
 
     public $executed_hooks = [];
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('crmentity');
@@ -117,7 +117,7 @@ class Datab extends CI_Model
         $entity['fields'] = $this->crmentity->getFields($entity_name);
         return $entity;
     }
-    public function getDataEntityByQuery($query, $input = NULL, $limit = NULL, $offset = 0, $orderBy = NULL, $count = FALSE, $eval_cachable_fields = [], $additional_parameters = [])
+    public function getDataEntityByQuery($query, $input = null, $limit = null, $offset = 0, $orderBy = null, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
         $unique = md5($query);
         $cache_key = "datab.getDataEntity.{$unique}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
@@ -179,7 +179,6 @@ class Datab extends CI_Model
                 $query = str_ireplace('{order_by}', '', $query);
                 $out = $this->db->query($query)->row()->c;
             } else {
-
                 $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
                 if ($limit) {
                     $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
@@ -247,7 +246,7 @@ class Datab extends CI_Model
     /**
      * Cerca una lista di dati. Wrapper del search/count apilib, ma che tiene
      * conto della sessione del crm e dei permessi
-     * 
+     *
      * @param int|string $entity_id
      * @param string|array $where
      * @param int|null $limit
@@ -258,9 +257,8 @@ class Datab extends CI_Model
      * @param array $eval_cachable_fields Eventuale array degli eval fields della grid cachabili. Servono per buildare correttamente il where e l'order by
      * @return array
      */
-    public function getDataEntity($entity_id, $where = NULL, $limit = NULL, $offset = 0, $order_by = NULL, $depth = 2, $count = FALSE, $eval_cachable_fields = [], $additional_parameters = [])
+    public function getDataEntity($entity_id, $where = null, $limit = null, $offset = 0, $order_by = null, $depth = 2, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
-
         $cache_key = "datab.getDataEntity.{$entity_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
         if (!($dati = $this->cache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
@@ -324,10 +322,8 @@ class Datab extends CI_Model
             $entity = $this->crmentity->getEntity($entity_id);
 
             if ($count) {
-
                 $dati =  $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
             } else {
-
                 $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
             if ($this->apilib->isCacheEnabled()) {
@@ -338,9 +334,8 @@ class Datab extends CI_Model
         return $dati;
     }
 
-    public function get_visible_fields($entity_id = NULL)
+    public function get_visible_fields($entity_id = null)
     {
-
         if (!$entity_id) {
             return array();
         }
@@ -357,7 +352,6 @@ class Datab extends CI_Model
 
     public function get_field($field_id, $full_data = false)
     {
-
         if (is_numeric($field_id)) {
             if ($full_data) {
                 return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_id' => $field_id])->row_array();
@@ -371,7 +365,6 @@ class Datab extends CI_Model
 
     public function get_field_by_name($field_name, $full_data = false)
     {
-
         if ($full_data) {
             return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_name' => $field_name])->row_array();
         } else {
@@ -386,7 +379,6 @@ class Datab extends CI_Model
      */
     public function get_default_fields_value($fields, $value_id = null)
     {
-
         $value = $this->input->get_post($fields['fields_name']);
         if ($value === false) {
             $value = null;
@@ -597,7 +589,6 @@ class Datab extends CI_Model
 
     public function get_form($form_id, $edit_id = null, $value_id = null)
     {
-
         $cache_key = "datab.get_form.{$form_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
         if (!($dati = $this->cache->get($cache_key))) {
             if (!$form_id) {
@@ -671,7 +662,6 @@ class Datab extends CI_Model
 
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
-
                 $fields[$key] = $this->processFieldMapping($field, $form);
             }
             unset($field);
@@ -696,10 +686,6 @@ class Datab extends CI_Model
          */
             $hidden = $shown = [];
             foreach ($fields as $field) {
-
-
-
-
                 $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type'] : $field['fields_draw_html_type'];
                 if ($type === 'input_hidden') {
                     $hidden[] = $field;
@@ -709,9 +695,6 @@ class Datab extends CI_Model
             }
 
             foreach ($hidden as $k => $field) {
-
-
-
                 $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id);
             }
 
@@ -820,7 +803,6 @@ class Datab extends CI_Model
 
         // Prendo la field select where
         if (($fieldWhere = trim($field['fields_select_where']))) {
-
             $wheres[] = $this->replace_superglobal_data($fieldWhere);
         }
 
@@ -834,7 +816,6 @@ class Datab extends CI_Model
         // assicurarmi che il valore/i valori vengano preselezionati, a
         // prescindere dai filtri
         if ($where && isset($formData[$field['fields_name']])) {
-
             $lvalue = $field['field_support_id'];
             $oper = '=';
             $rvalue = $formData[$field['fields_name']];
@@ -849,7 +830,7 @@ class Datab extends CI_Model
         }
         // TODO Calculate order by
 
-        $order_by = NULL;
+        $order_by = null;
 
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $order_by);
 
@@ -872,15 +853,16 @@ class Datab extends CI_Model
     public function get_grids_from_entity($entity_id)
     {
         debug("TODO: errore!!! Correggere... non so quando viene usata!", true);
-        if (!$grid_id)
+        if (!$grid_id) {
             die('ERRORE: Entity ID mancante');
+        }
 
         $dati = array();
         $dati['grids'] = $this->db->query("SELECT * FROM grids WHERE entity_id = '$entity_id'")->result_array();
         return $dati;
     }
 
-    public function get_grid_data($grid, $value_id = null, $where = array(), $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $additional_parameters = [])
+    public function get_grid_data($grid, $value_id = null, $where = array(), $limit = null, $offset = 0, $order_by = null, $count = false, $additional_parameters = [])
     {
         $cache_key = "datab.get_grid_data." . md5(serialize($grid)) . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
         if (!($dati = $this->cache->get($cache_key))) {
@@ -972,7 +954,6 @@ class Datab extends CI_Model
             $this->apilib->setLanguage();
 
             if (!empty($grid['grids']['grids_custom_query'])) {
-
                 $data = $this->getDataEntityByQuery($grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             } else {
                 $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
@@ -1092,7 +1073,7 @@ class Datab extends CI_Model
     }
 
     /**
-     * CHARTS 
+     * CHARTS
      */
 
 
@@ -1108,8 +1089,9 @@ class Datab extends CI_Model
      */
     public function get_calendar($calendar_id)
     {
-        if (!$calendar_id)
+        if (!$calendar_id) {
             die('ERRORE: calendar ID mancante');
+        }
 
         $dati['calendars'] = $this->db->query("SELECT * FROM calendars LEFT JOIN entity ON entity.entity_id = calendars.calendars_entity_id WHERE calendars_id = '$calendar_id'")->row_array();
 
@@ -1139,7 +1121,6 @@ class Datab extends CI_Model
      */
     public function get_map($map_id)
     {
-
         $map_id or die('ERRORE: map ID mancante');
 
         $dati['maps'] = $this->db->query("SELECT * FROM maps LEFT JOIN entity ON entity.entity_id = maps.maps_entity_id WHERE maps_id = '$map_id'")->row_array();
@@ -1154,13 +1135,12 @@ class Datab extends CI_Model
     /**
      * Utility methods
      */
-    public function get_entity_preview_by_name($entity_name, $where = NULL, $limit = NULL, $offset = 0)
+    public function get_entity_preview_by_name($entity_name, $where = null, $limit = null, $offset = 0)
     {
-
         return $this->crmentity->getEntityPreview($entity_name, $where, $limit, $offset);
     }
 
-    public function get_support_data($fields_ref = NULL)
+    public function get_support_data($fields_ref = null)
     {
         if (!$fields_ref) {
             return array();
@@ -1193,7 +1173,7 @@ class Datab extends CI_Model
     /**
      * Costruisce il where di un oggetto GRID, MAPS, CHARTS o altro
      */
-    public function generate_where($element_type, $element_id, $value_id = NULL, $other_where = null, $additional_data = array())
+    public function generate_where($element_type, $element_id, $value_id = null, $other_where = null, $additional_data = array())
     {
         $arr = array();
         if (!is_numeric($element_id)) {
@@ -1221,7 +1201,6 @@ class Datab extends CI_Model
 
         //Ora verifico se c'è una filter session key assegnata e se esiste in sessione
         if (array_key_exists($element_type . "_filter_session_key", $element) && $element[$element_type . "_filter_session_key"]) {
-
             $sess_where_data = $this->session->userdata(SESS_WHERE_DATA);
             $operators = unserialize(OPERATORS);
 
@@ -1293,7 +1272,7 @@ class Datab extends CI_Model
                             // modifico la variabile field già esistente
                             $field->fields_type = DB_INTEGER_IDENTIFIER;
                             $field->fields_name = $related_field;
-                            $field->fields_draw_html_type = NULL;
+                            $field->fields_draw_html_type = null;
                         } else {
                             // Sto filtrando in un campo dell'entità principale
                             // Metto comunque il nome della tabella come prefisso per evitare il classico errore che il campo compare in più tabelle...
@@ -1361,7 +1340,7 @@ class Datab extends CI_Model
                                     if (in_array($field->fields_type, array('INT4RANGE', 'INT8RANGE'))) {
                                         // Se sto filtrando nei range prendo i limiti superiori/inferiori in base all'occorrenza
                                         switch ($condition['operator']) {
-                                                // Se filtro per {range} le/lt {value} vuol dire che sto cercando 
+                                                // Se filtro per {range} le/lt {value} vuol dire che sto cercando
                                                 // tutti i range il cui estremo superiore è le/lt del valore inserito
                                                 // nel form di ricerca. Per ge/gt vale l'opposto
                                             case 'lt':
@@ -1402,9 +1381,8 @@ class Datab extends CI_Model
     /**
      * DEPRECATO - Metodo forse non + usato dovrebbe passare tutto sul generate where ora.
      */
-    public function get_grid_where($grid_id, $value_id = NULL)
+    public function get_grid_where($grid_id, $value_id = null)
     {
-
         $grid = $this->db->get_where('grids', array('grids_id' => $grid_id))->row_array();
         $entity = $this->get_entity($grid['grids_entity_id']);
         $arr = array();
@@ -1416,7 +1394,7 @@ class Datab extends CI_Model
             } else {
                 $arr[] = "{$entity['entity_name']}_id = '$value_id'";
             }
-        } else if ($grid['grids_where']) {
+        } elseif ($grid['grids_where']) {
             // Per la grid è definito un where -> è plausibile che bisogni fare  il replace di variabili
             $arr[] = $this->replace_superglobal_data($grid['grids_where']);
         }
@@ -1426,7 +1404,7 @@ class Datab extends CI_Model
             if (!empty($grid['grids_builder_where'])) {
                 $arr[] = str_replace('{value_id}', $value_id, $grid['grids_builder_where']);
             }
-        } else if (!empty($grid['grids_builder_where'])) {
+        } elseif (!empty($grid['grids_builder_where'])) {
             // Per la grid è definito un where -> è plausibile che bisogni fare  il replace di variabili
             $arr[] = $this->replace_superglobal_data($grid['grids_builder_where']);
         }
@@ -1495,7 +1473,7 @@ class Datab extends CI_Model
     {
         $myarray = array();
         foreach ($fields as $field) {
-            $myarray[] = (array_key_exists('alias', $field) ? "{$field['alias']}." : NULL) . $field['fields_name'];
+            $myarray[] = (array_key_exists('alias', $field) ? "{$field['alias']}." : null) . $field['fields_name'];
         }
         $fields_imploded = implode(',', $myarray);
         return $fields_imploded;
@@ -1529,7 +1507,6 @@ class Datab extends CI_Model
      */
     public function run_post_process($entity_id, $when, $data = array())
     {
-
         if (!is_numeric($entity_id) && is_string($entity_id)) {
             $entity = $this->get_entity_by_name($entity_id);
             $entity_id = $entity['entity_id'];
@@ -1580,7 +1557,7 @@ class Datab extends CI_Model
 
     /**
      * Costruzione link di dettaglio
-     * 
+     *
      * @param int|string $entityIdentifier
      * @param int $value_id
      * @param bool|string $modal
@@ -1611,11 +1588,10 @@ class Datab extends CI_Model
         return isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
     }
 
-    public function generate_menu_link($menu, $value_id = NULL, $data = NULL)
+    public function generate_menu_link($menu, $value_id = null, $data = null)
     {
         $link = '';
         if ($menu['menu_layout'] && $menu['menu_layout'] != '-2') {
-
             $controller_method = (($menu['menu_modal'] == DB_BOOL_TRUE) ? 'get_ajax/layout_modal' : 'main/layout');
             $link = base_url("{$controller_method}/{$menu['menu_layout']}") . $menu['menu_link'];
         } elseif ($menu['menu_form']) {
@@ -1629,7 +1605,7 @@ class Datab extends CI_Model
             $link = str_replace('{value_id}', $value_id, $link);
         }
 
-        if ($data !== NULL && is_array($data)) {
+        if ($data !== null && is_array($data)) {
             $replace_data = array();
             foreach ($data as $key => $value) {
                 if (!is_numeric($key) && !is_array($value)) {
@@ -1646,15 +1622,15 @@ class Datab extends CI_Model
     /**
      * Controllo permessi
      */
-    public function is_admin($user_id = NULL)
+    public function is_admin($user_id = null)
     {
-        if ($user_id === NULL || $user_id == $this->auth->get(LOGIN_ENTITY . "_id")) {
+        if ($user_id === null || $user_id == $this->auth->get(LOGIN_ENTITY . "_id")) {
             // Sto controllando me stesso
 
             return $this->auth->is_admin();
         } else {
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
-            return ($query->num_rows() > 0 ? $query->row()->permissions_admin == DB_BOOL_TRUE : FALSE);
+            return ($query->num_rows() > 0 ? $query->row()->permissions_admin == DB_BOOL_TRUE : false);
         }
     }
 
@@ -1684,7 +1660,6 @@ class Datab extends CI_Model
 
         // Inserisci il sottomenu per ogni menu padre
         foreach ($subs as $parent => $items) {
-
             if (isset($return[$parent]['submenu'])) {
                 // Dovrei avere realmente dei sottomenu.. se non ci sono vuol
                 // dire che sono proibiti dai permessi...
@@ -1742,10 +1717,8 @@ class Datab extends CI_Model
 
     public function can_write_entity($entity_id)
     {
-
         if ($this->is_admin()) {
-
-            return TRUE;
+            return true;
         } else {
             // Resolve the entity id
             $entity_id = is_numeric($entity_id) ? $entity_id : $this->get_entity_by_name($entity_id)['entity_id'];
@@ -1762,9 +1735,8 @@ class Datab extends CI_Model
 
     public function can_read_entity($entity_id)
     {
-
         if ($this->is_admin()) {
-            return TRUE;
+            return true;
         } else {
             $user_id = (int) $this->auth->get('id');
             $permissions = $this->db->from('permissions')
@@ -1777,17 +1749,15 @@ class Datab extends CI_Model
 
     public function can_access_layout($layout_id)
     {
-
         if (!$layout_id or !is_numeric($layout_id)) {
             return false;
         }
 
-        return isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id]);
+        return (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) && $this->conditions->accessible('layouts', $layout_id);
     }
 
     public function setPermissions($userOrGroup, $isAdmin, array $entitiesPermissions, array $modulesPermissions)
     {
-
         if (!$userOrGroup) {
             throw new Exception("Il nome gruppo o utente non può essere vuoto");
         }
@@ -1797,7 +1767,6 @@ class Datab extends CI_Model
         }
 
         try {
-
             $perm = $this->getPermission($userOrGroup);
 
             $permId = $perm['permissions_id'];
@@ -1836,7 +1805,6 @@ class Datab extends CI_Model
 
     public function getPermission($userOrGroup, $throwException = true)
     {
-
         if (is_numeric($userOrGroup)) {
             // Is User
             $perm = $this->db->get_where('permissions', array('permissions_user_id' => $userOrGroup))->row_array();
@@ -1967,7 +1935,6 @@ class Datab extends CI_Model
 
     public function insertModulesPermissions($permId, array $modulesPermissions)
     {
-
         $this->db->delete('permissions_modules', ['permissions_modules_permissions_id' => $permId]);
         $modulesPermissionsData = [];
         foreach ($modulesPermissions as $moduleName => $permissionValue) {
@@ -1984,7 +1951,6 @@ class Datab extends CI_Model
 
     public function assignUnallowedLayoutAsGroup($userId, $groupName)
     {
-
         if (is_numeric($groupName)) {
             throw new Exception("Il nome gruppo non può essere numerico");
         }
@@ -2135,6 +2101,46 @@ class Datab extends CI_Model
         return $results;
     }
 
+    /**
+     * Trash results
+     */
+    public function get_trash_results()
+    {
+        // Get entity with soft delete
+        $entities = $this->db->query("SELECT *, JSON_UNQUOTE(JSON_EXTRACT(entity_action_fields,'$.soft_delete_flag')) AS entity_soft_delete_field FROM entity WHERE JSON_EXTRACT(entity_action_fields,'$.soft_delete_flag') IS NOT NULL")->result_array();
+
+        $e_ids = array_map(function ($entity) {
+            return $entity['entity_id'];
+        }, $entities);
+
+        $results = array();
+        if (!empty($e_ids)) {
+            $_all_fields = $this->db->where_in('fields_entity_id', $e_ids)->get('fields')->result_array();
+
+            $all_fields = array();
+            foreach ($_all_fields as $field) {
+                $all_fields[$field['fields_entity_id']][] = $field;
+            }
+
+            foreach ($entities as $entity) {
+                $fields = $all_fields[$entity['entity_id']];
+                $where = $entity['entity_soft_delete_field'] . " = " . DB_BOOL_TRUE;
+
+                //Calcola risultato e consideralo sse ha dati effettivi
+                $result = $this->getDataEntity($entity['entity_id'], $where, null, 0, null, 1, false, [], ['group_by' => null]);
+                if ($result) {
+                    $results[] = [
+                        'entity' => $entity,
+                        'visible_fields' => $this->crmentity->getVisibleFields($entity['entity_id']),
+                        'data' => $result
+                    ];
+                }
+            }
+        }
+
+        return $results;
+    }
+
     public function search_like($search = '', $fields = array())
     {
         $outer_where = array();
@@ -2143,15 +2149,15 @@ class Datab extends CI_Model
         $fields_ids = [];
 
         if ($search) {
-
             $maxint4 = 2147483647;  // Max per int4
 
             /** FIX: Cerco gli eventuali support fields di un singolo field e li metto in un array al più bidimensionale * */
             $_fields = array();
 
             foreach ($fields as $field) {
-                if (in_array($field['fields_id'], $fields_ids) && $field['fields_id'] != '')
+                if (in_array($field['fields_id'], $fields_ids) && $field['fields_id'] != '') {
                     continue;
+                }
                 if (empty($field['support_fields'])) {
                     if (isset($field['fields_type']) && isset($field['fields_name'])) {
                         $_fields[] = $field;
@@ -2175,10 +2181,10 @@ class Datab extends CI_Model
             /*
              * Facendo così penalizzo i risultati contenenti la stringa intera
              * cercata
-             * 
+             *
               // Spezzo la stringa da cercare sugli spazi
               $search_chunks = explode(' ', $search);
-             * 
+             *
              * Quindi faccio una cosa più intelligente:
              *  - cerco la stringa così com'è
              *  - la spezzo in parole e mantengo solo quelle di almeno 3
@@ -2236,7 +2242,6 @@ class Datab extends CI_Model
                                 $chunk = strtolower($chunk);
                                 $inner_where[] = "LOWER({$field['grids_fields_eval_cache_data']}) LIKE '%{$chunk}%'";
                             } else {
-
                                 $inner_where[] = "({$field['grids_fields_eval_cache_data']}::TEXT ILIKE '%{$chunk}%')";
                             }
                         }
@@ -2280,9 +2285,7 @@ class Datab extends CI_Model
     {
         $cache_key = "datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET)) . md5(serialize($_POST)) . md5(serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->cache->get($cache_key))) {
-
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
-
                 return null;
             }
 
@@ -2322,13 +2325,13 @@ class Datab extends CI_Model
 
             $layouts = $this->layout->getBoxes($layout_id);
 
-                if ($dati['layout_container']['layouts_pdf'] != DB_BOOL_TRUE) {
+            if ($dati['layout_container']['layouts_pdf'] != DB_BOOL_TRUE) {
                 $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id);
-                            $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id);
-                } else {
-                    $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id,false);
-                            $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id,false);
-                }
+                $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id);
+            } else {
+                $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id, false);
+                $dati['post-layout'] = $this->getHookContent('post-layout', $layout_id, $value_id, false);
+            }
 
             
 
@@ -2385,7 +2388,7 @@ class Datab extends CI_Model
 
     /**
      * Carica una custom view
-     * 
+     *
      * @param string $viewName
      * @param array $data
      * @param bool $return
@@ -2401,7 +2404,7 @@ class Datab extends CI_Model
 
     /**
      * Renderizza contenuto di un layout
-     * 
+     *
      * @param string $hookType
      * @param int|string $hookRef
      * @param int|null $valueId
@@ -2409,16 +2412,9 @@ class Datab extends CI_Model
      */
     public function getHookContent($hookType, $hookRef, $valueId = null, $include_every_layouts = true)
     {
-
-
-
         $hooks_by_type = array_get($this->_precalcHooks(), $hookType, []);
-        $hooks = array_filter($hooks_by_type, function ($hook) use ($hookRef,$include_every_layouts) {
-
-                return ($hook['hooks_ref'] == $hookRef or (!$hook['hooks_ref'] && $include_every_layouts));
-            
-
-            
+        $hooks = array_filter($hooks_by_type, function ($hook) use ($hookRef, $include_every_layouts) {
+            return ($hook['hooks_ref'] == $hookRef or (!$hook['hooks_ref'] && $include_every_layouts));
         });
 
         $plainHookContent = trim(implode(PHP_EOL, array_key_map($hooks, 'hooks_content', '')));
@@ -2508,7 +2504,7 @@ class Datab extends CI_Model
             'id' => $id_record,
             'row_data' => $dato,
             'grid' => $grid['grids'],
-        ], TRUE) : '';
+        ], true) : '';
 
         return $return;
     }
@@ -2517,7 +2513,7 @@ class Datab extends CI_Model
 
         // =====================================================================
         // Controllo multilingua:
-        // Se il field è multilingua allora ciclo tutte le lingue e le stampo 
+        // Se il field è multilingua allora ciclo tutte le lingue e le stampo
         // una dopo l'altra
         $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == DB_BOOL_TRUE;
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
@@ -2545,8 +2541,8 @@ class Datab extends CI_Model
 
         // =====================================================================
         // Controllo se il campo è stampabile
-        // 
-        // Controllo se il campo è vuoto: in tal caso, se ho un placeholder 
+        //
+        // Controllo se il campo è vuoto: in tal caso, se ho un placeholder
         // stampo quello altrimenti non ritorno niente
         $isEmptyString = ($value === '');
         $isRefWithoutValue = ($field['fields_ref'] && !$value);
@@ -2565,9 +2561,8 @@ class Datab extends CI_Model
         //
 
         if ($field['fields_ref'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
-
             if (is_array($value)) {
-                // Ho una relazione molti a molti - non mi serve alcuna 
+                // Ho una relazione molti a molti - non mi serve alcuna
                 // informazione sui field ref, poiché ho già la preview stampata
                 $referenced = $this->crmentity->getReferencedEntity($field);
                 $lnk = $referenced ? $this->get_detail_layout_link($referenced['entity_id']) : false;
@@ -2579,8 +2574,8 @@ class Datab extends CI_Model
                 }
                 return implode('<br/>', $value);
             } elseif (!empty($field['support_fields'])) {
-                // Ho un field ref semplice - per stamparlo ho bisogno dei 
-                // support fields (che sono i campi preview dell'entità 
+                // Ho un field ref semplice - per stamparlo ho bisogno dei
+                // support fields (che sono i campi preview dell'entità
                 // referenziata)
                 $link = $value ? $this->get_detail_layout_link($field['support_fields'][0]['fields_entity_id']) : false;
                 $idKey = $field['fields_ref'] . '_id';
@@ -2592,7 +2587,6 @@ class Datab extends CI_Model
                     $hasAllFields = true;
                     $_text = array();
                     foreach ($field['support_fields'] as $support_field) {
-
                         $prefixedKey = $field['fields_name'] . '_' . $support_field['fields_name'];
                         $simpleKey = $support_field['fields_name'];
 
@@ -2674,6 +2668,7 @@ class Datab extends CI_Model
                         return "";
                     }
 
+                    // no break
                 case 'upload_image':
                     if ($value) {
                         if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
@@ -2687,12 +2682,12 @@ class Datab extends CI_Model
                         $path = base_url_admin('images/no-image-50x50.gif');
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
+                    // no break
                 case 'multi_upload':
                 case 'multi_upload_no_preview':
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
                         $value = (array) json_decode($value, true);
                         $value = array_map(function ($item) {
-
                             if (in_array($item['file_type'], ['image/jpeg', 'image/png'])) {
                                 if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                                     $_url = base_url_uploads("uploads/{$item['path_local']}");
@@ -2729,8 +2724,10 @@ class Datab extends CI_Model
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
 
+                    // no break
                 case 'textarea':
                     $style = 'white-space: pre-line';
+                    // no break
                 case 'wysiwyg':
                     if (empty($style)) {
                         $style = '';
@@ -2740,7 +2737,6 @@ class Datab extends CI_Model
                     $value = preg_replace(array('#<script(.*?)>(.*?)</script>#is', '/<img[^>]+\>/i'), '', $value);
 
                     if (strlen($stripped) > 150 && $crop) {
-
                         $textContainerID = md5($value);
                         $javascript = "event.preventDefault();$(this).parent().hide(); $('.text_{$textContainerID}').show();";
 
@@ -2751,6 +2747,7 @@ class Datab extends CI_Model
                         return (($field['fields_draw_html_type'] == 'textarea') ? nl2br($stripped) : $value);
                     }
 
+                    // no break
                 case 'date':
 
                     if ($escape_date && $value) {
@@ -2799,6 +2796,7 @@ class Datab extends CI_Model
                         return $value;
                     }
 
+                    // no break
                 case 'multiple_key_values':
                     if (is_array(json_decode(html_entity_decode($value), true))) {
                         $values = json_decode(html_entity_decode($value), true);
@@ -2814,6 +2812,7 @@ class Datab extends CI_Model
                         return $value;
                     }
 
+                    // no break
                 case 'todo':
                     if (is_array(json_decode(html_entity_decode($value), true))) {
                         $values = json_decode(html_entity_decode($value), true);
@@ -2823,9 +2822,10 @@ class Datab extends CI_Model
                         return $value;
                     }
 
+                    // no break
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
-                        // Formato daterange 
+                        // Formato daterange
                         $dates = dateRange_to_dates($value);
                         switch (count($dates)) {
                             case 2:
@@ -2872,7 +2872,6 @@ class Datab extends CI_Model
      */
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
-
         if (!$value && !empty($field['forms_fields_default_value'])) {
             $value = $this->get_default_fields_value($field, $value_id);
         }
@@ -2898,8 +2897,8 @@ class Datab extends CI_Model
          * Parametri di base dell'input
          * ---
          * Questi sono i parametri presi dal form_field (o, se non presenti, dal
-         * field) 
-         * -- Messa una chiocciola 
+         * field)
+         * -- Messa una chiocciola
          */
         $baseLabel = $field['forms_fields_override_label'] ?: $field['fields_draw_label'];
         $baseType = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
@@ -2917,7 +2916,6 @@ class Datab extends CI_Model
         $class = $field['fields_draw_css_extra'] . ' ' . ($field['forms_fields_extra_class'] ?? null) . ' field_' . $field['fields_id'];
         $name = $field['fields_name'];
         if ($isMultilingual) {
-
             $value = json_decode($value, true);
         }
 
@@ -2970,7 +2968,6 @@ class Datab extends CI_Model
 
             // Aggiungo la preview del value, da usare nelle nuove select_ajax
             if (!empty($data['value']) && !is_array($data['value']) && !empty($field['fields_ref']) && $field['forms_fields_override_type'] != 'input_hidden') {
-
                 $preview = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id = '{$data['value']}'", 1);
                 $data['value_preview'] = array_pop($preview);
             }
@@ -2993,18 +2990,16 @@ class Datab extends CI_Model
 
     /**
      * Retrieve the box contents from the layout box definition
-     * 
+     *
      * @param array $layoutBoxData      Layout box def
      * @param int|null $value_id        Value ID
      * @param array $layoutEntityData   Data related
-     * 
+     *
      * @return string
      */
     public function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [])
     {
-
         if (is_numeric($layoutBoxData)) {
-
             $layoutBoxData = $this->layout->getLayoutBox($layoutBoxData);
         }
 
@@ -3029,6 +3024,7 @@ class Datab extends CI_Model
                         return false;
                     }
                 }
+                // no break
             case 'tabs':
                 $tabs = [];
                 $tabId = 'tabs_' . $layoutBoxData['layouts_boxes_id'];
@@ -3040,7 +3036,6 @@ class Datab extends CI_Model
                     $content = $this->getBoxContent($subbox, $value_id, $layoutEntityData);
                     if ($content) {
                         if (is_numeric($subbox)) {
-
                             $subbox = $this->layout->getLayoutBox($subbox);
                         }
                         $hookSuffix = $subbox['layouts_boxes_content_type'];
@@ -3153,6 +3148,7 @@ class Datab extends CI_Model
                 } else {
                     return $this->load->view("box/errors/missing_form", ['form_id' => $form_id], true);
                 }
+                // no break
             case "calendar":
                 $data = $this->get_calendar($contentRef);
                 $data['cal_layout'] = $this->db->get_where('calendars', ['calendars_id' => $contentRef])->row_array();
@@ -3176,6 +3172,7 @@ class Datab extends CI_Model
                 } else {
                     return $this->loadCustomView($contentRef, ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
                 }
+                // no break
             default:
                 if (empty($contentType) && $layoutBoxData['layouts_boxes_content']) {
                     // Contenuto definito
@@ -3227,7 +3224,6 @@ class Datab extends CI_Model
             $this->_languages[$nlang['id']] = $nlang;
 
             if (strtolower($language['languages_name']) == strtolower($this->_default_language['languages_name']) or is_null($this->_defaultLanguage)) {
-
                 $this->_defaultLanguage = $nlang['id'];
             }
         }
@@ -3242,7 +3238,6 @@ class Datab extends CI_Model
 
     protected function normalizeLanguageArray(array $language)
     {
-
         $code = $language[LANG_CODE_FIELD];
         if (preg_match('/^[a-z]{2}(-|_)[a-z]{2}$/i', $code)) {
             $img = $code[3] . $code[4];
@@ -3267,7 +3262,7 @@ class Datab extends CI_Model
 
     /**
      * Prendi la lingua selezionata
-     * 
+     *
      * @return array|null
      */
     public function getLanguage()
@@ -3277,14 +3272,13 @@ class Datab extends CI_Model
 
     /**
      * Prendi la lingua di default
-     * 
+     *
      * @return array|null
      */
     public function getDefaultLanguage()
     {
         foreach ($this->_languages as $lang) {
             if (strtolower($lang['name']) == strtolower($this->_default_language['languages_name'])) {
-
                 return $lang;
             }
         }
@@ -3294,13 +3288,12 @@ class Datab extends CI_Model
 
     /**
      * Cerca un array di lingua per id o per codice
-     * 
+     *
      * @param int|string $key
      * @return array|null
      */
     public function findLanguage($key)
     {
-
         if (is_numeric($key)) {
             return isset($this->_languages[$key]) ? $this->_languages[$key] : null;
         }
@@ -3321,7 +3314,6 @@ class Datab extends CI_Model
 
     public function changeLanguage($key)
     {
-
         if (!is_numeric($key)) {
             $compatible = array_filter($this->_languages, function ($lang) use ($key) {
                 return $lang['code'] == $key;

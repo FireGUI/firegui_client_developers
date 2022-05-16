@@ -1235,3 +1235,4 @@ $lang['Mail Monitor'] = 'Mail Monitor';
 $lang['Company email update notifications'] = 'Company email update notifications';
 $lang['Stampa PDF'] = 'Stampa PDF';
 $lang['Sollecita ticket'] = 'Sollecita ticket';
+$lang['Lotti (dismesso)'] = 'Lotti (dismesso)';
