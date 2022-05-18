@@ -1,7 +1,8 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Get_ajax extends MY_Controller
 {
@@ -39,7 +40,6 @@ class Get_ajax extends MY_Controller
 
         // La richiesta non è ajax? Rimando al main/layout standard
         if (!$this->input->is_ajax_request()) {
-
             $gets = $this->input->get();
             $suffix = '';
 
@@ -72,8 +72,8 @@ class Get_ajax extends MY_Controller
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
         } else {
             $dati['current_page'] = "layout_{$layout_id}";
-            $dati['show_title'] = FALSE;
-            $modal = TRUE;
+            $dati['show_title'] = false;
+            $modal = true;
             $pagina = $this->load->view("pages/layout", array('dati' => $dati, 'value_id' => $value_id, 'modal' => $modal), true);
         }
 
@@ -82,7 +82,7 @@ class Get_ajax extends MY_Controller
             'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
             'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
             'content' => $pagina,
-            'footer' => NULL
+            'footer' => null
         ));
         $this->layout->setLayoutModule();
     }
@@ -114,7 +114,6 @@ class Get_ajax extends MY_Controller
             $value_id = $this->input->post('ids');
         }
         if ($form_entity_module = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON (forms_entity_id = entity_id) WHERE forms_id = '{$form_id}'")->row()->entity_module) {
-
             $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($form_entity_module, array_values($this->lang->is_loaded)[0]));
             $this->layout->setLayoutModule($form_entity_module);
         }
@@ -126,7 +125,6 @@ class Get_ajax extends MY_Controller
         }
 
         if ($this->datab->can_write_entity($form['forms']['forms_entity_id'])) {
-
             $viewData = array(
                 'size' => $modalSize,
                 'value_id' => $value_id,
@@ -221,7 +219,6 @@ class Get_ajax extends MY_Controller
 
         // Non ho l'entity id quindi l'entità non esiste
         if (empty($entity['entity_id'])) {
-
             echo json_encode(array());
             return;
         }
@@ -267,13 +264,12 @@ class Get_ajax extends MY_Controller
         if ($referer) {
             $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
             if (!empty($fReferer->fields_select_where)) {
-
                 $where_referer = $this->datab->replace_superglobal_data(trim($fReferer->fields_select_where));
             }
         }
 
         if ($entity['entity_type'] == ENTITY_TYPE_SUPPORT_TABLE) {
-            if ($id !== NULL) {
+            if ($id !== null) {
                 $row = $this->db->get_where($table, array($table . '_id' => $id))->row_array();
                 $result_json = array('id' => $row[$table . '_id'], 'name' => $row[$table . '_value']);
             } else {
@@ -306,7 +302,7 @@ class Get_ajax extends MY_Controller
                 }
             }
         } else {
-            if ($id !== NULL) {
+            if ($id !== null) {
                 $row = $this->datab->get_entity_preview_by_name($table, "{$table}_id = {$id}");
                 if (!empty($row)) {
                     reset($row);            // Puntatore array su prima posizione
@@ -429,7 +425,7 @@ class Get_ajax extends MY_Controller
         $search = str_replace("'", "''", $this->input->post('q'));
         $limit = $this->input->post('limit');
         $field_id = $this->input->post('field');
-        $id = str_replace("'", "''", $this->input->post('id') ? $this->input->post('id') : NULL);
+        $id = str_replace("'", "''", $this->input->post('id') ? $this->input->post('id') : null);
 
         // Prepara un result vuoto
         $result_json = array();
@@ -491,7 +487,6 @@ class Get_ajax extends MY_Controller
 
                 // Se ho passato l'id vuol dire che sto caricando quel record esatto
                 if ($id) {
-
                     $where = "{$field_name_search} = '{$id}'";
                     if ($where_limit) {
                         $where .= " AND {$where_limit}";
@@ -551,9 +546,8 @@ class Get_ajax extends MY_Controller
 
     public function get_datatable_ajax($grid_id, $valueID = null)
     {
-
         if ($this->auth->guest()) {
-            echo (json_encode(array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])));
+            echo(json_encode(array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])));
         } else {
 
             /**
@@ -590,7 +584,6 @@ class Get_ajax extends MY_Controller
             // fix da cui sopra per prendere il default order
             //if ($order_col !== null && isset($grid['grids_fields'][$order_col]['fields_name'])) {
             if ($order_col !== null && $order_col !== false) {
-
                 if ($has_bulk) {
                     $order_col -= 1;
                 }
@@ -599,11 +592,10 @@ class Get_ajax extends MY_Controller
                     //Se il campo è multilingua, forzo l'ordinamento per chiave lingua corrente
                     if ($grid['grids_fields'][$order_col]['fields_multilingual'] == DB_BOOL_TRUE) {
                         if ($this->db->dbdriver == 'postgre') {
-$order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
+                            $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}->>'{$this->datab->getLanguage()['id']}' {$order_dir}";
                         } else {
-$order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"$.{$this->datab->getLanguage()['id']}\") {$order_dir}";
+                            $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"$.{$this->datab->getLanguage()['id']}\") {$order_dir}";
                         }
-                        
                     } elseif ($grid['grids_fields'][$order_col]['fields_type'] == 'JSON') {
                         $order_by = "{$grid['grids_fields'][$order_col]['fields_name']}::TEXT {$order_dir}";
                     } else {
@@ -632,7 +624,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
                 }
             }
             //debug($where);
-            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : NULL, $offset, $order_by, false, ['group_by' => $group_by, 'search' => $search, 'preview_fields' => $preview_fields]);
+            $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : null, $offset, $order_by, false, ['group_by' => $group_by, 'search' => $search, 'preview_fields' => $preview_fields]);
 
             //debug($grid_data, true);
 
@@ -650,22 +642,22 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
                 unset($dato['value_id']);
                 // Controlla se ho delle action da stampare in fondo
                 if ($grid['grids']['grids_layout'] == 'datatable_ajax_inline') {
-                    $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
-                    $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), TRUE);
+                    $tr[] = $this->load->view('box/grid/inline_edit', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), true);
+                    $tr[] = $this->load->view('box/grid/inline_delete', array('id' => $dato[$grid['grids']['entity_name'] . "_id"]), true);
                 } elseif (($grid['grids']['grids_layout'] == 'datatable_ajax_inline_form' || $grid['grids']['grids_inline_edit'] == DB_BOOL_TRUE) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/inline_form_actions', array(
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
                         'links' => $grid['grids']['links'],
                         'row_data' => $dato,
                         'grid' => $grid['grids']
-                    ), TRUE);
+                    ), true);
                 } elseif (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/actions', array(
                         'links' => $grid['grids']['links'],
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
                         'row_data' => $dato,
                         'grid' => $grid['grids'],
-                    ), TRUE);
+                    ), true);
                 }
 
                 $out_array[] = $tr;
@@ -684,7 +676,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
         }
     }
 
-    public function get_map_markers($map_id, $value_id = NULL)
+    public function get_map_markers($map_id, $value_id = null)
     {
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
@@ -701,7 +693,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
         $post_where = (array) $this->input->post('where');
 
 
-        $latlng_field = NULL;
+        $latlng_field = null;
         foreach ($data['maps_fields'] as $field) {
             $fields[$field['fields_name']] = $field;
             if ($field['maps_fields_type'] == 'latlng') {
@@ -737,8 +729,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
         // Geography data
         $bounds = $this->input->post('bounds');
         if ($this->db->dbdriver == 'postgre') {
-            if ($latlng_field !== NULL && $bounds && !$isSearchMode) {
-
+            if ($latlng_field !== null && $bounds && !$isSearchMode) {
                 $ne_lat = $bounds['ne_lat'];
                 $ne_lng = $bounds['ne_lng'];
                 $sw_lat = $bounds['sw_lat'];
@@ -749,8 +740,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
                 }
             }
         } else {
-            if ($latlng_field !== NULL && $bounds && !$isSearchMode) {
-
+            if ($latlng_field !== null && $bounds && !$isSearchMode) {
                 $ne_lat = $bounds['ne_lat'];
                 $ne_lng = $bounds['ne_lng'];
                 $sw_lat = $bounds['sw_lat'];
@@ -763,12 +753,8 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
             }
         }
 
-        if ($data['maps']['maps_where']) {
-            $where[] = $this->datab->replace_superglobal_data(str_replace('{value_id}', $value_id, $data['maps']['maps_where']));
-        }
-
-        $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : NULL;
-        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), NULL, NULL, $order_by, 2, false, [], ['group_by' => null]);
+        $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : null;
+        $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), null, null, $order_by, 2, false, [], ['group_by' => null]);
 
         $markers = array();
         if (!empty($data_entity)) {
@@ -810,7 +796,6 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
 
 
             foreach ($data_entity as $marker) {
-
                 $mark = array();
                 foreach ($data['maps_fields'] as $field) {
                     if ($field['maps_fields_type'] == 'description') {
@@ -860,7 +845,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
         echo json_encode($markers);
     }
 
-    public function get_calendar_events($calendar_id, $value_id = NULL)
+    public function get_calendar_events($calendar_id, $value_id = null)
     {
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
@@ -932,7 +917,6 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
 
         $events = array();
         foreach ($data_entity as $event) {
-
             $ev = array();
             foreach ($data['calendars_fields'] as $field) {
                 if ($field['calendars_fields_type'] !== 'title' || (!empty($event[$field['fields_name']]) && empty($ev['title']))) {
@@ -1073,7 +1057,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
             $this->db->select('limits.*, fields.fields_entity_id AS entity_id')->from('limits')
                 ->join('fields', 'limits_fields_id = fields_id', 'left')
                 ->where('limits_user_id', $identifier);
-            $dati['limits'] = array_merge(array(NULL), $this->db->get()->result_array());
+            $dati['limits'] = array_merge(array(null), $this->db->get()->result_array());
         }
 
         $dati['groups'] = array_key_map($this->db->where('permissions_group IS NOT NULL AND permissions_user_id IS NULL')->get('permissions')->result_array(), 'permissions_group');
@@ -1278,12 +1262,11 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
 
         // Il from deve avere un ref - questo ref punta ad una tabella A, la stessa a cui deve puntare il field dell'entità da cui devo prendere i dati
         if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
-
             $relatingEntity = $this->crmentity->getEntity($field_to['fields_entity_id']);
             $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name'], 'relations_table_1' => $relatingEntity['entity_name']])->row();
 
             // Devo sostituire i campi
-            // $entity_id 
+            // $entity_id
             // Altrimenti lui prova a pescarmi i campi della tabella pivot
             $relatedEntityFrom = $this->crmentity->getEntity($field_from['fields_ref']);
 
@@ -1330,7 +1313,6 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
             $where_referer[] = "{$field_name_filter} = '{$from_val}'";
         }
         if (!empty($field_to['fields_select_where'])) {
-
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
 
@@ -1357,7 +1339,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
     }
 
     /**
-     * Ritorna un json con l'id dell'ultimo record 
+     * Ritorna un json con l'id dell'ultimo record
      */
     public function getLastRecord()
     {
@@ -1400,7 +1382,7 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
     }
 
     /**
-     * Ritorna un json con l'id dell'ultimo record 
+     * Ritorna un json con l'id dell'ultimo record
      */
     public function getJsonRecord($entity, $id)
     {
@@ -1434,7 +1416,6 @@ $order_by = "JSON_EXTRACT({$grid['grids_fields'][$order_col]['fields_name']}, \"
         $out = array();
 
         if ($id) {
-
             $out = $this->db->get_where('log_api', array('log_api_id' => $id))->row_array();
 
             if (@unserialize($out['log_api_params'])) {

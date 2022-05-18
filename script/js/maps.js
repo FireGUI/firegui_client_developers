@@ -29,6 +29,8 @@ function load_marker(map, url, clusterize) {
         url: url,
         success: function (data) {
 
+
+
             // Ciclo i Marker
             var group = new Array();
             $.each(data, function (i, val) {
@@ -126,6 +128,7 @@ function mapsInit() {
             $('.js_map:visible').each(function () {
 
                 var url = $(this).data('ajaxurl');
+                var get_parameters = $(this).data('get_parameters');
                 var clusterize = $(this).data('clusters');
 
 
@@ -162,7 +165,7 @@ function mapsInit() {
 
 
 
-                load_marker(map, url, clusterize);
+                load_marker(map, url + '?' + get_parameters, clusterize);
 
 
 

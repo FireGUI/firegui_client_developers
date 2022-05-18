@@ -1,12 +1,12 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Firegui extends MY_Controller
 {
-
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
 
@@ -18,7 +18,6 @@ class Firegui extends MY_Controller
                 log_message('DEBUG', "Missing token for Firegui request!");
                 $unallowed = true;
             } else {
-
                 $token_match = $this->db->where('meta_data_key', 'firegui_token')->where('meta_data_value', $token)->get('meta_data');
                 if ($token_match->num_rows() == 0) {
                     $unallowed = true;
@@ -45,16 +44,14 @@ class Firegui extends MY_Controller
 
         $modules_path = APPPATH . 'modules/';
 
-        if (!is_dir($modules_path)) //create the folder if it's not already exists
-        {
+        if (!is_dir($modules_path)) { //create the folder if it's not already exists
             mkdir($modules_path, DIR_WRITE_MODE, true);
         }
 
         $prefix_folder = $modules_path . $identifier . '/';
 
         foreach ($folders as $folder) {
-            if (!is_dir($prefix_folder . $folder)) //create the folder if it's not already exists
-            {
+            if (!is_dir($prefix_folder . $folder)) { //create the folder if it's not already exists
                 mkdir($prefix_folder . $folder, DIR_WRITE_MODE, true);
 
                 touch($prefix_folder . $folder . '/.gitkeep');
@@ -70,9 +67,8 @@ class Firegui extends MY_Controller
         }
     }
 
-    function updateFromGit($command = null, $output = true)
+    public function updateFromGit($command = null, $output = true)
     {
-
         if ($command == null) {
             $command = "git pull";
         }
@@ -95,7 +91,6 @@ class Firegui extends MY_Controller
         if (!$module) {
             die('Unauthorized');
         } else {
-
             $folder = APPPATH . 'modules/' . $identifier . '/';
 
             $destination_file = FCPATH . 'uploads/' . $identifier . '.zip';
@@ -107,7 +102,7 @@ class Firegui extends MY_Controller
 
             $success = zip_folder($folder, $destination_file);
 
-            if ($success === TRUE) {
+            if ($success === true) {
                 if (file_exists($destination_file)) {
                     header('Content-Type: application/zip');
                     header('Content-Disposition: attachment; filename="' . $identifier . '.zip"');
@@ -127,7 +122,7 @@ class Firegui extends MY_Controller
     {
         $zip = new ZipArchive;
 
-        if ($zip->open($_FILES['module_file']['tmp_name']) === TRUE) {
+        if ($zip->open($_FILES['module_file']['tmp_name']) === true) {
             if (!is_dir(APPPATH . "modules")) {
                 mkdir(APPPATH . "modules", DIR_WRITE_MODE, true);
                 if (!is_dir(APPPATH . "modules")) {
@@ -165,10 +160,9 @@ class Firegui extends MY_Controller
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
         } else {
-
             $zip = new ZipArchive();
 
-            if ($zip->open($newfile) !== TRUE) {
+            if ($zip->open($newfile) !== true) {
                 throw new Exception("Cannot open <$newfile>");
             } else {
                 $temp_folder = FCPATH;
@@ -207,7 +201,7 @@ class Firegui extends MY_Controller
                         foreach ($updates as $key => $value) {
 
                             // Check if the version number is old or new
-                            if ($key == $new_version ) {
+                            if ($key == $new_version) {
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
                                         eval($code);
@@ -259,7 +253,7 @@ class Firegui extends MY_Controller
 
             include(FCPATH . 'application/migrations/' . $migration_file . '.php');
 
-            if ($this->db->trans_status() === FALSE || $do_rollback) {
+            if ($this->db->trans_status() === false || $do_rollback) {
                 $this->db->trans_rollback();
             } else {
                 $this->db->trans_commit();
@@ -322,7 +316,7 @@ class Firegui extends MY_Controller
                             }
                         } else { //0 se uguale, -1 se old > key
                             //Vuol dire che gli ho già eseguiti, quindi skippo
-                            echo ("$key version already run.");
+                            //echo("$key version already run.");
                             continue;
                         }
                     }
@@ -384,7 +378,7 @@ class Firegui extends MY_Controller
 
         $success = zip_folder($folder, $destination_file, ['application/logs']);
 
-        if ($success === TRUE) {
+        if ($success === true) {
             if (file_exists($destination_file)) {
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="client.zip"');
