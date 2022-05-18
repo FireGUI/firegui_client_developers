@@ -151,7 +151,7 @@ class Layout extends CI_Model
             $filename = '';
 
             if (!empty($coverPage)) {
-                $mpdf->WriteHtml($coverPage, \Mpdf\HTMLParserMode::DEFAULT_MODE);
+                $mpdf->WriteHtml($this->generate_html($coverPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
                 $mpdf->AddPage();
             }
 
@@ -175,7 +175,7 @@ class Layout extends CI_Model
             
             if (!empty($conditionsPage)) {
                 $mpdf->AddPage();
-                $mpdf->WriteHtml($conditionsPage, \Mpdf\HTMLParserMode::DEFAULT_MODE);
+                $mpdf->WriteHtml($this->generate_html($conditionsPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
             }
 
 
