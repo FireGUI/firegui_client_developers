@@ -1389,7 +1389,7 @@ function getReverseGeocoding($address)
 
 
 if (!function_exists('curlRequest')) {
-    function curlRequest($url, $data = [], $isPost = false, $jsonPayload = false, $headers = [], $curlCustomOpts = [])
+    function curlRequest($url, $data = [], $isPost = false, $jsonPayload = false, $headers = ['Content-Type: application/json'], $method = 'GET')
     {
         $ch = curl_init();
 
@@ -1403,28 +1403,12 @@ if (!function_exists('curlRequest')) {
 
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        } else {
-            // dump("isPost false");
         }
-
-        $headers = array_merge(['Content-Type: application/json'], $headers);
-
-        // dump($url);
-        // dump($data);
-        // dump($isPost);
-        // dump($jsonPayload);
-        // dump($curlCustomOpts);
-
+        
         curl_setopt($ch, CURLOPT_URL, $url . $params);
-
-        if (!empty($curlCustomOpts)) {
-            foreach ($curlCustomOpts as $opt => $val) {
-                curl_setopt($ch, $opt, $val);
-            }
-        }
-
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1');
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
@@ -1433,12 +1417,10 @@ if (!function_exists('curlRequest')) {
         $data = curl_exec($ch);
 
         if ($data === false) {
-            dd(curl_error($ch));
+            die(curl_error($ch));
         }
 
         curl_close($ch);
-
-        // dump('----------------------------');
 
         return $data;
     }

@@ -142,28 +142,51 @@ class Layout extends CI_Model
 
             $header = array_get($options, 'mpdfHeader', '');
             $footer = array_get($options, 'mpdfFooter', '');
+
+            $coverPage = array_get($options, 'mpdfCover', '');
+            $conditionsPage = array_get($options, 'mpdfConditions', '');
+
             $css = array_get($options, 'mpdfCss', '');
             $pdfTitle = array_get($options, 'mpdfTitle', '');
             $filename = '';
 
-            if (!empty($header)) $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
-            if (!empty($footer)) $mpdf->SetHTMLFooter($this->generate_html($footer, $relative_path, $extra_data, $module, true));
+            if (!empty($coverPage)) {
+                $mpdf->WriteHtml($this->generate_html($coverPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
+                $mpdf->AddPage();
+            }
+
+
+            if (!empty($header)) {
+                $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
+            }
+            if (!empty($footer)) {
+                $mpdf->SetHTMLFooter($this->generate_html($footer, $relative_path, $extra_data, $module, true));
+            }
             if (!empty($pdfTitle)) {
                 $filename = str_ireplace([' ', '.'], '_', $pdfTitle) . '.pdf';
 
                 $mpdf->SetTitle($pdfTitle);
             }
-            if (!empty($css)) $mpdf->WriteHtml($css, \Mpdf\HTMLParserMode::HEADER_CSS);
+            if (!empty($css)) {
+                $mpdf->WriteHtml($css, \Mpdf\HTMLParserMode::HEADER_CSS);
+            }
 
             $mpdf->WriteHtml($content, \Mpdf\HTMLParserMode::DEFAULT_MODE);
+            
+            if (!empty($conditionsPage)) {
+                $mpdf->AddPage();
+                $mpdf->WriteHtml($this->generate_html($conditionsPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
+            }
+
+
             $mpdf->Output($filename, 'I');
 
-            //TODO: return true?
+        //TODO: return true?
         } else {
             $physicalDir = FCPATH . "/uploads";
             // 2022-04-19 - Added random_int because it can happen that a generation of pdf deriving from an array,
             // is done in the same second. so this guarantees a little more uniqueness ... Would microseconds be better?
-            $filename = date('Ymd_His').'_'.random_int(1,100);
+            $filename = date('Ymd_His').'_'.random_int(1, 100);
             $pdfFile = "{$physicalDir}/{$filename}.pdf";
 
             // Create a temporary file with the view html
@@ -183,7 +206,7 @@ class Layout extends CI_Model
             } else {
                 $options = "-T '5mm' -B '5mm'";
             }
-//die("wkhtmltopdf {$options} -O {$orientation} --footer-right \"Page [page] of [topage]\" --viewport-size 1024 {$tmpHtml} {$pdfFile}");
+            //die("wkhtmltopdf {$options} -O {$orientation} --footer-right \"Page [page] of [topage]\" --viewport-size 1024 {$tmpHtml} {$pdfFile}");
             exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
 
             return $pdfFile;
@@ -206,7 +229,6 @@ class Layout extends CI_Model
     }
     public function getLayoutBox($lb_id)
     {
-
         $box = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
             ->join('layouts', 'layouts.layouts_id = layouts_boxes.layouts_boxes_layout', 'left')
             ->get_where('layouts_boxes', ['layouts_boxes_id' => $lb_id])->row_array();
@@ -240,7 +262,6 @@ class Layout extends CI_Model
         }
 
         foreach ($lboxes as $id => $box) {
-
             $myKey = uniqid('box-');
 
             if (!in_array($id, $allSubboxes)) {
