@@ -10,7 +10,11 @@ class Conditions extends CI_Model
     {
         parent::__construct();
     }
-
+    public function accessible($what, $ref)
+    {
+        //TODO
+        return true;
+    }
     
     public function getRules()
     {
