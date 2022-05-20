@@ -53,8 +53,6 @@ class MY_Loader extends MX_Loader
             }
         }
         
-
-
         if (empty($_ci_path)) {
             
             // Check custom file
@@ -64,7 +62,7 @@ class MY_Loader extends MX_Loader
             } elseif (file_exists(FCPATH . "application/views/".$template."/".$view_file)) {
                 $_ci_path = FCPATH . "application/views/".$template."/".$view_file;
             } else {
-                $_ci_path = FCPATH . "application/views/base/".$_ci_view;
+                $_ci_path = FCPATH . "application/views/base/".$view_file;
                  
                 if ($template != 'base') {
                     log_message('error', 'Template file not found: '. $view_file.' Loaded base file');
@@ -75,7 +73,7 @@ class MY_Loader extends MX_Loader
                 log_message('error', 'Unable to load the requested file: ' . $_ci_file);
                 //$error =			$this->load->view("box/errors/missing_layout", ['layout' => $_ci_file], true);
                 if (is_maintenance()) {
-                    $error = "Missing layout: {$_ci_file}!";
+                    $error = "Missing layout: {$_ci_path}!";
                 } else {
                     $error = "Missing layout!";
                 }

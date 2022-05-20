@@ -363,28 +363,28 @@ function refreshAjaxLayoutBoxes() {
     //TODO: check if box is refreshable
 
     var is_modal = $('.modal:visible').length;
-    if ($('.layout_box:visible').length > 5 && !is_modal) {
-        location.reload();
+    // if ($('.layout_box:visible').length > 5 && !is_modal) {
+    //     location.reload();
+    // } else {
+    if (is_modal) {
+        var container = $('.modal:visible');
     } else {
-        if (is_modal) {
-            var container = $('.modal:visible');
-        } else {
-            var container = $('body');
-        }
-        $('.layout_box:visible', container).each(function () {
-
-            if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
-                refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
-            } else {
-                var lb = $(this);
-                var lb_id = $(this).data('layout-box');
-                var value_id = $(this).data('value_id');
-
-                refreshLayoutBox(lb_id, value_id);
-            }
-
-        });
+        var container = $('body');
     }
+    $('.layout_box:visible', container).each(function () {
+
+        if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
+            refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
+        } else {
+            var lb = $(this);
+            var lb_id = $(this).data('layout-box');
+            var value_id = $(this).data('value_id');
+
+            refreshLayoutBox(lb_id, value_id);
+        }
+
+    });
+    // }
 
 
 }

@@ -953,3 +953,6 @@ $lang['Login background'] = 'Login background';
 $lang['Mail module identifier'] = 'Mail module identifier';
 $lang['Template'] = 'Template';
 $lang['Knowledge'] = 'Knowledge';
+$lang['Deleted'] = 'Deleted';
+$lang['users, users'] = 'users, users';
+$lang['users'] = 'users';
