@@ -956,3 +956,4 @@ $lang['Knowledge'] = 'Knowledge';
 $lang['Deleted'] = 'Deleted';
 $lang['users, users'] = 'users, users';
 $lang['users'] = 'users';
+$lang['Created by'] = 'Created by';

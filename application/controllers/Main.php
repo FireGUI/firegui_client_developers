@@ -182,11 +182,11 @@ class Main extends MY_Controller
                 // I have 2 type of layouts: PDF or standard
                 if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
 
-                    if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
+                    //if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
                         $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-                    } else {
-                        $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-                    }
+                    //} else {
+                    //    $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+                    //}
 
                     $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
 
