@@ -1,11 +1,11 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Cron extends MY_Controller
 {
-
     const ENABLE_TRACKING = false;
 
     /**
@@ -15,7 +15,6 @@ class Cron extends MY_Controller
      */
     public function test_now($id, $rollback = 0)
     {
-
         if (!$this->auth->is_admin()) {
             e('You must be logged in as admin to run cronjobs.');
         }
@@ -41,6 +40,14 @@ class Cron extends MY_Controller
     public function check()
     {
 
+          // Save last execution on settings
+        $check_col = $this->db->query("SHOW COLUMNS FROM settings LIKE 'settings_last_cron_check';");
+        if ($check_col->num_rows() > 0) {
+            $settings = $this->apilib->searchFirst('settings');
+            $this->db->query("UPDATE settings SET settings_last_cron_check = NOW() WHERE settings_id = '{$settings['settings_id']}'");
+        }
+
+
         $cronKey = uniqid();
 
         if (self::ENABLE_TRACKING) {
@@ -64,7 +71,7 @@ class Cron extends MY_Controller
 
             // Essendo un update quello dell'attivazione del cron, non forzo
             // il sistema ad usarlo
-            // 
+            //
             // Controllo anche se il cron_id era tra quelli in esecuzione
             // all'avvio del cron runner
             if ((isset($cron['crons_active']) && $cron['crons_active'] === DB_BOOL_FALSE) or in_array($cron['crons_id'], $inExecution)) {
@@ -124,7 +131,6 @@ class Cron extends MY_Controller
         // ============= Start MAIL_QUEUE =============
         $model = $this->config->item('crm_name') . '_mail_model';
         if (file_exists(APPPATH . "models/$model.php")) {
-
             try {
                 $this->load->model($model, 'my_model');
                 $this->my_model->flushEmails();
@@ -226,7 +232,7 @@ class Cron extends MY_Controller
     public function cron_php_file($cron)
     {
         $file = realpath(dirname(__FILE__) . '/../../' . $cron['crons_file']);
-        if ($file === FALSE) {
+        if ($file === false) {
             die("Il file '{$cron['crons_file']}' non esiste.");
         } else {
             include $file;
@@ -277,7 +283,7 @@ class Cron extends MY_Controller
 
     public function reset_cron_history()
     {
-        $this->db->update('crons', array('crons_last_execution' => NULL));
+        $this->db->update('crons', array('crons_last_execution' => null));
         $this->noMoreInExecution();
     }
 
