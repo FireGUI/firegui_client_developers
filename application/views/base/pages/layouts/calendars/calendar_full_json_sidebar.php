@@ -46,7 +46,8 @@ if (!empty($data['calendars']['calendars_where_filter'])) {
 }
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 
-
+$create_permission = (!empty($data['create_form']) && $data['calendars']['calendars_allow_create'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
+$edit_permission = (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
 
 ?>
 
@@ -118,7 +119,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
     </div>
 
     <div class="col-lg-10 col-md-9">
-        <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar calendar_full_json_sidebar" data-sourceurl="<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>" data-mintime="<?php echo (array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>" data-maxtime="<?php echo (array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>" data-language="<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>" data-start="<?php echo ($calendar_map['start']); ?>" data-end="<?php echo ($calendar_map['end']); ?>" data-allday="<?php echo $calendar_map['all_day']; ?>" data-formurl="<?php echo base_url("get_ajax/modal_form/{$data['create_form']}"); ?>" data-formedit="<?php echo base_url("get_ajax/modal_form/{$data['update_form']}"); ?>" data-updateurl="<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>" data-fieldid="<?php echo $calendar_map['id']; ?>">
+        <div <?php echo sprintf('id="%s"', $calendarId); ?> class="has-toolbar calendar_full_json_sidebar" data-allow_create="<?php echo $create_permission; ?>" data-allow_edit="<?php echo $edit_permission; ?>" data-sourceurl="<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>" data-mintime="<?php echo (array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>" data-maxtime="<?php echo (array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>" data-language="<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>" data-start="<?php echo ($calendar_map['start']); ?>" data-end="<?php echo ($calendar_map['end']); ?>" data-allday="<?php echo $calendar_map['all_day']; ?>" data-formurl="<?php echo base_url("get_ajax/modal_form/{$data['create_form']}"); ?>" data-formedit="<?php echo base_url("get_ajax/modal_form/{$data['update_form']}"); ?>" data-updateurl="<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>" data-fieldid="<?php echo $calendar_map['id']; ?>">
         </div>
     </div>
 </div>
