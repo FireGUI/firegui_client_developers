@@ -8,7 +8,9 @@ if (!empty($value) && ($timestamp = strtotime(normalize_date($value)))) {
 }
 
 if (empty($value) && $field['fields_required'] == DB_BOOL_TRUE) {
-    $value = date('d/m/Y');
+    // $value = date('d/m/Y');
+    $value = null; // michael e. - 2022-06-01 - Ho disattivato il value perchè secondo me non è giusto che venga per forza settato il valore... Il campo è required, perciò se si prova a salvare vuoto, darà comunque errore!
+
 }
 
 ?>

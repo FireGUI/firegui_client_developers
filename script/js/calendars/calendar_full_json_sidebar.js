@@ -16,7 +16,12 @@ function initCalendars() {
             var formedit = $(this).data('formedit');
             var fieldid = $(this).data('fieldid');
             var updateurl = $(this).data('updateurl');
+            var allow_create = $(this).data('allow_create');
+            var allow_edit = $(this).data('allow_edit');
             // ============================
+
+            console.log(allow_create);
+            console.log(allow_edit);
 
             var token = JSON.parse(atob($('body').data('csrf')));
             var token_name = token.name;
@@ -27,34 +32,36 @@ function initCalendars() {
             var m = date.getMonth();
             var y = date.getFullYear();
 
-            var updateCalendar = function(evt) {
-                var allDay = isAlldayEvent(evt.event.start, evt.event.end);
-                var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
-                var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
-                var data = {
-                    [token_name]: token_hash,
-                    [fieldid]: evt.event.id,
-                    [startField]: fStart,
-                    [endField]: fEnd
-                        //TODO: manage all days events
-                };
+            var updateCalendar = function (evt) {
+                if (allow_edit) {
+                    var allDay = isAlldayEvent(evt.event.start, evt.event.end);
+                    var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
+                    var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
+                    var data = {
+                        [token_name]: token_hash,
+                        [fieldid]: evt.event.id,
+                        [startField]: fStart,
+                        [endField]: fEnd
+                            //TODO: manage all days events
+                    };
 
-                $.ajax({
-                    url: updateurl,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: data,
-                    success: function(data) {
-                        if (parseInt(data.status) < 1) {
+                    $.ajax({
+                        url: updateurl,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: data,
+                        success: function(data) {
+                            if (parseInt(data.status) < 1) {
+                                // revertFunc();
+                                alert(data.txt);
+                            }
+                        },
+                        error: function() {
                             // revertFunc();
-                            alert(data.txt);
-                        }
-                    },
-                    error: function() {
-                        // revertFunc();
-                        alert('There was an error while saving the event');
-                    },
-                });
+                            alert('There was an error while saving the event');
+                        },
+                    });
+                }
             }
 
             var calendarEl = document.getElementById(jqCalendar.attr('id'));
@@ -94,30 +101,35 @@ function initCalendars() {
                 // },
                 selectHelper: true,
                 select: function(date, allDay) {
-                    var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
-                    var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
+                    if (allow_create) {
+                        var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
+                        var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
 
-                    var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
-                    var data = {
-                        [token_name]: token_hash,
-                        [startField]: fStart,
-                        [endField]: fEnd
-                            //TODO: manage all days events
-                    };
+                        var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
+                        var data = {
+                            [token_name]: token_hash,
+                            [startField]: fStart,
+                            [endField]: fEnd
+                                //TODO: manage all days events
+                        };
 
-                    loadModal(formurl, data, function() {
-                        calendar.refetchEvents();
-                    }, 'get');
+                        loadModal(formurl, data, function() {
+                            calendar.refetchEvents();
+                        }, 'get');
 
-                    if (allDay) {
-                        end.date(end.date() + 1);
-                        end.minutes(end.minutes() - 1);
+                        if (allDay) {
+                            end.date(end.date() + 1);
+                            end.minutes(end.minutes() - 1);
+                        }
                     }
                 },
-                eventClick: function(evt, jsEvent, view) {
-                    loadModal(formedit + '/' + evt.event.id, {}, function() {
-                        calendar.refetchEvents();
-                    });
+                eventClick: function (evt, jsEvent, view) {
+                    if (allow_edit) {
+                        loadModal(formedit + '/' + evt.event.id, {}, function() {
+                            calendar.refetchEvents();
+                        });
+                    }
+
                     return false;
                 },
 

@@ -90,21 +90,24 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             },
 
             select: function(date) {
-                var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
-                var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
-                var allDay = date.allDay;
+                <?php if (!empty($data['create_form']) && $data['calendars']['calendars_allow_create'] == DB_BOOL_TRUE) : ?>
+                    var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
+                    var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
+                    var allDay = date.allDay;
 
-                var data = {
-                    [token_name]: token_hash,
-                    <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
-                };
-                loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
-                    calendar.refetchEvents();
-                }, 'get');
+                    var data = {
+                        [token_name]: token_hash,
+                        <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                    };
+                    loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
+                        calendar.refetchEvents();
+                    }, 'get');
+                <?php endif; ?>
+                return false;
             },
 
             eventClick: function(evt) {
-                <?php if (!empty($data['update_form'])) : ?>
+                <?php if (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) : ?>
                     loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + evt.event.id, {}, function() {
                         calendar.refetchEvents();
                     });
@@ -113,11 +116,17 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             },
 
             eventDrop: function(evt) {
-                updateCalendar(evt);
+                <?php if (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) : ?>
+                    updateCalendar(evt);
+                <?php endif; ?>
+                return false;
             },
 
             eventResize: function(evt, delta, revertFunc) {
-                updateCalendar(evt);
+                <?php if (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) : ?>
+                    updateCalendar(evt);
+                <?php endif; ?>
+                return false;
             },
 
             eventSources: [{
