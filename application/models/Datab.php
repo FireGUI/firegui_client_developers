@@ -2318,6 +2318,13 @@ class Datab extends CI_Model
      */
     public function build_layout($layout_id, $value_id, $layout_data_detail = null)
     {
+
+        //Check conditions
+        $is_accessible = $this->conditions->accessible('layouts', $layout_id, $value_id);
+        if (!$is_accessible) {
+            return null;
+        }
+
         $cache_key = "datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET)) . md5(serialize($_POST)) . md5(serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->cache->get($cache_key))) {
 

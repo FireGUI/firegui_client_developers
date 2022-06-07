@@ -471,6 +471,9 @@ class Crmentity extends CI_Model
         // =================
         $dati = $this->getEntityFullData($entity_id);
 
+        
+
+
         $this->buildSelect($dati, $options);
 
         $this->buildWhere($where);
@@ -486,16 +489,24 @@ class Crmentity extends CI_Model
 
         //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
+
+            
+
             //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
             $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
             // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
             if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
-
+                
                 if (in_array($campo['fields_ref'], $joined)) {
                     // Metto nella lista dei join later
                     $to_join_later[$campo['fields_name']] = $campo['fields_ref'];
                 } else {
+                    if ($campo['fields_ref'] == 'rel_impianto_immagine') {
+                        // debug($dati['entity']['entity_name']);
+                        // debug($dati['relations']);
+                    }
+
                     $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
                     array_push($joined, $campo['fields_ref']);
 
@@ -526,7 +537,7 @@ class Crmentity extends CI_Model
         // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
         // query sia andata a buon fine
         // =====================================================================
-
+        
         $qResult = $this->db->get();
 
         if (!$qResult instanceof CI_DB_result) {
@@ -624,12 +635,20 @@ class Crmentity extends CI_Model
                 $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
                 $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
-                if ($hasFieldRef && !$isRelation && $isJoinable) {
+                
+
+                if ($hasFieldRef && $isJoinable) {
                     $entity = $this->getEntity($campo['fields_ref']);
-                    foreach ($this->getVisibleFields($entity['entity_id'], $depth) as $supfield) {
-                        $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
-                        $entityFullData['visible_fields'][] = $supfield;
+                    if ($isRelation) {
+                        //debug($entity);
+                    } else {
+                        
+                        foreach ($this->getVisibleFields($entity['entity_id'], $depth) as $supfield) {
+                            $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
+                            $entityFullData['visible_fields'][] = $supfield;
+                        }
                     }
+                    
                 }
             }
         }
@@ -637,6 +656,8 @@ class Crmentity extends CI_Model
         // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
         // duplicati
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
+
+        
 
         $this->db->select(array_unique($visible_fields));
 
@@ -657,6 +678,7 @@ class Crmentity extends CI_Model
             $select_str = str_ireplace("SELECT ", '', $select_str);
 
 
+            
 
             $this->db->select($select_str . ',' . implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
         }
@@ -961,6 +983,7 @@ class Crmentity extends CI_Model
         foreach ($relations as $relation) {
             $relbyname[$relation['relations_name']] = $relation;
             $relbyent[$relation['relations_table_1']][] = $relation;
+            
         }
 
 
@@ -1128,6 +1151,9 @@ class Crmentity extends CI_Model
     public function getEntityRelations($entity)
     {
         $e_name = $this->getEntity($entity)['entity_name'];
+
+        
+
         return array_get($this->_schemaCache['relations']['by_entity'], $e_name, []);
     }
 
