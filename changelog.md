@@ -1,3 +1,4 @@
-Changelog version 2.3.3
+Changelog version 2.3.4
  
-Enabled new template engine
+Conditions manager
+reverse filters
