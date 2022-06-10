@@ -272,7 +272,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
 
                                     <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
-
+                                    <option value="-2" <?php echo (in_array(-2, explode(',', $value))) ? 'selected' : ''; ?>><?php e('Field empty'); ?></option>
                                         <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row) : ?>
                                             <?php if ($row['valore']) : ?>
                                                 <option value="<?php echo $row['valore']; ?>" <?php echo (in_array($row['valore'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $row['valore']; ?></option>

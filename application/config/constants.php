@@ -183,6 +183,13 @@ define('FIELDS_PERMISSIONS', serialize([
 define('FIREGUI_BUILDER_BASEURL', 'https://builder.firegui.com/');
 define('FIREGUI_ADMIN_BASEURL', 'https://admin.firegui.com/');
 
+
+define('CONDITIONS_ACTIONS_GRANT_ACCESS', 1);
+define('CONDITIONS_ACTIONS_DENY_ACCESS', 2);
+define('CONDITIONS_ACTIONS_REDIRECT', 3);
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Exit Status Codes

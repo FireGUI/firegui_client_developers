@@ -73,6 +73,8 @@ class Datab extends CI_Model
             ", [$userId, $userId, $userId, $userId, PERMISSION_NONE])->result_array();
             $dati['accessibleLayouts'] = array_combine(array_key_map($accessibleLayouts, 'layouts_id'), $accessibleLayouts);
 
+                               
+
             foreach ($dati['accessibleLayouts'] as $id => $linfo) {
                 if ($linfo['layouts_is_entity_detail'] === DB_BOOL_TRUE && !isset($dati['accessibleEntityLayouts'][$linfo['layouts_entity_id']])) {
                     $dati['accessibleEntityLayouts'][$linfo['layouts_entity_id']] = $id;
@@ -1354,9 +1356,35 @@ class Datab extends CI_Model
 
                             switch ($condition['operator']) {
                                 case 'in':
-                                    $values = "'" . implode("','", is_array($condition['value']) ? $condition['value'] : explode(',', $condition['value'])) . "'";
-                                    $arr[] = "({$where_prefix}{$field->fields_name} $not {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
-                                    break;
+                                    if (!is_array($condition['value'])) {
+                                        $condition['value'] = explode(',',$condition['value']);
+                                    }
+                                    $values = "'" . implode("','", $condition['value']) . "'";
+                                    if (in_array(-2, $condition['value'])) {
+                                        
+                                        // debug($where_prefix);
+                                        // debug($field->fields_name);
+                                        // debug($operators[$condition['operator']]['sql']);
+                                        // debug($where_suffix);
+
+                                        $foo_prefix = "{$where_prefix}{$field->fields_name}";
+                                        $foo_prefix = str_ireplace(' IN ', ' NOT IN ', $foo_prefix);
+                                        $foo_prefix = str_ireplace('WHERE', '',$foo_prefix);
+
+                                        $arr[] = "
+                                            $not (
+                                                    (
+                                                            {$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix}
+                                                            OR
+                                                            (
+                                                                {$foo_prefix}{$where_suffix}
+                                                            )
+                                                    )
+                                                )";
+                                    } else {
+                                        
+                                        $arr[] = "({$where_prefix}{$field->fields_name} $not {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
+                                    }                                    break;
 
                                 case 'like':
                                     if (in_array($field->fields_type, array('VARCHAR', 'TEXT'))) {
@@ -1786,14 +1814,20 @@ class Datab extends CI_Model
         }
     }
 
-    public function can_access_layout($layout_id)
+    public function can_access_layout($layout_id, $value_id = null)
     {
 
         if (!$layout_id or !is_numeric($layout_id)) {
             return false;
         }
+if (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) {
+return $this->conditions->accessible('layouts', $layout_id, $value_id);
+} else {
+    return false;
+}
+        
 
-        return isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id]);
+        
     }
 
     public function setPermissions($userOrGroup, $isAdmin, array $entitiesPermissions, array $modulesPermissions)
@@ -2330,11 +2364,7 @@ class Datab extends CI_Model
     public function build_layout($layout_id, $value_id, $layout_data_detail = null)
     {
 
-        //Check conditions
-        $is_accessible = $this->conditions->accessible('layouts', $layout_id, $value_id);
-        if (!$is_accessible) {
-            return null;
-        }
+        
 
         $cache_key = "datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET)) . md5(serialize($_POST)) . md5(serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->cache->get($cache_key))) {
@@ -2352,7 +2382,11 @@ class Datab extends CI_Model
             // Start Build Layout
             // ========================================
             $this->layout->addLayout($layout_id);
+
+
             $dati['layout_container'] = $this->layout->getLayout($layout_id);
+
+            
 
             if (empty($dati['layout_container'])) {
                 return [
@@ -3072,7 +3106,7 @@ class Datab extends CI_Model
         switch ($contentType) {
             case "layout":
 
-                if (!$this->datab->can_access_layout($contentRef)) {
+                if (!$this->datab->can_access_layout($contentRef,$value_id)) {
                     //Layout permission unallowed
                     return false;
                 } else {

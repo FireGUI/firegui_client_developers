@@ -91,7 +91,7 @@ class Main extends MY_Controller
         }
 
         // Check permission
-        if (!$this->datab->can_access_layout($layout_id)) {
+        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
             die(json_encode(array('status' => 0, 'msg' => 'Permission denied')));
         }
 
@@ -159,7 +159,7 @@ class Main extends MY_Controller
         // Se non posso accedere a questo layout, allora mostro la pagina con il
         // messaggio: "La pagina da te cercata non esiste, oppure non hai i
         // permessi per accedervi"
-        if (!$this->datab->can_access_layout($layout_id)) {
+        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->stampa($pagina, $value_id);
         } else {

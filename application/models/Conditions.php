@@ -38,14 +38,28 @@ class Conditions extends CI_Model
 
             
             foreach ($rules as $rule) {
-                debug($rule);
-                if (!$this->isApplicableRule($rule['_rule'], $dati)) {
-                    $accessible = false;
+                //debug($rule);
+                $applicable = $this->isApplicableRule($rule['_rule'], $dati);
+                    switch ($rule['conditions_action']) {
+                        case 1: //Allow
+                            $accessible = $applicable;
+                            break;
+                        case 2: //Deny
+                            $accessible = !$applicable;
+                            break;
+                        case 3: //Allow
+                            redirect();
+                            break;
+                        default:
+                        break;
+                    }
+                    
+                 if (!$accessible) { //Mi fermo alla prima regola deny o non applicabile in caso di allow
                     break;
-                }
+                 }  
+                
             }
-        }
-        
+        }        
         
 
         return $accessible;
@@ -57,6 +71,19 @@ class Conditions extends CI_Model
         ];
         foreach ($this->auth->getSessionUserdata() as $session_field => $val) {
             $dati["session_{$session_field}"] = $val;
+        }
+
+        switch ($what) {
+            case 'grids_actions':
+                $entity = $this->db->join('grids', 'grids_id = grids_actions_grids_id', 'LEFT')->join('entity', 'entity_id = grids_entity_id', 'LEFT')->get_where('grids_actions', ['grids_actions_id' => $ref])->row()->entity_name;
+                $dati = array_merge($dati,$this->apilib->view($entity, $value_id));
+
+                break;
+            case 'layouts':
+                break;
+            default:
+                debug("Element '$what' not recognized for conditions");
+                break;
         }
 
         return $dati;

@@ -57,7 +57,7 @@ class Get_ajax extends MY_Controller
         }
 
 
-        if (!$this->datab->can_access_layout($layout_id)) {
+        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
             $this->layout->setLayoutModule();
             show_404();
         }
