@@ -38,7 +38,7 @@ class Conditions extends CI_Model
 
             
             foreach ($rules as $rule) {
-                //debug($rule);
+                debug($rule);
                 if (!$this->isApplicableRule($rule['_rule'], $dati)) {
                     $accessible = false;
                     break;

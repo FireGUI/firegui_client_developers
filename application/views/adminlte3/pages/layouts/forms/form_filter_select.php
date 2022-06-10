@@ -48,7 +48,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                     <!-- End Builder buttons -->
 
                     <?php
-
+                    
                     $field_completo = $this->datab->get_field($field['id']);
 
                     $sess_value = !isset($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];

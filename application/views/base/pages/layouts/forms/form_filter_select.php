@@ -48,10 +48,15 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                     <!-- End Builder buttons -->
 
                     <?php
+                    
+                    $reverse =   $field['original_field']['forms_fields_allow_reverse']==DB_BOOL_TRUE;
 
                     $field_completo = $this->datab->get_field($field['id']);
 
                     $sess_value = !isset($where_data[$field['id']]['value']) ? NULL : $where_data[$field['id']]['value'];
+                    $reverse_checked = (!empty($where_data[$field['id']]['reverse']) && $where_data[$field['id']]['reverse'] == DB_BOOL_TRUE) ? true : false;
+
+                    
                     if ($field['datatype'] == 'INT4RANGE') {
                         $oper  = empty($where_data[$field['id']]['operator']) ? 'rangein' : $where_data[$field['id']]['operator'];
                     } else {
@@ -107,13 +112,23 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         $value = $sess_value;
                     }
 
+                    
+
                     ?>
 
                     <div class="form-group">
                         <input type="hidden" class="js-filter-field" name="conditions[<?php echo $k; ?>][field_id]" value="<?php echo $field['id']; ?>" />
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="<?php echo $oper; ?>" />
 
-                        <label><?php e($field['label']); ?></label>
+                        <label style="width:100%;">
+                            
+                            <span><?php e($field['label']); ?></span>
+                            <?php if ($reverse) : ?>
+                                <span style="float:right;">
+                                    <?php e('reverse'); ?> <input type="checkbox" name="conditions[<?php echo $k; ?>][reverse]" value="<?php echo DB_BOOL_TRUE; ?>" <?php if ($reverse_checked) : ?> checked="checked" <?php endif; ?>/> 
+                                </span>
+                            <?php endif; ?>
+                        </label>
                         <?php if (in_array($field['type'], ['date', 'date_time'])) : ?>
                             <div class="input-group js_form_daterangepicker">
 
@@ -243,6 +258,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
 
                                         <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
+                                        <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty'); ?></option>
 
                                         <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name) : ?>
                                             <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
@@ -268,6 +284,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
 
                                         <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
+                                        <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty'); ?></option>
 
                                         <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row) : ?>
                                             <?php if (!empty($row['valore'])) : ?><option value="<?php echo $row['valore']; ?>" <?php if ($value == $row['valore']) : ?> selected="selected" <?php endif; ?>><?php echo $row['valore']; ?></option><?php endif; ?>

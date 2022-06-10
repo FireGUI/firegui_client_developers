@@ -1302,7 +1302,11 @@ class Datab extends CI_Model
                         }
 
 
-
+                        if (!empty($condition['reverse']) && $condition['reverse'] == DB_BOOL_TRUE) {
+                            $not = 'NOT ';
+                        } else {
+                            $not = '';
+                        }
 
                         // Metto in pratica i filtri e li aggiungo all'array
                         // delle condizioni del where
@@ -1318,7 +1322,7 @@ class Datab extends CI_Model
                                         $other_field_select = $this->db->get_where('fields', array('fields_entity_id' => $field->fields_entity_id, 'fields_ref' => $entity['entity_name']))->row();
                                         if (isset($other_field_select->fields_name)) {
                                             // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
-                                            $arr[] = "{$entity['entity_name']}.{$entity['entity_name']}_id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
+                                            $arr[] = "{$entity['entity_name']}.{$entity['entity_name']}_id $not IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
                                         } else {
                                             // Caso 2: è questa entità che sta ha il ref nell'altra entità
                                             // devo trovare codesto field
@@ -1327,13 +1331,13 @@ class Datab extends CI_Model
                                                 // Non so come gestirlo, per ora piazzo un continue e tolgo debug
                                                 continue;
                                             }
-                                            $arr[] = "{$entity['entity_name']}.{$field_referencing->fields_name} IN (SELECT {$other_entity['entity_name']}_id FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
+                                            $arr[] = "{$entity['entity_name']}.{$field_referencing->fields_name} $not IN (SELECT {$other_entity['entity_name']}_id FROM {$other_entity['entity_name']} WHERE (CAST({$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'))";
                                         }
                                     } else {
-                                        $arr[] = "(CAST({$where_prefix}{$field->fields_name} AS DATE) BETWEEN '{$start}' AND '{$end}'{$where_suffix})";
+                                        $arr[] = "(CAST({$where_prefix}{$field->fields_name} AS DATE) $not BETWEEN '{$start}' AND '{$end}'{$where_suffix})";
                                     }
                                 } else {
-                                    $arr[] = "({$where_prefix}{$field->fields_name}::DATE >= '{$start}'::DATE AND {$field->fields_name}::DATE <= '{$end}'::DATE{$where_suffix})";
+                                    $arr[] = "$not ({$where_prefix}{$field->fields_name}::DATE >= '{$start}'::DATE AND {$field->fields_name}::DATE <= '{$end}'::DATE{$where_suffix})";
                                 }
                             }
                         } else {
@@ -1341,20 +1345,27 @@ class Datab extends CI_Model
                             if ($condition['value'] == '-1') {
                                 continue;
                             }
+
+                            if ($condition['value'] == '-2') {
+                                //Special condition: means "field empty"...
+                                $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = ''))";
+                                continue;
+                            }
+
                             switch ($condition['operator']) {
                                 case 'in':
                                     $values = "'" . implode("','", is_array($condition['value']) ? $condition['value'] : explode(',', $condition['value'])) . "'";
-                                    $arr[] = "({$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
+                                    $arr[] = "({$where_prefix}{$field->fields_name} $not {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
                                     break;
 
                                 case 'like':
                                     if (in_array($field->fields_type, array('VARCHAR', 'TEXT'))) {
-                                        $arr[] = "({$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} '%{$condition['value']}%'{$where_suffix})";
+                                        $arr[] = "({$where_prefix}{$field->fields_name} $not{$operators[$condition['operator']]['sql']} '%{$condition['value']}%'{$where_suffix})";
                                     }
                                     break;
                                 case 'rangein':
 
-                                    $arr[] = "({$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} int4range({$condition['value']}))";
+                                    $arr[] = "$not ({$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} int4range({$condition['value']}))";
                                     break;
                                 default:
 
@@ -1378,7 +1389,7 @@ class Datab extends CI_Model
                                         }
                                     }
 
-                                    $arr[] = "({$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} '{$condition['value']}'{$where_suffix})";
+                                    $arr[] = "$not({$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} '{$condition['value']}'{$where_suffix})";
                             }
                         }
                     }
