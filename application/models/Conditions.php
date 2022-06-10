@@ -28,15 +28,15 @@ class Conditions extends CI_Model
         //Preload rules
         $this->_preloadRules();
     }
-    public function accessible($what, $ref, $value_id)
+    public function accessible($what, $ref, $value_id, $_dati = null)
     {
         $accessible = true;
         if (!empty($this->_rules[$what][$ref])) {
             $rules = $this->_rules[$what][$ref];
 
-            $dati = $this->buildElementData($what,$ref,$value_id);
+            $dati = $this->buildElementData($what,$ref,$value_id, $_dati);
 
-            
+            //debug($dati);
             foreach ($rules as $rule) {
                 //debug($rule);
                 $applicable = $this->isApplicableRule($rule['_rule'], $dati);
@@ -64,19 +64,24 @@ class Conditions extends CI_Model
 
         return $accessible;
     }
-    private function buildElementData($what,$ref,$value_id) {
+    private function buildElementData($what,$ref,$value_id, $_dati = null) {
         $dati = [
             '_current_date' => date('Y-m-d'),
             '_current_time' => date('H:i:s'),
         ];
+        if ($_dati !== null) {
+            $dati = array_merge($dati, $_dati);
+        }
         foreach ($this->auth->getSessionUserdata() as $session_field => $val) {
             $dati["session_{$session_field}"] = $val;
         }
 
         switch ($what) {
             case 'grids_actions':
-                $entity = $this->db->join('grids', 'grids_id = grids_actions_grids_id', 'LEFT')->join('entity', 'entity_id = grids_entity_id', 'LEFT')->get_where('grids_actions', ['grids_actions_id' => $ref])->row()->entity_name;
-                $dati = array_merge($dati,$this->apilib->view($entity, $value_id));
+                if ($_dati !== null) {
+                    $entity = $this->db->join('grids', 'grids_id = grids_actions_grids_id', 'LEFT')->join('entity', 'entity_id = grids_entity_id', 'LEFT')->get_where('grids_actions', ['grids_actions_id' => $ref])->row()->entity_name;
+                    $dati = array_merge($dati,$this->apilib->view($entity, $value_id));
+                }                
 
                 break;
             case 'layouts':

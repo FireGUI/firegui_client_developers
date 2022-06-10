@@ -15,7 +15,7 @@
         $replace_to[] = $id;
         ?>
         <?php foreach ($links['custom'] as $custom_action) : ?>
-            <?php if (!$this->conditions->accessible('grids_actions', $custom_action['grids_actions_id'],$id)) {continue;} ?>
+            <?php if (!$this->conditions->accessible('grids_actions', $custom_action['grids_actions_id'],$id, $row_data)) {continue;} ?>
             <?php if ($custom_action['grids_actions_show'] == "bulk") continue; ?>
 
             <?php if (!empty($custom_action['grids_actions_html']) && (empty($custom_action['grids_actions_type']) || 'custom' == $custom_action['grids_actions_type'])) : ?>
