@@ -1320,7 +1320,8 @@ if (!function_exists('time_elapsed')) {
 
 function getReverseGeocoding($address)
 {
-    //$address = htmlentities($address);
+    $address = urlencode(strtolower($address));
+    
     $ch = curl_init();
 
     $get = http_build_query([
@@ -1329,25 +1330,31 @@ function getReverseGeocoding($address)
         'limit' => 1,
         'polygon_svg' => 1
     ]);
-
-    curl_setopt_array($ch, [
-        CURLOPT_URL => "https://nominatim.openstreetmap.org/search/{$address}?{$get}",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20100101 Firefox/17.0'
-    ]);
+    
+    $url = "https://nominatim.openstreetmap.org/search/{$address}?{$get}";
+    
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type' => 'application/json']);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 900);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
     $response = curl_exec($ch);
 
+    if ($response === false) {
+        $response = curl_error($ch);
+    } else {
+        $response = json_decode($response, true);
+    }
+
     curl_close($ch);
 
-    if ($response) {
-        return json_decode($response, true);
-    } else {
-        return null;
-    }
+    return $response;
 }
+
 
 
 if (!function_exists('curlRequest')) {
