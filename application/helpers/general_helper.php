@@ -14,7 +14,6 @@ if (!function_exists('is_odd')) {
 }
 
 if (!function_exists('command_exists')) {
-
     function command_exists($cmd)
     {
         $return = shell_exec(sprintf("which %s", escapeshellarg($cmd)));
@@ -135,7 +134,6 @@ if (!function_exists('is_maintenance')) {
     }
 }
 if (!function_exists('debug')) {
-
     function debug($var, $die = false, $trace = true, $show_from = true)
     {
         if (!is_development() && !is_maintenance()) {
@@ -279,7 +277,6 @@ if (!function_exists('json_alert')) {
 
 
 if (!function_exists('var_swap')) {
-
     function var_swap(&$var1, &$var2)
     {
         $tmp = $var1;
@@ -290,7 +287,6 @@ if (!function_exists('var_swap')) {
 
 
 if (!function_exists('debug_caller')) {
-
     function debug_caller()
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
@@ -300,7 +296,6 @@ if (!function_exists('debug_caller')) {
 
 
 if (!function_exists('isValidDateRange')) {
-
     function isValidDateRange($dateRange)
     {
         return preg_match("/^[\[\(][0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}[\)\]]$/", $dateRange);
@@ -308,7 +303,6 @@ if (!function_exists('isValidDateRange')) {
 }
 
 if (!function_exists('dateRange_to_dates')) {
-
     function dateRange_to_dates($date_range)
     {
         $dates = explode(',', trim($date_range, "[)(]"));
@@ -320,7 +314,6 @@ if (!function_exists('dateRange_to_dates')) {
 }
 
 if (!function_exists('dateFormat')) {
-
     function dateFormat($date, $format = null)
     {
         if ($format == null && defined('DEFAULT_DATE_FORMAT')) {
@@ -333,10 +326,8 @@ if (!function_exists('dateFormat')) {
 }
 
 if (!function_exists('dateTimeFormat')) {
-
     function dateTimeFormat($date, $format = null)
     {
-
         if ($format == null && defined('DEFAULT_DATETIME_FORMAT')) {
             $format = DEFAULT_DATETIME_FORMAT;
         } elseif ($format == null) {
@@ -348,7 +339,6 @@ if (!function_exists('dateTimeFormat')) {
 }
 
 if (!function_exists('date_toDbFormat')) {
-
     function date_toDbFormat($date)
     {
         $normalized_date = normalize_date($date);
@@ -363,7 +353,6 @@ if (!function_exists('date_toDbFormat')) {
 }
 
 if (!function_exists('dateTime_toDbFormat')) {
-
     function dateTime_toDbFormat($date)
     {
         $normalized_date = normalize_date($date);
@@ -378,7 +367,6 @@ if (!function_exists('dateTime_toDbFormat')) {
 }
 
 if (!function_exists('normalize_date')) {
-
     function normalize_date($date)
     {
         // Scan for date time format known
@@ -409,7 +397,6 @@ if (!function_exists('normalize_date')) {
 
 
 if (!function_exists('extract_intrange_data')) {
-
     function extract_intrange_data($value)
     {
         if (!$value) {
@@ -456,7 +443,6 @@ if (!function_exists('extract_intrange_data')) {
 
 
 if (!function_exists('array_key_map')) {
-
     function array_key_map(array $array, $key, $default = null)
     {
         return array_map(function ($item) use ($key, $default) {
@@ -466,7 +452,6 @@ if (!function_exists('array_key_map')) {
 }
 
 if (!function_exists('array_key_map_data')) {
-
     function array_key_map_data(array $array, $key, $default = null)
     {
         $new_array = [];
@@ -478,7 +463,6 @@ if (!function_exists('array_key_map_data')) {
 }
 
 if (!function_exists('array_get')) {
-
     function array_get(array $array, $key, $default = null)
     {
         if (is_array($key)) {
@@ -502,7 +486,6 @@ if (!function_exists('array_get')) {
 
 
 if (!function_exists('array_key_value_map')) {
-
     function array_key_value_map(array $array, $key, $value)
     {
         return array_combine(array_key_map($array, $key), array_key_map($array, $value));
@@ -510,7 +493,6 @@ if (!function_exists('array_key_value_map')) {
 }
 
 if (!function_exists('e')) {
-
     function e($string, $ucfirst = true, $params = array())
     {
         echo t($string, $ucfirst, $params);
@@ -518,15 +500,11 @@ if (!function_exists('e')) {
 }
 
 if (!function_exists('t')) {
-
     function t($string, $ucfirst = false, $params = array())
     {
-
-
         $translation = lang($string);
 
         if ($translation === false) {
-
             $CI = get_instance();
             $lang_array = $CI->datab->getLanguage();
             $language = $lang_array ? $lang_array['file'] : $CI->config->item('language');
@@ -548,7 +526,6 @@ if (!function_exists('t')) {
             if ($module_name) {
                 $path = sprintf('%smodules/%s/language/%s/%s_lang.php', APPPATH, $module_name, $language, $language);
             } else {
-
                 $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
             }
 
@@ -600,7 +577,6 @@ if (!function_exists('t')) {
 }
 
 if (!function_exists('normalize_path')) {
-
     function normalize_path($path)
     {
         $parts = array(); // Array to build a new path from the good parts
@@ -611,14 +587,16 @@ if (!function_exists('normalize_path')) {
         foreach ($segments as $segment) {
             if ($segment != '.') {
                 $test = array_pop($parts);
-                if (is_null($test))
+                if (is_null($test)) {
                     $parts[] = $segment;
-                else if ($segment == '..') {
-                    if ($test == '..')
+                } elseif ($segment == '..') {
+                    if ($test == '..') {
                         $parts[] = $test;
+                    }
 
-                    if ($test == '..' || $test == '')
+                    if ($test == '..' || $test == '') {
                         $parts[] = $segment;
+                    }
                 } else {
                     $parts[] = $test;
                     $parts[] = $segment;
@@ -629,7 +607,6 @@ if (!function_exists('normalize_path')) {
     }
 }
 if (!function_exists('echo_flush')) {
-
     function echo_flush($str, $new_line = '')
     {
         $CI = get_instance();
@@ -657,10 +634,8 @@ if (!function_exists('echo_flush')) {
 }
 
 if (!function_exists('generateRandomPassword')) {
-
     function generateRandomPassword($length = 8, $random_case = false, $user_friendly = false, $letters_array = false)
     {
-
         $result = '';
         if (!$letters_array) {
             $consonanti = array('b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'); //manca la i e la l per non creare confusione!
@@ -706,7 +681,6 @@ if (!function_exists('remove_objects_from_array_recursive')) {
 }
 
 if (!function_exists('str_replace_placeholders')) {
-
     function str_replace_placeholders($string, array $replaces, $caseinsensitive = true, $clearunmatched = false)
     {
         $replaces = remove_objects_from_array_recursive($replaces);
@@ -733,7 +707,6 @@ if (!function_exists('str_replace_placeholders')) {
 }
 
 if (!function_exists('str_get_placeholders')) {
-
     function str_get_placeholders($string)
     {
         $matches = array();
@@ -746,7 +719,6 @@ if (!function_exists('str_get_placeholders')) {
 }
 
 if (!function_exists('array_smooth')) {
-
     function array_smooth(array $array, $separator, $depth = null)
     {
         $output = [];
@@ -766,7 +738,6 @@ if (!function_exists('array_smooth')) {
 }
 
 if (!function_exists('is_development')) {
-
     function is_development()
     {
         if (($ci = get_instance())) {
@@ -779,7 +750,6 @@ if (!function_exists('is_development')) {
 }
 
 if (!function_exists('benchmark')) {
-
     function benchmark(callable $function)
     {
         // Misura 1
@@ -798,7 +768,6 @@ if (!function_exists('benchmark')) {
 
 
 if (!function_exists('crm_exception_handler')) {
-
     function crm_exception_handler($ex, $print = true, $sendQueryListing = false)
     {
 
@@ -867,14 +836,13 @@ if (!function_exists('crm_exception_handler')) {
 }
 
 if (!function_exists('make_tiny')) {
-
     function make_tiny($url)
     {
         $ch = curl_init();
         $timeout = 5;
         curl_setopt($ch, CURLOPT_URL, 'http://tinyurl.com/api-create.php?url=' . $url);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
@@ -882,7 +850,6 @@ if (!function_exists('make_tiny')) {
 }
 
 if (!function_exists('base64_to_jpeg')) {
-
     function base64_to_jpeg($base64_string, $output_file)
     {
         // open the output file for writing
@@ -906,7 +873,6 @@ if (!function_exists('base64_to_jpeg')) {
 }
 
 if (!function_exists('array_diff_assoc_recursive')) {
-
     function array_diff_assoc_recursive($array1, $array2)
     {
         foreach ($array1 as $key => $value) {
@@ -917,7 +883,7 @@ if (!function_exists('array_diff_assoc_recursive')) {
                     $difference[$key] = $value;
                 } else {
                     $new_diff = array_diff_assoc_recursive($value, $array2[$key]);
-                    if ($new_diff != FALSE) {
+                    if ($new_diff != false) {
                         $difference[$key] = $new_diff;
                     }
                 }
@@ -932,7 +898,6 @@ if (!function_exists('array_diff_assoc_recursive')) {
 
 
 if (!function_exists('mese_testuale')) {
-
     function mese_testuale($data_o_mese)
     {
         if (is_numeric($data_o_mese)) {
@@ -961,10 +926,8 @@ if (!function_exists('mese_testuale')) {
 }
 
 if (!function_exists('zip_folder')) {
-
     function zip_folder($source, $destination, $exclude_dirs = [])
     {
-
         if (!extension_loaded('zip')) {
             die('Extension ZIP not found!');
             return false;
@@ -998,8 +961,9 @@ if (!function_exists('zip_folder')) {
                 $file = str_replace('\\', '/', $file);
 
                 // Ignore "." and ".." folders
-                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..')))
+                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) {
                     continue;
+                }
 
                 $file = realpath($file);
 
@@ -1010,14 +974,13 @@ if (!function_exists('zip_folder')) {
                     }
                     if (!$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'))) {
                     }
-                } else if (is_file($file) === true) {
+                } elseif (is_file($file) === true) {
                     if ($exclude_dirs) {
                         $dir_container = explode('/', str_replace($source . '/', '', $file));
                         array_pop($dir_container);
                         $dir_container = implode('/', $dir_container);
 
                         if (in_array($dir_container, $exclude_dirs)) {
-
                             continue;
                         }
                     }
@@ -1025,7 +988,7 @@ if (!function_exists('zip_folder')) {
                     }
                 }
             }
-        } else if (is_file($source) === true) {
+        } elseif (is_file($source) === true) {
             if (!$zip->addFromString(basename($source), file_get_contents($source))) {
             }
         }
@@ -1037,11 +1000,8 @@ if (!function_exists('zip_folder')) {
 }
 
 if (!function_exists('doGeocoding')) {
-
     function doGeocoding($address)
     {
-
-
         usleep(800000);
         $url = "https://nominatim.openstreetmap.org/search?q=" . urlencode($address) . "&countrycodes=it&format=json";
 
@@ -1068,7 +1028,6 @@ if (!function_exists('doGeocoding')) {
     }
 }
 if (!function_exists('calculateDistance')) {
-
     function calculateDistance($startPlace, $endPlace)
     {
         //$url = "http://www.yournavigation.org/api/1.0/gosmore.php?flat={$startPlace['lat']}&flon={$startPlace['lon']}&tlat={$endPlace['lat']}&tlon={$endPlace['lon']}&v=motorcar&fast=0&layer=mapnik&format=geojson";
@@ -1104,14 +1063,12 @@ if (!function_exists('calculateDistance')) {
 }
 
 if (!function_exists('send_telegram_log')) {
-
     function send_telegram_log($chatid, $text)
     {
         return false;
     }
 }
 if (!function_exists('my_version_compare')) {
-
     function my_version_compare($v1, $v2)
     {
         if (is_string($v1) && is_string($v2)) {
@@ -1164,7 +1121,9 @@ if (!function_exists('scanAllDir')) {
     {
         $result = [];
         foreach (scandir($dir) as $filename) {
-            if ($filename[0] === '.') continue;
+            if ($filename[0] === '.') {
+                continue;
+            }
             $filePath = $dir . '/' . $filename;
             if (is_dir($filePath)) {
                 foreach (scanAllDir($filePath) as $childFilename) {
@@ -1265,13 +1224,14 @@ if (!function_exists('file_put_contents_and_create_dir')) {
 if (!function_exists('dirToArray')) {
     function dirToArray($dir)
     {
-
         $result = array();
 
         $cdir = scandir($dir);
         foreach ($cdir as $key => $value) {
             if (!in_array($value, array(".", ".."))) {
-                if (stripos($value, '.') === 0) continue;
+                if (stripos($value, '.') === 0) {
+                    continue;
+                }
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
                     $result[$value] = dirToArray($dir . DIRECTORY_SEPARATOR . $value);
                 } else {
@@ -1351,7 +1311,9 @@ if (!function_exists('time_elapsed')) {
             }
         }
 
-        if (!$full) $string = array_slice($string, 0, 1);
+        if (!$full) {
+            $string = array_slice($string, 0, 1);
+        }
         return $string ? implode(', ', $string) . t(' ago') : t('just now');
     }
 }
@@ -1438,7 +1400,6 @@ if (!function_exists('e_money')) {
 if (!function_exists('progress')) {
     function progress($current, $total, $selector_id = 'js_progress')
     {
-
         $perc = number_format(100 * $current / $total, 2);
 
         if ($selector_id != 'js_progress') {
@@ -1698,16 +1659,23 @@ if (!function_exists('mime2ext')) {
 }
 
 if (!function_exists('is_base64')) {
-    function is_base64($s){
+    function is_base64($s)
+    {
         // Check if there are valid base64 characters
-        if (!preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $s)) return false;
+        if (!preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $s)) {
+            return false;
+        }
 
         // Decode the string in strict mode and check the results
         $decoded = base64_decode($s, true);
-        if(false === $decoded) return false;
+        if (false === $decoded) {
+            return false;
+        }
 
         // Encode the string again
-        if(base64_encode($decoded) != $s) return false;
+        if (base64_encode($decoded) != $s) {
+            return false;
+        }
 
         return true;
     }
