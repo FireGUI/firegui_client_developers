@@ -179,7 +179,13 @@ class Datab extends CI_Model
                 $query = $this->removeLimitOffsetGroupBy($query);
                 $query = $this->replaceSelectWithCount($query);
                 $query = str_ireplace('{order_by}', '', $query);
-                $out = $this->db->query($query)->row()->c;
+                $res = $this->db->query($query);
+                if ($res->num_rows() == 1) {
+                    $out = $res->row()->c;
+                } else {
+                    $out = 0;
+                }
+                
             } else {
 
                 $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
@@ -622,6 +628,8 @@ class Datab extends CI_Model
                 ->order_by('forms_fields_order')
                 ->get_where('forms_fields', ['forms_fields_forms_id' => $form_id, 'fields_visible' => DB_BOOL_TRUE])->result_array();
 
+            
+
             if (!empty($form['forms_action'])) {
                 $form['action_url'] = str_ireplace(['{base_url}', '{value_id}'], [base_url(), ($edit_id ?? null)], $form['forms_action']);
             } else {
@@ -653,17 +661,21 @@ class Datab extends CI_Model
                 $formData = ($edit_id && !is_array($edit_id)) ? $this->apilib->view($form['entity_name'], $edit_id, 1) : [];
 
 
+            }
 
-                foreach ($fields as $field) {
-                    if ($field['fields_multilingual'] == DB_BOOL_TRUE && $edit_id) { //If multilanguage, override value with original json
-                        $entity = $this->crmentity->getEntity($field['fields_entity_id']);
+            foreach ($fields as $key => $field) {
+                if (!$this->conditions->accessible('forms_fields', "{$field['forms_fields_forms_id']},{$field['forms_fields_fields_id']}", $value_id, $formData)) {
+                    unset($fields[$key]);
+                    continue;
+                }
+                if ($field['fields_multilingual'] == DB_BOOL_TRUE && $edit_id) { //If multilanguage, override value with original json
+                    $entity = $this->crmentity->getEntity($field['fields_entity_id']);
 
-                        $value_json = $this->db
-                            ->select($field['fields_name'])
-                            ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $edit_id])
-                            ->row_array()[$field['fields_name']];
-                        $formData[$field['fields_name']] = $value_json;
-                    }
+                    $value_json = $this->db
+                        ->select($field['fields_name'])
+                        ->get_where($entity['entity_name'], [$entity['entity_name'] . '_id' => $edit_id])
+                        ->row_array()[$field['fields_name']];
+                    $formData[$field['fields_name']] = $value_json;
                 }
             }
 
@@ -1018,10 +1030,12 @@ class Datab extends CI_Model
                     ORDER BY grids_fields_order ASC
                 ", [$grid_id])->result_array();
 
+            
+
             // Ciclo ed estraggo eventuali campi di tabelle joinate FUNZIONA SOLO
             // CON ENTITA PER ORA
             foreach ($dati['grids_fields'] as $key => $field) {
-                if ($field['fields_ref'] && !$this->crmentity->entityExists($field['fields_ref'])) {
+                if ($field['fields_ref'] && !$this->crmentity->entityExists($field['fields_ref']) || !$this->conditions->accessible('grids_fields', $field['grids_fields_id'], null)) {
                     unset($dati['grids_fields'][$key]);
                     continue;
                 }
@@ -1705,7 +1719,13 @@ class Datab extends CI_Model
             ->where('menu_position', $position)->order_by('menu_order')->get()->result_array();
 
         $return = $subs = [];
-        foreach ($menu as $item) {
+        foreach ($menu as $key => $item) {
+            
+            if (!$this->conditions->accessible('menu', $item['menu_id'])) {
+                unset($menu[$key]);
+                continue;
+            }
+
             if ($item['menu_parent']) {
                 // Se c'è un parent è un sottomenu
                 isset($subs[$item['menu_parent']]) or $subs[$item['menu_parent']] = array();
@@ -3173,7 +3193,7 @@ return $this->conditions->accessible('layouts', $layout_id, $value_id);
             case "grid":
                 // Prendo la struttura della grid
                 $grid = $this->get_grid($contentRef);
-
+                
                 // Ci sono problemi se inizializzo una datatable senza colonne!!
                 if (empty($grid['grids_fields'])) {
                     return sprintf(t('*** Grid `%s` without fields ***'), $contentRef);

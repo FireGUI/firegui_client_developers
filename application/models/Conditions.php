@@ -28,7 +28,7 @@ class Conditions extends CI_Model
         //Preload rules
         $this->_preloadRules();
     }
-    public function accessible($what, $ref, $value_id, $_dati = null)
+    public function accessible($what, $ref, $value_id = null, $_dati = null)
     {
         $accessible = true;
         if (!empty($this->_rules[$what][$ref])) {
@@ -84,7 +84,15 @@ class Conditions extends CI_Model
                 }                
 
                 break;
+            case 'forms_fields':
+                if ($_dati !== null && $value_id) {
+                    debug("TODO: extract data from entity related to forms_fields with value_id");
+                }                
+
+                break;
             case 'layouts':
+            case 'menu':
+            case 'grids_fields':
                 break;
             default:
                 debug("Element '$what' not recognized for conditions");
