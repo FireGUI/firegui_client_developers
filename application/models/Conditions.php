@@ -91,6 +91,7 @@ class Conditions extends CI_Model
 
                 break;
             case 'layouts':
+            case 'layouts_boxes':
             case 'menu':
             case 'grids_fields':
                 break;
