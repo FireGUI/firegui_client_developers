@@ -14,12 +14,12 @@ $inline = count($choiches) < 4;
 <div class="row">
     <div class="col-xs-12">
         <?php if ($is_bool): ?>
-            <input type="hidden" value="<?php echo DB_BOOL_FALSE; ?>" name="<?php echo $field['fields_name']; ?>" data-notmodifiable="1" />
+            <input type="hidden" value="<?php echo DB_BOOL_FALSE; ?>" name="<?php echo $field['fields_name']; ?>" data-notmodifiable="1" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>"/>
         <?php endif; ?>
         <?php foreach($choiches as $id => $name): ?>
             <?php $isSelected = ((is_array($value) && isset($value[$id])) OR (!is_array($value) && $value == $id)); ?>
             <label class="<?php echo $inline ? '': 'checkbox' ?>">
-                <input type="checkbox" class="<?php echo $class ?>" value="<?php echo $id; ?>" <?php echo $isSelected ? 'checked': ''; ?> name="<?php echo $field['fields_name'] . ($field['fields_type']==DB_BOOL_IDENTIFIER?'': '[]'); ?>" <?php echo $onclick; ?> />
+                <input type="checkbox" class="<?php echo $class ?>" value="<?php echo $id; ?>" <?php echo $isSelected ? 'checked': ''; ?> name="<?php echo $field['fields_name'] . ($field['fields_type']==DB_BOOL_IDENTIFIER?'': '[]'); ?>" <?php echo $onclick; ?> data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
                 <?php echo $name; ?>
             </label>
         <?php endforeach; ?>

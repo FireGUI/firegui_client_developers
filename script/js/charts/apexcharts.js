@@ -88,6 +88,7 @@ $(function () {
                         backgroundBarRadius: 0
                     },
                     dataLabels: {
+                        enabled: false,
                         position: 'center',
                         maxItems: 100,
                         hideOverflowingLabels: false,
@@ -95,6 +96,7 @@ $(function () {
                     }
                 }
             },
+            
             legend: {
                 show: true
             },
@@ -113,24 +115,35 @@ $(function () {
                 }
             },
             dataLabels: {
+                enabled: false,
                 formatter: function (value) {
                     
                     if (typeof value == 'undefined') {
                         value = 0;
                     }
                     
-                    return value.toFixed(2)+appendLabels.chartId;
+                    value = value.toFixed(2).replace('.',',').replace(/[^\d,]/g, "")
+                            .replace(/^(\d*\,)(.*)\,(.*)$/, '$1$2$3')
+                            .replace(/\,(\d{2})\d+/, ',$1')
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + appendLabels.chartId;
+                        
+                        return value;
                 }
             },
             yaxis: {
                 labels: {
                     formatter: function (value) {
-                        console.log(value);
+                        //console.log(value);
                         if (typeof value == 'undefined') {
                             value = 0;
                         }
                         
-                        return value.toFixed(2)+appendLabels.chartId;
+                        value = value.toFixed(2).replace('.',',').replace(/[^\d,]/g, "")
+                            .replace(/^(\d*\,)(.*)\,(.*)$/, '$1$2$3')
+                            .replace(/\,(\d{2})\d+/, ',$1')
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + appendLabels.chartId;
+                        
+                        return value;
                     }
                 }
             },
@@ -142,7 +155,13 @@ $(function () {
                         if (typeof value == 'undefined') {
                             value = 0;
                         }
-                        return value+appendLabels.chartId;
+                        
+                        value = value.toFixed(2).replace('.',',').replace(/[^\d,]/g, "")
+                            .replace(/^(\d*\,)(.*)\,(.*)$/, '$1$2$3')
+                            .replace(/\,(\d{2})\d+/, ',$1')
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + appendLabels.chartId;
+                        
+                        return value;
                     }
                 }
             },

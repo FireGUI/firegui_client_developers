@@ -7,7 +7,7 @@ $form_id = $field['forms_fields_forms_id'];
 <?php echo $label; ?>
 <br />
 <div class="col-md-12 dropzone_div <?php echo $class ?> fileinput <?php echo $value ? 'fileinput-exists' : 'fileinput-new' ?>" data-provides="fileinput">
-    <input type="hidden" class="default" data-name="<?php echo $field['fields_name']; ?>" />
+    <input type="hidden" class="default" data-name="<?php echo $field['fields_name']; ?>" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
     <?php if (is_array($value)) : ?>
 
         <?php foreach ($value as $file_id => $file) : ?>

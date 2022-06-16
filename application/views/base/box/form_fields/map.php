@@ -32,7 +32,7 @@ if ($value) {
 ?>
 <?php echo $label; ?>
 
-<input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" />
+<input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
 <div class="location-search-container">
     <div class="input-group">
         <input type="text" class="form-control js_map_search" placeholder="<?php e('find localtion') ?>" />

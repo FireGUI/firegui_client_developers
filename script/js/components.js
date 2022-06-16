@@ -398,6 +398,43 @@ function initComponents(container, reset = false) {
 
     $('.js_form_colorpicker', container).colorpicker({ format: 'hex' });
 
+
+    /*
+    FORM FIELDS EVENTS
+    */
+    $(':input').on('change', function () {
+        var changed_input = $(this);
+        $(':input[data-dependent_on*="'+$(this).attr('name')+'"]', changed_input.closest('form')).each(function () {
+            //Grep optional value
+            if ($(this).data('dependent_on').includes(':')) {
+                var expl = $(this).data('dependent_on').split(':');
+                var vals = expl[1];
+            } else {
+                var vals = null;
+            }
+
+            if (vals !== null) {
+                if (vals == changed_input.val()) {
+                    $(this).closest('.form-group').show();
+                } else {
+                    $(this).closest('.form-group').hide();
+                }
+            } else {
+                if (changed_input.val() && changed_input.val() != 0) {
+                    $(this).closest('.form-group').show();
+                } else {
+                    
+                    $(this).closest('.form-group').hide();
+                }
+            }
+        });
+    });
+    $(':input').each (function () {
+        if ($(':input[data-dependent_on*="'+$(this).attr('name')+'"]', $(this).closest('form')).length > 0) {
+            $(this).trigger('change');
+        }
+    }) ;
+
     /*
      * Grid-filtering forms
      */
