@@ -2007,6 +2007,14 @@ class Apilib
 
             case 'FLOAT':
             case 'DOUBLE':
+                if ($field['fields_draw_html_type'] == 'input_money') {
+                    if (substr($value, -3, -2) === '.') {
+                        $value = substr_replace($value, ',', -3, -2);
+                    }
+
+                    $value = str_replace('.', '', $value);
+                }
+
                 $float = str_replace(',', '.', $value);
                 $value = (float) filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
                 break;

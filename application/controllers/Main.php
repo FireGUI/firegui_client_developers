@@ -91,7 +91,7 @@ class Main extends MY_Controller
         }
 
         // Check permission
-        if (!$this->datab->can_access_layout($layout_id)) {
+        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
             die(json_encode(array('status' => 0, 'msg' => 'Permission denied')));
         }
 
@@ -159,7 +159,7 @@ class Main extends MY_Controller
         // Se non posso accedere a questo layout, allora mostro la pagina con il
         // messaggio: "La pagina da te cercata non esiste, oppure non hai i
         // permessi per accedervi"
-        if (!$this->datab->can_access_layout($layout_id)) {
+        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->stampa($pagina, $value_id);
         } else {
@@ -178,15 +178,15 @@ class Main extends MY_Controller
                 $this->layout->setLayoutModule();
                 $this->stampa($pagina, $value_id);
             } else {
-
+                
                 // I have 2 type of layouts: PDF or standard
                 if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
 
-                    //if (file_exists(FCPATH . "application/views_adminlte/custom/layout/pdf.php")) {
+                    if (file_exists(FCPATH . "application/views/custom/layout/pdf.php")) {
                         $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-                    //} else {
-                    //    $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
-                    //}
+                    } else {
+                        $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
+                    }
 
                     $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
 
@@ -760,4 +760,6 @@ class Main extends MY_Controller
             fpassthru($fp);
         }
     }
+
+
 }

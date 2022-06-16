@@ -3,6 +3,7 @@ var series = [];
 var options = [];
 var categories = [];
 var labels = [];
+var appendLabels = [];
 
 $(function () {
     'use strict';
@@ -10,11 +11,16 @@ $(function () {
     $('.apexcharts').each(function () {
         var this_element = $(this);
         var chartId = this_element.attr('id');
-
+        
+        // console.log(this_element);
+        // alert( this_element.data('appendlabel'));
+        
+        appendLabels.chartId = this_element.data('appendlabel');
+        
         series.chartId = JSON.parse(atob(this_element.data('series')));
         categories.chartId = JSON.parse(atob(this_element.data('categories')));
         labels.chartId = JSON.parse(atob(this_element.data('labels')));
-        console.log(categories);
+        //console.log(categories);
         options.chartId = {
             chart: {
                 type: this_element.data('type'),
@@ -23,6 +29,39 @@ $(function () {
                     enabled: true,
                     autoScaleYaxis: true
                 },
+                toolbar: {
+                    show: true,
+                    offsetX: 0,
+                    offsetY: 0,
+                    tools: {
+                      download: true,
+                      selection: true,
+                      zoom: true,
+                      zoomin: true,
+                      zoomout: true,
+                      pan: true,
+                      reset: true | '<img src="/static/icons/reset.png" width="20">',
+                      customIcons: []
+                    },
+                    export: {
+                      csv: {
+                        filename: undefined,
+                        columnDelimiter: ',',
+                        headerCategory: 'category',
+                        headerValue: 'value',
+                        dateFormatter(timestamp) {
+                          return new Date(timestamp).toDateString()
+                        }
+                      },
+                      svg: {
+                        filename: undefined,
+                      },
+                      png: {
+                        filename: undefined,
+                      }
+                    },
+                    autoSelected: 'zoom' 
+                  },
             },
             title: {
                 text: this_element.data('title'),
@@ -73,10 +112,25 @@ $(function () {
                     }
                 }
             },
+            dataLabels: {
+                formatter: function (value) {
+                    
+                    if (typeof value == 'undefined') {
+                        value = 0;
+                    }
+                    
+                    return value.toFixed(2)+appendLabels.chartId;
+                }
+            },
             yaxis: {
                 labels: {
                     formatter: function (value) {
-                        return value.toFixed(2);
+                        console.log(value);
+                        if (typeof value == 'undefined') {
+                            value = 0;
+                        }
+                        
+                        return value.toFixed(2)+appendLabels.chartId;
                     }
                 }
             },
@@ -84,11 +138,15 @@ $(function () {
                 shared: true,
                 intersect: false,
                 y: {
-                    formatter: function (y) {
-                        return y;
+                    formatter: function (value) {
+                        if (typeof value == 'undefined') {
+                            value = 0;
+                        }
+                        return value+appendLabels.chartId;
                     }
                 }
             },
+            
         };
 
         charts.chartId = new ApexCharts(document.querySelector('#' + chartId), options.chartId);

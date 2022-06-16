@@ -45,9 +45,14 @@ class MY_Controller extends MX_Controller
         parent::__construct();
 
         // Inizializza le variabili d'istanza del controller
+        if ($this->db->table_exists('settings_template')) {
+            $this->db
+            ->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
+            
+        } 
         $this->settings = $this->db
-            ->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT')
-            ->get('settings')->row_array();
+        ->get('settings')->row_array();
+        
         //$this->settings = $this->db->get('settings')->row_array();
         $this->isAdmin = $this->auth->is_admin();
         $this->isDev = is_development();

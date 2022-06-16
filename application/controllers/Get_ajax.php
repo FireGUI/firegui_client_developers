@@ -57,7 +57,7 @@ class Get_ajax extends MY_Controller
         }
 
 
-        if (!$this->datab->can_access_layout($layout_id)) {
+        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
             $this->layout->setLayoutModule();
             show_404();
         }
@@ -899,6 +899,7 @@ class Get_ajax extends MY_Controller
 
         $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 3);
 
+        //debug($data_entity,true);
 
         $previews = array();
         foreach ($data['calendars_fields'] as $field) {

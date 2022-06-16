@@ -1,13 +1,13 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 include_once __DIR__ . '/../helpers/general_helper.php';
 
 class Crmentity extends CI_Model
 {
-
     const CACHE_TIME = 300;
     const SCHEMA_CACHE_KEY = 'crm.schema';
 
@@ -30,7 +30,7 @@ class Crmentity extends CI_Model
      * @param string $entity_name
      * @param array $languageId
      */
-    function __construct($entity_name = '', array $languageId = [])
+    public function __construct($entity_name = '', array $languageId = [])
     {
         parent::__construct();
 
@@ -63,7 +63,7 @@ class Crmentity extends CI_Model
     /**
      * Controlla se la $key è definita nella cache, altrimenti esegue $callback
      * e salva il valore ritornato in cache.
-     * 
+     *
      * @param string $key       Chiave della cache
      * @param Closure $callback Funzione da eseguire in caso di cache-miss
      * @return mixed            Il valore contenuto in cache
@@ -83,9 +83,9 @@ class Crmentity extends CI_Model
     }
 
     /**
-     * Estrai singolo record per id. Solo il record associato alla Crmentity 
+     * Estrai singolo record per id. Solo il record associato alla Crmentity
      * corrente viene estratto
-     * 
+     *
      * @param int $id
      * @param int $maxDepthLevel
      * @return array
@@ -97,13 +97,13 @@ class Crmentity extends CI_Model
     }
 
     /**
-     * Esegue una query sull'entità e ritorna una lista di record - Vengono 
-     * calcolate eventuali relazioni da aggiungere ad ogni record, risolte le 
-     * geography, tradotti i campi multilingua (se ci sono lingue impostate), 
+     * Esegue una query sull'entità e ritorna una lista di record - Vengono
+     * calcolate eventuali relazioni da aggiungere ad ogni record, risolte le
+     * geography, tradotti i campi multilingua (se ci sono lingue impostate),
      * ecc.
-     * 
+     *
      * !! Il risultato viene salvato in cache !!
-     * 
+     *
      * @param int|null $entity_id
      * @param null $unused_entity_name      DA DEPRECARE, PROBABILMENTE ADOTTEREI STRATEGIA DI ARRAY OPTIONS vedi `get_data_simple_list()`
      * @param array|string $where
@@ -112,12 +112,12 @@ class Crmentity extends CI_Model
      * @param string|null $order_by
      * @param bool $count
      * @param int $depth
-     * 
+     *
      * @return array
-     * 
+     *
      * @throws Exception
      */
-    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = NULL, $offset = 0, $order_by = NULL, $count = FALSE, $depth = 2, $eval_cachable_fields = [], $additional_parameters = [])
+    public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = null, $offset = 0, $order_by = null, $count = false, $depth = 2, $eval_cachable_fields = [], $additional_parameters = [])
     {
         if (!$entity_id) {
             if (!$this->entity_id) {
@@ -151,23 +151,21 @@ class Crmentity extends CI_Model
             // ---------------------------------------------------------
             // CON CALMA E TEMPO TUTTO STO PROCESSO E' DA OTTIMIZZARE!!!
             // ---------------------------------------------------------
-            // Cercare se possibile di ciclare $data['data'] e 
+            // Cercare se possibile di ciclare $data['data'] e
             // $data['visible_fields'] al più UNA volta ciascuno
             // Un array contenente tutti gli id dei risultati della query
             $result_ids = array_key_map($data['data'], $entity_name . '_id');
             $fieldsGeography = $fieldsWysiwyg = $fieldsMultilingual = $fieldsRanges = $fieldsFloat = [];
 
             foreach ($data['visible_fields'] as $field) {
-
                 $fieldOfMainEntity = $field['entity_name'] === $entity_name;
 
                 // Detect GEOGRAPHY
                 // -----
-                // Estraggo i geography per ricavarne latitudine e 
+                // Estraggo i geography per ricavarne latitudine e
                 // longitudine - prendo solo quelli della mia stessa entità
                 // altrimenti ho un db error
                 if ($field['fields_type'] === 'GEOGRAPHY' && $fieldOfMainEntity) {
-
                     $geographyValues = [];
                     $geographyField = $field['fields_name'];
 
@@ -378,7 +376,6 @@ class Crmentity extends CI_Model
                                 // Se il campo non è un array per il momento non ho soluzioni migliori se non farlo diventare un array vuoto
                                 // perché in effetti non dovrebbe mai essere pieno
                                 if (array_key_exists($related_value, $related_data_preview)) {
-
                                     if (!is_array($data['data'][$key][$field_name_for_relation_values])) {
                                         $data['data'][$key][$field_name_for_relation_values] = [];
                                     }
@@ -435,9 +432,9 @@ class Crmentity extends CI_Model
     }
 
     /**
-     * Esegui una query specificando l'entità oppure utilizzando l'eventuale 
+     * Esegui una query specificando l'entità oppure utilizzando l'eventuale
      * entity bindata alla crmentity
-     * 
+     *
      * @param int|string $entity_id
      * @param string|array $where
      * @param array $options        Le opzioni della query. Opzioni valide:
@@ -449,7 +446,7 @@ class Crmentity extends CI_Model
      *      - offset
      *      - order_by
      * @return array|int
-     * 
+     *
      * @throws Exception
      */
     public function get_data_simple_list($entity_id = null, $where = null, array $options = [])
@@ -471,6 +468,9 @@ class Crmentity extends CI_Model
         // =================
         $dati = $this->getEntityFullData($entity_id);
 
+        
+
+
         $this->buildSelect($dati, $options);
 
         $this->buildWhere($where);
@@ -486,16 +486,23 @@ class Crmentity extends CI_Model
 
         //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
+
+            
+
             //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
             $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
             // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
             if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
-
                 if (in_array($campo['fields_ref'], $joined)) {
                     // Metto nella lista dei join later
                     $to_join_later[$campo['fields_name']] = $campo['fields_ref'];
                 } else {
+                    if ($campo['fields_ref'] == 'rel_impianto_immagine') {
+                        // debug($dati['entity']['entity_name']);
+                        // debug($dati['relations']);
+                    }
+
                     $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
                     array_push($joined, $campo['fields_ref']);
 
@@ -526,11 +533,11 @@ class Crmentity extends CI_Model
         // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
         // query sia andata a buon fine
         // =====================================================================
-
+        
         $qResult = $this->db->get();
 
         if (!$qResult instanceof CI_DB_result) {
-            // Errore, la query 
+            // Errore, la query
             throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
         }
 
@@ -541,11 +548,11 @@ class Crmentity extends CI_Model
         // SUPPORTO MULTI-JOIN
         // ---
         // Un'entità (A) può essere joinata più di una volta ad un'altra entità
-        // (B) mediante altrettanti campi (ab1 e ab2). Non posso fare tutto in 
+        // (B) mediante altrettanti campi (ab1 e ab2). Non posso fare tutto in
         // una query perché dovrei usare degli alias e, per retrocompatibilità,
         // questo non è possibile (tutte le query inserite scoppierebbero).
         // Quindi nella query appena fatta ho joinato 1 solo campo, mentre gli
-        // altri campi li "joino" ora. Non si tratta di un vero e proprio join, 
+        // altri campi li "joino" ora. Non si tratta di un vero e proprio join,
         // in quanto devo estrarre manualmente i dati.
         // =====================================================================
         if ($dati['data'] && $depth > 0) {
@@ -585,11 +592,11 @@ class Crmentity extends CI_Model
     }
 
     /**
-     * Estrai a partire dai fulldata di un'entità e da un array di condizioni 
-     * select, l'eventuale select da usare nella query. $entityFullData è 
+     * Estrai a partire dai fulldata di un'entità e da un array di condizioni
+     * select, l'eventuale select da usare nella query. $entityFullData è
      * passato per riferimento dato che dev'essere aggiornato con i campi delle
      * entità joinate
-     * 
+     *
      * @param array $entityFullData
      * @param array $options
      */
@@ -607,7 +614,6 @@ class Crmentity extends CI_Model
 
 
         if (!$visible_fields) {
-
             foreach ($entityFullData['visible_fields'] as $campo) {
                 // Aggiungo il campo alla select
                 $visible_fields[] = sprintf('%s.%s', $campo['entity_name'], $campo['fields_name']);
@@ -615,28 +621,44 @@ class Crmentity extends CI_Model
                 // Ciclo i campi uno ad uno e se:
                 // -- sono campi semplici non faccio altro che aggiungere il nome
                 // del field alla mia select ($visible_fields)
-                // -- altrimenti se sono field ref devo estrarre a sua volta i 
+                // -- altrimenti se sono field ref devo estrarre a sua volta i
                 // suoi campi (valutare chiamate ricorsive). ATTENZIONE CHE IL
-                // CAMPO NON DEV'ESSERE RELAZIONE, perchè lo gestisco 
+                // CAMPO NON DEV'ESSERE RELAZIONE, perchè lo gestisco
                 // diversamente
 
                 $hasFieldRef = (bool) $campo['fields_ref'];
                 $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
                 $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
-                if ($hasFieldRef && !$isRelation && $isJoinable) {
+                
+
+                if ($hasFieldRef && $isJoinable) {
                     $entity = $this->getEntity($campo['fields_ref']);
-                    foreach ($this->getVisibleFields($entity['entity_id'], $depth) as $supfield) {
-                        $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
-                        $entityFullData['visible_fields'][] = $supfield;
+                    if ($isRelation) {
+                        //debug($entity);
+                    } else {
+                        foreach ($this->getVisibleFields($entity['entity_id'], $depth) as $supfield) {
+                            $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
+                            $entityFullData['visible_fields'][] = $supfield;
+                        }
                     }
                 }
             }
         }
 
-        // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i 
+        // AGGIUNGO A PRESCINDERE I CAMPI DI UNA RELATION
+        if ($entityFullData['entity']['entity_type'] == ENTITY_TYPE_RELATION) {
+            $relation = $this->getRelationByName($entityFullData['entity']['entity_name']);
+            // debug($relation, true);
+            $visible_fields[] = $relation['relations_field_1'];
+            $visible_fields[] = $relation['relations_field_2'];
+        }
+
+        // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i
         // duplicati
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
+
+        
 
         $this->db->select(array_unique($visible_fields));
 
@@ -657,6 +679,7 @@ class Crmentity extends CI_Model
             $select_str = str_ireplace("SELECT ", '', $select_str);
 
 
+            
 
             $this->db->select($select_str . ',' . implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
         }
@@ -704,10 +727,10 @@ class Crmentity extends CI_Model
     {
         $group_by = array_get($options, 'group_by', null);
 
-        if ($group_by !== NULL) {
-            $this->db->_protect_identifiers = FALSE;
+        if ($group_by !== null) {
+            $this->db->_protect_identifiers = false;
             $this->db->group_by($group_by);
-            $this->db->_protect_identifiers = TRUE;
+            $this->db->_protect_identifiers = true;
         }
     }
     /**
@@ -721,25 +744,25 @@ class Crmentity extends CI_Model
         $order_by = array_get($options, 'order_by', null);
         $count = array_get($options, 'count', false);
 
-        if ($limit !== NULL) {
+        if ($limit !== null) {
             $this->db->limit($limit);
         }
         if ($offset > 0) {
             $this->db->offset($offset);
         }
 
-        if ($order_by !== NULL && !$count) {
-            $this->db->_protect_identifiers = FALSE;
+        if ($order_by !== null && !$count) {
+            $this->db->_protect_identifiers = false;
             $this->db->order_by($order_by);
-            $this->db->_protect_identifiers = TRUE;
+            $this->db->_protect_identifiers = true;
         }
     }
 
     /**
      * Converte una lista di valori in una lista valida per il where in.
      *  [1, 2, 3, 4] => '1','2','3','4'
-     * 
-     * 
+     *
+     *
      * @param array $values
      * @return string
      */
@@ -753,7 +776,7 @@ class Crmentity extends CI_Model
 
     /**
      * Ritrova i dati completi da un'entità
-     * 
+     *
      * @param int|string $entity
      * @return array
      */
@@ -768,7 +791,7 @@ class Crmentity extends CI_Model
     }
 
     /**
-     *  Utility methods 
+     *  Utility methods
      */
     public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0)
     {
@@ -808,7 +831,7 @@ class Crmentity extends CI_Model
                         }
                     }
                 } else { // If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
-                    if (stripos($where, $entityCustomActions['soft_delete_flag']) === FALSE) {
+                    if (stripos($where, $entityCustomActions['soft_delete_flag']) === false) {
                         if (empty($where)) {
                             $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                         } else {
@@ -823,7 +846,6 @@ class Crmentity extends CI_Model
             /* Build preview */
             $result = [];
             foreach ($records as $record) {
-
                 $id = array_get($record, $entity_name . '_id');
                 $preview = "";
 
@@ -843,7 +865,6 @@ class Crmentity extends CI_Model
                     // Se vuoto (null o stringa vuota - voglio tenere eventuali 0),
                     // allora lo skippo
                     if (is_null($val) or $val === '') {
-
                         continue;
                     }
 
@@ -861,13 +882,12 @@ class Crmentity extends CI_Model
 
     /**
      * Traduci un valore secondo l'array delle lingue corrente
-     * 
+     *
      * @param string $jsonEncodedValue rappresentazione json del valore
      * @return mixed
      */
     public function translateValue($jsonEncodedValue)
     {
-
         $transVal = json_decode($jsonEncodedValue, true);
 
         // Se non ci sono lingue in lista, allora lascia il valore json decoded
@@ -983,7 +1003,7 @@ class Crmentity extends CI_Model
      * sottochiavi sulle quali eseguire la mappatura (array risultante avrà i
      * valori dei from sulle chiavi e i valori di to sui rispettivi valori).
      * Se to è null, allora viene preso l'intero record
-     * 
+     *
      * @param array $data
      * @param string $from
      * @param string|null $to
@@ -1038,7 +1058,6 @@ class Crmentity extends CI_Model
      */
     public function getFields($entity)
     {
-
         if (!is_numeric($entity)) {
             $entity = $this->getEntity($entity)['entity_id'];
         }
@@ -1053,7 +1072,7 @@ class Crmentity extends CI_Model
 
     /**
      * Ritrova tutte le regole di validazione per un dato field id
-     * 
+     *
      * @param int $fieldId
      */
     public function getValidations($fieldId)
@@ -1064,14 +1083,13 @@ class Crmentity extends CI_Model
 
     /**
      * Get all fields that are right joined to the entity passed
-     * 
+     *
      * @param string|int $entity
      * @return array
      */
     public function getFieldsRefBy($entity, $right_join = true)
     {
         if (!$this->_fields_ref_by) {
-
             if ($right_join) {
                 $column_join = 'fields_ref_auto_right_join';
             } else {
@@ -1121,13 +1139,16 @@ class Crmentity extends CI_Model
 
     /**
      * Ritrova relazioni da entità
-     * 
+     *
      * @param string|int|array $entity
      * @return array
      */
     public function getEntityRelations($entity)
     {
         $e_name = $this->getEntity($entity)['entity_name'];
+
+        
+
         return array_get($this->_schemaCache['relations']['by_entity'], $e_name, []);
     }
 
@@ -1143,7 +1164,7 @@ class Crmentity extends CI_Model
 
     /**
      * Data un'entità ottieni i suoi campi di preview
-     * 
+     *
      * @param string|int $entity
      * @return array
      */
@@ -1171,10 +1192,9 @@ class Crmentity extends CI_Model
                 }
 
                 // Caso `complesso`: preview in un field ref - prendo tutti i campi
-                // preview del ref 
+                // preview del ref
                 $subfields = $this->getVisibleFields($field['fields_ref']);
                 foreach ($subfields as $subfield) {
-
                     if ($subfield['fields_preview'] == DB_BOOL_TRUE && !$subfield['fields_ref']) {
                         $preview[] = $subfield;
                     }
@@ -1190,11 +1210,11 @@ class Crmentity extends CI_Model
 
     /**
      * Risolve un'entità referenziata dal field passato: se è un'entità semplice
-     * allora questo metodo ritorna l'equivalente di 
+     * allora questo metodo ritorna l'equivalente di
      *              Crmentity::getEntity($field[fields_ref])
-     * mentre se è una relazione, allora viene risolta l'entità relazionata e 
+     * mentre se è una relazione, allora viene risolta l'entità relazionata e
      * ritornata quella
-     * 
+     *
      * @param string|int|array $field
      * @return array
      */
@@ -1225,11 +1245,11 @@ class Crmentity extends CI_Model
             $refererEntity = $this->getEntity($field['fields_entity_id']);
 
             if ($relation['relations_table_1'] == $refererEntity['entity_name']) {
-                // Il mio referer corrisponde all'entità 1, quindi devo 
+                // Il mio referer corrisponde all'entità 1, quindi devo
                 // risolvere la tabella 2
                 return $this->getEntity($relation['relations_table_2']);
             } elseif ($relation['relations_table_2'] == $refererEntity['entity_name']) {
-                // Il mio referer corrisponde all'entità 2, quindi devo 
+                // Il mio referer corrisponde all'entità 2, quindi devo
                 // risolvere la tabella 1
                 return $this->getEntity($relation['relations_table_2']);
             }

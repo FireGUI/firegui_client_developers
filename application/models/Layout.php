@@ -229,6 +229,9 @@ class Layout extends CI_Model
     }
     public function getLayoutBox($lb_id)
     {
+        if (!$this->conditions->accessible('layouts_boxes', $lb_id)) {
+            return null;
+        }
         $box = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
             ->join('layouts', 'layouts.layouts_id = layouts_boxes.layouts_boxes_layout', 'left')
             ->get_where('layouts_boxes', ['layouts_boxes_id' => $lb_id])->row_array();
@@ -246,13 +249,18 @@ class Layout extends CI_Model
     }
     public function getBoxes($layoutId)
     {
+        
         $queriedBoxes = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
             ->join('layouts', 'layouts.layouts_id = layouts_boxes.layouts_boxes_layout', 'left')
             ->get_where('layouts_boxes', ['layouts_id' => $layoutId])->result_array();
 
         // Rimappo i box in modo tale da avere i parent che contengono i sub
         $boxes = $allSubboxes = $lboxes = [];
-        foreach ($queriedBoxes as $box) {
+        foreach ($queriedBoxes as $key => $box) {
+            if (!$this->conditions->accessible('layouts_boxes', $box['layouts_boxes_id'])) {
+                unset($queriedBoxes[$key]);
+                continue;
+            }
             if ($box['layouts_boxes_content_type'] === 'tabs') {
                 $box['subboxes'] = explode(',', $box['layouts_boxes_content_ref']);
                 $allSubboxes = array_merge($allSubboxes, $box['subboxes']);

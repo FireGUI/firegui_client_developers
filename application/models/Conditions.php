@@ -6,27 +6,123 @@ if (!defined('BASEPATH')) {
 
 class Conditions extends CI_Model
 {
+    private $_rules = [];
+    const CACHE_TIME = 3600;
+
+    private $rules_mapping = [
+        '_date' => '_current_date',
+        // 'numero_adulti' => '_numero_adulti',
+        // 'numero_bambini' => '_numero_bambini',
+        // 'numero_persone' => '_numero_persone',
+        // 'numero_notti' => '_numero_notti',
+        // 'data_checkin' => '_checkin',
+        // 'data_checkout' => '_checkout',
+        // 'data' => '_current_date',
+    ];
+
     public function __construct()
     {
-        parent::__construct();
-    }
-    public function accessible($what, $ref)
-    {
-        //TODO
-        return true;
-    }
-    
-    public function getRules()
-    {
-        $_rules = $this->apilib->search('regole', [
-            "(regole_struttura IS NULL OR regole_struttura = {$this->struttura_id})",
-            'regole_attiva' => 1
-        ]);
 
-        $this->rules = array_map(function ($rule) {
-            $rule['regole_regola_json'] = json_decode($rule['regole_regola_json'], true);
-            return $rule;
-        }, $_rules);
+        parent::__construct();
+
+        //Preload rules
+        $this->_preloadRules();
+    }
+    public function accessible($what, $ref, $value_id = null, $_dati = null)
+    {
+        $accessible = true;
+        if (!empty($this->_rules[$what][$ref])) {
+            $rules = $this->_rules[$what][$ref];
+
+            $dati = $this->buildElementData($what,$ref,$value_id, $_dati);
+
+            //debug($dati);
+            foreach ($rules as $rule) {
+                //debug($rule);
+                $applicable = $this->isApplicableRule($rule['_rule'], $dati);
+                    switch ($rule['conditions_action']) {
+                        case 1: //Allow
+                            $accessible = $applicable;
+                            break;
+                        case 2: //Deny
+                            $accessible = !$applicable;
+                            break;
+                        case 3: //Allow
+                            redirect();
+                            break;
+                        default:
+                        break;
+                    }
+                    
+                 if (!$accessible) { //Mi fermo alla prima regola deny o non applicabile in caso di allow
+                    break;
+                 }  
+                
+            }
+        }        
+        
+
+        return $accessible;
+    }
+    private function buildElementData($what,$ref,$value_id, $_dati = null) {
+        $dati = [
+            '_current_date' => date('Y-m-d'),
+            '_current_time' => date('H:i:s'),
+        ];
+        if ($_dati !== null) {
+            $dati = array_merge($dati, $_dati);
+        }
+        foreach ($this->auth->getSessionUserdata() as $session_field => $val) {
+            $dati["session_{$session_field}"] = $val;
+        }
+
+        switch ($what) {
+            case 'grids_actions':
+                if ($_dati !== null) {
+                    $entity = $this->db->join('grids', 'grids_id = grids_actions_grids_id', 'LEFT')->join('entity', 'entity_id = grids_entity_id', 'LEFT')->get_where('grids_actions', ['grids_actions_id' => $ref])->row()->entity_name;
+                    $dati = array_merge($dati,$this->apilib->view($entity, $value_id));
+                }                
+
+                break;
+            case 'forms_fields':
+                if ($_dati !== null && $value_id) {
+                    debug("TODO: extract data from entity related to forms_fields with value_id");
+                }                
+
+                break;
+            case 'layouts':
+            case 'layouts_boxes':
+            case 'menu':
+            case 'grids_fields':
+                break;
+            default:
+                debug("Element '$what' not recognized for conditions");
+                break;
+        }
+
+        return $dati;
+    }
+    private function _preloadRules()
+    {
+       if (empty($this->_rules)) {
+        $cache_key = 'conditions_rules';
+        if (!($this->_rule = $this->cache->get($cache_key))) {
+            $rules = $this->db->where('conditions_json_rules IS NOT NULL', null, false)->get('_conditions')->result_array();
+            foreach ($rules as $rule) {
+                if (empty($this->_rules[$rule['conditions_what']][$rule['conditions_ref']])) {
+                     $this->_rules[$rule['conditions_what']][$rule['conditions_ref']] = [];
+                }
+                $rule['_rule'] = json_decode($rule['conditions_json_rules'], true);
+                 $this->_rules[$rule['conditions_what']][$rule['conditions_ref']][] = $rule;
+            }
+            if ($this->apilib->isCacheEnabled()) {
+                $this->cache->save($cache_key, $this->_rule, self::CACHE_TIME);
+            }
+        }
+        
+       }
+        
+       //debug($this->_rules,true);
     }
     
 
@@ -40,7 +136,7 @@ class Conditions extends CI_Model
      * @param array $prenoData
      * @return boolean
      */
-    private function isApplicableRule(array $rule, array $room)
+    private function isApplicableRule(array $rule, array $dati)
     {
         //debug($rule, true);
         $contains_rules = (isset($rule['condition']) && isset($rule['rules']));
@@ -52,7 +148,7 @@ class Conditions extends CI_Model
              */
             $is_and = strtoupper($rule['condition']) === 'AND';
             foreach ($rule['rules'] as $sub_rule) {
-                $is_applicable = $this->isApplicableRule($sub_rule, $room);
+                $is_applicable = $this->isApplicableRule($sub_rule, $dati);
 
                 // Se devono essere tutte vere e la mia regola corrente è falsa,
                 // allora non proseguo e ritorno false
@@ -86,12 +182,12 @@ class Conditions extends CI_Model
                     break;
                 default:
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
-                        debug("Campo '{$rule['id']}' non gestito.");
-                        return true;
+                        return $this->doOperation($dati[$rule['id']], $rule['operator'], $rule['value']);    
+                    } else {
+                        return $this->doOperation($dati[$this->rules_mapping[$rule['id']]], $rule['operator'], $rule['value']);
                     }
-                    // debug($room);
-                    // debug($rule);
-                    return $this->doOperation($room[$this->rules_mapping[$rule['id']]], $rule['operator'], $rule['value']);
+                    
+                    
                     break;
             }
         } else {
@@ -159,6 +255,11 @@ class Conditions extends CI_Model
      */
     private function doOperation($value_to_validate, $ruleOperator, $ruleValue)
     {
+
+        // debug($value_to_validate);
+        // debug($ruleOperator);
+        // debug($ruleValue);
+
         switch ($ruleOperator) {
             case 'greater':
                 return $value_to_validate > $ruleValue;

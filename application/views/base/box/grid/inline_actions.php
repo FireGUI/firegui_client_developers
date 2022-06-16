@@ -1,6 +1,8 @@
 <div class="js_action_inline action_inline">
     <?php if (isset($links['custom']) && $links['custom']) : ?>
         <?php
+        
+
         // Filtra tutti i valori array e oggetto dall'array dati
         $row_data = array_filter(isset($row_data) ? $row_data : array(), function ($value) {
             return !is_array($value) && !is_object($value);
@@ -12,8 +14,14 @@
 
         $replace_from[] = '{value_id}';
         $replace_to[] = $id;
+
+
+        
         ?>
         <?php foreach ($links['custom'] as $key => $custom_action) : ?>
+
+            <?php if (!$this->conditions->accessible('grids_actions', $custom_action['grids_actions_id'],$id, $row_data)) {continue;} ?>
+
             <?php if (!empty($custom_action['grids_actions_html']) && (empty($custom_action['grids_actions_type']) || 'custom' == $custom_action['grids_actions_type'])) : ?>
                 <?php
                 ob_start();
