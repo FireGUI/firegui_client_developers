@@ -1,6 +1,7 @@
 <?php
 
 // Cron check last execution
+$interval_cron_execution = 10;
 if (!empty($this->settings['settings_last_cron_check'])) {
     $start_date = new DateTime($this->settings['settings_last_cron_check']);
     $end_date = new DateTime();
@@ -142,7 +143,7 @@ if (!empty($this->settings['settings_last_cron_check'])) {
 
                 <div class="box-body">
 
-                    <?php if (empty($interval_cron_execution) || $interval_cron_execution > 5):?>
+                    <?php if ($interval_cron_execution > 5):?>
                     <div class="">
                         <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
                         check <br />
