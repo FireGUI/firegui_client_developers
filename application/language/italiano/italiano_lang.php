@@ -115,6 +115,7 @@ $lang['Prev.'] = 'Prec.';
 $lang['Previous'] = 'Precedente';
 $lang['Filters'] = 'Filtri';
 $lang['Show'] = 'Mostra';
+$lang['Hide'] = 'Nascondi';
 $lang['Action Type'] = 'Tipo di azione';
 $lang['User detected'] = 'Utente rilevato';
 $lang['User not detected'] = 'Utente non rilevato';

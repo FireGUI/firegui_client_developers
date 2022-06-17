@@ -1292,7 +1292,7 @@ class Apilib
      */
     private function processData($entity, array &$data, $editMode = false, $value_id = null)
     {
-        
+            
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -1305,11 +1305,13 @@ class Apilib
         // Gestione delle custom fields actions - recupero il dato dall'entità
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
+        $fields = $this->db->join('entity', 'entity_id=fields_entity_id', 'left')
+                
+                ->get_where('fields', ['entity_name' => $entity_data['entity_name']])
+                ->result_array();
         //Xss clean
-        foreach ($data as $key => $val) {
-            $data[$key] = $this->security->xss_clean($val);
-        }
-
+        $data = $this->security->xss_clean($data, $fields);
+        
         $originalData = $data;
 
         if ($editMode) {

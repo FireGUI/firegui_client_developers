@@ -429,6 +429,12 @@ function initComponents(container, reset = false) {
             }
         });
     });
+
+    $('.js_form_fieldset').on('click', function () {
+        $('.row, legend span', $(this)).toggle();
+        
+    });
+
     $(':input').each (function () {
         if ($(':input[data-dependent_on*="'+$(this).attr('name')+'"]', $(this).closest('form')).length > 0) {
             $(this).trigger('change');

@@ -32,7 +32,7 @@ class Db_ajax extends MY_Controller
         if (isset($_POST[0])) {
             unset($_POST[0]);
         }
-
+        
         // ==========================
         // Load form related infos
         // ==========================
@@ -58,7 +58,7 @@ class Db_ajax extends MY_Controller
         // ==========================
         $dati = $this->input->post() ?: [];
 
-        $dati = $this->security->xss_clean($dati);
+        $dati = $this->security->xss_clean($dati, $form['fields']);
 
         $isOneRecord = $form['forms_one_record'] == DB_BOOL_TRUE;
         $edit = (bool) $edit;
@@ -721,8 +721,12 @@ class Db_ajax extends MY_Controller
     public function datatable_inline_edit($entity_name = null, $id = null)
     {
         try {
+            $fields = $this->db->join('entity', 'entity_id=fields_entity_id', 'left')
+                
+                ->get_where('fields', ['entity_name' => $entity_name])
+                ->result_array();
             $data = $this->input->post();
-            $data = $this->security->xss_clean($data);
+            $data = $this->security->xss_clean($data, $fields);
             if ($id) {
                 $this->apilib->edit($entity_name, $id, $data);
             } else {
@@ -741,8 +745,12 @@ class Db_ajax extends MY_Controller
     public function datatable_inline_insert($entity_name = null)
     {
         try {
+            $fields = $this->db->join('entity', 'entity_id=fields_entity_id', 'left')
+                
+                ->get_where('fields', ['entity_name' => $entity_name])
+                ->result_array();
             $data = $this->input->post();
-            $data = $this->security->xss_clean($data);
+            $data = $this->security->xss_clean($data, $fields);
             $id = $this->apilib->create($entity_name, $data, false);
         } catch (Exception $ex) {
             set_status_header(400); // Bad-Request se fallisce

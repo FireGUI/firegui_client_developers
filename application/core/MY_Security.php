@@ -52,14 +52,26 @@ class MY_Security extends CI_Security
         return $this;
     }
 
-    public function xss_clean($str, $is_image = FALSE)
+    public function xss_clean($str, $_fields = FALSE, $is_image = FALSE)
     {
+        $fields = [];
+        if ($_fields !== FALSE) {
+         
+            foreach ($_fields as $field) {
+                $fields[$field['fields_name']] = $field;
+            }
+        }
+        
+
         // Is the string an array?
         if (is_array($str)) {
             foreach ($str as $key => &$value) {
-                $str[$key] = $this->xss_clean($value);
+                
+                if (empty($fields[$key]) || $fields[$key]['fields_xssclean'] == DB_BOOL_TRUE) {
+                    $str[$key] = $this->xss_clean($value,$_fields,$is_image);
+                }
+                
             }
-
             return $str;
         }
 

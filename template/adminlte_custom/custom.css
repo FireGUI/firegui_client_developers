@@ -989,3 +989,22 @@ input:invalid {
 .connectedSortable {
   min-height: 5px!important;
 }
+
+form fieldset:hover {
+  cursor: pointer;
+}
+form fieldset .row {
+  display: none;
+}
+
+fieldset
+{
+  background-color:#CCC;
+  max-width:500px;
+  padding:16px;	
+}
+legend
+{
+  margin-bottom:0px;
+  margin-left:16px;
+}
