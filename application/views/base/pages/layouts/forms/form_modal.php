@@ -83,7 +83,7 @@ foreach ($form['forms_fields'] as $key => $field) {
                                 <?php foreach ($fieldsets as $field_set_title => $fields) : ?>
                                             <?php if ($field_set_title != '__main_fields') : ?>
                                                 <fieldset class="js_form_fieldset">
-                                                    <legend><span><?php e('Show'); ?></span><span style="display:none;"><?php e('Hide'); ?></span> <?php echo $field_set_title; ?></legend>
+                                                    <legend><span><?php e('Show'); ?></span><span style="display:none;"><?php e('Hide'); ?></span> <?php echo $field_set_title; ?> <i class="fa fa-arrow-right"></i></legend>
                                             <?php endif; ?>
                                     <div class="row sortableForm">
 

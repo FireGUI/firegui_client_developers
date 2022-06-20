@@ -431,8 +431,8 @@ function initComponents(container, reset = false) {
     });
 
     $('.js_form_fieldset').on('click', function () {
-        $('.row, legend span', $(this)).toggle();
-        
+        $('.row, legend span, i', $(this)).toggle();
+        $(this).toggleClass('fieldset_visible');
     });
 
     $(':input').each (function () {

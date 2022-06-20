@@ -997,14 +997,17 @@ form fieldset .row {
   display: none;
 }
 
-fieldset
+fieldset.fieldset_visible
 {
-  background-color:#CCC;
-  max-width:500px;
-  padding:16px;	
+  padding: 10px;
+  border: 1px dotted #4238ca;
+  background: #fcfcff;
 }
-legend
+.js_form_fieldset legend
 {
-  margin-bottom:0px;
-  margin-left:16px;
+  width: auto;
+  border-bottom: none;
+  font-size: 1.2em;
+  color: blue;
+
 }
