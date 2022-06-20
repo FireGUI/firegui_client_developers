@@ -436,8 +436,8 @@ function initComponents(container, reset = false) {
     });
 
     $('.js_form_fieldset legend').on('click', function () {
-        $('.row, legend span, i', $(this)).toggle();
-        $(this).toggleClass('fieldset_visible');
+        $('.row, legend span, i', $(this).closest('.js_form_fieldset')).toggle();
+        $(this).closest('.js_form_fieldset').toggleClass('fieldset_visible');
     });
 
     $(':input').each (function () {
