@@ -403,28 +403,33 @@ function initComponents(container, reset = false) {
     FORM FIELDS EVENTS
     */
     $(':input').on('change', function () {
+        
         var changed_input = $(this);
         $(':input[data-dependent_on*="'+$(this).attr('name')+'"]', changed_input.closest('form')).each(function () {
             //Grep optional value
+            //alert(1);
             if ($(this).data('dependent_on').includes(':')) {
                 var expl = $(this).data('dependent_on').split(':');
-                var vals = expl[1];
+                
+                var vals = expl[1].split(',');
+                
+                
             } else {
                 var vals = null;
             }
 
             if (vals !== null) {
-                if (vals == changed_input.val()) {
-                    $(this).closest('.form-group').show();
+                if (vals.includes(changed_input.val())) {
+                    $(this).closest('.js_container_field').show();
                 } else {
-                    $(this).closest('.form-group').hide();
+                    $(this).closest('.js_container_field').hide();
                 }
             } else {
                 if (changed_input.val() && changed_input.val() != 0) {
-                    $(this).closest('.form-group').show();
+                    $(this).closest('.js_container_field').show();
                 } else {
                     
-                    $(this).closest('.form-group').hide();
+                    $(this).closest('.js_container_field').hide();
                 }
             }
         });
