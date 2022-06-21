@@ -187,7 +187,12 @@ class Datab extends CI_Model
                 }
                 
             } else {
-                $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
+                if ($orderBy) {
+                    $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
+                } else {
+                    $query = str_ireplace('{order_by}', '', $query);
+                }
+
                 if ($limit) {
                     $query = str_ireplace(['{limit}', '{offset}'], [$limit, $offset], $query);
                 } else {

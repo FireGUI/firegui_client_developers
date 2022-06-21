@@ -897,9 +897,11 @@ class Get_ajax extends MY_Controller
 
         $generatedWhere = $this->datab->generate_where('calendars', $calendar_id, $value_id, $where);
 
-        $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 3);
-
-        //debug($data_entity,true);
+        if (!empty($data['calendars']['calendars_custom_query'])) {
+            $data_entity = $this->datab->getDataEntityByQuery($data['calendars']['calendars_custom_query'], $generatedWhere);
+        } else {
+            $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 3);
+        }
 
         $previews = array();
         foreach ($data['calendars_fields'] as $field) {
