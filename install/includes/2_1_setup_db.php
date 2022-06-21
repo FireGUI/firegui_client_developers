@@ -66,7 +66,7 @@ try {
             if (file_exists($dbconf)) {
                 $str = file_get_contents($dbconf);
 
-                $str = str_replace('server1.firegui.com', $dbHost, $str);
+                $str = str_replace('server1.openbuilder.net', $dbHost, $str);
                 $str = str_replace('<dbname>', $dbName, $str);
                 $str = str_replace('<dbuser>', $dbUser, $str);
                 $str = str_replace('<dbpassword>', $dbPass, $str);

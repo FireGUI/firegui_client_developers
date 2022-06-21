@@ -11,10 +11,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | of this setting
 |
 */
-defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', TRUE);
+defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.3.5');
+defined('VERSION') or define('VERSION', '2.3.5');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -40,18 +40,18 @@ define('DEBUG_LEVEL', 'DEVELOP');
 
 
 /*********** Layout di default *********/
-define('DEFAULT_LAYOUT_CALENDAR',   'calendar_simple');
-define('DEFAULT_LAYOUT_CHART',   'simple_pie');
-define('DEFAULT_LAYOUT_GRID',       'default');
-define('DEFAULT_LAYOUT_MAP',        'map_standard');
+define('DEFAULT_LAYOUT_CALENDAR', 'calendar_simple');
+define('DEFAULT_LAYOUT_CHART', 'simple_pie');
+define('DEFAULT_LAYOUT_GRID', 'default');
+define('DEFAULT_LAYOUT_MAP', 'map_standard');
 
 
 
 /*********** Session fields *********/
-define('SESS_LOGIN',        'session_login');
-define('SESS_GRIDS_DATA',   'master_crm_grids');
-define('SESS_WHERE_DATA',   'master_crm_where_data');
-define('SESS_WEBAUTHN',        'session_webauthn');
+define('SESS_LOGIN', 'session_login');
+define('SESS_GRIDS_DATA', 'master_crm_grids');
+define('SESS_WHERE_DATA', 'master_crm_where_data');
+define('SESS_WEBAUTHN', 'session_webauthn');
 
 
 /*********** Operatori filtri *********/
@@ -128,9 +128,9 @@ define('COLORS_PALETTE', array(
 /* ============
  * Permessi
  * ============ */
-define('PERMISSION_NONE',   '00');
-define('PERMISSION_READ',   '10');
-define('PERMISSION_WRITE',  '11');
+define('PERMISSION_NONE', '00');
+define('PERMISSION_READ', '10');
+define('PERMISSION_WRITE', '11');
 
 
 
@@ -156,17 +156,17 @@ defined('FOPEN_READ_WRITE_CREATE_STRICT')       or define('FOPEN_READ_WRITE_CREA
 /* ========================
  * Tipi entità
  * ======================== */
-define('ENTITY_TYPE_SYSTEM',        0);
-define('ENTITY_TYPE_DEFAULT',       1);
+define('ENTITY_TYPE_SYSTEM', 0);
+define('ENTITY_TYPE_DEFAULT', 1);
 define('ENTITY_TYPE_SUPPORT_TABLE', 2);
-define('ENTITY_TYPE_RELATION',      3);
-define('ENTITY_TYPE_MODULE',        4);
+define('ENTITY_TYPE_RELATION', 3);
+define('ENTITY_TYPE_MODULE', 4);
 
 /* ========================
  * Tipi di notifica
  * ======================== */
-define('NOTIFICATION_TYPE_ERROR',   0);
-define('NOTIFICATION_TYPE_INFO',    1);
+define('NOTIFICATION_TYPE_ERROR', 0);
+define('NOTIFICATION_TYPE_INFO', 1);
 define('NOTIFICATION_TYPE_WARNING', 2);
 define('NOTIFICATION_TYPE_MESSAGE', 3);
 define('NOTIFICATION_TYPE_SYSTEM', 4);
@@ -181,7 +181,7 @@ define('FIELDS_PERMISSIONS', serialize([
 ]));
 
 define('FIREGUI_BUILDER_BASEURL', 'https://my.openbuilder.net');
-define('FIREGUI_ADMIN_BASEURL', 'https://admin.firegui.com/');
+define('FIREGUI_ADMIN_BASEURL', 'https://admin.openbuilder.net/');
 
 
 define('CONDITIONS_ACTIONS_GRANT_ACCESS', 1);
