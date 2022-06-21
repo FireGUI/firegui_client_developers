@@ -1001,13 +1001,13 @@ fieldset.fieldset_visible
 {
   padding: 10px;
   border: 1px dotted #4238ca;
-  background: #fcfcff;
+  background: #f9f9f9;
 }
 .js_form_fieldset legend
 {
   width: auto;
   border-bottom: none;
   font-size: 1.2em;
-  color: blue;
+  color: #505ae2;
 
 }
