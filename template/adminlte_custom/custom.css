@@ -1000,7 +1000,6 @@ form fieldset .row {
 fieldset.fieldset_visible
 {
   padding: 10px;
-  border: 1px dotted #4238ca;
   background: #f9f9f9;
 }
 .js_form_fieldset legend
