@@ -74,7 +74,7 @@
 
 
   <div class="center_side pull-left hidden-xs">
-    <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.firegui.com/">FireGUI</a>.</strong> <?php e('All rights reserved.'); ?>
+    <strong>Copyright &copy; 2015-<?php echo date('Y'); ?> - Powered by <a href="https://www.openbuilder.net/">Open Builder</a>.</strong> <?php e('All rights reserved.'); ?>
   </div>
 
   <div class="right_side pull-right hidden-xs">
