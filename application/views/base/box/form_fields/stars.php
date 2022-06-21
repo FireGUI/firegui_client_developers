@@ -1,7 +1,7 @@
 <?php echo $label; ?>
 <?php if (in_array($field['fields_type'], array(DB_INTEGER_IDENTIFIER, 'INT', 'FLOAT'))) : ?>
     <div class="star-container">
-        <input class="<?php echo $class ?>" type="hidden" value="<?php echo $value; ?>" name="<?php echo $field['fields_name']; ?>" />
+        <input class="<?php echo $class ?>" type="hidden" value="<?php echo $value; ?>" name="<?php echo $field['fields_name']; ?>" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>"  />
 
         <?php for ($i = 1; $i <= 5; $i++) : ?>
             <span class="star cursor-pointer" data-val="<?php echo $i; ?>" onclick="changeStarsStatus(this)">

@@ -1,6 +1,6 @@
 <?php echo $label; ?>
 <div class="input-group">
-    <input type="password" name="<?php echo $field['fields_name']; ?>" class="form-control <?php echo $class ?>" placeholder="<?php echo $placeholder; ?>" <?php echo $onclick; ?> />
+    <input type="password" name="<?php echo $field['fields_name']; ?>" class="form-control <?php echo $class ?>" placeholder="<?php echo $placeholder; ?>" <?php echo $onclick; ?> data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
     <span class="input-group-addon">
         <i class="fas fa-lock"></i>
     </span>

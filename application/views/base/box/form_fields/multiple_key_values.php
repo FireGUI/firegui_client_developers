@@ -16,10 +16,10 @@ $count = 1;
 
             <div class="row js_multiple_key_values_row" style="margin-top:10px">
                 <div class="col-xs-5">
-                    <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][key]" data-name="<?php echo $field['fields_name']; ?>" data-type="key" class="form-control <?php echo $class ?>" placeholder="<?php e('Key'); ?>" value="<?php echo $single_value['key']; ?>" autocomplete="off" />
+                    <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][key]" data-name="<?php echo $field['fields_name']; ?>" data-type="key" class="form-control <?php echo $class ?>" placeholder="<?php e('Key'); ?>" value="<?php echo $single_value['key']; ?>" autocomplete="off" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
                 </div>
                 <div class="col-xs-5">
-                    <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][value]" data-name="<?php echo $field['fields_name']; ?>" data-type="value" class="form-control <?php echo $class ?>" placeholder="<?php e('Value'); ?>" value="<?php echo $single_value['value']; ?>" autocomplete="off" />
+                    <input type="text" name="<?php echo $field['fields_name']; ?>[<?php echo $count; ?>][value]" data-name="<?php echo $field['fields_name']; ?>" data-type="value" class="form-control <?php echo $class ?>" placeholder="<?php e('Value'); ?>" value="<?php echo $single_value['value']; ?>" autocomplete="off" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
                 </div>
                 <div class="col-xs-1">
                     <button type="button" class="btn js_remove_row"><i class="fas fa-trash-alt"></i></button>

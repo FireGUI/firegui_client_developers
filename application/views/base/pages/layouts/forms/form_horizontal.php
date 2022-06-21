@@ -1,5 +1,6 @@
 <?php
 $form_id = "form_{$form['forms']['forms_id']}";
+
 ?>
 
 <!-- Builder actions -->

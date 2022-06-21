@@ -21,6 +21,22 @@ if (isset($size)) {
 }
 
 $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $value_id);
+
+$fieldsets = ['__main_fields' => []];
+foreach ($form['forms_fields'] as $key => $field) {
+    
+    if ($field['fieldset'] && $field['required'] != DB_BOOL_TRUE) {
+        if (empty($fieldsets[$field['fieldset']])) {
+            $fieldsets[$field['fieldset']] = [$field];
+        } else {
+            $fieldsets[$field['fieldset']][] = $field;
+        }
+    } else {
+        $fieldsets['__main_fields'][] = $field;
+    }
+    unset($form['forms_fields'][$key]);
+}
+
 ?>
 
 <div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -64,47 +80,58 @@ $show_delete_button = ($form['forms']['forms_show_delete'] == DB_BOOL_TRUE && $v
                                 <?php echo implode(PHP_EOL, $form['forms_hidden']); ?>
 
                                 <div class="form-body">
+                                <?php foreach ($fieldsets as $field_set_title => $fields) : ?>
+                                            <?php if ($field_set_title != '__main_fields') : ?>
+                                                <fieldset class="js_form_fieldset">
+                                                    <legend><span><?php e('Show'); ?></span><span style="display:none;"><?php e('Hide'); ?></span> <?php echo $field_set_title; ?> <i class="fa fa-arrow-right"></i></legend>
+                                            <?php endif; ?>
                                     <div class="row sortableForm">
-                                        <?php foreach ($form['forms_fields'] as $field) : ?>
 
-                                            <?php if ($bulk_mode) : ?>
+                                        
+                                            <?php foreach ($fields as $field) : ?>
 
-                                                <div class="js_field_container">
-                                                    <div class="col-lg-3">
-                                                        <label>Edit this:</label>
-                                                        <input type="checkbox" class="_form-control js_field_check" name="edit_fields[]" value="<?php echo $field['name']; ?>" />
-                                                    </div>
-                                                    <div class="col-lg-9">
+                                                <?php if ($bulk_mode) : ?>
 
-                                                    <?php else : ?>
-                                                        <div id="<?php echo $field['id']; ?>" data-form_id="<?php echo $form['forms']['forms_id']; ?>" class=" formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>" data-id="<?php echo $field['id']; ?>" data-cols="<?php echo $field['size']; ?>">
-
-                                                            <!-- Builder buttons -->
-                                                            <div class="builder_formcolumns_buttons hide">
-                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_minus" data-toggle="tooltip" data-original-title="- columns">
-                                                                    <i class="fas fa-caret-left"></i>
-                                                                </a>
-                                                                Size
-                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_plus" data-toggle="tooltip" data-original-title="+ columns">
-                                                                    <i class="fas fa-caret-right"></i>
-                                                                </a>
-
-                                                                <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_delete btn-space" data-toggle="tooltip" data-original-title="Remove field">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </a>
-                                                            </div>
-                                                            <!-- End Builder buttons -->
-
-                                                        <?php endif; ?>
-
-                                                        <?php echo $field['html']; ?>
-
+                                                    <div class="js_field_container">
+                                                        <div class="col-lg-3">
+                                                            <label>Edit this:</label>
+                                                            <input type="checkbox" class="_form-control js_field_check" name="edit_fields[]" value="<?php echo $field['name']; ?>" />
                                                         </div>
-                                                        <?php if ($bulk_mode) : ?>
+                                                        <div class="col-lg-9">
+
+                                                        <?php else : ?>
+                                                            <div id="<?php echo $field['id']; ?>" data-form_id="<?php echo $form['forms']['forms_id']; ?>" class=" formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>" data-id="<?php echo $field['id']; ?>" data-cols="<?php echo $field['size']; ?>">
+
+                                                                <!-- Builder buttons -->
+                                                                <div class="builder_formcolumns_buttons hide">
+                                                                    <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_minus" data-toggle="tooltip" data-original-title="- columns">
+                                                                        <i class="fas fa-caret-left"></i>
+                                                                    </a>
+                                                                    Size
+                                                                    <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_plus" data-toggle="tooltip" data-original-title="+ columns">
+                                                                        <i class="fas fa-caret-right"></i>
+                                                                    </a>
+
+                                                                    <a href="javascript:void(0);" class="btn btn-box-tool js_btn_fields_delete btn-space" data-toggle="tooltip" data-original-title="Remove field">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                                <!-- End Builder buttons -->
+
+                                                            <?php endif; ?>
+
+                                                            <?php echo $field['html']; ?>
+
+                                                            </div>
+                                                            <?php if ($bulk_mode) : ?>
                                                     </div><?php endif; ?>
                                             <?php endforeach; ?>
+                                            
                                                 </div>
-
+                                                <?php if ($field_set_title != '__main_fields') : ?>
+                                                </fieldset>    
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div <?php echo "id='msg_{$form_id}'"; ?> class="alert alert-danger hide"></div>

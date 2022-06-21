@@ -1,4 +1,7 @@
-<?php $form_id = "form_{$form['forms']['forms_id']}"; ?>
+<?php 
+$form_id = "form_{$form['forms']['forms_id']}"; 
+
+?>
 <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>" class="formAjax <?php echo ($form['forms']['forms_css_extra']) ?? null; ?>" enctype="multipart/form-data" data-edit-id="<?php echo $value_id; ?>">
     <?php add_csrf(); ?>
     <!-- FORM HIDDEN DATA -->

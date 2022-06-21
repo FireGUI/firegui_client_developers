@@ -22,7 +22,7 @@
     </script>
 <?php endif; ?>
 
-<select class="form-control select2_standard <?php echo $class ?>" name="<?php echo $field['fields_name']; ?>" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?> <?php echo $attr; ?>>
+<select class="form-control select2_standard <?php echo $class ?>" name="<?php echo $field['fields_name']; ?>" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?> <?php echo $attr; ?> data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>">
     <?php if (!$field['fields_source']) : ?>
         <?php if ($field['fields_required'] == DB_BOOL_FALSE) : ?>
             <option></option>
