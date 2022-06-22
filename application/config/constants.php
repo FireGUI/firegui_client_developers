@@ -180,7 +180,7 @@ define('FIELDS_PERMISSIONS', serialize([
     4 => 'Read/Write (insert & update)'
 ]));
 
-define('FIREGUI_BUILDER_BASEURL', 'https://my.openbuilder.net');
+define('FIREGUI_BUILDER_BASEURL', 'https://my.openbuilder.net/');
 define('FIREGUI_ADMIN_BASEURL', 'https://admin.openbuilder.net/');
 
 
