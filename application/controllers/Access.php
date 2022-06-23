@@ -266,6 +266,8 @@ class Access extends MY_Controller
 
             $current = $this->auth->get('id');
 
+            // Force logout...
+            $this->auth->logout();
             //$this->session->sess_destroy();
             // Force login with remember
             $this->auth->login_force($userId, true);

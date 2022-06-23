@@ -138,13 +138,10 @@ class Auth extends CI_Model
         $this->db->limit(1);
         $this->db->select('*, ' . LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id as ' . LOGIN_ENTITY . '_id');
         $query = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_ENTITY . '.' . LOGIN_ENTITY . '_id' => $id));
-        if (!$query->num_rows() || (!$this->datab->is_admin() /* && $this->datab->is_admin($query->row()->id) */)) {
+        if (!$query->num_rows()) {
             // Nessun risultato? Allora esci...
             return false;
         }
-
-        // Force logout...
-        $this->auth->logout();
 
         $this->setSessionUserdata($query->row_array());
         if ($remember) {
