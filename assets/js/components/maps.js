@@ -67,13 +67,15 @@ function load_marker(map, url, clusterize) {
                         html: `<span style="${markerHtmlStyles}" />`
                     });
                 }
-                var marker = L.marker([val.lat, val.lon], {
-                    icon: icon
-                }).bindPopup(html);
-                markers.addLayer(marker);
+                if ($.isNumeric(val.lat) && $.isNumeric(val.lon)) {
+                    var marker = L.marker([val.lat, val.lon], {
+                        icon: icon
+                    }).bindPopup(html);
+                    markers.addLayer(marker);
 
-                var coor = L.latLng(val.lat, val.lon);
-                group.push(coor);
+                    var coor = L.latLng(val.lat, val.lon);
+                    group.push(coor);
+                }
             });
             //console.log(markers);
             //In questo momento, la mappa potrebbe esser stata distrutta e non più disponibile... controllo...
