@@ -266,6 +266,10 @@ a.fancybox {
   font-weight: 900;
 }
 
+.main-header a.logo {
+  box-shadow: none;
+}
+
 .dropdown-menu {
   border: none !important;
   box-shadow: 0 4px 2px 0 rgba(60, 64, 67, 0.3),
