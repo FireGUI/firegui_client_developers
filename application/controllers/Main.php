@@ -1,7 +1,8 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Main extends MY_Controller
 {
@@ -9,7 +10,7 @@ class Main extends MY_Controller
     /**
      * Controller constructor
      */
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         //$this->output->cache(20);
@@ -70,7 +71,6 @@ class Main extends MY_Controller
      */
     public function get_layout_content($layout_id, $value_id = null)
     {
-
         if (empty($layout_id)) {
             die(json_encode(array('status' => 0, 'msg' => 'Layout id needed')));
         }
@@ -91,7 +91,7 @@ class Main extends MY_Controller
         }
 
         // Check permission
-        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
+        if (!$this->datab->can_access_layout($layout_id, $value_id)) {
             die(json_encode(array('status' => 0, 'msg' => 'Permission denied')));
         }
 
@@ -111,7 +111,6 @@ class Main extends MY_Controller
         } else {
             // I have 2 type of layouts: PDF or standard. If PDF return type pdf and open in target blank by client
             if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
-
                 echo json_encode(array('status' => 1, 'type' => 'pdf'));
             } else {
                 $dati['title_prefix'] = ucfirst(t(trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])))));
@@ -159,7 +158,7 @@ class Main extends MY_Controller
         // Se non posso accedere a questo layout, allora mostro la pagina con il
         // messaggio: "La pagina da te cercata non esiste, oppure non hai i
         // permessi per accedervi"
-        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
+        if (!$this->datab->can_access_layout($layout_id, $value_id)) {
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->stampa($pagina, $value_id);
         } else {
@@ -181,7 +180,6 @@ class Main extends MY_Controller
                 
                 // I have 2 type of layouts: PDF or standard
                 if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
-
                     if (file_exists(FCPATH . "application/views/custom/layout/pdf.php")) {
                         $view_content = $this->load->view("custom/layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
                     } else {
@@ -269,7 +267,6 @@ class Main extends MY_Controller
         }
 
         foreach ($this->template as $key => $html) {
-
             $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
         }
 
@@ -375,7 +372,6 @@ class Main extends MY_Controller
     */
     public function settings()
     {
-
         $dati['current_page'] = 'settings';
 
         //Get all settings layout
@@ -465,7 +461,6 @@ class Main extends MY_Controller
      */
     public function permissions()
     {
-
         if (!$this->datab->is_admin()) {
             $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
             $this->stampa($pagina);
@@ -499,11 +494,13 @@ class Main extends MY_Controller
         // ===========
         // Sezione layouts
         if (defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
+            if (defined('LOGIN_DELETED_FIELD') && LOGIN_DELETED_FIELD) {
+                $this->db->where(LOGIN_DELETED_FIELD . " <> '" . DB_BOOL_TRUE . "'", null, false);
+            }
             $users = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_ACTIVE_FIELD => DB_BOOL_TRUE))->result_array();
         } else {
             $users = $this->db->get(LOGIN_ENTITY)->result_array();
         }
-
 
         // Crea un array di mappatura layout_id => ucwords(n. cognome)
         $userIds = array_key_map($users, LOGIN_ENTITY . '_id');
@@ -631,7 +628,6 @@ class Main extends MY_Controller
      */
     public function cache_control($action = null)
     {
-
         switch ($action) {
             case 'on':
                 $this->apilib->toggleCachingSystem(true);
@@ -744,7 +740,7 @@ class Main extends MY_Controller
         redirect(base_url());
     }
 
-    public function custom_view_to_pdf($view, $orientation = "landscape", $html = FALSE)
+    public function custom_view_to_pdf($view, $orientation = "landscape", $html = false)
     {
         if ($html) {
             die($content);
@@ -760,6 +756,4 @@ class Main extends MY_Controller
             fpassthru($fp);
         }
     }
-
-
 }
