@@ -6,7 +6,7 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
  * ============================================================
  * Base configurations
  * ============================================================
- 
+
  * THEME_CSS_PATH       Path to custom theme css
  * CUSTOM_CSS_PATH     Path to custom css
  * UPLOAD_DEPTH_LEVEL   Annidated folders to create for uploads directory
@@ -38,7 +38,7 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     define('DEFAULT_EMAIL_REPLY', 'Example Inc. <no-reply@yourdomain.com>');
 
     /*
- 
+
 
     /*
  * ============================================================
@@ -57,19 +57,20 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
  * LANG_NAME_FIELD          Language name/identifier field
  * LANG_DEFAULT_FIELD       Language "is default" field
  */
-    define('LOGIN_ENTITY',          'users');
-    define('LOGIN_USERNAME_FIELD',  'users_email');
-    define('LOGIN_PASSWORD_FIELD',  'users_password');
-    define('LOGIN_ACTIVE_FIELD',    'users_active');
-    define('LOGIN_NAME_FIELD',      'users_first_name');
-    define('LOGIN_SURNAME_FIELD',   'users_last_name');
-    define('LOGIN_IMG_FIELD',       'users_avatar');
+    define('LOGIN_ENTITY', 'users');
+    define('LOGIN_USERNAME_FIELD', 'users_email');
+    define('LOGIN_PASSWORD_FIELD', 'users_password');
+    define('LOGIN_ACTIVE_FIELD', 'users_active');
+    define('LOGIN_NAME_FIELD', 'users_first_name');
+    define('LOGIN_SURNAME_FIELD', 'users_last_name');
+    define('LOGIN_IMG_FIELD', 'users_avatar');
     define('LOGIN_LAST_PWD_CHANGE_FIELD', 'users_last_password_change');
     define('LOGIN_WEBAUTHN_DATA', 'users_webauthn_data');
+    define('LOGIN_DELETED_FIELD', 'users_deleted');
 
-    define('LANG_ENTITY',       'languages');
-    define('LANG_CODE_FIELD',   'languages_code');
-    define('LANG_NAME_FIELD',   'languages_name');
+    define('LANG_ENTITY', 'languages');
+    define('LANG_CODE_FIELD', 'languages_code');
+    define('LANG_NAME_FIELD', 'languages_name');
     //define('LANG_DEFAULT_FIELD', 'languages_default');
 
     define('MIN_SEARCH_CHARS', 3);
@@ -124,7 +125,7 @@ $                   Match the end of the string.
 
     /*
  * ============================================================
- * Base URL ADMIN 
+ * Base URL ADMIN
  * ============================================================
  *
  */
@@ -143,7 +144,7 @@ if (!function_exists('base_url_admin')) {
  * ============================================================
  * Base URL Template , Base URL Script, Base URL Uploads
  * ============================================================
- * 
+ *
  */
     function base_url_template($uri = '')
     {
@@ -159,11 +160,11 @@ if (!function_exists('base_url_admin')) {
     }
 }
 
-/* 
+/*
  * ============================================================
  * Additional and customizable configurations
  * ============================================================
- * 
+ *
  */
 
 $config = array(
