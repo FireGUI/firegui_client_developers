@@ -2384,6 +2384,7 @@ class Datab extends CI_Model
             if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0) {
                 $entity = $this->crmentity->getEntity($dati['layout_container']['layouts_entity_id']);
                 if (isset($entity['entity_name'])) {
+                    $this->layout->addRelatedEntity($entity['entity_name']);
                     $data_entity = $this->getDataEntity($entity['entity_id'], ["{$entity['entity_name']}_id" => $value_id], 1);
                     $layout_data_detail = array_shift($data_entity);
                 }
@@ -3150,6 +3151,9 @@ class Datab extends CI_Model
                 // Prendo la struttura della grid
                 $grid = $this->get_grid($contentRef);
                 
+                
+                $this->layout->addRelatedEntity($grid['grids']['entity_name']);
+
                 // Ci sono problemi se inizializzo una datatable senza colonne!!
                 if (empty($grid['grids_fields'])) {
                     return sprintf(t('*** Grid `%s` without fields ***'), $contentRef);

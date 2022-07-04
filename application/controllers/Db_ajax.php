@@ -156,9 +156,25 @@ class Db_ajax extends MY_Controller
                 }
             }
             if (in_array($status, [0, 1, 2, 3, 4, 5])) {
-                echo json_encode(array('status' => $status, 'txt' => str_replace($replaceFrom, $replaceTo, $message), 'data' => $saved), JSON_INVALID_UTF8_SUBSTITUTE);
+                echo json_encode(array(
+                    'status' => $status, 
+                    'txt' => str_replace($replaceFrom, $replaceTo, $message), 
+                    'data' => $saved,
+                    'cache_tags' => $this->apilib->buildTagsFromEntity($entity)
+                ), JSON_INVALID_UTF8_SUBSTITUTE,
+                    
+                );
             } elseif (in_array($status, [6, 7])) {
-                $return_data = array('status' => $status, 'txt' => str_replace($replaceFrom, $replaceTo, $message), 'close_modals' => 1, 'refresh_grids' => 1, 'related_entity' => $entity, 'reset_form' => 1, 'data' => $saved);
+                $return_data = array(
+                    'status' => $status, 
+                    'txt' => str_replace($replaceFrom, $replaceTo, $message), 
+                    'close_modals' => 1, 
+                    'refresh_grids' => 1, 
+                    'related_entity' => $entity, 
+                    'reset_form' => 1, 
+                    'data' => $saved,
+                    'cache_tags' => $this->apilib->buildTagsFromEntity($entity)
+                );
 
                 echo json_encode($return_data, JSON_INVALID_UTF8_SUBSTITUTE);
             } else {

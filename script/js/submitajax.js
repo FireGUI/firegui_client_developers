@@ -192,6 +192,12 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
                 closeContainingPopups(form);
             }
+            if (typeof msg.cache_tags !== 'undefined' && msg.cache_tags) {
+                for (var i in msg.cache_tags) {
+                    var entity = msg.cache_tags[i];
+                    refreshLayoutBoxesByEntity(entity);
+                }
+            } 
             if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids && msg.related_entity) {
                 refreshGridsByEntity(msg.related_entity);
                 //refreshAjaxLayoutBoxes();
@@ -313,7 +319,11 @@ function closeContainingPopups(el) {
 }
 
 function refreshGridsByEntity(entity_name) {
-    $('.js_fg_grid_' + entity_name).DataTable().ajax.reload();
+    var dt = $('.js_ajax_datatable', $('.js_fg_grid_' + entity_name)).DataTable();
+    if (dt.length > 0 && dt.ajax !== null) {
+        dt.ajax.reload();
+    }
+    
 
 }
 
@@ -387,4 +397,62 @@ function refreshAjaxLayoutBoxes() {
     // }
 
 
+}
+
+function refreshLayoutBoxesByEntity (entity_name) {
+    var link_href = window.location.href;
+    var get_params = link_href.split('?');
+                if (get_params[1]) {
+                    get_params = '?' + get_params[1];
+                } else {
+                    get_params = '';
+                }
+    $('.js_page_content').each (function () {
+        
+        var related_entities_string = $(this).data('related_entities');
+        //console.log(related_entities_string);
+        if (typeof related_entities_string != 'undefined') {
+            var related_entities = related_entities_string.split(',');
+            console.log(related_entities);
+            console.log(entity_name);
+            if (related_entities.includes(entity_name)) {
+                loading(true);
+                var layout_id = $(this).data('layout-id');
+                
+                
+                $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
+                    type: 'GET',
+                    dataType: 'json',
+                    complete: function () {
+                        loading(false);
+                    },
+                    success: function (data) {
+                        if (data.status == 0) {
+                            console.log(data.msg);
+                        }
+                        if (data.status == 1) {
+
+                                $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
+
+                                $('.js_page_content').hide();
+                                document.title = data.dati.title_prefix;
+                                console.log('TODO: clone js_page_content instead of creating div...');
+                                var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'"></div>';
+                                // $();
+                                //clonedContainer.html(data.content);
+                                $('#js_layout_content_wrapper').append(clonedContainerHtml);
+                                var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
+                                clonedContainer.html(data.content);
+                                window.history.pushState("", "", link_href);
+                                initComponents(clonedContainer, true);
+
+                                
+                            
+                        }
+                    },
+                });
+            }
+        }
+        
+    });
 }

@@ -192,7 +192,10 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
                 closeContainingPopups(form);
             }
-            if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids && msg.related_entity) {
+            if (typeof msg.cache_tags !== 'undefined' && msg.cache_tags) {
+console.log(msg.cache_tags);
+//alert('lock!');
+            } else if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids && msg.related_entity) {
                 refreshGridsByEntity(msg.related_entity);
                 //refreshAjaxLayoutBoxes();
             }

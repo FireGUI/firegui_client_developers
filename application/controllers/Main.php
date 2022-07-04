@@ -117,6 +117,8 @@ class Main extends MY_Controller
                 $dati['title_prefix'] = ucfirst(t(trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])))));
                 $dati['current_page'] = "layout_{$layout_id}";
                 $dati['show_title'] = true;
+                $dati['related_entities'] = $this->layout->getRelatedEntities();
+                //debug($dati['related_entities']);
                 $dati['layout_id'] = $layout_id;
                 $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
 
@@ -202,6 +204,7 @@ class Main extends MY_Controller
                 } else {
                     $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
                     $dati['current_page'] = "layout_{$layout_id}";
+                    $dati['related_entities'] = $this->layout->getRelatedEntities();
                     $dati['show_title'] = true;
                     $dati['layout_id'] = $layout_id;
                     $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);

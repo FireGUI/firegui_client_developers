@@ -4,7 +4,6 @@
 
 
 $('body').on('click', '.js_ajax_content', function (e) {
-
     // Check if has a layout id to open
     var layout_id = $(this).data('layout-id');
     var link_href = $(this).attr('href');
@@ -15,58 +14,81 @@ $('body').on('click', '.js_ajax_content', function (e) {
         get_params = '';
     }
     var that = $(this);
+    
+    
+    
     if (layout_id && !e.metaKey) {
 
+
+        $('.js_submenu_item.active').removeClass('active');
+
+                            $('#js_layout_content_wrapper').data('layout-id', layout_id);
+        // Fix for sidebar to active li
+        if ($(that).parent().hasClass('js_sidebar_menu_item')) {
+
+            $('.js_sidebar_menu_item').removeClass('active');
+            $('.js_sidebar_menu_item').removeClass('menu-open');
+            $('.treeview-menu').hide();
+        }
+        if ($(that).parent().hasClass('js_submenu_item')) {
+            $('.js_sidebar_menu_item').removeClass('active');
+            $('.js_sidebar_menu_item').removeClass('menu-open');
+            $('.treeview-menu').hide();
+
+            $(that).parent().addClass('active');
+            $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
+            $(that).closest('.treeview-menu').show();
+        } else {
+            $(that).parent().addClass('active');
+        }
+
         e.preventDefault();
-        loading(true);
-        $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
-            type: 'GET',
-            dataType: 'json',
-            complete: function () {
-                //$('#js_page_content').stop(true, true).show();
-                loading(false);
-            },
-            success: function (data) {
-                if (data.status == 0) {
-                    console.log(data.msg);
-                }
-                if (data.status == 1) {
+        var $layout_exists = $('.js_page_content[data-layout-id="'+layout_id+'"]');
+        if ($layout_exists.length > 0) {
+             //Il contenuto è già stato caricato, mostro quel box e nascondo gli altri
+             $('.js_page_content').hide();
+             $layout_exists.show();
+             document.title = $layout_exists.data('title');
+        } else {
+            loading(true);
+            $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
+                type: 'GET',
+                dataType: 'json',
+                complete: function () {
+                    loading(false);
+                },
+                success: function (data) {
+                    if (data.status == 0) {
+                        console.log(data.msg);
+                    }
+                    if (data.status == 1) {
 
-                    if (data.type == 'pdf') {
-                        //location.href = link_href;
-                        window.open(link_href, '_blank');
-                    } else {
-
-                        $('.js_submenu_item.active').removeClass('active');
-
-                        $('#js_layout_content_wrapper').data('layout-id', layout_id);
-                        document.title = data.dati.title_prefix;
-                        $('#js_page_content').html(data.content);
-                        window.history.pushState("", "", link_href);
-                        initComponents($('#js_page_content'), true);
-
-                        // Fix for sidebar to active li
-                        if ($(that).parent().hasClass('js_sidebar_menu_item')) {
-
-                            $('.js_sidebar_menu_item').removeClass('active');
-                            $('.js_sidebar_menu_item').removeClass('menu-open');
-                            $('.treeview-menu').hide();
-                        }
-                        if ($(that).parent().hasClass('js_submenu_item')) {
-                            $('.js_sidebar_menu_item').removeClass('active');
-                            $('.js_sidebar_menu_item').removeClass('menu-open');
-                            $('.treeview-menu').hide();
-
-                            $(that).parent().addClass('active');
-                            $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
-                            $(that).closest('.treeview-menu').show();
+                        if (data.type == 'pdf') {
+                            //location.href = link_href;
+                            window.open(link_href, '_blank');
                         } else {
-                            $(that).parent().addClass('active');
+                            $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
+                            $('.js_page_content').hide();
+                            document.title = data.dati.title_prefix;
+                            var related_entities = data.dati.related_entities.join(',');
+                            console.log('TODO: clone js_page_content instead of creating div...');
+                            var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'" data-related_entities="'+related_entities+'"></div>';
+                            // $();
+                            //clonedContainer.html(data.content);
+                            $('#js_layout_content_wrapper').append(clonedContainerHtml);
+                            var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
+                            clonedContainer.html(data.content);
+                            window.history.pushState("", "", link_href);
+                            initComponents(clonedContainer, true);
+
+                            
                         }
                     }
-                }
-            },
-        });
+                },
+            });
+        }
+
+        
         e.stopPropagation();
     } else {
 
