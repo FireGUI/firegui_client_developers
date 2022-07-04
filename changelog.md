@@ -1,3 +1,3 @@
-Changelog version 2.3.5
+Changelog version 2.3.6
  
-Graphics of fieldset
+Beta per cache layouts
