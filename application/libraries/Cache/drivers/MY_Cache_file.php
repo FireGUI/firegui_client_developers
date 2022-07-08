@@ -133,7 +133,7 @@ class MY_Cache_file extends CI_Driver
 		}
 		$this->writeMappingFile($mapping);
 	}
-	private function writeMappingFile($mapping)
+	public function writeMappingFile($mapping)
 	{
 		if (write_file($this->_cache_path . self::TAGS_CACHE_FILE, json_encode($mapping, JSON_PRETTY_PRINT))) {
 			return true;

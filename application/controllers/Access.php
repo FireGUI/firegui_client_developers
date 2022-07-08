@@ -7,6 +7,8 @@ class Access extends MY_Controller
 
     function __construct()
     {
+        $this->output->cache(20);
+
         parent::__construct();
         header('Access-Control-Allow-Origin: *');
         if (!empty($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
@@ -25,7 +27,8 @@ class Access extends MY_Controller
 
     public function login()
     {
-
+        
+        
         $this->load->view('layout/login');
     }
 

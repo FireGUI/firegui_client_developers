@@ -77,7 +77,9 @@ class MY_Session extends CI_Session
         if (empty($params['cookie_name'])) {
             $params['cookie_name'] = ini_get('session.name');
         } else {
+            
             ini_set('session.name', $params['cookie_name']);
+            
         }
 
         isset($params['cookie_path']) or $params['cookie_path'] = config_item('cookie_path');

@@ -33,7 +33,7 @@ class Get_ajax extends MY_Controller
 
         //If layout is module dependent, preload translations
         $layout = $this->layout->getLayout($layout_id);
-        if ($layout['layouts_module']) {
+        if ($layout['layouts_module']) { 
             $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], array_values($this->lang->is_loaded)[0]));
             $this->layout->setLayoutModule($layout['layouts_module']);
         }

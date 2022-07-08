@@ -2,6 +2,8 @@
 
 class MY_Output extends CI_Output
 {
+    var $path = null;
+    var $tags = [];
     /**
      * Write Cache
      *
@@ -15,7 +17,14 @@ class MY_Output extends CI_Output
 
         //-XXX CUSTOM------------------------------------
         $cache_path = $this->cachePath();
+        
+        
+
         //-----------------------------------------------
+        if (!is_dir($cache_path)) {
+            mkdir($cache_path, DIR_WRITE_MODE, true);
+        }
+
 
         if (!is_dir($cache_path) or !is_really_writable($cache_path)) {
             log_message('error', 'Unable to write cache file: ' . $cache_path);
@@ -84,6 +93,13 @@ class MY_Output extends CI_Output
         }
 
         chmod($cache_path, 0640);
+
+        //Last step: save this cacheid in tags to easily remove later (when db invalidate)
+        $relative_cache_path = implode('/',array_slice(explode('/',$cache_path), -3, 3, true));
+        
+        $this->saveTagsMapping($relative_cache_path);
+        
+
         log_message('debug', 'Cache file written: ' . $cache_path);
 
         // Send HTTP cache-control headers to browser to match file cache settings.
@@ -209,17 +225,14 @@ class MY_Output extends CI_Output
 
         //-XXX CUSTOM------------------------------------
         $passed = TRUE;
-        $path1 = $cache_path . 'xmember/' . md5($CI->config->item('base_url') . $CI->config->item('index_page') . ltrim($uri, '/'));
+        $path1 = $cache_path . 'fullpages/' . md5($CI->config->item('base_url') . $CI->config->item('index_page') . ltrim($uri, '/'));
+
         if (!@unlink($path1)) {
             log_message('error', 'Unable to delete cache file for ' . $uri);
             $passed = FALSE;
         }
 
-        $path2 = $cache_path . 'xvisitor/' . md5($CI->config->item('base_url') . $CI->config->item('index_page') . ltrim($uri, '/'));
-        if (!@unlink($path2)) {
-            log_message('error', 'Unable to delete cache file for ' . $uri);
-            $passed = FALSE;
-        }
+       
         //-----------------------------------------------
 
         return $passed;
@@ -228,18 +241,37 @@ class MY_Output extends CI_Output
 
     private function cachePath(&$CFG = false)
     {
+        if (!$this->path) {
+            $hasSession = !empty($_COOKIE['ci_session']);
 
-        $hasSession = !empty($_COOKIE['ci_session']);
-
-        if (empty($CFG)) {
-            $CI = &get_instance();
-            $CFG = $CI->config;
+            if (empty($CFG)) {
+                $CI = &get_instance();
+                $CFG = $CI->config;
+            }
+            $this->path = $CFG->item('cache_path');
+            $this->path = empty($path) ? APPPATH . 'cache/' : $path;
+            
+            
+            $this->path .= 'fullpages/';
+    
+            if ($hasSession) {
+                ob_start();
+                session_id($hasSession);
+                session_start();
+                if ($_SESSION['session_login']['users_id']) {
+                    $this->path .= $_SESSION['session_login']['users_id'].'/';
+                }
+                session_abort();
+    
+                
+    
+                ob_end_clean();
+                
+            }
         }
-        $path = $CFG->item('cache_path');
-        $path = empty($path) ? APPPATH . 'cache/' : $path;
-        $path .= $hasSession ? 'xmember/' : 'xvisitor/';
-
-        return $path;
+        
+        
+        return $this->path;
     }
 
     function executionTime()
@@ -251,4 +283,36 @@ class MY_Output extends CI_Output
         $total_time = round(($time), 4); //second unit
         return $total_time;
     }
+
+    public function setTags($tags) {
+        $this->tags = $tags;
+    }
+    public function addTag($tag) {
+        if (!in_array($tag, $this->tags)) {
+            $this->tags[] = $tag;
+        }
+        
+    }
+    public function addTags($tags) {
+        foreach ($tags as $tag) {
+            $this->addTag($tag);
+        }
+        
+    }
+
+    public function saveTagsMapping($id) {
+        $CI = &get_instance();
+        $current_mapping = $CI->mycache->getTagsMapping();
+        foreach ($this->tags as $tag) {
+            if (!array_key_exists($tag, $current_mapping)) {
+				$current_mapping[$tag] = [];
+			}
+			if (!in_array($id, $current_mapping[$tag])) {
+				//Add the id to the tag mapping
+				$current_mapping[$tag][] = $id;
+			}
+        }
+        $CI->mycache->writeMappingFile($current_mapping);
+    }
+    
 }

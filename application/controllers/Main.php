@@ -11,12 +11,13 @@ class Main extends MY_Controller
      * Controller constructor
      */
     public function __construct()
-    {
+    { 
+        $this->output->cache(20); 
         parent::__construct();
-        //$this->output->cache(20);
+        
         // Controllo anche la current uri
         if ($this->auth->guest()) {
-
+ 
             // FIX: siamo nel controller main, quindi l'uri dovrebbe cominciare con main
             $uri = explode('/', uri_string());
 
@@ -243,6 +244,9 @@ class Main extends MY_Controller
      */
     protected function stampa($pagina, $value_id = null)
     {
+
+       $this->output->setTags($this->layout->getRelatedEntities());
+
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/head.php")) {
             $this->template['head'] = $this->load->view('custom/layout/head', array(), true);
         } else {
