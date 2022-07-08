@@ -9,6 +9,7 @@ class Layout extends CI_Model
      */
     private $structure = [];
     public $current_module_identifier = false;
+    public $related_entities = [];
 
     /**
      * @param int $layoutId
@@ -383,5 +384,15 @@ class Layout extends CI_Model
             //}
         }
         return $html;
+    }
+
+    public function addRelatedEntity($entity_name) {
+        if (!in_array($entity_name, $this->related_entities)) {
+            $this->related_entities[] = $entity_name;
+        }
+        
+    }
+    public function getRelatedEntities() {
+        return $this->related_entities;
     }
 }

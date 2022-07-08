@@ -41,7 +41,7 @@
                     </div>
                 </section>
             <?php endif; ?>
-            <div id="js_page_content">
+            <div class="js_page_content" data-layout-id="<?php echo (!empty($dati['layout_id'])) ? $dati['layout_id'] : ''; ?>" data-title="<?php echo (!empty($dati['title_prefix'])) ? $dati['title_prefix'] : ''; ?>" data-related_entities="<?php echo (!empty($dati['related_entities']))?implode(',',$dati['related_entities']):'' ; ?>">
                 <?php echo $page; ?>
             </div>
         </div>
