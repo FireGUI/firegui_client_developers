@@ -1014,3 +1014,7 @@ fieldset.fieldset_visible
   color: #505ae2;
 
 }
+
+.js_show_user_password {
+  cursor: pointer;
+}
