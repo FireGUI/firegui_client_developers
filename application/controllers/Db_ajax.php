@@ -305,6 +305,9 @@ class Db_ajax extends MY_Controller
 
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
 
+        //Invalidate cache
+        //$this->mycache->clearCache();
+
         //debug($this->session->userdata(SESS_WHERE_DATA));
 
         // Mando output

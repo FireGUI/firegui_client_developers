@@ -6,7 +6,12 @@ if (!defined('BASEPATH')) {
 
 class Get_ajax extends MY_Controller
 {
+    public function __construct()
+    {
+    
 
+    parent::__construct();
+}
     /**
      * Render di un layout in modale
      * @param int $layout_id
@@ -132,9 +137,12 @@ class Get_ajax extends MY_Controller
                 'data' => $this->input->post()
             );
 
-            echo $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
-            $this->load->view('pages/layouts/forms/form_modal', $viewData);
-            echo $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+            $content = $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
+            $content.= $this->load->view('pages/layouts/forms/form_modal', $viewData, true);
+            $content.=$this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+
+            $this->load->view('layout/content_return', ['content' => $content]);
+
             $this->layout->setLayoutModule();
         } else {
             $content = '<div class="modal fade modal-scroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -142,7 +150,7 @@ class Get_ajax extends MY_Controller
                                 <div class="modal-content">';
             $content .= str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
             $content .= '</div></div></div>';
-            echo $content;
+            $this->load->view('layout/content_return', ['content' => $content]);
             $this->layout->setLayoutModule();
         }
     }
@@ -168,8 +176,8 @@ class Get_ajax extends MY_Controller
                 $layout['content'] .
                 $this->datab->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
         }
-
-        echo $layout['content'];
+        $this->load->view('layout/content_return', ['content' => $layout['content']]);
+        
     }
     /**
      * Alias di modal_form
@@ -539,15 +547,19 @@ class Get_ajax extends MY_Controller
                 }
             }
         }
-
-        header('Content-Type: application/json');
-        echo json_encode($result_json);
+$this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
+        
     }
 
     public function get_datatable_ajax($grid_id, $valueID = null)
     {
         if ($this->auth->guest()) {
-            echo(json_encode(array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])));
+            $this->load->view('layout/json_return', [
+                'json' => json_encode(
+                    array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])
+                )
+            ]);
+            
         } else {
 
             /**
@@ -666,13 +678,13 @@ class Get_ajax extends MY_Controller
             $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
             $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
 
-
-            echo json_encode(array(
+            $this->load->view('layout/json_return', ['json' => json_encode(array(
                 'iTotalRecords' => $totalRecords,
                 'iTotalDisplayRecords' => $totalDisplayRecord,
                 'sEcho' => $s_echo,
                 'aaData' => $out_array
-            ));
+            ))]);
+            
         }
     }
 

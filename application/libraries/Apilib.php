@@ -21,8 +21,6 @@ class Apilib
     const MODE_API_CALL = 2;
     const MODE_CRM_FORM = 3;
 
-    const CACHE_TIME = 3600;
-
     const ERR_INVALID_API_CALL  = 1;
     const ERR_NO_DATA_SENT      = 2;
     const ERR_REDIRECT_FAILED   = 3;
@@ -107,16 +105,6 @@ class Apilib
 
 
 
-
-        // Aggiungi tracciamento eccezioni non catchate, quantomeno per non
-        // bloccare il sistema e che nessuno sappia nulla
-
-        //Se impostato un tempo di cache diverso prendo quello
-        if (defined('CACHE_TIME')) {
-            $this->CACHE_TIME = CACHE_TIME;
-        } else {
-            $this->CACHE_TIME = self::CACHE_TIME;
-        }
     }
 
 
@@ -231,123 +219,7 @@ class Apilib
 
 
 
-    public function getCacheAdapter()
-    {
-        $filename = APPPATH . 'cache/cache-controller';
-        $defaultAdapter = array('adapter' => 'dummy'); //Default adapter dummy to disable cache by default
-        if (!file_exists($filename)) {
-            @file_put_contents_and_create_dir($filename, serialize($defaultAdapter), LOCK_EX);
-            return $defaultAdapter;
-        }
-
-        $controllerFileContents = file_get_contents($filename);
-        $adapter = @unserialize($controllerFileContents);
-
-        if (!is_array($adapter) or !array_key_exists('adapter', $adapter)) {
-            return $defaultAdapter;
-        }
-
-        return $adapter;
-    }
-
-    /**
-     * Enable/Disable for the caching system
-     * @param bool $enable
-     * @return bool Booleano indicante successo/fallimento dell'operazione
-     */
-    public function toggleCachingSystem($enable = true)
-    {
-        if (!$enable) {
-            $adapter = ['adapter' => 'dummy'];
-        } elseif ($this->mycache->apc && $this->mycache->apc->is_supported()) {
-            $adapter = ['adapter' => 'apc', 'backup' => 'file'];
-        } else {
-            $adapter = ['adapter' => 'file', 'backup' => 'dummy'];
-        }
-
-        $out = file_put_contents(APPPATH . 'cache/cache-controller', serialize($adapter), LOCK_EX);
-        return $out !== false;
-    }
-
-
-    /**
-     * Check cache abilitata o meno
-     * @return type
-     */
-    public function isCacheEnabled()
-    {
-        $adapter = $this->getCacheAdapter();
-        return ($adapter['adapter'] !== 'dummy');
-    }
-
-
-    public function clearCache($drop_template_files = false)
-    {
-        // Fix che riscrive il file cache-controller resettato da $this->mycache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
-        $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
-        $this->mycache->clean();
-        file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
-
-        @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
-
-        //Remove also css generated files from template cache
-        if ($drop_template_files) {
-            foreach (@scandir(APPPATH . '../template/build/') as $file) {
-                if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . '../template/build/' . $file)) {
-                    unlink(APPPATH . '../template/build/' . $file);
-                }
-            }
-        }
-    }
-
-    public function clearEntityCache($entity)
-    {
-        $tags = $this->buildTagsFromEntity($entity);
-        $this->clearCacheTags($tags);
-
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
-    }
-
-    public function clearCacheKey($key = null)
-    {
-        if (!$key) {
-            $this->showError(self::ERR_INVALID_API_CALL);
-        }
-
-        $this->mycache->delete($key);
-
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
-    }
-
-    public function clearCacheTags($tags)
-    {
-        if (!$tags) {
-            $this->showError(self::ERR_INVALID_API_CALL);
-        }
-
-        $this->mycache->deleteByTags($tags);
-
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
-    }
-
-    public function clearCacheRecord($entity = null, $id = null)
-    {
-        if (!$entity || !$id) {
-            $this->showError(self::ERR_INVALID_API_CALL);
-        }
-        $cache_key = "apilib.item.{$entity}.{$id}";
-
-        return $this->clearCacheKey($cache_key);
-    }
+    
     /***********************************
      * Rest actions
      */
@@ -362,12 +234,12 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        $cache_key = "apilib.list.{$entity}";
-        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        $cache_key = "apilib/apilib.list.{$entity}";
+        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], null, 0, null, null, false, $depth);
-            if ($this->apilib->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled()) {
                 $tags = $this->buildTagsFromEntity($entity);
-                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+                $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
             }
         }
 
@@ -387,12 +259,12 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        $cache_key = "apilib.item.{$entity}.{$id}";
-        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        $cache_key = "apilib/apilib.item.{$entity}.{$id}";
+        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
-            if ($this->apilib->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled()) {
                 $tags = $this->buildTagsFromEntity($entity);
-                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $tags);
+                $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
             }
         }
 
@@ -1006,9 +878,9 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
-        $cache_key = "apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
+        $cache_key = "apilib/apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
 
-        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -1080,8 +952,8 @@ class Apilib
 
             try {
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
-                if ($this->apilib->isCacheEnabled()) {
-                    $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                if ($this->mycache->isCacheEnabled()) {
+                    $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->buildTagsFromEntity($entity));
                 }
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
@@ -1118,9 +990,9 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
-        $cache_key = "apilib.count.{$entity}." . md5(serialize($input));
+        $cache_key = "apilib/apilib.count.{$entity}." . md5(serialize($input));
 
-        if (!$this->apilib->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -1158,8 +1030,8 @@ class Apilib
             }
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
-            if ($this->apilib->isCacheEnabled()) {
-                $this->mycache->save($cache_key, $out, $this->CACHE_TIME, $this->buildTagsFromEntity($entity));
+            if ($this->mycache->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->buildTagsFromEntity($entity));
             }
         }
 

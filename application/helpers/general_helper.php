@@ -1717,3 +1717,28 @@ if (!function_exists('slugify')) {
         return $text;
     }
 }
+
+if (!function_exists('GetDirectorySize')) {
+    function GetDirectorySize($path)
+    {
+        $bytestotal = 0;
+        $path = realpath($path);
+        if ($path!==false && $path!='' && file_exists($path)) {
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)) as $object) {
+                $bytestotal += $object->getSize();
+            }
+        }
+        return $bytestotal;
+    }
+}
+
+
+if (!function_exists('human_filesize')) {
+    function human_filesize($bytes, $dec = 2)
+    {
+        $size   = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $factor = floor((strlen($bytes) - 1) / 3);
+
+        return sprintf("%.{$dec}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+    }
+}
