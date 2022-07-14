@@ -43,6 +43,18 @@ class MY_Controller extends MX_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
+
+        if ($this->mycache->isActive('raw_queries')) {
+            
+            $this->db->cache_on();
+        } else {
+            $this->db->cache_off();
+        }
+
+        if ($this->mycache->isActive('full_page')) {
+            $this->output->cache(20);
+        }
 
         // Inizializza le variabili d'istanza del controller
         if ($this->db->table_exists('settings_template')) {

@@ -41,8 +41,8 @@ class Datab extends CI_Model
     {
         $userId = (int) $this->auth->get('id');
 
-        $cache_key = "datab.build_layout.accessible.{$userId}." . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
-        if (!($dati = $this->cache->get($cache_key))) {
+        $cache_key = "apilib/datab.build_layout.accessible.{$userId}." . md5(serialize($_GET).serialize($_POST).serialize($this->session->all_userdata()));
+        if (!($dati = $this->mycache->get($cache_key))) {
             $dati['accessibleLayouts'] = $dati['accessibleEntityLayouts'] = $dati['forwardedLayouts'] = [];
             $accessibleLayouts = $this->db->query("
                 SELECT layouts_id, layouts_is_entity_detail, layouts_entity_id
@@ -94,8 +94,8 @@ class Datab extends CI_Model
                     }
                 }
             }
-            if ($this->apilib->isCacheEnabled()) {
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            if ($this->mycache->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
             }
         }
         $this->_accessibleLayouts =  $dati['accessibleLayouts'];
@@ -122,8 +122,8 @@ class Datab extends CI_Model
     public function getDataEntityByQuery($query, $input = null, $limit = null, $offset = 0, $orderBy = null, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
         $unique = md5($query);
-        $cache_key = "datab.getDataEntity.{$unique}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
-        if (!($dati = $this->cache->get($cache_key))) {
+        $cache_key = "apilib/datab.getDataEntity.{$unique}." . md5(serialize(func_get_args()) . serialize($_GET).serialize($_POST).serialize($this->session->all_userdata()));
+        if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
             //debug($input);
             $where = [];
@@ -202,7 +202,7 @@ class Datab extends CI_Model
 
                 $out = $this->db->query($query)->result_array();
             }
-            if ($this->apilib->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled()) {
                 $this->mycache->save($cache_key, $out);
             }
             $dati = $out;
@@ -272,8 +272,8 @@ class Datab extends CI_Model
      */
     public function getDataEntity($entity_id, $where = null, $limit = null, $offset = 0, $order_by = null, $depth = 2, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
-        $cache_key = "datab.getDataEntity.{$entity_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
-        if (!($dati = $this->cache->get($cache_key))) {
+        $cache_key = "apilib/datab.getDataEntity.{$entity_id}." . md5(serialize(func_get_args()).serialize($_GET).serialize($_POST).serialize($this->session->all_userdata()));
+        if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
             // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
             // entità
@@ -339,8 +339,8 @@ class Datab extends CI_Model
             } else {
                 $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
-            if ($this->apilib->isCacheEnabled()) {
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
+            if ($this->mycache->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
             }
         }
         //debug($dati, true);
@@ -602,8 +602,8 @@ class Datab extends CI_Model
 
     public function get_form($form_id, $edit_id = null, $value_id = null)
     {
-        $cache_key = "datab.get_form.{$form_id}." . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
-        if (!($dati = $this->cache->get($cache_key))) {
+        $cache_key = "apilib/datab.get_form.{$form_id}." . md5(serialize(func_get_args()).serialize($_GET).serialize($_POST) . serialize($this->session->all_userdata()));
+        if (!($dati = $this->mycache->get($cache_key))) {
             if (!$form_id) {
                 log_message('error', "Form id '$form_id' not found");
                 echo $this->load->view("box/errors/missing_form", ['form_id' => $form_id], true);
@@ -612,8 +612,8 @@ class Datab extends CI_Model
             $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
             if (!$form) {
                 $dati = false;
-                if ($this->apilib->isCacheEnabled()) {
-                    $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                if ($this->mycache->isCacheEnabled()) {
+                    $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
                 }
                 return $dati;
             }
@@ -749,13 +749,16 @@ class Datab extends CI_Model
                     
                     'original_field' => $field,
                 ];
+
+                $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
+                if ($this->mycache->isCacheEnabled()) {
+                    $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
+                }
             }
 
 
-            $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
-            if ($this->apilib->isCacheEnabled()) {
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
-            }
+            
+            
         }
         return $dati;
     }
@@ -886,8 +889,8 @@ class Datab extends CI_Model
 
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = null, $offset = 0, $order_by = null, $count = false, $additional_parameters = [])
     {
-        $cache_key = "datab.get_grid_data." . md5(serialize($grid)) . md5(serialize(func_get_args())) . md5(serialize($_GET)) . md5(serialize($_POST)) . serialize($this->session->all_userdata());
-        if (!($dati = $this->cache->get($cache_key))) {
+        $cache_key = "apilib/datab.get_grid_data." . md5(serialize($grid).serialize(func_get_args()).serialize($_GET).serialize($_POST) . serialize($this->session->all_userdata()));
+        if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
             $search = array_get($additional_parameters, 'search', null);
             $preview_fields =            array_get($additional_parameters, 'preview_fields', []);
@@ -953,8 +956,8 @@ class Datab extends CI_Model
                     $this->error = self::ERR_VALIDATION_FAILED;
                     $this->errorMessage = $ex->getMessage();
                     $dati = false;
-                    if ($this->apilib->isCacheEnabled()) {
-                        $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+                    if ($this->mycache->isCacheEnabled()) {
+                        $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
                     }
                     return $dati;
                 }
@@ -987,8 +990,8 @@ class Datab extends CI_Model
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $dati = $data;
-            if ($this->apilib->isCacheEnabled()) {
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
+            if ($this->mycache->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
             }
         }
         return $dati;
@@ -2352,8 +2355,8 @@ class Datab extends CI_Model
      */
     public function build_layout($layout_id, $value_id, $layout_data_detail = null)
     {
-        $cache_key = "datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET)) . md5(serialize($_POST)) . md5(serialize($layout_data_detail) . serialize($this->session->all_userdata()));
-        if (!($dati = $this->cache->get($cache_key))) {
+        $cache_key = "apilib/datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET).serialize($_POST).serialize($layout_data_detail) . serialize($this->session->all_userdata()));
+        if (!($dati = $this->mycache->get($cache_key))) {
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
                 return null;
             }
@@ -2448,8 +2451,8 @@ class Datab extends CI_Model
             }
             $dati['layout_data_detail'] = $layout_data_detail;
 
-            if ($this->apilib->isCacheEnabled() && $this->is_layout_cachable($layout_id)) {
-                $this->cache->save($cache_key, $dati, self::CACHE_TIME);
+            if ($this->mycache->isCacheEnabled() && $this->is_layout_cachable($layout_id)) {
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
             }
             // ========================================
             // Fine Build Layout

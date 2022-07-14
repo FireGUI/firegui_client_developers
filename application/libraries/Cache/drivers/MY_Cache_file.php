@@ -57,6 +57,7 @@ class MY_Cache_file extends CI_Driver
 	 */
 	protected $_cache_path;
 	const TAGS_CACHE_FILE = 'tags_mapping.json';
+	const CACHE_TIME = 3600;
 	/**
 	 * Initialize file-based cache
 	 *
@@ -68,6 +69,12 @@ class MY_Cache_file extends CI_Driver
 		$CI->load->helper('file');
 		$path = $CI->config->item('cache_path');
 		$this->_cache_path = ($path === '') ? APPPATH . 'cache/' : $path;
+
+		if (defined('CACHE_TIME')) {
+            $this->CACHE_TIME = CACHE_TIME;
+        } else {
+            $this->CACHE_TIME = self::CACHE_TIME;
+        }
 	}
 
 	// ------------------------------------------------------------------------
@@ -103,13 +110,19 @@ class MY_Cache_file extends CI_Driver
 			'data'		=> $data,
 			//'tags'		=> $tags
 		);
-
+		//Folder exists check
+		$folder = dirname($this->_cache_path . $id);
+		if (!is_dir($folder)) {
+			mkdir($folder, DIR_WRITE_MODE, true);
+		}
 		if (write_file($this->_cache_path . $id, serialize($contents))) {
 			@chmod($this->_cache_path . $id, 0640);
 
 			//if tags are specified, save this id for each tags, so that i can remove it easily later
 			$this->saveTagsMapping($id, $tags);
 			return TRUE;
+		} else {
+			debug($this->_cache_path . $id,true);
 		}
 
 		return FALSE;
@@ -337,5 +350,184 @@ class MY_Cache_file extends CI_Driver
 		}
 
 		return $data;
+	}
+
+	public function getCacheAdapter()
+    {
+        if (!$adapter = $this->_adapter) {
+            $filename = APPPATH . 'cache/cache-controller';
+            $defaultAdapter = array('adapter' => 'dummy'); //Default adapter dummy to disable cache by default
+            if (!file_exists($filename)) {
+                @file_put_contents_and_create_dir($filename, serialize($defaultAdapter), LOCK_EX);
+                $this->_adapter = $defaultAdapter;
+                return $defaultAdapter;
+            }
+    
+            $controllerFileContents = file_get_contents($filename);
+            $adapter = @unserialize($controllerFileContents);
+            $this->_adapter = $adapter;
+            if (!is_array($adapter) or !array_key_exists('adapter', $adapter)) {
+                $this->_adapter = $defaultAdapter;
+                return $defaultAdapter;
+            }
+        }
+        
+        return $adapter;
+    }
+
+	/**
+     * Enable/Disable for the caching system
+     * @param bool $enable
+     * @return bool Booleano indicante successo/fallimento dell'operazione
+     */
+    public function toggleCachingSystem($enable = true)
+    {
+        if (!$enable) {
+            $adapter = ['adapter' => 'dummy'];
+        } elseif ($this->mycache->apc && $this->mycache->apc->is_supported()) {
+            $adapter = ['adapter' => 'apc', 'backup' => 'file'];
+        } else {
+            $adapter = ['adapter' => 'file', 'backup' => 'dummy'];
+        }
+
+        $out = file_put_contents(APPPATH . 'cache/cache-controller', serialize($adapter), LOCK_EX);
+        return $out !== false;
+    }
+
+
+    /**
+     * Check cache abilitata o meno
+     * @return type
+     */
+    public function isCacheEnabled()
+    {
+        $adapter = $this->getCacheAdapter();
+        return ($adapter['adapter'] !== 'dummy');
+    }
+
+
+    public function clearCache($drop_template_files = false, $key = null)
+    {
+        if ($key) {
+			if ($key == 'raw_queries') {
+				$key = 'sql';
+			}
+			if (is_dir(APPPATH . 'cache/'.$key)) {
+				foreach (@scandir(APPPATH . 'cache/'.$key) as $file) {
+					if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . 'cache/'.$key.'/' . $file)) {
+						unlink(APPPATH . 'cache/'.$key.'/' . $file);
+					}
+				}
+			} else {
+				if ($key == 'database_schema') {
+					@unlink(APPPATH . 'cache/crm.schema');
+				} else {
+					@unlink(APPPATH . 'cache/'.$key);
+				}
+				
+			}
+			
+		} else {
+			// Fix che riscrive il file cache-controller resettato da $this->mycache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
+			$cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
+			$this->clean();
+			file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
+
+			@unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+			if ($this->db->CACHE) {
+				$this->db->CACHE->delete_all();
+			}
+
+			//Remove also css generated files from template cache
+			if ($drop_template_files) {
+				foreach (@scandir(APPPATH . '../template/build/') as $file) {
+					if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . '../template/build/' . $file)) {
+						unlink(APPPATH . '../template/build/' . $file);
+					}
+				}
+			}
+		}
+		
+    }
+
+    public function clearEntityCache($entity)
+    {
+        $tags = $this->buildTagsFromEntity($entity);
+        $this->clearCacheTags($tags);
+
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
+    }
+
+    public function clearCacheKey($key = null)
+    {
+        if (!$key) {
+            $this->showError(self::ERR_INVALID_API_CALL);
+        }
+
+        $this->delete($key);
+
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
+    }
+
+    public function clearCacheTags($tags)
+    {
+        if (!$tags) {
+            $this->showError(self::ERR_INVALID_API_CALL);
+        }
+
+        $this->deleteByTags($tags);
+
+        if ($this->db->CACHE) {
+            $this->db->CACHE->delete_all();
+        }
+    }
+
+    public function clearCacheRecord($entity = null, $id = null)
+    {
+        if (!$entity || !$id) {
+            $this->showError(self::ERR_INVALID_API_CALL);
+        }
+        $cache_key = "apilib.item.{$entity}.{$id}";
+
+        return $this->clearCacheKey($cache_key);
+    }
+	public function setCurrentConfig($config) {
+		$config_json = json_encode($config, JSON_PRETTY_PRINT);
+		file_put_contents(APPPATH . 'cache/cache-config.json', $config_json);
+	}
+public function getCurrentConfig() {
+	$cache_config_json = @file_get_contents(APPPATH . 'cache/cache-config.json');
+	$cache_config = json_decode($cache_config_json, true);
+	return $cache_config;
+}
+	public function switchActive($key, $val) {
+		$config = $this->getCurrentConfig();
+		$config[$key]['active'] = $val;
+		$this->setCurrentConfig($config);
+	}
+
+public function getModifiedDate() {
+	$modified_dates = [];
+	$modified_dates['database_schema'] = @stat(APPPATH.'cache/crm.schema')['mtime'];
+	$modified_dates['apilib'] = stat(APPPATH.'cache/apilib')['mtime'];
+	$modified_dates['raw_queries'] = stat(APPPATH.'cache/sql')['mtime'];
+	$modified_dates['full_page'] = stat(APPPATH.'cache/fullpages')['mtime'];
+		return $modified_dates;
+}
+
+	public function getDiskSpace() {
+		$diskspaces = [];
+		$diskspaces['database_schema'] = @filesize(APPPATH.'cache/crm.schema');
+		$diskspaces['apilib'] = GetDirectorySize(APPPATH.'cache/apilib');
+		$diskspaces['raw_queries'] = GetDirectorySize(APPPATH.'cache/sql');
+		$diskspaces['full_page'] = GetDirectorySize(APPPATH.'cache/fullpages');
+		return $diskspaces;
+	}
+	public function isActive($key) {
+		return !empty($this->getCurrentConfig()[$key]['active']);
 	}
 }

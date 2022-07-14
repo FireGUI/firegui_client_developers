@@ -12,7 +12,7 @@ class Main extends MY_Controller
      */
     public function __construct()
     { 
-        $this->output->cache(20); 
+        
         parent::__construct();
         
         // Controllo anche la current uri
@@ -42,6 +42,9 @@ class Main extends MY_Controller
 
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
+        
+        
+
     }
 
 
@@ -123,8 +126,8 @@ class Main extends MY_Controller
                 $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
 
                 $this->layout->setLayoutModule();
-
-                echo json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id, 'dati' => $dati));
+                $this->load->view('layout/json_return', ['json' => json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id, 'dati' => $dati))]);
+                
             }
         }
     }
@@ -569,6 +572,66 @@ class Main extends MY_Controller
     }
 
     /**
+     * Permissions page
+     */
+    public function cache_manager()
+    {
+if ($this->mycache->isActive('full_page')) {
+    $this->output->cache(0);
+}
+        if (!$this->datab->is_admin()) {
+            $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
+            $this->stampa($pagina);
+            return;
+        }
+
+        $dati['current_page'] = 'cache_manager';
+        $current_config = $this->mycache->getCurrentConfig();
+        $disk_space = $this->mycache->getDiskSpace();
+        $modified_dates = $this->mycache->getModifiedDate();
+        $dati['caches'] = [
+            'database_schema' => [
+                'status' => 1,
+                'label' => 'Database schema',
+                'last_update' => $modified_dates['database_schema'],
+                'space' => $disk_space['database_schema'],
+                'active' => (!empty($current_config['database_schema']['active'])),
+                'driver' => 'File',
+            ],
+            'apilib' => [
+                'status' => 1,
+                'label' => 'Apilib',
+                'last_update' => $modified_dates['apilib'],
+                'space' => $disk_space['apilib'],
+                'active' => (!empty($current_config['apilib']['active'])),
+                'driver' => 'File',
+            ],
+            'raw_queries' => [
+                'status' => 1,
+                'label' => 'Database raw queries',
+                'last_update' => $modified_dates['raw_queries'],
+                'space' => $disk_space['raw_queries'],
+                'active' => (!empty($current_config['raw_queries']['active'])),
+                'driver' => 'File',
+            ],
+            'full_page' => [
+                'status' => 1,
+                'label' => 'Full pages',
+                'last_update' => $modified_dates['full_page'],
+                'space' => $disk_space['full_page'],
+                'active' => (!empty($current_config['full_page']['active'])),
+                'driver' => 'File',
+            ],
+        ];
+
+        $pagina = $this->load->view("pages/cache_manager", array('dati' => $dati), true);
+        $this->stampa($pagina);
+    }
+
+    public function cache_switch_active($key, $val) {
+        $this->mycache->switchActive($key, $val);
+    }
+    /**
      * Generic search page
      */
     public function search()
@@ -633,28 +696,28 @@ class Main extends MY_Controller
      *      - off   Disable cache (set a dummy cache driver)
      *      - clear Clear all data from cache
      */
-    public function cache_control($action = null)
+    public function cache_control($action = null, $key = null)
     {
         switch ($action) {
             case 'on':
-                $this->apilib->toggleCachingSystem(true);
+                $this->mycache->toggleCachingSystem(true);
                 break;
 
             case 'off':
                 $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
-                $this->apilib->clearCache(true);
+                $this->mycache->clearCache(true);
                 file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
 
                 @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
-                $this->apilib->toggleCachingSystem(false);
+                $this->mycache->toggleCachingSystem(false);
 
 
                 break;
 
             case 'clear':
-
-                $this->apilib->clearCache(true);
+                
+                $this->mycache->clearCache(true, $key);
 
                 break;
 

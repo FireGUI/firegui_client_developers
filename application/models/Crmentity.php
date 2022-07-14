@@ -34,8 +34,8 @@ class Crmentity extends CI_Model
     {
         parent::__construct();
 
-        $this->load->driver('cache');
-        // $this->load->driver('MY_Cache_file', null, 'mycache');
+        //$this->load->driver('cache');
+        $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
         $this->buildSchemaCacheIfNotValid();
 
@@ -70,12 +70,12 @@ class Crmentity extends CI_Model
      */
     private function getFromCache($key, Closure $callback)
     {
-        $result = $this->cache->get($key);
+        $result = $this->mycache->get($key);
 
         if ($result === false) {
             $result = $callback();
-            if ($this->apilib->isCacheEnabled()) {
-                $this->cache->save($key, $result, self::CACHE_TIME, []);
+            if ($this->mycache->isCacheEnabled()) {
+                $this->mycache->save($key, $result, self::CACHE_TIME, []);
             }
         }
 
@@ -132,7 +132,7 @@ class Crmentity extends CI_Model
 
         $entity_name = $this->getEntity($entity_id)['entity_name'];
 
-        $_cache_key = md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
+        $_cache_key = 'apilib/'.md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
 
         if ($depth-- <= 0) {    // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
             return [];
@@ -795,7 +795,7 @@ class Crmentity extends CI_Model
      */
     public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0)
     {
-        $key = sprintf('previews-%s', md5(serialize(func_get_args())));
+        $key = sprintf('apilib/previews-%s', md5(serialize(func_get_args())));
 
         return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset) {
             $entity = $this->getEntity($entityIdentifier);
@@ -913,40 +913,15 @@ class Crmentity extends CI_Model
     // =========================================================================
     public function reloadSchemaCache()
     {
-        $this->cache->file->delete(self::SCHEMA_CACHE_KEY);
+        $this->mycache->delete(self::SCHEMA_CACHE_KEY);
         $this->buildSchemaCacheIfNotValid();
     }
-    public function getCacheAdapter()
-    {
-        $filename = APPPATH . 'cache/cache-controller';
-        $defaultAdapter = array('adapter' => 'dummy'); //Default adapter dummy to disable cache by default
-        if (!file_exists($filename)) {
-            @file_put_contents_and_create_dir($filename, serialize($defaultAdapter), LOCK_EX);
-            return $defaultAdapter;
-        }
-
-        $controllerFileContents = file_get_contents($filename);
-        $adapter = @unserialize($controllerFileContents);
-
-        if (!is_array($adapter) or !array_key_exists('adapter', $adapter)) {
-            return $defaultAdapter;
-        }
-
-        return $adapter;
-    }
-    /**
-     * Check cache abilitata o meno
-     * @return type
-     */
-    public function isCacheEnabled()
-    {
-        $adapter = $this->getCacheAdapter();
-        return ($adapter['adapter'] !== 'dummy');
-    }
+    
+    
     protected function buildSchemaCacheIfNotValid()
     {
-        if ($this->isCacheEnabled()) {
-            $this->_schemaCache = $this->cache->file->get(self::SCHEMA_CACHE_KEY);
+        if ($this->mycache->isActive('database_schema')) {
+            $this->_schemaCache = $this->mycache->get(self::SCHEMA_CACHE_KEY);
             if ($this->_schemaCache) {
                 return;
             }
@@ -992,9 +967,9 @@ class Crmentity extends CI_Model
             'validations' => $validations,
             'relations' => ['by_name' => $relbyname, 'by_entity' => $relbyent]
         ];
-        if ($this->isCacheEnabled()) {
+        if ($this->mycache->isActive('database_schema')) {
             // And persist it
-            $this->cache->file->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24, [self::SCHEMA_CACHE_KEY]);  // 1h * 24 <= Salva cache per un giorno
+            $this->mycache->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24, [self::SCHEMA_CACHE_KEY]);  // 1h * 24 <= Salva cache per un giorno
         }
     }
 
@@ -1173,7 +1148,7 @@ class Crmentity extends CI_Model
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
 
-        return $this->getFromCache("preview-fields-{$eid}", function () use ($eid) {
+        return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid) {
             $preview = [];
             $fields = $this->getVisibleFields($eid);
 

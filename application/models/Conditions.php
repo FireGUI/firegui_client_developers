@@ -24,6 +24,7 @@ class Conditions extends CI_Model
     {
 
         parent::__construct();
+        $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
         //Preload rules
         $this->_preloadRules();
@@ -106,7 +107,7 @@ class Conditions extends CI_Model
     {
        if (empty($this->_rules)) {
         $cache_key = 'conditions_rules';
-        if (!($this->_rule = $this->cache->get($cache_key))) {
+        if (!($this->_rule = $this->mycache->get($cache_key))) {
             $rules = $this->db->where('conditions_json_rules IS NOT NULL', null, false)->get('_conditions')->result_array();
             foreach ($rules as $rule) {
                 if (empty($this->_rules[$rule['conditions_what']][$rule['conditions_ref']])) {
@@ -115,8 +116,8 @@ class Conditions extends CI_Model
                 $rule['_rule'] = json_decode($rule['conditions_json_rules'], true);
                  $this->_rules[$rule['conditions_what']][$rule['conditions_ref']][] = $rule;
             }
-            if ($this->apilib->isCacheEnabled()) {
-                $this->cache->save($cache_key, $this->_rule, self::CACHE_TIME);
+            if ($this->mycache->isCacheEnabled()) {
+                $this->mycache->save($cache_key, $this->_rule, self::CACHE_TIME);
             }
         }
         

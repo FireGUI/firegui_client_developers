@@ -97,33 +97,6 @@ $('body').on('click', '.js_ajax_content', function (e) {
 
 
 function destroyCkeditorInstances(instance = null) {
-    try {
-        if (instance) {
-            var instance_name = instance.attr('id');
-            if (CKEDITOR.instances[instance_name]) {
-                CKEDITOR.instances[instance_name].destroy(true);
-            }
-            if ($(that).parent().hasClass("js_submenu_item")) {
-              $(".js_sidebar_menu_item").removeClass("active");
-              $(".js_sidebar_menu_item").removeClass("menu-open");
-              $(".treeview-menu").hide();
-
-              $(that).parent().addClass("active");
-              $(that).closest(".js_sidebar_menu_item").addClass("menu-open");
-              $(that).closest(".treeview-menu").show();
-            } else {
-              $(that).parent().addClass("active");
-            }
-          }
-        }
-      },
-    });
-    e.stopPropagation();
-  } else {
-  }
-});
-
-function destroyCkeditorInstances(instance = null) {
   try {
     if (instance) {
       var instance_name = instance.attr("id");

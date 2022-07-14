@@ -15,95 +15,99 @@ class MY_Output extends CI_Output
         //die('test');
         $CI = &get_instance();
 
-        //-XXX CUSTOM------------------------------------
-        $cache_path = $this->cachePath();
+        if ($CI->mycache->isCacheEnabled()) {
+//-XXX CUSTOM------------------------------------
+$cache_path = $this->cachePath();
         
         
 
-        //-----------------------------------------------
-        if (!is_dir($cache_path)) {
-            mkdir($cache_path, DIR_WRITE_MODE, true);
+//-----------------------------------------------
+if (!is_dir($cache_path)) {
+    mkdir($cache_path, DIR_WRITE_MODE, true);
+}
+
+
+if (!is_dir($cache_path) or !is_really_writable($cache_path)) {
+    log_message('error', 'Unable to write cache file: ' . $cache_path);
+    return;
+}
+
+$uri = $CI->config->item('base_url')
+    . $CI->config->item('index_page')
+    . $CI->uri->uri_string();
+
+if (($cache_query_string = $CI->config->item('cache_query_string')) && !empty($_SERVER['QUERY_STRING'])) {
+    if (is_array($cache_query_string)) {
+        $uri .= '?' . http_build_query(array_intersect_key($_GET, array_flip($cache_query_string)));
+    } else {
+        $uri .= '?' . $_SERVER['QUERY_STRING'];
+    }
+}
+
+$cache_path .= md5($uri.serialize($_SESSION[SESS_WHERE_DATA]));
+
+if (!$fp = @fopen($cache_path, 'w+b')) {
+    log_message('error', 'Unable to write cache file: ' . $cache_path);
+    return;
+}
+
+if (!flock($fp, LOCK_EX)) {
+    log_message('error', 'Unable to secure a file lock for file at: ' . $cache_path);
+    fclose($fp);
+    return;
+}
+
+// If output compression is enabled, compress the cache
+// itself, so that we don't have to do that each time
+// we're serving it
+if ($this->_compress_output === TRUE) {
+    $output = gzencode($output);
+
+    if ($this->get_header('content-type') === NULL) {
+        $this->set_content_type($this->mime_type);
+    }
+}
+
+$expire = time() + ($this->cache_expiration * 60);
+
+// Put together our serialized info.
+$cache_info = serialize(array(
+    'expire'    => $expire,
+    'headers'   => $this->headers
+));
+
+$output = $cache_info . 'ENDCI--->' . $output;
+
+for ($written = 0, $length = self::strlen($output); $written < $length; $written += $result) {
+    if (($result = fwrite($fp, self::substr($output, $written))) === FALSE) {
+        break;
+    }
+}
+
+flock($fp, LOCK_UN);
+fclose($fp);
+
+if (!is_int($result)) {
+    @unlink($cache_path);
+    log_message('error', 'Unable to write the complete cache content at: ' . $cache_path);
+    return;
+}
+
+chmod($cache_path, 0640);
+
+//Last step: save this cacheid in tags to easily remove later (when db invalidate)
+$relative_cache_path = implode('/',array_slice(explode('/',$cache_path), -3, 3, true));
+
+$this->saveTagsMapping($relative_cache_path);
+
+
+log_message('debug', 'Cache file written: ' . $cache_path);
+
+// Send HTTP cache-control headers to browser to match file cache settings.
+$this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
         }
 
-
-        if (!is_dir($cache_path) or !is_really_writable($cache_path)) {
-            log_message('error', 'Unable to write cache file: ' . $cache_path);
-            return;
-        }
-
-        $uri = $CI->config->item('base_url')
-            . $CI->config->item('index_page')
-            . $CI->uri->uri_string();
-
-        if (($cache_query_string = $CI->config->item('cache_query_string')) && !empty($_SERVER['QUERY_STRING'])) {
-            if (is_array($cache_query_string)) {
-                $uri .= '?' . http_build_query(array_intersect_key($_GET, array_flip($cache_query_string)));
-            } else {
-                $uri .= '?' . $_SERVER['QUERY_STRING'];
-            }
-        }
-
-        $cache_path .= md5($uri);
-
-        if (!$fp = @fopen($cache_path, 'w+b')) {
-            log_message('error', 'Unable to write cache file: ' . $cache_path);
-            return;
-        }
-
-        if (!flock($fp, LOCK_EX)) {
-            log_message('error', 'Unable to secure a file lock for file at: ' . $cache_path);
-            fclose($fp);
-            return;
-        }
-
-        // If output compression is enabled, compress the cache
-        // itself, so that we don't have to do that each time
-        // we're serving it
-        if ($this->_compress_output === TRUE) {
-            $output = gzencode($output);
-
-            if ($this->get_header('content-type') === NULL) {
-                $this->set_content_type($this->mime_type);
-            }
-        }
-
-        $expire = time() + ($this->cache_expiration * 60);
-
-        // Put together our serialized info.
-        $cache_info = serialize(array(
-            'expire'    => $expire,
-            'headers'   => $this->headers
-        ));
-
-        $output = $cache_info . 'ENDCI--->' . $output;
-
-        for ($written = 0, $length = self::strlen($output); $written < $length; $written += $result) {
-            if (($result = fwrite($fp, self::substr($output, $written))) === FALSE) {
-                break;
-            }
-        }
-
-        flock($fp, LOCK_UN);
-        fclose($fp);
-
-        if (!is_int($result)) {
-            @unlink($cache_path);
-            log_message('error', 'Unable to write the complete cache content at: ' . $cache_path);
-            return;
-        }
-
-        chmod($cache_path, 0640);
-
-        //Last step: save this cacheid in tags to easily remove later (when db invalidate)
-        $relative_cache_path = implode('/',array_slice(explode('/',$cache_path), -3, 3, true));
         
-        $this->saveTagsMapping($relative_cache_path);
-        
-
-        log_message('debug', 'Cache file written: ' . $cache_path);
-
-        // Send HTTP cache-control headers to browser to match file cache settings.
-        $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
     }
 
     // --------------------------------------------------------------------
@@ -125,7 +129,7 @@ class MY_Output extends CI_Output
         $cache_path = $this->cachePath($CFG);
         //$cache_path = ($CFG->item('cache_path') === '') ? APPPATH.'cache/' : $CFG->item('cache_path');
         //-----------------------------------------------
-
+        
         // Build the file path. The file name is an MD5 hash of the full URI
         $uri = $CFG->item('base_url') . $CFG->item('index_page') . $URI->uri_string;
 
@@ -136,8 +140,8 @@ class MY_Output extends CI_Output
                 $uri .= '?' . $_SERVER['QUERY_STRING'];
             }
         }
-
-        $filepath = $cache_path . md5($uri);
+        
+        $filepath = $cache_path . md5($uri.serialize($_SESSION[SESS_WHERE_DATA]));
 
         if (!file_exists($filepath) or !$fp = @fopen($filepath, 'rb')) {
             return FALSE;
