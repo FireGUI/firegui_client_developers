@@ -13,6 +13,10 @@ class Db_ajax extends MY_Controller
         // Qualunque chiamata alle apilib da qua dentro è considerata una
         // chiamata in modalità CRM_FORM
         $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
+
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
     }
 
     public function save_form($form_id = null, $edit = false, $value_id = null)

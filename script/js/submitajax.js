@@ -418,9 +418,9 @@ function refreshLayoutBoxesByEntity (entity_name) {
             if (related_entities.includes(entity_name)) {
                 loading(true);
                 var layout_id = $(this).data('layout-id');
+                var value_id = $(this).data('value_id');
                 
-                
-                $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
+                $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
                     type: 'GET',
                     dataType: 'json',
                     complete: function () {

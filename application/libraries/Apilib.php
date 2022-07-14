@@ -1037,7 +1037,9 @@ class Apilib
 
         return $out;
     }
-
+public function clearCache($drop_template_files = false, $key = null) {
+    return $this->mycache->clearCache($drop_template_files, $key);
+}
     /**
      * Torna l'array dei messaggi d'errore,
      * NB: a scopi di debug - help ecc

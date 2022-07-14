@@ -303,9 +303,7 @@ return $html;
 }
 
 public function addRelatedEntity($entity_name,$value_id = null) {
-    if ($entity_name == 'customers' && !$value_id) {
-        debug('foo');
-    }
+    
     
     
     if ($value_id) {

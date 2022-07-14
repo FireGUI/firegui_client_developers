@@ -453,9 +453,7 @@ class MY_Cache_file extends CI_Driver
         $tags = $this->buildTagsFromEntity($entity);
         $this->clearCacheTags($tags);
 
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
+        $this->clearCache(false, 'raw_queries');
     }
 
     public function clearCacheKey($key = null)
@@ -466,9 +464,7 @@ class MY_Cache_file extends CI_Driver
 
         $this->delete($key);
 
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
+        $this->clearCache(false, 'raw_queries');
     }
 
     public function clearCacheTags($tags)
@@ -479,9 +475,7 @@ class MY_Cache_file extends CI_Driver
 
         $this->deleteByTags($tags);
 
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
+        $this->clearCache(false, 'raw_queries');
     }
 
     public function clearCacheRecord($entity = null, $id = null)
@@ -514,6 +508,8 @@ public function getModifiedDate() {
 	$modified_dates['apilib'] = @stat(APPPATH.'cache/apilib')['mtime'];
 	$modified_dates['raw_queries'] = @stat(APPPATH.'cache/sql')['mtime'];
 	$modified_dates['full_page'] = @stat(APPPATH.'cache/fullpages')['mtime'];
+	$modified_dates['template_assets'] = @stat(APPPATH.'../template/build')['mtime'];
+	
 		return $modified_dates;
 }
 
@@ -523,6 +519,7 @@ public function getModifiedDate() {
 		$diskspaces['apilib'] = GetDirectorySize(APPPATH.'cache/apilib');
 		$diskspaces['raw_queries'] = GetDirectorySize(APPPATH.'cache/sql');
 		$diskspaces['full_page'] = GetDirectorySize(APPPATH.'cache/fullpages');
+		$diskspaces['template_assets'] = GetDirectorySize(APPPATH.'../template/build');
 		return $diskspaces;
 	}
 	public function isActive($key) {

@@ -9,6 +9,9 @@ class Modulesbridge extends MY_Controller
     function __construct()
     {
         parent::__construct();
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
     }
 
     public function loadAssetFile($module_identifier)

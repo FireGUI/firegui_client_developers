@@ -65,7 +65,7 @@
         $('.js_cache_switch_active').on('change', function () {
             loading(true);
             var key = $(this).data('key');
-            var value = $(this).val();
+            var value = $(this).is(':checked')?1:0;
             $.ajax({
                 url: base_url + 'main/cache_switch_active/' + key + '/' + value,
                 //dataType: 'json',

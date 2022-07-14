@@ -108,10 +108,17 @@ class Main extends MY_Controller
 
         // Build layout, if null then layout is not accessible due to user permissions
         $dati = $this->datab->build_layout($layout_id, $value_id);
+        
         if (is_null($dati)) {
+            
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->layout->setLayoutModule();
-            echo json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id));
+            $dati = [
+                'status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id
+            ];
+            //$dati['title_prefix'] = ucfirst(t(trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])))));
+                
+            $this->load->view('layout/json_return', ['json' => json_encode($dati)]);
         } else {
             // I have 2 type of layouts: PDF or standard. If PDF return type pdf and open in target blank by client
             if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
@@ -622,6 +629,14 @@ class Main extends MY_Controller
                 'active' => (!empty($current_config['full_page']['active'])),
                 'driver' => 'File',
             ],
+            'template_assets' => [
+                'status' => 1,
+                'label' => 'Template assets',
+                'last_update' => $modified_dates['template_assets'],
+                'space' => $disk_space['template_assets'],
+                'active' => (!empty($current_config['template_assets']['active'])),
+                'driver' => 'File',
+            ],
         ];
 
         $pagina = $this->load->view("pages/cache_manager", array('dati' => $dati), true);
@@ -629,6 +644,9 @@ class Main extends MY_Controller
     }
 
     public function cache_switch_active($key, $val) {
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
         $this->mycache->switchActive($key, $val);
     }
     /**
