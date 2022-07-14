@@ -920,7 +920,7 @@ class Crmentity extends CI_Model
     
     protected function buildSchemaCacheIfNotValid()
     {
-        if ($this->mycache->isActive('database_schema')) {
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
             $this->_schemaCache = $this->mycache->get(self::SCHEMA_CACHE_KEY);
             if ($this->_schemaCache) {
                 return;
@@ -967,7 +967,7 @@ class Crmentity extends CI_Model
             'validations' => $validations,
             'relations' => ['by_name' => $relbyname, 'by_entity' => $relbyent]
         ];
-        if ($this->mycache->isActive('database_schema')) {
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
             // And persist it
             $this->mycache->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24, [self::SCHEMA_CACHE_KEY]);  // 1h * 24 <= Salva cache per un giorno
         }

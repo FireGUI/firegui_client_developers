@@ -19,7 +19,9 @@ class MY_Output extends CI_Output
 //-XXX CUSTOM------------------------------------
 $cache_path = $this->cachePath();
         
-        
+// echo '<pre>';
+// print_r($_SESSION);
+// die();
 
 //-----------------------------------------------
 if (!is_dir($cache_path)) {
@@ -44,7 +46,9 @@ if (($cache_query_string = $CI->config->item('cache_query_string')) && !empty($_
     }
 }
 
-$cache_path .= md5($uri.serialize($_SESSION[SESS_WHERE_DATA]));
+$cache_path .= md5($uri);
+
+//die($uri.serialize($_SESSION[SESS_WHERE_DATA]));
 
 if (!$fp = @fopen($cache_path, 'w+b')) {
     log_message('error', 'Unable to write cache file: ' . $cache_path);
@@ -124,7 +128,7 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
      */
     public function _display_cache(&$CFG, &$URI)
     {
-
+        
         //-XXX CUSTOM------------------------------------
         $cache_path = $this->cachePath($CFG);
         //$cache_path = ($CFG->item('cache_path') === '') ? APPPATH.'cache/' : $CFG->item('cache_path');
@@ -141,9 +145,15 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
             }
         }
         
-        $filepath = $cache_path . md5($uri.serialize($_SESSION[SESS_WHERE_DATA]));
+       
+            
+            $filepath = $cache_path . md5($uri);
+       
+
+        
 
         if (!file_exists($filepath) or !$fp = @fopen($filepath, 'rb')) {
+            //die($uri.serialize($_SESSION[SESS_WHERE_DATA]));
             return FALSE;
         }
 
@@ -186,7 +196,9 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
         //-----------------------------------------------
 
         // Display the cache
+        
         $this->_display(self::substr($cache, self::strlen($match[0])));
+        
         log_message('debug', 'Cache file is current. Sending it to browser.');
         return TRUE;
     }
@@ -308,6 +320,9 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
         $CI = &get_instance();
         $current_mapping = $CI->mycache->getTagsMapping();
         foreach ($this->tags as $tag) {
+
+
+            
             if (!array_key_exists($tag, $current_mapping)) {
 				$current_mapping[$tag] = [];
 			}

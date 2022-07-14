@@ -238,7 +238,7 @@ class Apilib
         if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], null, 0, null, null, false, $depth);
             if ($this->mycache->isCacheEnabled()) {
-                $tags = $this->buildTagsFromEntity($entity);
+                $tags = $this->mycache->buildTagsFromEntity($entity);
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
             }
         }
@@ -263,7 +263,7 @@ class Apilib
         if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
             if ($this->mycache->isCacheEnabled()) {
-                $tags = $this->buildTagsFromEntity($entity);
+                $tags = $this->mycache->buildTagsFromEntity($entity,$id);
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
             }
         }
@@ -344,7 +344,7 @@ class Apilib
     {
         if ($direct_db) {
             $output = $this->db->insert($entity, $data);
-            $this->apilib->clearCacheTags([$entity]);
+            $this->mycache->clearCacheTags([$entity]);
             return $output;
         }
 
@@ -393,7 +393,7 @@ class Apilib
 
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $this->view($entity, $id)));
 
-            $this->clearEntityCache($entity);
+            $this->mycache->clearEntityCache($entity);
 
             // Prima di uscire voglio ripristinare il post precedentemente modificato
             $_POST = $this->originalPost;
@@ -432,7 +432,7 @@ class Apilib
     {
         if ($direct_db) {
             $output = $this->db->where($entity . '_id', $id)->update($entity, $data);
-            $this->apilib->clearCacheTags([$entity]);
+            $this->mycache->clearCacheTags([$entity]);
             return $output;
         }
 
@@ -500,7 +500,7 @@ class Apilib
             $this->runDataProcessing($entity, 'update', $data_for_processing);
 
             //TODO: change with specific tags
-            $this->clearEntityCache($entity);
+            $this->mycache->clearEntityCache($entity);
 
             $_POST = $this->originalPost;
 
@@ -583,7 +583,7 @@ class Apilib
             $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $record));
         }
 
-        $this->clearEntityCache($entity);
+        $this->mycache->clearEntityCache($entity);
 
         // Prima di uscire voglio ripristinare il post precedentemente modificato
         $_POST = $this->originalPost;
@@ -953,7 +953,7 @@ class Apilib
             try {
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
                 if ($this->mycache->isCacheEnabled()) {
-                    $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                    $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
                 }
             } catch (Exception $ex) {
                 //throw new ApiException('Si è verificato un errore nel server', self::ERR_INTERNAL_DB, $ex);
@@ -1031,7 +1031,7 @@ class Apilib
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
             if ($this->mycache->isCacheEnabled()) {
-                $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->buildTagsFromEntity($entity));
+                $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
             }
         }
 
@@ -2549,28 +2549,7 @@ class Apilib
             $this->fallbackLanguage
         ]);
     }
-    public function buildTagsFromEntity($entity)
-    {
-        $entity_data = $this->crmEntity->getEntity($entity);
-        $tags = [$entity_data['entity_name']];
-        $fields = $this->crmEntity->getFields($entity);
-        foreach ($fields as $field) {
-            if ($field['fields_ref_auto_right_join'] == DB_BOOL_TRUE || $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
-                $tags[] = $field['fields_ref'];
-            }
-        }
-        //Get all fields that references this entity (false to force left join instead of right join)
-        $fields_referencing = $this->crmEntity->getFieldsRefBy($entity, false);
-
-        foreach ($fields_referencing as $field) {
-            $tags[] = $field['entity_name'];
-        }
-
-        $tags = array_filter($tags, 'strlen');
-
-
-        return $tags;
-    }
+    
 }
 
 class ApiException extends Exception

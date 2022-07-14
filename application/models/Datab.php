@@ -340,7 +340,7 @@ class Datab extends CI_Model
                 $dati =  $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
             if ($this->mycache->isCacheEnabled()) {
-                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($entity_id));
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($entity_id));
             }
         }
         //debug($dati, true);
@@ -746,13 +746,13 @@ class Datab extends CI_Model
                     'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id),
                     'fieldset' => $field['forms_fields_fieldset'],
                     'required' => $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] == DB_BOOL_TRUE && !trim($field['fields_default'])),
-                    
+                    'onclick' => $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '',
                     'original_field' => $field,
                 ];
 
                 $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
                 if ($this->mycache->isCacheEnabled()) {
-                    $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->apilib->buildTagsFromEntity($form['forms_entity_id']));
+                    $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($form['forms_entity_id']));
                 }
             }
 
@@ -760,6 +760,7 @@ class Datab extends CI_Model
             
             
         }
+        //debug($dati['forms_fields']);
         return $dati;
     }
     public function processFieldMapping($field, $form)
@@ -991,7 +992,7 @@ class Datab extends CI_Model
 
             $dati = $data;
             if ($this->mycache->isCacheEnabled()) {
-                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->apilib->buildTagsFromEntity($grid['grids']['entity_name']));
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($grid['grids']['entity_name'], $value_id));
             }
         }
         return $dati;
@@ -2387,7 +2388,7 @@ class Datab extends CI_Model
             if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0) {
                 $entity = $this->crmentity->getEntity($dati['layout_container']['layouts_entity_id']);
                 if (isset($entity['entity_name'])) {
-                    $this->layout->addRelatedEntity($entity['entity_name']);
+                    $this->layout->addRelatedEntity($entity['entity_name'],$value_id);
                     $data_entity = $this->getDataEntity($entity['entity_id'], ["{$entity['entity_name']}_id" => $value_id], 1);
                     $layout_data_detail = array_shift($data_entity);
                 }
@@ -2422,6 +2423,7 @@ class Datab extends CI_Model
                 // Precedentemente questa operazione veniva effettuata in questo
                 // punto, ma per motivi di dimensione e complessità della procedura
                 // è stata spostata in un metodo a se `getBoxContent`
+                
                 $layout['content'] = $this->getBoxContent($layout, $value_id, $layout_data_detail);
 
                 // Fa il wrap degli hook pre e post che devono esistere per ogni
@@ -3029,7 +3031,7 @@ class Datab extends CI_Model
 
             $style = $langShow ? '' : 'style="display:none"';
             $label = $baseShowLabel ? '<label class="control-label">' . t($langLabel) . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk firegui_fontsize85"></small>' : '') : '';
-
+            //debug($baseOnclick);
             $data = [
                 'lang' => $langId,
                 'field' => $field,
@@ -3154,7 +3156,6 @@ class Datab extends CI_Model
                 // Prendo la struttura della grid
                 $grid = $this->get_grid($contentRef);
                 
-                
                 $this->layout->addRelatedEntity($grid['grids']['entity_name']);
 
                 // Ci sono problemi se inizializzo una datatable senza colonne!!
@@ -3218,7 +3219,6 @@ class Datab extends CI_Model
                     if (!in_array($form['forms']['forms_layout'], ['filter_select']) && !$this->can_write_entity($form['forms']['forms_entity_id'])) {
                         return str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
                     }
-
                     return $this->load->view("pages/layouts/forms/form_{$form['forms']['forms_layout']}", array(
                         'form' => $form,
                         'ref_id' => $contentRef,

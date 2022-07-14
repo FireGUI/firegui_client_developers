@@ -160,7 +160,7 @@ class Db_ajax extends MY_Controller
                     'status' => $status, 
                     'txt' => str_replace($replaceFrom, $replaceTo, $message), 
                     'data' => $saved,
-                    'cache_tags' => $this->apilib->buildTagsFromEntity($entity)
+                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity)
                 ), JSON_INVALID_UTF8_SUBSTITUTE,
                     
                 );
@@ -173,7 +173,7 @@ class Db_ajax extends MY_Controller
                     'related_entity' => $entity, 
                     'reset_form' => 1, 
                     'data' => $saved,
-                    'cache_tags' => $this->apilib->buildTagsFromEntity($entity)
+                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity)
                 );
 
                 echo json_encode($return_data, JSON_INVALID_UTF8_SUBSTITUTE);
@@ -233,6 +233,8 @@ class Db_ajax extends MY_Controller
         // Ignoro il get_form del datab: a me serve solo la 'filter session key'
         // quindi faccio una query secca tramite il getById di apilib
         $form_id or die(json_alert('Form id required'));
+
+        $this->mycache->clearCache('full_page');
 
         $form = $this->apilib->getById('forms', $form_id);
 

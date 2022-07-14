@@ -354,7 +354,7 @@ class Firegui extends MY_Controller
 
     public function clearCache()
     {
-        $this->apilib->clearCache(true);
+        $this->mycache->clearCache(true);
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
         // Pulisco cache frontend se c'è...

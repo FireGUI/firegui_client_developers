@@ -576,9 +576,9 @@ class Main extends MY_Controller
      */
     public function cache_manager()
     {
-if ($this->mycache->isActive('full_page')) {
-    $this->output->cache(0);
-}
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
         if (!$this->datab->is_admin()) {
             $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
             $this->stampa($pagina);
