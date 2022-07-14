@@ -1484,4 +1484,31 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             die(json_encode(['status' => 0, 'txt' => t('Error')]));
         }
     }
+
+    public function search_autocomplete_groupby($requested_field)
+    {
+        $post = $this->security->xss_clean($this->input->post());
+
+        if (empty($post) || empty($post['keyword'])) {
+            // die(e_json(['status' => 0, 'txt' => t('No data passed')]));
+        }
+
+
+        $keyword = trim(strip_tags($post['keyword']));
+        $requested_field = trim(strip_tags($requested_field));
+
+        $field_db = $this->db->join('entity', 'entity_id = fields_entity_id')->where('fields_name', $requested_field)->get('fields')->row_array();
+
+        if (empty($field_db)) {
+            die(e_json(['status' => 0, 'txt' => t('Field not found')]));
+        }
+
+        try {
+            $results = $this->db->query("SELECT $requested_field AS result FROM {$field_db['entity_name']} WHERE $requested_field IS NOT NULL AND $requested_field <> '' AND $requested_field LIKE '%{$keyword}%' GROUP BY $requested_field ORDER BY $requested_field ASC")->result_array();
+
+            e_json(['status' => 1, 'txt' => $results]);
+        } catch (Exception $e) {
+            die(e_json(['status' => 0, 'txt' => $e->getMessage()]));
+        }
+    }
 }

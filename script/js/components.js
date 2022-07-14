@@ -233,6 +233,63 @@ function initComponents(container, reset = false) {
   initTinymce(container);
 
   /*
+    * Init autocomplete fields same entity
+    */
+
+  var js_autocomplete = $('.field_autocomplete');
+
+  try {
+    js_autocomplete.autocomplete("destroy");
+    js_autocomplete.removeData('autocomplete');
+  } catch (e) { }
+
+  js_autocomplete.autocomplete({
+    source: function (request, response) {
+      var currentField = document.activeElement.name;
+
+      $.ajax({
+        method: 'post',
+        url: base_url + "get_ajax/search_autocomplete_groupby/" + currentField,
+        dataType: "json",
+        data: {
+          [token_name]: token_hash,
+          keyword: request.term,
+        },
+        minLength: 1,
+        async: true,
+        success: function (ajax_response) {
+          var collection = [];
+
+          if (ajax_response.status == '1' && ajax_response.txt) {
+            $.each(ajax_response.txt, function (index, results) {
+              collection.push({
+                "id": index,
+                "label": results.result,
+                "value": results.result,
+              });
+            });
+          }
+
+          response(collection);
+        }
+      });
+    },
+    minLength: 1,
+    select: function (event, ui) {
+      if (event.keyCode === 9) return false;
+
+      var currentField = document.activeElement.name;
+
+      var result = ui.item.value;
+
+      $('[name="' + currentField + '"]').val(result);
+
+      return false;
+    }
+  });
+  $('.ui-autocomplete').css('z-index', '2147483647');
+
+  /*
    * Form Multiple key values
    */
 
