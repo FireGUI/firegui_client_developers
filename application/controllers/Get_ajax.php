@@ -11,9 +11,7 @@ class Get_ajax extends MY_Controller
     
 
     parent::__construct();
-    if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
-        $this->output->cache(0);
-    }
+    
 }
     /**
      * Render di un layout in modale
