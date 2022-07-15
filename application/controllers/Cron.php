@@ -15,6 +15,9 @@ class Cron extends MY_Controller
      */
     public function test_now($id, $rollback = 0)
     {
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
         if (!$this->auth->is_admin()) {
             e('You must be logged in as admin to run cronjobs.');
         }
