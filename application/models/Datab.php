@@ -119,7 +119,7 @@ class Datab extends CI_Model
         $entity['fields'] = $this->crmentity->getFields($entity_name);
         return $entity;
     }
-    public function getDataEntityByQuery($query, $input = null, $limit = null, $offset = 0, $orderBy = null, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
+    public function getDataEntityByQuery($entity_id, $query, $input = null, $limit = null, $offset = 0, $orderBy = null, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
         $unique = md5($query);
         $cache_key = "apilib/datab.getDataEntity.{$unique}." . md5(serialize(func_get_args()) . serialize($_GET).serialize($_POST).serialize($this->session->all_userdata()));
@@ -172,6 +172,7 @@ class Datab extends CI_Model
             };
 
             array_walk($where, $func);
+            $where = $this->apilib->runDataProcessing($entity_id, 'pre-search', $where);
 
             $query = str_ireplace('{where}', $this->buildWhereString($where, $query), $query);
 
@@ -980,7 +981,7 @@ class Datab extends CI_Model
             $this->apilib->setLanguage();
 
             if (!empty($grid['grids']['grids_custom_query'])) {
-                $data = $this->getDataEntityByQuery($grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
+                $data = $this->getDataEntityByQuery($grid['grids']['grids_entity_id'], $grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             } else {
                 $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             }
