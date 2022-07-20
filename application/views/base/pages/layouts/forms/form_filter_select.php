@@ -224,6 +224,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                             $support_data = $this->crmentity->getEntityPreview($field['filterref']);
                                         }
                                         ?>
+                                        <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty'); ?></option>
                                         <?php foreach ($support_data as $id => $name) : ?>
                                             <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
                                         <?php endforeach; ?>

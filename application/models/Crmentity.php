@@ -266,6 +266,8 @@ class Crmentity extends CI_Model
             // sono sicuro che $result_ids non è vuoto
             $referersKeys = [];
             $referersRecords = array_fill_keys($result_ids, []);
+            //debug($data, true);
+
             foreach ($data['fields_ref_by'] ?: [] as $entity) {
                 $refererEntity = $entity['entity_name'];
                 $refererField = $entity['fields_name'];
@@ -292,6 +294,9 @@ class Crmentity extends CI_Model
                 $referersKeys[$refererEntity] = [];
 
                 $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
+
+
+
                 if (!empty($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
@@ -348,10 +353,10 @@ class Crmentity extends CI_Model
 
                 // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
                 $ids = array_key_map($data['data'], $field);
-
+                
                 // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
                 $relation_data = $this->db->where_in($field, $ids)->get($relation)->result_array();
-
+                
                 // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
                 // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
                 $relation_data_by_ids = [];
@@ -367,8 +372,17 @@ class Crmentity extends CI_Model
 
                 // Prendo le preview dei record relazionati
                 if (!empty($related_data)) {
-                    $related_data_preview = $this->getEntityPreview($other_table, "{$other_table}.{$other} IN (" . implode(',', $related_data) . ")");
+                    //if entity is soft deletable, remove filter here to access deleted records in previews
+                    $other_entity_table = $this->getEntity($other_table);
+                    $entityCustomActions = empty($other_entity_table['entity_action_fields']) ? [] : json_decode($other_entity_table['entity_action_fields'], true);
+                    $where_related_data = ["{$other_table}.{$other} IN (" . implode(',', $related_data) . ")"];
+                    if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
+                        $where_related_data[] = "({$entityCustomActions['soft_delete_flag']} = 1 OR 1=1)";
 
+                    }
+                    $where_related_data_str = implode(' AND ', $where_related_data);
+                    $related_data_preview = $this->getEntityPreview($other_table, $where_related_data_str);
+                    //debug($related_data_preview);
                     foreach ($data['data'] as $key => $dato) {
                         if (isset($relation_data_by_ids[$dato[$field]])) {
                             foreach ($relation_data_by_ids[$dato[$field]] as $related_value) {
