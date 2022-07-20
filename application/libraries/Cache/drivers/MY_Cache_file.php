@@ -412,12 +412,11 @@ class MY_Cache_file extends CI_Driver
 			if ($key == 'raw_queries') {
 				$key = 'sql';
 			}
+			if ($key == 'full_page') {
+				$key = 'fullpages';
+			}
 			if (is_dir(APPPATH . 'cache/'.$key)) {
-				foreach (@scandir(APPPATH . 'cache/'.$key) as $file) {
-					if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . 'cache/'.$key.'/' . $file)) {
-						unlink(APPPATH . 'cache/'.$key.'/' . $file);
-					}
-				}
+				deleteDirRecursive(APPPATH . 'cache/'.$key);
 			} else {
 				if ($key == 'database_schema') {
 					@unlink(APPPATH . 'cache/crm.schema');
@@ -430,14 +429,13 @@ class MY_Cache_file extends CI_Driver
 		} else {
 			// Fix che riscrive il file cache-controller resettato da $this->mycache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
 			$cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
+			$cache_config = file_get_contents(APPPATH . 'cache/cache-config.json');
 			$this->clean();
 			file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
-
+			file_put_contents(APPPATH . 'cache/cache-config.json', $cache_config);
+			deleteDirRecursive(APPPATH . 'cache/sql');
 			@unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-			if ($this->db->CACHE) {
-				$this->db->CACHE->delete_all();
-			}
-
+			
 			//Remove also css generated files from template cache
 			if ($drop_template_files) {
 				foreach (@scandir(APPPATH . '../template/build/') as $file) {
@@ -455,9 +453,7 @@ class MY_Cache_file extends CI_Driver
         $tags = $this->buildTagsFromEntity($entity);
         $this->clearCacheTags($tags);
 
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
+        $this->clearCache(false, 'raw_queries');
     }
 
     public function clearCacheKey($key = null)
@@ -468,9 +464,7 @@ class MY_Cache_file extends CI_Driver
 
         $this->delete($key);
 
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
+        $this->clearCache(false, 'raw_queries');
     }
 
     public function clearCacheTags($tags)
@@ -481,9 +475,7 @@ class MY_Cache_file extends CI_Driver
 
         $this->deleteByTags($tags);
 
-        if ($this->db->CACHE) {
-            $this->db->CACHE->delete_all();
-        }
+        $this->clearCache(false, 'raw_queries');
     }
 
     public function clearCacheRecord($entity = null, $id = null)
@@ -513,9 +505,11 @@ public function getCurrentConfig() {
 public function getModifiedDate() {
 	$modified_dates = [];
 	$modified_dates['database_schema'] = @stat(APPPATH.'cache/crm.schema')['mtime'];
-	$modified_dates['apilib'] = stat(APPPATH.'cache/apilib')['mtime'];
-	$modified_dates['raw_queries'] = stat(APPPATH.'cache/sql')['mtime'];
-	$modified_dates['full_page'] = stat(APPPATH.'cache/fullpages')['mtime'];
+	$modified_dates['apilib'] = @stat(APPPATH.'cache/apilib')['mtime'];
+	$modified_dates['raw_queries'] = @stat(APPPATH.'cache/sql')['mtime'];
+	$modified_dates['full_page'] = @stat(APPPATH.'cache/fullpages')['mtime'];
+	$modified_dates['template_assets'] = @stat(APPPATH.'../template/build')['mtime'];
+	
 		return $modified_dates;
 }
 
@@ -525,9 +519,40 @@ public function getModifiedDate() {
 		$diskspaces['apilib'] = GetDirectorySize(APPPATH.'cache/apilib');
 		$diskspaces['raw_queries'] = GetDirectorySize(APPPATH.'cache/sql');
 		$diskspaces['full_page'] = GetDirectorySize(APPPATH.'cache/fullpages');
+		$diskspaces['template_assets'] = GetDirectorySize(APPPATH.'../template/build');
 		return $diskspaces;
 	}
 	public function isActive($key) {
 		return !empty($this->getCurrentConfig()[$key]['active']);
 	}
+	public function buildTagsFromEntity($entity, $value_id = null)
+    {
+		$CI = &get_instance();
+        $entity_data = $CI->crmentity->getEntity($entity);
+		if ($value_id) {
+			$tags = ["{$entity_data['entity_name']}:{$value_id}"];
+		} else {
+			$tags = [$entity_data['entity_name']];
+		}
+        
+        $fields = $CI->crmentity->getFields($entity);
+        foreach ($fields as $field) {
+            if ($field['fields_ref_auto_right_join'] == DB_BOOL_TRUE || $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
+                $tags[] = $field['fields_ref'];
+            }
+        }
+        //Get all fields that references this entity (false to force left join instead of right join)
+        $fields_referencing = $CI->crmentity->getFieldsRefBy($entity, false);
+
+        foreach ($fields_referencing as $field) {
+            $tags[] = $field['entity_name'];
+        }
+
+        $tags = array_filter($tags, 'strlen');
+
+
+        return $tags;
+    }
+
+	
 }

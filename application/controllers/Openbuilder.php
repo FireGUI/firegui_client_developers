@@ -9,7 +9,9 @@ class Openbuilder extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
         $permitted_routes = ['get_client_version'];
         $route = $this->uri->segment(2);
         $unallowed = false;

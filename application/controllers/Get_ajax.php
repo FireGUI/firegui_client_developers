@@ -11,6 +11,7 @@ class Get_ajax extends MY_Controller
     
 
     parent::__construct();
+    
 }
     /**
      * Render di un layout in modale

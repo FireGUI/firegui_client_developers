@@ -15,7 +15,9 @@ class Webauthn extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        //$this->output->cache(20);
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
         // Controllo anche la current uri
 
         $server_name = explode('://', base_url())[1];

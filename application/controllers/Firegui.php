@@ -9,7 +9,9 @@ class Firegui extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-
+        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
+            $this->output->cache(0);
+        }
         $permitted_routes = ['get_client_version'];
         $route = $this->uri->segment(2);
         $unallowed = false;
@@ -354,7 +356,7 @@ class Firegui extends MY_Controller
 
     public function clearCache()
     {
-        $this->apilib->clearCache(true);
+        $this->mycache->clearCache(true);
         @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
 
         // Pulisco cache frontend se c'è...

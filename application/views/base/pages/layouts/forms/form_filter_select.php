@@ -254,8 +254,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                     } else {
                                         $entity = $field['filterref'];
                                     }
+                                    //debug('test');
                                     ?>
-                                    <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
+                                    <select class="form-control select2_standard <?php echo $class ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $field['onclick']; ?>>
 
                                         <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
                                         <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty'); ?></option>
@@ -281,7 +282,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
 
                                     </select>
                                 <?php else : ?>
-                                    <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $onclick; ?>>
+                                    <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $field['onclick']; ?>>
 
                                         <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
                                         <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty'); ?></option>

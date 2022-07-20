@@ -302,7 +302,13 @@ $html = str_replace($placeholder, $hooks_contents, $html);
 return $html;
 }
 
-public function addRelatedEntity($entity_name) {
+public function addRelatedEntity($entity_name,$value_id = null) {
+    
+    
+    
+    if ($value_id) {
+        $entity_name = "{$entity_name}:{$value_id}";
+    }
 if (!in_array($entity_name, $this->related_entities)) {
 $this->related_entities[] = $entity_name;
 }

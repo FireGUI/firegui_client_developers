@@ -19,7 +19,7 @@ $('body').on('click', '.js_ajax_content', function (e) {
     
     if (layout_id && !e.metaKey) {
 
-
+      var value_id = $(this).data('layout_id');
         $('.js_submenu_item.active').removeClass('active');
 
                             $('#js_layout_content_wrapper').data('layout-id', layout_id);
@@ -51,7 +51,7 @@ $('body').on('click', '.js_ajax_content', function (e) {
              document.title = $layout_exists.data('title');
         } else {
             loading(true);
-            $.ajax(base_url + 'main/get_layout_content/' + layout_id + get_params, {
+          $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
                 type: 'GET',
                 dataType: 'json',
                 complete: function () {
