@@ -237,9 +237,9 @@ class Mail_model extends CI_Model
 
             //Verifico se è impostato email_deferred
             if ($this->isDeferred()) {
-                return $this->queueEmail($to, $additionalHeaders, $subject, $message, $isHtml, $attachments);
+                return $this->queueEmail($to, $additional_headers, $subject, $message, $isHtml, $attachments);
             } else {
-                return $this->sendEmail($to, $additionalHeaders, $subject, $message, $isHtml, [], $attachments);
+                return $this->sendEmail($to, $additional_headers, $subject, $message, $isHtml, [], $attachments);
             }
         }
     }
