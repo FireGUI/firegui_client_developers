@@ -176,11 +176,11 @@ class Conditions extends CI_Model
              */
             //Creo uno switch per le condizioni speciali, ovvero che non sono semplici operatori di confronto ma serve un codice ad hoc per questa verifica
             switch ($rule['id']) {
-                case 'almeno_un_bambino_di_eta':
-                case 'almeno_2_bambini_di_eta':
-                case 'almeno_3_bambini_di_eta':
-                    return $this->doSpecialOperation($rule['id'], $rule['operator'], $rule['value'], $room);
-                    break;
+                case 'special1':
+                    case 'special2':
+                    
+                        return $this->doSpecialOperation($rule['id'], $rule['operator'], $rule['value']);
+                        break;
                 default:
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
                         return $this->doOperation($dati[$rule['id']], $rule['operator'], $rule['value']);    
@@ -201,44 +201,12 @@ class Conditions extends CI_Model
     public function doSpecialOperation($id, $ruleOperator, $ruleValue, $room)
     {
         switch ($id) {
-            case 'almeno_un_bambino_di_eta':
-                //debug($room, true);
-                foreach ($room['_ospiti']['bambini'] as $bambino) {
-                    $eta = $bambino['eta'];
-                    if ($this->doOperation($eta, $ruleOperator, $ruleValue)) {
-                        return true;
-                    }
-                }
+            case 'special1':
+                //TODO
                 return false;
                 break;
-            case 'almeno_2_bambini_di_eta':
-                $count = 0;
-                foreach ($room['_ospiti']['bambini'] as $bambino) {
-                    $eta = $bambino['eta'];
-                    if ($this->doOperation($eta, $ruleOperator, $ruleValue)) {
-                        $count++;
-                    }
-                }
-                if ($count >= 2) {
-                    return true;
-                } else {
-                    return false;
-                }
-                
-                break;
-            case 'almeno_3_bambini_di_eta':
-                $count = 0;
-                foreach ($room['_ospiti']['bambini'] as $bambino) {
-                    $eta = $bambino['eta'];
-                    if ($this->doOperation($eta, $ruleOperator, $ruleValue)) {
-                        $count++;
-                    }
-                }
-                if ($count >= 3) {
-                    return true;
-                } else {
-                    return false;
-                }
+            case 'special2':
+                //TODO
                 
                 break;
             default:
@@ -288,6 +256,12 @@ class Conditions extends CI_Model
 
             case 'in':
                 return is_array($ruleValue) ? in_array($value_to_validate, $ruleValue) : ($value_to_validate == $ruleValue);
+            case 'is_null':
+                //debug($value_to_validate);
+                return $value_to_validate == '';
+            default:
+                debug("Rule operator '$ruleOperator' not recognized!");
+                break;
         }
 
         return false;
