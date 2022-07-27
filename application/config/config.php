@@ -321,7 +321,8 @@ $config['cache_path'] = '';
 |	             of query parameters.
 |
 */
-$config['cache_query_string'] = FALSE;
+$config['cache_query_string'] = true;
+
 
 /*
 |--------------------------------------------------------------------------
