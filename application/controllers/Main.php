@@ -199,7 +199,9 @@ class Main extends MY_Controller
                         $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
                     }
 
-                    $pdfFile = $this->layout->generate_pdf($view_content, "portrait", "", [], false, true);
+$orientation = $this->input->get('orientation') ? $this->input->get('orientation') : 'portrait';
+$pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], false, true);
+
 
                     $contents = file_get_contents($pdfFile, true);
                     $pdf_b64 = base64_encode($contents);
