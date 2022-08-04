@@ -17,19 +17,23 @@ class Openbuilder extends MY_Controller
         $unallowed = false;
         if (!in_array($route, $permitted_routes) && (!$this->auth->check() || !$this->auth->is_admin())) {
             if (!$token = $this->input->get('token')) {
-                log_message('DEBUG', "Missing token for Firegui request!");
+log_message('DEBUG', "Missing token for openbuilder request!");
+
                 $unallowed = true;
             } else {
-                $token_match = $this->db->where('meta_data_key', 'firegui_token')->where('meta_data_value', $token)->get('meta_data');
+$token_match = $this->db->where('meta_data_key', 'openbuilder_token')->where('meta_data_value', $token)->get('meta_data');
+
                 if ($token_match->num_rows() == 0) {
                     $unallowed = true;
                 } else {
                     //Destroy token and proceed...
-                    $this->db->where('meta_data_key', 'firegui_token')->delete('meta_data');
+$this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
+
                 }
             }
         }
-        // TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO FIREGUI DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
+// TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO OPENBUILDER DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
+
         if ($unallowed) {
             set_status_header(403);
             die('Nope... not allowed!');
@@ -85,7 +89,8 @@ class Openbuilder extends MY_Controller
         }
     }
 
-    //Send module to firegui (when creating new module or new release)
+//Send module to openbuilder (when creating new module or new release)
+
     public function downloadModuleFolder($identifier)
     {
         $module = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
@@ -151,9 +156,10 @@ class Openbuilder extends MY_Controller
 
         $old_version = VERSION;
 
-        $file_link = FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
-        $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
-        $new_version_code = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
+$file_link = OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
+$new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
+$new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
+
 
         //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
         log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
@@ -338,7 +344,8 @@ class Openbuilder extends MY_Controller
 
     public function getCustomViews()
     {
-        echo json_encode(dirToArray(APPPATH . (empty($_SERVER['FIREGUI_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['FIREGUI_CLIENT_TEMPLATE']) . '/custom/'));
+echo json_encode(dirToArray(APPPATH . (empty($_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) . '/custom/'));
+
     }
 
     public function getModulesCustomViews()

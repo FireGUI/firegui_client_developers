@@ -17,7 +17,7 @@
             - Type: <?php echo $hook['type']; ?> Ref: <?php echo $hook['ref']; ?> Value id: <?php echo $hook['value_id']; ?> <br />
 
             <?php foreach ($hook['hooks'] as $single_hook) : ?>
-            |- [<?php echo $single_hook['hooks_id']; ?>] Title: <a href="<?php echo FIREGUI_BUILDER_BASEURL; ?>main/events_builder/<?php echo $single_hook['hooks_id']; ?>" target="_blank"><?php echo $single_hook['hooks_title']; ?></a> Module: <?php echo $single_hook['hooks_module']; ?> <span class="js_show_code">Show Code</span><br />
+            |- [<?php echo $single_hook['hooks_id']; ?>] Title: <a href="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>main/events_builder/<?php echo $single_hook['hooks_id']; ?>" target="_blank"><?php echo $single_hook['hooks_title']; ?></a> Module: <?php echo $single_hook['hooks_module']; ?> <span class="js_show_code">Show Code</span><br />
             <span class="line4 hide"><br /><?php echo htmlentities($single_hook['hooks_content']); ?><br /><br /></span>
             <?php endforeach; ?>
             <br />
@@ -44,16 +44,16 @@
         <p class="line1 js_console_command">$ get crons</p>
         <p class="line2 hide">
             <?php foreach ($this->fi_events->getCrons() as $cron) : ?>
-            - [<?php echo $cron['fi_events_id']; ?>] <a href="<?php echo FIREGUI_BUILDER_BASEURL; ?>main/events_builder/<?php echo $cron['fi_events_id']; ?>" target="_blank"><?php echo $cron['fi_events_title']; ?></a> Type: <?php echo $cron['crons_type']; ?> Freq: <?php echo $cron['crons_frequency']; ?> min Active: <span class="line4"><?php echo $cron['crons_active']; ?></span> Last Exec: <?php echo $cron['crons_last_execution']; ?> Module: <?php echo $cron['crons_module']; ?> <span class="js_show_code">Show code/url</span><br />
+            - [<?php echo $cron['fi_events_id']; ?>] <a href="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>main/events_builder/<?php echo $cron['fi_events_id']; ?>" target="_blank"><?php echo $cron['fi_events_title']; ?></a> Type: <?php echo $cron['crons_type']; ?> Freq: <?php echo $cron['crons_frequency']; ?> min Active: <span class="line4"><?php echo $cron['crons_active']; ?></span> Last Exec: <?php echo $cron['crons_last_execution']; ?> Module: <?php echo $cron['crons_module']; ?> <span class="js_show_code">Show code/url</span><br />
             <span class="line4 hide"><br /><code><?php echo ($cron['crons_text']) ? htmlentities($cron['crons_text']) : $cron['crons_file']; ?></code><br /><br /></span>
             <?php endforeach; ?>
         </p>
 
         <p class="line1 js_console_command">$ count table records</p>
         <p class="line2 hide">
-            ci_sessions (<?php echo $this->db->query("SELECT COUNT(*) AS c FROM ci_sessions")->row()->c; ?>) <a target="_blank" href="<?php echo FIREGUI_BUILDER_BASEURL; ?>main/query/REVMRVRFIEZST00gY2lfc2Vzc2lvbnM=">Truncate</a>
-            <br />log_crm (<?php echo $this->db->query("SELECT COUNT(*) AS c FROM log_crm")->row()->c; ?>) <a target="_blank" href="<?php echo FIREGUI_BUILDER_BASEURL; ?>main/query/REVMRVRFIEZST00gbG9nX2NybQ==">Truncate</a>
-            <br />log_api (<?php echo $this->db->query("SELECT COUNT(*) AS c FROM log_api")->row()->c; ?>) <a target="_blank" href="<?php echo FIREGUI_BUILDER_BASEURL; ?>main/query/REVMRVRFIEZST00gbG9nX2FwaQ==">Truncate</a>
+            ci_sessions (<?php echo $this->db->query("SELECT COUNT(*) AS c FROM ci_sessions")->row()->c; ?>) <a target="_blank" href="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>main/query/REVMRVRFIEZST00gY2lfc2Vzc2lvbnM=">Truncate</a>
+            <br />log_crm (<?php echo $this->db->query("SELECT COUNT(*) AS c FROM log_crm")->row()->c; ?>) <a target="_blank" href="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>main/query/REVMRVRFIEZST00gbG9nX2NybQ==">Truncate</a>
+            <br />log_api (<?php echo $this->db->query("SELECT COUNT(*) AS c FROM log_api")->row()->c; ?>) <a target="_blank" href="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>main/query/REVMRVRFIEZST00gbG9nX2FwaQ==">Truncate</a>
         </p>
 
         <p class="line3">[?] What are you looking for? (Click command to execute)<span class="cursor3">_</span></p>

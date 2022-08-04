@@ -327,7 +327,8 @@ $lang['Clear'] = 'Clear';
 $lang['Description'] = 'Description';
 $lang['Support tables'] = 'Support tables';
 $lang['Notification'] = 'Notification';
-$lang['FireGUI'] = 'FireGUI';
+$lang['OpenBuilder'] = 'OpenBuilder';
+
 $lang['Client Releases'] = 'Client Releases';
 $lang['Modules Repository'] = 'Modules Repository';
 $lang['Database Dumps'] = 'Database Dumps';

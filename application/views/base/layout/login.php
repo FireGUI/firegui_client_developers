@@ -317,7 +317,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                         <p class="login-p"><a href="<?php echo base_url("access/recovery"); ?>"><?php e('Click here'); ?></a> <?php e('to reset it.'); ?></p>
                     </div>
                 </div>
-                <?php if ($this->input->get('source') == 'firegui') : ?>
+                <?php if ($this->input->get('source') == 'openbuilder') : ?>
                 <div class="box box-primary box-solid firegui-box">
                     <div class=" box-header with-border">
                         <h3 class="box-title"><?php e('Welcome to your client!'); ?></h3>
@@ -328,7 +328,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                     </div>
 
                     <div class="box-body">
-                        <?php e('You can login with the same email and password you used to register in FireGUI.com. After that, you can create new users or change your password directly in your reserved area.'); ?>
+                        <?php e('You can login with the same email and password you used to register in OpenBuilder.net. After that, you can create new users or change your password directly in your reserved area.'); ?>
                         <br />
                         <br />
                         <em>

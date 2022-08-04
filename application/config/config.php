@@ -475,6 +475,7 @@ $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array(
     'rest/v1/.*?',
     'firegui/.*?',
+    'openbuilder/.*?',
     'custom/.*?',
     'db_ajax/multi_upload_async/.*?',
     'Webauthn/.*?',

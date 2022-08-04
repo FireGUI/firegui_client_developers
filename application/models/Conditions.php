@@ -141,7 +141,8 @@ class Conditions extends CI_Model
     {
         //debug($rule, true);
         $contains_rules = (isset($rule['condition']) && isset($rule['rules']));
-        $is_rule_definition = (isset($rule['id']) && isset($rule['type']) && isset($rule['value']) && isset($rule['operator']));
+//$is_rule_definition = (isset($rule['id']) && isset($rule['type']) && isset($rule['value']) && isset($rule['operator']));
+$is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($rule['type']) && (isset($rule['value']) || in_array($rule['operator'], ['is_null'])));
 
         if ($contains_rules) {
             /*

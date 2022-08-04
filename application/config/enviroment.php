@@ -33,7 +33,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
  * DEFAULT_EMAIL_REPLY      "Reply To" default header
  */
     define('DEFAULT_EMAIL_SYSTEM', 'no-reply@yourdomain.com');
-    define('DEFAULT_EMAIL_SENDER', 'FireGUI');
+define('DEFAULT_EMAIL_SENDER', 'OpenBuilder');
+
     define('DEFAULT_EMAIL_FROM', 'Example Inc. <no-reply@yourdomain.com>');
     define('DEFAULT_EMAIL_REPLY', 'Example Inc. <no-reply@yourdomain.com>');
 

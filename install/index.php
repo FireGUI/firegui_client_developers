@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FireGUI Requirement Checker
+ * OpenBuilder Requirement Checker
  */
 
 $client_version = '1.8.7';
@@ -238,7 +238,7 @@ function base_url_template($uri)
     <div class="container">
         <div class="row">
             <div class="col-sm-12" style="margin-top:10px;">
-                <img src="<?php echo FIREGUI_BUILDER_BASEURL; ?>images/logo_login.png" class="img-responsive" alt="">
+                <img src="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>images/logo_login.png" class="img-responsive" alt="">
             </div>
             <div class="col-sm-12" style="margin-top: 10px; margin-bottom: 20px;">
                 <h3><b>Fire</b>GUI Quick Installer</h3>

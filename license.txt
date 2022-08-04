@@ -1,8 +1,8 @@
-Copyright (c) 2015 - 2020, Firegui.com
+Copyright (c) 2015 - 2020, OpenBuilder.net
 All rights reserved.
 
-This license is a legal agreement between you and Firegui.com for the use
-of FireGUI Client Software (the "Software").  By obtaining the Software you
+This license is a legal agreement between you and OpenBuilder.net for the use
+of OpenBuilder Client Software (the "Software").  By obtaining the Software you
 agree to comply with the terms and conditions of this license.
 
 PERMITTED USE
@@ -19,12 +19,12 @@ the following conditions are met:
    in the documentation and/or other materials provided with the distribution.
 
 4. Products derived from the Software must include an acknowledgment that
-   they are derived from FireGUI and/or FireGUI Client in their documentation 
+   they are derived from OpenBuilder and/or OpenBuilder Client in their documentation 
    and/or other materials provided with the distribution.
 
-5. Products derived from the Software may not be called "FireGUI",
-   nor may "FireGUI" (or abbreviations or similar...) appear in their name, 
-   without prior written permission from Firegui.comp
+5. Products derived from the Software may not be called "OpenBuilder",
+   nor may "OpenBuilder" (or abbreviations or similar...) appear in their name, 
+   without prior written permission from OpenBuilder.net
 
 6. The Software is released under the OSL License
 
@@ -194,7 +194,7 @@ You comply with its license review and certification process.
 
 COPYRIGHT ADDITIONAL INFORMATION
 This license extends "2008 - 2011 Ellislab, Inc" original MIT license. Read carefully
-the license below before use the Software. FireGUI and FireGUI Client are
+the license below before use the Software. OpenBuilder and OpenBuilder Client are
 based on CodeIgniter PHP Framework, so you must agree also their terms and
 conditions.
 

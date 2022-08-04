@@ -1180,7 +1180,8 @@ if (!function_exists('checkClientVersion')) {
             $CI->session->set_userdata('last_client_check', $last_check);
 
 
-            $new_version = file_get_contents(FIREGUI_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
+$new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
+
 
             $CI->session->set_userdata('last_checked_version', $new_version);
             if ($new_version != VERSION) {
