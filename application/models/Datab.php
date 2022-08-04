@@ -3260,7 +3260,12 @@ class Datab extends CI_Model
                     ob_start();
                     $layout_data_detail = $layoutEntityData;    // Ci assicuriamo che questa variabile esista dentro all'eval
                     eval(' ?>' . $layoutBoxData['layouts_boxes_content'] . '<?php ');
-                    return ob_get_clean();
+$return = ob_get_clean();
+
+$return = str_replace_placeholders($return, $layoutEntityData, true, false);
+
+return $return;
+
                 }
                 return sprintf('<strong style="color:red">TYPE: %s No content</strong>', $contentType);
         }
