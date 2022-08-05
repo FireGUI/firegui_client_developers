@@ -764,6 +764,8 @@ class Apilib
         //TODO: clear only cache entity could work only if entity tags will be related to grids pointing (or left joining) this entity, to enable clear also grid data cache
         //        $this->clearEntityCache($entity);
         $this->mycache->clearEntityCache($entity);
+
+        return ['id' => $id, 'data' => $record, 'entity' => $entity];
     }
 
     /**
