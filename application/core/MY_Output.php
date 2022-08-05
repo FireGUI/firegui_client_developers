@@ -290,6 +290,12 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
                 } else {
                     $filters_md5 = '';
                 }
+
+                if (!empty($CI->input->post())) {
+                    $post_md5 = md5(serialize($CI->input->post()));  
+                } else {
+                    $post_md5 = '';
+                }
                              
 
                 if (!empty($user_id)) {
@@ -297,6 +303,10 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
                     $this->path .= $user_id.'/';
                     if ($filters_md5) {
                         $this->path .= $filters_md5.'/';
+                        
+                    }
+                    if ($post_md5) {
+                        $this->path .= $post_md5.'/';
                         
                     }
                 } else {
