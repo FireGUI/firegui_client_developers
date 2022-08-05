@@ -317,15 +317,7 @@ if ( ! is_php('5.4'))
  */
 	$OUT =& load_class('Output', 'core');
 
-/*
- * ------------------------------------------------------
- *	Is there a valid cache file? If so, we're done...
- * ------------------------------------------------------
- */
-	if ($EXT->call_hook('cache_override') === FALSE && $OUT->_display_cache($CFG, $URI) === TRUE)
-	{
-		exit;
-	}
+
 
 /*
  * -----------------------------------------------------
@@ -366,6 +358,7 @@ if ( ! is_php('5.4'))
 	 */
 	function &get_instance()
 	{
+		
 		return CI_Controller::get_instance();
 	}
 
@@ -374,6 +367,15 @@ if ( ! is_php('5.4'))
 		require_once APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
 	}
 
+	/*
+ * ------------------------------------------------------
+ *	Is there a valid cache file? If so, we're done...
+ * ------------------------------------------------------
+ */
+	if ($EXT->call_hook('cache_override') === FALSE && $OUT->_display_cache($CFG, $URI) === TRUE)
+	{
+		exit;
+	}
 	// Set a mark point for benchmarking
 	$BM->mark('loading_time:_base_classes_end');
 

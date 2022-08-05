@@ -3262,7 +3262,7 @@ class Datab extends CI_Model
                     eval(' ?>' . $layoutBoxData['layouts_boxes_content'] . '<?php ');
 $return = ob_get_clean();
 
-$return = str_replace_placeholders($return, $layoutEntityData, true, false);
+$return = str_replace_placeholders($return, (array)$layoutEntityData, true, false);
 
 return $return;
 

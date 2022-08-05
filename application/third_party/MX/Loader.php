@@ -304,7 +304,7 @@ class MX_Loader extends CI_Loader
 
 			$CI = &get_instance();
 			if (isset($CI->$property)) {
-				log_message('debug', $class . ' class already loaded. Second attempt ignored.');
+				//log_message('debug', $class . ' class already loaded. Second attempt ignored.');
 				return;
 			}
 

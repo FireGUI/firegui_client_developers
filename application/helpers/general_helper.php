@@ -1137,11 +1137,16 @@ if (!function_exists('scanAllDir')) {
     }
     function deleteDirRecursive($dir)
     {
-        $files = array_diff(scandir($dir), array('.', '..'));
-        foreach ($files as $file) {
-            (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : unlink("$dir/$file");
+        if (is_dir($dir)) { 
+                $files = array_diff(scandir($dir), array('.', '..'));
+                foreach ($files as $file) {
+                    (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : unlink("$dir/$file");
+                }
+                return rmdir($dir);
+        } else {
+            return true;
         }
-        return rmdir($dir);
+        
     }
 
     function tofloat($num)

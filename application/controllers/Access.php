@@ -7,7 +7,7 @@ class Access extends MY_Controller
 
     function __construct()
     {
-        $this->output->cache(20);
+        $this->output->cache(1);
 
         parent::__construct();
         header('Access-Control-Allow-Origin: *');

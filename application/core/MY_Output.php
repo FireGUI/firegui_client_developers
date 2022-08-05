@@ -18,7 +18,12 @@ class MY_Output extends CI_Output
         if ($CI->mycache->isCacheEnabled()) {
 //-XXX CUSTOM------------------------------------
 $cache_path = $this->cachePath();
-        
+      
+      
+if ($cache_path == false) {
+    return;
+}
+
 // echo '<pre>';
 // print_r($_SESSION);
 // die();
@@ -88,7 +93,7 @@ for ($written = 0, $length = self::strlen($output); $written < $length; $written
     }
 }
 
-flock($fp, LOCK_UN);
+flock($fp, LOCK_UN); 
 fclose($fp);
 
 if (!is_int($result)) {
@@ -196,7 +201,7 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
         //-----------------------------------------------
 
         // Display the cache
-        
+        log_message('debug', "Load from cache: uri: '$uri', path: '$filepath'");
         $this->_display(self::substr($cache, self::strlen($match[0])));
         
         log_message('debug', 'Cache file is current. Sending it to browser.');
@@ -257,13 +262,17 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
 
     private function cachePath(&$CFG = false)
     {
-        if (!$this->path) {
+        $CI = &get_instance();
+        $user_id = $CI->auth->get('users_id');
+        if (!$this->path || !$user_id) {
             $hasSession = !empty($_COOKIE['ci_session']);
 
             if (empty($CFG)) {
                 $CI = &get_instance();
+                
                 $CFG = $CI->config;
             }
+            
             $this->path = $CFG->item('cache_path');
             $this->path = empty($path) ? APPPATH . 'cache/' : $path;
             
@@ -271,18 +280,37 @@ $this->set_cache_header($_SERVER['REQUEST_TIME'], $expire);
             $this->path .= 'fullpages/';
     
             if ($hasSession) {
-                ob_start();
-                session_id($hasSession);
-                session_start();
-                if ($_SESSION['session_login']['users_id']) {
-                    $this->path .= $_SESSION['session_login']['users_id'].'/';
+                
+               // ob_start();
+                $CI = &get_instance();
+                $user_id = $CI->auth->get('users_id');
+                
+                if (!empty($_SESSION[SESS_WHERE_DATA])) {
+                    $filters_md5 = md5(serialize($_SESSION[SESS_WHERE_DATA]));  
+                } else {
+                    $filters_md5 = '';
                 }
-                session_abort();
+                             
+
+                if (!empty($user_id)) {
+                    log_message('debug', "utente connesso: {$user_id}");
+                    $this->path .= $user_id.'/';
+                    if ($filters_md5) {
+                        $this->path .= $filters_md5.'/';
+                        
+                    }
+                } else {
+                    log_message('debug', "utente non trovato in sessione!");
+                    return false;
+                }
+                
     
                 
     
-                ob_end_clean();
+                //ob_end_clean();
                 
+            } else {
+                //debug('TODO: come fa a nn esserci una sessione?',true);
             }
         }
         

@@ -12,7 +12,7 @@ class Main extends MY_Controller
      */
     public function __construct()
     { 
-        
+           
         parent::__construct();
         
         // Controllo anche la current uri
@@ -718,19 +718,32 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
      */
     public function cache_control($action = null, $key = null)
     {
+        $cache_controller_file = APPPATH . 'cache/cache-controller';
         switch ($action) {
             case 'on':
                 $this->mycache->toggleCachingSystem(true);
                 break;
 
             case 'off':
-                $cache_controller = file_get_contents(APPPATH . 'cache/cache-controller');
-                $this->mycache->clearCache(true);
-                file_put_contents(APPPATH . 'cache/cache-controller', $cache_controller);
+                $fp = fopen($cache_controller_file, "r+");
 
+                if (flock($fp, LOCK_EX)) {  // acquire an exclusive lock
+                    $cache_controller = file_get_contents($cache_controller_file);
+                    $this->mycache->clearCache(true);
+                    ftruncate($fp, 0);      // truncate file
+                    fwrite($fp, $cache_controller);
+                    fflush($fp);            // flush output before releasing the lock
+                    flock($fp, LOCK_UN);    // release the lock
+                    
+
+                    
+                } else {
+                    $this->mycache->clearCache(true);
+                }
                 @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-
                 $this->mycache->toggleCachingSystem(false);
+                fclose($fp);
+
 
 
                 break;

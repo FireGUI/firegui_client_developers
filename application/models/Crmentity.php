@@ -68,14 +68,14 @@ class Crmentity extends CI_Model
      * @param Closure $callback Funzione da eseguire in caso di cache-miss
      * @return mixed            Il valore contenuto in cache
      */
-    private function getFromCache($key, Closure $callback)
+    private function getFromCache($key, Closure $callback, $tags)
     {
         $result = $this->mycache->get($key);
 
         if ($result === false) {
             $result = $callback();
             if ($this->mycache->isCacheEnabled()) {
-                $this->mycache->save($key, $result, self::CACHE_TIME, []);
+                $this->mycache->save($key, $result, self::CACHE_TIME, $tags);
             }
         }
 
@@ -131,8 +131,9 @@ class Crmentity extends CI_Model
         // Entity name è da deprecare...
 
         $entity_name = $this->getEntity($entity_id)['entity_name'];
+        $tags = $this->mycache->buildTagsFromEntity($entity_name);
 
-        $_cache_key = 'apilib/'.md5(__METHOD__ . serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
+        $_cache_key = 'apilib/'.__METHOD__.':'.$entity_name.md5(serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
 
         if ($depth-- <= 0) {    // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
             return [];
@@ -442,7 +443,7 @@ class Crmentity extends CI_Model
             }
 
             return $data['data'];
-        });
+        }, $tags);
     }
 
     /**
@@ -810,13 +811,15 @@ class Crmentity extends CI_Model
     public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0)
     {
         $key = sprintf('apilib/previews-%s', md5(serialize(func_get_args())));
-
-        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset) {
-            $entity = $this->getEntity($entityIdentifier);
+        $entity = $this->getEntity($entityIdentifier);
+        $entity_name = $entity['entity_name'];
+        $tags = $this->mycache->buildTagsFromEntity($entity_name);
+        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name) {
+            
             $previewFields = $this->getEntityPreviewFields($entityIdentifier);
 
             $entity_id = $entity['entity_id'];
-            $entity_name = $entity['entity_name'];
+            
 
             $select = array_key_map($previewFields, 'fields_name');
 
@@ -891,7 +894,7 @@ class Crmentity extends CI_Model
             }
 
             return $result;
-        });
+        },$tags);
     }
 
     /**
@@ -1161,7 +1164,8 @@ class Crmentity extends CI_Model
     {
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
-
+        $entity_name = $e['entity_name'];
+        $tags = $this->mycache->buildTagsFromEntity($entity_name);
         return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid) {
             $preview = [];
             $fields = $this->getVisibleFields($eid);
@@ -1194,7 +1198,7 @@ class Crmentity extends CI_Model
             array_multisort($ids, SORT_ASC, $preview);
 
             return $preview;
-        });
+        }, $tags);
     }
 
     /**
