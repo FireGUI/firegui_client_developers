@@ -1142,7 +1142,7 @@ if (!function_exists('scanAllDir')) {
                 foreach ($files as $file) {
                     (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : unlink("$dir/$file");
                 }
-                return rmdir($dir);
+                return @rmdir($dir);
         } else {
             return true;
         }

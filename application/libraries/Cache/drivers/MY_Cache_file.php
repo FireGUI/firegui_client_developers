@@ -105,10 +105,7 @@ class MY_Cache_file extends CI_Driver
 	public function save($id, $data, $ttl = 60, $tags = [])
 	{
 
-		if (strlen($id) == 32) {
-			debug($id,true);
-		}
-
+		
 		$contents = array(
 			'time'		=> time(),
 			'ttl'		=> $ttl,

@@ -772,10 +772,19 @@ class V1 extends MY_Controller
      */
     private function showOutput($message = array(), $status = 0)
     {
-        echo json_encode(array(
-            'status' => $status,
-            'message' => is_string($message) ? $message : null,
-            'data' => is_array($message) ? $message : array()
-        ));
+        $this->load->view('layout/json_return', [
+                'json' => json_encode(
+                    array(
+                        'status' => $status,
+                        'message' => is_string($message) ? $message : null,
+                        'data' => is_array($message) ? $message : array()
+                    )
+                )
+            ]);
+        // echo json_encode(array(
+        //     'status' => $status,
+        //     'message' => is_string($message) ? $message : null,
+        //     'data' => is_array($message) ? $message : array()
+        // ));
     }
 }

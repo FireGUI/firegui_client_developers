@@ -83,7 +83,7 @@ class Layout extends CI_Model
         if ($content_html === true) {
             ob_start();
             extract($extra_data);
-            eval('?>' . $view);
+            eval('?'.'>' . $view);
 
 $content = ob_get_clean();
 } else {
@@ -124,7 +124,94 @@ return $content;
 public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false,
 $content_html = false, $options = [])
 {
+$useMpdf = array_get($options, 'useMpdf', false);
 
+        $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);
+
+        if ($useMpdf) {
+            $mpdfInit = array_get($options, 'mpdfInit', [
+                'mode' => 'utf-8',
+                'margin_left' => 0,
+                'margin_right' => 0,
+                'margin_top' => 0,
+                'margin_bottom' => 0,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+            ]);
+
+            $mpdf = new \Mpdf\Mpdf($mpdfInit);
+
+            $header = array_get($options, 'mpdfHeader', '');
+            $footer = array_get($options, 'mpdfFooter', '');
+
+            $coverPage = array_get($options, 'mpdfCover', '');
+            $conditionsPage = array_get($options, 'mpdfConditions', '');
+
+            $css = array_get($options, 'mpdfCss', '');
+            $pdfTitle = array_get($options, 'mpdfTitle', '');
+            $filename = '';
+
+            if (!empty($coverPage)) {
+                $mpdf->WriteHtml($this->generate_html($coverPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
+                $mpdf->AddPage();
+            }
+
+
+            if (!empty($header)) {
+                $mpdf->SetHTMLHeader($this->generate_html($header, $relative_path, $extra_data, $module, true));
+            }
+            if (!empty($footer)) {
+                $mpdf->SetHTMLFooter($this->generate_html($footer, $relative_path, $extra_data, $module, true));
+            }
+            if (!empty($pdfTitle)) {
+                $filename = str_ireplace([' ', '.'], '_', $pdfTitle) . '.pdf';
+
+                $mpdf->SetTitle($pdfTitle);
+            }
+            if (!empty($css)) {
+                $mpdf->WriteHtml($css, \Mpdf\HTMLParserMode::HEADER_CSS);
+            }
+
+            $mpdf->WriteHtml($content, \Mpdf\HTMLParserMode::DEFAULT_MODE);
+            
+            if (!empty($conditionsPage)) {
+                $mpdf->AddPage();
+                $mpdf->WriteHtml($this->generate_html($conditionsPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
+            }
+
+
+            $mpdf->Output($filename, 'I');
+
+        //TODO: return true?
+        } else {
+            $physicalDir = FCPATH . "/uploads";
+            // 2022-04-19 - Added random_int because it can happen that a generation of pdf deriving from an array,
+            // is done in the same second. so this guarantees a little more uniqueness ... Would microseconds be better?
+            $filename = date('Ymd_His').'_'.random_int(1, 100);
+            $pdfFile = "{$physicalDir}/{$filename}.pdf";
+
+            // Create a temporary file with the view html
+            if (!is_dir($physicalDir)) {
+                mkdir($physicalDir, 0755, true);
+            }
+            $tmpHtml = "{$physicalDir}/{$filename}.html";
+            file_put_contents($tmpHtml, $content, LOCK_EX);
+
+            if ($this->input->get('options') !== null) {
+                $_options = $this->input->get('options');
+
+                $options = '';
+                foreach ($_options as $key => $value) {
+                    $options .= "-{$key} {$value} ";
+                }
+            } else {
+                $options = "-T '5mm' -B '5mm'";
+            }
+            //die("wkhtmltopdf {$options} -O {$orientation} --footer-right \"Page [page] of [topage]\" --viewport-size 1024 {$tmpHtml} {$pdfFile}");
+            exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
+
+            return $pdfFile;
+        }
 }
 
 public function getLayout($layoutId)
@@ -259,7 +346,7 @@ default:
 break;
 }
 }
-fclose($fp);
+fclose($fp); 
 }
 
 echo '

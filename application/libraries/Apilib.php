@@ -399,8 +399,9 @@ class Apilib
             $_POST = $this->originalPost;
 
             // Inserisco il log
-            //20211028 - Deprecated bcause now creations are managed by logActivity
-            //$this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
+            //20211028 - Deprecated because now creations are managed by logActivity
+            //20220809 - Restored
+            $this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
 
             if (defined('LOG_ENTITIES_ARRAY') && in_array($entity, LOG_ENTITIES_ARRAY)) {
                 $entity_data =            $this->crmentity->getEntity($entity);
@@ -506,7 +507,8 @@ class Apilib
 
             // Inserisco il log
             //20211028 - Deprecated and managed by logActivity
-            //$this->logSystemAction(self::LOG_EDIT, ['entity' => $entity, 'id' => $id]);
+            //20220809 Restored
+            $this->logSystemAction(self::LOG_EDIT, ['entity' => $entity, 'id' => $id]);
             if (
                 defined('LOG_ENTITIES_ARRAY') && in_array($entity, LOG_ENTITIES_ARRAY)
             ) {
