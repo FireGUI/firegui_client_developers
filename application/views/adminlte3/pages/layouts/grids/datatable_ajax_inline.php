@@ -1,20 +1,3 @@
-<?php
-
-if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) && $grid['grids']['links']['custom']) {
-    $links = $grid['grids']['links'];
-    $preload_colors = ['CCCCCC' => '#CCCCCC'];
-    foreach ($links['custom'] as $custom_action) {
-        $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
-    }
-    $preload_colors = array_unique($preload_colors);
-    $preload_colors = array_filter($preload_colors, 'strlen');
-
-    $data['background-colors'] = $preload_colors;
-
-    $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
-}
-?>
-
 <a class="js_datatable_inline_add btn btn-success btn-xs pull-right" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>"><?php e('New row'); ?></a>
 <div class="clearfix"></div>
 <br />
@@ -22,7 +5,7 @@ if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) 
     <thead>
         <tr>
             <?php foreach ($grid['grids_fields'] as $field) : ?>
-                <th data-name="<?php echo $field['fields_name']; ?>"><?php e($field['grids_fields_column_name']);  ?></th>
+            <th data-name="<?php echo $field['fields_name']; ?>"><?php e($field['grids_fields_column_name']);  ?></th>
             <?php endforeach; ?>
 
             <th data-prevent-order>&nbsp;</th>

@@ -21,90 +21,69 @@ $links = $grid['grids']['links'];
 
 ?>
 
-
-
-<?php
-
-if (grid_has_action($grid['grids']) && isset($grid['grids']['links']['custom']) && $grid['grids']['links']['custom']) {
-    $links = $grid['grids']['links'];
-    $preload_colors = ['CCCCCC' => '#CCCCCC'];
-    foreach ($links['custom'] as $custom_action) {
-        $preload_colors[md5($custom_action['grids_actions_color'])] = $custom_action['grids_actions_color'];
-    }
-    $preload_colors = array_unique($preload_colors);
-    $preload_colors = array_filter($preload_colors, 'strlen');
-
-    $data['background-colors'] = $preload_colors;
-
-    $this->layout->addDinamicStylesheet($data, "grid_{$links['custom'][0]['grids_actions_grids_id']}.css");
-}
-//debug($grid['grids']);
-?>
-
-
 <div class="___table-scrollable table-scrollable-borderless">
     <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered table-hover nowrap table-middle js_ajax_datatable js_fg_grid_<?php echo $grid['grids']['entity_name']; ?> <?php echo $grid['grids']['grids_append_class']; ?>" data-value-id="<?php echo $value_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-grid-id="<?php echo $grid['grids']['grids_id']; ?>" data-where_append="<?php echo (empty($where)) ? '' : $where; ?>">
         <thead>
             <tr>
                 <?php if ($has_bulk) : ?>
-                    <th data-prevent-order>
-                        <input type="checkbox" class="js-bulk-select-all" />
-                    </th>
+                <th data-prevent-order>
+                    <input type="checkbox" class="js-bulk-select-all" />
+                </th>
                 <?php endif; ?>
                 <?php foreach ($grid['grids_fields'] as $field) : ?>
-                    <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" <?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?> <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
+                <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" <?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?> <?php if ($field['fields_draw_html_type'] === 'upload_image') echo 'class="firegui_width50"'; ?>><?php e($field['grids_fields_column_name']);  ?></th>
                 <?php endforeach; ?>
 
                 <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
-                    <th data-prevent-order><?php e('Actions'); ?></th>
+                <th data-prevent-order><?php e('Actions'); ?></th>
                 <?php endif; ?>
             </tr>
         </thead>
         <tbody></tbody>
         <?php if ($has_totalable) : ?>
-            <tfoot>
-                <tr>
-                    <?php if ($has_bulk) : ?>
-                        <th data-prevent-order data-name="_foo">
-                            <input type="checkbox" class="js-bulk-select-all" />
-                        </th>
-                    <?php endif; ?>
+        <tfoot>
+            <tr>
+                <?php if ($has_bulk) : ?>
+                <th data-prevent-order data-name="_foo">
+                    <input type="checkbox" class="js-bulk-select-all" />
+                </th>
+                <?php endif; ?>
 
-                    <?php foreach ($grid['grids_fields'] as $field) : ?>
-                        <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
-                        <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
-                        </th>
-                    <?php endforeach; ?>
+                <?php foreach ($grid['grids_fields'] as $field) : ?>
+                <?php $name = ($field['grids_fields_eval_cache_type'] == 'query_equivalent') ? $field['grids_fields_eval_cache_data'] : $field['fields_name']; ?>
+                <th data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') echo ' class="firegui_width50"'; ?>>
+                </th>
+                <?php endforeach; ?>
 
-                    <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
-                        <th data-prevent-order>&nbsp;</th>
-                    <?php endif; ?>
+                <?php if (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) : ?>
+                <th data-prevent-order>&nbsp;</th>
+                <?php endif; ?>
 
-                </tr>
-            </tfoot>
+            </tr>
+        </tfoot>
         <?php endif; ?>
     </table>
 
     <?php if ($has_bulk or $has_exportable) : ?>
-        <div class="row">
-            <?php if ($has_bulk) : ?>
-                <div class="col-md-<?php echo $cols; ?>">
-                    <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
-                        <option value="" class="js-bulk-first-option" selected="selected"></option>
+    <div class="row">
+        <?php if ($has_bulk) : ?>
+        <div class="col-md-<?php echo $cols; ?>">
+            <select class="form-control js-bulk-action firegui_widthauto" data-entity-name="<?php echo $grid['grids']['entity_name']; ?>">
+                <option value="" class="js-bulk-first-option" selected="selected"></option>
 
-                        <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
-                            <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
-                        <?php endif; ?>
-                        <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
-                            <option value="bulk_delete" disabled="disabled">Delete</option>
-                        <?php endif; ?>
-                    </select>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($has_exportable) : ?>
-                <?php $this->load->view('pages/layouts/grids/export_button', ['grid' => $grid, 'cols' => $cols]); ?>
-            <?php endif; ?>
+                <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_edit' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
+                <option value="bulk_edit" data-form_id="<?php echo $grid['grids']['grids_bulk_edit_form']; ?>" disabled="disabled">Edit</option>
+                <?php endif; ?>
+                <?php if ($grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete' or $grid['grids']['grids_bulk_mode'] == 'bulk_mode_delete_edit') : ?>
+                <option value="bulk_delete" disabled="disabled">Delete</option>
+                <?php endif; ?>
+            </select>
         </div>
+        <?php endif; ?>
+
+        <?php if ($has_exportable) : ?>
+        <?php $this->load->view('pages/layouts/grids/export_button', ['grid' => $grid, 'cols' => $cols]); ?>
+        <?php endif; ?>
+    </div>
     <?php endif; ?>
 </div>
