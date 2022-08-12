@@ -1,3 +1,3 @@
 Changelog version 2.3.6
  
-Beta new cache system
+Beta per avanzamenti cache e bugfixes
