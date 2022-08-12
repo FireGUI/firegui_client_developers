@@ -74,7 +74,7 @@ class Crmentity extends CI_Model
 
         if ($result === false) {
             $result = $callback();
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->apilib->isCacheEnabled()) {
                 $this->mycache->save($key, $result, self::CACHE_TIME, $tags);
             }
         }
@@ -133,9 +133,9 @@ class Crmentity extends CI_Model
         $entity_name = $this->getEntity($entity_id)['entity_name'];
         $tags = $this->mycache->buildTagsFromEntity($entity_name);
 
-        $_cache_key = 'apilib/'.__METHOD__.':'.$entity_name.md5(serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
+        $_cache_key = 'apilib/' . __METHOD__ . ':' . $entity_name . md5(serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
 
-        if ($depth-- <= 0) {    // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
+        if ($depth-- <= 0) { // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
             return [];
         }
 
@@ -219,7 +219,6 @@ class Crmentity extends CI_Model
                 }
             }
 
-
             $baseUrl = function_exists('base_url_admin') ? base_url_admin() : base_url();
             foreach ($data['data'] as $key => $_data) {
                 $id = $_data[$entity_name . '_id'];
@@ -262,7 +261,6 @@ class Crmentity extends CI_Model
                 $data['data'][$key] = $_data;
             }
 
-
             // Cerco i campi che puntano a questa entità e ne ottengo i dati
             // sono sicuro che $result_ids non è vuoto
             $referersKeys = [];
@@ -272,9 +270,6 @@ class Crmentity extends CI_Model
             foreach ($data['fields_ref_by'] ?: [] as $entity) {
                 $refererEntity = $entity['entity_name'];
                 $refererField = $entity['fields_name'];
-
-
-
 
                 // Se il campo che fa riferimento alla mia entità, ha lo
                 // stesso nome dell'id di questa entità allora lo skippo,
@@ -296,8 +291,6 @@ class Crmentity extends CI_Model
 
                 $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
 
-
-
                 if (!empty($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
@@ -314,7 +307,6 @@ class Crmentity extends CI_Model
             foreach ($data['data'] as &$_data) {
                 $_data = array_merge($_data, $referersKeys, $referersRecords[$_data[$entity_name . '_id']]);
             }
-
 
             // Estraggo le eventuali relazioni
             foreach ($data['relations'] as $relation) {
@@ -354,10 +346,10 @@ class Crmentity extends CI_Model
 
                 // Prendo il gruppo di id della tabella e cerco tutti i valori nella relazione per quegli id. Poi con un foreach smisto il valore corretto per ogni dato
                 $ids = array_key_map($data['data'], $field);
-                
+
                 // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
                 $relation_data = $this->db->where_in($field, $ids)->get($relation)->result_array();
-                
+
                 // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
                 // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
                 $relation_data_by_ids = [];
@@ -402,7 +394,6 @@ class Crmentity extends CI_Model
                     }
                 }
             }
-
 
             // Recupero le eventuali fake relations, cioè tutti i fields con
             // fields_ref che hanno fields_type o VARCHAR o TEXT
@@ -483,9 +474,6 @@ class Crmentity extends CI_Model
         // =================
         $dati = $this->getEntityFullData($entity_id);
 
-        
-
-
         $this->buildSelect($dati, $options);
 
         $this->buildWhere($where);
@@ -497,12 +485,10 @@ class Crmentity extends CI_Model
         $joined = array($dati['entity']['entity_name']);
         $to_join_later = [];
 
-        $permission_entities = [$entity_id];   // Lista delle entità su cui devo applicare i limiti
+        $permission_entities = [$entity_id]; // Lista delle entità su cui devo applicare i limiti
 
         //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
-
-            
 
             //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
             $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
@@ -548,7 +534,7 @@ class Crmentity extends CI_Model
         // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
         // query sia andata a buon fine
         // =====================================================================
-        
+        //debug('test');
         $qResult = $this->db->get();
 
         if (!$qResult instanceof CI_DB_result) {
@@ -615,18 +601,16 @@ class Crmentity extends CI_Model
      * @param array $entityFullData
      * @param array $options
      */
-    private function buildSelect(array &$entityFullData, array $options = [])
+    private function buildSelect(array&$entityFullData, array $options = [])
     {
         // Inizializzo i fields: se ho specificato una select allora sono a
         // posto, altrimenti li autocalcolo in base ai fields entità
         $visible_fields = array_get($options, 'select', []);
 
-
         $depth = array_get($options, 'depth', 1);
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
         $entityName = $entityFullData['entity']['entity_name'];
-
 
         if (!$visible_fields) {
             foreach ($entityFullData['visible_fields'] as $campo) {
@@ -644,8 +628,6 @@ class Crmentity extends CI_Model
                 $hasFieldRef = (bool) $campo['fields_ref'];
                 $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
                 $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
-
-                
 
                 if ($hasFieldRef && $isJoinable) {
                     $entity = $this->getEntity($campo['fields_ref']);
@@ -673,8 +655,6 @@ class Crmentity extends CI_Model
         // duplicati
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
 
-        
-
         $this->db->select(array_unique($visible_fields));
 
         //Aggiungo eventuali eval cachable
@@ -685,16 +665,10 @@ class Crmentity extends CI_Model
             }
         }
 
-
-
-
         if (!empty($eval_fields)) {
             //Rimuovo la scritta "SELECT " davanti
             $select_str = $this->db->get_compiled_select();
             $select_str = str_ireplace("SELECT ", '', $select_str);
-
-
-            
 
             $this->db->select($select_str . ',' . implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
         }
@@ -711,7 +685,7 @@ class Crmentity extends CI_Model
             // Attenzione!! Se il primo e l'ultimo carattere sono parentesi tonde,
             // allora non serve wrappeggiare il where stringhiforme perché è già
             // wrappeggiato in codesta maniera
-            $this->db->where(($where[0] === '(' && $where[strlen($where) - 1] === ')') ? "({$where})" : $where, null, false);   // null: il valore, false: NON FARE ESCAPE
+            $this->db->where(($where[0] === '(' && $where[strlen($where) - 1] === ')') ? "({$where})" : $where, null, false); // null: il valore, false: NON FARE ESCAPE
         } elseif (is_array($where) && count($where) > 0) {
             // Attenzione!! Devo distinguere da where con chiave numerica a
             // quelli con chiave a stringa: dei primi ignoro la chiave, mentre
@@ -815,11 +789,10 @@ class Crmentity extends CI_Model
         $entity_name = $entity['entity_name'];
         $tags = $this->mycache->buildTagsFromEntity($entity_name);
         return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name) {
-            
+
             $previewFields = $this->getEntityPreviewFields($entityIdentifier);
 
             $entity_id = $entity['entity_id'];
-            
 
             $select = array_key_map($previewFields, 'fields_name');
 
@@ -888,13 +861,11 @@ class Crmentity extends CI_Model
                     $preview .= "{$val} ";
                 }
 
-
-
                 $result[$id] = (trim($preview) || trim($preview) === '0') ? trim($preview) : "ID #{$id}";
             }
 
             return $result;
-        },$tags);
+        }, $tags);
     }
 
     /**
@@ -933,8 +904,7 @@ class Crmentity extends CI_Model
         $this->mycache->delete(self::SCHEMA_CACHE_KEY);
         $this->buildSchemaCacheIfNotValid();
     }
-    
-    
+
     protected function buildSchemaCacheIfNotValid()
     {
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
@@ -949,12 +919,11 @@ class Crmentity extends CI_Model
 
         // ==== Get entity sub-data
         $this->db->join('entity', 'entity.entity_id = fields.fields_entity_id')
-            ->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id', 'left')   // LEFT JOIN perché a quanto pare non tutti i field hanno un fields_draw.
+            ->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id', 'left') // LEFT JOIN perché a quanto pare non tutti i field hanno un fields_draw.
             ->order_by('fields_name');
         $_fields = $this->createDataMap($this->db->get('fields')->result_array(), 'fields_id');
 
         $_validations = $this->createDataMap($this->db->get('fields_validation')->result_array(), 'fields_validation_fields_id');
-
 
         // Fields validation rules
         foreach ($_validations as $rule) {
@@ -975,18 +944,17 @@ class Crmentity extends CI_Model
             $relbyent[$relation['relations_table_1']][] = $relation;
         }
 
-
         // Build the cached array
         $this->_schemaCache = [
             'entity_names' => $this->createDataMap($entities, 'entity_name', 'entity_id'),
             'entities' => $entities,
             'fields' => $fields,
             'validations' => $validations,
-            'relations' => ['by_name' => $relbyname, 'by_entity' => $relbyent]
+            'relations' => ['by_name' => $relbyname, 'by_entity' => $relbyent],
         ];
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
             // And persist it
-            $this->mycache->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24, [self::SCHEMA_CACHE_KEY]);  // 1h * 24 <= Salva cache per un giorno
+            $this->mycache->save(self::SCHEMA_CACHE_KEY, $this->_schemaCache, 3600 * 24, [self::SCHEMA_CACHE_KEY]); // 1h * 24 <= Salva cache per un giorno
         }
     }
 
@@ -1089,8 +1057,8 @@ class Crmentity extends CI_Model
             }
 
             $_allFieldsRefBy = $this->db->query("
-                SELECT entity_id, entity_name, fields_name, fields_type, fields_ref 
-                FROM fields JOIN entity ON entity_id = fields_entity_id 
+                SELECT entity_id, entity_name, fields_name, fields_type, fields_ref
+                FROM fields JOIN entity ON entity_id = fields_entity_id
                 WHERE fields_ref IS NOT NULL AND fields_ref != '' AND $column_join = '" . DB_BOOL_TRUE . "'
             ")->result_array();
 
@@ -1138,8 +1106,6 @@ class Crmentity extends CI_Model
     public function getEntityRelations($entity)
     {
         $e_name = $this->getEntity($entity)['entity_name'];
-
-        
 
         return array_get($this->_schemaCache['relations']['by_entity'], $e_name, []);
     }
@@ -1260,7 +1226,7 @@ class Crmentity extends CI_Model
         if (!array_key_exists($entity, $this->_default_grids)) {
             $entity_id = $this->getEntity($entity)['entity_id'];
             $query = $this->db->get_where('grids', array(
-                'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE
+                'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE,
             ));
 
             $this->_default_grids[$entity] = $query->row_array();
@@ -1276,7 +1242,7 @@ class Crmentity extends CI_Model
         if (!array_key_exists($entity, $this->_default_forms)) {
             $entity_id = $this->getEntity($entity)['entity_id'];
             $query = $this->db->get_where('forms', array(
-                'forms_entity_id' => $entity_id, 'forms_default' => DB_BOOL_TRUE
+                'forms_entity_id' => $entity_id, 'forms_default' => DB_BOOL_TRUE,
             ));
 
             $this->_default_forms[$entity] = $query->row_array();

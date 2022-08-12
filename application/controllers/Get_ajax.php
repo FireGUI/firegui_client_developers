@@ -679,6 +679,8 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
             $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
 
+
+
             $this->load->view('layout/json_return', ['json' => json_encode(array(
                 'iTotalRecords' => $totalRecords,
                 'iTotalDisplayRecords' => $totalDisplayRecord,

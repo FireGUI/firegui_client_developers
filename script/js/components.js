@@ -19,7 +19,10 @@ $('body').on('click', '.js_ajax_content', function (e) {
     
     if (layout_id && !e.metaKey) {
 
-      var value_id = $(this).data('layout_id');
+      var value_id = $(this).data('value_id');
+      if (typeof value_id == 'undefined') {
+        value_id = '';
+      }
         $('.js_submenu_item.active').removeClass('active');
 
                             $('#js_layout_content_wrapper').data('layout-id', layout_id);
@@ -504,10 +507,20 @@ function initComponents(container, reset = false) {
     FORM FIELDS EVENTS
     */
   $(":input").on("change", function () {
+    
     var changed_input = $(this);
     $(':input[data-dependent_on*="' + $(this).attr("name") + '"]', changed_input.closest("form")).each(function () {
-      //Grep optional value
-      //alert(1);
+      
+      if (changed_input.attr('type') == 'radio') {
+        
+        var value_of_dependent_field = $('[name="'+changed_input.attr("name")+'"]:checked').val();
+      } else {
+        var value_of_dependent_field = changed_input.val();
+      }
+
+      console.log($(this).attr('name'));
+      console.log(value_of_dependent_field);
+      
       if ($(this).data("dependent_on").includes(":")) {
         var expl = $(this).data("dependent_on").split(":");
 
@@ -515,15 +528,15 @@ function initComponents(container, reset = false) {
       } else {
         var vals = null;
       }
-
+      
       if (vals !== null) {
-        if (vals.includes(changed_input.val())) {
+        if (vals.includes(value_of_dependent_field)) {
           $(this).closest(".js_container_field").show();
         } else {
           $(this).closest(".js_container_field").hide();
         }
       } else {
-        if (changed_input.val() && changed_input.val() != 0) {
+        if (value_of_dependent_field && value_of_dependent_field != 0) {
           $(this).closest(".js_container_field").show();
         } else {
           $(this).closest(".js_container_field").hide();

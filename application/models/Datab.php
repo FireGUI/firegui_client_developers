@@ -121,6 +121,7 @@ class Datab extends CI_Model
     }
     public function getDataEntityByQuery($entity_id, $query, $input = null, $limit = null, $offset = 0, $orderBy = null, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
+        
         $unique = md5($query);
         $cache_key = "apilib/datab.getDataEntity.{$unique}." . md5(serialize(func_get_args()) . serialize($_GET).serialize($_POST).serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
@@ -178,8 +179,10 @@ class Datab extends CI_Model
 
             if ($count) {
                 $query = $this->removeLimitOffsetGroupBy($query);
-                $query = $this->replaceSelectWithCount($query);
                 $query = str_ireplace('{order_by}', '', $query);
+                $query = "SELECT count(1) as c FROM ($query) as foo";
+                //$query = $this->replaceSelectWithCount($query);
+                
                 $res = $this->db->query($query);
                 if ($res->num_rows() == 1) {
                     $out = $res->row()->c;
@@ -891,6 +894,8 @@ class Datab extends CI_Model
 
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = null, $offset = 0, $order_by = null, $count = false, $additional_parameters = [])
     {
+
+        
         $cache_key = "apilib/datab.get_grid_data." . md5(serialize($grid).serialize(func_get_args()).serialize($_GET).serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
@@ -1457,7 +1462,7 @@ class Datab extends CI_Model
             if ($grid['grids_where']) {
                 $arr[] = str_replace('{value_id}', $value_id, $grid['grids_where']);
             } else {
-                $arr[] = "{$entity['entity_name']}_id = '$value_id'";
+                $arr[] = "{$entity['entity_name']}.{$entity['entity_name']}_id = '$value_id'";
             }
         } elseif ($grid['grids_where']) {
             // Per la grid è definito un where -> è plausibile che bisogni fare  il replace di variabili
@@ -2390,7 +2395,8 @@ class Datab extends CI_Model
                 $entity = $this->crmentity->getEntity($dati['layout_container']['layouts_entity_id']);
                 if (isset($entity['entity_name'])) {
                     $this->layout->addRelatedEntity($entity['entity_name'],$value_id);
-                    $data_entity = $this->getDataEntity($entity['entity_id'], ["{$entity['entity_name']}_id" => $value_id], 1);
+                    //debug($entity);
+                    $data_entity = $this->getDataEntity($entity['entity_id'], ["{$entity['entity_name']}.{$entity['entity_name']}_id" => $value_id], 1);
                     $layout_data_detail = array_shift($data_entity);
                 }
             }

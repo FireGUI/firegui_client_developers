@@ -221,7 +221,6 @@ if (!function_exists('json_message')) {
     }
 }
 
-
 if (!function_exists('json_redirect')) {
 
     /**
@@ -275,7 +274,6 @@ if (!function_exists('json_alert')) {
     }
 }
 
-
 if (!function_exists('var_swap')) {
     function var_swap(&$var1, &$var2)
     {
@@ -285,7 +283,6 @@ if (!function_exists('var_swap')) {
     }
 }
 
-
 if (!function_exists('debug_caller')) {
     function debug_caller()
     {
@@ -293,7 +290,6 @@ if (!function_exists('debug_caller')) {
         debug(array_pop($trace), false, false);
     }
 }
-
 
 if (!function_exists('isValidDateRange')) {
     function isValidDateRange($dateRange)
@@ -395,7 +391,6 @@ if (!function_exists('normalize_date')) {
     }
 }
 
-
 if (!function_exists('extract_intrange_data')) {
     function extract_intrange_data($value)
     {
@@ -441,7 +436,6 @@ if (!function_exists('extract_intrange_data')) {
     }
 }
 
-
 if (!function_exists('array_key_map')) {
     function array_key_map(array $array, $key, $default = null)
     {
@@ -484,7 +478,6 @@ if (!function_exists('array_get')) {
     }
 }
 
-
 if (!function_exists('array_key_value_map')) {
     function array_key_value_map(array $array, $key, $value)
     {
@@ -522,32 +515,27 @@ if (!function_exists('t')) {
                 }
             }
 
-
             if ($module_name) {
                 $path = sprintf('%smodules/%s/language/%s/%s_lang.php', APPPATH, $module_name, $language, $language);
             } else {
                 $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
             }
 
-
-
             $val = addslashes($string);
             $add = '$lang[\'' . $val . '\'] = \'' . $val . '\';' . PHP_EOL;
-
 
             if (file_exists($path)) {
                 include $path;
             }
 
-
             if (!isset($lang) or !array_key_exists($string, $lang) && is_development()) {
                 if (is_writable($path) && $string) {
                     $fp = fopen($path, "a+");
 
-                    if (flock($fp, LOCK_EX)) {  // acquire an exclusive lock
+                    if (flock($fp, LOCK_EX)) { // acquire an exclusive lock
 
                         fwrite($fp, $add);
-                        fflush($fp);            // flush output before releasing the lock
+                        fflush($fp); // flush output before releasing the lock
                         flock($fp, LOCK_UN);
 
                         $CI->lang->language = array_merge($CI->lang->language, [$val => $val]);
@@ -699,7 +687,6 @@ if (!function_exists('str_replace_placeholders')) {
         }, array_keys($smoothreplaces));
         $vals = array_values($smoothreplaces);
 
-
         $replaced = $caseinsensitive ? str_ireplace($keys, $vals, $string) : str_replace($keys, $vals, $string);
 
         return $replaced;
@@ -762,10 +749,9 @@ if (!function_exists('benchmark')) {
         $t2 = microtime(true);
 
         // TODO: Eseguire n volte la funzione, quindi voglio dividere il tempo per n
-        return ($t2 - $t1);  // ritorna il tempo trascorso in secondi approx. al microsecondo
+        return ($t2 - $t1); // ritorna il tempo trascorso in secondi approx. al microsecondo
     }
 }
-
 
 if (!function_exists('crm_exception_handler')) {
     function crm_exception_handler($ex, $print = true, $sendQueryListing = false)
@@ -779,7 +765,6 @@ if (!function_exists('crm_exception_handler')) {
             // In ambiente di sviluppo mostro più dettagli
             $out .= 'Eccezione:';
             $out .= '<div style="padding:10px;background:#fff;border-radius:7px;margin-top:10px;">' . $ex->getMessage() . " at line {$ex->getLine()} in file {$ex->getFile()}";
-
 
             $out .= '<hr><pre>' . $ex->getTraceAsString() . '</pre>';
             $out .= '</div>';
@@ -795,7 +780,7 @@ if (!function_exists('crm_exception_handler')) {
             $m = [
                 'Message: ' . $ex->getMessage(),
                 'URL: ' . current_url(),
-                'Trace: ' . $ex->getTraceAsString()
+                'Trace: ' . $ex->getTraceAsString(),
             ];
 
             // Carico l'istanza di CI se presente:
@@ -895,8 +880,6 @@ if (!function_exists('array_diff_assoc_recursive')) {
     }
 }
 
-
-
 if (!function_exists('mese_testuale')) {
     function mese_testuale($data_o_mese)
     {
@@ -993,8 +976,6 @@ if (!function_exists('zip_folder')) {
             }
         }
 
-
-
         return $zip->close();
     }
 }
@@ -1005,15 +986,13 @@ if (!function_exists('doGeocoding')) {
         usleep(800000);
         $url = "https://nominatim.openstreetmap.org/search?q=" . urlencode($address) . "&countrycodes=it&format=json";
 
-
-
         $ch = curl_init();
         curl_setopt_array($ch, array(
             CURLOPT_URL => $url,
             CURLOPT_HEADER => 0,
             /* CURLOPT_FOLLOWLOCATION => 1, */
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_USERAGENT => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0"
+            CURLOPT_USERAGENT => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0",
         ));
         $result = curl_exec($ch);
         $data = json_decode($result, true);
@@ -1021,8 +1000,6 @@ if (!function_exists('doGeocoding')) {
         curl_close($ch);
 
         $place = is_array($data) ? array_shift($data) : null;
-
-
 
         return $place;
     }
@@ -1039,10 +1016,9 @@ if (!function_exists('calculateDistance')) {
             CURLOPT_HEADER => 0,
             /* CURLOPT_FOLLOWLOCATION => 1, */
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => 2
+            CURLOPT_TIMEOUT => 2,
         ));
         $result = curl_exec($ch);
-
 
         $data = json_decode($result, true);
         curl_close($ch);
@@ -1108,7 +1084,8 @@ if (!function_exists('stats_standard_deviation')) {
         foreach ($a as $val) {
             $d = ((float) $val) - $mean;
             $carry += $d * $d;
-        };
+        }
+        ;
         if ($sample) {
             --$n;
         }
@@ -1137,16 +1114,16 @@ if (!function_exists('scanAllDir')) {
     }
     function deleteDirRecursive($dir)
     {
-        if (is_dir($dir)) { 
-                $files = array_diff(scandir($dir), array('.', '..'));
-                foreach ($files as $file) {
-                    (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : unlink("$dir/$file");
-                }
-                return @rmdir($dir);
+        if (is_dir($dir)) {
+            $files = array_diff(scandir($dir), array('.', '..'));
+            foreach ($files as $file) {
+                (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : unlink("$dir/$file");
+            }
+            return @rmdir($dir);
         } else {
             return true;
         }
-        
+
     }
 
     function tofloat($num)
@@ -1161,9 +1138,22 @@ if (!function_exists('scanAllDir')) {
 
         return floatval(
             preg_replace("/[^0-9\-]/", "", substr($num, 0, $sep)) . '.' .
-                preg_replace("/[^0-9\-]/", "", substr($num, $sep + 1, strlen($num)))
+            preg_replace("/[^0-9\-]/", "", substr($num, $sep + 1, strlen($num)))
         );
     }
+}
+
+if (!function_exists('copy_file')) {
+    function copy_file($s1, $s2)
+    {
+        $path = pathinfo($s2);
+        if (!file_exists($path['dirname'])) {
+            mkdir($path['dirname'], 0777, true);
+        }
+        return copy($s1, $s2);
+
+    }
+
 }
 
 if (!function_exists('checkClientVersion')) {
@@ -1178,15 +1168,12 @@ if (!function_exists('checkClientVersion')) {
         //Check if client is updated
         $last_check = $CI->session->userdata('last_client_check');
 
-
         //Check every 10 minutes to avoid unwanted curls...
         if (!$last_check || $last_check < date('Y-m-d h:i:s', strtotime('-10 minutes'))) {
             $last_check = date('Y-m-d h:i:s');
             $CI->session->set_userdata('last_client_check', $last_check);
 
-
-$new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
-
+            $new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
 
             $CI->session->set_userdata('last_checked_version', $new_version);
             if ($new_version != VERSION) {
@@ -1226,7 +1213,6 @@ if (!function_exists('file_put_contents_and_create_dir')) {
     }
 }
 
-
 if (!function_exists('dirToArray')) {
     function dirToArray($dir)
     {
@@ -1264,7 +1250,7 @@ if (!function_exists('get_csrf')) {
         $CI = get_instance();
         $csrf = array(
             'name' => $CI->security->get_csrf_token_name(),
-            'hash' => $CI->security->get_csrf_hash()
+            'hash' => $CI->security->get_csrf_hash(),
         );
         return $csrf;
     }
@@ -1276,7 +1262,7 @@ if (!function_exists('e_json')) {
             if (is_array($el)) {
                 $arr[$key] = json_recursive_cast($el);
             } else {
-                $arr[$key] = (string)$el;
+                $arr[$key] = (string) $el;
             }
         }
         return $arr;
@@ -1327,18 +1313,18 @@ if (!function_exists('time_elapsed')) {
 function getReverseGeocoding($address)
 {
     $address = urlencode(strtolower($address));
-    
+
     $ch = curl_init();
 
     $get = http_build_query([
         'format' => 'json',
         'addressdetails' => 1,
         'limit' => 1,
-        'polygon_svg' => 1
+        'polygon_svg' => 1,
     ]);
-    
+
     $url = "https://nominatim.openstreetmap.org/search/{$address}?{$get}";
-    
+
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
@@ -1361,8 +1347,6 @@ function getReverseGeocoding($address)
     return $response;
 }
 
-
-
 if (!function_exists('curlRequest')) {
     function curlRequest($url, $data = [], $isPost = false, $jsonPayload = false, $headers = ['Content-Type: application/json'], $method = 'GET')
     {
@@ -1379,7 +1363,7 @@ if (!function_exists('curlRequest')) {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
-        
+
         curl_setopt($ch, CURLOPT_URL, $url . $params);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1400,8 +1384,6 @@ if (!function_exists('curlRequest')) {
         return $data;
     }
 }
-
-
 
 if (!function_exists('e_money')) {
     function e_money($number, $format = '{number}')
@@ -1439,7 +1421,6 @@ if (!function_exists('progress')) {
         } else {
             echo "\r{$perc} of 100%";
         }
-
 
         return $perc;
     }
@@ -1483,189 +1464,188 @@ if (!function_exists('imagecreatefromany')) {
     }
 }
 
-
 if (!function_exists('mime2ext')) {
     function mime2ext($mime)
     {
         $mime_map = [
-            'video/3gpp2'                                                               => '3g2',
-            'video/3gp'                                                                 => '3gp',
-            'video/3gpp'                                                                => '3gp',
-            'application/x-compressed'                                                  => '7zip',
-            'audio/x-acc'                                                               => 'aac',
-            'audio/ac3'                                                                 => 'ac3',
-            'application/postscript'                                                    => 'ai',
-            'audio/x-aiff'                                                              => 'aif',
-            'audio/aiff'                                                                => 'aif',
-            'audio/x-au'                                                                => 'au',
-            'video/x-msvideo'                                                           => 'avi',
-            'video/msvideo'                                                             => 'avi',
-            'video/avi'                                                                 => 'avi',
-            'application/x-troff-msvideo'                                               => 'avi',
-            'application/macbinary'                                                     => 'bin',
-            'application/mac-binary'                                                    => 'bin',
-            'application/x-binary'                                                      => 'bin',
-            'application/x-macbinary'                                                   => 'bin',
-            'image/bmp'                                                                 => 'bmp',
-            'image/x-bmp'                                                               => 'bmp',
-            'image/x-bitmap'                                                            => 'bmp',
-            'image/x-xbitmap'                                                           => 'bmp',
-            'image/x-win-bitmap'                                                        => 'bmp',
-            'image/x-windows-bmp'                                                       => 'bmp',
-            'image/ms-bmp'                                                              => 'bmp',
-            'image/x-ms-bmp'                                                            => 'bmp',
-            'application/bmp'                                                           => 'bmp',
-            'application/x-bmp'                                                         => 'bmp',
-            'application/x-win-bitmap'                                                  => 'bmp',
-            'application/cdr'                                                           => 'cdr',
-            'application/coreldraw'                                                     => 'cdr',
-            'application/x-cdr'                                                         => 'cdr',
-            'application/x-coreldraw'                                                   => 'cdr',
-            'image/cdr'                                                                 => 'cdr',
-            'image/x-cdr'                                                               => 'cdr',
-            'zz-application/zz-winassoc-cdr'                                            => 'cdr',
-            'application/mac-compactpro'                                                => 'cpt',
-            'application/pkix-crl'                                                      => 'crl',
-            'application/pkcs-crl'                                                      => 'crl',
-            'application/x-x509-ca-cert'                                                => 'crt',
-            'application/pkix-cert'                                                     => 'crt',
-            'text/css'                                                                  => 'css',
-            'text/x-comma-separated-values'                                             => 'csv',
-            'text/comma-separated-values'                                               => 'csv',
-            'application/vnd.msexcel'                                                   => 'csv',
-            'application/x-director'                                                    => 'dcr',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'docx',
-            'application/x-dvi'                                                         => 'dvi',
-            'message/rfc822'                                                            => 'eml',
-            'application/x-msdownload'                                                  => 'exe',
-            'video/x-f4v'                                                               => 'f4v',
-            'audio/x-flac'                                                              => 'flac',
-            'video/x-flv'                                                               => 'flv',
-            'image/gif'                                                                 => 'gif',
-            'application/gpg-keys'                                                      => 'gpg',
-            'application/x-gtar'                                                        => 'gtar',
-            'application/x-gzip'                                                        => 'gzip',
-            'application/mac-binhex40'                                                  => 'hqx',
-            'application/mac-binhex'                                                    => 'hqx',
-            'application/x-binhex40'                                                    => 'hqx',
-            'application/x-mac-binhex40'                                                => 'hqx',
-            'text/html'                                                                 => 'html',
-            'image/x-icon'                                                              => 'ico',
-            'image/x-ico'                                                               => 'ico',
-            'image/vnd.microsoft.icon'                                                  => 'ico',
-            'text/calendar'                                                             => 'ics',
-            'application/java-archive'                                                  => 'jar',
-            'application/x-java-application'                                            => 'jar',
-            'application/x-jar'                                                         => 'jar',
-            'image/jp2'                                                                 => 'jp2',
-            'video/mj2'                                                                 => 'jp2',
-            'image/jpx'                                                                 => 'jp2',
-            'image/jpm'                                                                 => 'jp2',
-            'image/jpeg'                                                                => 'jpeg',
-            'image/pjpeg'                                                               => 'jpeg',
-            'application/x-javascript'                                                  => 'js',
-            'application/json'                                                          => 'json',
-            'text/json'                                                                 => 'json',
-            'application/vnd.google-earth.kml+xml'                                      => 'kml',
-            'application/vnd.google-earth.kmz'                                          => 'kmz',
-            'text/x-log'                                                                => 'log',
-            'audio/x-m4a'                                                               => 'm4a',
-            'application/vnd.mpegurl'                                                   => 'm4u',
-            'audio/midi'                                                                => 'mid',
-            'application/vnd.mif'                                                       => 'mif',
-            'video/quicktime'                                                           => 'mov',
-            'video/x-sgi-movie'                                                         => 'movie',
-            'audio/mpeg'                                                                => 'mp3',
-            'audio/mpg'                                                                 => 'mp3',
-            'audio/mpeg3'                                                               => 'mp3',
-            'audio/mp3'                                                                 => 'mp3',
-            'video/mp4'                                                                 => 'mp4',
-            'video/mpeg'                                                                => 'mpeg',
-            'application/oda'                                                           => 'oda',
-            'audio/ogg'                                                                 => 'ogg',
-            'video/ogg'                                                                 => 'ogg',
-            'application/ogg'                                                           => 'ogg',
-            'application/x-pkcs10'                                                      => 'p10',
-            'application/pkcs10'                                                        => 'p10',
-            'application/x-pkcs12'                                                      => 'p12',
-            'application/x-pkcs7-signature'                                             => 'p7a',
-            'application/pkcs7-mime'                                                    => 'p7c',
-            'application/x-pkcs7-mime'                                                  => 'p7c',
-            'application/x-pkcs7-certreqresp'                                           => 'p7r',
-            'application/pkcs7-signature'                                               => 'p7s',
-            'application/pdf'                                                           => 'pdf',
-            'application/octet-stream'                                                  => 'pdf',
-            'application/x-x509-user-cert'                                              => 'pem',
-            'application/x-pem-file'                                                    => 'pem',
-            'application/pgp'                                                           => 'pgp',
-            'application/x-httpd-php'                                                   => 'php',
-            'application/php'                                                           => 'php',
-            'application/x-php'                                                         => 'php',
-            'text/php'                                                                  => 'php',
-            'text/x-php'                                                                => 'php',
-            'application/x-httpd-php-source'                                            => 'php',
-            'image/png'                                                                 => 'png',
-            'image/x-png'                                                               => 'png',
-            'application/powerpoint'                                                    => 'ppt',
-            'application/vnd.ms-powerpoint'                                             => 'ppt',
-            'application/vnd.ms-office'                                                 => 'ppt',
-            'application/msword'                                                        => 'doc',
+            'video/3gpp2' => '3g2',
+            'video/3gp' => '3gp',
+            'video/3gpp' => '3gp',
+            'application/x-compressed' => '7zip',
+            'audio/x-acc' => 'aac',
+            'audio/ac3' => 'ac3',
+            'application/postscript' => 'ai',
+            'audio/x-aiff' => 'aif',
+            'audio/aiff' => 'aif',
+            'audio/x-au' => 'au',
+            'video/x-msvideo' => 'avi',
+            'video/msvideo' => 'avi',
+            'video/avi' => 'avi',
+            'application/x-troff-msvideo' => 'avi',
+            'application/macbinary' => 'bin',
+            'application/mac-binary' => 'bin',
+            'application/x-binary' => 'bin',
+            'application/x-macbinary' => 'bin',
+            'image/bmp' => 'bmp',
+            'image/x-bmp' => 'bmp',
+            'image/x-bitmap' => 'bmp',
+            'image/x-xbitmap' => 'bmp',
+            'image/x-win-bitmap' => 'bmp',
+            'image/x-windows-bmp' => 'bmp',
+            'image/ms-bmp' => 'bmp',
+            'image/x-ms-bmp' => 'bmp',
+            'application/bmp' => 'bmp',
+            'application/x-bmp' => 'bmp',
+            'application/x-win-bitmap' => 'bmp',
+            'application/cdr' => 'cdr',
+            'application/coreldraw' => 'cdr',
+            'application/x-cdr' => 'cdr',
+            'application/x-coreldraw' => 'cdr',
+            'image/cdr' => 'cdr',
+            'image/x-cdr' => 'cdr',
+            'zz-application/zz-winassoc-cdr' => 'cdr',
+            'application/mac-compactpro' => 'cpt',
+            'application/pkix-crl' => 'crl',
+            'application/pkcs-crl' => 'crl',
+            'application/x-x509-ca-cert' => 'crt',
+            'application/pkix-cert' => 'crt',
+            'text/css' => 'css',
+            'text/x-comma-separated-values' => 'csv',
+            'text/comma-separated-values' => 'csv',
+            'application/vnd.msexcel' => 'csv',
+            'application/x-director' => 'dcr',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+            'application/x-dvi' => 'dvi',
+            'message/rfc822' => 'eml',
+            'application/x-msdownload' => 'exe',
+            'video/x-f4v' => 'f4v',
+            'audio/x-flac' => 'flac',
+            'video/x-flv' => 'flv',
+            'image/gif' => 'gif',
+            'application/gpg-keys' => 'gpg',
+            'application/x-gtar' => 'gtar',
+            'application/x-gzip' => 'gzip',
+            'application/mac-binhex40' => 'hqx',
+            'application/mac-binhex' => 'hqx',
+            'application/x-binhex40' => 'hqx',
+            'application/x-mac-binhex40' => 'hqx',
+            'text/html' => 'html',
+            'image/x-icon' => 'ico',
+            'image/x-ico' => 'ico',
+            'image/vnd.microsoft.icon' => 'ico',
+            'text/calendar' => 'ics',
+            'application/java-archive' => 'jar',
+            'application/x-java-application' => 'jar',
+            'application/x-jar' => 'jar',
+            'image/jp2' => 'jp2',
+            'video/mj2' => 'jp2',
+            'image/jpx' => 'jp2',
+            'image/jpm' => 'jp2',
+            'image/jpeg' => 'jpeg',
+            'image/pjpeg' => 'jpeg',
+            'application/x-javascript' => 'js',
+            'application/json' => 'json',
+            'text/json' => 'json',
+            'application/vnd.google-earth.kml+xml' => 'kml',
+            'application/vnd.google-earth.kmz' => 'kmz',
+            'text/x-log' => 'log',
+            'audio/x-m4a' => 'm4a',
+            'application/vnd.mpegurl' => 'm4u',
+            'audio/midi' => 'mid',
+            'application/vnd.mif' => 'mif',
+            'video/quicktime' => 'mov',
+            'video/x-sgi-movie' => 'movie',
+            'audio/mpeg' => 'mp3',
+            'audio/mpg' => 'mp3',
+            'audio/mpeg3' => 'mp3',
+            'audio/mp3' => 'mp3',
+            'video/mp4' => 'mp4',
+            'video/mpeg' => 'mpeg',
+            'application/oda' => 'oda',
+            'audio/ogg' => 'ogg',
+            'video/ogg' => 'ogg',
+            'application/ogg' => 'ogg',
+            'application/x-pkcs10' => 'p10',
+            'application/pkcs10' => 'p10',
+            'application/x-pkcs12' => 'p12',
+            'application/x-pkcs7-signature' => 'p7a',
+            'application/pkcs7-mime' => 'p7c',
+            'application/x-pkcs7-mime' => 'p7c',
+            'application/x-pkcs7-certreqresp' => 'p7r',
+            'application/pkcs7-signature' => 'p7s',
+            'application/pdf' => 'pdf',
+            'application/octet-stream' => 'pdf',
+            'application/x-x509-user-cert' => 'pem',
+            'application/x-pem-file' => 'pem',
+            'application/pgp' => 'pgp',
+            'application/x-httpd-php' => 'php',
+            'application/php' => 'php',
+            'application/x-php' => 'php',
+            'text/php' => 'php',
+            'text/x-php' => 'php',
+            'application/x-httpd-php-source' => 'php',
+            'image/png' => 'png',
+            'image/x-png' => 'png',
+            'application/powerpoint' => 'ppt',
+            'application/vnd.ms-powerpoint' => 'ppt',
+            'application/vnd.ms-office' => 'ppt',
+            'application/msword' => 'doc',
             'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
-            'application/x-photoshop'                                                   => 'psd',
-            'image/vnd.adobe.photoshop'                                                 => 'psd',
-            'audio/x-realaudio'                                                         => 'ra',
-            'audio/x-pn-realaudio'                                                      => 'ram',
-            'application/x-rar'                                                         => 'rar',
-            'application/rar'                                                           => 'rar',
-            'application/x-rar-compressed'                                              => 'rar',
-            'audio/x-pn-realaudio-plugin'                                               => 'rpm',
-            'application/x-pkcs7'                                                       => 'rsa',
-            'text/rtf'                                                                  => 'rtf',
-            'text/richtext'                                                             => 'rtx',
-            'video/vnd.rn-realvideo'                                                    => 'rv',
-            'application/x-stuffit'                                                     => 'sit',
-            'application/smil'                                                          => 'smil',
-            'text/srt'                                                                  => 'srt',
-            'image/svg+xml'                                                             => 'svg',
-            'application/x-shockwave-flash'                                             => 'swf',
-            'application/x-tar'                                                         => 'tar',
-            'application/x-gzip-compressed'                                             => 'tgz',
-            'image/tiff'                                                                => 'tiff',
-            'text/plain'                                                                => 'txt',
-            'text/x-vcard'                                                              => 'vcf',
-            'application/videolan'                                                      => 'vlc',
-            'text/vtt'                                                                  => 'vtt',
-            'audio/x-wav'                                                               => 'wav',
-            'audio/wave'                                                                => 'wav',
-            'audio/wav'                                                                 => 'wav',
-            'application/wbxml'                                                         => 'wbxml',
-            'video/webm'                                                                => 'webm',
-            'audio/x-ms-wma'                                                            => 'wma',
-            'application/wmlc'                                                          => 'wmlc',
-            'video/x-ms-wmv'                                                            => 'wmv',
-            'video/x-ms-asf'                                                            => 'wmv',
-            'application/xhtml+xml'                                                     => 'xhtml',
-            'application/excel'                                                         => 'xl',
-            'application/msexcel'                                                       => 'xls',
-            'application/x-msexcel'                                                     => 'xls',
-            'application/x-ms-excel'                                                    => 'xls',
-            'application/x-excel'                                                       => 'xls',
-            'application/x-dos_ms_excel'                                                => 'xls',
-            'application/xls'                                                           => 'xls',
-            'application/x-xls'                                                         => 'xls',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'         => 'xlsx',
-            'application/vnd.ms-excel'                                                  => 'xlsx',
-            'application/xml'                                                           => 'xml',
-            'text/xml'                                                                  => 'xml',
-            'text/xsl'                                                                  => 'xsl',
-            'application/xspf+xml'                                                      => 'xspf',
-            'application/x-compress'                                                    => 'z',
-            'application/x-zip'                                                         => 'zip',
-            'application/zip'                                                           => 'zip',
-            'application/x-zip-compressed'                                              => 'zip',
-            'application/s-compressed'                                                  => 'zip',
-            'multipart/x-zip'                                                           => 'zip',
-            'text/x-scriptzsh'                                                          => 'zsh',
+            'application/x-photoshop' => 'psd',
+            'image/vnd.adobe.photoshop' => 'psd',
+            'audio/x-realaudio' => 'ra',
+            'audio/x-pn-realaudio' => 'ram',
+            'application/x-rar' => 'rar',
+            'application/rar' => 'rar',
+            'application/x-rar-compressed' => 'rar',
+            'audio/x-pn-realaudio-plugin' => 'rpm',
+            'application/x-pkcs7' => 'rsa',
+            'text/rtf' => 'rtf',
+            'text/richtext' => 'rtx',
+            'video/vnd.rn-realvideo' => 'rv',
+            'application/x-stuffit' => 'sit',
+            'application/smil' => 'smil',
+            'text/srt' => 'srt',
+            'image/svg+xml' => 'svg',
+            'application/x-shockwave-flash' => 'swf',
+            'application/x-tar' => 'tar',
+            'application/x-gzip-compressed' => 'tgz',
+            'image/tiff' => 'tiff',
+            'text/plain' => 'txt',
+            'text/x-vcard' => 'vcf',
+            'application/videolan' => 'vlc',
+            'text/vtt' => 'vtt',
+            'audio/x-wav' => 'wav',
+            'audio/wave' => 'wav',
+            'audio/wav' => 'wav',
+            'application/wbxml' => 'wbxml',
+            'video/webm' => 'webm',
+            'audio/x-ms-wma' => 'wma',
+            'application/wmlc' => 'wmlc',
+            'video/x-ms-wmv' => 'wmv',
+            'video/x-ms-asf' => 'wmv',
+            'application/xhtml+xml' => 'xhtml',
+            'application/excel' => 'xl',
+            'application/msexcel' => 'xls',
+            'application/x-msexcel' => 'xls',
+            'application/x-ms-excel' => 'xls',
+            'application/x-excel' => 'xls',
+            'application/x-dos_ms_excel' => 'xls',
+            'application/xls' => 'xls',
+            'application/x-xls' => 'xls',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
+            'application/vnd.ms-excel' => 'xlsx',
+            'application/xml' => 'xml',
+            'text/xml' => 'xml',
+            'text/xsl' => 'xsl',
+            'application/xspf+xml' => 'xspf',
+            'application/x-compress' => 'z',
+            'application/x-zip' => 'zip',
+            'application/zip' => 'zip',
+            'application/x-zip-compressed' => 'zip',
+            'application/s-compressed' => 'zip',
+            'multipart/x-zip' => 'zip',
+            'text/x-scriptzsh' => 'zsh',
         ];
 
         return isset($mime_map[$mime]) === true ? $mime_map[$mime] : false;
@@ -1729,7 +1709,7 @@ if (!function_exists('GetDirectorySize')) {
     {
         $bytestotal = 0;
         $path = realpath($path);
-        if ($path!==false && $path!='' && file_exists($path)) {
+        if ($path !== false && $path != '' && file_exists($path)) {
             foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)) as $object) {
                 $bytestotal += $object->getSize();
             }
@@ -1738,11 +1718,10 @@ if (!function_exists('GetDirectorySize')) {
     }
 }
 
-
 if (!function_exists('human_filesize')) {
     function human_filesize($bytes, $dec = 2)
     {
-        $size   = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $factor = floor((strlen($bytes) - 1) / 3);
 
         return sprintf("%.{$dec}f", $bytes / pow(1024, $factor)) . @$size[$factor];

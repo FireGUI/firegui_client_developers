@@ -21,25 +21,24 @@ class Apilib
     const MODE_API_CALL = 2;
     const MODE_CRM_FORM = 3;
 
-    const ERR_INVALID_API_CALL  = 1;
-    const ERR_NO_DATA_SENT      = 2;
-    const ERR_REDIRECT_FAILED   = 3;
+    const ERR_INVALID_API_CALL = 1;
+    const ERR_NO_DATA_SENT = 2;
+    const ERR_REDIRECT_FAILED = 3;
     const ERR_ENTITY_NOT_EXISTS = 4;
     const ERR_VALIDATION_FAILED = 5;
-    const ERR_UPLOAD_FAILED     = 6;
-    const ERR_INTERNAL_DB       = 7;    // Internal Server Error: Database Query
-    const ERR_POST_PROCESS      = 8;    // Questo errore di norma non usa il messaggio standard
-    const ERR_GENERIC           = 8;    // Internal Server Error: Generico. Genera report email
+    const ERR_UPLOAD_FAILED = 6;
+    const ERR_INTERNAL_DB = 7; // Internal Server Error: Database Query
+    const ERR_POST_PROCESS = 8; // Questo errore di norma non usa il messaggio standard
+    const ERR_GENERIC = 8; // Internal Server Error: Generico. Genera report email
 
-    const LOG_LOGIN         = 1;    // Login action
-    const LOG_LOGIN_FAIL    = 2;    // Logout action
-    const LOG_LOGOUT        = 3;    // Logout action
-    const LOG_ACCESS        = 4;    // Daily access
-    const LOG_CREATE        = 5;    // Apilib::create action
-    const LOG_CREATE_MANY   = 6;    // Apilib::createMany action
-    const LOG_EDIT          = 7;    // Apilib::edit action
-    const LOG_DELETE        = 8;    // Apilib::delete action
-
+    const LOG_LOGIN = 1; // Login action
+    const LOG_LOGIN_FAIL = 2; // Logout action
+    const LOG_LOGOUT = 3; // Logout action
+    const LOG_ACCESS = 4; // Daily access
+    const LOG_CREATE = 5; // Apilib::create action
+    const LOG_CREATE_MANY = 6; // Apilib::createMany action
+    const LOG_EDIT = 7; // Apilib::edit action
+    const LOG_DELETE = 8; // Apilib::delete action
 
     private $error = 0;
     private $errorMessage = '';
@@ -56,14 +55,14 @@ class Apilib
     ];
 
     private $logTitlePatterns = [
-        self::LOG_LOGIN       => "User {log_crm_user_name} has logged in",
-        self::LOG_LOGIN_FAIL  => "User {log_crm_user_name} failed to log in",
-        self::LOG_LOGOUT      => "User {log_crm_user_name} has logged out",
-        self::LOG_ACCESS      => "User {log_crm_user_name} succesfully access",
-        self::LOG_CREATE      => "New record ({log_crm_extra id}) on entity {log_crm_extra entity}",
+        self::LOG_LOGIN => "User {log_crm_user_name} has logged in",
+        self::LOG_LOGIN_FAIL => "User {log_crm_user_name} failed to log in",
+        self::LOG_LOGOUT => "User {log_crm_user_name} has logged out",
+        self::LOG_ACCESS => "User {log_crm_user_name} succesfully access",
+        self::LOG_CREATE => "New record ({log_crm_extra id}) on entity {log_crm_extra entity}",
         self::LOG_CREATE_MANY => "New bulk record creation on entity {log_crm_extra entity}",
-        self::LOG_EDIT        => "Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}",
-        self::LOG_DELETE      => "Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}",
+        self::LOG_EDIT => "Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}",
+        self::LOG_DELETE => "Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}",
     ];
 
     private $originalPost = null;
@@ -85,8 +84,6 @@ class Apilib
      */
     private $pendingRelations;
 
-
-
     public function __construct()
     {
         // Prima carica la libreria di cache e dopo carica la crm entity
@@ -94,20 +91,13 @@ class Apilib
         $this->load->model('crmentity');
         $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
-
-
-
-
-
         //debug(get_class_methods($this->cache), true);
         $this->previousDebug = $this->db->db_debug;
         $this->crmEntity = $this->getCrmEntity();
 
-
+        $this->cache_config = $this->mycache->getCurrentConfig();
 
     }
-
-
 
     /**
      * Fallback per accedere alle proprietà di CI
@@ -120,7 +110,6 @@ class Apilib
         return $CI->{$name};
     }
 
-
     /**
      * Attiva/disattiva le info di debug
      * @param bool $show
@@ -129,7 +118,6 @@ class Apilib
     {
         $this->db->db_debug = (bool) $show;
     }
-
 
     /**
      * Ripristina il vecchio valore del debug
@@ -174,7 +162,6 @@ class Apilib
         return $this->processEnabled;
     }
 
-
     public function setLanguage($langId = null, $fallbackLangId = null)
     {
         $this->currentLanguage = ((int) $langId) ?: null;
@@ -206,9 +193,6 @@ class Apilib
         return $this->getCrmEntity()->translateValue($jsonEncodedValue);
     }
 
-
-
-
     /**
      * @todo
      */
@@ -217,9 +201,6 @@ class Apilib
         return uniqid();
     }
 
-
-
-    
     /***********************************
      * Rest actions
      */
@@ -235,9 +216,9 @@ class Apilib
         }
 
         $cache_key = "apilib/apilib.list.{$entity}";
-        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], null, 0, null, null, false, $depth);
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->isCacheEnabled()) {
                 $tags = $this->mycache->buildTagsFromEntity($entity);
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
             }
@@ -245,7 +226,6 @@ class Apilib
 
         return $this->sanitizeList($out);
     }
-
 
     /**
      * Ritorna tutti i dati di una determinata entità
@@ -260,10 +240,10 @@ class Apilib
         }
 
         $cache_key = "apilib/apilib.item.{$entity}.{$id}";
-        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
-            if ($this->mycache->isCacheEnabled()) {
-                $tags = $this->mycache->buildTagsFromEntity($entity,$id);
+            if ($this->isCacheEnabled()) {
+                $tags = $this->mycache->buildTagsFromEntity($entity, $id);
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
             }
         }
@@ -304,7 +284,7 @@ class Apilib
         if (!$ids) {
             return [];
         }
- 
+
         $query = $this->db->where_in($entity . '_id', $ids)->get($entity);
         if ($query instanceof CI_DB_result) {
             return $query->result_array();
@@ -335,7 +315,6 @@ class Apilib
         return $success;
     }
 
-
     /**
      * Crea un nuovo record con il post passato e lo ritorna via json
      * @param string $entity
@@ -353,8 +332,6 @@ class Apilib
         }
 
         $_data = $this->extractInputData($data);
-
-
 
         //rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
@@ -404,13 +381,13 @@ class Apilib
             $this->logSystemAction(self::LOG_CREATE, ['entity' => $entity, 'id' => $id]);
 
             if (defined('LOG_ENTITIES_ARRAY') && in_array($entity, LOG_ENTITIES_ARRAY)) {
-                $entity_data =            $this->crmentity->getEntity($entity);
+                $entity_data = $this->crmentity->getEntity($entity);
 
                 $this->logActivity(self::LOG_CREATE, [
                     'entity_data' => $entity_data,
                     'data_id' => $id,
                     'json_data' => json_encode(['data' => $_data, ['post' => $_POST]]),
-                    'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
+                    'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id']),
 
                 ]);
             }
@@ -421,8 +398,6 @@ class Apilib
             $this->showError();
         }
     }
-
-
 
     /**
      * Fa l'update del record con id passato aggiornando i dati da post
@@ -442,8 +417,6 @@ class Apilib
         }
 
         $_data = $this->extractInputData($data);
-
-
 
         // rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
@@ -475,7 +448,6 @@ class Apilib
                 $this->showError(self::ERR_GENERIC);
             }
 
-
             $this->savePendingRelations($id);
             $this->updateMultiuploadsRef($entity, $id, $_data);
 
@@ -489,14 +461,14 @@ class Apilib
                 'save',
                 array_merge(
                     $this->getById($entity, $id),
-                    ['old' => $oldData,]
+                    ['old' => $oldData]
                 )
             );
             $data_for_processing = [
                 'new' => $newData,
                 'old' => $oldData,
                 'diff' => array_diff_assoc_recursive($newData, $oldData),
-                'value_id' => $id
+                'value_id' => $id,
             ];
             $this->runDataProcessing($entity, 'update', $data_for_processing);
 
@@ -512,7 +484,7 @@ class Apilib
             if (
                 defined('LOG_ENTITIES_ARRAY') && in_array($entity, LOG_ENTITIES_ARRAY)
             ) {
-                $entity_data =            $this->crmentity->getEntity($entity);
+                $entity_data = $this->crmentity->getEntity($entity);
 
                 $this->logActivity(self::LOG_EDIT, [
                     'entity_data' => $entity_data,
@@ -521,7 +493,7 @@ class Apilib
                         ['data' => $_data, 'post' => $_POST],
                         $data_for_processing
                     )),
-                    'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id'])
+                    'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id']),
                 ]);
             }
 
@@ -531,7 +503,6 @@ class Apilib
             $this->showError();
         }
     }
-
 
     public function createMany($entity = null, $data = null)
     {
@@ -594,7 +565,6 @@ class Apilib
         $this->logSystemAction(self::LOG_CREATE_MANY, ['entity' => $entity, 'ids' => $ids]);
         return $ids;
     }
-
 
     /**
      * @param mixed $data
@@ -673,7 +643,7 @@ class Apilib
             if ($field['fields_source'] && empty($data[$field['fields_source']])) {
                 if (!empty($data[$field['fields_name']])) {
                     $fill_value =
-                        $this->getFieldSourceValue($field, $data[$field['fields_name']], $fields);
+                    $this->getFieldSourceValue($field, $data[$field['fields_name']], $fields);
 
                     //Retry for all fields because now &$data has changed and potential has more fields values
                     if ($fill_value) {
@@ -805,7 +775,7 @@ class Apilib
         foreach ($entities as $entity) {
             $table = [
                 'name' => $entity['entity_name'],
-                'fields' => []
+                'fields' => [],
             ];
             $fields = $this->db->order_by('fields_name')->get_where('fields', ['fields_entity_id' => $entity['entity_id']])->result_array();
             foreach ($fields as $field) {
@@ -827,7 +797,7 @@ class Apilib
         foreach ($entities as $entity) {
             $table = [
                 'name' => $entity['entity_name'],
-                'fields' => []
+                'fields' => [],
             ];
             $fields = $this->db->order_by('fields_name')->get_where('fields', ['fields_entity_id' => $entity['entity_id']])->result_array();
             foreach ($fields as $field) {
@@ -867,7 +837,12 @@ class Apilib
         return $tables;
     }
 
+    public function isCacheEnabled()
+    {
+        $return = !empty($this->cache_config['apilib']['active']) && $this->mycache->isCacheEnabled();
 
+        return $return;
+    }
 
     public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
     {
@@ -882,9 +857,9 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
-        $cache_key = "apilib/apilib.search.{$entity}." . md5(serialize($input)) .         ($limit ? '.' . $limit : '') .         ($offset ? '.' . $offset : '') .          ($orderBy ? '.' . md5(serialize($orderBy)) : '') .         ($group_by ? '.' . md5(serialize($group_by)) : '') .          '.' .           md5(serialize($orderDir));
+        $cache_key = "apilib/apilib.search.{$entity}." . md5(serialize($input)) . ($limit ? '.' . $limit : '') . ($offset ? '.' . $offset : '') . ($orderBy ? '.' . md5(serialize($orderBy)) : '') . ($group_by ? '.' . md5(serialize($group_by)) : '') . '.' . md5(serialize($orderDir));
 
-        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -956,7 +931,7 @@ class Apilib
 
             try {
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
-                if ($this->mycache->isCacheEnabled()) {
+                if ($this->isCacheEnabled()) {
                     $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
                 }
             } catch (Exception $ex) {
@@ -968,7 +943,6 @@ class Apilib
         return $this->runDataProcessing($entity, 'search', $this->sanitizeList($out));
     }
 
-
     public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1, $additional_parameters = [])
     {
         if (!is_array($input)) {
@@ -978,8 +952,6 @@ class Apilib
         $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth, [], $additional_parameters);
         return array_shift($out) ?: [];
     }
-
-
 
     public function count($entity = null, $input = [], $additional_parameters = [])
     {
@@ -996,7 +968,7 @@ class Apilib
         unset($input['entity']);
         $cache_key = "apilib/apilib.count.{$entity}." . md5(serialize($input));
 
-        if (!$this->mycache->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
+        if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
                 $where[] = $input['where'];
@@ -1034,16 +1006,17 @@ class Apilib
             }
 
             $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->isCacheEnabled()) {
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
             }
         }
 
         return $out;
     }
-public function clearCache($drop_template_files = false, $key = null) {
-    return $this->mycache->clearCache($drop_template_files, $key);
-}
+    public function clearCache($drop_template_files = false, $key = null)
+    {
+        return $this->mycache->clearCache($drop_template_files, $key);
+    }
     /**
      * Torna l'array dei messaggi d'errore,
      * NB: a scopi di debug - help ecc
@@ -1136,7 +1109,6 @@ public function clearCache($drop_template_files = false, $key = null) {
         }
     }
 
-
     /**
      * Prepara i dati all'inserimento nel database
      *
@@ -1168,9 +1140,9 @@ public function clearCache($drop_template_files = false, $key = null) {
     /**
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
-    private function processData($entity, array &$data, $editMode = false, $value_id = null)
+    private function processData($entity, array&$data, $editMode = false, $value_id = null)
     {
-            
+
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -1184,12 +1156,12 @@ public function clearCache($drop_template_files = false, $key = null) {
         $entityCustomActions = empty($entity_data['entity_action_fields']) ? [] : json_decode($entity_data['entity_action_fields'], true);
 
         $fields = $this->db->join('entity', 'entity_id=fields_entity_id', 'left')
-                
-                ->get_where('fields', ['entity_name' => $entity_data['entity_name']])
-                ->result_array();
+
+            ->get_where('fields', ['entity_name' => $entity_data['entity_name']])
+            ->result_array();
         //Xss clean
         $data = $this->security->xss_clean($data, $fields);
-        
+
         $originalData = $data;
 
         if ($editMode) {
@@ -1230,7 +1202,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                 // first time)
                 if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
                     switch ($field['fields_draw_html_type']) {
-                            // this because upload is made after validation rules
+                        // this because upload is made after validation rules
                         case 'upload':
                         case 'upload_image':
                             if (!array_key_exists($field['fields_name'], $_FILES)) {
@@ -1238,27 +1210,26 @@ public function clearCache($drop_template_files = false, $key = null) {
                             }
                             break;
 
-                            // password is valuated as required only if not in edit mode,
-                            //because in edit it doesnt mean that i want to change it
+                        // password is valuated as required only if not in edit mode,
+                        //because in edit it doesnt mean that i want to change it
                         case 'input_password':
                             if (!$editMode) {
                                 $rule[] = 'required';
                             }
                             break;
 
-                            // By default field will be required
+                        // By default field will be required
                         default:
                             $rule[] = 'required';
                             break;
                     }
                 }
 
-
                 // Inserisci le altre regole di validazione
                 foreach ($field['validations'] as $validation) {
                     switch ($validation['fields_validation_type']) {
 
-                            //Le validazioni che non richiedono parametri particolari
+                        //Le validazioni che non richiedono parametri particolari
                         case 'valid_email':
                         case 'valid_emails':
                         case 'integer':
@@ -1271,7 +1242,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                             $rule[] = $validation['fields_validation_type'];
                             break;
 
-                            //Le validazioni che hanno parametri semplici
+                        //Le validazioni che hanno parametri semplici
                         case 'is_unique':
                             // Il caso unique ha una particolarità:
                             // nel caso di edit se uno NON ha cambiato il valore del campo,
@@ -1292,12 +1263,12 @@ public function clearCache($drop_template_files = false, $key = null) {
                             $rule[] = "{$validation['fields_validation_type']}[{$validation['fields_validation_extra']}]";
                             break;
 
-                            // Validazioni complesse
+                        // Validazioni complesse
                         case 'date_before':
                             $rules_date_before[] = [
                                 'before' => $field['fields_name'],
                                 'after' => $validation['fields_validation_extra'],
-                                'message' => $validation['fields_validation_message'] ?: null
+                                'message' => $validation['fields_validation_message'] ?: null,
                             ];
                             break;
 
@@ -1305,7 +1276,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                             $rules_date_before[] = [
                                 'before' => $validation['fields_validation_extra'],
                                 'after' => $field['fields_name'],
-                                'message' => $validation['fields_validation_message'] ?: null
+                                'message' => $validation['fields_validation_message'] ?: null,
                             ];
                             break;
                     }
@@ -1316,15 +1287,13 @@ public function clearCache($drop_template_files = false, $key = null) {
             }
         }
 
-
-
         /**
          * Eseguo il process di pre-validation
          */
         $_predata = $data;
         $mode = $editMode ? 'update' : 'insert';
-        $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->originalPost]);   // Pre-validation specifico
-        $processed_predata_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-validation', $processed_predata_1);                                     // Pre-validation generico
+        $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-validation specifico
+        $processed_predata_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-validation', $processed_predata_1); // Pre-validation generico
         if (isset($processed_predata_2['post'])) {
             // Metto i dati processati nel post
             $_POST = $data = $processed_predata_2['post'];
@@ -1342,7 +1311,6 @@ public function clearCache($drop_template_files = false, $key = null) {
             }
             // Col passaggio a CI3, non viene più verificato il $_POST dal form validator, ma direttamente il CI->input->method (che nel caso di "change_value" è GET, non POST).
             //Fortunatamente hanno previsto la possibilità di dire al form validator che non deve valutare $_POST, ma un array "validation_data" che si può settare con set_data. Ecco il perchè di questa modifica.
-
 
             $this->form_validation->set_data($_POST);
             $this->form_validation->set_rules($rules);
@@ -1384,7 +1352,6 @@ public function clearCache($drop_template_files = false, $key = null) {
             $data = array_merge($data, $result);
             $originalData = array_merge($originalData, $result);
         }
-
 
         /*
          * Elabora i dati prima del salvataggio in base a fields_draw_html_type e tipo
@@ -1467,7 +1434,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                 // stato modificato da com'è salvato in db)
                 $value = isset($originalData[$name]) ? json_encode($toSaveJSON) : $value;
 
-            // Per i campi non multilingua semplicemente processo il valore
+                // Per i campi non multilingua semplicemente processo il valore
                 // normalmente (attenzione $value è per riferimento)
             } elseif (!$this->sanitizeInput($field, $value, isset($originalData[$name]) ? $originalData[$name] : null)) {
                 return false;
@@ -1523,7 +1490,7 @@ public function clearCache($drop_template_files = false, $key = null) {
          * Run pre-action process
          */
         $processed_data_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-{$mode}", ['post' => $data, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-process specifico
-        $processed_data_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-save', $processed_data_1);                             // Pre-process generico
+        $processed_data_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-save', $processed_data_1); // Pre-process generico
         if (isset($processed_data_2['post'])) {
             // Put data to be inserted into database
             $data = $processed_data_2['post'];
@@ -1541,7 +1508,6 @@ public function clearCache($drop_template_files = false, $key = null) {
         if (isset($entityCustomActions['update_time']) && empty($originalData[$entityCustomActions['update_time']])) {
             $data[$entityCustomActions['update_time']] = $editMode ? date('Y-m-d H:i:s') : null;
         }
-
 
         /*
          * Filtro i campi su cui sto per fare la query.
@@ -1619,7 +1585,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                 'entity' => $relation->relations_name,
                 'relations_field_1' => $relation->relations_field_1,
                 'relations_field_2' => $relation->relations_field_2,
-                'value' => $dataToInsert
+                'value' => $dataToInsert,
             );
 
             return true;
@@ -1661,7 +1627,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                             $this->db
                                 ->where($file_table . '_id', $file_id)
                                 ->update($file_table, [
-                                    $field_related['fields_name'] => $record_id
+                                    $field_related['fields_name'] => $record_id,
                                 ]);
                         }
                     } else {
@@ -1703,7 +1669,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                     //Delete from db if related field2 has been removed from multiselect
                     $this->db->delete($relationBundle['entity'], [
                         $relationBundle['relations_field_1'] => $savedId,
-                        $relationBundle['relations_field_2'] => $old[$relationBundle['relations_field_2']]
+                        $relationBundle['relations_field_2'] => $old[$relationBundle['relations_field_2']],
                     ]);
                 } else {
                     //Delete from $relationBundle['value'] so that after it will be not inserted twice
@@ -1723,7 +1689,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                     //@todo Non è detto che il field_1 sia il saveId, nulla vieta di invertire le due tabella. Sarebbe da fare un check per capire dove va l'id salvato e dove va invece ilvalore della multiselect...
                     return [
                         $relationBundle['relations_field_1'] => $savedId,
-                        $relationBundle['relations_field_2'] => $value
+                        $relationBundle['relations_field_2'] => $value,
                     ];
                 }, $relationBundle['value']);
 
@@ -1749,7 +1715,6 @@ public function clearCache($drop_template_files = false, $key = null) {
     {
         $typeSQL = strtoupper($field['fields_type']);
         $typeHTML = $field['fields_draw_html_type'];
-
 
         switch ($typeHTML) {
             case 'date':
@@ -1778,7 +1743,6 @@ public function clearCache($drop_template_files = false, $key = null) {
             case 'upload_image':
                 $value = $value ?: null;
                 break;
-
 
             case 'polygon':
             case 'polygon_multi':
@@ -1863,7 +1827,6 @@ public function clearCache($drop_template_files = false, $key = null) {
                 break;
         }
 
-
         switch ($typeSQL) {
             case 'INT':
                 if (!is_numeric($value) && ((int) $value == $value)) {
@@ -1947,7 +1910,7 @@ public function clearCache($drop_template_files = false, $key = null) {
                 } else {
                     $value = null;
                 }
-                // no break
+            // no break
             case 'JSON':
                 if ($value === '') {
                     // Il json non mi accetta stringhe vuote
@@ -2054,10 +2017,10 @@ public function clearCache($drop_template_files = false, $key = null) {
                         // uguali: rimuovo quindi l'ultimo punto che è
                         // sicuramente === al primo e lo reinserisco
                         $last = array_pop($polygon_expl);
-                        $polygon_expl = array_unique($polygon_expl);   // Array unique fa anche un sort, ma non tocca le chiavi, quindi basta fare un ksort del risultato e ci sono
+                        $polygon_expl = array_unique($polygon_expl); // Array unique fa anche un sort, ma non tocca le chiavi, quindi basta fare un ksort del risultato e ci sono
                         ksort($polygon_expl);
                         $polygon_expl[] = $last;
-                        $polygon_expl = array_values($polygon_expl);    // Normalizzo le chiavi
+                        $polygon_expl = array_values($polygon_expl); // Normalizzo le chiavi
 
                         $polygon = implode(',', $polygon_expl);
                         //Aggiungo le parentesi aperta e chiusa
@@ -2111,7 +2074,6 @@ public function clearCache($drop_template_files = false, $key = null) {
                 } else {
                     $query = $this->db->query("SELECT ST_Multi(ST_BuildArea(ST_Collect(ST_CollectionExtract(ST_GeographyFromText('$multipolygon')::geometry, 3))))::geography AS geography");
                 }
-
 
                 if (!$query) {
                     $this->error = self::ERR_VALIDATION_FAILED;
@@ -2210,10 +2172,8 @@ public function clearCache($drop_template_files = false, $key = null) {
                 ->get('fi_events')
                 ->result_array();
 
-
-
             $this->_loadedDataProcessors = [
-                self::MODE_DIRECT   => [],
+                self::MODE_DIRECT => [],
                 self::MODE_API_CALL => [],
                 self::MODE_CRM_FORM => [],
             ];
@@ -2253,9 +2213,6 @@ public function clearCache($drop_template_files = false, $key = null) {
         }
     }
 
-
-
-
     /**
      * Upload di tutti i file dentro all'array $_FILES e opzionalmente rimuovili
      * dalla superglobal
@@ -2274,7 +2231,7 @@ public function clearCache($drop_template_files = false, $key = null) {
             'upload_path' => FCPATH . 'uploads/',
             'allowed_types' => '*',
             'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
-            'encrypt_name' => true
+            'encrypt_name' => true,
         ]);
 
         foreach ($_FILES as $fieldName => $fileData) {
@@ -2304,14 +2261,13 @@ public function clearCache($drop_template_files = false, $key = null) {
                     $newKey = uniqid();
                     $keyMap[$newKey] = $key;
                     $_FILES[$newKey] = [
-                        'name' =>     $fileData['name'][$key],
-                        'type' =>     $fileData['type'][$key],
+                        'name' => $fileData['name'][$key],
+                        'type' => $fileData['type'][$key],
                         'tmp_name' => $fileData['tmp_name'][$key],
-                        'error' =>    $fileData['error'][$key],
-                        'size' =>     $fileData['size'][$key]
+                        'error' => $fileData['error'][$key],
+                        'size' => $fileData['size'][$key],
                     ];
                 }
-
 
                 // Chiamata ricorsiva... se fallisce (= ritorna false) allora
                 // fallisce anche questa
@@ -2363,7 +2319,6 @@ public function clearCache($drop_template_files = false, $key = null) {
                 $output[$fieldName] = $uploadData['file_name'];
             }
 
-
             if ($clearFilesSuperglobal) {
                 unset($_FILES[$fieldName]);
             }
@@ -2371,7 +2326,6 @@ public function clearCache($drop_template_files = false, $key = null) {
 
         return $output;
     }
-
 
     /**
      * Aggiungi una nuova voce al log di sistema con il flag system = false.
@@ -2385,7 +2339,6 @@ public function clearCache($drop_template_files = false, $key = null) {
     {
         $this->addLogEntry($type, $titlePattern, false, $extra);
     }
-
 
     /**
      * Aggiungi una nuova voce al log di sistema con il flag system = true
@@ -2437,7 +2390,6 @@ public function clearCache($drop_template_files = false, $key = null) {
     public function logActivity($type, array $extra = [])
     {
 
-
         // Il tipo è valido?
         if (!isset($this->logTitlePatterns[$type])) {
             throw new UnexpectedValueException(t("Type '%s' not valid", 0, [$type]));
@@ -2479,7 +2431,7 @@ public function clearCache($drop_template_files = false, $key = null) {
             'log_crm_user_agent' => filter_input(INPUT_SERVER, 'HTTP_USER_AGENT') ?: null,
             'log_crm_referer' => filter_input(INPUT_SERVER, 'HTTP_REFERER') ?: null,
 
-            'log_crm_time' => date('Y-m-d H:i:s'),  // Server time
+            'log_crm_time' => date('Y-m-d H:i:s'), // Server time
             'log_crm_type' => (int) $type,
             'log_crm_system' => $system ? DB_BOOL_TRUE : DB_BOOL_FALSE,
             'log_crm_extra' => $extra,
@@ -2506,8 +2458,6 @@ public function clearCache($drop_template_files = false, $key = null) {
         }
         extract($extra);
 
-
-
         if ($type == self::LOG_CREATE) {
             $description = $this->fi_activity->getDescriptionCreate($uname);
         } elseif ($type == self::LOG_EDIT) {
@@ -2531,13 +2481,11 @@ public function clearCache($drop_template_files = false, $key = null) {
             'fi_activities_user_agent' => filter_input(INPUT_SERVER, 'HTTP_USER_AGENT') ?: null,
             'fi_activities_referer' => filter_input(INPUT_SERVER, 'HTTP_REFERER') ?: null,
 
-            'fi_activities_date' => date('Y-m-d H:i:s'),  // Server time
+            'fi_activities_date' => date('Y-m-d H:i:s'), // Server time
             'fi_activities_type' => (int) $type,
 
             //'fi_activities_json_data' => $json_data,
         ];
-
-
 
         $this->db->insert('fi_activities', $logactivity);
     }
@@ -2552,10 +2500,10 @@ public function clearCache($drop_template_files = false, $key = null) {
     {
         return new Crmentity($entity, [
             $this->currentLanguage,
-            $this->fallbackLanguage
+            $this->fallbackLanguage,
         ]);
     }
-    
+
 }
 
 class ApiException extends Exception
