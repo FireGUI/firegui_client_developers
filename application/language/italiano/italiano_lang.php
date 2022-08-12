@@ -1450,3 +1450,4 @@ $lang['Elenco assegnazioni'] = 'Elenco assegnazioni';
 $lang['Nuovo appuntamento'] = 'Nuovo appuntamento';
 $lang['Persone'] = 'Persone';
 $lang['appuntamenti'] = 'appuntamenti';
+$lang['Send SMS'] = 'Send SMS';

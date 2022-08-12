@@ -3,7 +3,7 @@
 /* Load content ajax */
 
 
-$('body').on('click', '.js_ajax_content', function (e) {
+$('body').on('click', '.___js_ajax_content', function (e) {
 
     // Check if has a layout id to open
     var layout_id = $(this).data('layout-id');

@@ -1727,3 +1727,16 @@ if (!function_exists('human_filesize')) {
         return sprintf("%.{$dec}f", $bytes / pow(1024, $factor)) . @$size[$factor];
     }
 }
+
+if (!function_exists('rgb_string_to_hex')) {
+    function rgb_string_to_hex($rgba)
+    {
+        if (strpos($rgba, '#') === 0) {
+            return $rgba;
+        }
+
+        preg_match('/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i', $rgba, $by_color);
+
+        return sprintf('%02x%02x%02x', $by_color[1], $by_color[2], $by_color[3]);
+    }
+}
