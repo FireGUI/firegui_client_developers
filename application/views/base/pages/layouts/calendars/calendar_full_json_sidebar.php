@@ -48,6 +48,8 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 $create_permission = (!empty($data['create_form']) && $data['calendars']['calendars_allow_create'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
 $edit_permission = (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
 $calendars_default_view = (!empty($data['cal_layout']['calendars_default_view'])) ? $data['cal_layout']['calendars_default_view'] : 'timeGridWeek';
+$filter_default_view = (!empty($data['cal_layout']) && $data['cal_layout']['calendars_default_sidebar_toggle_all_filters'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
+
 ?>
 
 <style>
@@ -97,8 +99,8 @@ $calendars_default_view = (!empty($data['cal_layout']['calendars_default_view'])
             <div class="scrollable">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="cal_filter[]" class="js_check_filter" id="select-all" value="0"/>
-                        <?php e('Select All'); ?>
+                        <input type="checkbox" name="cal_filter[]" class="js_check_filter" id="select-all" <?php if ($filter_default_view == DB_BOOL_TRUE) echo 'checked'; ?> value="0"/>
+                        <b><?php e('Select All'); ?></b>
                     </label>
                 </div>
                 <?php foreach ($filter_data as $id => $nome) : ?>
