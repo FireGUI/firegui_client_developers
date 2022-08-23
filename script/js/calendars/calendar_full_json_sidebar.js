@@ -18,11 +18,13 @@ function initCalendars() {
             var updateurl = $(this).data('updateurl');
             var allow_create = $(this).data('allow_create');
             var allow_edit = $(this).data('allow_edit');
+            var calendars_default_view = $(this).data('view');
+            
             // ============================
 
             console.log(allow_create);
             console.log(allow_edit);
-            
+
             var token = JSON.parse(atob($('body').data('csrf')));
             var token_name = token.name;
             var token_hash = token.hash;
@@ -67,9 +69,7 @@ function initCalendars() {
             var calendarEl = document.getElementById(jqCalendar.attr('id'));
 
             $('#' + jqCalendar.attr('id')).html('');
-            var defaultView = (typeof localStorage.getItem("fcDefaultView") !== 'undefined' && localStorage.getItem("fcDefaultView") !== null) ? localStorage.getItem("fcDefaultView") : "timeGridWeek";
-    
-            console.log(defaultView);
+            var defaultView = (typeof localStorage.getItem("fcDefaultView_"+calendarEl) !== 'undefined' && localStorage.getItem("fcDefaultView_"+calendarEl) !== null) ? localStorage.getItem("fcDefaultView_"+calendarEl) : calendars_default_view;
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
@@ -81,7 +81,7 @@ function initCalendars() {
                 },
                 datesRender: function(info, el)
                 {
-                    localStorage.setItem("fcDefaultView", info.view.type);
+                    localStorage.setItem("fcDefaultView_"+calendarEl, info.view.type);
                 },
                 editable: true,
                 selectable: true,
@@ -150,9 +150,11 @@ function initCalendars() {
                     events: function(fetchInfo, successCallback, failureCallback) {
                         var values = [];
                         $('.js_check_filter').filter('[type=checkbox]:checked').each(function() {
-                            values.push($(this).val());
+                            if($(this).val()!= 0){
+                                values.push($(this).val());
+                            }
                         });
-
+                        
                         $.ajax({
                             type: 'POST',
                             url: sourceUrl,
@@ -189,6 +191,18 @@ function initCalendars() {
             calendar.render();
 
             $('.js_check_filter').on('change', function() {
+                $('#select-all').click(function(event) {   
+                    if(this.checked) {
+                        // Iterate each checkbox
+                        $(':checkbox').each(function() {
+                            this.checked = true;                        
+                        });
+                    } else {
+                        $(':checkbox').each(function() {
+                            this.checked = false;                       
+                        });
+                    }
+                }); 
                 calendar.refetchEvents();
             });
 

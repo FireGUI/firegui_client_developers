@@ -1451,3 +1451,4 @@ $lang['Nuovo appuntamento'] = 'Nuovo appuntamento';
 $lang['Persone'] = 'Persone';
 $lang['appuntamenti'] = 'appuntamenti';
 $lang['Send SMS'] = 'Send SMS';
+$lang['Select all'] = 'Seleziona Tutto';

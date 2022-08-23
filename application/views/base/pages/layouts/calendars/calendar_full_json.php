@@ -11,6 +11,7 @@ if (!isset($calendar_map['id']) || !$calendar_map['id']) {
 
 $element_id = (isset($value_id) ? '/' . $value_id : NULL);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
+$calendars_default_view = (!empty($data['calendars']['calendars_default_view'])) ? $data['calendars']['calendars_default_view'] : 'timeGridWeek';
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 
@@ -58,7 +59,8 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
     $(function() {
         'use strict';
-
+        var id_calendario = "<?php echo $element_id; ?>";
+        var calendars_default_view = "<?php echo $calendars_default_view; ?>";
         var sourceUrl = "<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}" . $element_id); ?>";
         var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
         var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
@@ -68,10 +70,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
         var token_hash = token.hash;
 
         var calendarEl = document.getElementById('<?php echo $calendarId; ?>');
-    
-        var defaultView = (typeof localStorage.getItem("fcDefaultView") !== 'undefined' && localStorage.getItem("fcDefaultView") !== null) ? localStorage.getItem("fcDefaultView") : "timeGridWeek";
-    
-        //console.log(defaultView);
+        var defaultView = (typeof localStorage.getItem("fcDefaultView_"+id_calendario) !== 'undefined' && localStorage.getItem("fcDefaultView_"+id_calendario) !== null) ? localStorage.getItem("fcDefaultView_"+id_calendario) : calendars_default_view;
     
         var calendar = new FullCalendar.Calendar(calendarEl, {
             editable: true,
@@ -96,7 +95,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
         
             datesRender: function(info, el)
             {
-                localStorage.setItem("fcDefaultView", info.view.type);
+                localStorage.setItem("fcDefaultView_"+id_calendario, info.view.type);
             },
         
             select: function(date) {
