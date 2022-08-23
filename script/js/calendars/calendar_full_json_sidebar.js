@@ -5,6 +5,7 @@ function initCalendars() {
             var jqCalendarView;
 
             var jqCalendar = $(this);
+            var calendar_id = jqCalendar.attr('id');
             var sourceUrl = $(this).data('sourceurl');
             var minTime = $(this).data('mintime');
             var maxTime = $(this).data('maxtime');
@@ -21,9 +22,6 @@ function initCalendars() {
             var calendars_default_view = $(this).data('view');
             
             // ============================
-
-            console.log(allow_create);
-            console.log(allow_edit);
 
             var token = JSON.parse(atob($('body').data('csrf')));
             var token_name = token.name;
@@ -66,10 +64,10 @@ function initCalendars() {
                 }
             }
 
-            var calendarEl = document.getElementById(jqCalendar.attr('id'));
+            var calendarEl = document.getElementById(calendar_id);
 
-            $('#' + jqCalendar.attr('id')).html('');
-            var defaultView = (typeof localStorage.getItem("fcDefaultView_"+calendarEl) !== 'undefined' && localStorage.getItem("fcDefaultView_"+calendarEl) !== null) ? localStorage.getItem("fcDefaultView_"+calendarEl) : calendars_default_view;
+            $('#' + calendar_id).html('');
+            var defaultView = (typeof localStorage.getItem("fcDefaultView_"+calendar_id) !== 'undefined' && localStorage.getItem("fcDefaultView_"+calendar_id) !== null) ? localStorage.getItem("fcDefaultView_"+calendar_id) : calendars_default_view;
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
@@ -81,7 +79,7 @@ function initCalendars() {
                 },
                 datesRender: function(info, el)
                 {
-                    localStorage.setItem("fcDefaultView_"+calendarEl, info.view.type);
+                    localStorage.setItem("fcDefaultView_"+calendar_id, info.view.type);
                 },
                 editable: true,
                 selectable: true,
@@ -207,7 +205,7 @@ function initCalendars() {
             });
 
             // Ripristina sessione
-            var sessionStorageKey = jqCalendar.attr('id');
+            var sessionStorageKey = calendar_id;
 
             // try {
             //     var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
