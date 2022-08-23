@@ -22,7 +22,7 @@ function initCalendars() {
 
             console.log(allow_create);
             console.log(allow_edit);
-
+            
             var token = JSON.parse(atob($('body').data('csrf')));
             var token_name = token.name;
             var token_hash = token.hash;
@@ -67,16 +67,22 @@ function initCalendars() {
             var calendarEl = document.getElementById(jqCalendar.attr('id'));
 
             $('#' + jqCalendar.attr('id')).html('');
+            var defaultView = (typeof localStorage.getItem("fcDefaultView") !== 'undefined' && localStorage.getItem("fcDefaultView") !== null) ? localStorage.getItem("fcDefaultView") : "timeGridWeek";
+    
+            console.log(defaultView);
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
-                defaultView: 'timeGridWeek',
+                defaultView: defaultView,
                 defaultDate: moment().format('YYYY-MM-DD HH:mm'),
                 header: {
                     left: 'title',
                     right: 'prev,next,dayGridMonth,timeGridWeek,timeGridDay'
                 },
-
+                datesRender: function(info, el)
+                {
+                    localStorage.setItem("fcDefaultView", info.view.type);
+                },
                 editable: true,
                 selectable: true,
                 disableDragging: false,
