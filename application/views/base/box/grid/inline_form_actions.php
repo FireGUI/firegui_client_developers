@@ -89,7 +89,7 @@
                         $confirm = false;
                         $btn_attrs .= 'data-id="' . $id . '" ';
                     }*/ else {
-                        $btn_classes .= 'js_link_ajax ';
+                        //$btn_classes .= 'js_link_ajax '; // Michael - 2022 - Commento questo perchè qualsiasi custom action che viene messa gli viene appenso js_link_ajax, il che è sbagliato
                     }
 
                     if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) {
