@@ -55,11 +55,19 @@ endif;
     <link rel="stylesheet" type="text/css" href="<?php echo base_url_template("template/adminlte_custom/custom.css?v={$this->config->item('version')}"); ?>" />
 
     <?php
-    $data['custom'] = [
-        '.background_img' => [
-            'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . ((!empty($season)) ? base_url("images/{$season}.jpg") : '') . ")!important"
-        ]
-    ];
+    if ($this->settings['settings_login_background']) {
+        $data['custom'] = [
+            '.background_img' => [
+                'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . base_url("uploads/" . $this->settings['settings_login_background']) . ")!important"
+            ]
+        ];
+    } else {
+        $data['custom'] = [
+            '.background_img' => [
+                'background-image' => "linear-gradient(rgba(23, 23, 23, 0.3), rgba(18, 20, 23, 0.8)), url(" . ((!empty($season)) ? base_url("images/{$season}.jpg") : '') . ")!important"
+            ]
+        ];
+    }
 
     if (defined('LOGIN_COLOR') && !empty(LOGIN_COLOR)) {
         $data['custom'] = array_merge([
