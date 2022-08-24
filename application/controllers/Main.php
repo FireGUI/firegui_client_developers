@@ -11,13 +11,13 @@ class Main extends MY_Controller
      * Controller constructor
      */
     public function __construct()
-    { 
-           
+    {
+
         parent::__construct();
-        
+
         // Controllo anche la current uri
         if ($this->auth->guest()) {
- 
+
             // FIX: siamo nel controller main, quindi l'uri dovrebbe cominciare con main
             $uri = explode('/', uri_string());
 
@@ -42,11 +42,8 @@ class Main extends MY_Controller
 
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
-        
-        
 
     }
-
 
     public function dashboard()
     {
@@ -108,16 +105,16 @@ class Main extends MY_Controller
 
         // Build layout, if null then layout is not accessible due to user permissions
         $dati = $this->datab->build_layout($layout_id, $value_id);
-        
+
         if (is_null($dati)) {
-            
+
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->layout->setLayoutModule();
             $dati = [
-                'status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id
+                'status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id,
             ];
             //$dati['title_prefix'] = ucfirst(t(trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])))));
-                
+
             $this->load->view('layout/json_return', ['json' => json_encode($dati)]);
         } else {
             // I have 2 type of layouts: PDF or standard. If PDF return type pdf and open in target blank by client
@@ -134,7 +131,7 @@ class Main extends MY_Controller
 
                 $this->layout->setLayoutModule();
                 $this->load->view('layout/json_return', ['json' => json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id, 'dati' => $dati))]);
-                
+
             }
         }
     }
@@ -190,7 +187,7 @@ class Main extends MY_Controller
                 $this->layout->setLayoutModule();
                 $this->stampa($pagina, $value_id);
             } else {
-                
+
                 // I have 2 type of layouts: PDF or standard
                 if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
                     if (file_exists(FCPATH . "application/views/custom/layout/pdf.php")) {
@@ -199,9 +196,8 @@ class Main extends MY_Controller
                         $view_content = $this->load->view("layout/pdf", array('dati' => $dati, 'value_id' => $value_id), true);
                     }
 
-$orientation = $this->input->get('orientation') ? $this->input->get('orientation') : 'portrait';
-$pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], false, true);
-
+                    $orientation = $this->input->get('orientation') ? $this->input->get('orientation') : 'portrait';
+                    $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], false, true);
 
                     $contents = file_get_contents($pdfFile, true);
                     $pdf_b64 = base64_encode($contents);
@@ -257,7 +253,7 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
     protected function stampa($pagina, $value_id = null)
     {
 
-       $this->output->setTags($this->layout->getRelatedEntities());
+        $this->output->setTags($this->layout->getRelatedEntities());
 
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/head.php")) {
             $this->template['head'] = $this->load->view('custom/layout/head', array(), true);
@@ -318,7 +314,7 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
                 'form' => $form,
                 'ref_id' => 'test',
                 'value_id' => $value_id,
-                'layout_data_detail' => null
+                'layout_data_detail' => null,
             ], true);
 
             // Get hooks
@@ -375,7 +371,7 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
         foreach ($grids as $griddb) {
             $fooBox = [
                 'layouts_boxes_content_type' => 'grid',
-                'layouts_boxes_content_ref' => $griddb['grids_id']
+                'layouts_boxes_content_ref' => $griddb['grids_id'],
             ];
             $html = $this->datab->getBoxContent($fooBox);
             $grids_html[$griddb['grids_id']] = $html;
@@ -387,8 +383,8 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
     }
 
     /*
-    * General settings
-    */
+     * General settings
+     */
     public function settings()
     {
         $dati['current_page'] = 'settings';
@@ -501,7 +497,6 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
         $dati['users'] = $this->datab->get_entity_preview_by_name(LOGIN_ENTITY, $where);
         asort($dati['users']);
 
-
         if (LOGIN_NAME_FIELD) {
             $this->db->order_by(LOGIN_NAME_FIELD);
         }
@@ -530,7 +525,6 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
         }, $users);
         $usersLayouts = array_combine($userIds, $ucwordsUserNames);
 
-
         // Crea un array di mappatura layout_id => ucfirst(layout_title)
         $dati['layouts'] = $this->db->order_by('layouts_module, layouts_title')->get('layouts')->result_array();
 
@@ -542,7 +536,7 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
         $unalloweds = $this->db->get('unallowed_layouts')->result_array();
         $dati['unallowed'] = array();
 
-        $dati['userGroupsStatus'] = $userGroupsStatus = $this->datab->getUserGroups();  // Un array dove per ogni utente ho il gruppo corrispondente
+        $dati['userGroupsStatus'] = $userGroupsStatus = $this->datab->getUserGroups(); // Un array dove per ogni utente ho il gruppo corrispondente
         $dati['users_layout'] = [];
         foreach ($usersLayouts as $userId => $userPreview) {
             if (isset($userGroupsStatus[$userId])) {
@@ -645,7 +639,8 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
         $this->stampa($pagina);
     }
 
-    public function cache_switch_active($key, $val) {
+    public function cache_switch_active($key, $val)
+    {
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
             $this->output->cache(0);
         }
@@ -673,7 +668,6 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
             echo json_encode($dati);
             return;
         }
-
 
         if ($dati['count_total'] === 1) {
             $results = array_values($dati['results']);
@@ -727,16 +721,14 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
             case 'off':
                 $fp = fopen($cache_controller_file, "r+");
 
-                if (flock($fp, LOCK_EX)) {  // acquire an exclusive lock
+                if (flock($fp, LOCK_EX)) { // acquire an exclusive lock
                     $cache_controller = file_get_contents($cache_controller_file);
                     $this->mycache->clearCache(true);
-                    ftruncate($fp, 0);      // truncate file
+                    ftruncate($fp, 0); // truncate file
                     fwrite($fp, $cache_controller);
-                    fflush($fp);            // flush output before releasing the lock
-                    flock($fp, LOCK_UN);    // release the lock
-                    
+                    fflush($fp); // flush output before releasing the lock
+                    flock($fp, LOCK_UN); // release the lock
 
-                    
                 } else {
                     $this->mycache->clearCache(true);
                 }
@@ -744,13 +736,25 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
                 $this->mycache->toggleCachingSystem(false);
                 fclose($fp);
 
-
-
                 break;
 
             case 'clear':
-                
-                $this->mycache->clearCache(true, $key);
+
+                $fp = fopen($cache_controller_file, "r+");
+
+                if (flock($fp, LOCK_EX)) { // acquire an exclusive lock
+                    $cache_controller = file_get_contents($cache_controller_file);
+                    $this->mycache->clearCache(true);
+                    ftruncate($fp, 0); // truncate file
+                    fwrite($fp, $cache_controller);
+                    fflush($fp); // flush output before releasing the lock
+                    flock($fp, LOCK_UN); // release the lock
+
+                } else {
+                    $this->mycache->clearCache(true);
+                }
+                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+                fclose($fp);
 
                 break;
 
@@ -800,7 +804,7 @@ $pdfFile = $this->layout->generate_pdf($view_content, $orientation, "", [], fals
         }
 
         $zippath = FCPATH . 'uploads/_tmp_langs.zip';
-        file_put_contents($zippath, '');    // Mi assicuro che il file esista, perché se non esiste per qualche strano motivo ZipArchive non riesce a crearmelo.. mah
+        file_put_contents($zippath, ''); // Mi assicuro che il file esista, perché se non esiste per qualche strano motivo ZipArchive non riesce a crearmelo.. mah
         $zip = new ZipArchive();
 
         if (($code = $zip->open($zippath, ZipArchive::OVERWRITE)) !== true) {

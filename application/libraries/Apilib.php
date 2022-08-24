@@ -21,6 +21,12 @@ class Apilib
     const MODE_API_CALL = 2;
     const MODE_CRM_FORM = 3;
 
+    const MODE_MAPPING = [
+        1 => 'direct',
+        2 => 'api',
+        3 => 'form',
+    ];
+
     const ERR_INVALID_API_CALL = 1;
     const ERR_NO_DATA_SENT = 2;
     const ERR_REDIRECT_FAILED = 3;
@@ -1507,6 +1513,20 @@ class Apilib
         }
         if (isset($entityCustomActions['update_time']) && empty($originalData[$entityCustomActions['update_time']])) {
             $data[$entityCustomActions['update_time']] = $editMode ? date('Y-m-d H:i:s') : null;
+        }
+
+        if (isset($entityCustomActions['created_by']) && !$editMode && empty($data[$entityCustomActions['created_by']])) {
+            $data[$entityCustomActions['created_by']] = (!empty($this->auth->get('id'))) ? $this->auth->get('id') : null;
+        }
+        if (isset($entityCustomActions['edited_by']) && $editMode && empty($data[$entityCustomActions['edited_by']])) {
+            $data[$entityCustomActions['edited_by']] = (!empty($this->auth->get('id'))) ? $this->auth->get('id') : null;
+        }
+        $fields_names = array_key_map($fields, 'fields_name');
+        //Check scope
+        if (!$editMode && in_array($entity . '_insert_scope', $fields_names)) {
+            $data[$entity . '_insert_scope'] = self::MODE_MAPPING[$this->processMode];
+        } elseif ($editMode && in_array($entity . '_edit_scope', $fields_names)) {
+            $data[$entity . '_edit_scope'] = self::MODE_MAPPING[$this->processMode];
         }
 
         /*
