@@ -135,7 +135,7 @@ function initTinymce(container = null) {
 
   var tinymce_config = {
     selector: "textarea.js_tinymce",
-    height: 500,
+    height: 300,
     resize: true,
     autosave_ask_before_unload: false,
     powerpaste_allow_local_images: true,
@@ -144,9 +144,9 @@ function initTinymce(container = null) {
     remove_script_host: false,
     plugins:
       "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
-    menubar: "file edit view insert format tools table",
+    menubar: "",
     toolbar:
-      "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl",
+      "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor codesample",
     toolbar_sticky: false,
     automatic_uploads: true,
     images_upload_handler: function (blobInfo, success, failure) {

@@ -5,6 +5,7 @@ function initCalendars() {
             var jqCalendarView;
 
             var jqCalendar = $(this);
+            var calendar_id = jqCalendar.attr('id');
             var sourceUrl = $(this).data('sourceurl');
             var minTime = $(this).data('mintime');
             var maxTime = $(this).data('maxtime');
@@ -18,10 +19,9 @@ function initCalendars() {
             var updateurl = $(this).data('updateurl');
             var allow_create = $(this).data('allow_create');
             var allow_edit = $(this).data('allow_edit');
+            var calendars_default_view = $(this).data('view');
+            
             // ============================
-
-            console.log(allow_create);
-            console.log(allow_edit);
 
             var token = JSON.parse(atob($('body').data('csrf')));
             var token_name = token.name;
@@ -64,19 +64,23 @@ function initCalendars() {
                 }
             }
 
-            var calendarEl = document.getElementById(jqCalendar.attr('id'));
+            var calendarEl = document.getElementById(calendar_id);
 
-            $('#' + jqCalendar.attr('id')).html('');
+            $('#' + calendar_id).html('');
+            var defaultView = (typeof localStorage.getItem("fcDefaultView_"+calendar_id) !== 'undefined' && localStorage.getItem("fcDefaultView_"+calendar_id) !== null) ? localStorage.getItem("fcDefaultView_"+calendar_id) : calendars_default_view;
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
-                defaultView: 'timeGridWeek',
+                defaultView: defaultView,
                 defaultDate: moment().format('YYYY-MM-DD HH:mm'),
                 header: {
                     left: 'title',
                     right: 'prev,next,dayGridMonth,timeGridWeek,timeGridDay'
                 },
-
+                datesRender: function(info, el)
+                {
+                    localStorage.setItem("fcDefaultView_"+calendar_id, info.view.type);
+                },
                 editable: true,
                 selectable: true,
                 disableDragging: false,
@@ -144,9 +148,11 @@ function initCalendars() {
                     events: function(fetchInfo, successCallback, failureCallback) {
                         var values = [];
                         $('.js_check_filter').filter('[type=checkbox]:checked').each(function() {
-                            values.push($(this).val());
+                            if($(this).val()!= 0){
+                                values.push($(this).val());
+                            }
                         });
-
+                        
                         $.ajax({
                             type: 'POST',
                             url: sourceUrl,
@@ -183,11 +189,23 @@ function initCalendars() {
             calendar.render();
 
             $('.js_check_filter').on('change', function() {
+                $('#select-all').click(function(event) {   
+                    if(this.checked) {
+                        // Iterate each checkbox
+                        $(':checkbox').each(function() {
+                            this.checked = true;                        
+                        });
+                    } else {
+                        $(':checkbox').each(function() {
+                            this.checked = false;                       
+                        });
+                    }
+                }); 
                 calendar.refetchEvents();
             });
 
             // Ripristina sessione
-            var sessionStorageKey = jqCalendar.attr('id');
+            var sessionStorageKey = calendar_id;
 
             // try {
             //     var calendarSession = JSON.parse(window.sessionStorage.getItem(sessionStorageKey));
