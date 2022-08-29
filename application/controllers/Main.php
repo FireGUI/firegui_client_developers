@@ -55,15 +55,20 @@ class Main extends MY_Controller
      */
     public function index()
     {
-        // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
-        $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
-        foreach ($layouts as $layout) {
-            if ($this->datab->can_access_layout($layout['layouts_id'])) {
-                $this->layout($layout['layouts_id']);
-                return;
+        if ($layout_dashboard = $this->auth->get('default_dashboard')) {
+            $this->layout($layout_dashboard);
+            return;
+
+        } else {
+            // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
+            $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
+            foreach ($layouts as $layout) {
+                if ($this->datab->can_access_layout($layout['layouts_id'])) {
+                    $this->layout($layout['layouts_id']);
+                    return;
+                }
             }
         }
-
         show_error('Nessun layout Dashboard trovato.');
     }
 
@@ -712,10 +717,12 @@ class Main extends MY_Controller
      */
     public function cache_control($action = null, $key = null)
     {
+        $redirection = false;
         $cache_controller_file = APPPATH . 'cache/cache-controller';
         switch ($action) {
             case 'on':
                 $this->mycache->toggleCachingSystem(true);
+                $redirection = base_url('main/cache_manager');
                 break;
 
             case 'off':
@@ -761,8 +768,10 @@ class Main extends MY_Controller
             default:
                 show_error('Action non definita');
         }
+        if (!$redirection) {
+            $redirection = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_VALIDATE_URL);
 
-        $redirection = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_VALIDATE_URL);
+        }
         redirect($redirection ?: base_url());
     }
 

@@ -1732,7 +1732,7 @@ if (!function_exists('rgb_string_to_hex')) {
     function rgb_string_to_hex($rgba)
     {
         if (strpos($rgba, '#') === 0) {
-            return $rgba;
+            return substr($rgba, 1);
         }
 
         preg_match('/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i', $rgba, $by_color);

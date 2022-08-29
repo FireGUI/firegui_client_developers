@@ -20,16 +20,16 @@ $updates['1.5.5'] = ["UPDATE entity SET entity_login_entity = '" . DB_BOOL_TRUE 
 $updates['1.7.3'] = [
     "ALTER TABLE settings ADD COLUMN settings_default_language INT DEFAULT 1;",
     "ALTER TABLE languages DROP COLUMN languages_default;",
-    "DELETE FROM fields WHERE fields_name = 'languages_default'"
+    "DELETE FROM fields WHERE fields_name = 'languages_default'",
 ];
 //Updates to 1.9.1
 $updates['1.9.1'] = [
-    "UPDATE entity SET entity_type = 1 WHERE entity_name = 'users'"
+    "UPDATE entity SET entity_type = 1 WHERE entity_name = 'users'",
 ];
 
 //Updates to 1.9.4 - Change custom action style to uniform with native ones
 $updates['1.9.4'] = [
-    "UPDATE grids_actions SET grids_actions_html = REPLACE(grids_actions_html, 'btn-xs', 'js-action_button btn-grid-action-s')"
+    "UPDATE grids_actions SET grids_actions_html = REPLACE(grids_actions_html, 'btn-xs', 'js-action_button btn-grid-action-s')",
 ];
 
 // Updates to 2.0.0
@@ -73,8 +73,10 @@ $updates['2.3.1'] = [
 
 $updates['2.3.2'] = [
 
-    
     "UPDATE notifications SET notifications_desktop_notified = '" . DB_BOOL_TRUE . "'",
     "ALTER TABLE charts_elements DROP COLUMN IF EXISTS charts_elemets_type;",
     "ALTER TABLE charts_elements DROP COLUMN IF EXISTS charts_elemets_fill_columns;",
+];
+$updates['2.3.6'] = [
+    "UPDATE grids_actions SET grids_actions_color = '#E91E63' WHERE grids_actions_color = '#dd4b39'",
 ];
