@@ -1,12 +1,17 @@
 'use strict';
 var formAjaxSubmittedFormId = null;
 var formAjaxShownMessage = null;
+var formAjaxIsSubmitting = false;
 
 var handleSuccess = function (msg, container = null) {
+    var submittedForm = $('#'+formAjaxSubmittedFormId);
+    var submitBtn = $('button[type="submit"]', submittedForm);
+
     switch (parseInt(msg.status)) {
         case 0:
             //Show message
             error(msg.txt);
+            submitBtn.show();
             break;
 
         case 1:
@@ -72,9 +77,22 @@ function loading(bShow) {
 
 $(document).ready(function () {
     'use strict';
+
     $('body').on('submit', '.formAjax', function (e) {
         e.preventDefault();
         var form = $(this);
+
+        if (formAjaxIsSubmitting) {
+            return false;
+        }
+
+        var submitBtn = $('button[type="submit"]', form);
+
+        submitBtn.hide();
+
+        formAjaxIsSubmitting = true;
+
+        // return;
         if (formAjaxShownMessage) {
             formAjaxShownMessage.fadeOut(200, function () {
                 formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ display: '', opacity: '' });
@@ -86,6 +104,7 @@ $(document).ready(function () {
         } else {
             formAjaxSend(form);
         }
+        formAjaxIsSubmitting = false;
         return false;
     });
 
@@ -168,7 +187,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
         url: action,
         type: 'POST',
         data: data,
-        async: false,
+        async: true,
         cache: false,
         contentType: false,
         processData: false,
@@ -178,6 +197,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
         complete: function () {
             form.trigger('form-ajax-complete');
             loading(false);
+            formAjaxIsSubmitting = false;
         },
         success: function (msg) {
             if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
@@ -197,7 +217,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                     var entity = msg.cache_tags[i];
                     refreshLayoutBoxesByEntity(entity);
                 }
-            } 
+            }
             if (typeof msg.refresh_grids !== 'undefined' && msg.refresh_grids && msg.related_entity) {
                 refreshGridsByEntity(msg.related_entity);
                 //refreshAjaxLayoutBoxes();
@@ -323,7 +343,7 @@ function refreshGridsByEntity(entity_name) {
     if (dt.length > 0 && dt.ajax !== null) {
         dt.ajax.reload();
     }
-    
+
 
 }
 
@@ -402,13 +422,13 @@ function refreshAjaxLayoutBoxes() {
 function refreshLayoutBoxesByEntity (entity_name) {
     var link_href = window.location.href;
     var get_params = link_href.split('?');
-                if (get_params[1]) {
-                    get_params = '?' + get_params[1];
-                } else {
-                    get_params = '';
-                }
+    if (get_params[1]) {
+        get_params = '?' + get_params[1];
+    } else {
+        get_params = '';
+    }
     $('.js_page_content').each (function () {
-        
+
         var related_entities_string = $(this).data('related_entities');
         //console.log(related_entities_string);
         if (typeof related_entities_string != 'undefined') {
@@ -419,7 +439,7 @@ function refreshLayoutBoxesByEntity (entity_name) {
                 loading(true);
                 var layout_id = $(this).data('layout-id');
                 var value_id = $(this).data('value_id');
-                
+
                 $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
                     type: 'GET',
                     dataType: 'json',
@@ -432,27 +452,27 @@ function refreshLayoutBoxesByEntity (entity_name) {
                         }
                         if (data.status == 1) {
 
-                                $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
+                            $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
 
-                                $('.js_page_content').hide();
-                                document.title = data.dati.title_prefix;
-                                console.log('TODO: clone js_page_content instead of creating div...');
-                                var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'"></div>';
-                                // $();
-                                //clonedContainer.html(data.content);
-                                $('#js_layout_content_wrapper').append(clonedContainerHtml);
-                                var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
-                                clonedContainer.html(data.content);
-                                window.history.pushState("", "", link_href);
-                                initComponents(clonedContainer, true);
+                            $('.js_page_content').hide();
+                            document.title = data.dati.title_prefix;
+                            console.log('TODO: clone js_page_content instead of creating div...');
+                            var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'"></div>';
+                            // $();
+                            //clonedContainer.html(data.content);
+                            $('#js_layout_content_wrapper').append(clonedContainerHtml);
+                            var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
+                            clonedContainer.html(data.content);
+                            window.history.pushState("", "", link_href);
+                            initComponents(clonedContainer, true);
 
-                                
-                            
+
+
                         }
                     },
                 });
             }
         }
-        
+
     });
 }
