@@ -101,7 +101,7 @@ class Auth extends CI_Model
                     $is_logged_in = true;
                 } else {
                     $is_logged_in = false;
-                    // Force logout 
+                    // Force logout
                     $this->logout();
                 }
             }
@@ -229,6 +229,7 @@ class Auth extends CI_Model
 
         $this->db->where(LOGIN_ENTITY . '_id', $query->row()->{LOGIN_ENTITY . '_id'})->update(LOGIN_ENTITY, [
             LOGIN_PASSWORD_FIELD => $new_pwd_md5,
+            'users_temporary_password' => DB_BOOL_FALSE,
             // LOGIN_LAST_PWD_CHANGE_FIELD => date('Y-m-d')
         ]);
 
@@ -278,11 +279,10 @@ class Auth extends CI_Model
     public function is_admin()
     {
 
-
-        if ($this->isAdmin === NULL) {
+        if ($this->isAdmin === null) {
             $user_id = $this->get(LOGIN_ENTITY . "_id");
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
-            $this->isAdmin = (($query->num_rows() > 0 && $query->row()->permissions_admin === DB_BOOL_TRUE) ? TRUE : FALSE);
+            $this->isAdmin = (($query->num_rows() > 0 && $query->row()->permissions_admin === DB_BOOL_TRUE) ? true : false);
 
             /** FIX: se non ci sono amministratori questo utente lo diventa (ma non viene salvata su db, quindi se per caso dessi i permessi ad un nuovo utente, questo non lo sarebbe più) * */
             if (!$this->isAdmin && defined('PROMOTE_ADMIN') && PROMOTE_ADMIN == true) {
@@ -290,12 +290,12 @@ class Auth extends CI_Model
             }
         }
 
-        return (is_bool($this->isAdmin) ? $this->isAdmin : FALSE);
+        return (is_bool($this->isAdmin) ? $this->isAdmin : false);
     }
 
     /*
      * Save reminder login cookie
-     * 
+     *
      * @param int $user_id
      */
 
@@ -340,7 +340,7 @@ class Auth extends CI_Model
                 'user_tokens',
                 [
                     'user_id' => $user_id,
-                    'token_string' => $token_string
+                    'token_string' => $token_string,
                 ]
             );
         }
@@ -361,7 +361,6 @@ class Auth extends CI_Model
         } else {
             $token_string = false;
         }
-
 
         if ($token_string) {
             $user_token = $this->db->get_where('user_tokens', ['token_string' => $token_string]);

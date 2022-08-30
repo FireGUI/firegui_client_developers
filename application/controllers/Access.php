@@ -1,11 +1,10 @@
 <?php
 
-
 class Access extends MY_Controller
 {
     const SALT = 'ofuh249fh97H98UG876GHOICUYEGRF98ygdfds';
 
-    function __construct()
+    public function __construct()
     {
         $this->output->cache(1);
 
@@ -17,21 +16,16 @@ class Access extends MY_Controller
 
     }
 
-
     public function index()
     {
         $this->login();
     }
 
-
-
     public function login()
     {
-        
-        
+
         $this->load->view('layout/login');
     }
-
 
     public function recovery()
     {
@@ -46,13 +40,11 @@ class Access extends MY_Controller
         $this->load->view('layout/password-lost', array('sent' => $sent, 'receiver' => $receiver));
     }
 
-
     public function change_password()
     {
 
         $this->load->view('layout/change-password');
     }
-
 
     public function logout()
     {
@@ -64,8 +56,6 @@ class Access extends MY_Controller
 
         redirect();
     }
-
-
 
     public function login_start()
     {
@@ -95,7 +85,7 @@ class Access extends MY_Controller
                 $redirection_url = base_url("access/change_password");
                 // $this->session->set_userdata('change_password_email', $data['users_users_email']);
                 if ($this->input->is_ajax_request()) {
-                    echo json_encode(array('status' => 1, 'txt' => $redirection_url));;
+                    echo json_encode(array('status' => 1, 'txt' => $redirection_url));
                 } else {
                     redirect($redirection_url);
                 }
@@ -148,6 +138,10 @@ class Access extends MY_Controller
 
         $email = $this->auth->get(LOGIN_USERNAME_FIELD);
 
+        if (empty($email)) {
+            $email = $this->session->userdata('change_password_email');
+        }
+
         if (empty($post) || empty($email)) {
             echo json_encode(['status' => 1, 'txt' => base_url('access/login')]);
             exit;
@@ -157,7 +151,7 @@ class Access extends MY_Controller
         $this->form_validation->set_rules('users_users_password', t('Password'), 'required|regex_match[' . PASSWORD_REGEX_VALIDATION['regex'] . ']', ['regex_match' => t('The Password field does not match required security validation.') . '<br/>' . t(PASSWORD_REGEX_VALIDATION['msg'])]);
         $this->form_validation->set_rules('users_users_confirm_password', t('Password Confirmation'), 'required|matches[users_users_password]');
 
-        if ($this->form_validation->run() == FALSE) {
+        if ($this->form_validation->run() == false) {
             echo json_encode(['status' => 0, 'txt' => validation_errors()]);
             exit;
         }
@@ -171,7 +165,6 @@ class Access extends MY_Controller
 
         echo json_encode(['status' => 1, 'txt' => base_url('access/login')]);
     }
-
 
     public function reset_password_request()
     {
@@ -200,7 +193,7 @@ class Access extends MY_Controller
             t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
             t("this email was sent to you because you requested a reset of your password on %s.", 0, [$senderName]),
             t("If you have not requested a password reset, ignore this email, otherwise click on the link below"),
-            "<a href='" . base_url("access/reset_password/{$userID}/{$hash}") . "'>" . base_url("access/reset_password/{$userID}/{$hash}") . "</a>"
+            "<a href='" . base_url("access/reset_password/{$userID}/{$hash}") . "'>" . base_url("access/reset_password/{$userID}/{$hash}") . "</a>",
         ];
 
         $this->email->message(implode(PHP_EOL, $msg));
@@ -241,7 +234,7 @@ class Access extends MY_Controller
             '<br/>',
             t("You can now login by clicking link below:"),
             '<br/>',
-            "<a href='" . base_url('access/login') . "'>" . base_url('access/login') . "</a>"
+            "<a href='" . base_url('access/login') . "'>" . base_url('access/login') . "</a>",
         );
 
         $this->email->message(implode(PHP_EOL, $msg));
