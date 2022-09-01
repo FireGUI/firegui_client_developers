@@ -1821,28 +1821,30 @@ class Apilib
                 break;
 
             case 'todo':
-                if (is_array($value)) {
-                    // Delete empty rows
-                    foreach ($value as $key => $val) {
-                        if (empty($val['checked'])) {
-                            $value[$key]['checked'] = DB_BOOL_FALSE;
-                        }
+                if (!empty($value)) {
+                    if (is_array($value)) {
+                        // Delete empty rows
+                        foreach ($value as $key => $val) {
+                            if (empty($val['checked'])) {
+                                $value[$key]['checked'] = DB_BOOL_FALSE;
+                            }
 
-                        if (empty($val['value'])) {
-                            unset($value[$key]);
-                        } else {
-                            $value[$key]['value'] = trim($value[$key]['value']);
+                            if (empty($val['value'])) {
+                                unset($value[$key]);
+                            } else {
+                                $value[$key]['value'] = trim($value[$key]['value']);
+                            }
                         }
-                    }
-                    if (count($value) > 0) {
-                        $value = json_encode($value);
+                        if (count($value) > 0) {
+                            $value = json_encode($value);
+                        } else {
+                            $value = "";
+                        }
                     } else {
-                        $value = "";
+                        $this->error = self::ERR_VALIDATION_FAILED;
+                        $this->errorMessage = "{$field['fields_draw_label']} must be an array";
+                        return false;
                     }
-                } else {
-                    $this->error = self::ERR_VALIDATION_FAILED;
-                    $this->errorMessage = "{$field['fields_draw_label']} must be an array";
-                    return false;
                 }
                 break;
         }
