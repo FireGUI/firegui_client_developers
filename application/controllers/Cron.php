@@ -62,7 +62,7 @@ class Cron extends MY_Controller
         $inExecution = $this->getInExecution();
 
         if ($this->db->dbdriver != 'postgre') {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_last_execution IS NULL OR crons_last_execution < DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE)");
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i')");
         } else {
             $crons = $this->db->query("SELECT * FROM crons WHERE crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency");
         }
