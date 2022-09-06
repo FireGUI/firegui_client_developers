@@ -2749,7 +2749,37 @@ class Datab extends CI_Model
             switch ($field['fields_draw_html_type']) {
                 case 'upload':
                     if ($value) {
-                        return anchor(base_url_uploads("uploads/$value"), 'Download file', array('target' => '_blank'));
+                        $file = mime_content_type("uploads/$value");
+                        $doc_ext = array('doc', 'docx','ods','odt','html','htm','xls','xlsx','ppt','pptx','txt');
+                        $ext = pathinfo($value, PATHINFO_EXTENSION);
+                        if (in_array($ext, $doc_ext))
+                        {
+                            return "<a href=".base_url_uploads("uploads/$value")." class='fancybox'><img width='30px' height='30px' src=".base_url("images/download.png").">Download file</a>";
+                        }
+                        else if(strstr($file, "audio/")){
+                            // this code for audio
+                            return "<a href=".base_url("uploads/$value")." target='_blank'>Ascolta file</a>";                          
+                        }
+                        else if(strstr($file, "video/")){
+                            // this code for video
+                            //return"<video controls><source src=".base_url_uploads("uploads/$value")." type='video/mp4'>Your browser does not support the video tag.</video>";
+                            //return $this->load->view('layout/modal_link_file', ['file' => $file, 'value' => '_blank');
+                            /*return "<a href=".base_url_uploads("uploads/$value")." class='js_open_modal'>ciao</a>";
+                            $this->load->view("layout/modal_container", array(
+                                'size' => $modalSize,
+                                'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
+                                'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
+                                'content' => $pagina,
+                                'footer' => null
+                            ));*/
+                            return anchor(base_url_uploads("uploads/$value"), 'Download file', array('class' =>'js_open_modal_link_file'));
+                            
+                        }else if(strstr($file, "image/")){
+                            return "<a href=".base_url_uploads("uploads/$value")." class='fancybox'><img src=".base_url_uploads("thumb/50/50/1/uploads/$value")."></a>";
+                        }
+                        else {
+                            return anchor(base_url_uploads("uploads/$value"), 'Download file', array('class' =>'js_open_modal_link_file'));
+                        }
                     } else {
                         return "";
                     }
