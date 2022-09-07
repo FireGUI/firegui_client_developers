@@ -15,7 +15,7 @@
           - Type: <?php echo $hook['type']; ?> Ref: <?php echo $hook['ref']; ?> Value id: <?php echo $hook['value_id']; ?> <br />
 
           <?php foreach ($hook['hooks'] as $single_hook) : ?>
-            |- [<?php echo $single_hook['hooks_id']; ?>] Title: <a href="<?php echo FIREGUI_BUILDER_BASEURL; ?>main/events_builder/<?php echo $single_hook['hooks_id']; ?>" target="_blank"><?php echo $single_hook['hooks_title']; ?></a> Module: <?php echo $single_hook['hooks_module']; ?> <span class="js_show_code">Show Code</span><br />
+            |- [<?php echo $single_hook['hooks_id']; ?>] Title: <a href="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>main/events_builder/<?php echo $single_hook['hooks_id']; ?>" target="_blank"><?php echo $single_hook['hooks_title']; ?></a> Module: <?php echo $single_hook['hooks_module']; ?> <span class="js_show_code">Show Code</span><br />
             <span class="line4 hide"><br /><?php echo htmlentities($single_hook['hooks_content']); ?><br /><br /></span>
           <?php endforeach; ?>
           <br />
