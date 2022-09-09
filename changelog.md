@@ -57,4 +57,4 @@ Added check for users not deleted in permissions page
 Removed "main section" label from sidebar
 Renoved box-shadow from header logo
 Added show/hide password functionality
-Calendars custom query
+Calendars custom quer
