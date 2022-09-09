@@ -85,12 +85,13 @@ class MY_Controller extends MX_Controller
         if ($currentLang) {
             $fallbackLang = $this->datab->getDefaultLanguage();
             $this->apilib->setLanguage($currentLang['id'], $fallbackLang['id']);
-            $this->config->set_item('language','italiano');
-    
+            
+            $this->config->set_item('language', $currentLang['file']);
+            
             $loaded = $this->lang->is_loaded;
-
-            $this->is_loaded = array();
-    
+            
+            $this->is_loaded = [];
+            
             foreach($loaded as $lang)
             {
                 $this->lang->load($lang);
