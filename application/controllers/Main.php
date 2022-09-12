@@ -886,6 +886,8 @@ class Main extends MY_Controller
                             //non c'è in permission, quindi vado a creare la riga
                             $dati_db['permissions_admin']= 0;
                             $dati_db['permissions_group']= $tipologia['users_type_value'];
+                            //prima il campo users_id vuoto così da inizializzarlo
+                            $this->db->insert('permissions', $dati_db);
                             //per ogni utente che ha quel permesso, lo vado ad impostare
                             $users = $this->db->query("SELECT users_id FROM users WHERE users_type = '$user_type'")->result_array();
                             foreach ($users as $user) {
@@ -897,7 +899,7 @@ class Main extends MY_Controller
                                     $layouts = $this->db->query("SELECT layouts_id FROM layouts")->result_array();
                                     foreach ($layouts as $layout) {
                                         //escludo il primo dashboard layout
-                                        if ($layouts_id != $dashobard['layouts_id']) {
+                                        if ($layout['layouts_id'] != $dashobard['layouts_id']) {
                                             $dati_permissions['unallowed_layouts_layout']= $layout['layouts_id'];
                                             $this->db->insert('unallowed_layouts', $dati_permissions);
                                         }
@@ -905,6 +907,7 @@ class Main extends MY_Controller
                                 }
                             }
                         } 
+                        echo json_encode(array('status' => 2, 'txt' => "Permessi inizializzati correttamente."));
                     }
                 }
             }
