@@ -2748,8 +2748,8 @@ class Datab extends CI_Model
             // Posso stampare il campo in base al tipo
             switch ($field['fields_draw_html_type']) {
                 case 'upload':
-                    if ($value) {
-                        $file = mime_content_type("uploads/$value");
+                    if ($value && file_exists(FCPATH."uploads/$value")) {
+                        $file = mime_content_type(FCPATH."uploads/$value");
                         $doc_ext = array('doc', 'docx','ods','odt','html','htm','xls','xlsx','ppt','pptx','txt');
                         $ext = pathinfo($value, PATHINFO_EXTENSION);
                         if (in_array($ext, $doc_ext))
