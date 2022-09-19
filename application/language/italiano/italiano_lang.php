@@ -1472,3 +1472,7 @@ $lang['Timesheet - Group by Projects'] = 'Timesheet - Group by Projects';
 $lang['Timesheet - Projects and Tasks'] = 'Timesheet - Projects and Tasks';
 $lang['Crea Ordine Produzione'] = 'Crea Ordine Produzione';
 $lang[' '] = ' ';
+$lang['Download'] = 'Download';
+$lang['Posts'] = 'Posts';
+$lang['Dashboard Tickets'] = 'Dashboard Tickets';
+$lang['Genera fattura'] = 'Genera fattura';

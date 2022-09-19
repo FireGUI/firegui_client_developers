@@ -17,17 +17,17 @@ class Openbuilder extends MY_Controller
         $unallowed = false;
         if (!in_array($route, $permitted_routes) && (!$this->auth->check() || !$this->auth->is_admin())) {
             if (!$token = $this->input->get('token')) {
-log_message('DEBUG', "Missing token for openbuilder request!");
+                log_message('DEBUG', "Missing token for openbuilder request!");
 
                 $unallowed = true;
             } else {
-$token_match = $this->db->where('meta_data_key', 'openbuilder_token')->where('meta_data_value', $token)->get('meta_data');
+                $token_match = $this->db->where('meta_data_key', 'openbuilder_token')->where('meta_data_value', $token)->get('meta_data');
 
                 if ($token_match->num_rows() == 0) {
                     $unallowed = true;
                 } else {
                     //Destroy token and proceed...
-$this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
+                    $this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
 
                 }
             }
@@ -45,7 +45,7 @@ $this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
 
         //Creo le cartelle necessarie
         $folders = [
-            'controllers', 'models', 'views', 'assets'
+            'controllers', 'models', 'views', 'assets',
         ];
 
         $modules_path = APPPATH . 'modules/';
@@ -106,7 +106,6 @@ $this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
                 die('Can not create module, folder not found: ' . $destination_file);
             }
 
-
             $success = zip_folder($folder, $destination_file);
 
             if ($success === true) {
@@ -144,7 +143,7 @@ $this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
 
         //Una volta scompresso, eseguo l'eventuale file di install
         if (file_exists(APPPATH . "modules/{$identifier}/install/install.php")) {
-            include(APPPATH . "modules/{$identifier}/install/install.php");
+            include APPPATH . "modules/{$identifier}/install/install.php";
         }
     }
 
@@ -156,10 +155,9 @@ $this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
 
         $old_version = VERSION;
 
-$file_link = OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
-$new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
-$new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
-
+        $file_link = OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
+        $new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
+        $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
 
         //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
         log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
@@ -178,14 +176,13 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
                 $zip->extractTo($temp_folder);
                 $zip->close();
 
-
                 // Search update databases file for this version
                 $files = scandir(APPPATH . 'migrations');
 
                 foreach ($files as $file) {
                     if ($file == 'update_db.php') {
                         // Check if exist an update_db file to execute update queries
-                        include(APPPATH . 'migrations/update_db.php');
+                        include APPPATH . 'migrations/update_db.php';
 
                         // Sort array from oldest version to newest
                         uksort($updates, 'my_version_compare');
@@ -201,7 +198,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
                         }
                     } elseif ($file == 'update_php_code.php') {
                         // Check if exist an update_db file to execute update queries
-                        include(APPPATH . 'migrations/update_php_code.php');
+                        include APPPATH . 'migrations/update_php_code.php';
 
                         // Sort array from oldest version to newest
                         uksort($updates, 'my_version_compare');
@@ -218,7 +215,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
                                             foreach ($code as $file_to_include) {
                                                 $file_migration = APPPATH . 'migrations/' . $file_to_include;
                                                 if (file_exists($file_migration)) {
-                                                    include($file_migration);
+                                                    include $file_migration;
                                                 } else {
                                                     log_message('error', "Migration file {$file_migration} missing!");
                                                 }
@@ -227,7 +224,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
                                             $file_migration = APPPATH . 'migrations/' . $code;
 
                                             if (file_exists($file_migration)) {
-                                                include($file_migration);
+                                                include $file_migration;
                                             } else {
                                                 log_message('error', "Migration file {$file_migration} missing!");
                                             }
@@ -259,7 +256,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
 
             $this->db->trans_begin();
 
-            include(FCPATH . 'application/migrations/' . $migration_file . '.php');
+            include FCPATH . 'application/migrations/' . $migration_file . '.php';
 
             if ($this->db->trans_status() === false || $do_rollback) {
                 $this->db->trans_rollback();
@@ -290,14 +287,16 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
             foreach ($files as $file) {
                 if ($file == 'update_php_code.php') {
                     // Check if exist an update_db file to execute update queries
-                    include("$migration_dir/$file");
+                    include "$migration_dir/$file";
 
                     // Sort array from oldest version to newest
                     uksort($updates, 'my_version_compare');
 
                     foreach ($updates as $key => $value) {
                         $version_compare_old = version_compare($key, $old_version);
-                        if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
+                        //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
+                        if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
+
                             foreach ($value as $key_type => $code) {
                                 if ($key_type == 'eval') {
                                     eval($code);
@@ -306,7 +305,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
                                         foreach ($code as $file_to_include) {
                                             $file_migration = "$migration_dir/$file_to_include";
                                             if (file_exists($file_migration)) {
-                                                include($file_migration);
+                                                include $file_migration;
                                             } else {
                                                 log_message('error', "Migration file {$file_migration} missing!");
                                             }
@@ -315,7 +314,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
                                         $file_migration = APPPATH . 'migrations/' . $code;
 
                                         if (file_exists($file_migration)) {
-                                            include($file_migration);
+                                            include $file_migration;
                                         } else {
                                             log_message('error', "Migration file {$file_migration} missing!");
                                         }
@@ -344,7 +343,7 @@ $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/clie
 
     public function getCustomViews()
     {
-echo json_encode(dirToArray(APPPATH . (empty($_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) . '/custom/'));
+        echo json_encode(dirToArray(APPPATH . (empty($_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) . '/custom/'));
 
     }
 
@@ -384,7 +383,6 @@ echo json_encode(dirToArray(APPPATH . (empty($_SERVER['OPENBUILDER_CLIENT_TEMPLA
             die("'$folder' folder does not exists!");
         }
 
-
         $success = zip_folder($folder, $destination_file, ['application/logs']);
 
         if ($success === true) {
@@ -406,7 +404,7 @@ echo json_encode(dirToArray(APPPATH . (empty($_SERVER['OPENBUILDER_CLIENT_TEMPLA
     private function deleteDir($path)
     {
         return is_file($path) ?
-            @unlink($path) :
-            array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
+        @unlink($path) :
+        array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
     }
 }

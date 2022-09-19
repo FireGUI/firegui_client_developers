@@ -36,7 +36,7 @@ class Db_ajax extends MY_Controller
         if (isset($_POST[0])) {
             unset($_POST[0]);
         }
-        
+
         // ==========================
         // Load form related infos
         // ==========================
@@ -53,7 +53,7 @@ class Db_ajax extends MY_Controller
         $can_write = $this->datab->can_write_entity($form['entity_id']);
         if (!$can_write) {
             $txt = t('Insufficient permissions to write');
-            echo($this->input->is_ajax_request() ? json_encode(array('status' => 0, 'txt' => $txt)) : $txt);
+            echo ($this->input->is_ajax_request() ? json_encode(array('status' => 0, 'txt' => $txt)) : $txt);
             die();
         }
 
@@ -88,8 +88,6 @@ class Db_ajax extends MY_Controller
         $entity = $form['entity_name'];
         $entityIdField = $entity . '_id';
 
-
-
         try {
             if ($isOneRecord) {
                 $old_record = $this->apilib->searchFirst($entity);
@@ -112,7 +110,7 @@ class Db_ajax extends MY_Controller
                     } else {
                         //Nel dubbio rimuovo i fields non checcati nel form bulk (comunque non dovrebbe passarli il browser, ma non si sa mai cosa fa Internet explorer...)
                         foreach ($dati as $key => $val) {
-                            if (!in_array($key, (array)$this->input->post('edit_fields'))) {
+                            if (!in_array($key, (array) $this->input->post('edit_fields'))) {
                                 unset($dati[$key]);
                             }
                         }
@@ -145,7 +143,6 @@ class Db_ajax extends MY_Controller
             $message = empty($form['forms_success_message_edit']) ? $message : $form['forms_success_message_edit'];
         }
 
-
         if ($status == 1 && filter_var($message, FILTER_VALIDATE_URL) === false) {
             $message = base_url($message);
         }
@@ -161,23 +158,23 @@ class Db_ajax extends MY_Controller
             }
             if (in_array($status, [0, 1, 2, 3, 4, 5])) {
                 echo json_encode(array(
-                    'status' => $status, 
-                    'txt' => str_replace($replaceFrom, $replaceTo, $message), 
+                    'status' => $status,
+                    'txt' => str_replace($replaceFrom, $replaceTo, $message),
                     'data' => $saved,
-                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity)
+                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
                 ), JSON_INVALID_UTF8_SUBSTITUTE,
-                    
+
                 );
             } elseif (in_array($status, [6, 7])) {
                 $return_data = array(
-                    'status' => $status, 
-                    'txt' => str_replace($replaceFrom, $replaceTo, $message), 
-                    'close_modals' => 1, 
-                    'refresh_grids' => 1, 
-                    'related_entity' => $entity, 
-                    'reset_form' => 1, 
+                    'status' => $status,
+                    'txt' => str_replace($replaceFrom, $replaceTo, $message),
+                    'close_modals' => 1,
+                    'refresh_grids' => 1,
+                    'related_entity' => $entity,
+                    'reset_form' => 1,
                     'data' => $saved,
-                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity)
+                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
                 );
 
                 echo json_encode($return_data, JSON_INVALID_UTF8_SUBSTITUTE);
@@ -304,10 +301,7 @@ class Db_ajax extends MY_Controller
         // condizioni processate. Nel caso in cui siano vuote, queste verranno
         // rimosse con un array_filter
 
-
         $where_data[$filterSessionKey] = $conditions;
-
-
 
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
 
@@ -325,7 +319,7 @@ class Db_ajax extends MY_Controller
         $entity_name = $entity['entity']['entity_name'];
         if (in_array($status, [0, 1, 2, 3, 4, 5])) {
             echo json_encode(array(
-                'status' => $status, 'txt' => $message
+                'status' => $status, 'txt' => $message,
             ));
         } elseif (in_array($status, [6, 7])) {
             if ($this->input->post('clear-filters')) {
@@ -414,10 +408,8 @@ class Db_ajax extends MY_Controller
             return;
         }
 
-
         $data['permissions_admin'] = $is_admin;
         $getPermissionsFromGroup = false;
-
 
         if (!is_numeric($user)) {
 
@@ -484,7 +476,6 @@ class Db_ajax extends MY_Controller
         $this->db->where_in('permissions_entities_permissions_id', $permissionIds)->delete('permissions_entities');
         $this->db->where_in('permissions_modules_permissions_id', $permissionIds)->delete('permissions_modules');
 
-
         if ($getPermissionsFromGroup) {
 
             // In questo caso sto assegnando un utente ad un gruppo quindi i
@@ -516,7 +507,7 @@ class Db_ajax extends MY_Controller
                     $this->db->insert('permissions_entities', array(
                         'permissions_entities_permissions_id' => $permissionId,
                         'permissions_entities_entity_id' => $entity_id,
-                        'permissions_entities_value' => $permission_value
+                        'permissions_entities_value' => $permission_value,
                     ));
                 }
 
@@ -524,7 +515,7 @@ class Db_ajax extends MY_Controller
                     $this->db->insert('permissions_modules', array(
                         'permissions_modules_permissions_id' => $permissionId,
                         'permissions_modules_module_name' => $mod_name,
-                        'permissions_modules_value' => $permission_value
+                        'permissions_modules_value' => $permission_value,
                     ));
                 }
             }
@@ -624,7 +615,6 @@ class Db_ajax extends MY_Controller
             die(json_encode(['status' => 3, 'txt' => $ex->getMessage()]));
         }
 
-
         // Gestione limiti completamente indipendente dai gruppi/permessi
         // (al momento)
         // Rimuovi limiti precedenti
@@ -651,7 +641,6 @@ class Db_ajax extends MY_Controller
                 }
             }
         }
-
 
         $this->db->trans_complete();
     }
@@ -715,7 +704,6 @@ class Db_ajax extends MY_Controller
             }
         }
 
-
         $this->db->trans_start();
         $this->db->query('DELETE FROM unallowed_layouts');
         if ($batchData) {
@@ -747,7 +735,7 @@ class Db_ajax extends MY_Controller
     {
         try {
             $fields = $this->db->join('entity', 'entity_id=fields_entity_id', 'left')
-                
+
                 ->get_where('fields', ['entity_name' => $entity_name])
                 ->result_array();
             $data = $this->input->post();
@@ -771,7 +759,7 @@ class Db_ajax extends MY_Controller
     {
         try {
             $fields = $this->db->join('entity', 'entity_id=fields_entity_id', 'left')
-                
+
                 ->get_where('fields', ['entity_name' => $entity_name])
                 ->result_array();
             $data = $this->input->post();
@@ -810,7 +798,6 @@ class Db_ajax extends MY_Controller
         } catch (Exception $ex) {
             die($this->input->is_ajax_request() ? json_encode(['status' => 3, 'txt' => $ex->getMessage()]) : $ex->getMessage());
         }
-
 
         if ($this->input->is_ajax_request()) {
             echo json_encode(['status' => 7]);
@@ -864,7 +851,6 @@ class Db_ajax extends MY_Controller
             $field = array();
         }
 
-
         if (!empty($field) && $this->datab->can_write_entity($field['fields_entity_id'])) {
             $entity = $this->datab->get_entity($field['fields_entity_id']);
             $table = $entity['entity_name'];
@@ -879,7 +865,7 @@ class Db_ajax extends MY_Controller
         }
 
         if ($this->input->is_ajax_request()) {
-            echo json_encode(array('status' => 7));     //Refresh dei vari box
+            echo json_encode(array('status' => 5, 'txt' => false)); //Refresh dei vari box
         } else {
             if (!empty($_SERVER['HTTP_REFERER'])) {
                 redirect($_SERVER['HTTP_REFERER']);
@@ -894,7 +880,7 @@ class Db_ajax extends MY_Controller
         try {
             $this->apilib->edit($entity_name, $id, [$field_name => $new_value]);
             if ($this->input->is_ajax_request()) {
-                echo json_encode(array('status' => 2));     //Refresh se richiesta fatta da ajax
+                echo json_encode(array('status' => 2)); //Refresh se richiesta fatta da ajax
             } else {
                 redirect(base_url());
             }
@@ -949,7 +935,7 @@ class Db_ajax extends MY_Controller
     {
         $field = $this->datab->get_field($field_id);
 
-        $old_file_data =  $_FILES['file'];
+        $old_file_data = $_FILES['file'];
         unset($_FILES['file']);
         $_FILES[$field['fields_name']] = $old_file_data;
 
@@ -1080,7 +1066,7 @@ class Db_ajax extends MY_Controller
             $new_files = [];
 
             foreach ($files as $key => $file) {
-                $file = (array)$file;
+                $file = (array) $file;
                 if ($key != $file_id) {
                     $new_files[] = $file;
                 } else {

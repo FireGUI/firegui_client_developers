@@ -53,7 +53,8 @@ $('body').on('click', '.___js_ajax_content', function (e) {
              $layout_exists.show();
              document.title = $layout_exists.data('title');
         } else {
-            loading(true);
+          loading(true);
+          
           $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
                 type: 'GET',
                 dataType: 'json',
