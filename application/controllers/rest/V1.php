@@ -1,7 +1,8 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class V1 extends MY_Controller
 {
@@ -37,7 +38,7 @@ class V1 extends MY_Controller
                 //Aggiorno i conteggi
                 $this->db->where('api_manager_tokens_id', $this->token_id)->update('api_manager_tokens', [
                     'api_manager_tokens_last_use_date' => date('Y-m-d H:m:s'),
-                    'api_manager_tokens_requests' => (int) ($token->api_manager_tokens_requests) + 1
+                    'api_manager_tokens_requests' => (int) ($token->api_manager_tokens_requests) + 1,
                 ]);
             }
         }
@@ -112,6 +113,7 @@ class V1 extends MY_Controller
                     $this->showError("Missing id param!");
                     exit;
                 }
+
                 if (!$this->checkEntityPermission($entity, 'U')) {
                     $this->showError("Permission denied on entity $entity!");
                     exit;
@@ -173,7 +175,6 @@ class V1 extends MY_Controller
         // corrispondente come segmento lingua
         if (!method_exists($this, $method)) {
 
-
             $lang = $this->datab->findLanguage($method);
             if ($lang) {
                 $fallbackLang = $this->datab->getDefaultLanguage();
@@ -190,7 +191,6 @@ class V1 extends MY_Controller
         // A questo punto posso chiamare
         call_user_func_array([$this, $method], $params);
     }
-
 
     // ==========================================
     // Rest actions
@@ -263,8 +263,6 @@ class V1 extends MY_Controller
         }
     }
 
-
-
     /**
      * Fa l'update del record con id passato aggiornando i dati da post
      * Ritorna i nuovi dati via json
@@ -317,10 +315,7 @@ class V1 extends MY_Controller
                 $where = [];
             }
 
-
-
             $postData = $this->apilib->runDataProcessing($entity, 'pre-search', $postData);
-
 
             //non uso le apilib altrimenti mi fa left join e non è detto che abbia i permessi per le altre entità... una soluzione potrebbe essere quella di ciclare tutti i permessi e rimuovere nella
             ////filterOutputFields anche le tabelle joinate, ma è un lavorone... per ora no
@@ -358,10 +353,7 @@ class V1 extends MY_Controller
                 $where = [];
             }
 
-
-
             $postData = $this->apilib->runDataProcessing($entity, 'pre-search', $postData);
-
 
             //non uso le apilib altrimenti mi fa left join e non è detto che abbia i permessi per le altre entità... una soluzione potrebbe essere quella di ciclare tutti i permessi e rimuovere nella
             ////filterOutputFields anche le tabelle joinate, ma è un lavorone... per ora no
@@ -400,8 +392,6 @@ class V1 extends MY_Controller
         }
     }
 
-
-
     /**
      * Cancella il record selezionate
      * @param string $entity
@@ -416,8 +406,6 @@ class V1 extends MY_Controller
             $this->showError($e->getMessage(), $e->getCode());
         }
     }
-
-
 
     public function login($entity = null)
     {
@@ -471,7 +459,7 @@ class V1 extends MY_Controller
         $entity = $this->datab->get_entity_by_name($entity_name);
         $where = [
             "api_manager_permissions_token = '{$this->token_id}'",
-            "api_manager_permissions_entity = '{$entity['entity_id']}'"
+            "api_manager_permissions_entity = '{$entity['entity_id']}'",
         ];
         $permission = $this->db->where(implode(" AND ", $where), null, false)->get('api_manager_permissions');
 
@@ -488,7 +476,7 @@ class V1 extends MY_Controller
 
         $where = [
             "api_manager_fields_permissions_token = '{$this->token_id}'",
-            "api_manager_fields_permissions_field IN (SELECT fields_id FROM fields WHERE fields_entity_id = '{$entity['entity_id']}')"
+            "api_manager_fields_permissions_field IN (SELECT fields_id FROM fields WHERE fields_entity_id = '{$entity['entity_id']}')",
         ];
 
         switch ($chmod) {
@@ -528,16 +516,17 @@ class V1 extends MY_Controller
         $entity = $this->datab->get_entity_by_name($entity_name);
         $where = [
             "api_manager_permissions_token = '{$this->token_id}'",
-            "api_manager_permissions_entity = '{$entity['entity_id']}'"
+            "api_manager_permissions_entity = '{$entity['entity_id']}'",
         ];
         $permission = $this->db->where(implode(" AND ", $where), null, false)->get('api_manager_permissions');
         //Se non ho impostato permessi specifici
 
-        if ($permission->num_rows() == 0 || $permission->row()->api_manager_permissions_chmod === null) {
+        if ($permission->num_rows() == 0 || !$permission->row()->api_manager_permissions_chmod) {
             //Allora posso farci di tutto, perchè significa che non ho specificato nulla di particolare su questa entità...
             return true;
         } else {
             $permission_chmod = $permission->row()->api_manager_permissions_chmod;
+
             switch ($chmod) {
                 case 'R': //Lettura
                     //Torno true quando ho un qualsiasi permesso diverso da 0, ovvero maggiore o uguale a 1
@@ -581,7 +570,7 @@ class V1 extends MY_Controller
     }
 
     /**
-     * 
+     *
      * @param string $outputMode One of redirect|json
      * @param array $outputData
      */
@@ -590,7 +579,7 @@ class V1 extends MY_Controller
         switch ($outputMode) {
             case 'redirect':
                 $url = $this->input->get('url');
-                if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
+                if (filter_var($url, FILTER_VALIDATE_URL) === false) {
                     $this->showError('Per effetturare il redirect alla pagina desiderata è necessario passare $_GET[url] - [dati salvati correttamente]');
                 } else {
                     redirect($url);
@@ -635,7 +624,7 @@ class V1 extends MY_Controller
         foreach ($entities as $entity) {
             $table = [
                 'name' => $entity['entity_name'],
-                'fields' => []
+                'fields' => [],
             ];
             $fields_permissions = $this->db
                 ->order_by('fields_name')
@@ -651,7 +640,7 @@ class V1 extends MY_Controller
                     'required' => $field['fields_required'],
                     'multilangual' => $field['fields_multilingual'],
                     'permission' => ($field['api_manager_fields_permissions_chmod'] !== null) ? unserialize(FIELDS_PERMISSIONS)[$field['api_manager_fields_permissions_chmod']] : 'Read/Write/Delete',
-                    'ref' => ($field['fields_ref']) ?: ''
+                    'ref' => ($field['fields_ref']) ?: '',
                 ];
             }
 
@@ -672,7 +661,7 @@ class V1 extends MY_Controller
                 echo json_encode(array(
                     'post' => $post,
                     'get' => $get,
-                    'files' => $files
+                    'files' => $files,
                 ));
                 break;
 
@@ -744,7 +733,7 @@ class V1 extends MY_Controller
             'log_api_get' => $serial_get,
             'log_api_post' => $serial_post,
             'log_api_files' => $serial_files,
-            'log_api_output' => $serial_output
+            'log_api_output' => $serial_output,
         ));
     }
 
@@ -758,7 +747,7 @@ class V1 extends MY_Controller
             $token = $this->db->get_where('api_manager_tokens', ['api_manager_tokens_id' => $this->token_id])->row();
 
             $this->db->where('api_manager_tokens_id', $this->token_id)->update('api_manager_tokens', [
-                'api_manager_tokens_errors' => (int) ($token->api_manager_tokens_errors) + 1
+                'api_manager_tokens_errors' => (int) ($token->api_manager_tokens_errors) + 1,
             ]);
         }
 
@@ -772,15 +761,18 @@ class V1 extends MY_Controller
      */
     private function showOutput($message = array(), $status = 0)
     {
-        $this->load->view('layout/json_return', [
-                'json' => json_encode(
-                    array(
-                        'status' => $status,
-                        'message' => is_string($message) ? $message : null,
-                        'data' => is_array($message) ? $message : array()
-                    )
+        //TODO: check why if remove echo with the true parameters, view won't load
+
+        echo $this->load->view('layout/json_return', [
+            'json' => json_encode(
+                array(
+                    'status' => $status,
+                    'message' => is_string($message) ? $message : null,
+                    'data' => is_array($message) ? $message : array(),
                 )
-            ]);
+            ),
+        ], true);
+
         // echo json_encode(array(
         //     'status' => $status,
         //     'message' => is_string($message) ? $message : null,

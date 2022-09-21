@@ -9,9 +9,12 @@ class Access extends MY_Controller
         $this->output->cache(1);
 
         parent::__construct();
-        header('Access-Control-Allow-Origin: *');
-        if (!empty($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-            @header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
+        if (!is_cli()) {
+            header('Access-Control-Allow-Origin: *');
+            if (!empty($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+                @header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
+            }
+
         }
 
     }

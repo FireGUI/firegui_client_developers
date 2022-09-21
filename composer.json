@@ -1,7 +1,8 @@
 {
     "require-dev": {
         "kenjis/ci-phpunit-test": "^0.18.0",
-        "symfony/var-dumper": "^5.0"
+        "symfony/var-dumper": "^5.0",
+        "phpunit/phpunit": "^9.5"
     },
     "require": {
         "picqer/php-barcode-generator": "^2.0",

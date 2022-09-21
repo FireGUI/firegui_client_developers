@@ -249,7 +249,12 @@ class MY_Output extends CI_Output
 
     private function cachePath(&$CFG = false)
     {
-        $CI = &get_instance();
+        try {
+            $CI = &get_instance();
+
+        } catch (Error $e) {
+            return false;
+        }
         $user_id = $CI->auth->get('users_id');
         if (!$this->path || !$user_id) {
             $hasSession = !empty($_COOKIE['ci_session']);

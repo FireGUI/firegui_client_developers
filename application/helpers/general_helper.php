@@ -732,7 +732,7 @@ if (!function_exists('is_development')) {
         } else {
             $ipAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR') ?: @$_SERVER['REMOTE_ADDR'];
         }
-        return ((!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) || @$_SERVER['SERVER_NAME'] == 'localhost');
+        return ((!empty($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) || @(array_key_exists('SERVER_NAME', $_SERVER) && $_SERVER['SERVER_NAME'] == 'localhost'));
     }
 }
 
