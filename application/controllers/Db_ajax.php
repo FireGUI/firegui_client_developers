@@ -93,12 +93,14 @@ class Db_ajax extends MY_Controller
                 $old_record = $this->apilib->searchFirst($entity);
                 if ($old_record) {
                     $savedId = $old_record[$entityIdField];
+
                     $this->apilib->edit($entity, $savedId, $dati);
                 } else {
                     $savedId = $this->apilib->create($entity, $dati, false);
                 }
             } else {
                 if ($edit) {
+
                     // In questo caso devo controllare se ci sono i dati perché
                     // potrebbe essere che abbia aggiornato solamente una relazione
                     // e quindi non devo fare un update sull'entità puntata dal

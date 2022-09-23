@@ -1202,11 +1202,15 @@ class Apilib
         foreach ($fields as $field) {
             $rule = [];
 
-            if (in_array($field['fields_name'], array_keys($originalData))) { //Valido solo i nuovi campi passati dal form, non quelli vecchi già salvati
+            //in fase di creazione devo validarli tutti (quelli required, non quelli soft-required se non passati ovviamente)
+            if (in_array($field['fields_name'], array_keys($originalData)) || !$editMode) { //Valido solo i nuovi campi passati dal form, non quelli vecchi già salvati
                 // Enter the required rule for the fields that require it
                 // (a password is required only if creating the record for the
                 // first time)
-                if ($field['fields_required'] === DB_BOOL_TRUE && ($field['fields_default'] === '' || $field['fields_default'] === null)) {
+                if (($field['fields_required'] == FIELD_REQUIRED && ($field['fields_default'] === '' || $field['fields_default'] === null) ||
+                    //If field is soft-required and passed in $originalData
+                    $field['fields_required'] == FIELD_SOFT_REQUIRED && array_key_exists($field['fields_name'], $originalData)
+                )) {
                     switch ($field['fields_draw_html_type']) {
                         // this because upload is made after validation rules
                         case 'upload':
@@ -1292,7 +1296,7 @@ class Apilib
                 $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
             }
         }
-
+        //debug($rules, true);
         /**
          * Eseguo il process di pre-validation
          */
@@ -1454,7 +1458,7 @@ class Apilib
             // di modifica
             $isNull = is_null($value);
             $hasDefault = trim($field['fields_default']);
-            $isRequired = $field['fields_required'] === DB_BOOL_TRUE;
+            $isRequired = $field['fields_required'] === FIELD_REQUIRED;
 
             //Quersta è la vecchia condizione di Alberto. Secondo me è corretto che se non è obbligatorio e uno lo lascia vuoto, venga settato a null comunque...
             if (
@@ -1852,7 +1856,7 @@ class Apilib
         switch ($typeSQL) {
             case 'INT':
                 if (!is_numeric($value) && ((int) $value == $value)) {
-                    if ($value == '' && ($field['fields_required'] === DB_BOOL_FALSE or $field['fields_default'] !== '')) {
+                    if ($value == '' && ($field['fields_required'] !== FIELD_REQUIRED or $field['fields_default'] !== '')) {
                         // Se il campo è stato lasciato vuoto e non è richiesto
                         // oppure (se è richiesto), ma ha un default... lo metto
                         // a null in modo che il sistema lo gestisca

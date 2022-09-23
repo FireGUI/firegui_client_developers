@@ -251,6 +251,7 @@ class V1 extends MY_Controller
         //Devo quindi solo controllare che i dati passati siano tutti accessibili in inserimento
         try {
             if ($this->checkFieldsPermissions($entity, 'I')) {
+
                 $_outputData = [$this->apilib->create($entity)];
                 $this->filterOutputFields($entity, $_outputData);
                 $outputData = $_outputData;
