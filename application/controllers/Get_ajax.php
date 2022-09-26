@@ -8,11 +8,10 @@ class Get_ajax extends MY_Controller
 {
     public function __construct()
     {
-    
 
-    parent::__construct();
-    
-}
+        parent::__construct();
+
+    }
     /**
      * Render di un layout in modale
      * @param int $layout_id
@@ -39,7 +38,7 @@ class Get_ajax extends MY_Controller
 
         //If layout is module dependent, preload translations
         $layout = $this->layout->getLayout($layout_id);
-        if ($layout['layouts_module']) { 
+        if ($layout['layouts_module']) {
             $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], array_values($this->lang->is_loaded)[0]));
             $this->layout->setLayoutModule($layout['layouts_module']);
         }
@@ -62,8 +61,7 @@ class Get_ajax extends MY_Controller
             redirect(base_url("main/layout/{$layout_id}/{$value_id}{$suffix}"));
         }
 
-
-        if (!$this->datab->can_access_layout($layout_id,$value_id)) {
+        if (!$this->datab->can_access_layout($layout_id, $value_id)) {
             $this->layout->setLayoutModule();
             show_404();
         }
@@ -88,7 +86,7 @@ class Get_ajax extends MY_Controller
             'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
             'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
             'content' => $pagina,
-            'footer' => null
+            'footer' => null,
         ));
         $this->layout->setLayoutModule();
     }
@@ -135,12 +133,12 @@ class Get_ajax extends MY_Controller
                 'size' => $modalSize,
                 'value_id' => $value_id,
                 'form' => $form,
-                'data' => $this->input->post()
+                'data' => $this->input->post(),
             );
 
             $content = $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
-            $content.= $this->load->view('pages/layouts/forms/form_modal', $viewData, true);
-            $content.=$this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
+            $content .= $this->load->view('pages/layouts/forms/form_modal', $viewData, true);
+            $content .= $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
 
             $this->load->view('layout/content_return', ['content' => $content]);
 
@@ -174,11 +172,11 @@ class Get_ajax extends MY_Controller
 
         if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
             $layout['content'] = $this->datab->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
-                $layout['content'] .
-                $this->datab->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+            $layout['content'] .
+            $this->datab->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
         }
         $this->load->view('layout/content_return', ['content' => $layout['content']]);
-        
+
     }
     /**
      * Alias di modal_form
@@ -265,7 +263,6 @@ class Get_ajax extends MY_Controller
             }
         }
 
-
         // Inizializza l'array dei risultati
         $result_json = array();
 
@@ -287,7 +284,7 @@ class Get_ajax extends MY_Controller
                     $where = implode(' AND ', array_filter([
                         "{$table}_value LIKE '%{$search}%'",
                         $where_limit,
-                        $where_referer
+                        $where_referer,
                     ]));
 
                     $result_array = $this->db->query("SELECT * FROM {$table} WHERE {$where} ORDER BY {$table}_value LIKE '{$search}' DESC, {$table}_value LIMIT {$limit}")->result_array();
@@ -295,18 +292,18 @@ class Get_ajax extends MY_Controller
                     $where = implode(' AND ', array_filter([
                         "{$table}_value ILIKE '%{$search}%'",
                         $where_limit,
-                        $where_referer
+                        $where_referer,
                     ]));
 
                     $result_array = $this->db->query("SELECT * FROM {$table} WHERE {$where} ORDER BY {$table}_value ILIKE '{$search}' DESC, {$table}_value LIMIT {$limit}")->result_array();
                 }
-                
+
                 $result_json = array();
                 foreach ($result_array as $row) {
                     //Ho solo due campi per un record di support table: id e value
                     $result_json[] = array(
                         'id' => $row[$table . '_id'],
-                        'name' => $row[$table . '_value']
+                        'name' => $row[$table . '_value'],
                     );
                 }
             }
@@ -314,8 +311,8 @@ class Get_ajax extends MY_Controller
             if ($id !== null) {
                 $row = $this->datab->get_entity_preview_by_name($table, "{$table}_id = {$id}");
                 if (!empty($row)) {
-                    reset($row);            // Puntatore array su prima posizione
-                    $key = key($row);       // Ottengo la prima e unica chiave
+                    reset($row); // Puntatore array su prima posizione
+                    $key = key($row); // Ottengo la prima e unica chiave
                     $result_json = array('id' => $key, 'name' => $row[$key]);
                 }
             } else {
@@ -324,7 +321,7 @@ class Get_ajax extends MY_Controller
                     'fields',
                     array(
                         'fields_entity_id' => $entity['entity_id'],
-                        'fields_preview' => DB_BOOL_TRUE
+                        'fields_preview' => DB_BOOL_TRUE,
                     )
                 )->result_array();
 
@@ -350,8 +347,6 @@ class Get_ajax extends MY_Controller
                 if ($where_referer) {
                     $where = ($where ? "{$where} AND ({$where_referer})" : $where_referer);
                 }
-
-
 
                 // Voglio i filtri su ricerca apilib. Quelli dei
                 // post-process quindi prima mi prendo tutti gli id facendo un
@@ -389,24 +384,24 @@ class Get_ajax extends MY_Controller
                     $name1 = $val1['name'];
                     $name2 = $val2['name'];
                     if (strtolower($name1) === strtolower($search)) {
-                        return -1;                      // $val1 minore
+                        return -1; // $val1 minore
                     } elseif (strtolower($name2) === strtolower($search)) {
-                        return 1;                       // $val2 minore
+                        return 1; // $val2 minore
                     } else {
                         $firstOccurrence1 = stripos($name1, $search);
                         $firstOccurrence2 = stripos($name2, $search);
 
                         // Non so perché ma non esiste la stringa cercata nel valore 1/2
                         if ($firstOccurrence1 === false) {
-                            return 1;                   // $val2 minore
+                            return 1; // $val2 minore
                         } elseif ($firstOccurrence2 === false) {
-                            return -1;                  // $val1 minore
+                            return -1; // $val1 minore
                         } elseif ($firstOccurrence1 < $firstOccurrence2) {
-                            return -1;                  // $val1 minore
+                            return -1; // $val1 minore
                         } elseif ($firstOccurrence2 > $firstOccurrence1) {
-                            return 1;                   // $val2 minore
+                            return 1; // $val2 minore
                         } else {
-                            return 0;                   // $val1 === $val2
+                            return 0; // $val1 === $val2
                         }
                     }
                 });
@@ -542,14 +537,14 @@ class Get_ajax extends MY_Controller
                         //Due campi:
                         $result_json[] = array(
                             'id' => $row[$field_name_select],
-                            'name' => $row[$field_name_search]
+                            'name' => $row[$field_name_search],
                         );
                     }
                 }
             }
         }
-$this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
-        
+        $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
+
     }
 
     public function get_datatable_ajax($grid_id, $valueID = null)
@@ -557,10 +552,10 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
         if ($this->auth->guest()) {
             $this->load->view('layout/json_return', [
                 'json' => json_encode(
-                    array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => [])
+                    array('iTotalRecords' => 0, 'iTotalDisplayRecords' => 0, 'sEcho' => null, 'aaData' => []),
                 )
             ]);
-            
+
         } else {
 
             /**
@@ -662,7 +657,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
                         'id' => $dato[$grid['grids']['entity_name'] . "_id"],
                         'links' => $grid['grids']['links'],
                         'row_data' => $dato,
-                        'grid' => $grid['grids']
+                        'grid' => $grid['grids'],
                     ), true);
                 } elseif (grid_has_action($grid['grids']) && $grid['grids']['grids_actions_column'] == DB_BOOL_TRUE) {
                     $tr[] = $this->load->view('box/grid/actions', array(
@@ -679,15 +674,13 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
             $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
 
-
-
             $this->load->view('layout/json_return', ['json' => json_encode(array(
                 'iTotalRecords' => $totalRecords,
                 'iTotalDisplayRecords' => $totalDisplayRecord,
                 'sEcho' => $s_echo,
-                'aaData' => $out_array
+                'aaData' => $out_array,
             ))]);
-            
+
         }
     }
 
@@ -706,7 +699,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
         $fields = array();
         $isSearchMode = false;
         $post_where = (array) $this->input->post('where');
-
 
         $latlng_field = null;
         foreach ($data['maps_fields'] as $field) {
@@ -806,10 +798,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
                 // }
             }
 
-
-
-
-
             foreach ($data_entity as $marker) {
                 $mark = array();
                 foreach ($data['maps_fields'] as $field) {
@@ -896,9 +884,9 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             if ($start_field && $end_field) {
                 if ($this->db->dbdriver != 'postgre') {
                     $where[] = "(
-                                ($start_field BETWEEN '$ts_start' AND '$ts_end') OR 
-                                ($start_field BETWEEN '$ts_end' AND '$ts_start') OR 
-                                ($end_field BETWEEN '$ts_start' AND '$ts_end') OR 
+                                ($start_field BETWEEN '$ts_start' AND '$ts_end') OR
+                                ($start_field BETWEEN '$ts_end' AND '$ts_start') OR
+                                ($end_field BETWEEN '$ts_start' AND '$ts_end') OR
                                 ($end_field BETWEEN '$ts_end' AND '$ts_start')
                             )";
                 } else {
@@ -1010,7 +998,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
                     'class' => 'label-info',
                     'icon' => 'fas fa-globe-americas',
                 ],
-                'datespan' => date('d M')
+                'datespan' => date('d M'),
             ]], $notifications);
         }
 
@@ -1022,7 +1010,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             'errors' => count(array_filter($unread, function ($n) {
                 return $n['notifications_type'] == 0;
             })),
-            'data' => $notifications
+            'data' => $notifications,
         ));
     }
 
@@ -1055,7 +1043,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
         } catch (Exception $ex) {
             $dati['permissions'] = [];
         }
-
 
         $dati['permissions_entities'] = array();
         $dati['permissions_modules'] = array();
@@ -1232,7 +1219,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             }
         }
 
-
         echo json_encode(array_values($return));
     }
 
@@ -1262,12 +1248,10 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
         $entity_name = $entity['entity_name'];
         $entity_id = $entity['entity_id'];
 
-
         if (!$from_val) {
             // Non ho selezionato nessun valore
             die();
         }
-
 
         // Bisogna verificare innanzitutto se il campo to fa riferimento ad una tabella esterna
         $field_to = $this->db->get_where('fields', array('fields_name' => $field_name_to, 'fields_ref' => $entity_name))->row_array();
@@ -1288,14 +1272,13 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             // Altrimenti lui prova a pescarmi i campi della tabella pivot
             $relatedEntityFrom = $this->crmentity->getEntity($field_from['fields_ref']);
 
-
             if ($relatedEntityFrom['entity_type'] == ENTITY_TYPE_RELATION) {
                 $relation_sub = $this->db->get_where('relations', ['relations_name' => $field_from['fields_ref']])->row_array();
                 $relatedEntityFromSub = $this->crmentity->getEntity($relation_sub['relations_table_2']);
                 $fields_entity = $this->crmentity->getEntity($relation->relations_table_2);
                 $field_filter = $this->db->get_where('fields', [
                     'fields_ref' => $relatedEntityFromSub['entity_name'],
-                    'fields_entity_id' => $fields_entity['entity_id']
+                    'fields_entity_id' => $fields_entity['entity_id'],
                 ])->row_array();
                 $entity_name = $relation->relations_table_2;
                 $entity_id = $fields_entity['entity_id'];
@@ -1322,8 +1305,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             $field_name_filter = $field_filter['fields_name'];
         }
 
-
-
         $where_referer = [];
         if (is_array($from_val)) {
             $where_referer[] = "{$field_name_filter} IN ('" . implode("','", $from_val) . "')";
@@ -1333,7 +1314,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
         if (!empty($field_to['fields_select_where'])) {
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
-
 
         $preview = $this->datab->get_entity_preview_by_name($entity_name, implode(' AND ', $where_referer));
         echo json_encode($preview);
@@ -1352,7 +1332,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
 
         echo json_encode([
             'current' => $cur,
-            'languages' => $all
+            'languages' => $all,
         ]);
     }
 
@@ -1373,7 +1353,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             set_status_header(400);
             echo json_encode([
                 'status' => 1,
-                'error' => $ex->getMessage()
+                'error' => $ex->getMessage(),
             ]);
             die();
         }
@@ -1395,7 +1375,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
 
         echo json_encode([
             'status' => 0,
-            'data' => ['id' => $id, 'preview' => $preview]
+            'data' => ['id' => $id, 'preview' => $preview],
         ]);
     }
 
@@ -1416,7 +1396,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             set_status_header(400);
             echo json_encode([
                 'status' => 1,
-                'error' => $ex->getMessage()
+                'error' => $ex->getMessage(),
             ]);
             die();
         }
@@ -1425,7 +1405,7 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
 
         echo json_encode([
             'status' => 0,
-            'data' => $record
+            'data' => $record,
         ]);
     }
 
@@ -1496,7 +1476,6 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
             // die(e_json(['status' => 0, 'txt' => t('No data passed')]));
         }
 
-
         $keyword = trim(strip_tags($post['keyword']));
         $requested_field = trim(strip_tags($requested_field));
 
@@ -1513,5 +1492,12 @@ $this->load->view('layout/json_return', ['json' => json_encode($result_json)]);
         } catch (Exception $e) {
             die(e_json(['status' => 0, 'txt' => $e->getMessage()]));
         }
+    }
+
+    public function preview_pdf($base64_path)
+    {
+        $path = base64_decode($base64_path);
+
+        $this->load->view('pages/iframe_pdf_preview', ['path' => $path]);
     }
 }

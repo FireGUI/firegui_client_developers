@@ -1500,3 +1500,5 @@ $lang['Configurations'] = 'Configurations';
 $lang['Inizializza permessi'] = 'Inizializza permessi';
 $lang['Last login'] = 'Last login';
 $lang['prodotti'] = 'prodotti';
+$lang['Req'] = 'Req';
+$lang['Softreq'] = 'Softreq';

@@ -314,8 +314,8 @@ function initTableAjax(grid) {
             searchDelay: 500,
             sAjaxSource: ajaxSourceUrl,
             aLengthMenu: [
-                [5, 10, 15, 20, 25, 50, 100, 200, 500, -1],
-                [5, 10, 15, 20, 25, 50, 100, 200, 500, 'All'],
+                [5, 10, 15, 20, 25, 50, 100, 200, 500],
+                [5, 10, 15, 20, 25, 50, 100, 200, 500],
             ],
             pageLength: defaultLimit,
             oLanguage: {

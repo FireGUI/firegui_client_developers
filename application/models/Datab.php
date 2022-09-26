@@ -2765,12 +2765,24 @@ class Datab extends CI_Model
                                 }
                                 return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
                             } else {
-                                if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
-                                    $_url = base_url_uploads("uploads/{$item['path_local']}");
-                                } else {
-                                    $_url = base_url_admin("uploads/{$item['path_local']}");
+                                // if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
+                                //     $_url = base_url_uploads("uploads/{$item['path_local']}");
+                                // } else {
+                                //     $_url = base_url_admin("uploads/{$item['path_local']}");
+                                // }
+                                //TODO: find icons
+                                switch ($item['file_type']) {
+                                    case '___application/pdf':
+                                        $img = 'document_pdf.png';
+                                        break;
+                                    default:
+                                        $img = 'document.png';
+                                        break;
                                 }
-                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<a href='" . $_url . "' target=\"_blank\"><img src=\"" . base_url('images/document.png') . "\" style='width: 50px;'/></a>", array('style' => 'width:50px'));
+                                $_url = base_url("get_ajax/preview_pdf/" . rtrim(base64_encode("uploads/" . $item['path_local']), '='));
+
+                                //TODO: check mime type pdf, word, xls, ecc...
+                                return anchor($_url, "<img src=\"" . base_url("images/$img") . "\" style='width: 50px;'/>", array('style' => 'width:50px', 'class' => 'js_open_modal'));
                             }
                         }, $value);
                     } else { //Se arrivo qua i file sono scritti su un altra tabella, quindi mi arriva già l'array bello pulito con i file...

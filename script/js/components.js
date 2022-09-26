@@ -141,7 +141,7 @@ function initTinymce(container = null) {
     autosave_ask_before_unload: false,
     powerpaste_allow_local_images: true,
     paste_data_images: true,
-    relative_urls: false,
+    relative_urls: true,
     remove_script_host: false,
     plugins:
       "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",

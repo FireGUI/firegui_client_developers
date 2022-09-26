@@ -4,8 +4,8 @@ function startDataTables() {
         var lengthMenu =
             typeof $(this).attr('data-lengthmenu') === 'undefined'
                 ? [
-                      [10, 50, 100, 200, 500, -1],
-                      [10, 50, 100, 200, 500, 'All'],
+                      [10, 50, 100, 200, 500],
+                      [10, 50, 100, 200, 500],
                   ]
                 : JSON.parse($(this).attr('data-lengthmenu'));
 
