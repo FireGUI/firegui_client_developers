@@ -1,3 +1,3 @@
 Changelog version 2.3.7
  
-Beta for field soft-required
+Beta
