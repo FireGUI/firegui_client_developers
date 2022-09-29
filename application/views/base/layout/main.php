@@ -46,6 +46,8 @@
             </div>
         </div>
         <?php echo $footer; ?>
+        
+        <?php echo $foot; ?>
     </div>
 
 
