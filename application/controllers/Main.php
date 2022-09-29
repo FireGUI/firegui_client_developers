@@ -909,9 +909,9 @@ class Main extends MY_Controller
                             }
                         }
                     }
-                    echo json_encode(array('status' => 2, 'txt' => "Permessi inizializzati correttamente."));
                 }
             }
         }
+        echo json_encode(array('status' => 2, 'txt' => "Permessi inizializzati correttamente."));
     }
 }
