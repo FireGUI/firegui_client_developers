@@ -21,21 +21,6 @@ class Guest extends MY_Controller
             redirect();
         }
         
-        if (!$this->db->table_exists('users_manager_configurations')) {
-            redirect();
-        }
-        
-        $salt = $this->db->get('users_manager_configurations_salt')->row();
-        
-        if (empty($salt->users_manager_configurations_salt)) {
-            redirect();
-        }
-        
-        $realHash = substr(md5($layout_id.$salt->users_manager_configurations_salt), 0, 6);
-        if (empty($this->input->get('token')) || $this->input->get('token') !== $realHash) {
-            redirect();
-        }
-        
         //Se non è un numero, vuol dire che sto passando un url-key
         if (!is_numeric($layout_id)) {
             $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
@@ -46,7 +31,7 @@ class Guest extends MY_Controller
         }
         
         // $value_id ha senso sse è un numero
-        if (!is_numeric($value_id) && !is_null($value_id)) {
+        if ($value_id || (!is_numeric($value_id) && !is_null($value_id))) {
             $value_id = null;
         }
         
@@ -60,7 +45,20 @@ class Guest extends MY_Controller
         } else {
             
             //If layout is module dependent, preload translations
+    
+            if (!$this->db->table_exists('users_manager_configurations')) {
+                redirect();
+            }
+    
+            $salt = $this->db->get('users_manager_configurations')->row();
+    
             $layout = $this->layout->getLayout($layout_id);
+    
+            $realHash = substr(md5($layout_id.$salt->users_manager_configurations_salt), 0, 6);
+            if ($layout['layouts_is_public'] == DB_BOOL_FALSE && empty($salt->users_manager_configurations_salt) && (empty($this->input->get('token')) || $this->input->get('token') !== $realHash)) {
+                redirect();
+            }
+    
             if ($layout['layouts_module']) {
                 $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], @array_values($this->lang->is_loaded)[0]));
                 $this->layout->setLayoutModule($layout['layouts_module']);
