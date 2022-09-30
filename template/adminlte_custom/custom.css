@@ -1018,3 +1018,7 @@ fieldset.fieldset_visible
 .js_show_user_password {
   cursor: pointer;
 }
+
+#js_layout_content_wrapper {
+  padding-bottom: 50px !important;
+}
