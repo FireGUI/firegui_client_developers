@@ -1,6 +1,5 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    #RewriteBase /
 
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
@@ -33,6 +32,7 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php?/$1 [L]
 
+    RewriteRule ^.*\.git.* - [R=404]
 </IfModule>
 
 <IfModule !mod_rewrite.c>
