@@ -39,9 +39,7 @@ class Guest extends MY_Controller
         // messaggio: "La pagina da te cercata non esiste, oppure non hai i
         // permessi per accedervi"
         if (!$this->datab->can_access_layout($layout_id, $value_id)) {
-            
-            $pagina = $this->load->view("pages/layout_unaccessible", null, true);
-            $this->stampa($pagina, $value_id);
+            redirect();
         } else {
             
             //If layout is module dependent, preload translations
@@ -67,10 +65,10 @@ class Guest extends MY_Controller
             // Build layout, if null then layout is not accessible due to user permissions
             $dati = $this->datab->build_layout($layout_id, $value_id);
             if (is_null($dati)) {
-                
-                $pagina = $this->load->view("pages/layout_unaccessible", null, true);
-                $this->layout->setLayoutModule();
-                $this->stampa($pagina, $value_id);
+                redirect();
+                // $pagina = $this->load->view("pages/layout_unaccessible", null, true);
+                // $this->layout->setLayoutModule();
+                // $this->stampa($pagina, $value_id);
             } else {
                 
                 // I have 2 type of layouts: PDF or standard
