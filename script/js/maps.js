@@ -29,10 +29,9 @@ function load_marker(map, url, clusterize) {
         url: url,
         success: function (data) {
 
-
-
             // Ciclo i Marker
-            var group = new Array();
+            var bounds = L.latLngBounds()
+            
             $.each(data, function (i, val) {
                 var html = '<b>' + val.title + '</b><br />';
                 if (typeof val.description !== "undefined") {
@@ -76,7 +75,7 @@ function load_marker(map, url, clusterize) {
                     markers.addLayer(marker);
 
                     var coor = L.latLng(val.lat, val.lon);
-                    group.push(coor);
+                    bounds.extend(coor);
                 }
             });
             //console.log(markers);
@@ -85,20 +84,23 @@ function load_marker(map, url, clusterize) {
             //alert(map._container.id);
             if ($('#' + map._container.id).length > 0) {
                 try {
+                    
+                        
+                        map.fitBounds(bounds);
+
+                    
                     map.addLayer(markers);
 
 
 
-                    if (group.length > 0) {
-
-                        map.fitBounds(group);
-
-                    }
+                    
 
 
-                    map.invalidateSize();
+                    //map.invalidateSize();
                 } catch (e) {
-                    setTimeout(function () { mapsInit(); }, 500);
+                    //console.log(e);
+                    setTimeout(function () { mapsInit(); }, 3000);
+                    //setTimeout(function () { load_marker(map, url, clusterize); }, 500);
                 }
 
             }
@@ -128,7 +130,7 @@ function mapsInit() {
             'use strict';
 
             $('.js_map:visible').each(function () {
-
+                //alert(1);
                 var url = $(this).data('ajaxurl');
                 var get_parameters = $(this).data('get_parameters');
                 var clusterize = $(this).data('clusters');

@@ -844,8 +844,11 @@ class Get_ajax extends MY_Controller
             $markers = $this->datab->run_post_process($data['maps']['maps_entity_id'], 'marker_load', $markers);
         }
 
-        header('Content-Type: application/json');
-        echo json_encode($markers);
+        // header('Content-Type: application/json');
+        // echo json_encode($markers);
+        // Ritorna il json alla vista
+        $this->load->view('layout/json_return', ['json' => json_encode($markers)]);
+
     }
 
     public function get_calendar_events($calendar_id, $value_id = null)

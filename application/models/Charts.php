@@ -1,6 +1,5 @@
 <?php
 
-
 class Charts extends CI_Model
 {
 
@@ -56,9 +55,7 @@ class Charts extends CI_Model
                     $gr_by = "";
                 }
 
-
                 //TODO: joinare tutte le tabelle fino al 3° livello
-
 
                 $order = ($element['charts_elements_order']) ? "ORDER BY " . $element['charts_elements_order'] : '';
                 $data = array();
@@ -86,7 +83,6 @@ class Charts extends CI_Model
                 }
                 $query = $this->datab->replace_superglobal_data($query);
 
-
                 //debug($query);
                 $data['data'] = $this->db->query($query)->result_array();
             }
@@ -105,7 +101,6 @@ class Charts extends CI_Model
                 $field_exploso = explode('.', $x_field_name);
                 $field_name_exploso = trim(array_pop($field_exploso));
 
-
                 // Ha senso valutare sta cosa se è una stringa alfanumerica
                 $xfield = null;
                 if (preg_match("/^[a-z0-9_\-]+$/i", $field_name_exploso)) {
@@ -115,7 +110,6 @@ class Charts extends CI_Model
                         $xfield = $this->datab->get_field_by_name($field_name_exploso);
                     }
                 }
-
 
                 // Se ho un ref devo ricalcolare tutte le etichette perché vorrebbe dire che il campo
                 // contiene solo una lista di inutili id
@@ -138,13 +132,12 @@ class Charts extends CI_Model
                 }
             }
 
-
             // Monto l'array delle serie - di norma dovrei avere solo x e y, ma se voglio più serie
             // devo mettere altri campi nel group by.
             foreach ($data['data'] as $row) {
                 $x = $row['x'];
                 $y = $row['y'];
-                unset($row['x'], $row['y']);    // Rimuovo x e y per vedere se ho altri dati
+                unset($row['x'], $row['y']); // Rimuovo x e y per vedere se ho altri dati
 
                 if (empty($row)) {
                     // Non ho altri dati nella riga oltre a una x e una y => una colonna nella tabella,
@@ -175,9 +168,10 @@ class Charts extends CI_Model
 
         return $all_data;
     }
-    public function splitBars($data) {
+    public function splitBars($data)
+    {
         $splitted = [];
-        
+
         foreach ($data as $key => $element) {
             foreach ($element['data'] as $key2 => $xy) {
                 if (array_key_exists('x2', $xy)) {
@@ -186,7 +180,7 @@ class Charts extends CI_Model
                         unset($_element['data']);
                         $_element['element']['charts_elements_label'] = $xy['x2'];
                         //$_element['element']['charts_elements_label2'] = $xy['x2'];
-                        
+
                         $splitted[$xy['x2']] = $_element;
                         $splitted[$xy['x2']]['data'] = [$xy];
                     } else {
@@ -197,16 +191,16 @@ class Charts extends CI_Model
                     return $data;
                 }
             }
-            
+
         }
         // debug($splitted);
         // debug($data);
         return $splitted;
     }
     public function process_data($chart, $data)
-    {   
+    {
         $data = $this->splitBars($data);
-        
+
         switch ($chart['charts_x_datatype']) {
             case 'dates':
                 $data = $this->processDates($chart, $data);
@@ -216,13 +210,13 @@ class Charts extends CI_Model
                 $data = $this->processMonths($chart, $data);
                 //debug($data,true);
                 $data = $this->addMonthsCategories($data);
-                
+
                 break;
             default:
                 //throw new Exception("Charts x datatype '{$chart['charts_x_datatype']}' not recognized!");
                 break;
         }
-        
+
         $data = $this->processX($data);
         $data = $this->processSeries($data);
         //debug($data);
@@ -231,21 +225,18 @@ class Charts extends CI_Model
     private function addMonthsCategories($data)
     {
 
-
-        
-
         $categories = [];
         foreach ($data as $key => $element) {
             foreach ($element['data'] as $Ym => $xy) {
-                $fisrt_day_of_month =                new DateTime($Ym . '-01');
+                $fisrt_day_of_month = new DateTime($Ym . '-01');
                 if (!in_array($fisrt_day_of_month->format('M Y'), $categories)) {
                     $categories[] = $fisrt_day_of_month->format('M Y');
                 }
             }
-            
+
             $data[$key]['categories'] = $categories;
         }
-        
+
         return $data;
     }
     private function processX($data)
@@ -260,7 +251,7 @@ class Charts extends CI_Model
     }
     private function processSeries($data)
     {
-        
+
         foreach ($data as $key => $element) {
             $element['series'] = [];
             //debug($element['data'], true);
@@ -299,14 +290,14 @@ class Charts extends CI_Model
     }
     private function fillMonthColumns($data)
     {
-        
+
         $dates = $dataFilled = [];
         foreach ($data as $key => $xy) {
-            
+
             $dates[$xy['x']] = $xy;
         }
         if ($dates) {
-            
+
             $min_date = new DateTime(min(array_keys($dates)));
             $max_date = new DateTime(max(array_keys($dates)));
             $startDate = $min_date;
@@ -330,7 +321,7 @@ class Charts extends CI_Model
                 if (empty($xy['x'])) {
                     unset($element['data'][$key2]);
                 } else {
-                    $element['data'][$key2]['x'] = dateFormat($xy['x']);
+                    $element['data'][$key2]['x'] = dateFormat($xy['x'], 'Y-m-d');
                 }
             }
 
@@ -346,7 +337,7 @@ class Charts extends CI_Model
     }
     public function processMonths($chart, $data)
     {
-        
+
         foreach ($data as $key => $element) {
             //debug($element);
             foreach ($element['data'] as $key2 => $xy) {
