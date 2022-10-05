@@ -1,7 +1,7 @@
 function initCalendars() {
-    $(function() {
+    $(function () {
         'use strict';
-        $('.calendar_full_json_sidebar').each(function() {
+        $('.calendar_full_json_sidebar').each(function () {
             var jqCalendarView;
 
             var jqCalendar = $(this);
@@ -20,7 +20,7 @@ function initCalendars() {
             var allow_create = $(this).data('allow_create');
             var allow_edit = $(this).data('allow_edit');
             var calendars_default_view = $(this).data('view');
-            
+
             // ============================
 
             var token = JSON.parse(atob($('body').data('csrf')));
@@ -42,7 +42,7 @@ function initCalendars() {
                         [fieldid]: evt.event.id,
                         [startField]: fStart,
                         [endField]: fEnd
-                            //TODO: manage all days events
+                        //TODO: manage all days events
                     };
 
                     $.ajax({
@@ -50,13 +50,13 @@ function initCalendars() {
                         type: 'POST',
                         dataType: 'json',
                         data: data,
-                        success: function(data) {
+                        success: function (data) {
                             if (parseInt(data.status) < 1) {
                                 // revertFunc();
                                 alert(data.txt);
                             }
                         },
-                        error: function() {
+                        error: function () {
                             // revertFunc();
                             alert('There was an error while saving the event');
                         },
@@ -67,7 +67,7 @@ function initCalendars() {
             var calendarEl = document.getElementById(calendar_id);
 
             $('#' + calendar_id).html('');
-            var defaultView = (typeof localStorage.getItem("fcDefaultView_"+calendar_id) !== 'undefined' && localStorage.getItem("fcDefaultView_"+calendar_id) !== null) ? localStorage.getItem("fcDefaultView_"+calendar_id) : calendars_default_view;
+            var defaultView = (typeof localStorage.getItem("fcDefaultView_" + calendar_id) !== 'undefined' && localStorage.getItem("fcDefaultView_" + calendar_id) !== null) ? localStorage.getItem("fcDefaultView_" + calendar_id) : calendars_default_view;
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
@@ -77,9 +77,8 @@ function initCalendars() {
                     left: 'title',
                     right: 'prev,next,dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                datesRender: function(info, el)
-                {
-                    localStorage.setItem("fcDefaultView_"+calendar_id, info.view.type);
+                datesRender: function (info, el) {
+                    localStorage.setItem("fcDefaultView_" + calendar_id, info.view.type);
                 },
                 editable: true,
                 selectable: true,
@@ -104,7 +103,7 @@ function initCalendars() {
                 //     });
                 // },
                 selectHelper: true,
-                select: function(date, allDay) {
+                select: function (date, allDay) {
                     if (allow_create) {
                         var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
                         var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
@@ -114,10 +113,10 @@ function initCalendars() {
                             [token_name]: token_hash,
                             [startField]: fStart,
                             [endField]: fEnd
-                                //TODO: manage all days events
+                            //TODO: manage all days events
                         };
 
-                        loadModal(formurl, data, function() {
+                        loadModal(formurl, data, function () {
                             calendar.refetchEvents();
                         }, 'get');
 
@@ -129,7 +128,7 @@ function initCalendars() {
                 },
                 eventClick: function (evt, jsEvent, view) {
                     if (allow_edit) {
-                        loadModal(formedit + '/' + evt.event.id, {}, function() {
+                        loadModal(formedit + '/' + evt.event.id, {}, function () {
                             calendar.refetchEvents();
                         });
                     }
@@ -137,22 +136,22 @@ function initCalendars() {
                     return false;
                 },
 
-                eventDrop: function(evt) {
+                eventDrop: function (evt) {
                     updateCalendar(evt);
                 },
 
-                eventResize: function(evt, delta, revertFunc) {
+                eventResize: function (evt, delta, revertFunc) {
                     updateCalendar(evt);
                 },
                 eventSources: [{
-                    events: function(fetchInfo, successCallback, failureCallback) {
+                    events: function (fetchInfo, successCallback, failureCallback) {
                         var values = [];
-                        $('.js_check_filter').filter('[type=checkbox]:checked').each(function() {
-                            if($(this).val()!= 0){
+                        $('.js_check_filter').filter('[type=checkbox]:checked').each(function () {
+                            if ($(this).val() != 0) {
                                 values.push($(this).val());
                             }
                         });
-                        
+
                         $.ajax({
                             type: 'POST',
                             url: sourceUrl,
@@ -163,13 +162,13 @@ function initCalendars() {
                                 "start": moment(fetchInfo.start).format('YYYY-MM-DD HH:mm'),
                                 "end": moment(fetchInfo.end).format('YYYY-MM-DD HH:mm')
                             },
-                            loading: function(bool) {
+                            loading: function (bool) {
                                 $('#loading').fadeTo(bool ? 1 : 0);
                             },
-                            success: function(response) {
+                            success: function (response) {
                                 successCallback(response);
                             },
-                            error: function(response) {
+                            error: function (response) {
                                 console.log(response);
                                 failureCallback(response);
                             },
@@ -178,7 +177,7 @@ function initCalendars() {
                     color: '#4B8DF8', // a non-ajax option
                     textColor: 'white' // a non-ajax option
                 }],
-                viewRender: function(view) {
+                viewRender: function (view) {
                     // window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
                     //     view: view.name,
                     //     date: jqCalendar.fullCalendar('getDate').toISOString()
@@ -188,22 +187,25 @@ function initCalendars() {
 
             calendar.render();
 
-            $('.js_check_filter').on('change', function() {
-                $('#select-all').click(function(event) {   
-                    if(this.checked) {
+            $('.js_check_filter').on('change', function () {
+                $('#select-all').click(function (event) {
+                    if (this.checked) {
                         // Iterate each checkbox
-                        $(':checkbox').each(function() {
-                            this.checked = true;                        
+                        $(':checkbox').each(function () {
+                            this.checked = true;
                         });
                     } else {
-                        $(':checkbox').each(function() {
-                            this.checked = false;                       
+                        $(':checkbox').each(function () {
+                            this.checked = false;
                         });
                     }
-                }); 
+                });
                 calendar.refetchEvents();
             });
-
+            $(document).ready(function () {
+                $('.js_check_filter').trigger('change');
+                $('#select-all').trigger('click');
+            });
             // Ripristina sessione
             var sessionStorageKey = calendar_id;
 

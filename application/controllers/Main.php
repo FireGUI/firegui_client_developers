@@ -287,6 +287,12 @@ class Main extends MY_Controller
         } else {
             $this->template['footer'] = $this->load->view('layout/footer', null, true);
         }
+    
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/foot.php")) {
+            $this->template['foot'] = $this->load->view('custom/layout/foot', null, true);
+        } else {
+            $this->template['foot'] = $this->load->view('layout/foot', null, true);
+        }
 
         foreach ($this->template as $key => $html) {
             $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
@@ -909,9 +915,9 @@ class Main extends MY_Controller
                             }
                         }
                     }
-                    echo json_encode(array('status' => 2, 'txt' => "Permessi inizializzati correttamente."));
                 }
             }
         }
+        echo json_encode(array('status' => 2, 'txt' => "Permessi inizializzati correttamente."));
     }
 }
