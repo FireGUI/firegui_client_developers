@@ -846,7 +846,6 @@ class Get_ajax extends MY_Controller
 
         // header('Content-Type: application/json');
         // echo json_encode($markers);
-        // Ritorna il json alla vista
         $this->load->view('layout/json_return', ['json' => json_encode($markers)]);
 
     }
@@ -972,7 +971,9 @@ class Get_ajax extends MY_Controller
             }
         }
 
-        echo json_encode($events);
+//        echo json_encode($events);
+        $this->load->view('layout/json_return', ['json' => json_encode($events)]);
+
     }
 
     public function dropdown_notification_list()

@@ -1,9 +1,6 @@
 <?php
 
-
 //calendars_where_filter
-
-
 
 // Map the calendar fields with the entity fields
 $calendar_map = [];
@@ -21,7 +18,7 @@ if (!isset($calendar_map['id']) || !$calendar_map['id']) {
     $calendar_map['id'] = $data['calendars']['entity_name'] . "_id";
 }
 
-$element_id = (isset($value_id) ? $value_id : NULL);
+$element_id = (isset($value_id) ? $value_id : null);
 $calendarId = 'calendar' . $data['calendars']['calendars_id'];
 $data['calendars']['calendars_where'] = trim($data['calendars']['calendars_where']);
 if (!empty($data['calendars']['calendars_where'])) {
@@ -68,60 +65,65 @@ $filter_default_view = (!empty($data['cal_layout']) && $data['cal_layout']['cale
         font-weight: bold;
     }
 </style>
-<div class="row">
+<div class="row js_calendar_sidemain_container">
     <div class="col-lg-2 col-md-3">
-        <?php if ($data['calendars']['calendars_filter_entity_id']) : ?>
-            <?php $entity = $this->datab->get_entity($data['calendars']['calendars_filter_entity_id']); ?>
+        <?php if ($data['calendars']['calendars_filter_entity_id']): ?>
+            <?php $entity = $this->datab->get_entity($data['calendars']['calendars_filter_entity_id']);?>
             <h3><?php echo ucwords($entity['entity_name']); ?></h3>
 
             <?php
-            $main_entity = $data['calendars']['entity_name'];
-            $where = ($filterWhere) ? "WHERE $filterWhere" : '';
-            foreach ($data['calendars_fields'] as $_field) {
-                if ($_field['calendars_fields_type'] == 'filter') {
-                    $field_filter = $_field['fields_name'];
-                }
-            }
-            if (!empty($field_filter)) {
-                if ($filterWhereFilter) {
-                    $filterWhereFilter .= "AND {$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
-                } else {
-                    $filterWhereFilter = "{$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
-                }
-            }
-            $filter_data = $this->datab->get_entity_preview_by_name($entity['entity_name'], $filterWhereFilter);
+$main_entity = $data['calendars']['entity_name'];
+$where = ($filterWhere) ? "WHERE $filterWhere" : '';
+foreach ($data['calendars_fields'] as $_field) {
+    if ($_field['calendars_fields_type'] == 'filter') {
+        $field_filter = $_field['fields_name'];
+    }
+}
+if (!empty($field_filter)) {
+    if ($filterWhereFilter) {
+        $filterWhereFilter .= "AND {$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
+    } else {
+        $filterWhereFilter = "{$entity['entity_name']}_id IN (SELECT $field_filter FROM $main_entity $where)";
+    }
+}
+$filter_data = $this->datab->get_entity_preview_by_name($entity['entity_name'], $filterWhereFilter);
 
+$detailsLink = $this->datab->get_detail_layout_link($data['calendars']['calendars_filter_entity_id']);
 
-            $detailsLink = $this->datab->get_detail_layout_link($data['calendars']['calendars_filter_entity_id']);
-
-            natcasesort($filter_data);
-            ?>
-            <div class="scrollable">
+natcasesort($filter_data);
+?>
+            <div class="scrollable js_sidebar_filter_container">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="cal_filter[]" class="js_check_filter" id="select-all" <?php if ($filter_default_view == DB_BOOL_TRUE) echo 'checked'; ?> value="0"/>
-                        <b><?php e('Select All'); ?></b>
+                        <input type="checkbox" name="cal_filter[]" class="js_check_filter_all" id="select-all" <?php if ($filter_default_view == DB_BOOL_TRUE): ?>checked<?php endif;?> value="0"/>
+                        <b><?php e('Select All');?></b>
                     </label>
                 </div>
-                <?php foreach ($filter_data as $id => $nome) : ?>
-                    <?php if ($detailsLink) : ?>
+                <?php foreach ($filter_data as $id => $nome): ?>
+                    <?php if ($detailsLink): ?>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
+                                <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if (($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) or $filter_default_view == DB_BOOL_TRUE) {
+    echo 'checked';
+}
+?> />
                                 <?php echo anchor($detailsLink . '/' . $id, $nome, ['data-toggle' => 'tooltip', 'title' => 'Visualizza ' . $nome]); ?>
                             </label>
                         </div>
-                    <?php else : ?>
+                    <?php else: ?>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) echo 'checked'; ?> />
+                                <input type="checkbox" name="cal_filter[]" class="js_check_filter" value="<?php echo $id; ?>" <?php if ($entity['entity_name'] == LOGIN_ENTITY && $id == $this->auth->get(LOGIN_ENTITY . "_id")) {
+    echo 'checked';
+}
+?> />
                                 <?php echo $nome; ?>
                             </label>
                         </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
+                    <?php endif;?>
+                <?php endforeach;?>
             </div>
-        <?php endif; ?>
+        <?php endif;?>
         <div class="calendar_custom_area"></div>
     </div>
 

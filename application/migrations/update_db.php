@@ -80,3 +80,7 @@ $updates['2.3.2'] = [
 $updates['2.3.6'] = [
     "UPDATE grids_actions SET grids_actions_color = '#E91E63' WHERE grids_actions_color = '#dd4b39'",
 ];
+
+$updates['2.3.7'] = [
+    "DELETE FROM forms_fields WHERE forms_fields_fields_id IN (SELECT fields_id FROM fields WHERE fields_name = 'users_type') AND forms_fields_forms_id IN (SELECT forms_id FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "')",
+];
