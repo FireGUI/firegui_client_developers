@@ -1520,3 +1520,4 @@ $lang['Data Tessera'] = 'Data Tessera';
 $lang['CSEN'] = 'CSEN';
 $lang['Nominativo Genitore'] = 'Nominativo Genitore';
 $lang['Tessera Attiva'] = 'Tessera Attiva';
+$lang['Commesse'] = 'Commesse';

@@ -1258,3 +1258,7 @@ $lang['In the meantime you can <a href=\"%s\">go back to the dashboard</a><br />
 $lang['In the meantime you can <a href=\"%s\">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem'] = 'In the meantime you can <a href=\"%s\">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem';
 $lang['In the meantime you can <a href=\"%s\">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem'] = 'In the meantime you can <a href=\"%s\">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem';
 $lang['In the meantime you can <a href=\"%s\">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem'] = 'In the meantime you can <a href=\"%s\">go back to the dashboard</a><br /> otherwise you can contact the administrators to resolve the problem';
+$lang['Cache manager'] = 'Cache manager';
+$lang['Stampa'] = 'Stampa';
+$lang['Duplica'] = 'Duplica';
+$lang['Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}'] = 'Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}';

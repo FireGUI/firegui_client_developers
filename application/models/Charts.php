@@ -210,13 +210,17 @@ class Charts extends CI_Model
                 $data = $this->processMonths($chart, $data);
                 //debug($data,true);
                 $data = $this->addMonthsCategories($data);
+                $data = $this->addMonthsSeries($data);
 
                 break;
             default:
                 //throw new Exception("Charts x datatype '{$chart['charts_x_datatype']}' not recognized!");
                 break;
         }
+        foreach ($data as $key => $subdata) {
+            uksort($data[$key]['data'], array('Charts', 'sortDataByKey'));
 
+        }
         $data = $this->processX($data);
         $data = $this->processSeries($data);
         //debug($data);
@@ -224,7 +228,7 @@ class Charts extends CI_Model
     }
     private function addMonthsCategories($data)
     {
-
+        //debug($data, true);
         $categories = [];
         foreach ($data as $key => $element) {
             foreach ($element['data'] as $Ym => $xy) {
@@ -234,7 +238,37 @@ class Charts extends CI_Model
                 }
             }
 
+        }
+        foreach ($data as $key => $element) {
             $data[$key]['categories'] = $categories;
+
+        }
+
+        return $data;
+    }
+    private function addMonthsSeries($data)
+    {
+        //debug($data, true);
+        $categories = [];
+        foreach ($data as $key => $element) {
+            foreach ($element['data'] as $Ym => $xy) {
+                if (!in_array($Ym, $categories)) {
+                    $categories[] = $Ym;
+                }
+            }
+
+        }
+        foreach ($data as $key => $element) {
+
+            foreach ($categories as $cat) {
+                if (!array_key_exists($cat, $data[$key]['data'])) {
+                    //debug($element, true);
+                    $data[$key]['data'][$cat] = [
+                        'x' => $cat,
+                        'y' => 0,
+                    ];
+                }
+            }
         }
 
         return $data;
@@ -254,19 +288,30 @@ class Charts extends CI_Model
 
         foreach ($data as $key => $element) {
             $element['series'] = [];
-            //debug($element['data'], true);
+
             foreach ($element['data'] as $key2 => $xy) {
 
                 $element['series'][$xy['x']] = $xy['y'];
             }
+            uksort($element['series'], array('Charts', 'sortDataByKey'));
+            //debug($element);
             $data[$key] = $element;
             //$data['series'][] = $element['series'];
         }
+
         return $data;
     }
     private static function sortByDate($a, $b)
     {
+
         return ($a['x'] < $b['x']) ? -1 : 1;
+    }
+    private static function sortDataByKey($a, $b)
+    {
+        $a = str_replace('-', '', $a);
+        $b = str_replace('-', '', $b);
+
+        return ($a < $b) ? -1 : 1;
     }
     private function fillDateColumns($data)
     {
@@ -292,6 +337,7 @@ class Charts extends CI_Model
     {
 
         $dates = $dataFilled = [];
+
         foreach ($data as $key => $xy) {
 
             $dates[$xy['x']] = $xy;
@@ -300,6 +346,7 @@ class Charts extends CI_Model
 
             $min_date = new DateTime(min(array_keys($dates)));
             $max_date = new DateTime(max(array_keys($dates)));
+
             $startDate = $min_date;
             while ($startDate <= $max_date) {
                 $formattedStart = $startDate->format('Y-m');

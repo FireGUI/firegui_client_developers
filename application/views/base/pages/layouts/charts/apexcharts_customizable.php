@@ -1,4 +1,5 @@
 <?php
+
 $chartId = "container_chartjs_{$chart['charts_id']}";
 // --- Series
 $series = ['yaxis' => [], 'series' => []];
@@ -36,7 +37,6 @@ foreach ($chart_data as $x => $chart_element_data) {
             'data' => [],
         ];
         foreach ($data as $key => $value) {
-
 
             $elements_data['data'][] = floatVal($value);
         }

@@ -20,7 +20,7 @@ $(function () {
         series.chartId = JSON.parse(atob(this_element.data('series')));
         categories.chartId = JSON.parse(atob(this_element.data('categories')));
         labels.chartId = JSON.parse(atob(this_element.data('labels')));
-        //console.log(categories);
+        //console.log(series);
         options.chartId = {
             chart: {
                 type: this_element.data('type'),
@@ -107,10 +107,10 @@ $(function () {
                 labels: {
                     formatter: function (value, timestamp, index) {
                         if (moment(value).isValid()) {
-                            return moment(value).format('DD MMM YYYY');
-                        } else {
+                             return moment(value).format('DD MMM YYYY');
+                         } else {
                             return value;
-                        }
+                         }
                     }
                 }
             },
