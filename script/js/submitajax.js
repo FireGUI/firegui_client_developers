@@ -62,6 +62,17 @@ var handleSuccess = function (msg, container = null) {
             // Callback
             eval(msg.txt);
             break;
+        case 10:
+            //Alert e redirect
+            alert(msg.txt);
+            if (msg.hasOwnProperty('timeout')) {
+                setTimeout(function () {
+                    window.location = msg.url;
+                }, msg.timeout);
+            } else {
+                window.location = msg.url;
+            }
+            break;
     }
 };
 

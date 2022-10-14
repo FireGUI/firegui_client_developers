@@ -1740,3 +1740,9 @@ if (!function_exists('rgb_string_to_hex')) {
         return sprintf('%02x%02x%02x', $by_color[1], $by_color[2], $by_color[3]);
     }
 }
+    
+if (!function_exists('br2nl')) {
+    function br2nl( $input ) {
+        return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n","",str_replace("\r","", htmlspecialchars_decode($input))));
+    }
+}

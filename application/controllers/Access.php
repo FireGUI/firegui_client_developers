@@ -83,16 +83,24 @@ class Access extends MY_Controller
         //prenda in automatico anche i dati delle entità collegate... Buttare ovviamente anche questi dati in sessione
         if ($success) {
             //debug($data, true);
-            
-            if (defined('PASSWORD_REGEX_VALIDATION') && !preg_match(PASSWORD_REGEX_VALIDATION['regex'], $data['users_users_password'])) {
-                $redirection_url = base_url("access/change_password");
-                // $this->session->set_userdata('change_password_email', $data['users_users_email']);
-                if ($this->input->is_ajax_request()) {
-                    echo json_encode(array('status' => 1, 'txt' => $redirection_url));
-                } else {
-                    redirect($redirection_url);
+    
+            if ($this->module->moduleExists('user-extender')) {
+                $user_manager = $this->apilib->searchFirst('users_manager_configurations');
+        
+                if (
+                    $user_manager['users_manager_configurations_enable_password_validation'] == DB_BOOL_TRUE
+                    && !empty($user_manager['users_manager_configurations_password_validation_regex'])
+                    && !preg_match($user_manager['users_manager_configurations_password_validation_regex'], $data['users_users_password'])
+                ) {
+                    $redirection_url = base_url("access/change_password");
+                    // $this->session->set_userdata('change_password_email', $data['users_users_email']);
+                    if ($this->input->is_ajax_request()) {
+                        echo json_encode(array('status' => 10, 'txt' => strip_tags(br2nl($user_manager['users_manager_configurations_password_validation_message'])), 'url' => $redirection_url));
+                    } else {
+                        redirect($redirection_url);
+                    }
+                    exit;
                 }
-                exit;
             }
             
             $user_last_changed_days = 90; // @todo check ultima data di cambio pwd
