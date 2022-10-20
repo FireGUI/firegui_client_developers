@@ -35,37 +35,37 @@ class Conditions extends CI_Model
         if (!empty($this->_rules[$what][$ref])) {
             $rules = $this->_rules[$what][$ref];
 
-            $dati = $this->buildElementData($what,$ref,$value_id, $_dati);
+            $dati = $this->buildElementData($what, $ref, $value_id, $_dati);
 
             //debug($dati);
             foreach ($rules as $rule) {
                 //debug($rule);
                 $applicable = $this->isApplicableRule($rule['_rule'], $dati);
-                    switch ($rule['conditions_action']) {
-                        case 1: //Allow
-                            $accessible = $applicable;
-                            break;
-                        case 2: //Deny
-                            $accessible = !$applicable;
-                            break;
-                        case 3: //Allow
-                            redirect();
-                            break;
-                        default:
+                switch ($rule['conditions_action']) {
+                    case 1: //Allow
+                        $accessible = $applicable;
                         break;
-                    }
-                    
-                 if (!$accessible) { //Mi fermo alla prima regola deny o non applicabile in caso di allow
+                    case 2: //Deny
+                        $accessible = !$applicable;
+                        break;
+                    case 3: //Allow
+                        redirect();
+                        break;
+                    default:
+                        break;
+                }
+
+                if (!$accessible) { //Mi fermo alla prima regola deny o non applicabile in caso di allow
                     break;
-                 }  
-                
+                }
+
             }
-        }        
-        
+        }
 
         return $accessible;
     }
-    private function buildElementData($what,$ref,$value_id, $_dati = null) {
+    private function buildElementData($what, $ref, $value_id, $_dati = null)
+    {
         $dati = [
             '_current_date' => date('Y-m-d'),
             '_current_time' => date('H:i:s'),
@@ -81,14 +81,14 @@ class Conditions extends CI_Model
             case 'grids_actions':
                 if ($_dati !== null) {
                     $entity = $this->db->join('grids', 'grids_id = grids_actions_grids_id', 'LEFT')->join('entity', 'entity_id = grids_entity_id', 'LEFT')->get_where('grids_actions', ['grids_actions_id' => $ref])->row()->entity_name;
-                    $dati = array_merge($dati,$this->apilib->view($entity, $value_id));
-                }                
+                    $dati = array_merge($dati, $this->apilib->view($entity, $value_id));
+                }
 
                 break;
             case 'forms_fields':
                 if ($_dati !== null && $value_id) {
                     debug("TODO: extract data from entity related to forms_fields with value_id");
-                }                
+                }
 
                 break;
             case 'layouts':
@@ -105,30 +105,26 @@ class Conditions extends CI_Model
     }
     private function _preloadRules()
     {
-       if (empty($this->_rules)) {
-        $cache_key = 'conditions_rules';
-        if (!($this->_rule = $this->mycache->get($cache_key))) {
-            $rules = $this->db->where('conditions_json_rules IS NOT NULL', null, false)->get('_conditions')->result_array();
-            foreach ($rules as $rule) {
-                if (empty($this->_rules[$rule['conditions_what']][$rule['conditions_ref']])) {
-                     $this->_rules[$rule['conditions_what']][$rule['conditions_ref']] = [];
+        if (empty($this->_rules)) {
+            $cache_key = 'conditions_rules';
+            if (!($this->_rule = $this->mycache->get($cache_key))) {
+                $rules = $this->db->where('conditions_json_rules IS NOT NULL', null, false)->get('_conditions')->result_array();
+                foreach ($rules as $rule) {
+                    if (empty($this->_rules[$rule['conditions_what']][$rule['conditions_ref']])) {
+                        $this->_rules[$rule['conditions_what']][$rule['conditions_ref']] = [];
+                    }
+                    $rule['_rule'] = json_decode($rule['conditions_json_rules'], true);
+                    $this->_rules[$rule['conditions_what']][$rule['conditions_ref']][] = $rule;
                 }
-                $rule['_rule'] = json_decode($rule['conditions_json_rules'], true);
-                 $this->_rules[$rule['conditions_what']][$rule['conditions_ref']][] = $rule;
+                if ($this->mycache->isCacheEnabled()) {
+                    $this->mycache->save($cache_key, $this->_rule, self::CACHE_TIME);
+                }
             }
-            if ($this->mycache->isCacheEnabled()) {
-                $this->mycache->save($cache_key, $this->_rule, self::CACHE_TIME);
-            }
+
         }
-        
-       }
-        
-       //debug($this->_rules,true);
+
+        //debug($this->_rules,true);
     }
-    
-
-    
-
 
     /**
      * Controlla se questa regola è applicabile
@@ -142,7 +138,7 @@ class Conditions extends CI_Model
         //debug($rule, true);
         $contains_rules = (isset($rule['condition']) && isset($rule['rules']));
 //$is_rule_definition = (isset($rule['id']) && isset($rule['type']) && isset($rule['value']) && isset($rule['operator']));
-$is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($rule['type']) && (isset($rule['value']) || in_array($rule['operator'], ['is_null'])));
+        $is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($rule['type']) && (isset($rule['value']) || in_array($rule['operator'], ['is_null'])));
 
         if ($contains_rules) {
             /*
@@ -177,43 +173,63 @@ $is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($
              */
             //Creo uno switch per le condizioni speciali, ovvero che non sono semplici operatori di confronto ma serve un codice ad hoc per questa verifica
             switch ($rule['id']) {
-                case 'special1':
-                    case 'special2':
-                    
-                        return $this->doSpecialOperation($rule['id'], $rule['operator'], $rule['value']);
-                        break;
+                case 'foo_special':
+                case 'special2':
+
+                    return $this->doFooSpecialOperation($rule['id'], $rule['operator'], $rule['value']);
+                    break;
+                case '_module_installed':
+
+                    return $this->doModuleInstalledOperation($rule['id'], $rule['operator'], $rule['value']);
+                    break;
                 default:
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
-                        return $this->doOperation($dati[$rule['id']], $rule['operator'], $rule['value']);    
+                        debug($rule);
+                        debug($dati);
+                        return $this->doOperation($dati[$rule['id']], $rule['operator'], $rule['value']);
                     } else {
                         return $this->doOperation($dati[$this->rules_mapping[$rule['id']]], $rule['operator'], $rule['value']);
                     }
-                    
-                    
+
                     break;
             }
         } else {
             /*
              * Situazione anomala
              */
-            return false;   // throw exception [?]
+            return false; // throw exception [?]
         }
     }
-    public function doSpecialOperation($id, $ruleOperator, $ruleValue, $room)
+    public function doFooSpecialOperation($id, $ruleOperator, $ruleValue, $room)
     {
         switch ($id) {
-            case 'special1':
+            case 'foo_special':
                 //TODO
                 return false;
                 break;
-            case 'special2':
-                //TODO
-                
-                break;
+
             default:
                 debug("Controllo '{$id}' non riconosciuto!");
                 break;
         }
+    }
+    public function doModuleInstalledOperation($id, $ruleOperator, $ruleValue)
+    {
+
+        switch ($ruleOperator) {
+
+            case 'equal':
+                return $this->datab->module_installed($ruleValue);
+
+            case 'not_equal':
+                return !$this->datab->module_installed($ruleValue);
+
+            default:
+                debug("Rule operator '$ruleOperator' not recognized!");
+                break;
+        }
+        return false;
+
     }
     /**
      * Esegue un'operazione booleana avendo i due operandi e il codice operatore
@@ -267,8 +283,6 @@ $is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($
 
         return false;
     }
-
-
 
     //Ritorna una stringa che descrive lo sconto
     public function rulesHumanReadableCondition($rule_db, $rules_json = null)
@@ -324,7 +338,7 @@ $is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($
                         4 => 'giovedì',
                         5 => 'venerdì',
                         6 => 'sabato',
-                        7 => 'domenica'
+                        7 => 'domenica',
                     );
                     $rules_json->value = $week_days[$rules_json->value];
                     break;
@@ -361,9 +375,6 @@ $is_rule_definition = (isset($rule['id']) && isset($rule['operator']) && isset($
                     $operator = $rules_json->operator;
                     break;
             }
-
-
-
 
             $val = (is_array($rules_json->value)) ? implode(' e ', $rules_json->value) : $rules_json->value;
             return "se $label è $operator $val";

@@ -40,6 +40,7 @@ if ($grid['grids']['grids_pagination']) {
 } else {
     $limit = 10;
 }
+
 ?>
 
 <?php if (!$grid_is_ajax && empty($grid_data['data'])): ?>
@@ -71,7 +72,7 @@ if ($grid['grids']['grids_pagination']) {
 ?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') {
     echo ' class="firegui_width50"';
 }
-?><?php echo ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data'])) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);?></th>
+?><?php echo ($grid['grids']['grids_ajax'] && ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data']))) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);?></th>
 
                 <?php endforeach;?>
 
