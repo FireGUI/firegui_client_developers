@@ -2981,7 +2981,7 @@ class Datab extends CI_Model
         $baseLabel = $field['forms_fields_override_label'] ?: $field['fields_draw_label'];
         $baseType = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
         $basePlaceholder = $field['forms_fields_override_placeholder'] ?: $field['fields_draw_placeholder'];
-        $baseHelpText = $field['fields_draw_help_text'] ? '<span class="help-block">' . $field['fields_draw_help_text'] . '</span>' : '';
+        $baseHelpText = $field['fields_draw_help_text'] ? '<span class="help-block">' . t($field['fields_draw_help_text']) . '</span>' : '';
         $baseShow = $field['fields_draw_display_none'] == DB_BOOL_FALSE;
         $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default']));
         $baseShowLabel = $field['forms_fields_show_label'] ? $field['forms_fields_show_label'] == DB_BOOL_TRUE : true; // Se è vuoto mostro sempre la label di default, altrimenti valuto il campo
