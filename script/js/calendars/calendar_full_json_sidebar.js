@@ -6,6 +6,7 @@ function initCalendars() {
             var jqCalendarView;
 
             var jqCalendar = $(this);
+            var calendar_data = JSON.parse(atob($(this).data('calendar')));
             var calendar_id = jqCalendar.attr('id');
             var sourceUrl = $(this).data('sourceurl');
             var minTime = $(this).data('mintime');
@@ -22,8 +23,6 @@ function initCalendars() {
             var allow_edit = $(this).data('allow_edit');
             var calendars_default_view = $(this).data('view');
             var main_container = $(this).closest('.js_calendar_sidemain_container');
-
-            
             // ============================
 
             var token = JSON.parse(atob($('body').data('csrf')));
@@ -130,10 +129,25 @@ function initCalendars() {
                     }
                 },
                 eventClick: function (evt, jsEvent, view) {
-                    if (allow_edit) {
+                    if (calendar_data.calendars_event_click === 'form' && allow_edit) {
                         loadModal(formedit + '/' + evt.event.id, {}, function () {
                             calendar.refetchEvents();
                         });
+                    } else if (calendar_data.calendars_event_click === 'layout' && calendar_data.calendars_layout_id.length > 0) {
+                        if (calendar_data.calendars_layout_modal == true) {
+                            loadModal(base_url + 'get_ajax/layout_modal/' + calendar_data.calendars_layout_id + '/' + evt.event.id, {}, function () {
+                                calendar.refetchEvents();
+                            });
+                        } else {
+                            window.location.href = base_url + 'main/layout/'+calendar_data.calendars_layout_id+'/'+evt.event.id;
+                        }
+                    } else if (calendar_data.calendars_event_click === 'link' && calendar_data.calendars_link.length > 0) {
+                        var link = calendar_data.calendars_link;
+
+                        var link = link.replace('{base_url}/', base_url);
+                        var link = link.replace('{value_id}', evt.event.id);
+
+                        window.location.href = link;
                     }
 
                     return false;

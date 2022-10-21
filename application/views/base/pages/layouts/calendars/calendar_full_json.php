@@ -65,6 +65,8 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
         var minTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>;
         var maxTime = <?php echo json_encode(array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>;
 
+        var calendar_data = <?php echo json_encode($data['calendars']) ?>;
+        
         var token = JSON.parse(atob($('body').data('csrf')));
         var token_name = token.name;
         var token_hash = token.hash;
@@ -116,11 +118,27 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
             },
 
             eventClick: function(evt) {
-                <?php if (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) : ?>
+                <?php if ($data['calendars']['calendars_event_click'] === 'form' && !empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) : ?>
                     loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + evt.event.id, {}, function() {
                         calendar.refetchEvents();
                     });
+                <?php elseif($data['calendars']['calendars_event_click'] === 'layout' && !empty($data['calendars']['calendars_layout_id'])): ?>
+                    <?php if($data['calendars']['calendars_layout_modal'] === DB_BOOL_TRUE): ?>
+                        loadModal(<?php echo json_encode(base_url("get_ajax/layout_modal/{$data['calendars']['calendars_layout_id']}")); ?> + '/' + evt.event.id, {}, function() {
+                            calendar.refetchEvents();
+                        });
+                    <?php else: ?>
+                        window.location.href = <?php echo json_encode(base_url("main/layout/{$data['calendars']['calendars_layout_id']}")); ?> + '/' + evt.event.id
+                    <?php endif; ?>
+                <?php elseif($data['calendars']['calendars_event_click'] === 'link' && !empty($data['calendars']['calendars_link'])): ?>
+                    var link = '<?php echo $data['calendars']['calendars_link']; ?>';
+    
+                    var link = link.replace('{base_url}', '<?php echo base_url(); ?>');
+                    var link = link.replace('{value_id}', evt.event.id);
+                    
+                    window.location.href = link;
                 <?php endif; ?>
+                
                 return false;
             },
 
