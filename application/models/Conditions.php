@@ -184,8 +184,8 @@ class Conditions extends CI_Model
                     break;
                 default:
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
-                        debug($rule);
-                        debug($dati);
+                        // debug($rule);
+                        // debug($dati);
                         return $this->doOperation($dati[$rule['id']], $rule['operator'], $rule['value']);
                     } else {
                         return $this->doOperation($dati[$this->rules_mapping[$rule['id']]], $rule['operator'], $rule['value']);
