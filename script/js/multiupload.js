@@ -12,9 +12,9 @@ function initDropzones() {
         var preview = $(this).data('preview');
 
         if ($(this).data('value')) {
-            var value = JSON.parse(atob($(this).data('value')))
+            var value = JSON.parse(atob($(this).data('value')));
         } else {
-            var value = $(this).data('value')
+            var value = $(this).data('value');
         }
 
         var form_selector = '#form_' + formid;
@@ -76,12 +76,7 @@ function initDropzones() {
                             } else {
                                 $('[name="' + fieldname + '"]').val(JSON.stringify(dzfiles[unique]));
                             }
-
-
-
                         }
-
-
                     }
                 }
                 if (preview) {
@@ -98,29 +93,24 @@ function initDropzones() {
 
                 if (!x) {
                     return false;
-                } else {
-
-                    if (file.id) {
-
-                        $.ajax(base_url + 'db_ajax/removeFileFromMultiUpload/' + fieldname + '/' + $(form_selector).data('edit-id') + '/' + file.id, {
-                            success: function () {
-                                file.previewElement.remove();
-
-                                dzfiles[unique].splice(file.key, 1);
-                                $('[name="' + fieldname + '"]').val(JSON.stringify(dzfiles[unique]));
-                                $('[name="' + fieldname + '[]"][value="' + file.intid + '"]').remove();
-                                return true;
-                            }
-                        });
-
-                    } else {
-                        file.previewElement.remove();
-                        return true;
-                    }
-
                 }
-            }
 
+                var dzfile_index = dzfiles[unique].findIndex(item => item.original_filename == file.name);
+
+                var file_id = (dzfile_index != '-1') ? dzfile_index : file.id;
+
+                $.ajax(base_url + 'db_ajax/removeFileFromMultiUpload/' + fieldname + '/' + $(form_selector).data('edit-id') + '/' + file_id, {
+                    success: function () {
+                        file.previewElement.remove();
+                        dzfiles[unique].splice(file_id, 1);
+
+                        $('[name="' + fieldname + '"]').val(JSON.stringify(dzfiles[unique]));
+                        $('[name="' + fieldname + '[]"][value="' + file.intid + '"]').remove();
+                    }
+                });
+
+                return true;
+            }
         });
 
         //Trigger click on every internal element (div, text, etc...)
@@ -175,18 +165,11 @@ function initDropzones() {
             };
         } catch (Exception) {
             console.log(Exception);
-
         }
-
-
-
-
     });
 }
 
-
-
-$(document).ready(function () {
+$(function () {
     'use strict';
 
     initDropzones();
