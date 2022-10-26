@@ -1117,7 +1117,7 @@ if (!function_exists('scanAllDir')) {
         if (is_dir($dir)) {
             $files = array_diff(scandir($dir), array('.', '..'));
             foreach ($files as $file) {
-                (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : unlink("$dir/$file");
+                (is_dir("$dir/$file")) ? deleteDirRecursive("$dir/$file") : @unlink("$dir/$file");
             }
             return @rmdir($dir);
         } else {
@@ -1740,9 +1740,10 @@ if (!function_exists('rgb_string_to_hex')) {
         return sprintf('%02x%02x%02x', $by_color[1], $by_color[2], $by_color[3]);
     }
 }
-    
+
 if (!function_exists('br2nl')) {
-    function br2nl( $input ) {
-        return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n","",str_replace("\r","", htmlspecialchars_decode($input))));
+    function br2nl($input)
+    {
+        return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n", "", str_replace("\r", "", htmlspecialchars_decode($input))));
     }
 }
