@@ -136,11 +136,12 @@ if (isset($grid_data['data'])) {
                 var chatContainer = $('.chats', this.element);
                 var thisClass = 'direct-chat-msg right'; // I miei messaggi sono sempre a dx...
                 var listItem = $('<li/>').addClass(thisClass);
+                var isDeletedField = '<?php echo $isDeletedField ?>';
                 listItem.append(
                     $('<div/>').addClass('direct-chat-primary clearfix').append(
                         $('<a/>').addClass('direct-chat-name pull-left name').attr('href', '#').html(message.username),
                         $('<span/>').addClass('direct-chat-timestamp pull-right datetime').html(message.date),
-                        $('<a/>').addClass('direct-chat-delete pull-right delete').attr('data-message_id', message.id).attr('href', '#').html('<i class="fas fa-trash-o text-danger"></i>&nbsp;'),
+                            (isDeletedField.length > 0 ? $('<a/>').addClass('direct-chat-delete pull-right delete').attr('data-message_id', message.id).attr('href', '#').html('<i class="fas fa-trash text-danger"></i>&nbsp;') : ''),
                     ),
                     (typeof value !== "undefined" ? $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive') : ''),
                     $('<div/>').addClass('direct-chat-text body').append(
@@ -148,7 +149,7 @@ if (isset($grid_data['data'])) {
                     )
                 ).appendTo(chatContainer);
 
-                this.scrollChat();
+                this.init();
             },
 
             scrollChat: function() {
@@ -160,18 +161,18 @@ if (isset($grid_data['data'])) {
                 if (!confirm('<?php e('Are you sure to delete this message?') ?>')) {
                     return;
                 }
-        
-                var chat_msg = $(this.closest('.direct-chat-msg'));
-
-                var message_id = chat_msg.data('id');
-
+                
+                var message_id = $(this).data('message_id');
+                var chat_msg = $(this).closest('.direct-chat-msg');
+    
                 $.ajax({
                     url: base_url + 'db_ajax/switch_bool/<?php echo $isDeletedField; ?>/' + message_id,
                     async: false,
                     dataType: 'json',
                     success: function(res) {
                         if (res.status == '5') {
-                            $('.direct-chat-message.body', chat_msg).text('<?php e('Message deleted') ?>');
+                            $('.direct-chat-text', chat_msg).html('<i><?php e('Message deleted') ?></i>');
+                            $('.direct-chat-delete', chat_msg).remove();
                         }
                     },
                 })
