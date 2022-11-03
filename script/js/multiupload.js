@@ -83,6 +83,7 @@ function initDropzones() {
                     var a = document.createElement('a');
                     a.setAttribute('href', file.url);
                     a.setAttribute('class', 'dz-download');
+                    a.setAttribute('target', '_blank');
                     a.innerHTML = "Download";
                     file.previewTemplate.appendChild(a);
                 }

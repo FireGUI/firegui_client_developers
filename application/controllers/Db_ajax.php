@@ -209,7 +209,6 @@ class Db_ajax extends MY_Controller
             return;
         }
 
-        $this->load->library('apilib');
         $newChatMessage = $this->apilib->create($grid['grids']['entity_name'], $data);
 
         $output = array();
@@ -218,6 +217,8 @@ class Db_ajax extends MY_Controller
                 $output[$replace] = $newChatMessage[$gridField['fields_name']];
             }
         }
+        
+        $output['id'] = $newChatMessage[$grid['grids']['entity_name'].'_id'];
 
         if (!empty($output['thumbnail'])) {
             $output['thumbnail'] = base_url_uploads("uploads/{$output['thumbnail']}");

@@ -2,6 +2,8 @@
 $itemId = "chats{$grid['grids']['grids_id']}";
 $userField = empty($grid['replaces']['user']['fields_name']) ? null : $grid['replaces']['user']['fields_name'];
 $dateField = empty($grid['replaces']['date']['fields_name']) ? null : $grid['replaces']['date']['fields_name'];
+$entityField = $grid['grids']['entity_name'];
+$isDeletedField = empty($grid['replaces']['is_deleted']['fields_name']) ? null : $grid['replaces']['is_deleted']['fields_name'];
 $items = array();
 
 if (isset($grid_data['data'])) {
@@ -24,6 +26,10 @@ if (isset($grid_data['data'])) {
                 'date' => $thisDate,
                 'body' => '',
                 'user' => $thisUser,
+                'data' => $dato,
+                'grid' => $grid,
+                'message_id' => $dato["{$entityField}_id"],
+                'is_deleted' => (!empty($isDeletedField) && $dato[$isDeletedField] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE,
                 'class' => $userField ? (($dato[$userField] == $this->auth->get('id')) ? 'right' : 'out') : (($x % 2 == 0) ? 'out' : 'right'),
                 'id' => $dato[$grid['replaces']['value_id']['fields_name']]
             );
@@ -56,10 +62,13 @@ if (isset($grid_data['data'])) {
                         <div class="direct-chat-primary clearfix">
                             <a href="#" class="direct-chat-name pull-left name"><?php echo $item['username']; ?></a>
                             <span class="direct-chat-timestamp pull-right"><span class="datetime"><?php echo date('d/m/Y H:i', $item['date']); ?></span>&nbsp;<span class="actions"></span></span>
+                            <?php if(!empty($isDeletedField) && $item['is_deleted'] == DB_BOOL_FALSE && $item['user'] == $this->auth->get('users_id')): ?>
+                                <a href="#" class="direct-chat-delete pull-right delete" data-message_id="<?php echo $item['message_id']; ?>"><i class="fas fa-trash text-danger" data-toggle="tooltip" title="<?php e('Delete') ?>"></i>&nbsp;</a>
+                            <?php endif; ?>
                         </div>
                         <?php if (isset($item['thumb'])) : ?><img class="direct-chat-img avatar" src="<?php echo (!empty($item['thumb'])) ? $item['thumb'] : base_url('images/user.png'); ?>" alt="message user image"><?php endif; ?>
                         <div class="direct-chat-text body">
-                            <?php echo $item['body']; ?>
+                            <?php echo ($item['is_deleted'] == DB_BOOL_TRUE) ? '<i>' . t('Message deleted') . '</i>' : $item['body']; ?>
                         </div>
                     </li>
                 <?php endforeach; ?>
@@ -100,13 +109,10 @@ if (isset($grid_data['data'])) {
 
 <script>
     var ChatWidget = function() {
-
         return {
-
             element: $('#<?php echo $itemId; ?>'),
 
             sendMessage: function(event) {
-
                 event.preventDefault();
                 var widget = event.data;
 
@@ -123,7 +129,6 @@ if (isset($grid_data['data'])) {
                         } catch (e) {}
                     });
                 }, 'json');
-
             },
 
             appendMessage: function(message) {
@@ -131,10 +136,12 @@ if (isset($grid_data['data'])) {
                 var chatContainer = $('.chats', this.element);
                 var thisClass = 'direct-chat-msg right'; // I miei messaggi sono sempre a dx...
                 var listItem = $('<li/>').addClass(thisClass);
+                var isDeletedField = '<?php echo $isDeletedField ?>';
                 listItem.append(
                     $('<div/>').addClass('direct-chat-primary clearfix').append(
                         $('<a/>').addClass('direct-chat-name pull-left name').attr('href', '#').html(message.username),
                         $('<span/>').addClass('direct-chat-timestamp pull-right datetime').html(message.date),
+                            (isDeletedField.length > 0 ? $('<a/>').addClass('direct-chat-delete pull-right delete').attr('data-message_id', message.id).attr('href', '#').html('<i class="fas fa-trash text-danger"></i>&nbsp;') : ''),
                     ),
                     (typeof value !== "undefined" ? $('<img/>').attr('src', message.thumbnail).addClass('direct-chat-img avatar img-responsive') : ''),
                     $('<div/>').addClass('direct-chat-text body').append(
@@ -142,22 +149,43 @@ if (isset($grid_data['data'])) {
                     )
                 ).appendTo(chatContainer);
 
-                this.scrollChat();
+                this.init();
             },
 
             scrollChat: function() {
                 var scroller = $('.scroller', this.element);
                 scroller.scrollTop(scroller.height());
             },
+            
+            deleteMessage: function() {
+                if (!confirm('<?php e('Are you sure to delete this message?') ?>')) {
+                    return;
+                }
+                
+                var message_id = $(this).data('message_id');
+                var chat_msg = $(this).closest('.direct-chat-msg');
+    
+                $.ajax({
+                    url: base_url + 'db_ajax/switch_bool/<?php echo $isDeletedField; ?>/' + message_id,
+                    async: false,
+                    dataType: 'json',
+                    success: function(res) {
+                        if (res.status == '5') {
+                            $('.direct-chat-text', chat_msg).html('<i><?php e('Message deleted') ?></i>');
+                            $('.direct-chat-delete', chat_msg).remove();
+                        }
+                    },
+                })
+            },
 
             init: function() {
                 $('.chat-form', this.element).on('submit', this, this.sendMessage);
                 setTimeout(this.scrollChat, 800);
+                
+                $('.direct-chat-delete', this.element).on('click', this, this.deleteMessage);
             }
         };
-
     }();
-
-
+    
     $(document).ready(ChatWidget.init());
 </script>

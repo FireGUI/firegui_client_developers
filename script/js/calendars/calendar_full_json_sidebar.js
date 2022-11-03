@@ -2,7 +2,7 @@ function initCalendars() {
     $(function () {
         'use strict';
         $('.calendar_full_json_sidebar').each(function () {
-            
+
             var jqCalendarView;
 
             var jqCalendar = $(this);
@@ -85,6 +85,7 @@ function initCalendars() {
                 editable: true,
                 selectable: true,
                 disableDragging: false,
+                weekNumbers: true,
                 height: 'auto',
                 locale: language,
                 timeFormat: 'H:mm',
@@ -139,7 +140,7 @@ function initCalendars() {
                                 calendar.refetchEvents();
                             });
                         } else {
-                            window.location.href = base_url + 'main/layout/'+calendar_data.calendars_layout_id+'/'+evt.event.id;
+                            window.location.href = base_url + 'main/layout/' + calendar_data.calendars_layout_id + '/' + evt.event.id;
                         }
                     } else if (calendar_data.calendars_event_click === 'link' && calendar_data.calendars_link.length > 0) {
                         var link = calendar_data.calendars_link;
@@ -163,7 +164,7 @@ function initCalendars() {
                 eventSources: [{
                     events: function (fetchInfo, successCallback, failureCallback) {
                         var values = [];
-                        $('.js_check_filter',main_container).filter('[type=checkbox]:checked').each(function () {
+                        $('.js_check_filter', main_container).filter('[type=checkbox]:checked').each(function () {
                             if ($(this).val() != 0) {
                                 values.push($(this).val());
                             }
@@ -207,24 +208,24 @@ function initCalendars() {
                 calendar.refetchEvents();
             });
             $('.js_check_filter_all', main_container).on('change', function () {
-                
+
                 var $contenitore = $(this).closest('.js_sidebar_filter_container');
-                    if (this.checked) {
-                        // Iterate each checkbox
-                        $(':checkbox', $contenitore).each(function () {
-                            this.checked = true;
-                        });
-                    } else {
-                        $(':checkbox', $contenitore).each(function () {
-                            this.checked = false;
-                        });
-                    }
-                
+                if (this.checked) {
+                    // Iterate each checkbox
+                    $(':checkbox', $contenitore).each(function () {
+                        this.checked = true;
+                    });
+                } else {
+                    $(':checkbox', $contenitore).each(function () {
+                        this.checked = false;
+                    });
+                }
+
                 calendar.refetchEvents();
             });
-            
-                //$('.js_check_filter_all', $(this).closest('.js_calendar_sidemain_container')).trigger('change');
-            
+
+            //$('.js_check_filter_all', $(this).closest('.js_calendar_sidemain_container')).trigger('change');
+
             // Ripristina sessione
             var sessionStorageKey = calendar_id;
 
