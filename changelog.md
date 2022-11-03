@@ -1,3 +1,3 @@
-Changelog version 2.3.7
+Changelog version 2.3.8
  
-Beta
+Beta for full cache
