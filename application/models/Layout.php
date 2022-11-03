@@ -295,7 +295,7 @@ class Layout extends CI_Model
         if (file_exists($file_cache) && $this->mycache->isCacheEnabled() && !empty($current_config['template_assets']['active'])) {
             $path = base_url($file_cache);
         } else {
-            if ($this->mycache->isCacheEnabled() && !empty($current_config['template_assets']['active'])) {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('template_assets') && !empty($current_config['template_assets']['active'])) {
                 $modules_path = APPPATH . 'modules';
                 $assets_folder = "{$modules_path}/{$module_identifier}/assets";
                 $asset_file = "$assets_folder/$file";
@@ -331,8 +331,10 @@ class Layout extends CI_Model
         }
 
         $file = "template/build/{$file}";
-        if (!file_exists($file) || !$this->mycache->isCacheEnabled() || $clear) {
+        if (!file_exists($file) || !$this->mycache->isCacheEnabled() || !$this->mycache->isActive('template_assets') || $clear) {
+
             $fp = fopen($file, 'w+');
+
             foreach ($data as $key => $vals) {
                 switch ($key) {
                     case 'background-colors':

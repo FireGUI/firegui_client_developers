@@ -1131,7 +1131,8 @@ class Crmentity extends CI_Model
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
         $entity_name = $e['entity_name'];
-        $tags = $this->mycache->buildTagsFromEntity($entity_name);
+        //$tags = $this->mycache->buildTagsFromEntity($entity_name);
+        $tags = []; //Preview fields does not depend on data changes in entity, so keep these always in cache, event if any data changes
         return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid) {
             $preview = [];
             $fields = $this->getVisibleFields($eid);

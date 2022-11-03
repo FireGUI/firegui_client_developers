@@ -106,7 +106,7 @@ class Conditions extends CI_Model
     private function _preloadRules()
     {
         if (empty($this->_rules)) {
-            $cache_key = 'conditions_rules';
+            $cache_key = 'database_schema/conditions_rules';
             if (!($this->_rule = $this->mycache->get($cache_key))) {
                 $rules = $this->db->where('conditions_json_rules IS NOT NULL', null, false)->get('_conditions')->result_array();
                 foreach ($rules as $rule) {
@@ -116,7 +116,7 @@ class Conditions extends CI_Model
                     $rule['_rule'] = json_decode($rule['conditions_json_rules'], true);
                     $this->_rules[$rule['conditions_what']][$rule['conditions_ref']][] = $rule;
                 }
-                if ($this->mycache->isCacheEnabled()) {
+                if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                     $this->mycache->save($cache_key, $this->_rule, self::CACHE_TIME);
                 }
             }

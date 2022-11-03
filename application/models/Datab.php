@@ -41,7 +41,7 @@ class Datab extends CI_Model
     {
         $userId = (int) $this->auth->get('id');
 
-        $cache_key = "apilib/datab.build_layout.accessible.{$userId}." . md5(serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
+        $cache_key = "database_schema/datab.build_layout.accessible.{$userId}." . md5(serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             $dati['accessibleLayouts'] = $dati['accessibleEntityLayouts'] = $dati['forwardedLayouts'] = [];
             $accessibleLayouts = $this->db->query("
@@ -91,7 +91,7 @@ class Datab extends CI_Model
                     }
                 }
             }
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
             }
         }
@@ -202,7 +202,7 @@ class Datab extends CI_Model
 
                 $out = $this->db->query($query)->result_array();
             }
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
                 $this->mycache->save($cache_key, $out);
             }
             $dati = $out;
@@ -337,7 +337,7 @@ class Datab extends CI_Model
             } else {
                 $dati = $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
             }
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($entity_id));
             }
         }
@@ -609,7 +609,7 @@ class Datab extends CI_Model
             $form = $this->db->join('entity', 'forms_entity_id = entity_id')->get_where('forms', ['forms_id' => $form_id])->row_array();
             if (!$form) {
                 $dati = false;
-                if ($this->mycache->isCacheEnabled()) {
+                if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                     $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
                 }
                 return $dati;
@@ -741,7 +741,7 @@ class Datab extends CI_Model
                 ];
 
                 $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
-                if ($this->mycache->isCacheEnabled()) {
+                if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                     $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($form['forms_entity_id']));
                 }
             }
@@ -945,8 +945,8 @@ class Datab extends CI_Model
                     $this->error = self::ERR_VALIDATION_FAILED;
                     $this->errorMessage = $ex->getMessage();
                     $dati = false;
-                    if ($this->mycache->isCacheEnabled()) {
-                        $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
+                    if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
+                        $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($grid['grids']['entity_name']));
                     }
                     return $dati;
                 }
@@ -1103,6 +1103,7 @@ class Datab extends CI_Model
                                                       LEFT JOIN fields ON fields.fields_id = calendars_fields.calendars_fields_fields_id
                                                       LEFT JOIN calendars ON calendars.calendars_id = calendars_fields.calendars_fields_calendars_id
                                                       WHERE calendars_id = '$calendar_id'")->result_array();
+        //debug($dati['calendars_fields'], true);
 
         $defaultForm = null; // Faccio la query solamente se è realmente necessario
         $allowCreate = $dati['calendars']['calendars_allow_create'] == DB_BOOL_TRUE;
@@ -2421,9 +2422,10 @@ class Datab extends CI_Model
                 $dati['layout_container']['layouts_subtitle'] = str_replace_placeholders($dati['layout_container']['layouts_subtitle'], $replaces);
             }
             $dati['layout_data_detail'] = $layout_data_detail;
-
-            if ($this->mycache->isCacheEnabled() && $this->is_layout_cachable($layout_id)) {
-                $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
+            //TODO: remove apilib and create another cache type for html_blocks!
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib') && $this->is_layout_cachable($layout_id)) {
+                //debug($this->layout->getRelatedEntities(), true);
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->layout->getRelatedEntities());
             }
             // ========================================
             // Fine Build Layout

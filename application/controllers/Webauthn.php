@@ -3,20 +3,19 @@
 class Webauthn extends MY_Controller
 {
 
+    public $WebAuthn = null;
+    public $userVerification = 'required';
+    public $requireResidentKey = true;
+    public $typeUsb = false;
+    public $typeNfc = true;
+    public $typeBle = true;
+    public $typeInt = true;
 
-    var $WebAuthn = NULL;
-    var $userVerification = 'required';
-    var $requireResidentKey = true;
-    var $typeUsb = false;
-    var $typeNfc = true;
-    var $typeBle = true;
-    var $typeInt = true;
-
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
-            $this->output->cache(0);
+            // $this->output->cache(0);
         }
         // Controllo anche la current uri
 
@@ -43,8 +42,6 @@ class Webauthn extends MY_Controller
         if ($post) {
             $post = json_decode($post, true);
         }
-
-
 
         //debug($post, true);
 
@@ -80,8 +77,6 @@ class Webauthn extends MY_Controller
         $email = $post['email'];
         $users = $this->apilib->search(LOGIN_ENTITY, [LOGIN_USERNAME_FIELD => $email]);
 
-
-
         $ids = array();
         foreach ($users as $user) {
             $reg = json_decode($user['users_webauthn_data']);
@@ -89,13 +84,10 @@ class Webauthn extends MY_Controller
             $ids[] = base64_decode($reg->credentialId);
         }
 
-
-
         //debug($ids);
         if (count($ids) === 0) {
             throw new Exception('User not authorized');
         }
-
 
         $getArgs = $this->WebAuthn->getGetArgs($ids, 20, $this->typeUsb, $this->typeNfc, $this->typeBle, $this->typeInt, $this->userVerification);
         $this->session->set_userdata(SESS_WEBAUTHN, $this->WebAuthn->getChallenge());
@@ -122,12 +114,9 @@ class Webauthn extends MY_Controller
 
         $data->credentialId = base64_encode($data->credentialId);
 
-
         $user = $this->apilib->edit(LOGIN_ENTITY, $this->auth->get('id'), [
-            LOGIN_WEBAUTHN_DATA => json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE)
+            LOGIN_WEBAUTHN_DATA => json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE),
         ]);
-
-
 
         $msg = 'registration success.';
         if ($data->rootValid === false) {

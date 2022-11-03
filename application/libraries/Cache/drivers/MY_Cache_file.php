@@ -137,6 +137,7 @@ class MY_Cache_file extends CI_Driver
             $tags = [];
         }
         foreach ($tags as $tag) {
+
             if (!array_key_exists($tag, $mapping)) {
                 $mapping[$tag] = [];
             }
@@ -174,6 +175,7 @@ class MY_Cache_file extends CI_Driver
      */
     public function delete($id)
     {
+
         return is_file($this->_cache_path . $id) ? @unlink($this->_cache_path . $id) : false;
     }
 
@@ -194,6 +196,7 @@ class MY_Cache_file extends CI_Driver
         $mapping = $this->getTagsMapping();
         if (array_key_exists($tag, $mapping)) {
             foreach ($mapping[$tag] as $id) {
+
                 $this->delete($id);
             }
             unset($mapping[$tag]);
@@ -345,6 +348,7 @@ class MY_Cache_file extends CI_Driver
         $data = @unserialize(file_get_contents($this->_cache_path . $id));
 
         if (!$data || ($data['ttl'] > 0 && time() > $data['time'] + $data['ttl'])) {
+
             @unlink($this->_cache_path . $id);
             return false;
         }
@@ -536,7 +540,9 @@ class MY_Cache_file extends CI_Driver
         $CI = &get_instance();
         $entity_data = $CI->crmentity->getEntity($entity);
         if ($value_id) {
-            $tags = ["{$entity_data['entity_name']}:{$value_id}"];
+            //$tags = ["{$entity_data['entity_name']}:{$value_id}"];
+            $tags = [$entity_data['entity_name']];
+
         } else {
             $tags = [$entity_data['entity_name']];
         }

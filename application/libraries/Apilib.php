@@ -743,15 +743,9 @@ class Apilib
         //        $this->clearEntityCache($entity);
         $this->mycache->clearEntityCache($entity);
 
-        return ['id' => $id, 'data' => $record, 'entity' => $entity];
-    }
+        //debug('STOP DELETED!', true);
 
-    /**
-     * Alias function
-     */
-    public function cleanCache()
-    {
-        $this->clearCache(false);
+        return ['id' => $id, 'data' => $record, 'entity' => $entity];
     }
 
     /**
