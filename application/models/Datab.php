@@ -188,7 +188,11 @@ class Datab extends CI_Model
 
             } else {
                 if ($orderBy) {
+
+                    $query = str_ireplace('{order_by_clear}', ",$orderBy", $query);
+
                     $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
+
                 } else {
                     $query = str_ireplace('{order_by}', '', $query);
                 }
@@ -1446,7 +1450,7 @@ class Datab extends CI_Model
             $arr[] = $this->replace_superglobal_data($grid['grids_builder_where']);
         }
 
-        debug($arr, true);
+        //debug($arr, true);
         // Applica il filtro => joinalo all'arr
         $sess_grid_data = $this->session->userdata(SESS_GRIDS_DATA);
         $operators = unserialize(OPERATORS);
@@ -1602,27 +1606,34 @@ class Datab extends CI_Model
      */
     public function get_detail_layout_link($entityIdentifier, $value_id = null, $modal = false)
     {
-        // Che sia name o id a getEntity non importa...
-        $entity_id = $this->crmentity->getEntity($entityIdentifier)['entity_id'];
+        $cache_key = "apilib/datab.get_detail_layout_link." . $this->auth->get(LOGIN_ENTITY . "_id") . '.' . $entityIdentifier;
+        if (!($dati = $this->mycache->get($cache_key))) {
+            // Che sia name o id a getEntity non importa...
+            $entity_id = $this->crmentity->getEntity($entityIdentifier)['entity_id'];
 
-        $baseRoute = 'main/layout';
-        $suffix = '';
-        $getSuffix = [];
-        if ($modal) {
-            $baseRoute = 'get_ajax/layout_modal';
-            if (is_string($modal)) {
-                $getSuffix['_size'] = $modal;
+            $baseRoute = 'main/layout';
+            $suffix = '';
+            $getSuffix = [];
+            if ($modal) {
+                $baseRoute = 'get_ajax/layout_modal';
+                if (is_string($modal)) {
+                    $getSuffix['_size'] = $modal;
+                }
+            }
+
+            if ($getSuffix) {
+                $suffix .= '?';
+            }
+            foreach ($getSuffix as $k => $v) {
+                $suffix .= $k . '=' . $v;
+            }
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
+                $dati = isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
+
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->layout->getRelatedEntities());
             }
         }
-
-        if ($getSuffix) {
-            $suffix .= '?';
-        }
-        foreach ($getSuffix as $k => $v) {
-            $suffix .= $k . '=' . $v;
-        }
-
-        return isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
+        return $dati;
     }
 
     public function generate_menu_link($menu, $value_id = null, $data = null)
