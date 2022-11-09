@@ -1747,3 +1747,39 @@ if (!function_exists('br2nl')) {
         return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n", "", str_replace("\r", "", htmlspecialchars_decode($input))));
     }
 }
+    
+if (!function_exists('hours_to_human')) {
+    function hours_to_human($decimal_hours, $return_formatted = true) {
+        if (!is_numeric($decimal_hours)) return false;
+        
+        $hours = 0;
+        $minutes = 0;
+        
+        $time_ex = explode('.', $decimal_hours);
+        
+        // CHECK E ASSEGNO ORE
+        if (!empty($time_ex[0]) && is_numeric($time_ex[0])) {
+            $hours = $time_ex[0];
+        }
+        
+        //// CHECK MINUTI, SE PIù DI 60, DEVO AGGIUNGERE ORE
+        if (!empty($time_ex[1]) && is_numeric($time_ex[1]) && $time_ex[1] > 0) {
+            $minutes = round(($time_ex[1] * 60) / 100);
+        }
+        
+        $hours_label = ($hours === 1) ? t('hour') : t('hours');
+        $minutes_label = ($minutes === 1) ? t('minute') : t('minutes');
+        
+        $return = '';
+        
+        if ($hours > 0) {
+            $return .= "{$hours} {$hours_label} ";
+        }
+        
+        if ($minutes > 0) {
+            $return .= "{$minutes} {$minutes_label} ";
+        }
+        
+        return $return_formatted ? $return : ['hours' => $hours, 'minutes' => $minutes];
+    }
+}
