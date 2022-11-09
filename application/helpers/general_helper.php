@@ -1749,26 +1749,27 @@ if (!function_exists('br2nl')) {
 }
     
 if (!function_exists('hours_to_human')) {
-    function hours_to_human($decimal_hours, $return_formatted = true) {
+    function hours_to_human($decimal_hours, $return_formatted = true, $return_seconds = false) {
         if (!is_numeric($decimal_hours)) return false;
         
-        $hours = 0;
-        $minutes = 0;
+        // start by converting to seconds
+        $seconds = ($decimal_hours * 3600);
+        // we're given hours, so let's get those the easy way
+        $hours = floor($decimal_hours);
+        // since we've "calculated" hours, let's remove them from the seconds variable
+        $seconds -= $hours * 3600;
+        // calculate minutes left
+        $minutes = floor($seconds / 60);
+        // remove those from seconds as well
+        $seconds -= $minutes * 60;
         
-        $time_ex = explode('.', $decimal_hours);
-        
-        // CHECK E ASSEGNO ORE
-        if (!empty($time_ex[0]) && is_numeric($time_ex[0])) {
-            $hours = $time_ex[0];
-        }
-        
-        //// CHECK MINUTI, SE PIù DI 60, DEVO AGGIUNGERE ORE
-        if (!empty($time_ex[1]) && is_numeric($time_ex[1]) && $time_ex[1] > 0) {
-            $minutes = round(($time_ex[1] * 60) / 100);
-        }
+        $hours = str_pad($hours, 2, 0, STR_PAD_LEFT);
+        $minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
+        $seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
         
         $hours_label = ($hours === 1) ? t('hour') : t('hours');
         $minutes_label = ($minutes === 1) ? t('minute') : t('minutes');
+        $seconds_label = ($seconds === 1) ? t('second') : t('seconds');
         
         $return = '';
         
@@ -1780,6 +1781,10 @@ if (!function_exists('hours_to_human')) {
             $return .= "{$minutes} {$minutes_label} ";
         }
         
-        return $return_formatted ? $return : ['hours' => $hours, 'minutes' => $minutes];
+        if ($return_seconds && $seconds > 0) {
+            $return .= "{$seconds} {$seconds_label} ";
+        }
+        
+        return $return_formatted ? $return : ['hours' => $hours, 'minutes' => $minutes, 'seconds' => $seconds];
     }
 }
