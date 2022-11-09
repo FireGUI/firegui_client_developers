@@ -27,13 +27,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2018, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	https://codeigniter.com
- * @since	Version 2.0.0
+ * @package    CodeIgniter
+ * @author    EllisLab Dev Team
+ * @copyright    Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright    Copyright (c) 2014 - 2018, British Columbia Institute of Technology (http://bcit.ca/)
+ * @license    http://opensource.org/licenses/MIT    MIT License
+ * @link    https://codeigniter.com
+ * @since    Version 2.0.0
  * @filesource
  */
 defined('BASEPATH') or exit('No direct script access allowed');
@@ -41,16 +41,33 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * CodeIgniter Session Class
  *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Sessions
- * @author		Andrey Andreev
- * @link		https://codeigniter.com/user_guide/libraries/sessions.html
+ * @package        CodeIgniter
+ * @subpackage    Libraries
+ * @category    Sessions
+ * @author        Andrey Andreev
+ * @link        https://codeigniter.com/user_guide/libraries/sessions.html
  */
 class MY_Session extends CI_Session
 {
 
+    public function __construct(array $params = array())
+    {
+        if ($this->ignore_sessions()) {
+            return;
+        }
 
+        parent::__construct();
+    }
+
+    private function ignore_sessions()
+    {
+        $uri = str_replace("//", "/", $_SERVER['REQUEST_URI']);
+        if (strpos($uri, '/rest/') === 0) {
+            return true;
+        }
+
+        return false;
+    }
     // ------------------------------------------------------------------------
 
     /**
@@ -58,8 +75,8 @@ class MY_Session extends CI_Session
      *
      * Handle input parameters and configuration defaults
      *
-     * @param	array	&$params	Input parameters
-     * @return	void
+     * @param    array    &$params    Input parameters
+     * @return    void
      */
     protected function _configure(&$params)
     {
@@ -70,16 +87,16 @@ class MY_Session extends CI_Session
             $params['cookie_lifetime'] = (int) $params['cookie_lifetime'];
         } else {
             $params['cookie_lifetime'] = (!isset($expiration) && config_item('sess_expire_on_close'))
-                ? 0 : (int) $expiration;
+            ? 0 : (int) $expiration;
         }
 
         isset($params['cookie_name']) or $params['cookie_name'] = config_item('sess_cookie_name');
         if (empty($params['cookie_name'])) {
             $params['cookie_name'] = ini_get('session.name');
         } else {
-            
+
             ini_set('session.name', $params['cookie_name']);
-            
+
         }
 
         isset($params['cookie_path']) or $params['cookie_path'] = config_item('cookie_path');
@@ -95,7 +112,7 @@ class MY_Session extends CI_Session
                 'secure' => $secure_cookie,
                 'path' => config_item('cookie_path'),
                 'domain' => config_item('cookie_domain'),
-                'httponly' => config_item('cookie_httponly')
+                'httponly' => config_item('cookie_httponly'),
             ]
         );
 
