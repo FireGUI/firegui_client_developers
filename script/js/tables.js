@@ -65,7 +65,7 @@ function initTabelWithPars(grid, pars) {
                 sUrl: base_url_scripts + 'script/dt_translations/datatable.' + lang_short_code + '.json',
             },
             drawCallback: function (settings) {
-                if (!pars.ajax) {
+                if (pars.ajax) {
                     if (settings._iDisplayStart > settings._iRecordsTotal) {
                         grid.fnDestroy();
 
