@@ -33,12 +33,24 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
     var updateCalendar = function(evt) {
         var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
         var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
+    
+        var fDateStart = moment(evt.event.start).format('DD/MM/YYYY'); // formatted date start
+        var fDateEnd = moment(evt.event.end).format('DD/MM/YYYY'); // formatted date end
+    
+        var fTimeStart = moment(evt.event.start).format('HH:mm'); // formatted date start
+        var fTimeEnd = moment(evt.event.end).format('HH:mm'); // formatted date end
+        
         var allDay = evt.event.allDay;
         var event_id = evt.event.id;
 
         var data = {
             [token_name]: token_hash,
-            <?php echo json_encode($calendar_map['id']) . ' : event_id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+            <?php echo json_encode($calendar_map['id']) . ' : event_id,' . json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>,
+        
+            date_start: fDateStart,
+            date_end: fDateEnd,
+            time_start: fTimeStart,
+            time_end: fTimeEnd,
         };
 
         $.ajax({
@@ -105,10 +117,21 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
                     var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
                     var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
                     var allDay = date.allDay;
-
+    
+                    var fDateStart = moment(date.start).format('DD/MM/YYYY'); // formatted date start
+                    var fDateEnd = moment(date.end).format('DD/MM/YYYY'); // formatted date end
+        
+                    var fTimeStart = moment(date.start).format('HH:mm'); // formatted time start
+                    var fTimeEnd = moment(date.end).format('HH:mm'); // formatted time end
+                    
                     var data = {
                         [token_name]: token_hash,
-                        <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                        <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>,
+    
+                        date_start: fDateStart,
+                        date_end: fDateEnd,
+                        time_start: fTimeStart,
+                        time_end: fTimeEnd,
                     };
                     loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
                         calendar.refetchEvents();
