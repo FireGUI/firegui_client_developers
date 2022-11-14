@@ -2142,8 +2142,8 @@ class Apilib
             }
             $entity_id = $entity['entity_id'];
         }
-        //debug($data);
-        if (empty($data['entity'])) {
+
+        if (empty($data['entity']) && is_array($data)) {
             $data['entity'] = $entity['entity_name'] ?? $entity_id;
         }
 
@@ -2168,7 +2168,9 @@ class Apilib
                 }
             }
         }
-        unset($data['entity']);
+        if (!empty($data['entity']) && is_array($data)) {
+            unset($data['entity']);
+        }
         return $data;
     }
     private function runEvent($function, $data)
