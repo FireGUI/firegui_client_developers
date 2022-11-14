@@ -1747,3 +1747,44 @@ if (!function_exists('br2nl')) {
         return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n", "", str_replace("\r", "", htmlspecialchars_decode($input))));
     }
 }
+    
+if (!function_exists('hours_to_human')) {
+    function hours_to_human($decimal_hours, $return_formatted = true, $return_seconds = false) {
+        if (!is_numeric($decimal_hours)) return false;
+        
+        // start by converting to seconds
+        $seconds = ($decimal_hours * 3600);
+        // we're given hours, so let's get those the easy way
+        $hours = floor($decimal_hours);
+        // since we've "calculated" hours, let's remove them from the seconds variable
+        $seconds -= $hours * 3600;
+        // calculate minutes left
+        $minutes = floor($seconds / 60);
+        // remove those from seconds as well
+        $seconds -= $minutes * 60;
+        
+        $hours = str_pad($hours, 2, 0, STR_PAD_LEFT);
+        $minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
+        $seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
+        
+        $hours_label = ($hours === 1) ? t('hour') : t('hours');
+        $minutes_label = ($minutes === 1) ? t('minute') : t('minutes');
+        $seconds_label = ($seconds === 1) ? t('second') : t('seconds');
+        
+        $return = '';
+        
+        if ($hours > 0) {
+            $return .= "{$hours} {$hours_label} ";
+        }
+        
+        if ($minutes > 0) {
+            $return .= "{$minutes} {$minutes_label} ";
+        }
+        
+        if ($return_seconds && $seconds > 0) {
+            $return .= "{$seconds} {$seconds_label} ";
+        }
+        
+        return $return_formatted ? $return : ['hours' => $hours, 'minutes' => $minutes, 'seconds' => $seconds];
+    }
+}
