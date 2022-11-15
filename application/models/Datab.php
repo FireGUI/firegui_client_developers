@@ -1638,6 +1638,7 @@ class Datab extends CI_Model
 
     public function generate_menu_link($menu, $value_id = null, $data = null)
     {
+
         $link = '';
         if ($menu['menu_layout'] && $menu['menu_layout'] != '-2') {
             $controller_method = (($menu['menu_modal'] == DB_BOOL_TRUE) ? 'get_ajax/layout_modal' : 'main/layout');
@@ -2367,7 +2368,7 @@ class Datab extends CI_Model
                 //show_404();
             }
 
-            if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0) {
+            if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0 && $layout_data_detail == null) {
                 $entity = $this->crmentity->getEntity($dati['layout_container']['layouts_entity_id']);
                 if (isset($entity['entity_name'])) {
                     $this->layout->addRelatedEntity($entity['entity_name'], $value_id);

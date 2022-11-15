@@ -182,6 +182,12 @@ class Conditions extends CI_Model
 
                     return $this->doModuleInstalledOperation($rule['id'], $rule['operator'], $rule['value']);
                     break;
+                case '_is_maintenance':
+
+                    $return = $this->doOperation($rule['id'], $rule['operator'], is_maintenance());
+
+                    return $return;
+                    break;
                 default:
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
                         // debug($rule);
