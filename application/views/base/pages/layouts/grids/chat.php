@@ -89,18 +89,18 @@ if (isset($grid_data['data'])) {
     </div>
 </div>
 
-<?php if (!isset($grid['replaces']['thumbnail'])) : ?>
+<?php /* if (!isset($grid['replaces']['thumbnail'])) : ?>
     <style>
         .right .direct-chat-text {
             margin-right: 1px !important;
         }
-    
+        
         .direct-chat-text {
             margin-left: 1px !important;
         }
     
     </style>
-<?php endif; ?>
+<?php endif; */ ?>
 
 <script>
     var ChatWidget = function() {
