@@ -165,7 +165,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
 
 <div id="app">
-    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" @ready="initCalendar" @view-change="initCalendar" :events="events" :on-event-drag-create="onEventCreate" @cell-click="onClicCell($event)" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
+    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @cell-click="onClicCell($event)" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
             <strong :style="`color: ${split.color}`">{{ split.label }}</strong>
         </template></vue-cal>
 </div>
@@ -215,10 +215,10 @@ new Vue({
         }
     },
     methods: {
-onClicCell(event) {
-    return this.onEventCreate(event);
-    //alert(1);
-},
+        onClicCell(event) {
+            return this.onEventCreate(event);
+            //alert(1);
+        },
         //TODO: oncreate?
         /**
          * ! Call on event creation
@@ -230,11 +230,23 @@ onClicCell(event) {
             <?php if (!empty($data['create_form']) && $data['calendars']['calendars_allow_create'] == DB_BOOL_TRUE): ?>
             var fStart = moment(event.start).format('DD/MM/YYYY HH:mm'); // formatted start
             var fEnd = moment(event.end).format('DD/MM/YYYY HH:mm'); // formatted end
+
+            var fDateStart = moment(event.start).format('DD/MM/YYYY'); // formatted date start
+            var fDateEnd = moment(event.end).format('DD/MM/YYYY'); // formatted date end
+
+            var fTimeStart = moment(event.start).format('HH:mm'); // formatted date start
+            var fTimeEnd = moment(event.end).format('HH:mm'); // formatted date end
+
             var allDay = event.allDay;
 
             var data = {
                 [token_name]: token_hash,
-                <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? ','.json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+
+                date_start: fDateStart,
+                date_end: fDateEnd,
+                time_start: fTimeStart,
+                time_end: fTimeEnd,
             };
             console.log(data)
             loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
@@ -398,7 +410,7 @@ onClicCell(event) {
                                     _splits.push(column);
                                 }
                                 exists = _splits.findIndex(el => el.label === column.label);
-                                element.split = exists+1;
+                                element.split = exists + 1;
 
                                 // console.log(column);
                                 // console . log(_splits);
