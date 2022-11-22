@@ -1718,3 +1718,6 @@ $lang['ID Subscriptions Recurrence'] = 'ID Subscriptions Recurrence';
 $lang['Subscriptions Recurrence'] = 'Subscriptions Recurrence';
 $lang['ID Tickets Reports Type'] = 'ID Tickets Reports Type';
 $lang['Tickets Reports Type'] = 'Tickets Reports Type';
+$lang['TEST VUE'] = 'TEST VUE';
+$lang['Straordinario'] = 'Straordinario';
+$lang['salvato'] = 'salvato';

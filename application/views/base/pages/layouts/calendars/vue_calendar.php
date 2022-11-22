@@ -165,7 +165,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
 
 <div id="app">
-    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @cell-click="onClicCell($event)" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
+    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
             <strong :style="`color: ${split.color}`">{{ split.label }}</strong>
         </template></vue-cal>
 </div>
@@ -212,19 +212,20 @@ new Vue({
 ?> ";*/
             sourceUrl: "<?php echo base_url("get_ajax/get_calendar_events/{$calendarId}"); ?>",
             calendars_group_by: "<?php echo ($calendar_map['group_by']) ?? ''; ?>",
+            options: null,
         }
     },
     methods: {
-        onClicCell(event) {
-            return this.onEventCreate(event);
-            //alert(1);
-        },
+        // onClicCell(event) {
+        //     return this.onEventCreate(event);
+        //     //alert(1);
+        // },
         //TODO: oncreate?
         /**
          * ! Call on event creation
          */
         onEventCreate(event, deleteEventFunction) {
-            console.log(event);
+            //console.log(event);
             const self = this;
 
             <?php if (!empty($data['create_form']) && $data['calendars']['calendars_allow_create'] == DB_BOOL_TRUE): ?>
@@ -241,23 +242,29 @@ new Vue({
 
             var data = {
                 [token_name]: token_hash,
-                <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? ','.json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
+                <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd, ' . (isset($calendar_map['all_day']) ? ',' . json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>
 
                 date_start: fDateStart,
                 date_end: fDateEnd,
                 time_start: fTimeStart,
                 time_end: fTimeEnd,
             };
-            console.log(data)
+            //console.log(data)
             loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
-                self.initCalendar();
+
+
+                self.initCalendar(self.options);
             }, 'get');
             <?php endif;?>
-            //return false;
+            //console.log(event);
+            //event.class = "hide hidden";
+            //alert(1);
+
+            return event;
 
             // You can modify event here and return it.
             // You can also return false to reject the event creation.
-            return event
+            //return event;
         },
 
         /**
@@ -271,7 +278,7 @@ new Vue({
             //Open modal form
             <?php if (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE): ?>
             loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['update_form']}")); ?> + '/' + event.id, {}, function() {
-                self.initCalendar();
+                self.initCalendar(self.options);
             });
             <?php endif;?>
             return false;
@@ -351,13 +358,14 @@ new Vue({
             endDate,
             week
         }) {
-            /* console.log('Fetching events', {
+            this.options = {
                 view,
                 startDate,
                 endDate,
                 week
-            }); */
-
+            };
+            //console.log(options);
+            //alert(2);
             const self = this;
             this.loadingCalendar = true;
 
