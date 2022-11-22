@@ -1638,6 +1638,7 @@ class Datab extends CI_Model
 
     public function generate_menu_link($menu, $value_id = null, $data = null)
     {
+
         $link = '';
         if ($menu['menu_layout'] && $menu['menu_layout'] != '-2') {
             $controller_method = (($menu['menu_modal'] == DB_BOOL_TRUE) ? 'get_ajax/layout_modal' : 'main/layout');
@@ -2367,7 +2368,7 @@ class Datab extends CI_Model
                 //show_404();
             }
 
-            if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0) {
+            if ($value_id && $dati['layout_container']['layouts_entity_id'] > 0 && $layout_data_detail == null) {
                 $entity = $this->crmentity->getEntity($dati['layout_container']['layouts_entity_id']);
                 if (isset($entity['entity_name'])) {
                     $this->layout->addRelatedEntity($entity['entity_name'], $value_id);
@@ -3254,12 +3255,22 @@ class Datab extends CI_Model
                 $data = $this->get_menu($contentRef);
                 return $this->load->view("pages/layouts/menu/{$contentType}", array('data' => $data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
             case "view":
-                //Verifico se questa custom view fa parte di un modulo. In tal caso, carico la view direttamente dal modulo
-                if ($module_view = $this->getModuleViewData($contentRef)) {
-                    return $this->load->module_view($module_view['module_name'] . '/views', $module_view['module_view'], ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+                //TODO: verificare prima se esiste un custom per questo modulo nelle view native custom
+                $module_view = $this->getModuleViewData($contentRef);
+
+                if (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php")) {
+                    return $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+
                 } else {
-                    return $this->loadCustomView($contentRef, ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+//Verifico se questa custom view fa parte di un modulo. In tal caso, carico la view direttamente dal modulo
+                    if ($module_view) {
+                        return $this->load->module_view($module_view['module_name'] . '/views', $module_view['module_view'], ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+                    } else {
+                        return $this->loadCustomView($contentRef, ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+                    }
+
                 }
+
             // no break
             default:
                 if (empty($contentType) && $layoutBoxData['layouts_boxes_content']) {
