@@ -27,6 +27,7 @@ var handleSuccess = function (msg, container = null) {
         case 3:
             //Alert
             alert(msg.txt);
+            submitBtn.show();
             break;
 
         case 4:
@@ -51,6 +52,7 @@ var handleSuccess = function (msg, container = null) {
             // Success
 
             success(msg.txt);
+            submitBtn.show();
             break;
         case 7:
             refreshAjaxLayoutBoxes();
@@ -213,7 +215,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             formAjaxIsSubmitting = false;
         },
         success: function (msg) {
-            
+
             if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
@@ -227,10 +229,10 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 closeContainingPopups(form);
             }
             if (typeof msg.cache_tags !== 'undefined' && msg.cache_tags) {
-                
+
                 for (var i in msg.cache_tags) {
                     var entity = msg.cache_tags[i];
-                    
+
                     refreshLayoutBoxesByEntity(entity);
                 }
             }
@@ -436,7 +438,7 @@ function refreshAjaxLayoutBoxes() {
 }
 var refreshed_layouts = [];
 function refreshLayoutBoxesByEntity (entity_name) {
-    
+
     var link_href = window.location.href;
     var get_params = link_href.split('?');
     if (get_params[1]) {
@@ -455,49 +457,49 @@ function refreshLayoutBoxesByEntity (entity_name) {
             if (related_entities.includes(entity_name)) {
                 loading(true);
                 var layout_id = $(this).data('layout-id');
-                
+
                 if (refreshed_layouts.includes(layout_id)) {
                     console.log('Already refreshed layout '+layout_id);
                 } else {
                     var value_id = $(this).data('value_id');
                     refreshed_layouts.push(layout_id);
                     $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
-                    type: 'GET',
-                    dataType: 'json',
-                    complete: function () {
-                        loading(false);
-                    },
-                    success: function (data) {
-                        
-                        if (data.status == 0) {
-                            console.log(data.msg);
-                        }
-                        if (data.status == 1) {
+                        type: 'GET',
+                        dataType: 'json',
+                        complete: function () {
+                            loading(false);
+                        },
+                        success: function (data) {
 
-                            $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
+                            if (data.status == 0) {
+                                console.log(data.msg);
+                            }
+                            if (data.status == 1) {
 
-                            $('.js_page_content').hide();
-                            document.title = data.dati.title_prefix;
-                            console.log('TODO: clone js_page_content instead of creating div...');
-                            var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'"></div>';
-                            // $();
-                            //clonedContainer.html(data.content);
-                            $('#js_layout_content_wrapper').append(clonedContainerHtml);
-                            var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
-                            clonedContainer.html(data.content);
-                            window.history.pushState("", "", link_href);
-                            initComponents(clonedContainer, true);
+                                $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
+
+                                $('.js_page_content').hide();
+                                document.title = data.dati.title_prefix;
+                                console.log('TODO: clone js_page_content instead of creating div...');
+                                var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'"></div>';
+                                // $();
+                                //clonedContainer.html(data.content);
+                                $('#js_layout_content_wrapper').append(clonedContainerHtml);
+                                var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
+                                clonedContainer.html(data.content);
+                                window.history.pushState("", "", link_href);
+                                initComponents(clonedContainer, true);
 
 
 
-                        }
-                        refreshed_layouts = [];
-                    },
-                });
+                            }
+                            refreshed_layouts = [];
+                        },
+                    });
                 }
 
 
-                
+
             }
         }
 
