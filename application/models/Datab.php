@@ -1627,8 +1627,9 @@ class Datab extends CI_Model
             foreach ($getSuffix as $k => $v) {
                 $suffix .= $k . '=' . $v;
             }
+            $dati = isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
+
             if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
-                $dati = isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
 
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->layout->getRelatedEntities());
             }
