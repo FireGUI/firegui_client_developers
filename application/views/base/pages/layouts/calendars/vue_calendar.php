@@ -149,7 +149,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 }
 
 .demo .kate .vuecal__event {
-    background-color: rgb(51, 65, 85);
+    /*background-color: rgb(51, 65, 85);*/
     color: #fff;
     border: 0.5px solid #ffffff;
     border-radius: 4px;
@@ -167,28 +167,18 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 <div id="app">
     <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
             <strong :style="`color: ${split.color}`">{{ split.label }}</strong>
-        </template></vue-cal>
+        </template>
+        <template #event="{ event, view }">
+            <div class="event-content" :style="{ backgroundColor: event.backgroundColor }" style="height: 100%; color: #ffffff;">
+                <div class="vuecal__event-title" v-html="event.title"></div>
+                {{ event.start.formatTime() }} - {{ event.end.formatTime() }}
+            </div>
+        </template>
+    </vue-cal>
 </div>
 
 
 <script>
-// const demoExample = {
-//     splits: [{
-//         label: 'John',
-//         class: 'john'
-//     }, {
-//         label: 'Kate',
-//         class: 'kate'
-//     }],
-//     editable: {
-//         title: false,
-//         drag: true,
-//         resize: true,
-//         create: true,
-//         delete: false
-//     },
-// };
-
 new Vue({
     el: '#app',
     components: {
@@ -398,13 +388,14 @@ new Vue({
 
                         self.events.forEach((element, index) => {
                             console.log(element)
-                            // if (index % 2 === 0) {
-                            //     element.split = 1;
-                            // } else {
-                            //     element.split = 2;
-                            // }
+
                             element.start = moment(element.start).format('YYYY-MM-DD HH:mm');
                             element.end = moment(element.end).format('YYYY-MM-DD HH:mm');
+                            if (element.color) {
+                                element.backgroundColor = element.color;
+                            } else {
+                                element.backgroundColor = 'rgb(51, 65, 85)';
+                            }
 
                             if (self.calendars_group_by != '' && view == 'day') {
                                 var column = {
