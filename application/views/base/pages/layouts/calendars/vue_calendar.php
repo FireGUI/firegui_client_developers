@@ -33,6 +33,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 <!-- VUE CAL -->
 <script src="https://unpkg.com/vue-cal@legacy"></script>
 <link href="https://unpkg.com/vue-cal@legacy/dist/vuecal.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vue-touch-events@1.0.3/vue-touch-events.min.js"></script>
 
 <style>
 .vue_cal_container {
@@ -281,9 +282,12 @@ new Vue({
             const eventId = event.id;
             const start = moment(event.start).format('YYYY-MM-DD HH:mm:ss');
             const end = moment(event.end).format('YYYY-MM-DD HH:mm:ss');
-            const allDay = event.allDay;
+            var allday = 0;
+            if(event.allDay === true){
+                allday == 1;
+            }
+            const allDay = allday;
             console.log(`Updating event with id # ${eventId}, start: ${start} - end: ${end}`);
-
             const formData = new FormData();
             formData.append([token_name], token_hash);
             formData.append("<?php echo $calendar_map['id']; ?>", eventId);
