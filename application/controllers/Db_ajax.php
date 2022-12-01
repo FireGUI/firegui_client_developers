@@ -36,10 +36,20 @@ class Db_ajax extends MY_Controller
         if (isset($_POST[0])) {
             unset($_POST[0]);
         }
-
+    
+        if (!is_numeric($form_id)) {
+            $this->db->where('forms_identifier', $form_id);
+        } else {
+            $this->db->where('forms_id', $form_id);
+        }
+    
         // ==========================
         // Load form related infos
         // ==========================
+        $form = $this->db->join('entity', 'forms_entity_id=entity_id', 'left')->get('forms')->row_array();
+    
+        if (!$form) show_error(t('Form not found!'));
+    
         $form = $this->db->join('entity', 'forms_entity_id=entity_id', 'left')->get_where('forms', array('forms_id' => $form_id))->row_array();
         $form['fields'] = $this->db->join('fields', 'forms_fields_fields_id=fields_id', 'left')
             ->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')
