@@ -557,6 +557,23 @@ class Get_ajax extends MY_Controller
             ]);
 
         } else {
+            $referer = ($_SERVER['HTTP_REFERER'] ?? '');
+
+            //Set current layout the same as the layout who caused this call
+            if ($referer) {
+                //catch layout id
+                $ref_expl = explode('/', explode('?', $referer)[0]);
+                $pointer = 0;
+                $layout_id = null;
+                while ($pointer < count($ref_expl) && stripos($ref_expl[$pointer], 'layout') === false) {
+                    $pointer++;
+                }
+                if ($pointer < count($ref_expl)) {
+                    //Layout id is the next parameter
+                    $layout_id = $ref_expl[$pointer + 1];
+                }
+                $this->layout->addLayout($layout_id);
+            }
 
             /**
              * Info da datatable

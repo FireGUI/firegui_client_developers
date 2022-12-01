@@ -67,7 +67,11 @@ class Layout extends CI_Model
             return false;
         }
     }
+    public function getLoadedLayoutsIds()
+    {
 
+        return array_values($this->structure);
+    }
     /**
      * @return int|null
      */

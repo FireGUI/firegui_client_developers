@@ -69,6 +69,9 @@ class Conditions extends CI_Model
         $dati = [
             '_current_date' => date('Y-m-d'),
             '_current_time' => date('H:i:s'),
+            '_current_page_id' => $this->layout->getCurrentLayout(),
+            '_current_page_identifier' => $this->layout->getCurrentLayoutIdentifier(),
+            '_nested_layouts_id' => $this->layout->getLoadedLayoutsIds(), //TODO: array contentente tutti i layout/sublayout attuaklmente visualizzati
         ];
         if ($_dati !== null) {
             $dati = array_merge($dati, $_dati);
@@ -182,6 +185,20 @@ class Conditions extends CI_Model
 
                     return $this->doModuleInstalledOperation($rule['id'], $rule['operator'], $rule['value']);
                     break;
+                case '_current_page_id':
+
+                    return $this->doCurrentPageIdOperation($dati, $rule['id'], $rule['operator'], $rule['value']);
+                    break;
+                case '_current_page_identifier':
+                    return $this->doCurrentPageIdentifierOperation($dati, $rule['id'], $rule['operator'], $rule['value']);
+                    break;
+                case '_current_page_id_included':
+
+                    return $this->doCurrentPageIdIncludedOperation($dati, $rule['id'], $rule['operator'], $rule['value']);
+                    break;
+                case '_current_page_identifier_included':
+                    return $this->doCurrentPageIdentifierIncludedOperation($dati, $rule['id'], $rule['operator'], $rule['value']);
+                    break;
                 case '_is_maintenance':
 
                     $return = $this->doOperation($rule['id'], $rule['operator'], is_maintenance());
@@ -237,6 +254,48 @@ class Conditions extends CI_Model
         return false;
 
     }
+
+    public function doCurrentPageIdOperation($dati, $rule_id, $ruleOperator, $ruleValue)
+    {
+
+        //TODO: in realtà non va bene perchè il current layout della grid è corretto, ma quando parte l'ajax il current layout è null (essendo una get_ajax)... le ajax dovrebbero portarsi dirtro / passare al controller l'informazione del layout da cui sono state invocate
+        //TODO: return true also if ruleVale match/doesn't match/... with _nested_layouts_id. Probabily needs another specific rule id in builder...
+        $value_to_validate = $dati[$rule_id];
+        return $this->doOperation($value_to_validate, $ruleOperator, $ruleValue);
+    }
+    public function doCurrentPageIdentifierOperation($dati, $rule_id, $ruleOperator, $ruleValue)
+    {
+        //TODO: return true also if ruleVale match/doesn't match/... with _nested_layouts_id. Probabily needs another specific rule id in builder...
+
+        $value_to_validate = $dati[$rule_id];
+        return $this->doOperation($value_to_validate, $ruleOperator, $ruleValue);
+    }
+    public function doCurrentPageIdIncludedOperation($dati, $rule_id, $ruleOperator, $ruleValue)
+    {
+        $layouts = $dati['_nested_layouts_id'];
+        foreach ($layouts as $layout_id) {
+            if ($this->doOperation($layout_id, $ruleOperator, $ruleValue)) {
+                return true;
+                break;
+            }
+        }
+        return false;
+    }
+    public function doCurrentPageIdentifierIncludedOperation($dati, $rule_id, $ruleOperator, $ruleValue)
+    {
+        $rule_value_id = $this->layout->getLayoutByIdentifier($ruleValue);
+        //debug($rule_value_id, true);
+        $layouts = $dati['_nested_layouts_id'];
+        foreach ($layouts as $layout_id) {
+            if ($this->doOperation($layout_id, $ruleOperator, $rule_value_id)) {
+                return true;
+                break;
+            }
+        }
+        return false;
+
+    }
+
     /**
      * Esegue un'operazione booleana avendo i due operandi e il codice operatore
      *
