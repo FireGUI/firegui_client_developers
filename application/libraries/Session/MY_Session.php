@@ -66,6 +66,10 @@ class MY_Session extends CI_Session
             return true;
         }
 
+        // if ($current_controller == 'Public_Controller') {
+        //     return true;
+        // }
+
         return false;
     }
     // ------------------------------------------------------------------------

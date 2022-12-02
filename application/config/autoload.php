@@ -27,7 +27,7 @@
 | 5. Language files
 | 6. Models
 |
-*/
+ */
 
 /*
 | -------------------------------------------------------------------
@@ -37,10 +37,9 @@
 |
 |  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
 |
-*/
+ */
 
 $autoload['packages'] = [];
-
 
 /*
 | -------------------------------------------------------------------
@@ -51,11 +50,10 @@ $autoload['packages'] = [];
 |
 | Prototype:
 |
-|	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
-*/
+|    $autoload['libraries'] = array('database', 'session', 'xmlrpc');
+ */
 
 $autoload['libraries'] = array('session', 'database', 'apilib', 'security');
-
 
 /*
 | -------------------------------------------------------------------
@@ -63,11 +61,10 @@ $autoload['libraries'] = array('session', 'database', 'apilib', 'security');
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['helper'] = array('url', 'file');
-*/
+|    $autoload['helper'] = array('url', 'file');
+ */
 
 $autoload['helper'] = array('string', 'url', 'cookie', 'general_helper', 'language', 'text', 'entity');
-
 
 /*
 | -------------------------------------------------------------------
@@ -75,15 +72,14 @@ $autoload['helper'] = array('string', 'url', 'cookie', 'general_helper', 'langua
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['config'] = array('config1', 'config2');
+|    $autoload['config'] = array('config1', 'config2');
 |
 | NOTE: This item is intended for use ONLY if you have created custom
 | config files.  Otherwise, leave it blank.
 |
-*/
+ */
 
 $autoload['config'] = array('enviroment');
-
 
 /*
 | -------------------------------------------------------------------
@@ -91,15 +87,14 @@ $autoload['config'] = array('enviroment');
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['language'] = array('lang1', 'lang2');
+|    $autoload['language'] = array('lang1', 'lang2');
 |
 | NOTE: Do not include the "_lang" part of your file.  For example
 | "codeigniter_lang.php" would be referenced as array('codeigniter');
 |
-*/
+ */
 
 $autoload['language'] = [];
-
 
 /*
 | -------------------------------------------------------------------
@@ -107,9 +102,9 @@ $autoload['language'] = [];
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['model'] = array('model1', 'model2');
+|    $autoload['model'] = array('model1', 'model2');
 |
-*/
+ */
 
 $autoload['model'] = [
     'auth',
@@ -122,9 +117,8 @@ $autoload['model'] = [
     'fi_events',
     'fi_activity',
     'notifications',
-    'conditions'
+    'conditions',
 ];
-
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

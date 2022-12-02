@@ -27,12 +27,12 @@ class MY_Profiler extends CI_Profiler
 
         if (count($dbs) === 0) {
             return "\n\n"
-                . '<fieldset id="ci_profiler_queries" style="border:1px solid #0000FF;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee;">'
-                . "\n"
-                . '<legend style="color:#0000FF;">&nbsp;&nbsp;' . $this->CI->lang->line('profiler_queries') . '&nbsp;&nbsp;</legend>'
-                . "\n\n\n<table style=\"border:none; width:100%;\">\n"
-                . '<tr><td style="width:100%;color:#0000FF;font-weight:normal;background-color:#eee;padding:5px;">'
-                . $this->CI->lang->line('profiler_no_db')
+            . '<fieldset id="ci_profiler_queries" style="border:1px solid #0000FF;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee;">'
+            . "\n"
+            . '<legend style="color:#0000FF;">&nbsp;&nbsp;' . $this->CI->lang->line('profiler_queries') . '&nbsp;&nbsp;</legend>'
+            . "\n\n\n<table style=\"border:none; width:100%;\">\n"
+            . '<tr><td style="width:100%;color:#0000FF;font-weight:normal;background-color:#eee;padding:5px;">'
+            . $this->CI->lang->line('profiler_no_db')
                 . "</td></tr>\n</table>\n</fieldset>";
         }
 
@@ -42,19 +42,20 @@ class MY_Profiler extends CI_Profiler
         // Key words we want bolded
         $highlight = array('SELECT', 'DISTINCT', 'FROM', 'WHERE', 'AND', 'LEFT&nbsp;JOIN', 'ORDER&nbsp;BY', 'GROUP&nbsp;BY', 'LIMIT', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'OR&nbsp;', 'HAVING', 'OFFSET', 'NOT&nbsp;IN', 'IN', 'LIKE', 'NOT&nbsp;LIKE', 'COUNT', 'MAX', 'MIN', 'ON', 'AS', 'AVG', 'SUM', '(', ')');
 
-        $output  = "\n\n";
+        $output = "\n\n";
         $count = 0;
 
         foreach ($dbs as $name => $db) {
 
             uksort($db->queries, function ($key1, $key2) use ($db) {
+
                 return ($db->query_times[$key1] > $db->query_times[$key2]) ? -1 : 1;;
             });
             uksort($db->query_times, function ($key1, $key2) use ($db) {
                 return ($db->query_times[$key1] > $db->query_times[$key2]) ? -1 : 1;;
             });
 
-            $hide_queries = (count($db->queries) > $this->_query_toggle_count) ? ' display:none' : '';
+            $hide_queries = (count($db->queries) > $this->_query_toggle_count) ? ' _display:none' : '';
             $total_time = number_format(array_sum($db->query_times), 4) . ' ' . $this->CI->lang->line('profiler_seconds');
 
             $show_hide_js = '(<span style="cursor: pointer;" onclick="var s=document.getElementById(\'ci_profiler_queries_db_' . $count . '\').style;s.display=s.display==\'none\'?\'\':\'none\';this.innerHTML=this.innerHTML==\'' . $this->CI->lang->line('profiler_section_hide') . '\'?\'' . $this->CI->lang->line('profiler_section_show') . '\':\'' . $this->CI->lang->line('profiler_section_hide') . '\';">' . $this->CI->lang->line('profiler_section_hide') . '</span>)';
@@ -64,15 +65,15 @@ class MY_Profiler extends CI_Profiler
             }
 
             $output .= '<fieldset style="border:1px solid #0000FF;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee;">'
-                . "\n"
-                . '<legend style="color:#0000FF;">&nbsp;&nbsp;' . $this->CI->lang->line('profiler_database')
-                . ':&nbsp; ' . $db->database . ' (' . $name . ')&nbsp;&nbsp;&nbsp;' . $this->CI->lang->line('profiler_queries')
-                . ': ' . count($db->queries) . ' (' . $total_time . ')&nbsp;&nbsp;' . $show_hide_js . "</legend>\n\n\n"
+            . "\n"
+            . '<legend style="color:#0000FF;">&nbsp;&nbsp;' . $this->CI->lang->line('profiler_database')
+            . ':&nbsp; ' . $db->database . ' (' . $name . ')&nbsp;&nbsp;&nbsp;' . $this->CI->lang->line('profiler_queries')
+            . ': ' . count($db->queries) . ' (' . $total_time . ')&nbsp;&nbsp;' . $show_hide_js . "</legend>\n\n\n"
                 . '<table style="width:100%;' . $hide_queries . '" id="ci_profiler_queries_db_' . $count . "\">\n";
 
             if (count($db->queries) === 0) {
                 $output .= '<tr><td style="width:100%;color:#0000FF;font-weight:normal;background-color:#eee;padding:5px;">'
-                    . $this->CI->lang->line('profiler_no_queries') . "</td></tr>\n";
+                . $this->CI->lang->line('profiler_no_queries') . "</td></tr>\n";
             } else {
 
                 foreach ($db->queries as $key => $val) {

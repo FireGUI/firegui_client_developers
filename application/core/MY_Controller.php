@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * Controller base
- * 
+ *
  * @author Alberto
  * @property-read Apilib $apilib
  * @property-read Auth $auth
@@ -42,11 +42,12 @@ class MY_Controller extends MX_Controller
      */
     public function __construct()
     {
+        //debug($this, true);
         parent::__construct();
         $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('raw_queries')) {
-            
+
             $this->db->cache_on();
         } else {
             $this->db->cache_off();
@@ -59,12 +60,12 @@ class MY_Controller extends MX_Controller
         // Inizializza le variabili d'istanza del controller
         if ($this->db->table_exists('settings_template')) {
             $this->db
-            ->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
-            
-        } 
+                ->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
+
+        }
         $this->settings = $this->db
-        ->get('settings')->row_array();
-        
+            ->get('settings')->row_array();
+
         //$this->settings = $this->db->get('settings')->row_array();
         $this->isAdmin = $this->auth->is_admin();
         $this->isDev = is_development();
@@ -85,15 +86,14 @@ class MY_Controller extends MX_Controller
         if ($currentLang) {
             $fallbackLang = $this->datab->getDefaultLanguage();
             $this->apilib->setLanguage($currentLang['id'], $fallbackLang['id']);
-            
+
             $this->config->set_item('language', $currentLang['file']);
-            
+
             $loaded = $this->lang->is_loaded;
-            
+
             $this->is_loaded = [];
-            
-            foreach($loaded as $lang)
-            {
+
+            foreach ($loaded as $lang) {
                 $this->lang->load($lang);
             }
         }
