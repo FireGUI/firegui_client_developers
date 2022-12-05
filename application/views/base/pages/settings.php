@@ -171,21 +171,21 @@ if (!empty($this->settings['settings_last_cron_check'])) {
 
     </div>
 
-<div class="row">
+    <!--<div class="row">
 
 
-        <div class="col-md-12">
-            <div class="box box-solid">
-                <div class="box-header with-border">
-                    <i class="fas fa-microscope"></i>
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <i class="fas fa-microscope"></i>
 
-                    <h3 class="box-title">Unit tests</h3>
-                </div>
-
-                <div class="box-body">
-                        <iframe src="<?php echo base_url("application/tests/build/coverage/index.html"); ?>" />
-                </div>
-            </div>
+                        <h3 class="box-title">Unit tests</h3>
                     </div>
 
+                    <div class="box-body">
+                            <iframe src="<?php echo base_url("application/tests/build/coverage/index.html"); ?>" />
+                    </div>
+                </div>
+            </div>
+    </div>-->
 </section>
