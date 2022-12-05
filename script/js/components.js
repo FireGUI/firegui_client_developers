@@ -663,6 +663,7 @@ function initComponents(container, reset = false) {
 
   var fieldsSources = [];
   $('[data-source-field]:not([data-source-field=""])', container).each(function () {
+    
     // Prendo il form dell'elemento
     var jsMultiselect = $(this);
     var jqForm = jsMultiselect.parents("form");
@@ -717,21 +718,24 @@ function initComponents(container, reset = false) {
             var jqOption = $("<option></option>").val(k).text(v);
 
             if ($.inArray(k, previousValue) > -1) {
+              //alert(k);
               previousValueFound = true;
+              jqOption.attr('selected', 'selected');
             }
 
             jsMultiselect.append(jqOption);
           });
 
-          if (previousValueFound) {
-            if (isNormalSelect) {
-              jsMultiselect.val(previousValue[0]); // Solo UN valore
-              jsMultiselect.select2("val", previousValue);
-            } else {
-              jsMultiselect.val(previousValue).trigger("change");
-              jsMultiselect.select2("data", previousValue);
-            }
-          }
+           if (previousValueFound) {
+          //   if (isNormalSelect) {
+          //     jsMultiselect.val(previousValue[0]); // Solo UN valore
+          //     jsMultiselect.select2("val", previousValue);
+          //   } else {
+          //     jsMultiselect.val(previousValue).trigger("change");
+          //     jsMultiselect.select2("data", previousValue);
+          //   }
+             jsMultiselect.trigger('change');
+           }
         },
       });
     });
