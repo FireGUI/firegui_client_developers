@@ -1606,28 +1606,30 @@ class Datab extends CI_Model
      */
     public function get_detail_layout_link($entityIdentifier, $value_id = null, $modal = false)
     {
-
-        // Che sia name o id a getEntity non importa...
-        $entity_id = $this->crmentity->getEntity($entityIdentifier)['entity_id'];
-
-        $baseRoute = 'main/layout';
-        $suffix = '';
-        $getSuffix = [];
-        if ($modal) {
-            $baseRoute = 'get_ajax/layout_modal';
-            if (is_string($modal)) {
-                $getSuffix['_size'] = $modal;
+        $cache_key = "apilib/datab.get_detail_layout_link." . $this->auth->get(LOGIN_ENTITY . "_id") . '.' . $entityIdentifier;
+        if (!($dati = $this->mycache->get($cache_key))) {
+            // Che sia name o id a getEntity non importa...
+            $entity_id = $this->crmentity->getEntity($entityIdentifier)['entity_id'];
+            $baseRoute = 'main/layout';
+            $suffix = '';
+            $getSuffix = [];
+            if ($modal) {
+                $baseRoute = 'get_ajax/layout_modal';
+                if (is_string($modal)) {
+                    $getSuffix['_size'] = $modal;
+                }
+            }
+            if ($getSuffix) {
+                $suffix .= '?';
+            }
+            foreach ($getSuffix as $k => $v) {
+                $suffix .= $k . '=' . $v;
+            }
+            $dati = isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->layout->getRelatedEntities());
             }
         }
-
-        if ($getSuffix) {
-            $suffix .= '?';
-        }
-        foreach ($getSuffix as $k => $v) {
-            $suffix .= $k . '=' . $v;
-        }
-        $dati = isset($this->_accessibleEntityLayouts[$entity_id]) ? base_url("{$baseRoute}/{$this->_accessibleEntityLayouts[$entity_id]}/{$value_id}{$suffix}") : false;
-
         return $dati;
     }
 
