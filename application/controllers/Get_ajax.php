@@ -967,8 +967,25 @@ class Get_ajax extends MY_Controller
             }
 
             // Store timezone
+            //Se non è mappato uno start nell'evento
+            if (!array_key_exists('start', $ev)) {
+                //Assumo che sia mappato un date start
+                $ev['start'] = substr($ev['date_start'], 0, 10);
+
+                if (array_key_exists('hours_start', $ev)) {
+                    $ev['start'] = "{$ev['start']} {$ev['hours_start']}:00";
+                }
+                //debug($ev, true);
+            }
             $ev['start'] = date('c', strtotime($ev['start']));
-            $ev['end'] = date('c', strtotime($ev['end']));
+
+            if (!empty($ev['end'])) {
+                $ev['end'] = date('c', strtotime($ev['end']));
+
+            } else {
+                $ev['end'] = date('c', strtotime($ev['start'] . ' +1 hour'));
+
+            }
 
             if (empty($ev['all_day'])) {
                 $arr_start = explode('T', $ev['start']);

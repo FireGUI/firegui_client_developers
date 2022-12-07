@@ -18,6 +18,36 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 
+$config = [];
+//debug($calendar_map, true);
+if (!empty($calendar_map['start'])) {
+    $config[] = "{$calendar_map['start']}: fStart";
+}
+if (!empty($calendar_map['end'])) {
+    $config[] = "{$calendar_map['end']}: fEnd";
+}
+if (!empty($calendar_map['date_start'])) {
+    $config[] = "{$calendar_map['date_start']}: fDateStart";
+}
+
+if (!empty($calendar_map['date_end'])) {
+    $config[] = "{$calendar_map['date_end']}: fDateEnd";
+}
+
+if (!empty($calendar_map['hours_start'])) {
+    $config[] = "{$calendar_map['hours_start']}: fTimeStart";
+}
+
+if (!empty($calendar_map['hours_end'])) {
+    $config[] = "{$calendar_map['hours_end']}: fTimeEnd";
+}
+
+if (!empty($calendar_map['all_day'])) {
+    $config[] = "{$calendar_map['all_day']}: allDay";
+}
+
+$imploded_config = implode(',', $config);
+
 // $calendar_group_by = $data['calendars']['calendars_group_by'];
 // $splits = [];
 // if ($calendar_group_by) {
@@ -197,7 +227,7 @@ new Vue({
                 delete: false
             },
             selectedDate: new Date(), //default calendar date as today
-            loadingCalendar: false, //flag to show / hide spinner
+            loadingCalendar: true, //flag to show / hide spinner
             events: [],
             /*sourceUrl: "<?php //echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}" . $element_id);
 ?> ";*/
@@ -223,6 +253,9 @@ new Vue({
             var fStart = moment(event.start).format('DD/MM/YYYY HH:mm'); // formatted start
             var fEnd = moment(event.end).format('DD/MM/YYYY HH:mm'); // formatted end
 
+
+
+
             var fDateStart = moment(event.start).format('DD/MM/YYYY'); // formatted date start
             var fDateEnd = moment(event.end).format('DD/MM/YYYY'); // formatted date end
 
@@ -233,12 +266,7 @@ new Vue({
 
             var data = {
                 [token_name]: token_hash,
-                <?php echo json_encode($calendar_map['start']) . ' : fStart, ' . json_encode($calendar_map['end']) . ' : fEnd ' . (isset($calendar_map['all_day']) ? ',' . json_encode($calendar_map['all_day']) . ' : allDay? "' . DB_BOOL_TRUE . '":"' . DB_BOOL_FALSE . '"' : ''); ?>,
-
-                date_start: fDateStart,
-                date_end: fDateEnd,
-                time_start: fTimeStart,
-                time_end: fTimeEnd,
+                <?php echo $imploded_config; ?>
             };
             //console.log(data)
             loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
@@ -282,6 +310,13 @@ new Vue({
             const eventId = event.id;
             const start = moment(event.start).format('YYYY-MM-DD HH:mm:ss');
             const end = moment(event.end).format('YYYY-MM-DD HH:mm:ss');
+            var fDateStart = moment(event.start).format('DD/MM/YYYY'); // formatted date start
+            var fDateEnd = moment(event.end).format('DD/MM/YYYY'); // formatted date end
+
+            var fTimeStart = moment(event.start).format('HH:mm'); // formatted date start
+            var fTimeEnd = moment(event.end).format('HH:mm'); // formatted date end
+
+
             var allday = 0;
             if(event.allDay === true){
                 allday == 1;
@@ -291,10 +326,26 @@ new Vue({
             const formData = new FormData();
             formData.append([token_name], token_hash);
             formData.append("<?php echo $calendar_map['id']; ?>", eventId);
+            <?php if (!empty($calendar_map['start'])): ?>
             formData.append("<?php echo $calendar_map['start']; ?>", start);
-            formData.append("<?php echo $calendar_map['end']; ?>", end);
+            <?php endif;?>
+            <?php if (!empty($calendar_map['end'])): ?>
+                formData.append("<?php echo $calendar_map['end']; ?>", end);
+            <?php endif;?>
             <?php if (!empty($calendar_map['all_day'])): ?>
             formData.append("<?php echo $calendar_map['all_day']; ?>", allDay);
+            <?php endif;?>
+            <?php if (!empty($calendar_map['date_start'])): ?>
+            formData.append("<?php echo $calendar_map['date_start']; ?>", fDateStart);
+            <?php endif;?>
+            <?php if (!empty($calendar_map['date_end'])): ?>
+            formData.append("<?php echo $calendar_map['date_end']; ?>", fDateEnd);
+            <?php endif;?>
+            <?php if (!empty($calendar_map['hours_start'])): ?>
+            formData.append("<?php echo $calendar_map['hours_start']; ?>", fTimeStart);
+            <?php endif;?>
+            <?php if (!empty($calendar_map['hours_end'])): ?>
+            formData.append("<?php echo $calendar_map['hours_end']; ?>", fTimeEnd);
             <?php endif;?>
 
             /**
@@ -391,7 +442,7 @@ new Vue({
                         self.events = [...data];
 
                         self.events.forEach((element, index) => {
-                            console.log(element)
+                            //console.log(element)
 
                             element.start = moment(element.start).format('YYYY-MM-DD HH:mm');
                             element.end = moment(element.end).format('YYYY-MM-DD HH:mm');

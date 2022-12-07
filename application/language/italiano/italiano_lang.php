@@ -1732,3 +1732,4 @@ $lang['Rif. Commessa'] = 'Rif. Commessa';
 $lang['Materiale'] = 'Materiale';
 $lang['Elenco Ordini'] = 'Elenco Ordini';
 $lang['Crea commessa'] = 'Crea commessa';
+$lang['Partecipazioni sociali'] = 'Partecipazioni sociali';
