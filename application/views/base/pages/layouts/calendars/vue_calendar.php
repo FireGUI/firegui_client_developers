@@ -229,9 +229,7 @@ new Vue({
             selectedDate: new Date(), //default calendar date as today
             loadingCalendar: true, //flag to show / hide spinner
             events: [],
-            /*sourceUrl: "<?php //echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}" . $element_id);
-?> ";*/
-            sourceUrl: "<?php echo base_url("get_ajax/get_calendar_events/{$calendarId}"); ?>",
+            sourceUrl: "<?php echo base_url("get_ajax/get_calendar_events/{$calendarId}{$element_id}"); ?>",
             calendars_group_by: "<?php echo ($calendar_map['group_by']) ?? ''; ?>",
             options: null,
         }
@@ -318,7 +316,7 @@ new Vue({
 
 
             var allday = 0;
-            if(event.allDay === true){
+            if (event.allDay === true) {
                 allday == 1;
             }
             const allDay = allday;
@@ -330,7 +328,7 @@ new Vue({
             formData.append("<?php echo $calendar_map['start']; ?>", start);
             <?php endif;?>
             <?php if (!empty($calendar_map['end'])): ?>
-                formData.append("<?php echo $calendar_map['end']; ?>", end);
+            formData.append("<?php echo $calendar_map['end']; ?>", end);
             <?php endif;?>
             <?php if (!empty($calendar_map['all_day'])): ?>
             formData.append("<?php echo $calendar_map['all_day']; ?>", allDay);
