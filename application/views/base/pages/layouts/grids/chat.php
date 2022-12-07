@@ -113,11 +113,15 @@
             
             sendMessage: function(event) {
                 event.preventDefault();
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+                
                 var widget = event.data;
                 
                 var form = $(this);
                 $.post(form.attr('action'), form.serialize(), function(json) {
                     widget.appendMessage(json);
+                    
                     $('[name=text]', form).val('');
                     
                     // Se siamo in una modale comunichiamo che i dati sono stati
