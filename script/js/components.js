@@ -486,14 +486,20 @@ function initComponents(container, reset = false) {
           firstDay: 1,
         },
         ranges: {
-          Oggi: [moment(), moment()],
-          Ieri: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-          "Ultimi 7 Giorni": [moment().subtract(6, "days"), moment()],
-          "Ultimi 30 Giorni": [moment().subtract(29, "days"), moment()],
-          "Mese corrente": [moment().startOf("month"), moment().endOf("month")],
-          "Mese precedente": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
-          "Anno corrente": [moment().startOf("year"), moment().endOf("year")],
-          "Anno precedente": [moment().subtract(1, "year").startOf("year"), moment().subtract(1, "year").endOf("year")],
+          'Oggi': [moment(), moment()],
+          'Ieri': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Domani': [moment().add(1, 'days'), moment().add(1, 'days')],
+
+          'Ultimi 7 Giorni': [moment().subtract(6, 'days'), moment()],
+          'Ultimi 30 Giorni': [moment().subtract(29, 'days'), moment()],
+
+          'Mese corrente': [moment().startOf('month'), moment().endOf('month')],
+          'Mese precedente': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+          'Mese successivo': [moment().add(1, 'month').startOf('month'), moment().add(1, 'month').endOf('month')],
+
+          'Anno corrente': [moment().startOf('year'), moment().endOf('year')],
+          'Anno precedente': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+          'Anno successivo': [moment().add(1, 'year').startOf('year'), moment().add(1, 'year').endOf('year')]
         },
       },
       function (start, end) {
