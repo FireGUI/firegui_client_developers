@@ -1,5 +1,4 @@
 <?php
-
 // Map the calendar fields with the entity fields
 $calendar_map = array();
 foreach ($data['calendars_fields'] as $field) {
@@ -16,7 +15,6 @@ $calendars_default_view = (!empty($data['calendars']['calendars_default_view']))
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 
-$settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 
 $config = [];
 //debug($calendar_map, true);
@@ -63,7 +61,6 @@ $imploded_config = implode(',', $config);
 <!-- VUE CAL -->
 <script src="https://unpkg.com/vue-cal@legacy"></script>
 <link href="https://unpkg.com/vue-cal@legacy/dist/vuecal.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/vue-touch-events@1.0.3/vue-touch-events.min.js"></script>
 
 <style>
 .vue_cal_container {
@@ -196,7 +193,7 @@ $imploded_config = implode(',', $config);
 
 
 <div id="app">
-    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
+    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" events-on-month-view="short" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
             <strong :style="`color: ${split.color}`">{{ split.label }}</strong>
         </template>
         <template #event="{ event, view }">
@@ -227,7 +224,7 @@ new Vue({
                 delete: false
             },
             selectedDate: new Date(), //default calendar date as today
-            loadingCalendar: true, //flag to show / hide spinner
+            loadingCalendar: false, //flag to show / hide spinner
             events: [],
             sourceUrl: "<?php echo base_url("get_ajax/get_calendar_events/{$calendarId}{$element_id}"); ?>",
             calendars_group_by: "<?php echo ($calendar_map['group_by']) ?? ''; ?>",
@@ -250,10 +247,6 @@ new Vue({
             <?php if (!empty($data['create_form']) && $data['calendars']['calendars_allow_create'] == DB_BOOL_TRUE): ?>
             var fStart = moment(event.start).format('DD/MM/YYYY HH:mm'); // formatted start
             var fEnd = moment(event.end).format('DD/MM/YYYY HH:mm'); // formatted end
-
-
-
-
             var fDateStart = moment(event.start).format('DD/MM/YYYY'); // formatted date start
             var fDateEnd = moment(event.end).format('DD/MM/YYYY'); // formatted date end
 
@@ -421,27 +414,16 @@ new Vue({
                 const response = await axios.post(`${self.sourceUrl}`, formData);
                 if (response.status === 200) {
                     const data = response.data;
+                    //console.log(data);
 
                     //If group_by specified, use it to build splits columns for daily view
                     var _splits = [];
-                    /*
-[{
-//         label: 'John',
-//         class: 'john'
-//     }, {
-//         label: 'Kate',
-//         class: 'kate'
-//     }]
-                    */
-
 
                     if (data.length > 0) {
-
                         self.events = [...data];
 
                         self.events.forEach((element, index) => {
                             //console.log(element)
-
                             element.start = moment(element.start).format('YYYY-MM-DD HH:mm');
                             element.end = moment(element.end).format('YYYY-MM-DD HH:mm');
                             if (element.color) {
@@ -463,12 +445,6 @@ new Vue({
                                 }
                                 exists = _splits.findIndex(el => el.label === column.label);
                                 element.split = exists + 1;
-
-                                // console.log(column);
-                                // console . log(_splits);
-                                // alert(1);
-
-
                             }
 
                         });
