@@ -28,11 +28,10 @@ class Openbuilder extends MY_Controller
                 } else {
                     //Destroy token and proceed...
                     $this->db->where('meta_data_key', 'openbuilder_token')->delete('meta_data');
-
                 }
             }
         }
-// TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO OPENBUILDER DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
+        // TODO: INTEGRARE SISTEMA DI PROTEZIONE, SOLO OPENBUILDER DEVE POTER ESEGUIRE QUESTI METODI SE QUALCUNO SCOPRE
 
         if ($unallowed) {
             set_status_header(403);
@@ -42,7 +41,6 @@ class Openbuilder extends MY_Controller
 
     public function createModule($identifier)
     {
-
         //Creo le cartelle necessarie
         $folders = [
             'controllers', 'models', 'views', 'assets',
@@ -100,7 +98,12 @@ class Openbuilder extends MY_Controller
         } else {
             $folder = APPPATH . 'modules/' . $identifier . '/';
 
-            $destination_file = FCPATH . 'uploads/' . $identifier . '.zip';
+            // Create temp directory
+            if (!file_exists(FCPATH . 'uploads/modules_temp')) {
+                mkdir(FCPATH . 'uploads/modules_temp', 0755, true);
+            }
+
+            $destination_file = FCPATH . 'uploads/modules_temp/' . $identifier . '.zip';
 
             if (!file_exists($folder)) {
                 die('Can not create module, folder not found: ' . $destination_file);
@@ -126,7 +129,7 @@ class Openbuilder extends MY_Controller
     // Receive module from Builder
     public function uploadModule($identifier)
     {
-        $zip = new ZipArchive;
+        $zip = new ZipArchive();
 
         if ($zip->open($_FILES['module_file']['tmp_name']) === true) {
             if (!is_dir(APPPATH . "modules")) {
@@ -188,7 +191,6 @@ class Openbuilder extends MY_Controller
                         uksort($updates, 'my_version_compare');
 
                         foreach ($updates as $key => $value) {
-
                             // Check if the version number is old or new
                             if ($key == $new_version) {
                                 foreach ($value as $query) {
@@ -204,7 +206,6 @@ class Openbuilder extends MY_Controller
                         uksort($updates, 'my_version_compare');
 
                         foreach ($updates as $key => $value) {
-
                             // Check if the version number is old or new
                             if ($key == $new_version) {
                                 foreach ($value as $key_type => $code) {
@@ -296,7 +297,6 @@ class Openbuilder extends MY_Controller
                         $version_compare_old = version_compare($key, $old_version);
                         //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
                         if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
-
                             foreach ($value as $key_type => $code) {
                                 if ($key_type == 'eval') {
                                     eval($code);
@@ -344,7 +344,6 @@ class Openbuilder extends MY_Controller
     public function getCustomViews()
     {
         echo json_encode(dirToArray(APPPATH . (empty($_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) ? 'views_adminlte' : $_SERVER['OPENBUILDER_CLIENT_TEMPLATE']) . '/custom/'));
-
     }
 
     public function getModulesCustomViews()
