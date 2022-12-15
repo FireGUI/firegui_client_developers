@@ -207,7 +207,6 @@ if (!function_exists('is_valid_json')) {
 }
 
 if (!function_exists('json_message')) {
-
     /**
      * JSON per submitajax: messaggio
      *
@@ -222,7 +221,6 @@ if (!function_exists('json_message')) {
 }
 
 if (!function_exists('json_redirect')) {
-
     /**
      * JSON per submitajax: redirect
      *
@@ -240,7 +238,6 @@ if (!function_exists('json_redirect')) {
 }
 
 if (!function_exists('json_refresh')) {
-
     /**
      * JSON per submitajax: refresh
      */
@@ -251,7 +248,6 @@ if (!function_exists('json_refresh')) {
 }
 
 if (!function_exists('json_alert')) {
-
     /**
      * JSON per submitajax: apri alert popup ed opzionalmente fai refresh.
      *
@@ -533,7 +529,6 @@ if (!function_exists('t')) {
                     $fp = fopen($path, "a+");
 
                     if (flock($fp, LOCK_EX)) { // acquire an exclusive lock
-
                         fwrite($fp, $add);
                         fflush($fp); // flush output before releasing the lock
                         flock($fp, LOCK_UN);
@@ -756,7 +751,6 @@ if (!function_exists('benchmark')) {
 if (!function_exists('crm_exception_handler')) {
     function crm_exception_handler($ex, $print = true, $sendQueryListing = false)
     {
-
         // messaggio per utente
         $out = '<div style="padding:10px;background:#efefef;border-radius:7px;">';
         $out .= 'Si &egrave; verificato un errore imprevisto. Il problema &egrave; gi&agrave; stato inoltrato al nostro staff tecnico<br/>';
@@ -919,6 +913,10 @@ if (!function_exists('zip_folder')) {
         if (!file_exists($source)) {
             die("'$source' does not exists!");
             return false;
+        }
+
+        if (file_exists($destination)) {
+            unlink($destination); // Unlink before create because otherwise it add files to existing zip file
         }
 
         //Folder tree creation before open destination
@@ -1123,7 +1121,6 @@ if (!function_exists('scanAllDir')) {
         } else {
             return true;
         }
-
     }
 
     function tofloat($num)
@@ -1151,9 +1148,7 @@ if (!function_exists('copy_file')) {
             mkdir($path['dirname'], 0777, true);
         }
         return copy($s1, $s2);
-
     }
-
 }
 
 if (!function_exists('checkClientVersion')) {
@@ -1279,7 +1274,7 @@ if (!function_exists('e_json')) {
 if (!function_exists('time_elapsed')) {
     function time_elapsed($datetime, $full = false)
     {
-        $now = new DateTime;
+        $now = new DateTime();
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
 

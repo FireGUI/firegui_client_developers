@@ -1,17 +1,16 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Api_manager extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
 
         if ($this->auth->guest()) {
-
             // FIX: siamo nel controller main, quindi l'uri dovrebbe cominciare con main
             $uri = explode('/', uri_string());
 
@@ -73,7 +72,8 @@ class Api_manager extends MY_Controller
             ->get('api_manager_tokens')
             ->result_array();
 
-        $dati['logs'] = $this->db->limit(10)->get('log_api')->result_array();
+        $dati['logs'] = $this->db->limit(100)->order_by('log_api_date', 'DESC')->get('log_api')->result_array();
+
 
         $dati['current_page'] = 'api_manager';
 
@@ -272,7 +272,7 @@ class Api_manager extends MY_Controller
      * Template renderer
      * ---
      * Accept a string in html format
-     * 
+     *
      * @param string $pagina
      */
     protected function stampa($pagina)
