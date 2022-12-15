@@ -2,7 +2,6 @@
 
 class Layout extends CI_Model
 {
-
     /**
      * @var array
      */
@@ -67,11 +66,7 @@ class Layout extends CI_Model
             return false;
         }
     }
-    public function getLoadedLayoutsIds()
-    {
 
-        return array_values($this->structure);
-    }
     /**
      * @return int|null
      */
@@ -123,8 +118,15 @@ class Layout extends CI_Model
         return $content;
     }
 
-    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false,
-        $content_html = false, $options = []) {
+    public function generate_pdf(
+        $view,
+        $orientation = "landscape",
+        $relative_path = "",
+        $extra_data = [],
+        $module = false,
+        $content_html = false,
+        $options = []
+    ) {
         $useMpdf = array_get($options, 'useMpdf', false);
 
         $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);
@@ -181,9 +183,9 @@ class Layout extends CI_Model
 
             $mpdf->Output($filename, 'I');
 
-            //TODO: return true?
+        //TODO: return true?
         } else {
-            $physicalDir = FCPATH . "/uploads";
+            $physicalDir = FCPATH . "uploads/pdf";
             // 2022-04-19 - Added random_int because it can happen that a generation of pdf deriving from an array,
             // is done in the same second. so this guarantees a little more uniqueness ... Would microseconds be better?
             $filename = date('Ymd_His') . '_' . random_int(1, 100);
@@ -209,14 +211,18 @@ class Layout extends CI_Model
             //die("wkhtmltopdf {$options} -O {$orientation} --footer-right \"Page [page] of [topage]\" --viewport-size 1024 {$tmpHtml} {$pdfFile}");
             exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
 
+            @unlink($tmpHtml);
+
             return $pdfFile;
         }
     }
 
     public function getLayout($layoutId)
     {
-        $layout = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->get_where('layouts',
-            array('layouts_id' => $layoutId))->row_array();
+        $layout = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->get_where(
+            'layouts',
+            array('layouts_id' => $layoutId)
+        )->row_array();
         return $layout;
     }
 
@@ -247,12 +253,11 @@ class Layout extends CI_Model
     }
     public function getBoxes($layoutId)
     {
-
         $queriedBoxes = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
             ->join('layouts', 'layouts.layouts_id = layouts_boxes.layouts_boxes_layout', 'left')
             ->get_where('layouts_boxes', ['layouts_id' => $layoutId])->result_array();
 
-// Rimappo i box in modo tale da avere i parent che contengono i sub
+        // Rimappo i box in modo tale da avere i parent che contengono i sub
         $boxes = $allSubboxes = $lboxes = [];
         foreach ($queriedBoxes as $key => $box) {
             if (!$this->conditions->accessible('layouts_boxes', $box['layouts_boxes_id'])) {
@@ -305,10 +310,8 @@ class Layout extends CI_Model
                 $asset_file = "$assets_folder/$file";
                 copy_file($asset_file, $file_cache);
                 $path = base_url($file_cache);
-
             } else {
                 $path = base_url("modulesbridge/loadAssetFile/{$module_identifier}?file=$file");
-
             }
         }
 
@@ -336,7 +339,6 @@ class Layout extends CI_Model
 
         $file = "template/build/{$file}";
         if (!file_exists($file) || !$this->mycache->isCacheEnabled() || !$this->mycache->isActive('template_assets') || $clear) {
-
             $fp = fopen($file, 'w+');
 
             foreach ($data as $key => $vals) {
@@ -359,8 +361,8 @@ class Layout extends CI_Model
                         }
                         break;
                     default:
-// debug($vals);
-// log_message('error', "Key '$key' not recognized for dinamic stylesheet");
+                        // debug($vals);
+                        // log_message('error', "Key '$key' not recognized for dinamic stylesheet");
                         break;
                 }
             }
@@ -392,35 +394,32 @@ class Layout extends CI_Model
 
     public function replaceTemplateHooks($html, $value_id)
     {
-//debug($html, true);
+        //debug($html, true);
         preg_match_all("/\{tpl-[^\}]*\}/", $html, $matches);
         foreach ($matches[0] as $placeholder) {
+            //debug(strpos($placeholder, '{tpl-'), true);
 
-//debug(strpos($placeholder, '{tpl-'), true);
-
-//if (strpos($placeholder, '{tpl-') === 0) {
+            //if (strpos($placeholder, '{tpl-') === 0) {
             $hook_key = trim($placeholder, "{}");
             $hook_key = str_replace('tpl-', '', $hook_key);
-//debug($hook_key, true);
+            //debug($hook_key, true);
 
             $hooks_contents = $this->fi_events->getHooksContents($hook_key, $value_id);
 
             $html = str_replace($placeholder, $hooks_contents, $html);
-//}
+            //}
         }
         return $html;
     }
 
     public function addRelatedEntity($entity_name, $value_id = null)
     {
-
         if ($value_id) {
             $entity_name = "{$entity_name}:{$value_id}";
         }
         if (!in_array($entity_name, $this->related_entities)) {
             $this->related_entities[] = $entity_name;
         }
-
     }
     public function getRelatedEntities()
     {
