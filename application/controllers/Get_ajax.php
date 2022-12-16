@@ -559,7 +559,7 @@ class Get_ajax extends MY_Controller
         } else {
             $referer = ($_SERVER['HTTP_REFERER'] ?? '');
 
-            //Set current layout the same as the layout who caused this call
+//Set current layout the same as the layout who caused this call
             if ($referer) {
                 //catch layout id
                 $ref_expl = explode('/', explode('?', $referer)[0]);
@@ -922,6 +922,7 @@ class Get_ajax extends MY_Controller
         if (!empty($data['calendars']['calendars_custom_query'])) {
             $data_entity = $this->datab->getDataEntityByQuery($data['calendars']['calendars_entity_id'], $data['calendars']['calendars_custom_query'], $generatedWhere);
         } else {
+
             $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 3);
         }
 
@@ -941,6 +942,7 @@ class Get_ajax extends MY_Controller
         }
 
         $events = array();
+
         foreach ($data_entity as $event) {
             $ev = array();
             foreach ($data['calendars_fields'] as $field) {
@@ -965,25 +967,38 @@ class Get_ajax extends MY_Controller
             if (!isset($ev['id']) || !$ev['id']) {
                 $ev['id'] = $event[$data['calendars']['entity_name'] . "_id"];
             }
-
+            //debug($ev);
             // Store timezone
             //Se non è mappato uno start nell'evento
             if (!array_key_exists('start', $ev)) {
                 //Assumo che sia mappato un date start
                 $ev['start'] = substr($ev['date_start'], 0, 10);
 
-                if (array_key_exists('hours_start', $ev)) {
+                if (array_key_exists('hours_start', $ev) && $ev['hours_start'] != '') {
                     $ev['start'] = "{$ev['start']} {$ev['hours_start']}:00";
                 }
-                //debug($ev, true);
+
             }
+            //debug($ev);
+
             $ev['start'] = date('c', strtotime($ev['start']));
 
             if (!empty($ev['end'])) {
                 $ev['end'] = date('c', strtotime($ev['end']));
 
             } else {
-                $ev['end'] = date('c', strtotime($ev['start'] . ' +1 hour'));
+                $start = substr($ev['start'], 0, 10);
+
+                if (array_key_exists('hours_end', $ev) && $ev['hours_end'] != '') {
+
+                    $ev['end'] = "{$start} {$ev['hours_end']}:00";
+
+                    $ev['end'] = date('c', strtotime($ev['end']));
+
+                } else {
+                    $ev['end'] = date('c', strtotime($ev['start'] . ' +1 hour'));
+
+                }
 
             }
 
