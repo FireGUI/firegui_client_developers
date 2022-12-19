@@ -767,26 +767,54 @@ class Apilib
         $fields = $this->crmEntity->getVisibleFields($entity_data['entity_id']);
         return array_key_map($fields, 'fields_name');
     }
-    public function tableList()
-    {
-        $entities = $this->db->order_by('entity_name')->get('entity')->result_array();
+    // public function tableList()
+    // {
+        
+    //     $entities = $this->db->order_by('entity_name')->get('entity')->result_array();
 
-        $tables = [];
-        foreach ($entities as $entity) {
-            $table = [
-                'name' => $entity['entity_name'],
+    //     $tables = [];
+    //     foreach ($entities as $entity) {
+    //         $table = [
+    //             'name' => $entity['entity_name'],
+    //             'fields' => [],
+    //         ];
+    //         $fields = $this->db->order_by('fields_name')->get_where('fields', ['fields_entity_id' => $entity['entity_id']])->result_array();
+    //         foreach ($fields as $field) {
+    //             $table['fields'][] = $field['fields_name'] . ($field['fields_ref'] ? ' <small>[ref. from: <strong>' . $field['fields_ref'] . '</strong>]</small>' : '');
+    //         }
+
+    //         $tables[] = $table;
+    //     }
+
+    //     return $tables;
+    // }
+
+    //Rewrited function by chatgpt3!
+    public function tableList()
+{
+    $query = $this->db->query("
+        SELECT e.entity_name, f.fields_name, f.fields_ref
+        FROM entity e
+        LEFT JOIN fields f ON f.fields_entity_id = e.entity_id
+        ORDER BY e.entity_name, f.fields_name
+    ");
+
+    $results = $query->result_array();
+
+    $tables = [];
+    foreach ($results as $row) {
+        $name = $row['entity_name'];
+        if (!isset($tables[$name])) {
+            $tables[$name] = [
+                'name' => $name,
                 'fields' => [],
             ];
-            $fields = $this->db->order_by('fields_name')->get_where('fields', ['fields_entity_id' => $entity['entity_id']])->result_array();
-            foreach ($fields as $field) {
-                $table['fields'][] = $field['fields_name'] . ($field['fields_ref'] ? ' <small>[ref. from: <strong>' . $field['fields_ref'] . '</strong>]</small>' : '');
-            }
-
-            $tables[] = $table;
         }
-
-        return $tables;
+        $tables[$name]['fields'][] = $row['fields_name'] . ($row['fields_ref'] ? ' <small>[ref. from: <strong>' . $row['fields_ref'] . '</strong>]</small>' : '');
     }
+
+    return array_values($tables);
+}
 
     public function entityList()
     {

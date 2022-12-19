@@ -223,6 +223,7 @@ $config['allow_get_array'] = true;
 |    2 = Debug Messages
 |    3 = Informational Messages
 |    4 = All Messages
+|    5 = All Messages and queries
 |
 | You can also pass an array with threshold levels to show individual error types
 |

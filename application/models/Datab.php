@@ -735,8 +735,10 @@ class Datab extends CI_Model
                     'max' => $field['forms_fields_max'],
                     'type' => $type,
                     'datatype' => $field['fields_type'],
-                    'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'], // Computo il ref field da usare nel caso di form
-                    'fields_source' => $field['fields_source'], // Computo il ref field da usare nel caso di form
+                    'filterref' => empty($field['support_fields'][0]['entity_name']) ? $field['fields_ref'] : $field['support_fields'][0]['entity_name'],
+                    // Computo il ref field da usare nel caso di form
+                    'fields_source' => $field['fields_source'],
+                    // Computo il ref field da usare nel caso di form
                     'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id),
                     'fieldset' => $field['forms_fields_fieldset'],
                     'required' => $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default'])),
@@ -869,8 +871,8 @@ class Datab extends CI_Model
 
     public function get_grids_from_entity($entity_id)
     {
-        debug("TODO: errore!!! Correggere... non so quando viene usata!", true);
-        if (!$grid_id) {
+        debug("TODO: Assert error! Deprecated function.", true);
+        if (!$entity_id) {
             die('ERRORE: Entity ID mancante');
         }
 
@@ -1022,12 +1024,14 @@ class Datab extends CI_Model
                 $dati['grids_fields'][$key]['grids_fields_column_name'] = trim($colname) ?: $field['fields_draw_label'];
 
                 if ($field['fields_ref'] && $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->crmentity->entityExists($field['fields_ref'])) {
-                    $dati['grids_fields'][$key]['support_fields'] = array_values(array_filter(
-                        $this->crmentity->getFields($field['fields_ref']),
-                        function ($field) {
-                            return $field['fields_preview'] == DB_BOOL_TRUE;
-                        }
-                    ));
+                    $dati['grids_fields'][$key]['support_fields'] = array_values(
+                        array_filter(
+                            $this->crmentity->getFields($field['fields_ref']),
+                            function ($field) {
+                                return $field['fields_preview'] == DB_BOOL_TRUE;
+                            }
+                        )
+                    );
                 }
             }
 
@@ -1248,7 +1252,7 @@ class Datab extends CI_Model
                             $other_field_select = $this->db->get_where('fields', array('fields_entity_id' => $field->fields_entity_id, 'fields_ref' => $entity['entity_name']))->row();
                             if (isset($other_field_select->fields_name)) {
                                 // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
-                                $where_prefix = "{$entity['entity_name']}_id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE ";
+                                $where_prefix = "{$entity['entity_name']}.{$entity['entity_name']}_id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE ";
                             } else {
                                 // Caso 2: è questa entità che sta ha il ref nell'altra entità
                                 // devo trovare codesto field
@@ -1365,7 +1369,8 @@ class Datab extends CI_Model
                                                 )";
                                     } else {
                                         $arr[] = "({$where_prefix}{$field->fields_name} $not {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
-                                    }break;
+                                    }
+                                    break;
 
                                 case 'like':
                                     if (in_array($field->fields_type, array('VARCHAR', 'TEXT'))) {
@@ -1555,11 +1560,14 @@ class Datab extends CI_Model
 
         $post_process = $this->db
             ->join('fi_events', 'fi_events_post_process_id = post_process_id', 'LEFT')
-            ->get_where('post_process', array(
-                'post_process_entity_id' => $entity_id,
-                'post_process_when' => $when,
-                'post_process_crm' => DB_BOOL_TRUE,
-            ));
+            ->get_where(
+                'post_process',
+                array(
+                    'post_process_entity_id' => $entity_id,
+                    'post_process_when' => $when,
+                    'post_process_crm' => DB_BOOL_TRUE,
+                )
+            );
 
         if ($post_process->num_rows() > 0) {
             foreach ($post_process->result_array() as $function) {
@@ -1943,10 +1951,13 @@ class Datab extends CI_Model
 
         // Recupera permessi del gruppo
         $permissions = $this->getPermission($groupName);
-        $permissionsEntities = $this->db->where('permissions_entities_entity_id IN (SELECT entity_id FROM entity)', null, false)->get_where('permissions_entities', array(
-            'permissions_entities_permissions_id' => $permissions['permissions_id'],
+        $permissionsEntities = $this->db->where('permissions_entities_entity_id IN (SELECT entity_id FROM entity)', null, false)->get_where(
+            'permissions_entities',
+            array(
+                'permissions_entities_permissions_id' => $permissions['permissions_id'],
 
-        ))->result_array();
+            )
+        )->result_array();
         $permissionsModules = $this->db->get_where('permissions_modules', array('permissions_modules_permissions_id' => $permissions['permissions_id']))->result_array();
 
         $this->db->trans_start();
@@ -2091,11 +2102,13 @@ class Datab extends CI_Model
         if ($this->is_admin($user_id)) {
             $modules = $this->db->get_where('modules', array('modules_installed' => DB_BOOL_TRUE));
         } else {
-            $modules = $this->db->select('modules.*')->from('modules')->join('permissions_modules', 'permissions_modules_module_name = modules_name', 'left')->join('permissions', 'permissions_modules_permissions_id = permissions_id', 'left')->where(array(
-                'permissions_modules_value' => PERMISSION_WRITE,
-                'modules_installed' => DB_BOOL_TRUE,
-                'permissions_user_id' => $user_id,
-            ))->get();
+            $modules = $this->db->select('modules.*')->from('modules')->join('permissions_modules', 'permissions_modules_module_name = modules_name', 'left')->join('permissions', 'permissions_modules_permissions_id = permissions_id', 'left')->where(
+                array(
+                    'permissions_modules_value' => PERMISSION_WRITE,
+                    'modules_installed' => DB_BOOL_TRUE,
+                    'permissions_user_id' => $user_id,
+                )
+            )->get();
         }
 
         return $modules->result_array();
@@ -2337,6 +2350,7 @@ class Datab extends CI_Model
      */
     public function build_layout($layout_id, $value_id, $layout_data_detail = null)
     {
+
         $cache_key = "apilib/datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET) . serialize($_POST) . serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
@@ -3259,7 +3273,7 @@ class Datab extends CI_Model
                     return $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
 
                 } else {
-//Verifico se questa custom view fa parte di un modulo. In tal caso, carico la view direttamente dal modulo
+                    //Verifico se questa custom view fa parte di un modulo. In tal caso, carico la view direttamente dal modulo
                     if ($module_view) {
                         return $this->load->module_view($module_view['module_name'] . '/views', $module_view['module_view'], ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
                     } else {

@@ -1271,6 +1271,21 @@ if (!function_exists('e_json')) {
     }
 }
 
+if (!function_exists('elapsed_time')) {
+    function elapsed_time($start_time)
+    {
+        // get the current time in seconds
+        $end_time = microtime(true);
+
+        // calculate the elapsed time in seconds
+        $elapsed_time = $end_time - $start_time;
+
+        // return the elapsed time in seconds
+        return $elapsed_time;
+    }
+
+}
+
 if (!function_exists('time_elapsed')) {
     function time_elapsed($datetime, $full = false)
     {

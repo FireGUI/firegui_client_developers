@@ -187,6 +187,7 @@ class Main extends MY_Controller
             }
 
             // Build layout, if null then layout is not accessible due to user permissions
+
             $dati = $this->datab->build_layout($layout_id, $value_id);
             if (is_null($dati)) {
 
@@ -216,6 +217,7 @@ class Main extends MY_Controller
                     $this->layout->setLayoutModule();
                     echo base64_decode($pdf_b64);
                 } else {
+
                     $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
                     $dati['current_page'] = "layout_{$layout_id}";
                     $dati['related_entities'] = $this->layout->getRelatedEntities();
@@ -224,6 +226,7 @@ class Main extends MY_Controller
                     $pagina = $this->load->view("pages/layout", compact('dati', 'value_id'), true);
 
                     $this->layout->setLayoutModule();
+
                     $this->stampa($pagina, $value_id);
                 }
             }
@@ -287,7 +290,7 @@ class Main extends MY_Controller
         } else {
             $this->template['footer'] = $this->load->view('layout/footer', null, true);
         }
-    
+
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/foot.php")) {
             $this->template['foot'] = $this->load->view('custom/layout/foot', null, true);
         } else {

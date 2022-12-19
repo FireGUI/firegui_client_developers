@@ -348,8 +348,9 @@ class Crmentity extends CI_Model
                 $ids = array_key_map($data['data'], $field);
 
                 // Le tuple della tabella pivot della relazione - sono già filtrate per gli id dell'entità della grid
+                //debug('test');
                 $relation_data = $this->db->where_in($field, $ids)->get($relation)->result_array();
-
+                //debug('test2');
                 // Cicla i dati della tabella pivot e metti in $relation_data_by_ids i record suddivisi per id dell'entità della grid (per accederci dopo con meno foreach),
                 // mentre in $related_data metti tutti gli id dell'altra tabella nella relazione (nell'esempio di camere_servizi, metti gli id dei servizi).
                 $relation_data_by_ids = [];
@@ -423,7 +424,9 @@ class Crmentity extends CI_Model
                 if (!empty($fake_relation_ids)) {
                     $imploded_fake_relation_ids = implode(',', $fake_relation_ids);
                     $frEntity = $this->getEntity($related);
+                    //debug('test');
                     $qFullData = $this->get_data_simple_list($frEntity['entity_id'], "{$related}_id IN ({$imploded_fake_relation_ids})", ['depth' => $depth - 1]);
+                    //debug('test2');
                     $fullData = array_combine(array_key_map($qFullData, "{$related}_id"), $qFullData);
                 }
 
