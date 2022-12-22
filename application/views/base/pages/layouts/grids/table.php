@@ -65,14 +65,15 @@ if ($grid['grids']['grids_pagination']) {
                 <?php endif;?>
                 <?php foreach ($grid['grids_fields'] as $field): ?>
 
-                <?php $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name'];?>
-                <th <?php if ($field['fields_draw_html_type'] === 'upload_image') {
-    echo 'class="firegui_width50"';
-}
-?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php if ($field['fields_draw_html_type'] === 'upload_image') {
-    echo ' class="firegui_width50"';
-}
-?><?php echo ($grid['grids']['grids_ajax'] && ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data']))) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);?></th>
+                <?php
+                    $name = ($field['grids_fields_eval_cache_data']) ? $field['grids_fields_eval_cache_data'] : $field['fields_name'];
+                    $classes = [];
+                    
+                    if ($field['fields_draw_html_type'] === 'upload_image') {
+                        $classes[] = 'firegui_width50';
+                    }
+                ?>
+                <th class="<?php echo (!empty($classes)) ? implode(' ', $classes) : ''; ?>" <?php echo (!empty($field['grids_fields_width']) && is_numeric($field['grids_fields_width'])) ? "width='{$field['grids_fields_width']}%'" : ''; ?> data-totalable="<?php echo ($field['grids_fields_totalable'] == DB_BOOL_TRUE) ? 1 : 0; ?>" data-name="<?php echo $name; ?>" <?php echo ($grid['grids']['grids_ajax'] && ($field['grids_fields_replace_type'] !== 'field' && ($field['grids_fields_eval_cache_type'] == '' or $field['grids_fields_eval_cache_type'] == 'no_cache') && empty($field['grids_fields_eval_cache_data']))) ? 'data-prevent-order' : ''; ?>><?php e($field['grids_fields_column_name']);?></th>
 
                 <?php endforeach;?>
 
