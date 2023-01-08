@@ -191,9 +191,27 @@ $imploded_config = implode(',', $config);
 }
 </style>
 
+<?php
+$min_time = $data['calendars']['calendars_min_time'];
+$max_time = $data['calendars']['calendars_max_time'];
 
+function time_to_minutes($time) {
+  // Split the time into hours and minutes
+  $hours = intval(substr($time, 0, 2));
+  $minutes = intval(substr($time, 3, 2));
+  
+  // Convert the hours to minutes
+  $hours_in_minutes = $hours * 60;
+  
+  // Add the minutes from the hours to the minutes from the time
+  $total_minutes = $hours_in_minutes + $minutes;
+  
+  return $total_minutes;
+}
+
+?>
 <div id="app">
-    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="6 * 60" :time-to="22 * 60" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" events-on-month-view="short" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
+    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="<?php echo time_to_minutes($min_time); ?>" :time-to="<?php echo time_to_minutes($max_time); ?>" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" events-on-month-view="short" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30"><template #split-label="{ split, view }">
             <strong :style="`color: ${split.color}`">{{ split.label }}</strong>
         </template>
         <template #event="{ event, view }">
