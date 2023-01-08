@@ -1283,7 +1283,6 @@ if (!function_exists('elapsed_time')) {
         // return the elapsed time in seconds
         return $elapsed_time;
     }
-
 }
 
 if (!function_exists('time_elapsed')) {
@@ -1406,6 +1405,10 @@ if (!function_exists('e_money')) {
 if (!function_exists('progress')) {
     function progress($current, $total, $selector_id = 'js_progress')
     {
+        if (empty($total) || $total == 0) {
+            return 0;
+        }
+
         $perc = number_format(100 * $current / $total, 2);
 
         if ($selector_id != 'js_progress') {

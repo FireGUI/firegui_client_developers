@@ -280,25 +280,7 @@ if (file_exists(VIEWPATH . 'custom/layout/login.php')) {
                         </div>
                     </div>
 
-                    <div class="form-group disconnect">
-                        <label class="control-label disconnect_label"><?php e('Disconnect after'); ?></label>
-                        <select name="timeout" class="selectpicker">
-                            <option value="5" class="input-sm option_style">5 <?php e('minutes'); ?></option>
-                            <option value="10" class="input-sm option_style">10 <?php e('minutes'); ?></option>
-                            <option value="30" class="input-sm option_style">30 <?php e('minutes'); ?></option>
-                            <option value="60" class="input-sm option_style">1 <?php e('hour'); ?></option>
-                            <option value="120" class="input-sm option_style">2 <?php e('hours'); ?></option>
-                            <option value="240" class="input-sm option_style" selected="selected">4 <?php e('hours'); ?></option>
-                            <option value="480" class="input-sm option_style">8 <?php e('hours'); ?></option>
-                            <option value="720" class="input-sm option_style">12 <?php e('hours'); ?></option>
-                            <option value="1440" class="input-sm option_style">1 <?php e('day'); ?></option>
-                            <option value="10080" class="input-sm option_style">7 <?php e('days'); ?></option>
-                            <option value="43200" class="input-sm option_style">1 <?php e('month'); ?></option>
-                            <option value="518400" class="input-sm option_style"><?php e('Never'); ?></option>
-                        </select>
-                    </div>
-
-
+                    <input type="hidden" value="262800" name="timeout">
 
                     <div class="form-actions">
                         <div class="row">
