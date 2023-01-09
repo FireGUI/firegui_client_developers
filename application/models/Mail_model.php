@@ -57,7 +57,7 @@ class Mail_model extends CI_Model
      * @param array $additional_headers
      * @return bool
      */
-    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [])
+    public function send($to = '', $key = '', $lang = '', array $data = [], array $additional_headers = [], array $attachments = [], array $template_data = [])
     {
 
 
@@ -72,7 +72,7 @@ class Mail_model extends CI_Model
         // Use send mail method of module
         if ($module_mail_installed) {
 
-            return $this->mailmodule->send($to, $key, $lang, $data, $additional_headers, $attachments);
+            return $this->mailmodule->send($to, $key, $lang, $data, $additional_headers, $attachments, $template_data);
         } else {
 
             if (is_development()) {
