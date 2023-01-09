@@ -6,18 +6,15 @@ if (!defined('BASEPATH')) {
 
 class Main extends MY_Controller
 {
-
     /**
      * Controller constructor
      */
     public function __construct()
     {
-
         parent::__construct();
 
         // Controllo anche la current uri
         if ($this->auth->guest()) {
-
             // FIX: siamo nel controller main, quindi l'uri dovrebbe cominciare con main
             $uri = explode('/', uri_string());
 
@@ -42,7 +39,6 @@ class Main extends MY_Controller
 
         // Imposta il log di accesso giornaliero
         $this->apilib->logSystemAction(Apilib::LOG_ACCESS);
-
     }
 
     public function dashboard()
@@ -58,7 +54,6 @@ class Main extends MY_Controller
         if ($layout_dashboard = $this->auth->get('default_dashboard')) {
             $this->layout($layout_dashboard);
             return;
-
         } else {
             // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
             $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
@@ -112,7 +107,6 @@ class Main extends MY_Controller
         $dati = $this->datab->build_layout($layout_id, $value_id);
 
         if (is_null($dati)) {
-
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->layout->setLayoutModule();
             $dati = [
@@ -136,7 +130,6 @@ class Main extends MY_Controller
 
                 $this->layout->setLayoutModule();
                 $this->load->view('layout/json_return', ['json' => json_encode(array('status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id, 'dati' => $dati))]);
-
             }
         }
     }
@@ -148,7 +141,6 @@ class Main extends MY_Controller
      */
     public function layout($layout_id = null, $value_id = null)
     {
-
         // Se non ho un layout_id non posso fare il render di questo controllo,
         // allora redirigo il flusso verso il controller dashboard che calcolerà
         // automaticamente il layout principale da usare come dashboard
@@ -174,11 +166,9 @@ class Main extends MY_Controller
         // messaggio: "La pagina da te cercata non esiste, oppure non hai i
         // permessi per accedervi"
         if (!$this->datab->can_access_layout($layout_id, $value_id)) {
-
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->stampa($pagina, $value_id);
         } else {
-
             //If layout is module dependent, preload translations
             $layout = $this->layout->getLayout($layout_id);
             if ($layout['layouts_module']) {
@@ -190,12 +180,10 @@ class Main extends MY_Controller
 
             $dati = $this->datab->build_layout($layout_id, $value_id);
             if (is_null($dati)) {
-
                 $pagina = $this->load->view("pages/layout_unaccessible", null, true);
                 $this->layout->setLayoutModule();
                 $this->stampa($pagina, $value_id);
             } else {
-
                 // I have 2 type of layouts: PDF or standard
                 if ($dati['layout_container']['layouts_pdf'] == DB_BOOL_TRUE) {
                     if (file_exists(FCPATH . "application/views/custom/layout/pdf.php")) {
@@ -217,7 +205,6 @@ class Main extends MY_Controller
                     $this->layout->setLayoutModule();
                     echo base64_decode($pdf_b64);
                 } else {
-
                     $dati['title_prefix'] = trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])));
                     $dati['current_page'] = "layout_{$layout_id}";
                     $dati['related_entities'] = $this->layout->getRelatedEntities();
@@ -262,7 +249,6 @@ class Main extends MY_Controller
      */
     protected function stampa($pagina, $value_id = null)
     {
-
         $this->output->setTags($this->layout->getRelatedEntities());
 
         if (file_exists(FCPATH . "application/views_adminlte/custom/layout/head.php")) {
@@ -542,7 +528,7 @@ class Main extends MY_Controller
         $usersLayouts = array_combine($userIds, $ucwordsUserNames);
 
         // Crea un array di mappatura layout_id => ucfirst(layout_title)
-        $dati['layouts'] = $this->db->order_by('layouts_module, layouts_title')->get('layouts')->result_array();
+        $dati['layouts'] = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->order_by('layouts_module, layouts_title')->get('layouts')->result_array();
 
         //Fix per non prendere tutti gli utenti ma solo quelli che possono fare login
         if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
@@ -746,7 +732,6 @@ class Main extends MY_Controller
                     fwrite($fp, $cache_controller);
                     fflush($fp); // flush output before releasing the lock
                     flock($fp, LOCK_UN); // release the lock
-
                 } else {
                     $this->mycache->clearCache(true);
                 }
@@ -767,7 +752,6 @@ class Main extends MY_Controller
                     fwrite($fp, $cache_controller);
                     fflush($fp); // flush output before releasing the lock
                     flock($fp, LOCK_UN); // release the lock
-
                 } else {
                     $this->mycache->clearCache(true);
                 }
@@ -781,7 +765,6 @@ class Main extends MY_Controller
         }
         if (!$redirection) {
             $redirection = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_VALIDATE_URL);
-
         }
         redirect($redirection ?: base_url());
     }
