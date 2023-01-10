@@ -4,9 +4,58 @@
 $stima_campi = (count($dati['layouts']) * count($dati['users_layout'])) * 2; //Mi tengo un margine doppio, non voglio rischiare...
 $max_input_vars = ini_get('max_input_vars');
 
+$sidebar = $this->db->query("SELECT menu_layout FROM menu WHERE menu_layout <> '' AND menu_layout IS NOT NULL AND menu_position = 'sidebar'")->result_array();
+$sidebar_layouts = array();
+foreach ($sidebar as $menu_layout) {
+    $sidebar_layouts[] = $menu_layout['menu_layout'];
+}
+
+function extra_data($layout, $sidebar_layouts)
+{
+    $extra="";
 
 
+    if (in_array($layout['layouts_id'], $sidebar_layouts)) {
+        $extra .= '<i title="Linked in sidebar" class="extra_icon fas fa-link"></i> ';
+    }
+
+
+    if ($layout['layouts_is_entity_detail']) {
+        $extra .= '<i title="Layout Detail" class="extra_icon fas fa-eye"></i> ';
+    }
+
+    if ($layout['layouts_is_public']) {
+        $extra .= '<i title="Public layout" class="extra_icon fas fa-user"></i> ';
+    }
+
+
+    if ($layout['layouts_settings']) {
+        $extra .= '<i title="Settings layout" class="extra_icon fas fa-cogs"></i> ';
+    }
+
+
+    if ($layout['layouts_dashboardable']) {
+        $extra .= '<i title="Dashboard" class="extra_icon fas fa-home"></i> ';
+    }
+
+
+    if ($layout['layouts_pdf']) {
+        $extra .= '<i title="PDF layout" class="extra_icon fas fa-print"></i> ';
+    }
+
+
+
+    return $extra;
+}
 ?>
+<style>
+    a {
+        cursor:pointer!important;
+    }
+    .extra_icon {
+        color:#666666;
+    }
+    </style>
 <section class="content-header">
 
     <ol class="breadcrumb">
@@ -51,7 +100,7 @@ $max_input_vars = ini_get('max_input_vars');
     <?php endif; ?>
     <div class="row">
 
-        <div class="col-md-8">
+        <div class="col-md-12">
 
             <div class="box box-primary">
                 <div class="box-header">
@@ -112,13 +161,7 @@ $max_input_vars = ini_get('max_input_vars');
         <div class="col-md-12">
 
             <div class="box box-primary">
-                <div class="box-header">
-                    <div class="caption">
-                        <i class="fas fa-check"></i>
-                        <h3 class="box-title"><?php e("Layouts settings", 0); ?></h3>
-                    </div>
-                    <div class="tools"></div>
-                </div>
+                
                 <div class="portlet-body form">
 
                     <form id="views_form" role="form" method="post" action="<?php echo base_url('db_ajax/save_views_permissions'); ?>" class="formAjax">
@@ -128,12 +171,12 @@ $max_input_vars = ini_get('max_input_vars');
                                 <table id="views-permissions-datatable" class="table table-bordered table-condensed table-hover">
                                     <thead>
                                         <tr>
-                                            <th><?php e('Layouts'); ?></th>
+                                            <th><a OnClick="$('.tr-module').toggleClass('hide');">Show/hide all</a> | <a OnClick="show_only_sidebar();">Show/hide only Sidebar layouts</a></th>
                                             <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
                                                 <th>
                                                     <label>
-                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Attiva/Disattiva tutti'); ?>" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
-                                                        <strong><?php echo (is_numeric($userID) ? '' : '<small class="text-muted fw-normal">Group</small> ') . $username; ?></strong>
+                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all toggle" data-user="<?php echo $userID; ?>" />
+                                                        <strong><?php echo(is_numeric($userID) ? '' : '<small class="text-muted fw-normal">Group</small> ') . $username; ?></strong>
                                                     </label>
                                                 </th>
                                             <?php endforeach; ?>
@@ -141,23 +184,50 @@ $max_input_vars = ini_get('max_input_vars');
                                     </thead>
 
                                     <tbody>
+                                        <?php $module = "";?>
                                         <?php foreach ($dati['layouts'] as $layout) : ?>
+
+                                            <!-- Module header -->
+                                            <?php if ($layout['layouts_module'] != $module):?>
                                             <tr>
                                                 <th>
-                                                    <label class="permissions-layout-label" title="<?php echo $layout['layouts_title']; ?>">
-                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layout['layouts_id']; ?>" />
-                                                        <small class="text-muted"><?php echo $layout['layouts_id']; ?> - </small> <a target="_blank" href="<?php echo base_url(); ?>main/layout/<?php echo $layout['layouts_id']; ?>"><?php echo $layout['layouts_title']; ?></a> <small><?php echo $layout['layouts_module']; ?></small>
+                                                    <label class="permissions-layout-label">
+                                                        <strong><?php echo ($layout['modules_name']) ? $layout['modules_name'] : "Generic layouts"; ?></strong>
+                                                        
+                                                        <small><a OnClick="$('tr[data-module=\'<?php echo $layout['layouts_module'];?>\']').toggleClass('hide');">show/hide</a></small>
                                                     </label>
                                                 </th>
                                                 <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
                                                     <td>
                                                         <label>
-                                                            <input type="checkbox" class="js-toggle-view toggle" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layout['layouts_id']; ?>][]" <?php if (!isset($dati['unallowed'][$userID]) || !in_array($layout['layouts_id'], $dati['unallowed'][$userID])) echo 'checked' ?> />
+                                                            <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-module toggle" data-module="<?php echo $layout['layouts_module'];?>" data-user="<?php echo $userID; ?>" />
+                                                            <small class="text-muted">* <?php echo $username; ?> *</small>
+                                                        </label>
+                                                    </td>
+                                                <?php endforeach; ?>
+                                            <?php $module = $layout['layouts_module'];?>
+                                            <?php endif;?>
+
+                                            <!-- Single layout row -->
+                                            <tr data-module="<?php echo $layout['layouts_module'];?>" class="tr-module hide" <?php if (in_array($layout['layouts_id'], $sidebar_layouts)): ?>data-sidebar="true"<?php endif;?>>
+                                                <th>
+                                                    <label class="permissions-layout-label" title="<?php echo $layout['layouts_title']; ?> ">
+                                                        <input type="checkbox" data-toggle="tooltip" title="<?php e('Enable/Disable all'); ?>" class="js-toggle-all-horizontal toggle" data-layout="<?php echo $layout['layouts_id']; ?>" />
+                                                        <small class="text-muted"><?php echo $layout['layouts_id']; ?> - </small> <a target="_blank" href="<?php echo base_url(); ?>main/layout/<?php echo $layout['layouts_id']; ?>"><?php echo $layout['layouts_title']; ?></a> <?php echo extra_data($layout, $sidebar_layouts);?> <small><?php echo $layout['layouts_identifier']; ?></small>
+                                                    </label>
+                                                </th>
+                                                <?php foreach ($dati['users_layout'] as $userID => $username) : ?>
+                                                    <td>
+                                                        <label>
+                                                            <input type="checkbox" class="js-toggle-view toggle" data-single_checkbox="1" data-module="<?php echo $layout['layouts_module'];?>" data-user="<?php echo $userID; ?>" value="<?php echo $userID; ?>" name="view[<?php echo $layout['layouts_id']; ?>][]" <?php if (!isset($dati['unallowed'][$userID]) || !in_array($layout['layouts_id'], $dati['unallowed'][$userID])) {
+                                                                echo 'checked';
+                                                            } ?> />
                                                             <small class="text-muted"><?php echo $username; ?></small>
                                                         </label>
                                                     </td>
                                                 <?php endforeach; ?>
                                             </tr>
+                                            
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -191,20 +261,43 @@ $max_input_vars = ini_get('max_input_vars');
     var token = JSON.parse(atob($('body').data('csrf')));
     var token_name = token.name;
     var token_hash = token.hash;
+    var only_sidebar = false;
     $(document).ready(function() {
         'use strict';
         var numero_di_campi = $('#views_form :input').length;
         if ((numero_di_campi + 20) > <?php echo $max_input_vars; ?>) {
-            alert('Il limite max_input_vars (<?php echo $max_input_vars; ?>) è troppo basso rispetto al numero di campi in questa pagina (' + numero_di_campi + ')! Funzionalità disattivata.');
-            $('#views_form button').hide();
+            // $('#views_form button').hide();
         }
+
+
+        // Select all user module
+        $('body').on('change', '.js-toggle-all-module', function() {
+            var user = $(this).data('user');
+            var module = $(this).data('module');
+
+            if ($(this).is(":checked")) {
+                $('input[type="checkbox"][data-single_checkbox="1"][data-module="'+module+'"][data-user="'+user+'"]').prop('checked', true);
+            } else {
+                $('input[type="checkbox"][data-single_checkbox="1"][data-module="'+module+'"][data-user="'+user+'"]').prop('checked', false);
+            }
+        })
     });
 
+    function show_only_sidebar() {
+        if (only_sidebar == false) {
+            $('tr.tr-module').addClass('hide');
+            $('tr[data-sidebar="true"]').removeClass('hide');
+            only_sidebar = true;
+        } else {
+            $('tr.tr-module').removeClass('hide');
+            only_sidebar = false;
+        }
+    }
     function refreshPermissionTable(userId) {
         var jqTableContainer = $('#js_permission_table');
         var formButton = $('#js_form_toggler');
 
-        formButton.attr('disabled', true);
+        // formButton.attr('disabled', true);
 
         // Nascondi vista precedente
         $('#js-remove-group').hide().off('click');

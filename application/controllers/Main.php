@@ -529,7 +529,7 @@ class Main extends MY_Controller
         $usersLayouts = array_combine($userIds, $ucwordsUserNames);
 
         // Crea un array di mappatura layout_id => ucfirst(layout_title)
-        $dati['layouts'] = $this->db->order_by('layouts_module, layouts_title')->get('layouts')->result_array();
+        $dati['layouts'] = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->order_by('layouts_module, layouts_title')->get('layouts')->result_array();
 
         //Fix per non prendere tutti gli utenti ma solo quelli che possono fare login
         if (defined('LOGIN_ACTIVE_FIELD') && !empty(LOGIN_ACTIVE_FIELD)) {
