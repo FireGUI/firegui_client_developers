@@ -6,7 +6,8 @@ if (!defined('BASEPATH')) {
 
 class Cron extends MY_Controller
 {
-    const ENABLE_TRACKING = false;
+    public const ENABLE_TRACKING = false;
+
 
     /**
      * Testa un cron per id
@@ -23,7 +24,7 @@ class Cron extends MY_Controller
         }
 
         $cron = $this->db->get_where('crons', ['crons_id' => $id])->row_array();
-        $cron or show_404();    // Il cron deve esistere
+        $cron or show_404(); // Il cron deve esistere
 
         if ($rollback) {
             $this->db->trans_start(true);
@@ -43,22 +44,23 @@ class Cron extends MY_Controller
     public function check()
     {
 
-          // Save last execution on settings
+        echo_log('debug', "Start cron check...");
+
+        // Save last execution on settings
         $check_col = $this->db->query("SHOW COLUMNS FROM settings LIKE 'settings_last_cron_check';");
         if ($check_col->num_rows() > 0) {
-            $settings = $this->apilib->searchFirst('settings');
-            $this->db->query("UPDATE settings SET settings_last_cron_check = NOW() WHERE settings_id = '{$settings['settings_id']}'");
+            $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
         }
 
 
         $cronKey = uniqid();
 
         if (self::ENABLE_TRACKING) {
-            mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Data inizio: ' . date('Y-m-d H:i:s'));
+            echo_log("debug", "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Start date: ' . date('Y-m-d H:i:s'));
+            mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Start date: ' . date('Y-m-d H:i:s'));
         }
 
-        // Precarico il file di cache per vedere IN QUESTO PUNTO quali cron sono
-        // attivi in altri thread in modo da skipparli dopo
+        // Check active cron or progress in other thread
         $inExecution = $this->getInExecution();
 
         if ($this->db->dbdriver != 'postgre') {
@@ -67,11 +69,9 @@ class Cron extends MY_Controller
             $crons = $this->db->query("SELECT * FROM crons WHERE crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency");
         }
 
-
         $skipped = $executed = [];
 
         foreach ($crons->result_array() as $cron) {
-
             // Essendo un update quello dell'attivazione del cron, non forzo
             // il sistema ad usarlo
             //
@@ -174,6 +174,7 @@ class Cron extends MY_Controller
 
         // Send output mail
         if (self::ENABLE_TRACKING) {
+            echo_log('debug', "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
             mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey end " . DEFAULT_EMAIL_SENDER, strip_tags($out));
         }
 

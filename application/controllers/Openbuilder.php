@@ -43,7 +43,10 @@ class Openbuilder extends MY_Controller
     {
         //Creo le cartelle necessarie
         $folders = [
-            'controllers', 'models', 'views', 'assets',
+            'controllers',
+            'models',
+            'views',
+            'assets',
         ];
 
         $modules_path = APPPATH . 'modules/';
@@ -87,7 +90,7 @@ class Openbuilder extends MY_Controller
         }
     }
 
-//Send module to openbuilder (when creating new module or new release)
+    //Send module to openbuilder (when creating new module or new release)
 
     public function downloadModuleFolder($identifier)
     {
@@ -150,102 +153,24 @@ class Openbuilder extends MY_Controller
         }
     }
 
-    public function updateClient($close = false, $version_code = null)
+    /**
+     * Update Client, method invoked from Builder
+     * @param mixed $close
+     * @param mixed $version_code
+     * @param mixed $channel
+     * @return void
+     */
+    public function updateClient($close = false, $version_code = null, $channel = 4)
     {
-        if (!class_exists('ZipArchive')) {
-            die("Missing ZipArchive class in client");
-        }
 
-        $old_version = VERSION;
+        $this->load->model('core');
+        $output = $this->core->updateClient(null, $version_code, $channel);
 
-        $file_link = OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}";
-        $new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}");
-        $new_version_code = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}");
-
-        //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
-        log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
-
-        $newfile = './tmp_file.zip';
-        if (!copy($file_link, $newfile)) {
-            throw new Exception("Error while copying zip file.");
-        } else {
-            $zip = new ZipArchive();
-
-            if ($zip->open($newfile) !== true) {
-                throw new Exception("Cannot open <$newfile>");
+        if ($output !== false) {
+            if ($close) {
+                echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();window.history.back();}, 5000);</script>";
             } else {
-                $temp_folder = FCPATH;
-                @mkdir($temp_folder);
-                $zip->extractTo($temp_folder);
-                $zip->close();
-
-                // Search update databases file for this version
-                $files = scandir(APPPATH . 'migrations');
-
-                foreach ($files as $file) {
-                    if ($file == 'update_db.php') {
-                        // Check if exist an update_db file to execute update queries
-                        include APPPATH . 'migrations/update_db.php';
-
-                        // Sort array from oldest version to newest
-                        uksort($updates, 'my_version_compare');
-
-                        foreach ($updates as $key => $value) {
-                            // Check if the version number is old or new
-                            if ($key == $new_version) {
-                                foreach ($value as $query) {
-                                    $this->db->query($query);
-                                }
-                            }
-                        }
-                    } elseif ($file == 'update_php_code.php') {
-                        // Check if exist an update_db file to execute update queries
-                        include APPPATH . 'migrations/update_php_code.php';
-
-                        // Sort array from oldest version to newest
-                        uksort($updates, 'my_version_compare');
-
-                        foreach ($updates as $key => $value) {
-                            // Check if the version number is old or new
-                            if ($key == $new_version) {
-                                foreach ($value as $key_type => $code) {
-                                    if ($key_type == 'eval') {
-                                        eval($code);
-                                    } elseif ($key_type == 'include') { // Added possibility to execute a custom code when updating client
-                                        if (is_array($code)) {
-                                            foreach ($code as $file_to_include) {
-                                                $file_migration = APPPATH . 'migrations/' . $file_to_include;
-                                                if (file_exists($file_migration)) {
-                                                    include $file_migration;
-                                                } else {
-                                                    log_message('error', "Migration file {$file_migration} missing!");
-                                                }
-                                            }
-                                        } else {
-                                            $file_migration = APPPATH . 'migrations/' . $code;
-
-                                            if (file_exists($file_migration)) {
-                                                include $file_migration;
-                                            } else {
-                                                log_message('error', "Migration file {$file_migration} missing!");
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                log_message('debug', "new version: $new_version, key: $key");
-                            }
-                        }
-                    }
-                }
-
-                unlink($newfile);
-                $this->clearCache(true);
-                if ($close) {
-                    echo "Client updated! This page will be closed in 5 seconds...<script>setTimeout(function () {window.close();window.history.back();}, 5000);</script>";
-                } else {
-                    echo $new_version_code;
-                }
+                echo $output;
             }
         }
     }
@@ -402,8 +327,8 @@ class Openbuilder extends MY_Controller
 
     private function deleteDir($path)
     {
-        return is_file($path) ?
-        @unlink($path) :
-        array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
+        return is_file($path) ? 
+            @unlink($path) :
+            array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
     }
 }

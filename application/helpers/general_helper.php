@@ -75,6 +75,12 @@ if (!function_exists('dd')) {
 }
 
 if (!function_exists('d')) {
+    /**
+     * Debug function
+     * @param mixed $var
+     * @param array $
+     * @return void
+     */
     function d($var)
     {
         if (!is_development() && !is_maintenance()) {
@@ -126,6 +132,10 @@ if (!function_exists('d')) {
 }
 
 if (!function_exists('is_maintenance')) {
+    /**
+     * Cehck maintenance mode
+     * @return bool
+     */
     function is_maintenance()
     {
         $CI = get_instance();
@@ -133,7 +143,29 @@ if (!function_exists('is_maintenance')) {
         return $CI->db->query("SELECT settings_maintenance_mode FROM settings")->row()->settings_maintenance_mode == DB_BOOL_TRUE;
     }
 }
+
+if (!function_exists('is_update_in_progress')) {
+    /**
+     * Cehck maintenance mode
+     * @return bool
+     */
+    function is_update_in_progress()
+    {
+        $CI = get_instance();
+
+        return $CI->db->query("SELECT settings_update_in_progress FROM settings")->row()->settings_update_in_progress == DB_BOOL_TRUE;
+    }
+}
+
 if (!function_exists('debug')) {
+    /**
+     * Debug function
+     * @param mixed $var
+     * @param mixed $die
+     * @param mixed $trace
+     * @param mixed $show_from
+     * @return void
+     */
     function debug($var, $die = false, $trace = true, $show_from = true)
     {
         if (!is_development() && !is_maintenance()) {
@@ -363,12 +395,18 @@ if (!function_exists('normalize_date')) {
     {
         // Scan for date time format known
         $validFormats = array(
-            'Y-m-d H:i:s', // (US) Datetime
-            'Y-m-d H:i:s.u', // (--) PostgreSQL datetime
-            'Y-m-d H:i', // (US) Datetime (no secondi)
-            'Y-m-d', // (US) Date
-            'd/m/Y H:i:s', // (IT) Datetime
-            'd/m/Y H:i', // (IT) Datetime (no secondi)
+            'Y-m-d H:i:s',
+            // (US) Datetime
+            'Y-m-d H:i:s.u',
+            // (--) PostgreSQL datetime
+            'Y-m-d H:i',
+            // (US) Datetime (no secondi)
+            'Y-m-d',
+            // (US) Date
+            'd/m/Y H:i:s',
+            // (IT) Datetime
+            'd/m/Y H:i',
+            // (IT) Datetime (no secondi)
             'd/m/Y', // (IT) Date
         );
         foreach ($validFormats as $format) {
@@ -902,7 +940,86 @@ if (!function_exists('mese_testuale')) {
     }
 }
 
+if (!function_exists('generate_dump')) {
+
+    function generate_dump($destination, $filename = "")
+    {
+        $CI = & get_instance();
+        $DBUSER = $CI->db->username;
+        $DBPASSWD = $CI->db->password;
+        $DATABASE = $CI->db->database;
+        $DBHOST = $CI->db->hostname;
+
+        if (empty($filename)) {
+            $filename = "backup-db-" . date("d-m-Y") . ".sql.gz";
+        }
+        $filepath = $destination . "/" . $filename;
+
+        $cmd = "mysqldump -h $DBHOST -u $DBUSER --password=$DBPASSWD $DATABASE | gzip --best > $filepath";
+        shell_exec($cmd);
+        // Check exists zip file and size if already 0.1mb
+        if (!file_exists($filepath) || filesize($filepath) < 100000) {
+            echo_log('error', "Dump failed... File does note exists or too small. Check");
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+if (!function_exists('ci_zip_folder')) {
+    /**
+     * Create zip folder with ZIP Codeigniter library, recommended
+     * @param mixed $source
+     * @param mixed $destination
+     * @param mixed $exclude_dirs
+     * @return mixed
+     */
+    function ci_zip_folder($source, $destination, $exclude_dirs = [])
+    {
+        $CI = & get_instance();
+
+        $CI->load->library('zip');
+
+
+        // Check zip extension
+        if (!extension_loaded('zip')) {
+            echo_log('error', "ZIP Extension not found... zip failed.");
+            return false;
+        }
+
+        // Read the contents of the directory
+        $items = scandir($source);
+        // Iterate over the items in the directory
+        foreach ($items as $item) {
+            // Check if the item is a directory
+            if (is_dir($source . '/' . $item)) {
+                if ($item != '.' && $item != '..' && substr($item, 0, 1) != '.' && !in_array($item, $exclude_dirs)) {
+                    // Item is a directory
+                    echo "Add dir: " . $item . "\n";
+                    $CI->zip->read_dir($source . $item, false);
+                }
+            } else {
+                echo "Add file: " . $item . "\n";
+                $CI->zip->read_file($source . $item);
+            }
+        }
+
+        return $CI->zip->archive($destination);
+    }
+}
+
+
+
+
 if (!function_exists('zip_folder')) {
+    /**
+     * Create zip folder with ZipArchive, Pay attention, exclude_dirs does not work.
+     * @param mixed $source
+     * @param mixed $destination
+     * @param mixed $exclude_dirs
+     * @return bool
+     */
     function zip_folder($source, $destination, $exclude_dirs = [])
     {
         if (!extension_loaded('zip')) {
@@ -919,14 +1036,14 @@ if (!function_exists('zip_folder')) {
             unlink($destination); // Unlink before create because otherwise it add files to existing zip file
         }
 
-        //Folder tree creation before open destination
-        $dirs = explode('/', $destination);
-        array_pop($dirs);
-        foreach ($dirs as $dir) {
-            if (!is_dir(FCPATH . $dir)) {
-                mkdir(FCPATH . $dir, DIR_WRITE_MODE, true);
-            }
-        }
+        // Folder tree creation before open destination
+        // $dirs = explode('/', $destination);
+        // array_pop($dirs);
+        // foreach ($dirs as $dir) {
+        //     if (!is_dir(FCPATH . $dir)) {
+        //         mkdir(FCPATH . $dir, DIR_WRITE_MODE, true);
+        //     }
+        // }
 
         $zip = new ZipArchive();
         if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
@@ -936,7 +1053,9 @@ if (!function_exists('zip_folder')) {
         $source = str_replace('\\', '/', realpath($source));
 
         if (is_dir($source) === true) {
+
             $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+
 
             foreach ($files as $file) {
                 $file = str_replace('\\', '/', $file);
@@ -945,9 +1064,8 @@ if (!function_exists('zip_folder')) {
                 if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) {
                     continue;
                 }
-
                 $file = realpath($file);
-
+                // Check if file or dir
                 if (is_dir($file) === true) {
                     //Ignore folders excluded
                     if (in_array(str_replace($source . '/', '', $file), $exclude_dirs)) {
@@ -985,13 +1103,16 @@ if (!function_exists('doGeocoding')) {
         $url = "https://nominatim.openstreetmap.org/search?q=" . urlencode($address) . "&countrycodes=it&format=json";
 
         $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_URL => $url,
-            CURLOPT_HEADER => 0,
-            /* CURLOPT_FOLLOWLOCATION => 1, */
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_USERAGENT => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0",
-        ));
+        curl_setopt_array(
+            $ch,
+            array(
+                CURLOPT_URL => $url,
+                CURLOPT_HEADER => 0,
+                /* CURLOPT_FOLLOWLOCATION => 1, */
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_USERAGENT => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0",
+            )
+        );
         $result = curl_exec($ch);
         $data = json_decode($result, true);
 
@@ -1009,13 +1130,16 @@ if (!function_exists('calculateDistance')) {
         $url = "https://router.project-osrm.org/route/v1/driving/{$startPlace['lon']},{$startPlace['lat']};{$endPlace['lon']},{$endPlace['lat']}?geometries=geojson&alternatives=false&steps=false&generate_hints=false";
 
         $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_URL => $url,
-            CURLOPT_HEADER => 0,
-            /* CURLOPT_FOLLOWLOCATION => 1, */
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => 2,
-        ));
+        curl_setopt_array(
+            $ch,
+            array(
+                CURLOPT_URL => $url,
+                CURLOPT_HEADER => 0,
+                /* CURLOPT_FOLLOWLOCATION => 1, */
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_TIMEOUT => 2,
+            )
+        );
         $result = curl_exec($ch);
 
         $data = json_decode($result, true);
@@ -1152,9 +1276,14 @@ if (!function_exists('copy_file')) {
 }
 
 if (!function_exists('checkClientVersion')) {
-    function checkClientVersion()
+    /**
+     * Summary of checkClientVersion
+     * @param mixed $update_channel
+     * @return bool|string
+     */
+    function checkClientVersion($update_channel = 4)
     {
-        $CI = &get_instance();
+        $CI = & get_instance();
 
         if (!$CI->auth->is_admin()) {
             return false;
@@ -1168,7 +1297,7 @@ if (!function_exists('checkClientVersion')) {
             $last_check = date('Y-m-d h:i:s');
             $CI->session->set_userdata('last_client_check', $last_check);
 
-            $new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION);
+            $new_version = file_get_contents(OPENBUILDER_BUILDER_BASEURL . "public/client/getLastClientVersionNumber/" . VERSION . "/0/" . $update_channel);
 
             $CI->session->set_userdata('last_checked_version', $new_version);
             if ($new_version != VERSION) {
@@ -1401,6 +1530,16 @@ if (!function_exists('e_money')) {
         echo $return;
     }
 }
+
+
+if (!function_exists('echo_log')) {
+    function echo_log($type, $message)
+    {
+        echo $message . "\r\n";
+        log_message($type, $message);
+    }
+}
+
 
 if (!function_exists('progress')) {
     function progress($current, $total, $selector_id = 'js_progress')

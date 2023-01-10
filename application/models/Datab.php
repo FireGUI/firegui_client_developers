@@ -9,8 +9,8 @@ if (!defined('BASEPATH')) {
  */
 class Datab extends CI_Model
 {
-    const LANG_SESSION_KEY = 'master_crm_language';
-    const CACHE_TIME = 3600;
+    public const LANG_SESSION_KEY = 'master_crm_language';
+    public const CACHE_TIME = 3600;
     private $_accessibleLayouts = [];
     private $_forwardedLayouts = [];
     private $_accessibleEntityLayouts = [];
@@ -118,7 +118,6 @@ class Datab extends CI_Model
     }
     public function getDataEntityByQuery($entity_id, $query, $input = null, $limit = null, $offset = 0, $orderBy = null, $count = false, $eval_cachable_fields = [], $additional_parameters = [])
     {
-
         $unique = md5($query);
         $cache_key = "apilib/datab.getDataEntity.{$unique}." . md5(serialize(func_get_args()) . serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
@@ -139,7 +138,6 @@ class Datab extends CI_Model
             }
             foreach ($input as $key => $value) {
                 if (is_array($value) && is_string($key)) {
-
                     // La chiave se è stringa indica il nome del campo,
                     // mentre il value se è array (fattibile solo da POST o PROCESS)
                     // fa un WHERE IN
@@ -185,14 +183,11 @@ class Datab extends CI_Model
                 } else {
                     $out = 0;
                 }
-
             } else {
                 if ($orderBy) {
-
                     $query = str_ireplace('{order_by_clear}', ",$orderBy", $query);
 
                     $query = str_ireplace('{order_by}', "ORDER BY $orderBy", $query);
-
                 } else {
                     $query = str_ireplace('{order_by}', '', $query);
                 }
@@ -213,6 +208,13 @@ class Datab extends CI_Model
         }
         return $dati;
     }
+
+    /**
+     * Summary of replaceSelectWithCount
+     * @param mixed $query
+     * @throws Exception
+     * @return array|string
+     */
     public function replaceSelectWithCount($query)
     {
         if (strpos($query, 'SELECT') !== false) {
@@ -236,10 +238,26 @@ class Datab extends CI_Model
 
         return $query_count;
     }
+
+    /**
+     * Summary of removeLimitOffsetGroupBy
+     * @param mixed $query
+     * @return string
+     */
+
     public function removeLimitOffsetGroupBy($query)
     {
         return explode('LIMIT', $query)[0];
     }
+
+    /**
+     * Builds a WHERE clause for a SQL query using the provided conditions.
+     *
+     * @param array $where An array of conditions for the WHERE clause. Each element in the array should be a string containing a condition, such as 'id = 1' or 'name = "John"'.
+     * @param string $query A string containing a SQL query.
+     *
+     * @return string The modified $query string with the WHERE clause added or appended to it. If the $where array is empty, an empty string is returned.
+     */
     public function buildWhereString($where, $query)
     {
         if ($where) {
@@ -450,7 +468,7 @@ class Datab extends CI_Model
                         }
                         break;
                     case '{different_date}':
-                        $timeobj = new DateTime;
+                        $timeobj = new DateTime();
 
                         if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
                             if (substr($var1, 0, 1) == '+') {
@@ -479,7 +497,7 @@ class Datab extends CI_Model
                         $value = $timeobj->format('d/m/Y');
                         break;
                     case '{different_time}':
-                        $timeobj = new DateTime;
+                        $timeobj = new DateTime();
 
                         if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
                             if (substr($var1, 0, 1) == '+') {
@@ -500,7 +518,7 @@ class Datab extends CI_Model
                         $value = $timeobj->format('H:i');
                         break;
                     case '{different_date_time}':
-                        $timeobj = new DateTime;
+                        $timeobj = new DateTime();
 
                         if (preg_match('/\A[-+]?[0-9]+\z/', $var1)) {
                             if (substr($var1, 0, 1) == '+') {
@@ -537,14 +555,14 @@ class Datab extends CI_Model
                         $value = $timeobj->format('d/m/Y H:i');
                         break;
                     case '{last_month}':
-                        $timeobj = new DateTime;
+                        $timeobj = new DateTime();
                         $last_month_day = $timeobj->format('t/m/Y');
                         $first_month_day = $timeobj->format('01/m/Y');
                         $value = "{$first_month_day} - {$last_month_day}";
                         //debug($value);
                         break;
                     case '{last_year}':
-                        $timeobj = new DateTime;
+                        $timeobj = new DateTime();
                         $last_year_day = $timeobj->format('31/12/Y');
                         $first_year_day = $timeobj->format('01/01/Y');
                         $value = "{$first_year_day} - {$last_year_day}";
@@ -654,7 +672,6 @@ class Datab extends CI_Model
                 $formData = $this->apilib->searchFirst($form['entity_name']);
             } else {
                 $formData = ($edit_id && !is_array($edit_id)) ? $this->apilib->view($form['entity_name'], $edit_id, 1) : [];
-
             }
 
             foreach ($fields as $key => $field) {
@@ -712,7 +729,6 @@ class Datab extends CI_Model
             }
 
             foreach ($shown as $k => $field) {
-
                 // Dimensione del field:
                 //  - cerca prima un valore valido in `forms_fields_override_colsize`
                 //  - altrimenti controlla se è un wysiwyg e impostala a 12
@@ -751,7 +767,6 @@ class Datab extends CI_Model
                     $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($form['forms_entity_id']));
                 }
             }
-
         }
         //debug($dati['forms_fields']);
         return $dati;
@@ -775,7 +790,6 @@ class Datab extends CI_Model
         $relations = $this->crmentity->getRelationByName($entity['entity_name']);
 
         if (count($relations) > 0) {
-
             // Se ho relazione A_B e il form inserisce A, allora voglio prendere la tabella B...
             $nField = ($relations['relations_table_2'] == $form['entity_name']) ? 1 : 2;
 
@@ -883,7 +897,6 @@ class Datab extends CI_Model
 
     public function get_grid_data($grid, $value_id = null, $where = array(), $limit = null, $offset = 0, $order_by = null, $count = false, $additional_parameters = [])
     {
-
         $cache_key = "apilib/datab.get_grid_data." . md5(serialize($grid) . serialize(func_get_args()) . serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
@@ -1123,8 +1136,8 @@ class Datab extends CI_Model
             $defaultForm = $this->db->query('SELECT forms_id FROM forms WHERE forms_default AND forms_entity_id = ? LIMIT 1', [$dati['calendars']['calendars_entity_id']])->row()->forms_id;
         }
 
-        $dati['create_form'] = $allowCreate ? ($formCreate ?: $defaultForm): null;
-        $dati['update_form'] = $allowUpdate ? ($formUpdate ?: $defaultForm): null;
+        $dati['create_form'] = $allowCreate ? ($formCreate ?: $defaultForm) : null;
+        $dati['update_form'] = $allowUpdate ? ($formUpdate ?: $defaultForm) : null;
 
         return $dati;
     }
@@ -1218,7 +1231,6 @@ class Datab extends CI_Model
             $operators = unserialize(OPERATORS);
 
             if (isset($sess_where_data[$element[$element_type . "_filter_session_key"]])) {
-
                 /** =======================
                  * Prendo le relazioni che mi serviranno dopo.
                  * Alla fine verranno disposte in un array indicizzato con il
@@ -1347,7 +1359,6 @@ class Datab extends CI_Model
                                     }
                                     $values = "'" . implode("','", $condition['value']) . "'";
                                     if (in_array(-2, $condition['value'])) {
-
                                         // debug($where_prefix);
                                         // debug($field->fields_name);
                                         // debug($operators[$condition['operator']]['sql']);
@@ -1501,7 +1512,6 @@ class Datab extends CI_Model
 
     public function replace_superglobal_data($string)
     {
-
         // Fix per mantenere vecchia compatibilità con replace di sessioni login
         if (strpos($string, 'master_crm_login') !== false) {
             $string = str_replace('master_crm_login', SESS_LOGIN, $string);
@@ -1643,7 +1653,6 @@ class Datab extends CI_Model
 
     public function generate_menu_link($menu, $value_id = null, $data = null)
     {
-
         $link = '';
         if ($menu['menu_layout'] && $menu['menu_layout'] != '-2') {
             $controller_method = (($menu['menu_modal'] == DB_BOOL_TRUE) ? 'get_ajax/layout_modal' : 'main/layout');
@@ -1690,14 +1699,12 @@ class Datab extends CI_Model
 
     public function get_menu($position = 'sidebar')
     {
-
         // Prendi tutti i menu, con i sottomenu e poi ciclandoli costruisci un array multidimensionale
         $menu = $this->db->from('menu')->join('layouts', 'layouts.layouts_id = menu.menu_layout', 'left')
             ->where('menu_position', $position)->order_by('menu_order')->get()->result_array();
 
         $return = $subs = [];
         foreach ($menu as $key => $item) {
-
             if (!$this->conditions->accessible('menu', $item['menu_id'])) {
                 unset($menu[$key]);
                 continue;
@@ -2246,17 +2253,17 @@ class Datab extends CI_Model
             $fields = $_fields;
 
             /*
-             * Facendo così penalizzo i risultati contenenti la stringa intera
-             * cercata
-             *
+            * Facendo così penalizzo i risultati contenenti la stringa intera
+            * cercata
+            *
             // Spezzo la stringa da cercare sugli spazi
             $search_chunks = explode(' ', $search);
-             *
-             * Quindi faccio una cosa più intelligente:
-             *  - cerco la stringa così com'è
-             *  - la spezzo in parole e mantengo solo quelle di almeno 3
-             *    caratteri
-             */
+            *
+            * Quindi faccio una cosa più intelligente:
+            *  - cerco la stringa così com'è
+            *  - la spezzo in parole e mantengo solo quelle di almeno 3
+            *    caratteri
+            */
             if (!defined('EXPLODE_SPACES') || EXPLODE_SPACES === true) {
                 $search_chunks = array_unique(array_filter(explode(' ', $search), function ($chunk) {
                     return $chunk && strlen($chunk) > (defined('MIN_SEARCH_CHARS') ? (MIN_SEARCH_CHARS - 1) : 2);
@@ -2350,11 +2357,9 @@ class Datab extends CI_Model
      */
     public function build_layout($layout_id, $value_id, $layout_data_detail = null)
     {
-
         $cache_key = "apilib/datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET) . serialize($_POST) . serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
-
                 return null;
             }
 
@@ -2370,7 +2375,6 @@ class Datab extends CI_Model
             $dati['layout_container'] = $this->layout->getLayout($layout_id);
 
             if (empty($dati['layout_container'])) {
-
                 return [
                     'pre-layout' => '',
                     'post-layout' => '',
@@ -2410,7 +2414,6 @@ class Datab extends CI_Model
 
             // Ricavo il content se necessario
             foreach ($layouts as $layout) {
-
                 // Recupero del contenuto del layout
                 // ---
                 // Precedentemente questa operazione veniva effettuata in questo
@@ -2429,8 +2432,8 @@ class Datab extends CI_Model
 
                 if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
                     $layout['content'] = $this->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
-                    $layout['content'] .
-                    $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+                        $layout['content'] .
+                        $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
                 }
 
                 $dati['layout'][$layout['layouts_boxes_row']][] = $layout;
@@ -2525,7 +2528,6 @@ class Datab extends CI_Model
      */
     public function build_grid_cell($field, $dato, $escape_date = true, $crop = true)
     {
-
         // Valuta eventuali grid fields eval e placeholder
         $type = isset($field['grids_fields_replace_type']) ? $field['grids_fields_replace_type'] : 'field';
 
@@ -2583,7 +2585,6 @@ class Datab extends CI_Model
     }
     private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true)
     {
-
         // =====================================================================
         // Controllo multilingua:
         // Se il field è multilingua allora ciclo tutte le lingue e le stampo
@@ -2620,8 +2621,8 @@ class Datab extends CI_Model
         if ($isEmptyString or $isRefWithoutValue) {
             // Il campo non è stampabile, quindi torno il placeholder se ce l'ho
             $placeholder = trim($field['fields_draw_placeholder']);
-            return $placeholder ?
-            sprintf('<small class="text-muted">%s</small>', $placeholder) : '';
+            return $placeholder ? 
+                sprintf('<small class="text-muted">%s</small>', $placeholder) : '';
         }
 
         // =====================================================================
@@ -2659,7 +2660,6 @@ class Datab extends CI_Model
                         $simpleKey = $support_field['fields_name'];
 
                         if (array_key_exists($prefixedKey, $dato)) {
-
                             // Il caso migliore:    entitàReferenziata_entitàPrincipale_nomeBaseCampo
                             $previewSegment = '';
                             if ($support_field['fields_multilingual'] === DB_BOOL_TRUE) {
@@ -2736,10 +2736,10 @@ class Datab extends CI_Model
                         $ext = pathinfo($value, PATHINFO_EXTENSION);
                         if (in_array($ext, $doc_ext)) {
                             return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img width='30px' height='30px' src=" . base_url("images/download.png") . ">Download file</a>";
-                        } else if (strstr($file, "audio/")) {
+                        } elseif (strstr($file, "audio/")) {
                             // this code for audio
                             return "<a href=" . base_url("uploads/$value") . " target='_blank'>Ascolta file</a>";
-                        } else if (strstr($file, "video/")) {
+                        } elseif (strstr($file, "video/")) {
                             // this code for video
                             //return"<video controls><source src=".base_url_uploads("uploads/$value")." type='video/mp4'>Your browser does not support the video tag.</video>";
                             //return $this->load->view('layout/modal_link_file', ['file' => $file, 'value' => '_blank');
@@ -2752,8 +2752,7 @@ class Datab extends CI_Model
                             'footer' => null
                             ));*/
                             return anchor(base_url_uploads("uploads/$value"), 'Download file', array('class' => 'js_open_modal_link_file'));
-
-                        } else if (strstr($file, "image/")) {
+                        } elseif (strstr($file, "image/")) {
                             return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img src=" . base_url_uploads("thumb/50/50/1/uploads/$value") . "></a>";
                         } else {
                             return anchor(base_url_uploads("uploads/$value"), 'Download file', array('class' => 'js_open_modal_link_file'));
@@ -3145,8 +3144,8 @@ class Datab extends CI_Model
 
                         if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
                             $content = $this->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
-                            $content .
-                            $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+                                $content .
+                                $this->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
                         }
                         //debug($content);
                         $tabs[$key] = [
@@ -3271,7 +3270,6 @@ class Datab extends CI_Model
 
                 if (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php")) {
                     return $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
-
                 } else {
                     //Verifico se questa custom view fa parte di un modulo. In tal caso, carico la view direttamente dal modulo
                     if ($module_view) {
@@ -3279,7 +3277,6 @@ class Datab extends CI_Model
                     } else {
                         return $this->loadCustomView($contentRef, ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
                     }
-
                 }
 
             // no break
@@ -3294,7 +3291,6 @@ class Datab extends CI_Model
                     $return = str_replace_placeholders($return, (array) $layoutEntityData, true, false);
 
                     return $return;
-
                 }
                 return sprintf('<strong style="color:red">TYPE: %s No content</strong>', $contentType);
         }

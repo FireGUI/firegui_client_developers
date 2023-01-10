@@ -143,26 +143,39 @@ if (!empty($this->settings['settings_last_cron_check'])) {
                 </div>
 
                 <div class="box-body">
-                            <?php if (!empty($this->settings['settings_last_cron_check'])): ?>
-                    <?php if ($interval_cron_execution > 5): ?>
-                    <div class="">
-                        <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
-                        check <br />
-                        <small>Last execution: <?php echo $this->settings['settings_last_cron_check']; ?> </small>
-                    </div>
-                    <?php else: ?>
-                     <div class="">
-                        <span><i style="color:#009933;margin-right:15px" class="fas fa-check-circle"></i></span> Cron
-                        check <br />
-                        <small>Last execution: <?php echo $this->settings['settings_last_cron_check']; ?> </small>
-                    </div>
-                    <?php endif;?>
-                    <?php else: ?>
-                        <div class="">
-                        <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
-                        check <br />
-                        <small>Last execution: <i>unavailable</i> </small>
-                    </div>
+
+                        <?php if (!empty($this->settings['settings_last_cron_check'])): ?>
+                            <?php if ($interval_cron_execution > 5): ?>
+                            <div class="">
+                                <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
+                                check <br />
+                                <small>Last execution: <?php echo $this->settings['settings_last_cron_check']; ?> </small>
+                            </div>
+                            <?php else: ?>
+                            <div class="">
+                                <span><i style="color:#009933;margin-right:15px" class="fas fa-check-circle"></i></span> Cron
+                                check <br />
+                                <small>Last execution: <?php echo $this->settings['settings_last_cron_check']; ?> </small>
+                            </div>
+                            <?php endif;?>
+                            <?php else: ?>
+                                <div class="">
+                                <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
+                                check <br />
+                                <small>Last execution: <i>unavailable</i> </small>
+                            </div>
+                        <?php endif;?>
+
+                        <?php if (array_key_exists('settings_auto_update_client', $this->settings)): ?>
+                            <div class="">
+                                <?php if ($this->settings['settings_auto_update_client'] == DB_BOOL_TRUE): ?>
+                                    <span><i style="color:#FF0000;margin-right:15px" class="fas fa-check-circle"></i></span> Auto update client (<a href="<?php echo base_url("db_ajax/switch_bool/settings_auto_update_client/".$this->settings['settings_id']);?>">disable it</a>)
+                                <?php else: ?>
+                                    <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Auto update client (<a href="<?php echo base_url("db_ajax/switch_bool/settings_auto_update_client/".$this->settings['settings_id']);?>">disable it</a>)
+                             <?php endif;?>
+                                <br /><small>Last update: - </small>
+                                <br /><small>Update in progress: <?php if ($this->settings['settings_update_in_progress'] == DB_BOOL_TRUE): ?>Yes now...<?php else:?>No<?php endif;?> </small>
+                            </div>
                         <?php endif;?>
                 </div>
             </div>
