@@ -630,11 +630,13 @@ if (!function_exists('normalize_path')) {
 if (!function_exists('echo_flush')) {
     function echo_flush($str, $new_line = '')
     {
+
         $CI = get_instance();
-        if (!$CI->input->is_cli_request()) {
-            echo str_pad($str, 2048, ' ');
-            flush();
-            ob_flush();
+        if ($CI->input->is_cli_request()) {
+            // echo str_pad($str, 2048, ' ');
+            echo $str . PHP_EOL;
+            // flush();
+            // ob_flush();
         } else {
             $newlineTags = array(
                 '<br>',
@@ -941,7 +943,12 @@ if (!function_exists('mese_testuale')) {
 }
 
 if (!function_exists('generate_dump')) {
-
+    /**
+     * Generate dump
+     * @param mixed $destination
+     * @param mixed $filename
+     * @return bool
+     */
     function generate_dump($destination, $filename = "")
     {
         $CI = & get_instance();

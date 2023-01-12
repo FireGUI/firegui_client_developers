@@ -246,6 +246,13 @@ function extra_data($layout, $sidebar_layouts)
                                 </div>
                             </div>
                         </div>
+                        <div class="form-actions fluid">
+                            <div class="col-md-12">
+                                <div class='pull-right'>
+                                    &nbsp;
+                                </div>
+                            </div>
+                        </div>
                     </form>
 
                 </div>

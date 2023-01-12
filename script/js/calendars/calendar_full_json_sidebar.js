@@ -39,24 +39,12 @@ function initCalendars() {
                     var allDay = isAlldayEvent(evt.event.start, evt.event.end);
                     var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
                     var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
-
-                    var fDateStart = moment(date.start).format('DD/MM/YYYY'); // formatted date start
-                    var fDateEnd = moment(date.end).format('DD/MM/YYYY'); // formatted date end
-
-                    var fTimeStart = moment(date.start).format('HH:mm'); // formatted time start
-                    var fTimeEnd = moment(date.end).format('HH:mm'); // formatted time end
-
                     var data = {
                         [token_name]: token_hash,
                         [fieldid]: evt.event.id,
                         [startField]: fStart,
-                        [endField]: fEnd,
+                        [endField]: fEnd
                         //TODO: manage all days events
-
-                        date_start: fDateStart,
-                        date_end: fDateEnd,
-                        time_start: fTimeStart,
-                        time_end: fTimeEnd,
                     };
 
                     $.ajax({
@@ -123,23 +111,12 @@ function initCalendars() {
                         var fStart = moment(date.start).format('DD/MM/YYYY HH:mm'); // formatted start
                         var fEnd = moment(date.end).format('DD/MM/YYYY HH:mm'); // formatted end
 
-                        var fDateStart = moment(date.start).format('DD/MM/YYYY'); // formatted date start
-                        var fDateEnd = moment(date.end).format('DD/MM/YYYY'); // formatted date end
-
-                        var fTimeStart = moment(date.start).format('HH:mm'); // formatted time start
-                        var fTimeEnd = moment(date.end).format('HH:mm'); // formatted time end
-
                         var allDay = isAlldayEvent(fStart, fEnd, 'DD/MM/YYYY HH:mm');
                         var data = {
                             [token_name]: token_hash,
                             [startField]: fStart,
-                            [endField]: fEnd,
+                            [endField]: fEnd
                             //TODO: manage all days events
-
-                            date_start: fDateStart,
-                            date_end: fDateEnd,
-                            time_start: fTimeStart,
-                            time_end: fTimeEnd,
                         };
 
                         loadModal(formurl, data, function () {

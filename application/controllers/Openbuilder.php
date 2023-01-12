@@ -160,7 +160,7 @@ class Openbuilder extends MY_Controller
      * @param mixed $channel
      * @return void
      */
-    public function updateClient($close = false, $version_code = null, $channel = 4)
+    public function updateClient($close = false, $version_code = 0, $channel = 4)
     {
 
         $this->load->model('core');
@@ -286,14 +286,8 @@ class Openbuilder extends MY_Controller
 
     public function clearCache()
     {
-        $this->apilib->clearCache(true);
-        @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-
-        // Pulisco cache frontend se c'è...
-        if (is_dir(APPPATH . '../core/cache/')) {
-            $this->load->helper('file');
-            delete_files(APPPATH . '../core/cache/', false);
-        }
+        $this->load->model('core');
+        $this->core->clearCache();
     }
 
     //Send module to firegui (when creating new module or new release)
