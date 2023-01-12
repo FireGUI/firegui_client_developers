@@ -409,24 +409,36 @@ class Cron extends MY_Controller
         }
     }
 
+    public function cron_cli($cron)
+    {
+
+        // Workaroung for cli execution... Replace url or explode and execute via cli if base_url
+        if (strpos($cron['crons_file'], "{base_url}") !== false) {
+            $path = str_replace("/", " ", $cron['crons_file']);
+            $path = str_replace("{base_url}", "", $path);
+            $cmd = "cd " . FCPATH . " && php index.php " . $path;
+            exec($cmd);
+        } else {
+            $cmd = $cron['crons_file'];
+        }
+        echo_log("debug", "Execute CURL via CLI: $cmd");
+        exec($cmd);
+    }
+
     public function cron_curl($cron)
     {
         $ch = curl_init();
 
         // Workaroung for cli execution... Replace url or explode and execute via cli if base_url
-        if (strpos($cron['crons_file'], "{base_url}") !== false) {
-            if (is_cli()) {
-                $path = str_replace("/", " ", $cron['crons_file']);
-                $path = str_replace("{base_url}", "", $path);
-                $cmd = "cd " . FCPATH . " && php index.php " . $path;
-                echo_log("debug", "Execute CURL via CLI: $cmd");
-                exec($cmd);
-                return false;
-            } else {
-                $url = str_ireplace('{base_url}', base_url(), $cron['crons_file']);
-            }
+        if (is_cli() && $cron['crons_cli'] == DB_BOOL_TRUE) {
+            $this->cron_cli($cron);
+            return false;
         } else {
-            $url = $cron['crons_file'];
+            if (strpos($cron['crons_file'], "{base_url}") !== false) {
+                $url = str_ireplace('{base_url}', base_url(), $cron['crons_file']);
+            } else {
+                $url = $cron['crons_file'];
+            }
         }
 
         echo_log("debug", "Start curl: " . $url);
