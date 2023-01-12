@@ -13,15 +13,28 @@ class Core extends CI_Model
 
     }
 
+
+    public function clearCache()
+    {
+        $this->mycache->clearCache(true);
+        @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+
+        // Pulisco cache frontend se c'è...
+        if (is_dir(APPPATH . '../core/cache/')) {
+            $this->load->helper('file');
+            delete_files(APPPATH . '../core/cache/', false);
+        }
+    }
+
     /**
      * Core method to update client
      * @param mixed $repository_url
-     * @param mixed $version_code
+     * @param mixed $version_code if empty use 0 not null
      * @param mixed $channel
      * @throws Exception
      * @return bool|string
      */
-    public function updateClient($repository_url = null, $version_code = null, $channel = 4)
+    public function updateClient($repository_url = null, $version_code = 0, $channel = 4)
     {
 
         if (!class_exists('ZipArchive')) {
@@ -48,6 +61,7 @@ class Core extends CI_Model
         log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
 
         $newfile = './tmp_file.zip';
+
         if (!copy($file_link, $newfile)) {
             throw new Exception("Error while copying zip file.");
         } else {

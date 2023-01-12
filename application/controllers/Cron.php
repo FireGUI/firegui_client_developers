@@ -39,11 +39,176 @@ class Cron extends MY_Controller
 
 
     /**
-     * Esegui il cron
+     * From 2.3.9 Cron check method executed via CLI. Same method check() without output header. Recommended!!
+     * @return void
+     */
+    public function cli()
+    {
+
+        if (!is_cli()) {
+            echo_log("error", "Invoked cli cron method from url? Nope...");
+            return false;
+        }
+        echo_log('debug', "Start cron check...");
+
+        // Save last execution on settings
+        $check_col = $this->db->query("SHOW COLUMNS FROM settings LIKE 'settings_last_cron_check';");
+        if ($check_col->num_rows() > 0) {
+            $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
+        }
+
+
+        $cronKey = uniqid();
+
+        if (self::ENABLE_TRACKING) {
+            echo_log("debug", "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Start date: ' . date('Y-m-d H:i:s'));
+            mail(DEFAULT_EMAIL_SYSTEM, "Cron $cronKey start" . DEFAULT_EMAIL_SENDER, 'Start date: ' . date('Y-m-d H:i:s'));
+        }
+
+        // Check active cron or progress in other thread
+        $inExecution = $this->getInExecution();
+
+        if ($this->db->dbdriver != 'postgre') {
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i')");
+        } else {
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency");
+        }
+
+        $skipped = $executed = [];
+
+        foreach ($crons->result_array() as $cron) {
+            // Essendo un update quello dell'attivazione del cron, non forzo
+            // il sistema ad usarlo
+            //
+            // Controllo anche se il cron_id era tra quelli in esecuzione
+            // all'avvio del cron runner
+            if ((isset($cron['crons_active']) && $cron['crons_active'] === DB_BOOL_FALSE) or in_array($cron['crons_id'], $inExecution)) {
+                $skipped[] = $cron['crons_id'];
+                //Remove to avoid infinite pending cron
+                $this->noMoreInExecution($cron['crons_id']);
+                continue;
+            }
+
+            // Marco l'inizio del cron impostando il last execution field e
+            // ricordandolo come in esecuzione in cache
+            $this->db->set('crons_last_execution', 'NOW()', false);
+            $this->db->where('crons_id', $cron['crons_id']);
+            $this->db->update('crons');
+
+            $this->saveInExecution($cron['crons_id']);
+
+            $this->run($cron);
+
+            // End cron
+            $executed[] = $cron['crons_id'];
+            $this->noMoreInExecution($cron['crons_id']);
+        }
+
+        $allCrons = $this->db->get('crons')->result_array();
+        $idxCrons = array_combine(array_key_map($allCrons, 'crons_id'), array_key_map($allCrons, 'crons_title'));
+
+
+        // =============== OUTPUT ===============
+        echo '<pre>';
+        echo 'Data fine: ', date('Y-m-d H:i:s');
+
+        echo PHP_EOL, PHP_EOL, 'Attivi alla partenza', PHP_EOL;
+        print_r(array_map(function ($c) use ($idxCrons) {
+            return sprintf('(%s) %s', $c, $idxCrons[$c]);
+        }, array_keys($idxCrons)));
+
+        echo PHP_EOL, PHP_EOL, 'In esecuzione alla partenza', PHP_EOL;
+        print_r(array_map(function ($c) use ($idxCrons) {
+            return sprintf('(%s) %s', $c, $idxCrons[$c]);
+        }, $inExecution));
+
+        echo PHP_EOL, PHP_EOL, 'Eseguiti', PHP_EOL;
+        print_r(array_map(function ($c) use ($idxCrons) {
+            return sprintf('(%s) %s', $c, $idxCrons[$c]);
+        }, $executed));
+
+        echo PHP_EOL, PHP_EOL, 'Skippati', PHP_EOL;
+        print_r(array_map(function ($c) use ($idxCrons) {
+            return sprintf('(%s) %s', $c, $idxCrons[$c]);
+        }, $skipped));
+        echo '</pre>';
+
+        // =============== OUTPUT ===============
+        //
+        // ============= Start MAIL_QUEUE =============
+        $model = $this->config->item('crm_name') . '_mail_model';
+        if (file_exists(APPPATH . "models/$model.php")) {
+            try {
+                $this->load->model($model, 'my_model');
+                $this->my_model->flushEmails();
+                // Model Exists
+            } catch (Exception $e) {
+                debug($e, true);
+                // Model does NOT Exist
+                //Uso il mail model di default
+                $this->mail_model->flushEmails();
+            }
+        } else {
+            $this->mail_model->flushEmails();
+        }
+        // ============= End MAIL_QUEUE =============
+
+        // ============= Start Delete logs =============
+        //Execute only on time a day
+        if (date('H') == 11) {
+            if ($this->db->dbdriver != 'postgre') {
+                $this->db->where("log_api_date < now() - interval 280 day", null, false)->delete('log_api');
+                $this->db->where("log_crm_time < now() - interval 280 day", null, false)->delete('log_crm');
+                $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 7 DAY", null, false)->delete('ci_sessions');
+            } else {
+                $this->db
+                    ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
+                    ->delete('log_api');
+                $this->db
+                    ->where("log_crm_time < NOW() - INTERVAL '6 MONTH'", null, false)
+                    ->delete('log_crm');
+                $this->db
+                    ->where("to_timestamp(timestamp) < NOW() - INTERVAL '1 MONTH'", null, false)
+                    ->delete('ci_sessions');
+            }
+        }
+        // ============= End Delete logs =============
+
+
+        //Clear logs folder
+        $files = scandir(APPPATH . 'logs/');
+        foreach ($files as $file) {
+            if (in_array($file, ['.', '..', 'index.html']) || count(explode('-', $file)) != 4) {
+                continue;
+            } else {
+                $file_no_ext = explode('.', $file)[0];
+                $file_expl = explode('-', $file_no_ext);
+                $data_txt = "{$file_expl[1]}-{$file_expl[2]}-{$file_expl[3]}";
+                $date = DateTime::createFromFormat('Y-m-d', $data_txt);
+
+                if ($date->diff(new DateTime())->format('%a') > 7) {
+                    //debug("Cancello il file " . APPPATH . 'logs/' . $file);
+                    unlink(APPPATH . 'logs/' . $file);
+                    log_message("info", "Cancello il file " . APPPATH . 'logs/' . $file);
+                } else {
+                    //debug("Mantengo il file " . APPPATH . 'logs/' . $file);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Method called from CURL to execute all crons... (deprecated from 2.3.9)
+     * @return void
      */
     public function check()
     {
 
+        if (is_cli()) {
+            echo_log("error", "Invoked check cron method from cli... Nope... use cli() method");
+            return false;
+        }
         echo_log('debug', "Start cron check...");
 
         // Save last execution on settings
@@ -207,6 +372,7 @@ class Cron extends MY_Controller
 
     private function run(array $cron)
     {
+        echo_log("debug", "Execute cron id: " . $cron['crons_id'] . " type: " . $cron['crons_type'] . " " . $cron['crons_title']);
         switch ($cron['crons_type']) {
             case 'mail':
                 $this->cron_email($cron);
@@ -246,7 +412,24 @@ class Cron extends MY_Controller
     public function cron_curl($cron)
     {
         $ch = curl_init();
-        $url = str_ireplace('{base_url}', base_url(), $cron['crons_file']);
+
+        // Workaroung for cli execution... Replace url or explode and execute via cli if base_url
+        if (strpos($cron['crons_file'], "{base_url}") !== false) {
+            if (is_cli()) {
+                $path = str_replace("/", " ", $cron['crons_file']);
+                $path = str_replace("{base_url}", "", $path);
+                $cmd = "cd " . FCPATH . " && php index.php " . $path;
+                echo_log("debug", "Execute CURL via CLI: $cmd");
+                exec($cmd);
+                return false;
+            } else {
+                $url = str_ireplace('{base_url}', base_url(), $cron['crons_file']);
+            }
+        } else {
+            $url = $cron['crons_file'];
+        }
+
+        echo_log("debug", "Start curl: " . $url);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);

@@ -45,5 +45,3 @@ template/build/*
 !template/build/.gitkeep
 class/genthumb/cache/*
 class/easythumb/writable/*
-
-tmp
