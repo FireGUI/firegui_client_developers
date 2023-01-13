@@ -902,10 +902,14 @@ abstract class CI_DB_forge {
 				$attributes['NULL'] = TRUE;
 				$field['null'] = empty($this->_null) ? '' : ' '.$this->_null;
 			}
-			else
-			{
-				$field['default'] = $this->_default.$this->db->escape($attributes['DEFAULT']);
-			}
+			elseif (array_key_exists('DEFAULT_STRING', $attributes) && $attributes['DEFAULT_STRING'] === false)
+                        {
+                            $field['default'] = $this->_default.$attributes['DEFAULT'];
+                        }
+                        else
+                        {
+                            $field['default'] = $this->_default.$this->db->escape($attributes['DEFAULT']);
+                        }
 		}
 	}
 

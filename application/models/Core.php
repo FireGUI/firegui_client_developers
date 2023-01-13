@@ -11,6 +11,15 @@ class Core extends CI_Model
     {
         parent::__construct();
 
+
+        $this->load->model('utils', 'utils_base');
+
+        // Load utils model
+        if ($this->db->dbdriver == 'postgre') {
+            $this->load->model('Utils/postgre_utils', 'utils');
+        } else if ($this->db->dbdriver == 'mysqli') {
+            $this->load->model('Utils/mysqli_utils', 'utils');
+        }
     }
 
 
@@ -26,8 +35,19 @@ class Core extends CI_Model
         }
     }
 
+
     /**
-     * Core method to update client
+     * From 2.3.9 UpdateDB method, invoked usually after update client
+     * @return never
+     */
+    public function update()
+    {
+        log_message("debug", "Core: Start UPDATE Database from Utils");
+        $this->utils->migrationProcess();
+    }
+
+    /**
+     * From 2.3.9 Core method to update client
      * @param mixed $repository_url
      * @param mixed $version_code if empty use 0 not null
      * @param mixed $channel

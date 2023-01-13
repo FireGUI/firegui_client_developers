@@ -4,19 +4,38 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-
-class Install extends CI_Controller
+class Install extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        show_error("Controller dismesso");
+
     }
 
 
+
+    /**
+     * From 2.3.9 Method to invoke update database from external curl
+     * @return never
+     */
+    public function update()
+    {
+        echo_log("debug", "Start update database...");
+        $this->load->model('core');
+        $this->core->update();
+        echo_log("debug", "Finish update database...");
+    }
+
+
+    /**
+     * Summary of import_query
+     * @param mixed $filename
+     * @return void
+     */
+
     public function import_query($filename)
     {
-        $file = './application/logs/'.$filename.'.txt';
+        $file = './application/logs/' . $filename . '.txt';
 
         if (file_exists($file)) {
             $queries = file($file);
@@ -29,4 +48,6 @@ class Install extends CI_Controller
             write_file($file, '');
         }
     }
+
+
 }
