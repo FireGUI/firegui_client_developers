@@ -3267,9 +3267,15 @@ class Datab extends CI_Model
             case "view":
                 //TODO: verificare prima se esiste un custom per questo modulo nelle view native custom
                 $module_view = $this->getModuleViewData($contentRef);
+                // debug($module_view);
+                // debug($contentRef, true);
 
                 if (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php")) {
-                    return $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+
+                    $html = $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
+                    //die($html);
+                    return $html;
+
                 } else {
                     //Verifico se questa custom view fa parte di un modulo. In tal caso, carico la view direttamente dal modulo
                     if ($module_view) {
@@ -3277,6 +3283,7 @@ class Datab extends CI_Model
                     } else {
                         return $this->loadCustomView($contentRef, ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
                     }
+
                 }
 
             // no break
