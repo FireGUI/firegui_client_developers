@@ -8,7 +8,6 @@ class Cron extends MY_Controller
 {
     public const ENABLE_TRACKING = false;
 
-
     /**
      * Testa un cron per id
      * @param int $id

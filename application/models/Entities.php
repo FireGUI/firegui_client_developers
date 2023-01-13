@@ -14,6 +14,8 @@ class Entities extends CI_Model
 
         // Fix for compatibility Client-Builder 
         $this->selected_db = $this->db;
+        $this->load->model('general');
+
 
         $this->alter_text = ($this->selected_db->dbdriver != 'postgre') ? 'MODIFY' : 'ALTER COLUMN';
         $this->type_text = ($this->selected_db->dbdriver != 'postgre') ? '' : 'TYPE';
@@ -393,10 +395,12 @@ class Entities extends CI_Model
         $grids = $this->selected_db->get_where('grids', array('grids_entity_id' => $entity_id))->result_array();
         foreach ($grids as $grid) {
             $this->selected_db->delete('grids', array('grids_id' => $grid['grids_id']));
-            $this->selected_db->delete('layouts_boxes', array(
-                'layouts_boxes_content_type' => 'grid',
-                'layouts_boxes_content_ref' => $grid['grids_id'],
-            )
+            $this->selected_db->delete(
+                'layouts_boxes',
+                array(
+                    'layouts_boxes_content_type' => 'grid',
+                    'layouts_boxes_content_ref' => $grid['grids_id'],
+                )
             );
         }
 
@@ -404,10 +408,12 @@ class Entities extends CI_Model
         $forms = $this->selected_db->get_where('forms', array('forms_entity_id' => $entity_id))->result_array();
         foreach ($forms as $form) {
             $this->selected_db->delete('forms', array('forms_id' => $form['forms_id']));
-            $this->selected_db->delete('layouts_boxes', array(
-                'layouts_boxes_content_type' => 'form',
-                'layouts_boxes_content_ref' => $form['forms_id'],
-            )
+            $this->selected_db->delete(
+                'layouts_boxes',
+                array(
+                    'layouts_boxes_content_type' => 'form',
+                    'layouts_boxes_content_ref' => $form['forms_id'],
+                )
             );
         }
 
@@ -415,10 +421,12 @@ class Entities extends CI_Model
         $maps = $this->selected_db->get_where('maps', array('maps_entity_id' => $entity_id))->result_array();
         foreach ($maps as $map) {
             $this->selected_db->delete('maps', array('maps_id' => $map['maps_id']));
-            $this->selected_db->delete('layouts_boxes', array(
-                'layouts_boxes_content_type' => 'map',
-                'layouts_boxes_content_ref' => $map['maps_id'],
-            )
+            $this->selected_db->delete(
+                'layouts_boxes',
+                array(
+                    'layouts_boxes_content_type' => 'map',
+                    'layouts_boxes_content_ref' => $map['maps_id'],
+                )
             );
         }
 
@@ -426,10 +434,12 @@ class Entities extends CI_Model
         $calendars = $this->selected_db->get_where('calendars', array('calendars_entity_id' => $entity_id))->result_array();
         foreach ($calendars as $calendar) {
             $this->selected_db->delete('calendars', array('calendars_id' => $calendar['calendars_id']));
-            $this->selected_db->delete('layouts_boxes', array(
-                'layouts_boxes_content_type' => 'calendar',
-                'layouts_boxes_content_ref' => $calendar['calendars_id'],
-            )
+            $this->selected_db->delete(
+                'layouts_boxes',
+                array(
+                    'layouts_boxes_content_type' => 'calendar',
+                    'layouts_boxes_content_ref' => $calendar['calendars_id'],
+                )
             );
         }
 
@@ -1206,16 +1216,18 @@ class Entities extends CI_Model
         // Aggiungo i campi
         $id_query = $this->selected_db->where('fields_name', $table_name . '_id')->get('fields');
         if ($id_query->num_rows() < 1) {
-            $this->selected_db->insert('fields', array(
-                'fields_name' => $table_name . '_id',
-                'fields_preview' => DB_BOOL_FALSE,
-                'fields_entity_id' => $entity_id,
-                'fields_type' => 'INT',
-                'fields_visible' => DB_BOOL_TRUE,
-                //20190322 - Matteo: messo a False altrimenti non funzionavano le support table inline edit
-                'fields_required' => FIELD_NOT_REQUIRED,
-                'fields_default' => '',
-            )
+            $this->selected_db->insert(
+                'fields',
+                array(
+                    'fields_name' => $table_name . '_id',
+                    'fields_preview' => DB_BOOL_FALSE,
+                    'fields_entity_id' => $entity_id,
+                    'fields_type' => 'INT',
+                    'fields_visible' => DB_BOOL_TRUE,
+                    //20190322 - Matteo: messo a False altrimenti non funzionavano le support table inline edit
+                    'fields_required' => FIELD_NOT_REQUIRED,
+                    'fields_default' => '',
+                )
             );
             $id_field_id = $this->selected_db->insert_id();
         } else {
@@ -1224,15 +1236,17 @@ class Entities extends CI_Model
 
         $value_query = $this->selected_db->where('fields_name', $table_name . '_value')->get('fields');
         if ($value_query->num_rows() < 1) {
-            $this->selected_db->insert('fields', array(
-                'fields_name' => $table_name . '_value',
-                'fields_preview' => DB_BOOL_TRUE,
-                'fields_entity_id' => $entity_id,
-                'fields_type' => 'VARCHAR',
-                'fields_visible' => DB_BOOL_TRUE,
-                'fields_default' => '',
+            $this->selected_db->insert(
+                'fields',
+                array(
+                    'fields_name' => $table_name . '_value',
+                    'fields_preview' => DB_BOOL_TRUE,
+                    'fields_entity_id' => $entity_id,
+                    'fields_type' => 'VARCHAR',
+                    'fields_visible' => DB_BOOL_TRUE,
+                    'fields_default' => '',
 
-            )
+                )
             );
             $value_field_id = $this->selected_db->insert_id();
         } else {
@@ -1253,17 +1267,21 @@ class Entities extends CI_Model
         }
 
         // Devo creare i fields draw per i campi altrimenti non saranno visibili - creati in ogni caso perché devo avere la label
-        $this->selected_db->insert('fields_draw', array(
-            'fields_draw_fields_id' => $id_field_id,
-            'fields_draw_label' => 'ID ' . ucwords(str_replace('_', ' ', $table_name)),
-            'fields_draw_html_type' => 'input_text',
-        )
+        $this->selected_db->insert(
+            'fields_draw',
+            array(
+                'fields_draw_fields_id' => $id_field_id,
+                'fields_draw_label' => 'ID ' . ucwords(str_replace('_', ' ', $table_name)),
+                'fields_draw_html_type' => 'input_text',
+            )
         );
-        $this->selected_db->insert('fields_draw', array(
-            'fields_draw_fields_id' => $value_field_id,
-            'fields_draw_label' => ucwords(str_replace('_', ' ', $table_name)),
-            'fields_draw_html_type' => 'input_text',
-        )
+        $this->selected_db->insert(
+            'fields_draw',
+            array(
+                'fields_draw_fields_id' => $value_field_id,
+                'fields_draw_label' => ucwords(str_replace('_', ' ', $table_name)),
+                'fields_draw_html_type' => 'input_text',
+            )
         );
         //$this->db->query("SET FOREIGN_KEY_CHECKS=0");
         //Creo il form per la grids_inline_edit_form che creerò dopo
@@ -1291,27 +1309,31 @@ class Entities extends CI_Model
 
         if ($customizable_grid) {
             // Creo una grid per customizzare i dati della support table
-            $this->selected_db->insert('grids', array(
-                'grids_entity_id' => $entity_id,
-                'grids_name' => "Customize {$table_name}",
-                //'grids_layout' => 'datatable_ajax_inline',
-                'grids_layout' => 'datatable_ajax_inline_form',
-                'grids_inline_form' => $form_id,
-            )
+            $this->selected_db->insert(
+                'grids',
+                array(
+                    'grids_entity_id' => $entity_id,
+                    'grids_name' => "Customize {$table_name}",
+                    //'grids_layout' => 'datatable_ajax_inline',
+                    'grids_layout' => 'datatable_ajax_inline_form',
+                    'grids_inline_form' => $form_id,
+                )
             );
             $grid_id = $this->selected_db->insert_id();
             $this->selected_db->insert('grids_fields', array('grids_fields_grids_id' => $grid_id, 'grids_fields_fields_id' => $id_field_id));
             $this->selected_db->insert('grids_fields', array('grids_fields_grids_id' => $grid_id, 'grids_fields_fields_id' => $value_field_id));
 
             // Michael - 08/2022 - Creating also a grid_actions record containing delete button
-            $this->selected_db->insert('grids_actions', array(
-                'grids_actions_grids_id' => $grid_id,
-                'grids_actions_order' => 99,
-                'grids_actions_name' => 'Delete',
-                'grids_actions_icon' => 'fas fa-trash',
-                'grids_actions_type' => 'delete',
-                'grids_actions_color' => 'rgb(233, 30, 99)',
-            )
+            $this->selected_db->insert(
+                'grids_actions',
+                array(
+                    'grids_actions_grids_id' => $grid_id,
+                    'grids_actions_order' => 99,
+                    'grids_actions_name' => 'Delete',
+                    'grids_actions_icon' => 'fas fa-trash',
+                    'grids_actions_type' => 'delete',
+                    'grids_actions_color' => 'rgb(233, 30, 99)',
+                )
             );
 
             //TODO: anche qui mettere ordinamento
@@ -1528,15 +1550,17 @@ class Entities extends CI_Model
      */
     public function newSimpleLayout($title, $is_entity_detail = null, $related_entity_id = null, $subtitle = null, $dashboard = DB_BOOL_FALSE, $layouts_identifier = "")
     {
-        $success = $this->selected_db->insert('layouts', array(
-            'layouts_title' => $title,
-            'layouts_is_entity_detail' => $is_entity_detail,
-            'layouts_entity_id' => $related_entity_id,
-            'layouts_subtitle' => $subtitle,
-            'layouts_dashboardable' => $dashboard,
-            'layouts_cachable' => DB_BOOL_TRUE,
-            'layouts_identifier' => $layouts_identifier,
-        )
+        $success = $this->selected_db->insert(
+            'layouts',
+            array(
+                'layouts_title' => $title,
+                'layouts_is_entity_detail' => $is_entity_detail,
+                'layouts_entity_id' => $related_entity_id,
+                'layouts_subtitle' => $subtitle,
+                'layouts_dashboardable' => $dashboard,
+                'layouts_cachable' => DB_BOOL_TRUE,
+                'layouts_identifier' => $layouts_identifier,
+            )
         );
 
         return $success ? $this->selected_db->insert_id() : false;
@@ -1544,25 +1568,27 @@ class Entities extends CI_Model
 
     public function newSimpleLayoutBox($title, $layout_id, $content_type, $content_ref, $row = 1, $pos = 1, $col = 12, $color = 'blue', $css_classes = 'box', $titolable = true)
     {
-        $success = $this->selected_db->insert('layouts_boxes', array(
-            'layouts_boxes_title' => $title,
-            'layouts_boxes_layout' => $layout_id,
-            'layouts_boxes_content_type' => $content_type,
-            'layouts_boxes_content_ref' => $content_ref,
-            'layouts_boxes_dragable' => false,
-            'layouts_boxes_collapsible' => false,
-            'layouts_boxes_collapsed' => false,
-            'layouts_boxes_reloadable' => false,
-            'layouts_boxes_discardable' => false,
-            'layouts_boxes_show_container' => false,
-            'layouts_boxes_titolable' => $titolable,
-            'layouts_boxes_row' => $row,
-            'layouts_boxes_position' => $pos,
-            'layouts_boxes_cols' => $col,
-            'layouts_boxes_color' => $color,
-            'layouts_boxes_css' => $css_classes,
-            'layouts_boxes_show_container' => DB_BOOL_TRUE,
-        )
+        $success = $this->selected_db->insert(
+            'layouts_boxes',
+            array(
+                'layouts_boxes_title' => $title,
+                'layouts_boxes_layout' => $layout_id,
+                'layouts_boxes_content_type' => $content_type,
+                'layouts_boxes_content_ref' => $content_ref,
+                'layouts_boxes_dragable' => false,
+                'layouts_boxes_collapsible' => false,
+                'layouts_boxes_collapsed' => false,
+                'layouts_boxes_reloadable' => false,
+                'layouts_boxes_discardable' => false,
+                'layouts_boxes_show_container' => false,
+                'layouts_boxes_titolable' => $titolable,
+                'layouts_boxes_row' => $row,
+                'layouts_boxes_position' => $pos,
+                'layouts_boxes_cols' => $col,
+                'layouts_boxes_color' => $color,
+                'layouts_boxes_css' => $css_classes,
+                'layouts_boxes_show_container' => DB_BOOL_TRUE,
+            )
         );
 
         return $success ? $this->selected_db->insert_id() : false;
@@ -1570,16 +1596,18 @@ class Entities extends CI_Model
 
     public function newSimpleMenu($label, $layout = null, $position = 'sidebar', $order = 1, $icon = null, $class = null, $modal = false)
     {
-        $success = $this->selected_db->insert('menu', array(
-            'menu_label' => $label,
-            'menu_layout' => $layout,
-            'menu_position' => $position,
-            'menu_order' => $order,
-            'menu_icon_class' => $icon,
-            'menu_css_class' => $class,
-            'menu_modal' => (bool) $modal,
-            'menu_type' => ($layout) ? 'layout' : null,
-        )
+        $success = $this->selected_db->insert(
+            'menu',
+            array(
+                'menu_label' => $label,
+                'menu_layout' => $layout,
+                'menu_position' => $position,
+                'menu_order' => $order,
+                'menu_icon_class' => $icon,
+                'menu_css_class' => $class,
+                'menu_modal' => (bool) $modal,
+                'menu_type' => ($layout) ? 'layout' : null,
+            )
         );
         return $success ? $this->selected_db->insert_id() : false;
     }
@@ -1587,14 +1615,16 @@ class Entities extends CI_Model
     public function new_grid($grid_name, $entity_id, $layout, $where = null, $default = false, $fields_names = array(), $builder_where = null)
     {
         // Crea grid
-        $this->selected_db->insert('grids', array(
-            'grids_name' => $grid_name,
-            'grids_entity_id' => $entity_id,
-            'grids_layout' => $layout,
-            'grids_where' => $where,
-            'grids_builder_where' => $builder_where,
-            'grids_default' => ($default === true || $default === DB_BOOL_TRUE || $default === 1) ? DB_BOOL_TRUE : DB_BOOL_FALSE,
-        )
+        $this->selected_db->insert(
+            'grids',
+            array(
+                'grids_name' => $grid_name,
+                'grids_entity_id' => $entity_id,
+                'grids_layout' => $layout,
+                'grids_where' => $where,
+                'grids_builder_where' => $builder_where,
+                'grids_default' => ($default === true || $default === DB_BOOL_TRUE || $default === 1) ? DB_BOOL_TRUE : DB_BOOL_FALSE,
+            )
         );
         $grid_id = $this->selected_db->insert_id();
 
@@ -1609,11 +1639,13 @@ class Entities extends CI_Model
                     die("Il field $name non esiste");
                 }
 
-                $this->selected_db->insert('grids_fields', array(
-                    'grids_fields_grids_id' => $grid_id,
-                    'grids_fields_fields_id' => $field->fields_id,
-                    'grids_fields_order' => $k,
-                )
+                $this->selected_db->insert(
+                    'grids_fields',
+                    array(
+                        'grids_fields_grids_id' => $grid_id,
+                        'grids_fields_fields_id' => $field->fields_id,
+                        'grids_fields_order' => $k,
+                    )
                 );
             }
         }

@@ -12,7 +12,8 @@ $updates['1.6.6.6'] = [
 ];
 
 $updates['1.6.9.7'] = [
-    'include' => ['1.6.9.7_rename_crm_configuration.php',],
+    'include' => ['1.6.9.7_rename_crm_configuration.php',
+    ],
 ];
 
 $updates['1.6.7.5'] = [
@@ -50,4 +51,8 @@ $updates['2.3.1'] = [
 
 $updates['2.3.2'] = [
     'include' => ['2.3.2_settings_template.php'],
+];
+
+$updates['2.3.9'] = [
+    'include' => ['2.3.9_settings_update_in_progress.php'],
 ];

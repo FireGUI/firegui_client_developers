@@ -13,7 +13,6 @@ class Install extends MY_Controller
     }
 
 
-
     /**
      * From 2.3.9 Method to invoke update database from external curl
      * @return never

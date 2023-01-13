@@ -84,7 +84,3 @@ $updates['2.3.6'] = [
 $updates['2.3.7'] = [
     "DELETE FROM forms_fields WHERE forms_fields_fields_id IN (SELECT fields_id FROM fields WHERE fields_name = 'users_type') AND forms_fields_forms_id IN (SELECT forms_id FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "')",
 ];
-
-$update['2.3.9'] = [
-    "ALTER TABLE layouts ADD COLUMN settings_update_in_progress BOOLEAN NOT NULL DEFAULT '" . DB_BOOL_FALSE . "';"
-];
