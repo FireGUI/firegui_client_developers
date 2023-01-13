@@ -155,6 +155,9 @@ class Core extends CI_Model
                     }
                 }
 
+                // Force update databse
+                $this->update();
+
                 unlink($newfile);
                 $this->clearCache(true);
 

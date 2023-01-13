@@ -20,6 +20,11 @@ class Install extends MY_Controller
      */
     public function update()
     {
+
+        if (!$this->datab->is_admin() || !is_cli()) {
+            echo_log("error", "Cannot access without admin or cli...");
+            return false;
+        }
         echo_log("debug", "Start update database...");
         $this->load->model('core');
         $this->core->update();

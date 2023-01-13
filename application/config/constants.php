@@ -11,11 +11,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | error_reporting is disabled, the backtrace will not display, regardless
 | of this setting
 |
- */
+*/
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.3.9');
+defined('VERSION') or define('VERSION', '2.3.9');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -28,7 +28,7 @@ defined('VERSION') OR define('VERSION', '2.3.9');
 | user, PHP under CGI with Apache suEXEC, etc.).  Octal values should
 | always be used to set the mode correctly.
 |
- */
+*/
 define('FILE_READ_MODE', 0644);
 define('FILE_WRITE_MODE', 0666);
 define('DIR_READ_MODE', 0755);
@@ -51,23 +51,27 @@ define('SESS_WHERE_DATA', 'master_crm_where_data');
 define('SESS_WEBAUTHN', 'session_webauthn');
 
 /*********** Operatori filtri *********/
-define('OPERATORS', serialize(array(
-    'eq' => array('html' => '=', 'sql' => '='),
-    'lt' => array('html' => '<', 'sql' => '<'),
-    'gt' => array('html' => '>', 'sql' => '>'),
-    'le' => array('html' => '&le;', 'sql' => '<='),
-    'ge' => array('html' => '&ge;', 'sql' => '>='),
-    'in' => array('html' => 'IN', 'sql' => 'IN'),
-    'like' => array('html' => 'LIKE', 'sql' => 'ILIKE'),
-    //'rangein'  => array( 'html' => 'Range in',    'sql' => '<@' ),
-    'rangein' => array('html' => 'Range in', 'sql' => '&&'),
-)));
+define('OPERATORS', serialize(
+    array(
+        'eq' => array('html' => '=', 'sql' => '='),
+        'lt' => array('html' => '<', 'sql' => '<'),
+        'gt' => array('html' => '>', 'sql' => '>'),
+        'le' => array('html' => '&le;', 'sql' => '<='),
+        'ge' => array('html' => '&ge;', 'sql' => '>='),
+        'in' => array('html' => 'IN', 'sql' => 'IN'),
+        'like' => array('html' => 'LIKE', 'sql' => 'ILIKE'),
+        //'rangein'  => array( 'html' => 'Range in',    'sql' => '<@' ),
+        'rangein' => array('html' => 'Range in', 'sql' => '&&'),
+    )
+));
 
-define('CRON_TYPES', serialize(array(
-    'mail' => 'Mail',
-    'php_file' => 'PHP FILE',
-    'curl' => 'CURL',
-)));
+define('CRON_TYPES', serialize(
+    array(
+        'mail' => 'Mail',
+        'php_file' => 'PHP FILE',
+        'curl' => 'CURL',
+    )
+));
 
 /* ============
  * Colors palette field
@@ -115,7 +119,8 @@ define('COLORS_PALETTE', array(
     'Black' => '#000000',
     'Black' => '#1e272e',
     'Black dark' => '#2C3A47',
-));
+)
+);
 
 /* ============
  * Permessi
@@ -131,7 +136,7 @@ define('PERMISSION_WRITE', '11');
 |
 | These modes are used when working with fopen()/popen()
 |
- */
+*/
 defined('FOPEN_READ') or define('FOPEN_READ', 'rb');
 defined('FOPEN_READ_WRITE') or define('FOPEN_READ_WRITE', 'r+b');
 defined('FOPEN_WRITE_CREATE_DESTRUCTIVE') or define('FOPEN_WRITE_CREATE_DESTRUCTIVE', 'wb'); // truncates existing file data, use with care
@@ -203,7 +208,7 @@ define('FIELD_REQUIRED', 2);
 |    Bash scripting:
 |       http://tldp.org/LDP/abs/html/exitcodes.html
 |
- */
+*/
 defined('EXIT_SUCCESS') or define('EXIT_SUCCESS', 0); // no errors
 defined('EXIT_ERROR') or define('EXIT_ERROR', 1); // generic error
 defined('EXIT_CONFIG') or define('EXIT_CONFIG', 3); // configuration error
