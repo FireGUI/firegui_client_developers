@@ -37,6 +37,28 @@ class Core extends CI_Model
 
 
     /**
+     * checkUpdate Client from repository or get last version
+     * @param mixed $repository_url
+     * @param mixed $update_channel
+     * @return bool|string
+     */
+
+    function checkUpdate($repository_url = null, $update_channel = 4)
+    {
+        if (empty($repository_url)) {
+            $repository_url = OPENBUILDER_BUILDER_BASEURL;
+        }
+
+        $last_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/0/$update_channel");
+
+        if (version_compare($last_version, VERSION, '>')) {
+            return $last_version;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * From 2.3.9 UpdateDB method, invoked usually after update client
      * @return never
      */
