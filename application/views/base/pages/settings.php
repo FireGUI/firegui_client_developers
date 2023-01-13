@@ -169,7 +169,7 @@ if (!empty($this->settings['settings_last_cron_check'])) {
                         <?php if (array_key_exists('settings_auto_update_client', $this->settings)): ?>
                             <div class="">
                                 <?php if ($this->settings['settings_auto_update_client'] == DB_BOOL_TRUE): ?>
-                                    <span><i style="color:#FF0000;margin-right:15px" class="fas fa-check-circle"></i></span> Auto update client (<a href="<?php echo base_url("db_ajax/switch_bool/settings_auto_update_client/".$this->settings['settings_id']);?>">disable it</a>)
+                                    <span><i style="color:#009933;margin-right:15px" class="fas fa-check-circle"></i></span> Auto update client (<a href="<?php echo base_url("db_ajax/switch_bool/settings_auto_update_client/".$this->settings['settings_id']);?>">disable it</a>)
                                 <?php else: ?>
                                     <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Auto update client (<a href="<?php echo base_url("db_ajax/switch_bool/settings_auto_update_client/".$this->settings['settings_id']);?>">disable it</a>)
                              <?php endif;?>
