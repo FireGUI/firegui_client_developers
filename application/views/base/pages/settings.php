@@ -8,6 +8,16 @@ if (!empty($this->settings['settings_last_cron_check'])) {
     $interval = $start_date->diff($end_date);
     $interval_cron_execution = $interval->i;
 }
+
+
+$interval_cron_cli_execution = 10;
+if (!empty($this->settings['settings_last_cron_cli'])) {
+    $start_date = new DateTime($this->settings['settings_last_cron_cli']);
+    $end_date = new DateTime();
+    $interval = $start_date->diff($end_date);
+    $interval_cron_cli_execution = $interval->i;
+}
+
 ?>
 
 
@@ -144,28 +154,53 @@ if (!empty($this->settings['settings_last_cron_check'])) {
 
                 <div class="box-body">
 
+                        <!-- Cron Check CURL -->
                         <?php if (!empty($this->settings['settings_last_cron_check'])): ?>
                             <?php if ($interval_cron_execution > 5): ?>
                             <div class="">
                                 <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
-                                check <br />
+                                check (CURL)<br />
                                 <small>Last execution: <?php echo $this->settings['settings_last_cron_check']; ?> </small>
                             </div>
                             <?php else: ?>
                             <div class="">
                                 <span><i style="color:#009933;margin-right:15px" class="fas fa-check-circle"></i></span> Cron
-                                check <br />
+                                check (CURL)<br />
                                 <small>Last execution: <?php echo $this->settings['settings_last_cron_check']; ?> </small>
                             </div>
                             <?php endif;?>
                             <?php else: ?>
                                 <div class="">
                                 <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
-                                check <br />
+                                check (CURL)<br />
                                 <small>Last execution: <i>unavailable</i> </small>
                             </div>
                         <?php endif;?>
 
+                        <!-- Cron Check CLI -->
+                        <?php if (!empty($this->settings['settings_last_cron_cli'])): ?>
+                            <?php if ($interval_cron_cli_execution > 5): ?>
+                            <div class="">
+                                <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
+                                check (CLI)<br />
+                                <small>Last execution: <?php echo $this->settings['settings_last_cron_cli']; ?> </small>
+                            </div>
+                            <?php else: ?>
+                            <div class="">
+                                <span><i style="color:#009933;margin-right:15px" class="fas fa-check-circle"></i></span> Cron
+                                check (CLI) <br />
+                                <small>Last execution: <?php echo $this->settings['settings_last_cron_cli']; ?> </small>
+                            </div>
+                            <?php endif;?>
+                            <?php else: ?>
+                                <div class="">
+                                <span><i style="color:#FF0000;margin-right:15px" class="fas fa-thumbs-down"></i></span> Cron
+                                check (CLI)<br />
+                                <small>Last execution: <i>unavailable</i> </small>
+                            </div>
+                        <?php endif;?>
+
+                        <!-- Auto Update -->
                         <?php if (array_key_exists('settings_auto_update_client', $this->settings)): ?>
                             <div class="">
                                 <?php if ($this->settings['settings_auto_update_client'] == DB_BOOL_TRUE): ?>

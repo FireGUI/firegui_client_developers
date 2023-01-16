@@ -43,7 +43,6 @@ class Cron extends MY_Controller
      */
     public function cli()
     {
-
         if (!is_cli()) {
             echo_log("error", "Invoked cli cron method from url? Nope...");
             return false;
@@ -51,9 +50,9 @@ class Cron extends MY_Controller
         echo_log('debug', "Start cron check...");
 
         // Save last execution on settings
-        $check_col = $this->db->query("SHOW COLUMNS FROM settings LIKE 'settings_last_cron_check';");
+        $check_col = $this->db->query("SHOW COLUMNS FROM settings LIKE 'settings_last_cron_cli';");
         if ($check_col->num_rows() > 0) {
-            $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
+            $this->db->query("UPDATE settings SET settings_last_cron_cli = NOW()");
         }
 
 
@@ -68,9 +67,9 @@ class Cron extends MY_Controller
         $inExecution = $this->getInExecution();
 
         if ($this->db->dbdriver != 'postgre') {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_TRUE . " AND crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i')");
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_TRUE . " AND (crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i'))");
         } else {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_TRUE . " AND crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency");
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_TRUE . " AND (crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency)");
         }
 
         $skipped = $executed = [];
@@ -203,7 +202,6 @@ class Cron extends MY_Controller
      */
     public function check()
     {
-
         if (is_cli()) {
             echo_log("error", "Invoked check cron method from cli... Nope... use cli() method");
             return false;
@@ -228,9 +226,9 @@ class Cron extends MY_Controller
         $inExecution = $this->getInExecution();
 
         if ($this->db->dbdriver != 'postgre') {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_FALSE . " AND crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i')");
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_FALSE . " AND (crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i'))");
         } else {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_FALSE . " AND crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency");
+            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_FALSE . " AND (crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency)");
         }
 
         $skipped = $executed = [];
@@ -410,7 +408,6 @@ class Cron extends MY_Controller
 
     public function cron_cli($cron)
     {
-
         // Workaroung for cli execution... Replace url or explode and execute via cli if base_url
         if (strpos($cron['crons_file'], "{base_url}") !== false) {
             $path = str_replace("/", " ", $cron['crons_file']);
