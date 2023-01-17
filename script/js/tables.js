@@ -65,21 +65,23 @@ function initTabelWithPars(grid, pars) {
                 sUrl: base_url_scripts + 'script/dt_translations/datatable.' + lang_short_code + '.json',
             },
             drawCallback: function (settings) {
-                // This is a hot-fix for situations where you filter a table that has N pages,
-                // then change the filter by reducing the number of pages, the table init loops,
-                // this fix checks that if the offset is greater than total records,
-                // then does a page reset and reinitializes the table
-                if (settings._iDisplayStart > settings._iRecordsTotal) {
-                    grid.fnPageChange(0);
-                    grid.fnDestroy();
-                    grid.fnPageChange(0);
+                if (pars.ajax) {
+                    // This is a hot-fix for situations where you filter a table that has N pages,
+                    // then change the filter by reducing the number of pages, the table init loops,
+                    // this fix checks that if the offset is greater than total records,
+                    // then does a page reset and reinitializes the table
+                    if (settings._iDisplayStart > settings._iRecordsTotal) {
+                        grid.fnPageChange(0);
+                        grid.fnDestroy();
+                        grid.fnPageChange(0);
 
-                    initTabelWithPars(grid, pars);
+                        initTabelWithPars(grid, pars);
+                        initComponents(grid);
+
+                        return;
+                    }
                     initComponents(grid);
-
-                    return;
                 }
-                initComponents(grid);
             },
             footerCallback: function (row, data, start, end, display) {
                 if (totalable == 1) {
