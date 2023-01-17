@@ -1813,12 +1813,21 @@ class Datab extends CI_Model
             return empty($permissions) || ($permissions->permissions_entities_value != PERMISSION_NONE);
         }
     }
-
+    
     public function can_access_layout($layout_id, $value_id = null)
     {
-        if (!$layout_id or !is_numeric($layout_id)) {
+        if (!$layout_id) {
             return false;
         }
+        
+        if (!is_numeric($layout_id)) {
+            $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
+            
+            if (!$layout_id) {
+                return false;
+            }
+        }
+        
         if (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) {
             return $this->conditions->accessible('layouts', $layout_id, $value_id);
         } else {
