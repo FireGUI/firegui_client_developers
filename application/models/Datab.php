@@ -3269,8 +3269,8 @@ class Datab extends CI_Model
                 $module_view = $this->getModuleViewData($contentRef);
                 // debug($module_view);
                 // debug($contentRef, true);
-
-                if (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php")) {
+    
+                if (!empty($module_view) && (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php"))) {
 
                     $html = $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
                     //die($html);
