@@ -46,7 +46,7 @@ class Core extends CI_Model
     function checkUpdate($repository_url = null, $update_channel = 4)
     {
         if (empty($repository_url)) {
-            $repository_url = OPENBUILDER_BUILDER_BASEURL;
+            $repository_url = OPENBUILDER_ADMIN_BASEURL;
         }
 
         $last_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/0/$update_channel");
@@ -68,6 +68,12 @@ class Core extends CI_Model
         $this->utils->migrationProcess();
     }
 
+
+    public function updatePatches($repository_url = null)
+    {
+
+    }
+
     /**
      * From 2.3.9 Core method to update client
      * @param mixed $repository_url
@@ -85,7 +91,7 @@ class Core extends CI_Model
         }
 
         if (empty($repository_url)) {
-            $repository_url = OPENBUILDER_BUILDER_BASEURL;
+            $repository_url = OPENBUILDER_ADMIN_BASEURL;
         }
 
         // Check Update in progress and set true
