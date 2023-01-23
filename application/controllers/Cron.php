@@ -8,6 +8,25 @@ class Cron extends MY_Controller
 {
     public const ENABLE_TRACKING = false;
 
+
+    /**
+     *  Spostare su controller autoupdate
+     *  Aggiungere tasto su settings per triggerare update patches a mano
+     */
+
+    public function checkUpdatePatches()
+    {
+        $this->load->model('core');
+        // Check patches
+        $last_version = $this->core->checkUpdate(null, 4, true);
+        if ($last_version == false) {
+            echo_log('error', "This version is already updated.");
+            return false;
+        } else {
+            echo $last_version;
+        }
+    }
+
     /**
      * Testa un cron per id
      * @param int $id

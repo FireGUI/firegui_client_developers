@@ -15,7 +15,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.3.10');
+defined('VERSION') or define('VERSION', '2.3.9');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -63,7 +63,8 @@ define('OPERATORS', serialize(
         //'rangein'  => array( 'html' => 'Range in',    'sql' => '<@' ),
         'rangein' => array('html' => 'Range in', 'sql' => '&&'),
     )
-));
+)
+);
 
 define('CRON_TYPES', serialize(
     array(
@@ -71,55 +72,58 @@ define('CRON_TYPES', serialize(
         'php_file' => 'PHP FILE',
         'curl' => 'CURL',
     )
-));
+)
+);
 
 /* ============
  * Colors palette field
  * ============ */
-define('COLORS_PALETTE', array(
-    'Blue default' => '#222d32',
-    'Blue speech' => '#3c40c6',
-    'Blue disco' => '#0fbcf9',
-    'Blue devil' => '#227093',
-    'Blue night' => '#192a56',
-    'Blue naval' => '#40739e',
-    'Blue light' => '#7efff5',
-    'Yellow' => '#ffd32a',
-    'Yellow desert' => '#ccae62',
-    'Yellow spice' => '#ffda79',
-    'Yellow ultra' => '#fffa65',
-    'Green' => '#0be881',
-    'Green light' => '#0be881',
-    'Green water' => '#00d8d6',
-    'Green progress' => '#4cd1370',
-    'Green slack' => '#3aaf85',
-    'Grey' => '#485460',
-    'Grey light' => '#d2dae2',
-    'Grey medium' => '#808e9b',
-    'Grey steel' => '#4b4b4b',
-    'Grey strong' => '#dcdde1',
-    'Violet' => '#575fcf',
-    'Violet light' => '#8c7ae6',
-    'Violet lavender' => '#82589F',
-    'Violet medium' => '#C71585',
-    'Brown Sienna' => '#A0522D',
-    'Brown Indianred' => '#CD5C5C',
-    'Red' => '#b33939',
-    'Red Crimson' => '#DC143C',
-    'Red light' => '#ff5252',
-    'Red Flower' => '#e84118',
-    'Red strong' => '#c23616',
-    'Orange' => '#FF4500',
-    'Orange dark' => '#FF8C00',
-    'Orange radiant' => '#ff9f1a',
-    'Pink' => '#FC427B',
-    'White swan' => '#f7f1e3',
-    'White light' => '#fafafa',
-    'White lynx' => '#f5f6fa',
-    'Black' => '#000000',
-    'Black' => '#1e272e',
-    'Black dark' => '#2C3A47',
-)
+define(
+    'COLORS_PALETTE',
+    array(
+        'Blue default' => '#222d32',
+        'Blue speech' => '#3c40c6',
+        'Blue disco' => '#0fbcf9',
+        'Blue devil' => '#227093',
+        'Blue night' => '#192a56',
+        'Blue naval' => '#40739e',
+        'Blue light' => '#7efff5',
+        'Yellow' => '#ffd32a',
+        'Yellow desert' => '#ccae62',
+        'Yellow spice' => '#ffda79',
+        'Yellow ultra' => '#fffa65',
+        'Green' => '#0be881',
+        'Green light' => '#0be881',
+        'Green water' => '#00d8d6',
+        'Green progress' => '#4cd1370',
+        'Green slack' => '#3aaf85',
+        'Grey' => '#485460',
+        'Grey light' => '#d2dae2',
+        'Grey medium' => '#808e9b',
+        'Grey steel' => '#4b4b4b',
+        'Grey strong' => '#dcdde1',
+        'Violet' => '#575fcf',
+        'Violet light' => '#8c7ae6',
+        'Violet lavender' => '#82589F',
+        'Violet medium' => '#C71585',
+        'Brown Sienna' => '#A0522D',
+        'Brown Indianred' => '#CD5C5C',
+        'Red' => '#b33939',
+        'Red Crimson' => '#DC143C',
+        'Red light' => '#ff5252',
+        'Red Flower' => '#e84118',
+        'Red strong' => '#c23616',
+        'Orange' => '#FF4500',
+        'Orange dark' => '#FF8C00',
+        'Orange radiant' => '#ff9f1a',
+        'Pink' => '#FC427B',
+        'White swan' => '#f7f1e3',
+        'White light' => '#fafafa',
+        'White lynx' => '#f5f6fa',
+        'Black' => '#000000',
+        'Black' => '#1e272e',
+        'Black dark' => '#2C3A47',
+    )
 );
 
 /* ============
