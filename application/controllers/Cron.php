@@ -47,7 +47,7 @@ class Cron extends MY_Controller
             echo_log("error", "Invoked cli cron method from url? Nope...");
             return false;
         }
-        echo_log('debug', "Start cron check...");
+        echo_log('debug', "Start cron cli...");
 
         // Save last execution on settings
         $check_col = $this->db->query("SHOW COLUMNS FROM settings LIKE 'settings_last_cron_cli';");
