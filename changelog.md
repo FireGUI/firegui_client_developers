@@ -1,3 +1,3 @@
 Changelog version 2.3.10
  
-New cron release
+Beta per patch
