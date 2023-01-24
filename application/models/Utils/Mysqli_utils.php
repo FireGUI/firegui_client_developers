@@ -264,7 +264,7 @@ class Mysqli_utils extends Utils
             'grids_actions_grids_id' => ['type' => 'BIGINT', 'unsigned' => true],
             'grids_actions_order' => ['type' => 'BIGINT'],
             'grids_actions_name' => ['type' => 'VARCHAR', 'constraint' => 255],
-            'grids_actions_html' => ['type' => 'TEXT'],
+            'grids_actions_html' => ['type' => 'TEXT', 'null' => true],
 
             //Aggiunta per nuovo tool / visual builder:
             //Tutte le action (custom o meno) verranno salvate sempre in questa tabella
