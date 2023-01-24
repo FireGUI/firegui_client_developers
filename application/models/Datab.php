@@ -1816,8 +1816,15 @@ class Datab extends CI_Model
 
     public function can_access_layout($layout_id, $value_id = null)
     {
-        if (!$layout_id or !is_numeric($layout_id)) {
+        if (!$layout_id) {
             return false;
+        }
+        if (!is_numeric($layout_id)) {
+            $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
+        
+            if (!$layout_id) {
+                return false;
+            }
         }
         if (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) {
             return $this->conditions->accessible('layouts', $layout_id, $value_id);
@@ -3270,7 +3277,7 @@ class Datab extends CI_Model
                 // debug($module_view);
                 // debug($contentRef, true);
 
-                if (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php")) {
+                if (!empty($module_view) && (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php"))) {
 
                     $html = $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
                     //die($html);

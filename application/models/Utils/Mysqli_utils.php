@@ -444,6 +444,9 @@ class Mysqli_utils extends Utils
             //20190711 Michael - Campo per salvare il nome del file dell'icona modulo
             'modules_min_client_version' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'modules_version_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+            'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
+            'modules_last_update' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+            
         ], 'modules_id');
 
         /* ============================

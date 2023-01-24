@@ -206,60 +206,11 @@ class Openbuilder extends MY_Controller
 
     public function executeMigrations($module_identifier, $old_version, $new_version)
     {
-        $migration_dir = APPPATH . "modules/$module_identifier/migrations";
-        if (file_exists($migration_dir)) {
-            $files = scandir($migration_dir);
+        $this->load->model('core/modules_model', 'core_modules');
 
-            foreach ($files as $file) {
-                if ($file == 'update_php_code.php') {
-                    // Check if exist an update_db file to execute update queries
-                    include "$migration_dir/$file";
-
-                    // Sort array from oldest version to newest
-                    uksort($updates, 'my_version_compare');
-
-                    foreach ($updates as $key => $value) {
-                        $version_compare_old = version_compare($key, $old_version);
-                        //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
-                        if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
-                            foreach ($value as $key_type => $code) {
-                                if ($key_type == 'eval') {
-                                    eval($code);
-                                } elseif ($key_type == 'include') {
-                                    if (is_array($code)) {
-                                        foreach ($code as $file_to_include) {
-                                            $file_migration = "$migration_dir/$file_to_include";
-                                            if (file_exists($file_migration)) {
-                                                include $file_migration;
-                                            } else {
-                                                log_message('error', "Migration file {$file_migration} missing!");
-                                            }
-                                        }
-                                    } else {
-                                        $file_migration = APPPATH . 'migrations/' . $code;
-
-                                        if (file_exists($file_migration)) {
-                                            include $file_migration;
-                                        } else {
-                                            log_message('error', "Migration file {$file_migration} missing!");
-                                        }
-                                    }
-                                }
-                            }
-                        } else { //0 se uguale, -1 se old > key
-                            //Vuol dire che gli ho già eseguiti, quindi skippo
-                            //echo("$key version already run.");
-                            continue;
-                        }
-                    }
-                }
-            }
-            $this->clearCache(true);
-            die('ok');
-        } else {
-            $this->clearCache(true);
-            die('ok');
-        }
+        
+        $return = $this->core_modules->run_migrations($module_identifier, $old_version, $new_version);
+        die('ok');
     }
 
     public function downloadClient()
