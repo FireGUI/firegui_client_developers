@@ -1819,15 +1819,15 @@ class Datab extends CI_Model
         if (!$layout_id) {
             return false;
         }
-        
+
         if (!is_numeric($layout_id)) {
             $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
-            
-            if (!$layout_id) {
-                return false;
-            }
-        }
         
+        }
+        if (!is_numeric($layout_id)) {
+            return false;
+        }
+
         if (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) {
             return $this->conditions->accessible('layouts', $layout_id, $value_id);
         } else {
@@ -3276,9 +3276,7 @@ class Datab extends CI_Model
             case "view":
                 //TODO: verificare prima se esiste un custom per questo modulo nelle view native custom
                 $module_view = $this->getModuleViewData($contentRef);
-                // debug($module_view);
-                // debug($contentRef, true);
-    
+                
                 if (!empty($module_view) && (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php"))) {
 
                     $html = $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);

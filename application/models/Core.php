@@ -20,6 +20,9 @@ class Core extends CI_Model
         } else if ($this->db->dbdriver == 'mysqli') {
             $this->load->model('Utils/mysqli_utils', 'utils');
         }
+
+        $this->settings = $this->apilib->searchFirst('settings');
+
     }
 
 
@@ -71,6 +74,8 @@ class Core extends CI_Model
     {
         log_message("debug", "Core: Start UPDATE Database from Utils");
         $this->utils->migrationProcess();
+
+        $this->mycache->clearCache();
     }
 
 
@@ -213,4 +218,57 @@ class Core extends CI_Model
             }
         }
     }
+
+    /**
+     * checkClientVersion from repository
+     * @param mixed $update_channel
+     * @return bool|string
+     */
+    function checkModuleUpdate($identifier)
+    {
+        $data = $this->getModuleRepositoryData($identifier);
+        
+        $current_module = $this->db->get_where('modules', ['modules_identifier' => $identifier])->row_array();
+        if (version_compare($data['modules_repository_version_code'], $current_module['modules_version_code'], '>')) {
+            return $data['modules_repository_version_code'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * From 2.3.9 Core method to update client
+     * @param string $module_identifier Identifier of the module to be updated
+     * 
+     * @throws Exception
+     * @return bool|string
+     */
+    public function updateModule($identifier) {
+        $this->load->model('core/modules_model', 'core_modules');
+
+        //debug($this->core_modules,true);
+        return $this->core_modules->updateModule($identifier);
+        
+    }
+    public function getModuleRepositoryData($module_identifier) {
+        //Fare curl ad admin o openbuilder?
+        $get_module_info_url =  $this->settings['settings_modules_update_repository'].'/public/client/get_module_info/'.$module_identifier;
+
+        // Scarica il contenuto JSON dall'URL specificato
+        $json = file_get_contents($get_module_info_url);
+        
+        // Decodifica il contenuto JSON in un oggetto PHP
+        $data = json_decode($json, true);
+
+        // Verifica se la decodifica è avvenuta correttamente
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $data;
+        } else {
+            // Se la decodifica non è avvenuta correttamente, mostra un errore
+            return false;
+        }
+        
+    }
+    
+    
 }

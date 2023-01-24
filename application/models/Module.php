@@ -1,5 +1,5 @@
 <?php
-
+//20230123 - MP - Questo model sarebbe da deprecare e spostare i metodi nel model core/modules.php
 
 class Module extends CI_Model
 {
