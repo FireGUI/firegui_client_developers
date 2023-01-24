@@ -94,7 +94,7 @@ function base_url_template($uri)
     <link rel="icon" href="favicon.ico">
 
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>FireGUI Client Installer</title>
+    <title>OpenBuilder Client Installer</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="<?php echo base_url_template('bootstrap/dist') ?>/css/bootstrap.min.css">
@@ -310,7 +310,7 @@ function base_url_template($uri)
                             <h4 class="text-center" style="margin-top: 50px;">Click below button to continue</h4>
 
                             <div class="text-center">
-                                <a href="./../" class="btn btn-success btn-lg" style=" margin: auto;margin-top: 25px;">Open <b>Fire</b>GUI Client</a>
+                                <a href="./../" class="btn btn-success btn-lg" style=" margin: auto;margin-top: 25px;">Open <b>Open</b>Builder Client</a>
                             </div>
                         </div>
                     </div>

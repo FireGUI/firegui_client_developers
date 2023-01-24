@@ -14,7 +14,7 @@ class Install extends MY_Controller
 
 
     /**
-     * From 2.3.9 Method to invoke update database from external curl
+     * From 2.3.10 Method to invoke update database from external curl
      * @return never
      */
     public function update()
@@ -30,6 +30,24 @@ class Install extends MY_Controller
         echo_log("debug", "Finish update database...");
     }
 
+    /**
+     * From 2.3.10 Update client. Invoked manually
+     */
+    public function UpdateClient($update_patches = false)
+    {
+
+        // Security check
+        if (!$this->datab->is_admin() || !is_cli()) {
+            echo_log("error", "Cannot access without admin or cli...");
+            return false;
+        }
+        echo_log('info', 'Start update without backup...');
+
+        $this->load->model('core');
+        $last_version = $this->core->updateClient(null, 0, 4, $update_patches);
+        echo_log("debug", "Updated to: " . $last_version);
+        echo_log("debug", "Update client finish...");
+    }
 
     /**
      * Summary of import_query
@@ -39,6 +57,13 @@ class Install extends MY_Controller
 
     public function import_query($filename)
     {
+
+        // Security check
+        if (!$this->datab->is_admin() || !is_cli()) {
+            echo_log("error", "Cannot access without admin or cli...");
+            return false;
+        }
+
         $file = './application/logs/' . $filename . '.txt';
 
         if (file_exists($file)) {

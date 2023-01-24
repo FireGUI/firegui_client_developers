@@ -27,6 +27,7 @@ var handleSuccess = function (msg, container = null) {
         case 3:
             //Alert
             alert(msg.txt);
+            submitBtn.show();
             break;
 
         case 4:
@@ -45,11 +46,13 @@ var handleSuccess = function (msg, container = null) {
             // Success
 
             success(msg.txt);
+            submitBtn.show();
             break;
         case 6:
             // Success
 
             success(msg.txt);
+            submitBtn.show();
             break;
         case 7:
             refreshAjaxLayoutBoxes();
@@ -57,6 +60,7 @@ var handleSuccess = function (msg, container = null) {
                 closeContainingPopups(container);
             }
             success(msg.txt);
+            submitBtn.show();
             break;
         case 9:
             // Callback

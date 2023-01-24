@@ -40,18 +40,24 @@ class Core extends CI_Model
 
 
     /**
-     * checkClientVersion from repository
+     * checkUpdate Client from repository or get last version
+     * @param mixed $repository_url
      * @param mixed $update_channel
      * @return bool|string
      */
-    function checkUpdate($repository_url = null, $update_channel = 4)
+
+    function checkUpdate($repository_url = null, $update_channel = 4, $updatePatches = false)
     {
         if (empty($repository_url)) {
-            $repository_url = OPENBUILDER_BUILDER_BASEURL;
+            $repository_url = OPENBUILDER_ADMIN_BASEURL;
         }
 
-        //Check every 10 minutes to avoid unwanted curls...
-        $last_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/0/$update_channel");
+        if ($updatePatches == true) {
+            $checkPatch = file_get_contents($repository_url . "public/client/getLastPatch/" . VERSION . "/$update_channel");
+            $last_version = json_decode($checkPatch, true)['clients_releases_version'];
+        } else {
+            $last_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/0/$update_channel");
+        }
 
         if (version_compare($last_version, VERSION, '>')) {
             return $last_version;
@@ -72,6 +78,17 @@ class Core extends CI_Model
         $this->mycache->clearCache();
     }
 
+
+    public function updatePatches($repository_url = null, $channel_update = 4)
+    {
+        echo_log('debug', "Start Updating patches...");
+        $this->updateClient($repository_url, 0, $channel_update, true);
+        echo_log('debug', "Finish update patches...");
+        echo_log('debug', "Check for new patches...");
+        $this->checkUpdate($repository_url, $channel_update, true);
+        // Add trigger next update? $this->updateclient....
+    }
+
     /**
      * From 2.3.9 Core method to update client
      * @param mixed $repository_url
@@ -80,7 +97,7 @@ class Core extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateClient($repository_url = null, $version_code = 0, $channel = 4)
+    public function updateClient($repository_url = null, $version_code = 0, $channel = 4, $updatePatches = false)
     {
 
         if (!class_exists('ZipArchive')) {
@@ -89,7 +106,7 @@ class Core extends CI_Model
         }
 
         if (empty($repository_url)) {
-            $repository_url = OPENBUILDER_BUILDER_BASEURL;
+            $repository_url = OPENBUILDER_ADMIN_BASEURL;
         }
 
         // Check Update in progress and set true
@@ -99,9 +116,18 @@ class Core extends CI_Model
         }
 
         $old_version = VERSION;
-        $file_link = $repository_url . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}/$channel";
-        $new_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}/$channel");
-        $new_version_code = file_get_contents($repository_url . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}/$channel");
+
+        if ($updatePatches == true) {
+            $patchInfo = file_get_contents($repository_url . "public/client/getLastPatch/" . VERSION . "/$channel");
+            $patch = json_decode($patchInfo, true);
+            $file_link = OPENBUILDER_ADMIN_BASEURL . "uploads/" . $patch['clients_releases_file'];
+            $new_version = $patch['clients_releases_version'];
+            $new_version_code = $patch['clients_releases_version_code'];
+        } else {
+            $file_link = $repository_url . "public/client/getLastClientVersion/" . VERSION . "/{$version_code}/$channel";
+            $new_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/{$version_code}/$channel");
+            $new_version_code = file_get_contents($repository_url . "public/client/getLastClientVersionCode/" . VERSION . "/{$version_code}/$channel");
+        }
 
         //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
         log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
