@@ -327,6 +327,45 @@ class Layout extends CI_Model
         echo '<script src="' . $path . '"></script>';
     }
 
+
+    public function templateAssets($template_folder, $file)
+    {
+        $file_cache = "template/build/{$template_folder}/assets/$file";
+
+        $current_config = $this->mycache->getCurrentConfig();
+        if (file_exists($file_cache) && $this->mycache->isCacheEnabled() && !empty($current_config['template_assets']['active'])) {
+            $path = base_url($file_cache);
+        } else {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('template_assets') && !empty($current_config['template_assets']['active'])) {
+                $template_path = APPPATH . 'views/';
+                $assets_folder = "{$template_path}/{$template_folder}/assets";
+                $asset_file = "$assets_folder/$file";
+                copy_file($asset_file, $file_cache);
+                $path = base_url($file_cache);
+
+            } else {
+                $path = base_url("templatebridge/loadAssetFile/{$template_folder}?file=$file");
+
+            }
+        }
+
+        return $path;
+    }
+
+    public function addTemplateStylesheet($template_folder, $file)
+    {
+        $path = $this->templateAssets($template_folder, $file);
+
+        echo '<link rel="stylesheet" type="text/css" href="' . $path . '" />';
+    }
+
+    public function addTemplateJavascript($module_identifier, $file)
+    {
+        $path = $this->templateAssets($module_identifier, $file);
+
+        echo '<script src="' . $path . '"></script>';
+    }
+
 //Functions to include dinamic generate css or js
     public function addDinamicStylesheet($data, $file, $clear = false)
     {
