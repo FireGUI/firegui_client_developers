@@ -120,7 +120,7 @@ class Core extends CI_Model
         if ($updatePatches == true) {
             $patchInfo = file_get_contents($repository_url . "public/client/getLastPatch/" . VERSION . "/$channel");
             $patch = json_decode($patchInfo, true);
-            $file_link = OPENBUILDER_ADMIN_BASEURL . "uploads/" . $patch['clients_releases_file'];
+            $file_link = $repository_url . "uploads/" . $patch['clients_releases_file'];
             $new_version = $patch['clients_releases_version'];
             $new_version_code = $patch['clients_releases_version_code'];
         } else {
@@ -227,7 +227,7 @@ class Core extends CI_Model
     function checkModuleUpdate($identifier)
     {
         $data = $this->getModuleRepositoryData($identifier);
-        
+
         $current_module = $this->db->get_where('modules', ['modules_identifier' => $identifier])->row_array();
         if (version_compare($data['modules_repository_version_code'], $current_module['modules_version_code'], '>')) {
             return $data['modules_repository_version_code'];
@@ -243,20 +243,22 @@ class Core extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateModule($identifier) {
+    public function updateModule($identifier)
+    {
         $this->load->model('core/modules_model', 'core_modules');
 
         //debug($this->core_modules,true);
         return $this->core_modules->updateModule($identifier);
-        
+
     }
-    public function getModuleRepositoryData($module_identifier) {
+    public function getModuleRepositoryData($module_identifier)
+    {
         //Fare curl ad admin o openbuilder?
-        $get_module_info_url =  $this->settings['settings_modules_update_repository'].'/public/client/get_module_info/'.$module_identifier;
+        $get_module_info_url = $this->settings['settings_modules_update_repository'] . '/public/client/get_module_info/' . $module_identifier;
 
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
-        
+
         // Decodifica il contenuto JSON in un oggetto PHP
         $data = json_decode($json, true);
 
@@ -267,8 +269,8 @@ class Core extends CI_Model
             // Se la decodifica non è avvenuta correttamente, mostra un errore
             return false;
         }
-        
+
     }
-    
-    
+
+
 }
