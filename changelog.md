@@ -1,5 +1,3 @@
-Changelog version 2.4.0
+Changelog version 2.4.1
  
-Template install
-Patch update
-Module manager
+test
