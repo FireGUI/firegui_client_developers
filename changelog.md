@@ -1,3 +1,4 @@
-Changelog version 2.4.1
+Changelog version 2.4.2
  
-Changed update module repository constant
+Bugfix in mx loader 
+Fix modules installer
