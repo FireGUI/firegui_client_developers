@@ -22,11 +22,11 @@ class Modules_model extends CI_Model
         }
 
         $this->settings = $this->apilib->searchFirst('settings');
-        $this->temp_folder = FCPATH . 'uploads/modules/tmp/';
+        $this->temp_folder = FCPATH . 'uploads/tmp/';
     }
 
 
-    
+
     /**
      * From 2.3.9 Core method to update client
      * @param string $module_identifier Identifier of the module to be updated
@@ -34,9 +34,10 @@ class Modules_model extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateModule($identifier,$update_repository_url = null) {
-if ($update_repository_url === null) {
-            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL')?MODULES_REPOSITORY_BASEURL:null;
+    public function updateModule($identifier, $update_repository_url = null)
+    {
+        if ($update_repository_url === null) {
+            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL') ? MODULES_REPOSITORY_BASEURL : null;
         }
         if (!$update_repository_url) {
             log_message('error', 'No module repository url defined');
@@ -45,18 +46,18 @@ if ($update_repository_url === null) {
         $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
         //debug($module, true);
         // Check Min. client version
-            if (!empty($module['modules_repository_min_client_version']) && version_compare($module['modules_repository_min_client_version'], VERSION, '>')) {
-                echo_log('error', "{$module['modules_repository_name']} requires at least '{$module['modules_repository_min_client_version']}' version of client (current is '".VERSION."')");
-                return false;
-                
-            }
+        if (!empty($module['modules_repository_min_client_version']) && version_compare($module['modules_repository_min_client_version'], VERSION, '>')) {
+            echo_log('error', "{$module['modules_repository_name']} requires at least '{$module['modules_repository_min_client_version']}' version of client (current is '" . VERSION . "')");
+            return false;
 
-            $get_module_info_url =  $update_repository_url.'/public/client/download_module/'.$identifier;
+        }
+
+        $get_module_info_url = $update_repository_url . '/public/client/download_module/' . $identifier;
 
         // Scarica il contenuto JSON dall'URL specificato
         $zip_content = file_get_contents($get_module_info_url);
         $zip = new ZipArchive;
-        
+
         createFolderRecursive($this->temp_folder);
         $unzip_destination_folder = "{$this->temp_folder}/$identifier/";
 
@@ -64,14 +65,14 @@ if ($update_repository_url === null) {
         $tmp_zip_file = "{$this->temp_folder}{$identifier}.zip";
         file_put_contents($tmp_zip_file, $zip_content);
         if ($zip->open($tmp_zip_file) === TRUE) {
-            
+
             $zip->extractTo($unzip_destination_folder);
             $zip->close();
 
             unlink($tmp_zip_file);
 
             if (file_exists("{$unzip_destination_folder}/json/data.json")) {
-                
+
                 $content = file_get_contents("{$unzip_destination_folder}/json/data.json");
 
                 //TODO: Check if module depends on other modules
@@ -99,40 +100,41 @@ if ($update_repository_url === null) {
 
                 //Check if every is ok (checksum, module version code, ecc...)
                 echo_log('debug', 'TODO: final checks...');
+                deleteDirRecursive($unzip_destination_folder);
 
                 $this->mycache->clearCache();
                 return true;
             } else {
-                unlink($tmp_zip_file);
-            
+                deleteDirRecursive($unzip_destination_folder);
                 echo_log('error', "Missing data.json in module $identifier");
                 return false;
             }
 
         } else {
-            
+
             echo_log('error', "Unable to open zip file of module '{$module['modules_repository_name']}'!");
             return false;
         }
 
-        
-            
+
+
     }
-    public function getModuleRepositoryData($module_identifier,$update_repository_url=null) {
+    public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
+    {
         if ($update_repository_url === null) {
-            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL')?MODULES_REPOSITORY_BASEURL:null;
+            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL') ? MODULES_REPOSITORY_BASEURL : null;
         }
         if (!$update_repository_url) {
             log_message('error', 'No module repository url defined');
             return false;
         }
-        
+
         //Fare curl ad admin o openbuilder?
-        $get_module_info_url =  $update_repository_url.'/public/client/get_module_info/'.$module_identifier;
+        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier;
 
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
-        
+
         // Decodifica il contenuto JSON in un oggetto PHP
         $data = json_decode($json, true);
 
@@ -143,9 +145,10 @@ if ($update_repository_url === null) {
             // Se la decodifica non è avvenuta correttamente, mostra un errore
             return false;
         }
-        
+
     }
-    public function run_migrations($identifier, $old_version, $new_version) {
+    public function run_migrations($identifier, $old_version, $new_version)
+    {
         $migration_dir = APPPATH . "modules/$identifier/migrations";
         if (file_exists($migration_dir)) {
             $files = scandir($migration_dir);
@@ -201,13 +204,15 @@ if ($update_repository_url === null) {
             return true;
         }
     }
-    private function copy_files($identifier) {
+    private function copy_files($identifier)
+    {
         $source_path = "{$this->temp_folder}/$identifier/";
         recurse_copy($source_path, APPPATH . "modules/{$identifier}/");
     }
-    private function json_process($content, $module) {
-$json = json_decode($content, true);
-$uninstall = false;
+    private function json_process($content, $module)
+    {
+        $json = json_decode($content, true);
+        $uninstall = false;
         $conditions = [];
         try {
             //Mi tengo in una variabile l'elenco dei nomi delle entità di questo modulo (mi serve dopo)
@@ -217,7 +222,7 @@ $uninstall = false;
             if (!$identifier) {
                 echo_log('error', "Missing module identifier");
                 throw new Exception("Modules identifier missing!");
-                
+
             }
 
             $this->mycache->clearCache();
@@ -232,7 +237,7 @@ $uninstall = false;
             foreach ($json['entities'] as $old_entity_id => $entity) {
                 $c++;
                 progress($c, $total, 'entities');
-                
+
                 $entity_action_fields = json_decode($entity['entity_action_fields'], true);
 
                 log_message('debug', "Module install: creating '{$entity['entity_name']}' (type: '{$entity['entity_type']}')");
@@ -1515,14 +1520,14 @@ $uninstall = false;
             unset($json['menu']);
             unset($json['grids']);
             unset($json['layouts_boxes']);
-            
+
             return true;
-            
+
         } catch (Exception $e) {
             log_message('error', 'Install module error: ' . $e->getMessage());
             die($e->getMessage());
             //$this->db->trans_rollback();
         }
     }
-    
+
 }
