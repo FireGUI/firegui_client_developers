@@ -83,14 +83,14 @@ class General extends CI_Model
         }
     }
 
-    public function generateToken()
-    {
-        $token = generateRandomPassword(20, true);
+    // public function generateToken()
+    // {
+    //     $token = generateRandomPassword(20, true);
 
-        $result = $this->selected_db->insert('meta_data', ['meta_data_key' => 'openbuilder_token', 'meta_data_value' => $token]);
+    //     $result = $this->selected_db->insert('meta_data', ['meta_data_key' => 'openbuilder_token', 'meta_data_value' => $token]);
 
-        return $token;
-    }
+    //     return $token;
+    // }
 
     public function checkClientConnection($hash)
     {
