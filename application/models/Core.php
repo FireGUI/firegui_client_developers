@@ -79,14 +79,23 @@ class Core extends CI_Model
     }
 
 
-    public function updatePatches($repository_url = null, $channel_update = 4)
+    public function updatePatches($repository_url = null, $channel_update = 4, $recursive_to_last = false)
     {
         echo_log('debug', "Start Updating patches...");
         $this->updateClient($repository_url, 0, $channel_update, true);
         echo_log('debug', "Finish update patches...");
         echo_log('debug', "Check for new patches...");
-        $this->checkUpdate($repository_url, $channel_update, true);
-        // Add trigger next update? $this->updateclient....
+
+        // Check recursive patch and update to the last version
+        if ($recursive_to_last != false) {
+            echo_log('debug', "Recursive update patch...");
+            $next_version = $this->checkUpdate($repository_url, $channel_update, true);
+            if ($next_version !== false) {
+                echo_log('debug', "Proceed to next version " . $next_version);
+                $this->updatePatches($repository_url, $channel_update);
+            }
+        }
+
     }
 
     /**

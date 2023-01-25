@@ -31,13 +31,32 @@ class Install extends MY_Controller
     }
 
     /**
+     * From 2.4.3 Update client patches
+     */
+    public function UpdatePatches($recursive_to_last = false)
+    {
+
+        // Security check
+        if (!$this->datab->is_admin() && !is_cli()) {
+            echo_log("error", "Cannot access without admin or cli...");
+            return false;
+        }
+        echo_log('info', 'Start update without backup...');
+
+        $this->load->model('core');
+        $last_version = $this->core->updatePatches(null, 4, $recursive_to_last);
+        echo_log("debug", "Updated to: " . $last_version);
+        echo_log("debug", "Update client finish...");
+    }
+
+    /**
      * From 2.3.10 Update client. Invoked manually
      */
     public function UpdateClient($update_patches = false)
     {
 
         // Security check
-        if (!$this->datab->is_admin() || !is_cli()) {
+        if (!$this->datab->is_admin() && !is_cli()) {
             echo_log("error", "Cannot access without admin or cli...");
             return false;
         }
