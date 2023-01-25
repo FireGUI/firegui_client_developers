@@ -34,9 +34,15 @@ class Modules_model extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateModule($identifier) {
-
-        $module = $this->getModuleRepositoryData($identifier);
+    public function updateModule($identifier,$update_repository_url = null) {
+if ($update_repository_url === null) {
+            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL')?MODULES_REPOSITORY_BASEURL:null;
+        }
+        if (!$update_repository_url) {
+            log_message('error', 'No module repository url defined');
+            return false;
+        }
+        $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
         //debug($module, true);
         // Check Min. client version
             if (!empty($module['modules_repository_min_client_version']) && version_compare($module['modules_repository_min_client_version'], VERSION, '>')) {
@@ -45,7 +51,7 @@ class Modules_model extends CI_Model
                 
             }
 
-            $get_module_info_url =  $this->settings['settings_modules_update_repository'].'/public/client/download_module/'.$identifier;
+            $get_module_info_url =  $update_repository_url.'/public/client/download_module/'.$identifier;
 
         // Scarica il contenuto JSON dall'URL specificato
         $zip_content = file_get_contents($get_module_info_url);
@@ -112,9 +118,17 @@ class Modules_model extends CI_Model
         
             
     }
-    public function getModuleRepositoryData($module_identifier) {
+    public function getModuleRepositoryData($module_identifier,$update_repository_url=null) {
+        if ($update_repository_url === null) {
+            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL')?MODULES_REPOSITORY_BASEURL:null;
+        }
+        if (!$update_repository_url) {
+            log_message('error', 'No module repository url defined');
+            return false;
+        }
+        
         //Fare curl ad admin o openbuilder?
-        $get_module_info_url =  $this->settings['settings_modules_update_repository'].'/public/client/get_module_info/'.$module_identifier;
+        $get_module_info_url =  $update_repository_url.'/public/client/get_module_info/'.$module_identifier;
 
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);

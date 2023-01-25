@@ -224,9 +224,16 @@ class Core extends CI_Model
      * @param mixed $update_channel
      * @return bool|string
      */
-    function checkModuleUpdate($identifier)
+    function checkModuleUpdate($identifier, $update_repository_url = null)
     {
-        $data = $this->getModuleRepositoryData($identifier);
+        if ($update_repository_url === null) {
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
+        }
+        if (!$update_repository_url) {
+            log_message('error', 'No module repository url defined');
+            return false;
+        }
+        $data = $this->getModuleRepositoryData($identifier, $update_repository_url);
 
         $current_module = $this->db->get_where('modules', ['modules_identifier' => $identifier])->row_array();
         if (version_compare($data['modules_repository_version_code'], $current_module['modules_version_code'], '>')) {
@@ -243,32 +250,25 @@ class Core extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateModule($identifier)
+    public function updateModule($identifier, $update_repository_url = null)
     {
+        if ($update_repository_url === null) {
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
+        }
+        if (!$update_repository_url) {
+            log_message('error', 'No module repository url defined');
+            return false;
+        }
         $this->load->model('core/modules_model', 'core_modules');
 
         //debug($this->core_modules,true);
-        return $this->core_modules->updateModule($identifier);
+        return $this->core_modules->updateModule($identifier, $update_repository_url);
 
     }
-    public function getModuleRepositoryData($module_identifier)
+    public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
     {
-        //Fare curl ad admin o openbuilder?
-        $get_module_info_url = $this->settings['settings_modules_update_repository'] . '/public/client/get_module_info/' . $module_identifier;
-
-        // Scarica il contenuto JSON dall'URL specificato
-        $json = file_get_contents($get_module_info_url);
-
-        // Decodifica il contenuto JSON in un oggetto PHP
-        $data = json_decode($json, true);
-
-        // Verifica se la decodifica è avvenuta correttamente
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $data;
-        } else {
-            // Se la decodifica non è avvenuta correttamente, mostra un errore
-            return false;
-        }
+        $this->load->model('core/modules_model', 'core_modules');
+        return $this->core_modules->getModuleRepositoryData($module_identifier, $update_repository_url);
 
     }
 
