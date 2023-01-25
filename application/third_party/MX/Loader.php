@@ -153,14 +153,16 @@ class MX_Loader extends CI_Loader
         CI::$APP->lang->load($langfile, $idiom, $return, $add_suffix, $alt_path, $this->_module);
 
         //Now add modules translations files
-        $modules = scandir(APPPATH . 'modules/');
-        foreach ($modules as $module) {
-            if (is_dir(APPPATH . 'modules/' . $module)) {
-                if (file_exists(APPPATH . 'modules/' . $module . '/language/' . $langfile . '/' . "{$idiom}_lang.php")) {
-                    include APPPATH . 'modules/' . $module . '/language/' . $langfile . '/' . "{$idiom}_lang.php";
-                    $module_lang = $lang;
-                    CI::$APP->lang->language = array_merge(CI::$APP->lang->language, $module_lang);
-                    $lang = [];
+        if (is_dir(APPPATH . 'modules/')) {
+            $modules = scandir(APPPATH . 'modules/');
+            foreach ($modules as $module) {
+                if (is_dir(APPPATH . 'modules/' . $module)) {
+                    if (file_exists(APPPATH . 'modules/' . $module . '/language/' . $langfile . '/' . "{$idiom}_lang.php")) {
+                        include APPPATH . 'modules/' . $module . '/language/' . $langfile . '/' . "{$idiom}_lang.php";
+                        $module_lang = $lang;
+                        CI::$APP->lang->language = array_merge(CI::$APP->lang->language, $module_lang);
+                        $lang = [];
+                    }
                 }
             }
         }
