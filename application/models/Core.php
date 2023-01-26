@@ -274,6 +274,20 @@ class Core extends CI_Model
         return $this->core_modules->updateModule($identifier, $update_repository_url);
 
     }
+    public function installModule($identifier,$update_repository_url = null) {
+        if ($update_repository_url === null) {
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL')?OPENBUILDER_ADMIN_BASEURL:null;
+        }
+        if (!$update_repository_url) {
+            log_message('error', 'No module repository url defined');
+            return false;
+        }
+         $this->load->model('core/modules_model', 'core_modules');
+
+        //debug($this->core_modules,true);
+        return $this->core_modules->installModule($identifier,$update_repository_url);
+
+    }
     public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
     {
         $this->load->model('core/modules_model', 'core_modules');

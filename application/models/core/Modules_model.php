@@ -24,7 +24,22 @@ class Modules_model extends CI_Model
         $this->settings = $this->apilib->searchFirst('settings');
         $this->temp_folder = FCPATH . 'uploads/tmp/';
     }
-
+    public function installModule($identifier,$update_repository_url = null) {
+        $return = $this->updateModule($identifier, $update_repository_url);
+        if ($return) {
+            $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
+            $this->db->insert('modules', array(
+                'modules_name' => $module['modules_repository_name'],
+                'modules_version' => $module['modules_repository_version'],
+                'modules_identifier' => $module['modules_repository_identifier'],
+                'modules_version_code' => $module['modules_repository_version_code'],
+                'modules_description' => $module['modules_repository_description'],
+                'modules_created_by_user' => $module['modules_repository_created_by_user'],
+                'modules_thumbnail' => $module['modules_repository_thumbnail'],
+            ));
+        }
+        return $return;
+    }
 
 
     /**
@@ -37,7 +52,7 @@ class Modules_model extends CI_Model
     public function updateModule($identifier, $update_repository_url = null)
     {
         if ($update_repository_url === null) {
-            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL') ? MODULES_REPOSITORY_BASEURL : null;
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
             log_message('error', 'No module repository url defined');
@@ -122,7 +137,7 @@ class Modules_model extends CI_Model
     public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
     {
         if ($update_repository_url === null) {
-            $update_repository_url = defined('MODULES_REPOSITORY_BASEURL') ? MODULES_REPOSITORY_BASEURL : null;
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
             log_message('error', 'No module repository url defined');

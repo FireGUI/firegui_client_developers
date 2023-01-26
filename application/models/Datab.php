@@ -2985,7 +2985,7 @@ class Datab extends CI_Model
      */
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
-        if (!$value && !empty($field['forms_fields_default_value'])) {
+        if (!$value && (!empty($field['forms_fields_default_value']) || (array_key_exists('forms_fields_default_value',$field) && $field['forms_fields_default_value'] === '0'))) {
             $value = $this->get_default_fields_value($field, $value_id);
         }
 
