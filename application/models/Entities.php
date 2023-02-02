@@ -53,6 +53,7 @@ class Entities extends CI_Model
             $this->selected_db->where("layouts_id <> '{$layout_id}'");
         }
 
+        //TODO: 20230127 - MP - consentire da builder di specificare più di un layout detail e dopo qui prendere solo quello a cui l'utente connesso ha accesso (permessi)
         $layout = $this->selected_db->where('layouts_is_entity_detail', true)->where('layouts_entity_id', $dati['layouts_entity_id'])->get('layouts')->row_array();
 
         if (!empty($layout)) {
