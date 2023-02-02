@@ -1208,7 +1208,10 @@ class Datab extends CI_Model
             //debug($element, true);
         }
         $element = $this->db->get_where($element_type, array($element_type . "_id" => $element_id))->row_array();
-        $entity = $this->get_entity($element[$element_type . '_entity_id']);
+        if (!empty($element[$element_type . '_entity_id'])) {
+            $entity = $this->get_entity($element[$element_type . '_entity_id']);
+        }
+        
 
         // Verifico se questo oggetto ha un where di suo
         if ($other_where) {
@@ -1240,11 +1243,14 @@ class Datab extends CI_Model
                  * RELATION TABLE 1 ci sia l'entità principale (quella sulla
                  * quale eseguo la query)
                  */
-                $__relationships = $this->db->get_where('relations', array('relations_table_1' => $entity['entity_name']))->result_array();
-                $relationships = array_combine(array_map(function ($rel) {
-                    return $rel['relations_name'];
-                }, $__relationships), $__relationships);
-
+                if (!empty($entity)) {
+                    $__relationships = $this->db->get_where('relations', array('relations_table_1' => $entity['entity_name']))->result_array();
+                    $relationships = array_combine(array_map(function ($rel) {
+                        return $rel['relations_name'];
+                    }, $__relationships), $__relationships);
+                } else {
+                    $relationships = [];
+                }
                 foreach ($sess_where_data[$element[$element_type . "_filter_session_key"]] as $condition) {
                     if (!array_key_exists('value', $condition) || $condition['value'] === '' || $condition['value'] === []) {
                         continue;
@@ -1255,7 +1261,7 @@ class Datab extends CI_Model
 
                         // Se il campo è di un'entità diversa da quella del form devo fare un where in
                         // ovviamente l'entità a cui appartiene il campo deve avere almeno un campo che punta all'entità del form
-                        $is_another_entity = ($entity['entity_id'] != $field->fields_entity_id);
+                        $is_another_entity = !empty($entity) && ($entity['entity_id'] != $field->fields_entity_id);
 
                         if ($is_another_entity) {
                             // Sto cercando in un'entità diversa
@@ -1298,7 +1304,7 @@ class Datab extends CI_Model
                         } else {
                             // Sto filtrando in un campo dell'entità principale
                             // Metto comunque il nome della tabella come prefisso per evitare il classico errore che il campo compare in più tabelle...
-                            $where_prefix = "{$entity['entity_name']}.";
+                            $where_prefix = (!empty($entity))?"{$entity['entity_name']}.":'';
                             $where_suffix = '';
                         }
 
@@ -1813,21 +1819,21 @@ class Datab extends CI_Model
             return empty($permissions) || ($permissions->permissions_entities_value != PERMISSION_NONE);
         }
     }
-    
+
     public function can_access_layout($layout_id, $value_id = null)
     {
         if (!$layout_id) {
             return false;
         }
-
+    
         if (!is_numeric($layout_id)) {
             $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
         
+            if (!$layout_id) {
+                return false;
+            }
         }
-        if (!is_numeric($layout_id)) {
-            return false;
-        }
-
+        
         if (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) {
             return $this->conditions->accessible('layouts', $layout_id, $value_id);
         } else {
@@ -2985,7 +2991,7 @@ class Datab extends CI_Model
      */
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
-        if (!$value && (!empty($field['forms_fields_default_value']) || (array_key_exists('forms_fields_default_value',$field) && $field['forms_fields_default_value'] === '0'))) {
+        if (!$value && !empty($field['forms_fields_default_value'])) {
             $value = $this->get_default_fields_value($field, $value_id);
         }
 
@@ -3276,7 +3282,9 @@ class Datab extends CI_Model
             case "view":
                 //TODO: verificare prima se esiste un custom per questo modulo nelle view native custom
                 $module_view = $this->getModuleViewData($contentRef);
-                
+                // debug($module_view);
+                // debug($contentRef, true);
+    
                 if (!empty($module_view) && (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php"))) {
 
                     $html = $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);
