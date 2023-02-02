@@ -26,3 +26,7 @@ $hook['post_controller'] = [
     'filepath' => 'hooks',
     'params' => array()
 ];
+
+if (file_exists(APPPATH . 'config/hooks_custom.php')) {
+    include_once APPPATH . 'config/hooks_custom.php';
+}

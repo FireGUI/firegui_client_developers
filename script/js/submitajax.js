@@ -293,7 +293,7 @@ function error(txt, idform) {
 
     // Reset della proprietà css inline display in modo che non interferisca con
     // le classi di bootstrap
-    formAjaxShownMessage.css('display', '');
+    formAjaxShownMessage.css({ display: '', opacity: '' });
 
     if (txt) {
         formAjaxShownMessage.removeClass('hide hidden alert-success').addClass('alert-danger');
@@ -307,7 +307,7 @@ function success(txt) {
 
     // Reset della proprietà css inline display in modo che non interferisca con
     // le classi di bootstrap
-    formAjaxShownMessage.css('display', '');
+    formAjaxShownMessage.css({ display: '', opacity: '' });
 
     var current = formAjaxShownMessage;
 
