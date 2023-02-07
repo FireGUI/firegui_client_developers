@@ -21,11 +21,77 @@ if (!function_exists('command_exists')) {
     }
 }
 
+/**
+ * 
+ */
+if (!function_exists('json_validate')) {
+    function json_validate($string, $return_decoded = false)
+    {
+
+        if (empty($string)) {
+            log_message('error', 'Validate json failed: string is empty');
+            return false;
+        }
+
+        // decode the JSON data
+        $result = json_decode($string, true);
+
+        // switch and check possible JSON errors
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                $error = '';
+                break;
+            case JSON_ERROR_DEPTH:
+                $error = 'The maximum stack depth has been exceeded.';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                $error = 'Invalid or malformed JSON.';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                $error = 'Control character error, possibly incorrectly encoded.';
+                break;
+            case JSON_ERROR_SYNTAX:
+                $error = 'Syntax error, malformed JSON.';
+                break;
+            // PHP >= 5.3.3
+            case JSON_ERROR_UTF8:
+                $error = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
+                break;
+            // PHP >= 5.5.0
+            case JSON_ERROR_RECURSION:
+                $error = 'One or more recursive references in the value to be encoded.';
+                break;
+            // PHP >= 5.5.0
+            case JSON_ERROR_INF_OR_NAN:
+                $error = 'One or more NAN or INF values in the value to be encoded.';
+                break;
+            case JSON_ERROR_UNSUPPORTED_TYPE:
+                $error = 'A value of a type that cannot be encoded was given.';
+                break;
+            default:
+                $error = 'Unknown JSON error occured.';
+                break;
+        }
+
+        if ($error !== '') {
+            log_message('error', 'Validate json failed: ' . $error);
+            return false;
+        } else {
+
+            if ($return_decoded == true) {
+                return $result;
+            } else {
+                return true;
+            }
+        }
+    }
+}
+
+
 // Todo to nativo
 if (!function_exists('my_api')) {
     function my_api($url, $public_key, $post_data = null)
     {
-
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded', 'Authorization: Bearer ' . $public_key));
@@ -41,12 +107,11 @@ if (!function_exists('my_api')) {
         $jsonData = curl_exec($ch);
         curl_close($ch);
 
-        // Check json output
-        try {
-            $data = json_decode($jsonData, $associative = true, $depth = 512, JSON_THROW_ON_ERROR);
+        // Check output if valid json
+        if ($data = json_validate($jsonData, true)) {
             return $data;
-        } catch (Exception $e) {
-            log_message('error', 'My API request failed: ' . $e);
+        } else {
+            log_message('error', 'My API request failed. Excpected json output. ');
             return false;
         }
     }
