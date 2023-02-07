@@ -36,6 +36,7 @@ class Modules_model extends CI_Model
                 'modules_description' => $module['modules_repository_description'],
                 'modules_created_by_user' => $module['modules_repository_created_by_user'],
                 'modules_thumbnail' => $module['modules_repository_thumbnail'],
+                'modules_version_date' => $module['modules_repository_last_update'],
             ));
         }
         return $return;
@@ -111,6 +112,7 @@ class Modules_model extends CI_Model
                 $this->db->where('modules_identifier', $identifier)->update('modules', [
                     'modules_version' => $module['modules_repository_version'],
                     'modules_version_code' => $module['modules_repository_version_code'],
+                    'modules_version_date' => $module['modules_repository_last_update'],
                 ]);
 
                 //Check if every is ok (checksum, module version code, ecc...)
