@@ -1,3 +1,3 @@
-Changelog version 2.4.4
+Changelog version 2.4.5
  
-New my_api function in general_helper
+New my_api function
