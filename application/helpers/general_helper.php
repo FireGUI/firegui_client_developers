@@ -21,6 +21,37 @@ if (!function_exists('command_exists')) {
     }
 }
 
+// Todo to nativo
+if (!function_exists('my_api')) {
+    function my_api($url, $public_key, $post_data = null)
+    {
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded', 'Authorization: Bearer ' . $public_key));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        curl_setopt($ch, CURLOPT_XOAUTH2_BEARER, $public_key);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
+        $jsonData = curl_exec($ch);
+        curl_close($ch);
+
+        // Check json output
+        try {
+            $data = json_decode($jsonData, $associative = true, $depth = 512, JSON_THROW_ON_ERROR);
+            return $data;
+        } catch (Exception $e) {
+            log_message('error', 'My API request failed: ' . $e);
+            return false;
+        }
+    }
+}
+
 if (!function_exists('dd')) {
     function dd($var)
     {
@@ -1253,35 +1284,35 @@ if (!function_exists('scanAllDir')) {
             return true;
         }
     }
-    function recurse_copy($src,$dst) {
 
-    $dir = opendir($src);
+    function recurse_copy($src, $dst)
+    {
 
-    @mkdir($dst);
+        $dir = opendir($src);
 
-    while(false !== ( $file = readdir($dir)) ) {
+        @mkdir($dst);
 
-        if (( $file != '.' ) && ( $file != '..' )) {
+        while (false !== ($file = readdir($dir))) {
 
-            if ( is_dir($src . '/' . $file) ) {
+            if (($file != '.') && ($file != '..')) {
 
-                recurse_copy($src . '/' . $file,$dst . '/' . $file);
+                if (is_dir($src . '/' . $file)) {
 
-            }
+                    recurse_copy($src . '/' . $file, $dst . '/' . $file);
 
-            else { 
+                } else {
 
-                copy($src . '/' . $file,$dst . '/' . $file);
+                    copy($src . '/' . $file, $dst . '/' . $file);
+
+                }
 
             }
 
         }
 
+        closedir($dir);
+
     }
-
-    closedir($dir);
-
-}
 
     function tofloat($num)
     {
