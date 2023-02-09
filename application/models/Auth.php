@@ -278,10 +278,12 @@ class Auth extends CI_Model
      */
     public function is_admin()
     {
-
+        
         if ($this->isAdmin === null) {
             $user_id = $this->get(LOGIN_ENTITY . "_id");
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
+
+            
             $this->isAdmin = (($query->num_rows() > 0 && $query->row()->permissions_admin === DB_BOOL_TRUE) ? true : false);
 
             /** FIX: se non ci sono amministratori questo utente lo diventa (ma non viene salvata su db, quindi se per caso dessi i permessi ad un nuovo utente, questo non lo sarebbe più) * */
@@ -289,7 +291,7 @@ class Auth extends CI_Model
                 $this->isAdmin = ($this->db->where('permissions_admin', DB_BOOL_TRUE)->count_all_results('permissions') < 1);
             }
         }
-
+        
         return (is_bool($this->isAdmin) ? $this->isAdmin : false);
     }
 

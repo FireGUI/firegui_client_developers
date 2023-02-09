@@ -1131,4 +1131,81 @@ class Mysqli_utils extends Utils
         // Completa transazione
         $this->selected_db->trans_complete();
     }
+
+    public function indexesUpdate() {
+       
+
+        $current_indexes = $this->db->query("
+            SELECT 
+                TABLE_NAME,
+                COLUMN_NAME,
+                INDEX_NAME
+            FROM INFORMATION_SCHEMA.STATISTICS
+            WHERE TABLE_SCHEMA = '{$this->db->database}'")
+            ->result_array();
+        
+        $current_indexes = array_key_value_map($current_indexes, 'COLUMN_NAME', 'COLUMN_NAME');
+            //solo tabelle con più di 1000 records...
+            $large_tables = $this->db->query("
+                select table_name, table_schema,table_rows from information_schema.tables WHERE table_schema <> 'sys' AND table_rows > 500;
+            ")->result_array();
+            
+          $large_tables = array_key_value_map($large_tables, 'table_name', 'table_name');  
+            //debug($large_tables,true);
+
+         $fields_indexes_needed = $this->db
+            ->group_by('fields_name')
+            ->where(
+            "
+            (
+                (
+                    fields_ref IS NOT NULL 
+                    AND fields_ref IN (SELECT entity_name FROM entity)
+                )
+                OR fields_id IN (
+                    SELECT grids_fields_fields_id FROM grids_fields WHERE grids_fields_fields_id IS NOT NULL AND grids_fields_grids_id IN (
+                        SELECT layouts_boxes_content_ref FROM layouts_boxes WHERE layouts_boxes_content_type = 'grid' AND layouts_boxes_content_ref IS NOT NULL AND layouts_boxes_layout IS NOT NULL AND layouts_boxes_layout IN (
+                            SELECT layouts_id FROM layouts
+                        )
+                    )
+                )
+                OR fields_id IN (
+                    SELECT forms_fields_fields_id FROM forms_fields LEFT JOIN forms ON (forms_id = forms_fields_forms_id) 
+                    WHERE 
+                        forms_fields_fields_id IS NOT NULL 
+                        AND forms_layout = 'filter_select' 
+                        AND forms_fields_forms_id IN (
+                            SELECT layouts_boxes_content_ref FROM layouts_boxes 
+                            WHERE 
+                                layouts_boxes_content_type = 'form'
+                                AND layouts_boxes_content_ref IS NOT NULL 
+                                AND layouts_boxes_layout IS NOT NULL 
+                                AND layouts_boxes_layout IN (
+                                    SELECT layouts_id FROM layouts
+                                )
+                        )
+                )
+                OR fields_preview = '".DB_BOOL_TRUE."'
+            )
+            ", null,false
+
+        )->where_not_in('fields_name', $current_indexes)
+        ->where_in('entity_name', $large_tables)
+        ->where(
+            "fields_type NOT IN ('LONGTEXT')", null, false
+        )->join('entity', 'fields_entity_id = entity_id', 'LEFT')
+        ->get('fields')->result_array();
+
+        $count = count($fields_indexes_needed);
+        
+        $i = 0;
+        foreach ($fields_indexes_needed as $field) {
+            $i++;
+            progress($i,$count,'Indexes update');
+            $sql = "CREATE INDEX {$field['fields_name']}_idx ON {$field['entity_name']} ({$field['fields_name']})";
+            //debug($sql);
+            $this->db->query($sql);
+        }
+        $this->mycache->clearCache();
+    }
 }

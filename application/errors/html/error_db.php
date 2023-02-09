@@ -91,6 +91,10 @@ log_message('error', "*** WARNING *** Databse error: " . $error['error_message']
     <div id="container">
         <h1><?php echo $heading; ?></h1>
         <pre><?php echo $message; ?></pre>
+
+        <?php if (is_maintenance() || is_development()) : ?>
+            <?php debug('***DEBUG TECNICO***'); ?>
+        <?php endif; ?>
     </div>
 </body>
 
