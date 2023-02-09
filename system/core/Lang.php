@@ -55,14 +55,14 @@ class CI_Lang
 	 *
 	 * @var	array
 	 */
-	public $language =	array();
+	public $language = array();
 
 	/**
 	 * List of loaded language files
 	 *
 	 * @var	array
 	 */
-	public $is_loaded =	array();
+	public $is_loaded = array();
 
 	/**
 	 * Class constructor
@@ -106,7 +106,7 @@ class CI_Lang
 		$langfile .= '.php';
 
 		if (empty($idiom) or !preg_match('/^[a-z_-]+$/i', $idiom)) {
-			$config = &get_config();
+			$config = & get_config();
 			$idiom = empty($config['language']) ? 'english' : $config['language'];
 		}
 
@@ -181,7 +181,7 @@ class CI_Lang
 
 		// Because killer robots like unicorns!
 		if ($value === FALSE && $log_errors === TRUE) {
-			log_message('debug', 'Could not find the language line "' . $line . '"');
+			log_message('info', 'Could not find the language line "' . $line . '"');
 		}
 
 		return $value;
