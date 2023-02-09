@@ -307,7 +307,7 @@ class V1 extends MY_Controller
             $orderBy = ($this->input->post('orderby')) ? $this->input->post('orderby') : null;
 
             $orderDir = ($this->input->post('orderdir')) ? $this->input->post('orderdir') : 'ASC';
-            $maxDepth = ($this->input->post('maxdepth')) ? $this->input->post('maxdepth') : 1;
+            $maxDepth = ($this->input->post('maxdepth')) ? $this->input->post('maxdepth') : 2;
 
             $postData = array_filter((array) $this->input->post('where'));
             if ($this->getEntityWhere($entity)) {
@@ -345,7 +345,7 @@ class V1 extends MY_Controller
             $orderBy = ($this->input->post('orderby')) ? $this->input->post('orderby') : null;
 
             $orderDir = ($this->input->post('orderdir')) ? $this->input->post('orderdir') : 'ASC';
-            $maxDepth = ($this->input->post('maxdepth')) ? $this->input->post('maxdepth') : 1;
+            $maxDepth = ($this->input->post('maxdepth')) ? $this->input->post('maxdepth') : 2;
 
             $postData = array_filter((array) $this->input->post('where'));
             if ($this->getEntityWhere($entity)) {
