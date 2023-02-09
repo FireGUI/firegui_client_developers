@@ -17,16 +17,16 @@ class Install extends MY_Controller
      * From 2.3.10 Method to invoke update database from external curl
      * @return never
      */
-    public function update()
+    public function update($indexes_update = false)
     {
 
-        if (!$this->datab->is_admin() || !is_cli()) {
+        if (!$this->datab->is_admin() || (!is_cli() && !is_development())) {
             echo_log("error", "Cannot access without admin or cli...");
             return false;
         }
         echo_log("debug", "Start update database...");
         $this->load->model('core');
-        $this->core->update();
+        $this->core->update($indexes_update);
         echo_log("debug", "Finish update database...");
     }
 

@@ -1276,7 +1276,7 @@ if (!function_exists('my_version_compare')) {
             return version_compare($v1, $v2);
         } else {
             debug($v1);
-            debug($v2, true);
+            debug($v2);
             return true;
         }
     }

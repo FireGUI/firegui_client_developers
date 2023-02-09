@@ -1,3 +1,3 @@
-Changelog version 2.4.4
+Changelog version 2.5.0
  
-New my_api function in general_helper
+Beta test for depth parameter fix and auto indexes

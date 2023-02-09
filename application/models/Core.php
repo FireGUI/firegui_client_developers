@@ -70,10 +70,15 @@ class Core extends CI_Model
      * From 2.3.9 UpdateDB method, invoked usually after update client
      * @return never
      */
-    public function update()
+    public function update($indexes_update = false)
     {
         log_message("debug", "Core: Start UPDATE Database from Utils");
         $this->utils->migrationProcess();
+if ($indexes_update) {
+    $this->utils->indexesUpdate();
+}
+    
+
 
         $this->mycache->clearCache();
     }

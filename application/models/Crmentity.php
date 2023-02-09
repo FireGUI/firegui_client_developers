@@ -131,17 +131,21 @@ class Crmentity extends CI_Model
         // Entity name è da deprecare...
 
         $entity_name = $this->getEntity($entity_id)['entity_name'];
+        if ($entity_name == 'timesheet') {
+            //debug($depth);
+        }
+
         $tags = $this->mycache->buildTagsFromEntity($entity_name);
 
         $_cache_key = 'apilib/' . __METHOD__ . ':' . $entity_name . md5(serialize(array_merge([$entity_id], array_slice(func_get_args(), 2))));
 
-        if ($depth-- <= 0) { // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
+        if ($depth <= 0) { // Se è <= 0, ritorno array vuoto, altrimenti decrementa depth
             return [];
         }
 
         return $this->getFromCache($_cache_key, function () use ($entity_id, $entity_name, $where, $limit, $offset, $order_by, $group_by, $count, $depth, $eval_cachable_fields) {
             $extra_data = true;
-
+           
             $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'group_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
             //debug($entity_id);
             // Se è count ho finito qua, ma anche se non ho nessun risultato
@@ -474,10 +478,14 @@ class Crmentity extends CI_Model
         $depth = array_get($options, 'depth', 2);
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
+
+        
         // =================
         $dati = $this->getEntityFullData($entity_id);
-
         $this->buildSelect($dati, $options);
+        
+        
+        
 
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);
@@ -487,6 +495,8 @@ class Crmentity extends CI_Model
         $this->db->from($dati['entity']['entity_name']);
         $joined = array($dati['entity']['entity_name']);
         $to_join_later = [];
+
+        
 
         $permission_entities = [$entity_id]; // Lista delle entità su cui devo applicare i limiti
 
@@ -519,7 +529,7 @@ class Crmentity extends CI_Model
                 }
             }
         }
-
+        
         // =====================================================================
         // QUERY OUT - COUNT
         // ---
@@ -610,11 +620,14 @@ class Crmentity extends CI_Model
         // posto, altrimenti li autocalcolo in base ai fields entità
         $visible_fields = array_get($options, 'select', []);
 
-        $depth = array_get($options, 'depth', 1);
+        $depth = array_get($options, 'depth', 2);
+
+        //debug($depth);
+
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
         $entityName = $entityFullData['entity']['entity_name'];
-
+        
         if (!$visible_fields) {
             foreach ($entityFullData['visible_fields'] as $campo) {
                 // Aggiungo il campo alla select
@@ -637,10 +650,19 @@ class Crmentity extends CI_Model
                     if ($isRelation) {
                         //debug($entity);
                     } else {
-                        foreach ($this->getVisibleFields($entity['entity_id'], $depth) as $supfield) {
+                        if ($entityName == 'subscriptions' && $entity['entity_name'] == 'currencies') {
+                            //debug($depth,true);
+                        }
+
+                        
+                        
+                        foreach ($this->getVisibleFields($entity['entity_id'], $depth-1) as $supfield) {
+                                                    
                             $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
                             $entityFullData['visible_fields'][] = $supfield;
                         }
+                        
+                        
                     }
                 }
             }
@@ -658,7 +680,12 @@ class Crmentity extends CI_Model
         // duplicati
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
 
+
+
+
         $this->db->select(array_unique($visible_fields));
+
+
 
         //Aggiungo eventuali eval cachable
         $eval_fields = [];
@@ -674,6 +701,11 @@ class Crmentity extends CI_Model
             $select_str = str_ireplace("SELECT ", '', $select_str);
 
             $this->db->select($select_str . ',' . implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
+        }
+
+        if ($entityFullData['entity']['entity_name'] == 'timesheet') {
+                    //debug($this->db->get_compiled_select());
+                    //debug($entityFullData,true);
         }
     }
 
@@ -1081,22 +1113,30 @@ class Crmentity extends CI_Model
      */
     public function getVisibleFields($entity, $depth = 1)
     {
+        if ($depth <= 0) {
+            return [];
+        }
         if (!array_key_exists($entity, $this->_visible_fields) || $depth > 1) {
             $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function ($item) {
                 return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
             });
-
+            
             while ($depth > 1) {
                 $depth--;
                 foreach ($this->_visible_fields[$entity] as $field) {
+                    
                     $isJoinable = $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
                     if (!empty($field['fields_ref']) && $isJoinable) {
+                        
                         $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
                     }
                 }
             }
         }
-
+        if ($entity == 20) {
+                
+                //debug(count($this->_visible_fields[$entity]));
+            }
         return $this->_visible_fields[$entity];
     }
 

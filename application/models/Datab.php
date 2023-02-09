@@ -1695,7 +1695,7 @@ class Datab extends CI_Model
     {
         if ($user_id === null || $user_id == $this->auth->get(LOGIN_ENTITY . "_id")) {
             // Sto controllando me stesso
-
+            
             return $this->auth->is_admin();
         } else {
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');

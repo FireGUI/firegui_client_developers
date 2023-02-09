@@ -622,7 +622,7 @@ class Main extends MY_Controller
             ],
             'full_page' => [
                 'status' => 1,
-                'label' => 'Full pages',
+                'label' => 'Full pages (alpha)',
                 'last_update' => $modified_dates['full_page'],
                 'space' => $disk_space['full_page'],
                 'active' => (!empty($current_config['full_page']['active'])),

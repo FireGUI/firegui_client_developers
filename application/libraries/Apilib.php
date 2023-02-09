@@ -874,6 +874,7 @@ class Apilib
 
     public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
     {
+        
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -913,6 +914,7 @@ class Apilib
 
             try {
                 $this->load->model('crmentity');
+                
                 $entity_data = $this->crmentity->getEntity($entity);
             } catch (Exception $ex) {
                 $this->error = self::ERR_VALIDATION_FAILED;
@@ -958,6 +960,8 @@ class Apilib
             $order = empty($order_array) ? null : implode(', ', $order_array);
 
             try {
+                
+         
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
                 if ($this->isCacheEnabled()) {
                     $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
@@ -971,11 +975,14 @@ class Apilib
         return $this->runDataProcessing($entity, 'search', $this->sanitizeList($out));
     }
 
-    public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 1, $additional_parameters = [])
+    public function searchFirst($entity = null, $input = [], $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $additional_parameters = [])
     {
         if (!is_array($input)) {
             throw new ApiException("Passed input is not an array!");
         }
+
+        
+
         // aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
         $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth, [], $additional_parameters);
         return array_shift($out) ?: [];
