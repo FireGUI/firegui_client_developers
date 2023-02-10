@@ -8,7 +8,19 @@ $_sess_where_data = array_get($sess_data, $filterSessionKey, []);
 $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess_where_data);
 
 ?>
-
+<div class="row">
+    <!-- Builder actions -->
+    <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form builder">
+        <i class="fas fa-hat-wizard"></i>
+    </button>
+    <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form option">
+        <i class="fas fa-edit"></i>
+    </button>
+    <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_init_sortableform hide" data-toggle="tooltip" title="" data-original-title="Start Drag Fields">
+        <i class="fas fa-arrows-alt"></i>
+    </button>
+    <!-- End Builder actions -->
+</div>
 
 <form autocomplete="off" <?php echo "id='form_{$form['forms']['forms_id']}'"; ?> role="form" method="post" action="<?php echo base_url("db_ajax/save_session_filter/{$form['forms']['forms_id']}"); ?>" class="formAjax <?php echo ($form['forms']['forms_css_extra']) ?? null; ?> js_filter_form <?php echo ("form_{$form['forms']['forms_id']}"); ?>" enctype="multipart/form-data">
     <?php add_csrf();?>

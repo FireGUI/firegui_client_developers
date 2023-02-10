@@ -49,6 +49,19 @@ foreach ($form['forms_fields'] as $key => $field) {
                     <span aria-hidden="true">×</span>
                 </button>
 
+                <!-- Builder actions -->
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="builder" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form builder">
+                    <i class="fas fa-hat-wizard"></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_builder_toolbar_btn hide" data-action="option" data-element-type="form" data-element-ref="<?php echo $form['forms']['forms_id']; ?>" data-toggle="tooltip" title="" data-original-title="Form option">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" style="float:right" class="btn btn-box-tool builder_toolbar_actions js_init_sortableform hide">
+                    <i class="fas fa-arrows-alt"></i>
+                </button>
+                <!-- End Builder actions -->
+
+
                 <h4 class="modal-title" id="myModalLabel"><?php echo t(ucwords(str_replace('_', ' ', $form['forms']['forms_name']))); ?></h4>
             </div>
             <div class="modal-body">
