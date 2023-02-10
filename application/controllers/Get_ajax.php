@@ -1435,14 +1435,14 @@ class Get_ajax extends MY_Controller
     /**
      * Ritorna un json con l'id dell'ultimo record
      */
-    public function getJsonRecord($entity, $id)
+    public function getJsonRecord($entity, $id, $depth = 2)
     {
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
             die('Non sei loggato nel sistema');
         }
-
+        
         try {
             $entity = $this->crmentity->getEntity($entity);
         } catch (Exception $ex) {
@@ -1453,9 +1453,9 @@ class Get_ajax extends MY_Controller
             ]);
             die();
         }
-
-        $record = $this->apilib->view($entity['entity_name'], $id);
-
+        
+        $record = $this->apilib->view($entity['entity_name'], $id, $depth);
+        
         echo json_encode([
             'status' => 0,
             'data' => $record,
