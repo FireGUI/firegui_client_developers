@@ -84,3 +84,7 @@ $updates['2.3.6'] = [
 $updates['2.3.7'] = [
     "DELETE FROM forms_fields WHERE forms_fields_fields_id IN (SELECT fields_id FROM fields WHERE fields_name = 'users_type') AND forms_fields_forms_id IN (SELECT forms_id FROM forms WHERE forms_default = '" . DB_BOOL_TRUE . "')",
 ];
+
+$updates['2.5.0'] = [
+    "UPDATE grids SET grids_depth = 2 WHERE grids_depth = 1;"
+];

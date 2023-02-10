@@ -1145,10 +1145,11 @@ class Mysqli_utils extends Utils
             ->result_array();
         
         $current_indexes = array_key_value_map($current_indexes, 'COLUMN_NAME', 'COLUMN_NAME');
-            //solo tabelle con più di 1000 records...
-            $large_tables = $this->db->query("
-                select table_name, table_schema,table_rows from information_schema.tables WHERE table_schema <> 'sys' AND table_rows > 500;
-            ")->result_array();
+        
+        //solo tabelle con più di 1000 records...
+        $large_tables = $this->db->query("
+            select table_name, table_schema,table_rows from information_schema.tables WHERE table_schema <> 'sys' AND table_rows > 500;
+        ")->result_array();
             
           $large_tables = array_key_value_map($large_tables, 'table_name', 'table_name');  
             //debug($large_tables,true);

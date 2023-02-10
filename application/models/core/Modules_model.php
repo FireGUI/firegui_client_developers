@@ -433,9 +433,6 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['layouts'] as $layout) {
 
-                if ($layout['conditions']) {
-                    debug($layout, true);
-                }
 
                 $c++;
                 progress($c, $total, 'layouts delete');
@@ -483,10 +480,14 @@ class Modules_model extends CI_Model
 
                 $layout_exists = $this->db->query("SELECT * FROM layouts WHERE layouts_module_key = '{$layout['layouts_module_key']}'");
 
-                $conditions = array_merge($conditions, $layout['conditions']);
+                if (!empty($layout['conditions'])) {
+                    //debug($layout, true);
+                    $conditions = array_merge($conditions, $layout['conditions']);
+                    
+                }
                 unset($layout['conditions']);
-
-                //debug($layout, true);
+                
+                
 
                 if ($layout_exists->num_rows() == 0) {
                     unset($layout['layouts_id']);
@@ -548,8 +549,15 @@ class Modules_model extends CI_Model
                 unset($form['fields']);
                 $form['forms_entity_id'] = $entities_id_map[$form['forms_entity_id']];
                 //die('TODO: NON CANCELLARE MA VERIFICARE SE IL FORM ESISTE GIA\' COME LE GRID!');
-                $this->db->insert('forms', $form);
-                $new_form_id = $this->db->insert_id();
+                $form_exists = $this->db->query("SELECT * FROM forms WHERE forms_module_key = '{$form['forms_module_key']}'");
+                if ($form_exists->num_rows() == 0) {
+                    $this->db->insert('forms', $form);
+                    $new_form_id = $this->db->insert_id();
+                } else {
+                    $new_form_id = $form_exists->row()->forms_id;
+                    $this->db->where('forms_id', $new_form_id)->update('forms', $form);
+                }
+                
                 $forms_id_map[$old_form_id] = $new_form_id;
 
                 log_message('debug', "Module install: form {$form['forms_name']} created");
@@ -562,7 +570,10 @@ class Modules_model extends CI_Model
             //I fields dei form li inserisco dopo aver inserito tutti i form (per non rischiare di avere sub_form_id come chiavi esterne di form non ancora creati...
             foreach ($json['forms'] as $form) {
                 foreach ($form['fields'] as $field) {
-                    $conditions = @array_merge($conditions, $field['conditions']);
+                    if (!empty($field['conditions'])) {
+                        $conditions = array_merge($conditions, $field['conditions']);
+                    }
+                    
                     unset($field['conditions']);
 
                     if ($field['forms_fields_subform_id']) {
@@ -585,6 +596,7 @@ class Modules_model extends CI_Model
 
                     $field['forms_fields_fields_id'] = $fields_id_map[$field['forms_fields_fields_id']];
                     $field['forms_fields_forms_id'] = $forms_id_map[$form['forms_id']];
+
                     $this->db->insert('forms_fields', $field);
                     //log_message('debug', "Module install: form {$form['forms_name']} - field {$field['forms_fields_fields_id']} created");
                 }
@@ -1488,21 +1500,22 @@ class Modules_model extends CI_Model
                     if ($entity['raw_data_install']) {
                         log_message('debug', "Module install: raw data insert - {$entity['entity_name']}");
                     }
-                    foreach ($entity['raw_data_install'] as $row) {
-                        $c++;
-                        progress($c, $total, 'raw data install');
-                        //debug($row);
-                        //Verifico se il record esiste già basandomi sulla pk
-                        if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
-                            $this->db->insert($entity['entity_name'], $row);
+                    //20230210 - MP - Modificata la logica: inserisco solo se la tabella è vuota perchè se non è vuota vuol dire che è già stato inserito l'install o che il cliente si è inserito i suoi valori custom
+                    $count_table_records = $this->db->count_all($entity['entity_name']);
+                    if ($count_table_records == 0) {
+                        foreach ($entity['raw_data_install'] as $row) {
+                            $c++;
+                            progress($c, $total, 'raw data install');
+                            //debug($row);
+                            //Verifico se il record esiste già basandomi sulla pk
+                            if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
+                                
+                                $this->db->insert($entity['entity_name'], $row);
+                            }
+                        
                         }
-                        //Rimosso... ora i dati vengono solo inseriti solo in fase di install. L'aggiornamento avviene nel prossimo blocco di codice, solo per le raw_data_update
-                        //                        else {
-                        //                            $id = $row[$entity['entity_name'].'_id'];
-                        //                            unset($row[$entity['entity_name'].'_id']);
-                        //                            $this->db->where($entity['entity_name'].'_id', $id)->update($entity['entity_name'], $row);
-                        //                        }
                     }
+                    
                 }
                 //Aggiorno i raw_data_update
                 if (array_key_exists('raw_data_update', $entity)) {

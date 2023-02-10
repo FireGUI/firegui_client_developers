@@ -1412,7 +1412,9 @@ class Entities extends CI_Model
         // La creo anche come entità per motivi tecnici di fields
         $this->entities->new_entity(['entity_name' => $rel_name, 'entity_type' => ENTITY_TYPE_RELATION], false);
 
-        $field = $this->get_field($entity_field_id);
+        if ($entity_field_id) {
+$field = $this->get_field($entity_field_id);
+        
         $entity = $this->get_by_name($table1);
         $field_draw = $this->get_field_draw_by_field($entity_field_id);
 
@@ -1422,7 +1424,7 @@ class Entities extends CI_Model
         if (!empty($field_draw['fields_draw_html_type'])) {
             $field["fields_draw_html_type"] = $field_draw['fields_draw_html_type'];
         }
-
+        
         $field['fields_name'] = str_ireplace($entity['entity_name'] . '_', '', $field['fields_name']);
 
         $dati = [
@@ -1432,6 +1434,8 @@ class Entities extends CI_Model
         ];
 
         $this->editField($dati);
+        }
+        
 
         return true;
     }
