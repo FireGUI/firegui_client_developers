@@ -409,12 +409,14 @@ class Postgre_utils extends Utils
             'modules_base64_zip' => ['type' => 'TEXT'],
             'modules_raw_data_install' => ['type' => 'TEXT'],
             'modules_raw_data_update' => ['type' => 'TEXT'],
-            'modules_raw_data' => ['type' => 'TEXT'], //20190510 Matteo - Teniamo ancora per un po' per retrocompatibilità...
+            'modules_raw_data' => ['type' => 'TEXT'],
+            //20190510 Matteo - Teniamo ancora per un po' per retrocompatibilità...
             'modules_created_by_user' => ['type' => 'INT'],
             'modules_version_code' => ['type' => 'INT'],
-            'modules_thumbnail' => ['type' => 'VARCHAR', 'null' => true], //20190711 Michael - Campo per salvare il nome del file dell'icona modulo
+            'modules_thumbnail' => ['type' => 'VARCHAR', 'null' => true],
+            //20190711 Michael - Campo per salvare il nome del file dell'icona modulo
             'modules_min_client_version' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
-             'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
+            'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
             'modules_last_update' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'default' => 'NOW()'],
         ]);
 
@@ -704,13 +706,19 @@ class Postgre_utils extends Utils
         $this->morphTable('fi_events', [
             'fi_events_id' => ['type' => 'serial unique', 'unsigned' => true, 'auto_increment' => true],
             'fi_events_title' => ['type' => 'varchar', 'constraint' => 255],
-            'fi_events_json_data' => ['type' => 'JSON', 'null' => true], //Dati grezzi (non si sa mai che torni utile recuperare tutto il $_POST fatto)
+            'fi_events_json_data' => ['type' => 'JSON', 'null' => true],
+            //Dati grezzi (non si sa mai che torni utile recuperare tutto il $_POST fatto)
 
-            'fi_events_type' => ['type' => 'varchar', 'constraint' => 45], //Database, layout, grid, form, cron
-            'fi_events_when' => ['type' => 'varchar', 'constraint' => 255, 'null' => true], //pre-insert, post-edit, pre-validation, pre-layout...
-            'fi_events_ref_id' => ['type' => 'int', 'constraint' => 45, 'null' => true], //Id del layout, piuttosto che dell'entity, piuttosto che della grid...
-            'fi_events_action' => ['type' => 'varchar', 'constraint' => 255], //Custom code, send email, send a curl...
-            'fi_events_actiondata' => ['type' => 'JSON'], //Tutto quello che serve all'action per essere eseguita: codice custom, parametri della mail, parametri della curl, ecc...
+            'fi_events_type' => ['type' => 'varchar', 'constraint' => 45],
+            //Database, layout, grid, form, cron
+            'fi_events_when' => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
+            //pre-insert, post-edit, pre-validation, pre-layout...
+            'fi_events_ref_id' => ['type' => 'int', 'constraint' => 45, 'null' => true],
+            //Id del layout, piuttosto che dell'entity, piuttosto che della grid...
+            'fi_events_action' => ['type' => 'varchar', 'constraint' => 255],
+            //Custom code, send email, send a curl...
+            'fi_events_actiondata' => ['type' => 'JSON'],
+            //Tutto quello che serve all'action per essere eseguita: codice custom, parametri della mail, parametri della curl, ecc...
 
             'fi_events_active' => ['type' => 'BOOL', 'default' => 't'],
 
@@ -721,8 +729,10 @@ class Postgre_utils extends Utils
 
             'fi_events_order' => ['type' => 'int', 'unsigned' => true, 'null' => true],
 
-            'fi_events_cron_frequency' => ['type' => 'INT', 'default' => 1, 'null' => true], //Campo specifico per i cron che mi indica la frequenza di esecuzione
-            'fi_events_cron_last_execution' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'null' => true], //Campo specifico per i cron che mi indica la frequenza di esecuzione
+            'fi_events_cron_frequency' => ['type' => 'INT', 'default' => 1, 'null' => true],
+            //Campo specifico per i cron che mi indica la frequenza di esecuzione
+            'fi_events_cron_last_execution' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'null' => true],
+            //Campo specifico per i cron che mi indica la frequenza di esecuzione
 
             'fi_events_hook_order' => ['type' => 'int', 'unsigned' => true, 'null' => true],
             'fi_events_post_process_id' => ['type' => 'int', 'unsigned' => true, 'null' => true],
@@ -898,7 +908,7 @@ class Postgre_utils extends Utils
         $this->entities->addFields([
             'entity_id' => $layoutsEntityId,
             'fields' => [
-                ['fields_name' => 'title', 'fields_type' => 'VARCHAR', 'fields_visible' => 't', 'fields_draw_html_type' => 'input_text'],
+                ['fields_name' => 'title', 'fields_type' => 'VARCHAR', 'fields_visible' => 't', 'fields_draw_html_type' => 'input_text', 'fields_preview' => DB_BOOL_TRUE],
                 ['fields_name' => 'subtitle', 'fields_type' => 'VARCHAR', 'fields_visible' => 't', 'fields_draw_html_type' => 'input_text'],
                 ['fields_name' => 'is_entity_detail', 'fields_type' => 'BOOL', 'fields_visible' => 't', 'fields_draw_html_type' => 'checkbox'],
                 ['fields_name' => 'entity_id', 'fields_type' => 'INT', 'fields_visible' => 't', 'fields_draw_html_type' => 'checkbox'],
