@@ -446,7 +446,7 @@ class Mysqli_utils extends Utils
             'modules_version_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
             'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
             'modules_last_update' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
-            
+
         ], 'modules_id');
 
         /* ============================
@@ -955,7 +955,7 @@ class Mysqli_utils extends Utils
         if (strlen($conname) > 64) {
             $conname = substr($conname, -64);
         }
-        $exists = $this->selected_db->query("SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = '$conname' AND CONSTRAINT_SCHEMA = '{$this->selected_db->database}'")->num_rows() == 1;
+        $exists = $this->selected_db->query("SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = '$conname' AND CONSTRAINT_SCHEMA = '{$this->selected_db->database}'")->num_rows() > 0;
 
         if (!$exists) {
             $this->dbforge->add_column($fromTable, "CONSTRAINT $conname FOREIGN KEY ($fromField) REFERENCES $toTable($toField) ON DELETE CASCADE ON UPDATE CASCADE");
@@ -982,7 +982,7 @@ class Mysqli_utils extends Utils
             $this->entities->addFields([
                 'entity_id' => $layoutsEntityId,
                 'fields' => [
-                    ['fields_name' => 'title', 'fields_type' => 'VARCHAR', 'fields_visible' => '1', 'fields_draw_html_type' => 'input_text'],
+                    ['fields_name' => 'title', 'fields_type' => 'VARCHAR', 'fields_visible' => '1', 'fields_draw_html_type' => 'input_text', 'fields_preview' => DB_BOOL_TRUE],
                     ['fields_name' => 'subtitle', 'fields_type' => 'VARCHAR', 'fields_visible' => '1', 'fields_draw_html_type' => 'input_text'],
                     ['fields_name' => 'is_entity_detail', 'fields_type' => 'BOOLEAN', 'fields_visible' => '1', 'fields_draw_html_type' => 'checkbox'],
                     ['fields_name' => 'entity_id', 'fields_type' => 'BIGINT', 'fields_visible' => '1', 'fields_draw_html_type' => 'checkbox'],
@@ -1132,8 +1132,9 @@ class Mysqli_utils extends Utils
         $this->selected_db->trans_complete();
     }
 
-    public function indexesUpdate() {
-       
+    public function indexesUpdate()
+    {
+
 
         $current_indexes = $this->db->query("
             SELECT 
@@ -1143,21 +1144,20 @@ class Mysqli_utils extends Utils
             FROM INFORMATION_SCHEMA.STATISTICS
             WHERE TABLE_SCHEMA = '{$this->db->database}'")
             ->result_array();
-        
+
         $current_indexes = array_key_value_map($current_indexes, 'COLUMN_NAME', 'COLUMN_NAME');
-        
+
         //solo tabelle con più di 1000 records...
         $large_tables = $this->db->query("
             select table_name, table_schema,table_rows from information_schema.tables WHERE table_schema <> 'sys' AND table_rows > 500;
         ")->result_array();
-            
-          $large_tables = array_key_value_map($large_tables, 'table_name', 'table_name');  
-            //debug($large_tables,true);
+        $large_tables = array_key_value_map($large_tables, 'table_name', 'table_name');
+        //debug($large_tables,true);
 
-         $fields_indexes_needed = $this->db
+        $fields_indexes_needed = $this->db
             ->group_by('fields_name')
             ->where(
-            "
+                "
             (
                 (
                     fields_ref IS NOT NULL 
@@ -1186,23 +1186,27 @@ class Mysqli_utils extends Utils
                                 )
                         )
                 )
-                OR fields_preview = '".DB_BOOL_TRUE."'
+                OR fields_preview = '" . DB_BOOL_TRUE . "'
             )
-            ", null,false
+            ",
+                null,
+                false
 
-        )->where_not_in('fields_name', $current_indexes)
-        ->where_in('entity_name', $large_tables)
-        ->where(
-            "fields_type NOT IN ('LONGTEXT')", null, false
-        )->join('entity', 'fields_entity_id = entity_id', 'LEFT')
-        ->get('fields')->result_array();
+            )->where_not_in('fields_name', $current_indexes)
+            ->where_in('entity_name', $large_tables)
+            ->where(
+                "fields_type NOT IN ('LONGTEXT')",
+                null,
+                false
+            )->join('entity', 'fields_entity_id = entity_id', 'LEFT')
+            ->get('fields')->result_array();
 
         $count = count($fields_indexes_needed);
-        
+
         $i = 0;
         foreach ($fields_indexes_needed as $field) {
             $i++;
-            progress($i,$count,'Indexes update');
+            progress($i, $count, 'Indexes update');
             $sql = "CREATE INDEX {$field['fields_name']}_idx ON {$field['entity_name']} ({$field['fields_name']})";
             //debug($sql);
             $this->db->query($sql);

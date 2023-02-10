@@ -132,8 +132,16 @@ if ($indexes_update) {
         $old_version = VERSION;
 
         if ($updatePatches == true) {
+
             $patchInfo = file_get_contents($repository_url . "public/client/getLastPatch/" . VERSION . "/$channel");
             $patch = json_decode($patchInfo, true);
+
+            // Check if there is a patch
+            if (empty($patch['clients_releases_file'])) {
+                log_message('debug', 'updatePatches, no pathes found...');
+                return false;
+            }
+
             $file_link = $repository_url . "uploads/" . $patch['clients_releases_file'];
             $new_version = $patch['clients_releases_version'];
             $new_version_code = $patch['clients_releases_version_code'];
@@ -279,18 +287,19 @@ if ($indexes_update) {
         return $this->core_modules->updateModule($identifier, $update_repository_url);
 
     }
-    public function installModule($identifier,$update_repository_url = null) {
+    public function installModule($identifier, $update_repository_url = null)
+    {
         if ($update_repository_url === null) {
-            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL')?OPENBUILDER_ADMIN_BASEURL:null;
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
             log_message('error', 'No module repository url defined');
             return false;
         }
-         $this->load->model('core/modules_model', 'core_modules');
+        $this->load->model('core/modules_model', 'core_modules');
 
         //debug($this->core_modules,true);
-        return $this->core_modules->installModule($identifier,$update_repository_url);
+        return $this->core_modules->installModule($identifier, $update_repository_url);
 
     }
     public function getModuleRepositoryData($module_identifier, $update_repository_url = null)

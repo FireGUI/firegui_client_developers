@@ -264,7 +264,7 @@ class Api_manager extends MY_Controller
 
     protected function generate_public_token($token_data)
     {
-        return md5(API_MANAGER_PRIVATE_KEY . serialize($token_data) . mktime());
+        return md5(API_MANAGER_PRIVATE_KEY . serialize($token_data) . time());
     }
 
 
@@ -306,10 +306,12 @@ class Api_manager extends MY_Controller
      */
     private function showOutput($message = [], $status = 0)
     {
-        echo json_encode(array(
-            'status' => $status,
-            'txt' => is_string($message) ? $message : null,
-            'data' => is_array($message) ? $message : array()
-        ));
+        echo json_encode(
+            array(
+                'status' => $status,
+                'txt' => is_string($message) ? $message : null,
+                'data' => is_array($message) ? $message : array()
+            )
+        );
     }
 }

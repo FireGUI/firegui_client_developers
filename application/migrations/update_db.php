@@ -86,5 +86,6 @@ $updates['2.3.7'] = [
 ];
 
 $updates['2.5.0'] = [
-    "UPDATE grids SET grids_depth = 2 WHERE grids_depth = 1;"
+    "UPDATE grids SET grids_depth = 2 WHERE grids_depth = 1;",
+    "UPDATE fields SET fields_preview = '1' WHERE fields_name = 'layouts_title'"
 ];
