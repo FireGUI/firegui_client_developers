@@ -1,3 +1,5 @@
-Changelog version 2.5.0
+Changelog version 2.5.1
  
-Beta test for depth parameter fix and auto indexes
+Fix api token
+Fix vue calendar
+Add migration to layout preview
