@@ -7,27 +7,27 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
     //  Days of spring
     $spring_starts = date("z", strtotime("March 21"));
-    $spring_ends   = date("z", strtotime("June 20"));
+    $spring_ends = date("z", strtotime("June 20"));
 
     //  Days of summer
     $summer_starts = date("z", strtotime("June 21"));
-    $summer_ends   = date("z", strtotime("September 22"));
+    $summer_ends = date("z", strtotime("September 22"));
 
     //  Days of autumn
     $autumn_starts = date("z", strtotime("September 23"));
-    $autumn_ends   = date("z", strtotime("December 20"));
+    $autumn_ends = date("z", strtotime("December 20"));
 
     //  If $day is between the days of spring, summer, autumn, and winter
-    if ($day >= $spring_starts && $day <= $spring_ends) :
+    if ($day >= $spring_starts && $day <= $spring_ends):
         $season = "spring";
-    elseif ($day >= $summer_starts && $day <= $summer_ends) :
+    elseif ($day >= $summer_starts && $day <= $summer_ends):
         $season = "summer";
-    elseif ($day >= $autumn_starts && $day <= $autumn_ends) :
+    elseif ($day >= $autumn_starts && $day <= $autumn_ends):
         $season = "autumn";
-    else :
+    else:
         $season = "winter";
     endif;
-?>
+    ?>
 
 
     <!DOCTYPE html>
@@ -49,7 +49,8 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
         <link rel="shortcut icon" href="/favicon.ico" />
         <!-- Google Font: Source Sans Pro -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
         <!-- Font Awesome -->
         <link rel="stylesheet" href="<?php echo base_url("assets/plugins/fontawesome-free/css/all.min.css"); ?>">
         <!-- Theme style -->
@@ -213,20 +214,25 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
     </head>
 
-    <body class="hold-transition login-page background_img" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-base_url="<?php echo base_url(); ?>" data-base_url_admin="<?php echo base_url_admin(); ?>" data-base_url_template="<?php echo base_url_template(); ?>" data-base_url_scripts="<?php echo base_url_scripts(); ?>" data-base_url_uploads="<?php echo base_url_uploads(); ?>" data-base_url_builder="<?php echo FIREGUI_BUILDER_BASEURL; ?>">
+    <body class="hold-transition login-page background_img"
+        data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" data-base_url="<?php echo base_url(); ?>"
+        data-base_url_admin="<?php echo base_url_admin(); ?>" data-base_url_template="<?php echo base_url_template(); ?>"
+        data-base_url_scripts="<?php echo base_url_scripts(); ?>" data-base_url_uploads="<?php echo base_url_uploads(); ?>"
+        data-base_url_builder="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>">
 
 
         <div class="login-box login-box-security js_easylogin_page" data-user="<?php echo base64_encode(json_encode([
-                                                                                    'id' => $this->auth->get('id'),
-                                                                                    'email' => $this->auth->get(LOGIN_USERNAME_FIELD),
-                                                                                    'display_name' => $this->auth->get(LOGIN_NAME_FIELD),
-                                                                                ])); ?>
-    ">
+            'id' => $this->auth->get('id'),
+            'email' => $this->auth->get(LOGIN_USERNAME_FIELD),
+            'display_name' => $this->auth->get(LOGIN_NAME_FIELD),
+        ])); ?>
+        ">
             <div class="card card-outline card-primary shadow-sm">
                 <div class="card-header text-center">
-                    <?php if ($this->settings['settings_company_logo']) : ?>
-                        <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>" alt="logo" class="logo" />
-                    <?php else : ?>
+                    <?php if ($this->settings['settings_company_logo']): ?>
+                        <img src="<?php echo base_url_uploads("uploads/{$this->settings['settings_company_logo']}"); ?>"
+                            alt="logo" class="logo" />
+                    <?php else: ?>
                         <a href="<?php echo base_url() ?>" class="h1"><?php echo $this->settings['settings_company_short_name'] ?? t('La tua azienda'); ?></a>
                     <?php endif; ?>
                 </div>
@@ -247,15 +253,18 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
 
                     <div class="d-flex flex-column">
                         <div class="d-flex justify-content-between"">
-                            <input type="button" class="btn btn-outline-primary js_easylogin_later" value="<?php echo e('Later'); ?>" />
-                            <input type="button" class="btn btn-primary js_easylogin_proceed" value="<?php echo e('Proceed'); ?> " />
-                        </div>
-                        <div class="mt-4">
-                            <input type="button" class="btn btn-block btn-default btn-sm js_easylogin_never" value="<?php echo e('Don\'t ask me again'); ?>" />
-                        </div>
+                                <input type=" button" class="btn btn-outline-primary js_easylogin_later"
+                            value="<?php echo e('Later'); ?>" />
+                        <input type="button" class="btn btn-primary js_easylogin_proceed"
+                            value="<?php echo e('Proceed'); ?> " />
+                    </div>
+                    <div class="mt-4">
+                        <input type="button" class="btn btn-block btn-default btn-sm js_easylogin_never"
+                            value="<?php echo e('Don\'t ask me again'); ?>" />
                     </div>
                 </div>
             </div>
+        </div>
 
         </div>
 
@@ -273,7 +282,8 @@ if (file_exists(VIEWPATH . 'custom/layout/easylogin.php')) {
         <!-- Bootstrap Select 1.14 -->
         <script src="<?php echo base_url("assets/plugins/bootstrap-select/js/bootstrap-select.min.js"); ?>"></script>
         <!-- Custom Components -->
-        <script type="text/javascript" src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
+        <script type="text/javascript"
+            src="<?php echo base_url_scripts("script/js/submitajax.js?v={$this->config->item('version')}"); ?>"></script>
         <!-- Easylogin -->
         <script src="<?php echo base_url("assets/js/core/easylogin.js?v={$this->config->item('version')}"); ?>"></script>
 
