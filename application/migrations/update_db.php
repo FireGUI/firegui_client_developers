@@ -87,5 +87,12 @@ $updates['2.3.7'] = [
 
 $updates['2.5.0'] = [
     "UPDATE grids SET grids_depth = 2 WHERE grids_depth = 1;",
-    "UPDATE fields SET fields_preview = '1' WHERE fields_name = 'layouts_title'"
+    "DELETE FROM layouts WHERE layouts_id NOT IN (
+        SELECT layouts_boxes_layout FROM layouts_boxes WHERE layouts_boxes_layout IS NOT NULL
+    ) AND layouts_id NOT IN (
+        SELECT menu_layout FROM menu WHERE menu_layout IS NOT NULL
+    ) AND layouts_id NOT IN (
+        SELECT layouts_boxes_content_ref FROM layouts_boxes WHERE layouts_boxes_content_ref IS NOT NULL AND layouts_boxes_content_type = 'layout'
+    );",
+    "UPDATE fields SET fields_preview = '1' WHERE fields_name = 'layouts_title';"
 ];

@@ -115,6 +115,13 @@ class Modules_model extends CI_Model
                     'modules_version_date' => $module['modules_repository_last_update'],
                 ]);
 
+                //Rimuovo eventuali moduli duplicati
+                while ($this->db->where('modules_identifier',$identifier)->count_all_result('modules') > 1) {
+                    $duplicate = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
+                    $this->db->where('modules_id', $duplicate['modules_id'])->delete('modules');
+                    $this->mycache->clearCache();
+                }
+
                 //Check if every is ok (checksum, module version code, ecc...)
                 echo_log('debug', 'TODO: final checks...');
                 deleteDirRecursive($unzip_destination_folder);
@@ -597,6 +604,20 @@ class Modules_model extends CI_Model
                     $field['forms_fields_fields_id'] = $fields_id_map[$field['forms_fields_fields_id']];
                     $field['forms_fields_forms_id'] = $forms_id_map[$form['forms_id']];
 
+
+                     $duplicate_forms_fields = $this->db->where(
+                        "
+                            forms_fields_forms_id = '{$field['forms_fields_forms_id']}'
+                            AND
+                            forms_fields_fields_id = '{$field['forms_fields_fields_id']}'
+                        ",
+                        null,
+                        false
+                    )->join('fields', 'fields_id = forms_fields_fields_id', 'LEFT')->delete('forms_fields');
+                   
+                    
+
+
                     $this->db->insert('forms_fields', $field);
                     //log_message('debug', "Module install: form {$form['forms_name']} - field {$field['forms_fields_fields_id']} created");
                 }
@@ -695,7 +716,7 @@ class Modules_model extends CI_Model
                     }
                     $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
                 }
-                $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']];
+                $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']]??null;
 
                 $conditions = array_merge($conditions, $menu['conditions']);
                 unset($menu['conditions']);
@@ -864,9 +885,6 @@ class Modules_model extends CI_Model
                             null,
                             false
                         )->join('fields', 'fields_id = grids_fields_fields_id', 'LEFT')->get('grids_fields')->row_array();
-                        if ($field['grids_fields_column_name'] == 'Last name') {
-                            //debug($duplicate_grids_fields);
-                        }
                         if (!empty($duplicate_grids_fields)) {
                             $this->db->where('grids_fields_id', $duplicate_grids_fields['grids_fields_id'])->delete('grids_fields');
 
@@ -878,6 +896,7 @@ class Modules_model extends CI_Model
                                 //debug($this->db->last_query(), true);
                             }
                         }
+                        
 
                         unset($field['grids_fields_id']);
                         unset($field['fields_id']);
@@ -935,7 +954,7 @@ class Modules_model extends CI_Model
                         }
                         //Rimappo i form legati alle actions...
                         if (!empty($action['grids_actions_form'])) {
-                            $action['grids_actions_form'] = $forms_id_map[$action['grids_actions_form']];
+                            $action['grids_actions_form'] = $forms_id_map[$action['grids_actions_form']]??null;
                         }
                         $conditions = array_merge($conditions, $action['conditions']);
                         unset($action['conditions']);
@@ -1306,7 +1325,10 @@ class Modules_model extends CI_Model
                     case 'tabs':
                         $new_lays = [];
                         foreach (explode(',', $lb['layouts_boxes_content_ref']) as $_old_layout_box_id) {
-                            $new_lays[] = $layout_box_map[$_old_layout_box_id];
+                            if (!empty($layout_box_map[$_old_layout_box_id])) {
+                                $new_lays[] = $layout_box_map[$_old_layout_box_id];
+                            }
+                            
                         }
 
                         //debug($new_lays);

@@ -61,3 +61,5 @@ $updates['2.3.9'] = [
 $updates['2.4.0'] = [
     'include' => ['2.4.0_settings_last_cron_cli.php'],
 ];
+
+

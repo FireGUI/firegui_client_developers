@@ -399,7 +399,7 @@ class Main extends MY_Controller
             ->order_by('layouts_title')
             ->get('layouts')
             ->result_array();
-
+        
         foreach ($layouts as $layout) {
             $dati['settings_layout'][$layout['modules_name']][] = $layout;
         }

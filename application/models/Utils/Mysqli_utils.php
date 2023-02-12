@@ -815,6 +815,50 @@ class Mysqli_utils extends Utils
 
         //die('test');
 
+            $sql_get_all_foreign = "
+            select concat(fks.constraint_schema, '.', fks.table_name) as foreign_table,
+                
+                concat(fks.unique_constraint_schema, '.', fks.referenced_table_name)
+                        as primary_table,
+                fks.constraint_name,
+                group_concat(kcu.column_name
+                        order by position_in_unique_constraint separator ', ') 
+                        as fk_columns
+            from information_schema.referential_constraints fks
+            join information_schema.key_column_usage kcu
+                on fks.constraint_schema = kcu.table_schema
+                and fks.table_name = kcu.table_name
+                and fks.constraint_name = kcu.constraint_name
+            -- where fks.constraint_schema = 'database name'
+            group by fks.constraint_schema,
+                    fks.table_name,
+                    fks.unique_constraint_schema,
+                    fks.referenced_table_name,
+                    fks.constraint_name
+            order by fks.constraint_schema,
+                    fks.table_name;
+        ";
+
+        $_foreign_keys = $this->db->query($sql_get_all_foreign)->result_array();
+        $foreign_keys = [];
+        foreach ($_foreign_keys as $fk) {
+            $duplicate_index_key = "{$fk['foreign_table']}#{$fk['primary_table']}#{$fk['fk_columns']}";
+            $foreign_keys[$duplicate_index_key][] = [$fk['foreign_table'],$fk['constraint_name']];
+        }
+        //debug($foreign_keys,true);
+        foreach ($foreign_keys as $duplicate_index_key => $fkeys_names) {
+            while (count($fkeys_names) > 1) {
+                $popped = array_pop($fkeys_names);
+                $foreign_name_to_remove = $popped[1];
+                $table = $popped[0];
+                $this->db->query("
+                    ALTER TABLE $table
+                    DROP CONSTRAINT $foreign_name_to_remove;
+                ");
+                log_message('debug', "Removed duplicated foreign key '$foreign_name_to_remove'");
+            }
+        }
+        $this->mycache->clearCache();
         //$this->selected_db->trans_complete();
     }
 
@@ -956,10 +1000,11 @@ class Mysqli_utils extends Utils
             $conname = substr($conname, -64);
         }
         $exists = $this->selected_db->query("SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = '$conname' AND CONSTRAINT_SCHEMA = '{$this->selected_db->database}'")->num_rows() > 0;
-
+        //debug($conname,true);
         if (!$exists) {
             $this->dbforge->add_column($fromTable, "CONSTRAINT $conname FOREIGN KEY ($fromField) REFERENCES $toTable($toField) ON DELETE CASCADE ON UPDATE CASCADE");
-        }
+        } 
+        
         $this->selected_db->cache_delete_all();
     }
 
