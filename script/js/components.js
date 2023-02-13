@@ -4,99 +4,99 @@
 
 
 $('body').on('click', '.___js_ajax_content', function (e) {
-    // Check if has a layout id to open
-    var layout_id = $(this).data('layout-id');
-    var link_href = $(this).attr('href');
-    var get_params = link_href.split('?');
-    if (get_params[1]) {
-        get_params = '?' + get_params[1];
-    } else {
-        get_params = '';
+  // Check if has a layout id to open
+  var layout_id = $(this).data('layout-id');
+  var link_href = $(this).attr('href');
+  var get_params = link_href.split('?');
+  if (get_params[1]) {
+    get_params = '?' + get_params[1];
+  } else {
+    get_params = '';
+  }
+  var that = $(this);
+
+
+
+  if (layout_id && !e.metaKey) {
+
+    var value_id = $(this).data('value_id');
+    if (typeof value_id == 'undefined') {
+      value_id = '';
     }
-    var that = $(this);
-    
-    
-    
-    if (layout_id && !e.metaKey) {
+    $('.js_submenu_item.active').removeClass('active');
 
-      var value_id = $(this).data('value_id');
-      if (typeof value_id == 'undefined') {
-        value_id = '';
-      }
-        $('.js_submenu_item.active').removeClass('active');
+    $('#js_layout_content_wrapper').data('layout-id', layout_id);
+    // Fix for sidebar to active li
+    if ($(that).parent().hasClass('js_sidebar_menu_item')) {
 
-                            $('#js_layout_content_wrapper').data('layout-id', layout_id);
-        // Fix for sidebar to active li
-        if ($(that).parent().hasClass('js_sidebar_menu_item')) {
-
-            $('.js_sidebar_menu_item').removeClass('active');
-            $('.js_sidebar_menu_item').removeClass('menu-open');
-            $('.treeview-menu').hide();
-        }
-        if ($(that).parent().hasClass('js_submenu_item')) {
-            $('.js_sidebar_menu_item').removeClass('active');
-            $('.js_sidebar_menu_item').removeClass('menu-open');
-            $('.treeview-menu').hide();
-
-            $(that).parent().addClass('active');
-            $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
-            $(that).closest('.treeview-menu').show();
-        } else {
-            $(that).parent().addClass('active');
-        }
-
-        e.preventDefault();
-        var $layout_exists = $('.js_page_content[data-layout-id="'+layout_id+'"]');
-        if ($layout_exists.length > 0) {
-             //Il contenuto è già stato caricato, mostro quel box e nascondo gli altri
-             $('.js_page_content').hide();
-             $layout_exists.show();
-             document.title = $layout_exists.data('title');
-        } else {
-          loading(true);
-          
-          $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
-                type: 'GET',
-                dataType: 'json',
-                complete: function () {
-                    loading(false);
-                },
-                success: function (data) {
-                    if (data.status == 0) {
-                        console.log(data.msg);
-                    }
-                    if (data.status == 1) {
-
-                        if (data.type == 'pdf') {
-                            //location.href = link_href;
-                            window.open(link_href, '_blank');
-                        } else {
-                            $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
-                            $('.js_page_content').hide();
-                            document.title = data.dati.title_prefix;
-                            var related_entities = data.dati.related_entities.join(',');
-                            console.log('TODO: clone js_page_content instead of creating div...');
-                            var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'" data-related_entities="'+related_entities+'"></div>';
-                            // $();
-                            //clonedContainer.html(data.content);
-                            $('#js_layout_content_wrapper').append(clonedContainerHtml);
-                            var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
-                            clonedContainer.html(data.content);
-                            window.history.pushState("", "", link_href);
-                            initComponents(clonedContainer, true);
-
-                            
-                        }
-                    }
-                },
-            });
-        }
-
-        
-        e.stopPropagation();
-    } else {
-
+      $('.js_sidebar_menu_item').removeClass('active');
+      $('.js_sidebar_menu_item').removeClass('menu-open');
+      $('.treeview-menu').hide();
     }
+    if ($(that).parent().hasClass('js_submenu_item')) {
+      $('.js_sidebar_menu_item').removeClass('active');
+      $('.js_sidebar_menu_item').removeClass('menu-open');
+      $('.treeview-menu').hide();
+
+      $(that).parent().addClass('active');
+      $(that).closest('.js_sidebar_menu_item').addClass('menu-open');
+      $(that).closest('.treeview-menu').show();
+    } else {
+      $(that).parent().addClass('active');
+    }
+
+    e.preventDefault();
+    var $layout_exists = $('.js_page_content[data-layout-id="' + layout_id + '"]');
+    if ($layout_exists.length > 0) {
+      //Il contenuto è già stato caricato, mostro quel box e nascondo gli altri
+      $('.js_page_content').hide();
+      $layout_exists.show();
+      document.title = $layout_exists.data('title');
+    } else {
+      loading(true);
+
+      $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
+        type: 'GET',
+        dataType: 'json',
+        complete: function () {
+          loading(false);
+        },
+        success: function (data) {
+          if (data.status == 0) {
+            console.log(data.msg);
+          }
+          if (data.status == 1) {
+
+            if (data.type == 'pdf') {
+              //location.href = link_href;
+              window.open(link_href, '_blank');
+            } else {
+              $('.js_page_content[data-layout-id="' + layout_id + '"]').remove();
+              $('.js_page_content').hide();
+              document.title = data.dati.title_prefix;
+              var related_entities = data.dati.related_entities.join(',');
+              console.log('TODO: clone js_page_content instead of creating div...');
+              var clonedContainerHtml = '<div class="js_page_content" data-layout-id="' + layout_id + '" data-title="' + data.dati.title_prefix + '" data-related_entities="' + related_entities + '"></div>';
+              // $();
+              //clonedContainer.html(data.content);
+              $('#js_layout_content_wrapper').append(clonedContainerHtml);
+              var clonedContainer = $('.js_page_content[data-layout-id="' + layout_id + '"]');
+              clonedContainer.html(data.content);
+              window.history.pushState("", "", link_href);
+              initComponents(clonedContainer, true);
+
+
+            }
+          }
+        },
+      });
+    }
+
+
+    e.stopPropagation();
+  } else {
+
+  }
 });
 
 
@@ -112,7 +112,7 @@ function destroyCkeditorInstances(instance = null) {
         CKEDITOR.instances[instance_name].destroy(true);
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function fillEditor(selector, content) {
@@ -163,7 +163,7 @@ function initTinymce(container = null) {
         success: function (res) {
           success(res.txt);
         },
-        error: function (request, status, error) {},
+        error: function (request, status, error) { },
       });
     },
     content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
@@ -197,7 +197,7 @@ function initComponents(container, reset = false) {
           $(this).select2("destroy");
         }
       });
-    } catch (e) {}
+    } catch (e) { }
 
     // destroyCkeditorInstances($('textarea.js_ckeditor', container));
   }
@@ -508,20 +508,20 @@ function initComponents(container, reset = false) {
     FORM FIELDS EVENTS
     */
   $(":input").on("change", function () {
-    
+
     var changed_input = $(this);
     $(':input[data-dependent_on*="' + $(this).attr("name") + '"]', changed_input.closest("form")).each(function () {
-      
+
       if (changed_input.attr('type') == 'radio') {
-        
-        var value_of_dependent_field = $('[name="'+changed_input.attr("name")+'"]:checked').val();
+
+        var value_of_dependent_field = $('[name="' + changed_input.attr("name") + '"]:checked').val();
       } else {
         var value_of_dependent_field = changed_input.val();
       }
 
       console.log($(this).attr('name'));
       console.log(value_of_dependent_field);
-      
+
       if ($(this).data("dependent_on").includes(":")) {
         var expl = $(this).data("dependent_on").split(":");
 
@@ -529,7 +529,7 @@ function initComponents(container, reset = false) {
       } else {
         var vals = null;
       }
-      
+
       if (vals !== null) {
         if (vals.includes(value_of_dependent_field)) {
           $(this).closest(".js_container_field").show();
@@ -546,7 +546,7 @@ function initComponents(container, reset = false) {
     });
   });
 
-  $(".js_form_fieldset legend").on("click", function () {
+  $(".js_form_fieldset legend").off("click").on("click", function () {
     $(".row, legend span, i", $(this).closest(".js_form_fieldset")).toggle();
     $(this).closest(".js_form_fieldset").toggleClass("fieldset_visible");
   });
@@ -590,7 +590,7 @@ function initComponents(container, reset = false) {
     });
 
     $(".select2me", container).select2({ allowClear: true });
-  } catch (e) {}
+  } catch (e) { }
 
   $(".select2_standard", container).select2();
 
@@ -965,7 +965,7 @@ function initComponents(container, reset = false) {
   $(".box").each(function () {
     try {
       $.fn.boxWidget.call($(this));
-    } catch (e) {}
+    } catch (e) { }
   });
   /**
    * Dopo aver inizializzato il tutto, trigger resize della finestra in
@@ -1082,7 +1082,7 @@ function loadModal(url, data, callbackSuccess, method) {
 }
 
 /** Fix per focus su select in modale **/
-$.fn.modal.Constructor.prototype.enforceFocus = function () {};
+$.fn.modal.Constructor.prototype.enforceFocus = function () { };
 
 function formatDate(dateTime, ignoreTimezone) {
   if (!ignoreTimezone) {
