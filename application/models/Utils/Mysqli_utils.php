@@ -1189,15 +1189,25 @@ class Mysqli_utils extends Utils
             FROM INFORMATION_SCHEMA.STATISTICS
             WHERE TABLE_SCHEMA = '{$this->db->database}'")
             ->result_array();
-
+        $tables_indexes_count = [];
+        foreach ($current_indexes as $idx) {
+            //debug($idx,true);
+            if (empty($tables_indexes_count[$idx['TABLE_NAME']])) {
+$tables_indexes_count[$idx['TABLE_NAME']] = 1;
+            } else {
+$tables_indexes_count[$idx['TABLE_NAME']]++;
+            }
+            
+        }
         $current_indexes = array_key_value_map($current_indexes, 'COLUMN_NAME', 'COLUMN_NAME');
 
+        
         //solo tabelle con più di 1000 records...
         $large_tables = $this->db->query("
             select table_name, table_schema,table_rows from information_schema.tables WHERE table_schema <> 'sys' AND table_rows > 500;
         ")->result_array();
         $large_tables = array_key_value_map($large_tables, 'table_name', 'table_name');
-        //debug($large_tables,true);
+        
 
         $fields_indexes_needed = $this->db
             ->group_by('fields_name')
@@ -1245,13 +1255,26 @@ class Mysqli_utils extends Utils
                 false
             )->join('entity', 'fields_entity_id = entity_id', 'LEFT')
             ->get('fields')->result_array();
+            //debug($fields_indexes_needed,true);
 
         $count = count($fields_indexes_needed);
 
         $i = 0;
+        
         foreach ($fields_indexes_needed as $field) {
             $i++;
             progress($i, $count, 'Indexes update');
+            //debug($field['entity_name']);
+            if (!empty($tables_indexes_count[$field['entity_name']]) && $tables_indexes_count[$field['entity_name']] > 50) {
+                //debug('skip');
+                continue;
+            } else {
+                if (empty($tables_indexes_count[$field['entity_name']])) {
+                    $tables_indexes_count[$field['entity_name']] = 1;
+                } else {
+                    $tables_indexes_count[$field['entity_name']]++;
+                }
+            }
             $sql = "CREATE INDEX {$field['fields_name']}_idx ON {$field['entity_name']} ({$field['fields_name']})";
             //debug($sql);
             $this->db->query($sql);
