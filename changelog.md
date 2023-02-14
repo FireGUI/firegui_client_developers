@@ -1,5 +1,3 @@
-Changelog version 2.5.1
+Changelog version 2.5.0
  
-Fix api token
-Fix vue calendar
-Add migration to layout preview
+Indici automatici
