@@ -2464,7 +2464,7 @@ class Datab extends CI_Model
             }
             $dati['layout_data_detail'] = $layout_data_detail;
             //TODO: remove apilib and create another cache type for html_blocks!
-            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib') && $this->is_layout_cachable($layout_id)) {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('template_assets') && $this->is_layout_cachable($layout_id)) {
                 //debug($this->layout->getRelatedEntities(), true);
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->layout->getRelatedEntities());
             }

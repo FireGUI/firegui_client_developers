@@ -284,7 +284,7 @@ if ($indexes_update) {
         $this->load->model('core/modules_model', 'core_modules');
 
         //debug($this->core_modules,true);
-        return $this->core_modules->updateModule($identifier, $update_repository_url);
+        return $this->core_modules->updateModule($identifier, $update_repository_url, true);
 
     }
     public function installModule($identifier, $update_repository_url = null)

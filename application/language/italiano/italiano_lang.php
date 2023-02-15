@@ -1778,3 +1778,7 @@ $lang['Ore inizio attivita'] = 'Ore inizio attivita';
 $lang['Ore fine attivita'] = 'Ore fine attivita';
 $lang['Interventi Risoluzione Intervento'] = 'Interventi Risoluzione Intervento';
 $lang['Elenco Interventi'] = 'Elenco Interventi';
+$lang['Demo'] = 'Demo';
+$lang['CRM'] = 'CRM';
+$lang['Marketing'] = 'Marketing';
+$lang['Self assign ticket'] = 'Self assign ticket';

@@ -257,9 +257,9 @@ class Cron extends MY_Controller
         $inExecution = $this->getInExecution();
 
         if ($this->db->dbdriver != 'postgre') {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_FALSE . " AND (crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i'))");
+            $crons = $this->db->query("SELECT * FROM crons WHERE (crons_cli = " . DB_BOOL_FALSE . " OR crons_cli IS NULL) AND (crons_last_execution IS NULL OR DATE_FORMAT(crons_last_execution, '%Y-%m-%d %H:%i') <= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL (1 * crons_frequency) MINUTE), '%Y-%m-%d %H:%i'))");
         } else {
-            $crons = $this->db->query("SELECT * FROM crons WHERE crons_cli = " . DB_BOOL_FALSE . " AND (crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency)");
+            $crons = $this->db->query("SELECT * FROM crons WHERE (crons_cli = " . DB_BOOL_FALSE . " OR crons_cli IS NULL) AND (crons_last_execution IS NULL OR crons_last_execution < now() - interval '1 minute' * crons_frequency)");
         }
 
         $skipped = $executed = [];

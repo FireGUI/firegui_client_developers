@@ -25,7 +25,7 @@ class Modules_model extends CI_Model
         $this->temp_folder = FCPATH . 'uploads/tmp/';
     }
     public function installModule($identifier,$update_repository_url = null) {
-        $return = $this->updateModule($identifier, $update_repository_url);
+        $return = $this->updateModule($identifier, $update_repository_url, false);
         if ($return) {
             $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
             $this->db->insert('modules', array(
@@ -50,7 +50,7 @@ class Modules_model extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateModule($identifier, $update_repository_url = null)
+    public function updateModule($identifier, $update_repository_url = null,$is_update = true)
     {
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
@@ -94,7 +94,7 @@ class Modules_model extends CI_Model
                 //TODO: Check if module depends on other modules
 
                 //Process json informations
-                $this->json_process($content, $identifier);
+                $this->json_process($content, $identifier, $is_update);
 
                 //Copy module files on modules folder
                 $this->copy_files($identifier);
@@ -116,7 +116,7 @@ class Modules_model extends CI_Model
                 ]);
 
                 //Rimuovo eventuali moduli duplicati
-                while ($this->db->where('modules_identifier',$identifier)->count_all_result('modules') > 1) {
+                while ($this->db->where('modules_identifier',$identifier)->count_all_results('modules') > 1) {
                     $duplicate = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
                     $this->db->where('modules_id', $duplicate['modules_id'])->delete('modules');
                     $this->mycache->clearCache();
@@ -233,7 +233,7 @@ class Modules_model extends CI_Model
         $source_path = "{$this->temp_folder}/$identifier/";
         recurse_copy($source_path, APPPATH . "modules/{$identifier}/");
     }
-    private function json_process($content, $module)
+    private function json_process($content, $module, $is_update)
     {
         $json = json_decode($content, true);
         $uninstall = false;
@@ -630,20 +630,22 @@ class Modules_model extends CI_Model
 
             $total = count($json['menu']);
             $c = 0;
-            foreach ($json['menu'] as $menu) {
-                $c++;
-                progress($c, $total, 'menu delete');
-                if (!$menu['menu_parent']) { //I parent non li cancello, altrimenti perdo anche tutti i figli già dentro...
-                    //debug("COMMENTATO CODICE CHE TOGLIE I MENU... CI SARANNO MENU DOPPI O TRIPLI SICURO");
-                    $this->db->query(
-                        "DELETE FROM menu WHERE menu_module = '{$identifier}'"
-                    );
-                }
-            }
+            // 20230215 - MP - Non rimuovo i menu, ma faccio dopo il controllo if exists
+            // foreach ($json['menu'] as $menu) {
+            //     $c++;
+            //     progress($c, $total, 'menu delete');
+            //     if (!$menu['menu_parent']) { //I parent non li cancello, altrimenti perdo anche tutti i figli già dentro...
+            //         //debug("COMMENTATO CODICE CHE TOGLIE I MENU... CI SARANNO MENU DOPPI O TRIPLI SICURO");
+            //         $this->db->query(
+            //             "DELETE FROM menu WHERE menu_module = '{$identifier}'"
+            //         );
+            //     }
+            // }
             $c = 0;
             foreach ($json['menu'] as $menu) {
                 $c++;
                 progress($c, $total, 'menu creation (step 1)');
+                
                 if ($menu['menu_parent']) { //Skippo quelli che hanno parent, li riprocesso dopo
                     continue;
                 }
@@ -680,6 +682,15 @@ class Modules_model extends CI_Model
                 $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
                 if ($check_menu_exists->num_rows() > 0) {
                     $menu_esistente = $check_menu_exists->row_array();
+                    // if ($menu['menu_label'] == 'Tickets') {
+                    //     debug($menu,true);
+                    // }
+                    if ($is_update && ($menu['menu_position'] == 'sidebar')) {
+                        //Se sto aggiornando, il menu esiste già e il menu è posizionato in sidebar, unsetto position e parent in modo che se lo sposto per un cliente non venga più sovrascritta la posizione
+                        unset($menu['menu_parent']);
+                        unset($menu['menu_position']);
+                    }
+
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
                 } else {
@@ -695,7 +706,7 @@ class Modules_model extends CI_Model
             foreach ($json['menu'] as $menu) {
                 $c++;
                 progress($c, $total, 'menu creation (step 2)');
-                if (!$menu['menu_parent']) { //Skippo i parent
+                if (!$menu['menu_parent']) { //Skippo quelli che non hanno parent
                     continue;
                 }
                 unset($menu['menu_id']);
@@ -720,10 +731,31 @@ class Modules_model extends CI_Model
 
                 $conditions = array_merge($conditions, $menu['conditions']);
                 unset($menu['conditions']);
+                    
 
-                //TODO: check menu already exists (see code before..)
-                $this->db->insert('menu', $menu);
-                $menuid = $this->db->insert_id();
+
+                $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
+
+                if ($check_menu_exists) {
+                    
+                    if ($is_update && ($menu['menu_position'] == 'sidebar')) {
+                        //Se sto aggiornando, il menu esiste già e il menu è posizionato in sidebar, unsetto position e parent in modo che se lo sposto per un cliente non venga più sovrascritta la posizione
+                        unset($menu['menu_parent']);
+                        unset($menu['menu_position']);
+                        unset($menu['menu_order']);
+                        
+                    }
+                    $menu_esistente = $check_menu_exists->row_array();
+
+                    $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu);
+                    $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
+                } else {
+                    //TODO: check menu already exists (see code before..)
+                    //debug($menu,true);
+                    $this->db->insert('menu', $menu);
+                    $menuid = $this->db->insert_id();
+                }
+                
             }
             log_message('debug', "Module install: End menu creation");
 
