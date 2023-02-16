@@ -238,7 +238,7 @@ function base_url_template($uri)
 <div class="container">
     <div class="row">
         <div class="col-sm-12" style="margin-top:10px;">
-            <img src="<?php echo OPENBUILDER_BUILDER_BASEURL; ?>images/logo_login.png" class="img-responsive" alt="">
+            <img src="https://my.openbuilder.net/images/logo_dark.png" class="img-responsive" alt="">
         </div>
         <div class="col-sm-12" style="margin-top: 10px; margin-bottom: 20px;">
             <h3>Open<b>Builder</b> Client Installer</h3>
