@@ -1188,7 +1188,7 @@ class Modules_model extends CI_Model
 
                     unset($field['calendars_fields_id']);
 
-                    if (!empty($field['calendars_filter_session_key'])) {
+                    if (array_key_exists('calendars_filter_session_key', $field)) {
                         unset($field['calendars_filter_session_key']);
                     }
 
