@@ -319,7 +319,7 @@ class Mysqli_utils extends Utils
             'calendars_layout_modal' => ['type' => 'BOOLEAN', 'default' => true, 'null' => false],
             'calendars_layout_id' => ['type' => 'BIGINT', 'unsigned' => true, 'constraint' => 10, 'null' => true],
             'calendars_link' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
-            'calendars_event_click' => ['type' => 'VARCHAR', 'constraint' => 10],
+            'calendars_event_click' => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
             'calendars_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
         ]);
 
