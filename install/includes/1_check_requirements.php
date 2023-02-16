@@ -1,6 +1,6 @@
 <?php if ($error_level > 0) : ?>
     <div class="alert alert-danger">
-        Please resolve all requirements before continue<br />
+        Please resolve all requirements before continue<br/>
         <?php foreach ($error_req as $error) echo '- ', $error, "<br>"; ?>
     </div>
 <?php endif; ?>
