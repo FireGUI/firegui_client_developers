@@ -680,11 +680,12 @@ class Modules_model extends CI_Model
                 //Vedo se esiste già un menu parent con questa label. In caso riutilizzo questo senza crearne uno nuovo...
                 //$check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_label = '{$menu['menu_label']}' AND menu_module = '$identifier'");
                 $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
+                
+                
+                
                 if ($check_menu_exists->num_rows() > 0) {
                     $menu_esistente = $check_menu_exists->row_array();
-                    // if ($menu['menu_label'] == 'Tickets') {
-                    //     debug($menu,true);
-                    // }
+                    
                     if ($is_update && ($menu['menu_position'] == 'sidebar')) {
                         //Se sto aggiornando, il menu esiste già e il menu è posizionato in sidebar, unsetto position e parent in modo che se lo sposto per un cliente non venga più sovrascritta la posizione
                         unset($menu['menu_parent']);
@@ -704,6 +705,8 @@ class Modules_model extends CI_Model
             $c = 0;
             //Creo i menu
             foreach ($json['menu'] as $menu) {
+                
+                
                 $c++;
                 progress($c, $total, 'menu creation (step 2)');
                 if (!$menu['menu_parent']) { //Skippo quelli che non hanno parent
@@ -736,7 +739,7 @@ class Modules_model extends CI_Model
 
                 $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
 
-                if ($check_menu_exists) {
+                if ($check_menu_exists->num_rows() > 0) {
                     
                     if ($is_update && ($menu['menu_position'] == 'sidebar')) {
                         //Se sto aggiornando, il menu esiste già e il menu è posizionato in sidebar, unsetto position e parent in modo che se lo sposto per un cliente non venga più sovrascritta la posizione
@@ -747,11 +750,15 @@ class Modules_model extends CI_Model
                     }
                     $menu_esistente = $check_menu_exists->row_array();
 
+                    
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
                 } else {
                     //TODO: check menu already exists (see code before..)
                     //debug($menu,true);
+
+                    
+
                     $this->db->insert('menu', $menu);
                     $menuid = $this->db->insert_id();
                 }
