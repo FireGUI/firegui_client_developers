@@ -1187,6 +1187,11 @@ class Modules_model extends CI_Model
                     $field['calendars_fields_fields_id'] = $fields_id_map[$field['calendars_fields_fields_id']];
 
                     unset($field['calendars_fields_id']);
+
+                    if (!empty($field['calendars_filter_session_key'])) {
+                        unset($field['calendars_filter_session_key']);
+                    }
+
                     $field['calendars_fields_calendars_id'] = $calendars_id_map[$field['calendars_fields_calendars_id']];
                     $this->db->insert('calendars_fields', $field);
                 }

@@ -1275,8 +1275,8 @@ if (!function_exists('my_version_compare')) {
         if (is_string($v1) && is_string($v2)) {
             return version_compare($v1, $v2);
         } else {
-            debug($v1);
-            debug($v2);
+            // debug($v1);
+            // debug($v2);
             return true;
         }
     }
