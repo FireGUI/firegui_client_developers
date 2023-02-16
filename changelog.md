@@ -1,4 +1,3 @@
-Changelog version 2.5.1
+Changelog version si
  
-Bugfix for calendars_filter_session_key
-Removed unusefull debug
+Bugfix calendars_filter_session_key
