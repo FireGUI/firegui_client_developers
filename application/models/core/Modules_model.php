@@ -143,7 +143,7 @@ class Modules_model extends CI_Model
 
 
     }
-    public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
+    public function getModuleRepositoryData($module_identifier, $update_repository_url = null, $project_id = null, $token = null)
     {
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
@@ -154,8 +154,8 @@ class Modules_model extends CI_Model
         }
 
         //Fare curl ad admin o openbuilder?
-        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier;
-
+        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier.'/'.$project_id.'/'.$token;
+        //debug($get_module_info_url);
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
 
