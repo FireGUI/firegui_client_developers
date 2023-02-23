@@ -1590,7 +1590,7 @@ class Modules_model extends CI_Model
                     default:
                         debug($condition);
                         debug("Condition '{$condition['conditions_what']}' not recognized");
-                        
+                        log_message('error', "Condition '{$condition['conditions_what']}' not recognized");
                         break;
                 }
 
