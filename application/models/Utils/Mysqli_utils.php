@@ -446,7 +446,7 @@ class Mysqli_utils extends Utils
             'modules_version_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
             'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
             'modules_last_update' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
-
+            'modules_core' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
         ], 'modules_id');
 
         /* ============================
@@ -815,7 +815,7 @@ class Mysqli_utils extends Utils
 
         //die('test');
 
-            $sql_get_all_foreign = "
+        $sql_get_all_foreign = "
             select concat(fks.constraint_schema, '.', fks.table_name) as foreign_table,
                 
                 concat(fks.unique_constraint_schema, '.', fks.referenced_table_name)
@@ -843,7 +843,7 @@ class Mysqli_utils extends Utils
         $foreign_keys = [];
         foreach ($_foreign_keys as $fk) {
             $duplicate_index_key = "{$fk['foreign_table']}#{$fk['primary_table']}#{$fk['fk_columns']}";
-            $foreign_keys[$duplicate_index_key][] = [$fk['foreign_table'],$fk['constraint_name']];
+            $foreign_keys[$duplicate_index_key][] = [$fk['foreign_table'], $fk['constraint_name']];
         }
         //debug($foreign_keys,true);
         foreach ($foreign_keys as $duplicate_index_key => $fkeys_names) {
@@ -1003,8 +1003,8 @@ class Mysqli_utils extends Utils
         //debug($conname,true);
         if (!$exists) {
             $this->dbforge->add_column($fromTable, "CONSTRAINT $conname FOREIGN KEY ($fromField) REFERENCES $toTable($toField) ON DELETE CASCADE ON UPDATE CASCADE");
-        } 
-        
+        }
+
         $this->selected_db->cache_delete_all();
     }
 
@@ -1193,21 +1193,21 @@ class Mysqli_utils extends Utils
         foreach ($current_indexes as $idx) {
             //debug($idx,true);
             if (empty($tables_indexes_count[$idx['TABLE_NAME']])) {
-$tables_indexes_count[$idx['TABLE_NAME']] = 1;
+                $tables_indexes_count[$idx['TABLE_NAME']] = 1;
             } else {
-$tables_indexes_count[$idx['TABLE_NAME']]++;
+                $tables_indexes_count[$idx['TABLE_NAME']]++;
             }
-            
+
         }
         $current_indexes = array_key_value_map($current_indexes, 'COLUMN_NAME', 'COLUMN_NAME');
 
-        
+
         //solo tabelle con più di 1000 records...
         $large_tables = $this->db->query("
             select table_name, table_schema,table_rows from information_schema.tables WHERE table_schema <> 'sys' AND table_rows > 500;
         ")->result_array();
         $large_tables = array_key_value_map($large_tables, 'table_name', 'table_name');
-        
+
 
         $fields_indexes_needed = $this->db
             ->group_by('fields_name')
@@ -1255,12 +1255,12 @@ $tables_indexes_count[$idx['TABLE_NAME']]++;
                 false
             )->join('entity', 'fields_entity_id = entity_id', 'LEFT')
             ->get('fields')->result_array();
-            //debug($fields_indexes_needed,true);
+        //debug($fields_indexes_needed,true);
 
         $count = count($fields_indexes_needed);
 
         $i = 0;
-        
+
         foreach ($fields_indexes_needed as $field) {
             $i++;
             progress($i, $count, 'Indexes update');
