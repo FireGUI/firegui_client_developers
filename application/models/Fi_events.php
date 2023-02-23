@@ -246,8 +246,10 @@ class Fi_events extends CI_Model
         if ($event_id == null) {
             $event['fi_events_creation_date'] = date('Y-m-d H:i:s');
         }
-
-        $data['pp']['post_process_entity_id'] = ($data['pp']['post_process_entity_id']) ? $data['pp']['post_process_entity_id'] : null;
+        if (!empty($data['pp']['post_process_entity_id'])) {
+            $data['pp']['post_process_entity_id'] = ($data['pp']['post_process_entity_id']) ? $data['pp']['post_process_entity_id'] : null;
+        }
+        
 
 
 

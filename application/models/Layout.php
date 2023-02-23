@@ -307,8 +307,8 @@ class Layout extends CI_Model
                 $path = base_url($file_cache);
 
             } else {
-                $path = base_url("modulesbridge/loadAssetFile/{$module_identifier}?file=$file");
-
+                //$path = base_url("modulesbridge/loadAssetFile/{$module_identifier}?file=$file");
+                $path = base_url("module_bridge/{$module_identifier}/$file");
             }
         }
 
