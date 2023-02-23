@@ -418,6 +418,7 @@ class Postgre_utils extends Utils
             'modules_min_client_version' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
             'modules_last_update' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'default' => 'NOW()'],
+            'modules_core' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
         ]);
 
         /* ============================

@@ -24,7 +24,8 @@ class Modules_model extends CI_Model
         $this->settings = $this->apilib->searchFirst('settings');
         $this->temp_folder = FCPATH . 'uploads/tmp/';
     }
-    public function installModule($identifier,$update_repository_url = null) {
+    public function installModule($identifier, $update_repository_url = null)
+    {
         $return = $this->updateModule($identifier, $update_repository_url, false);
         if ($return) {
             $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
@@ -37,7 +38,9 @@ class Modules_model extends CI_Model
                 'modules_created_by_user' => $module['modules_repository_created_by_user'],
                 'modules_thumbnail' => $module['modules_repository_thumbnail'],
                 'modules_version_date' => $module['modules_repository_last_update'],
-            ));
+                'modules_core' => $module['modules_repository_core'],
+            )
+            );
         }
         return $return;
     }
@@ -50,7 +53,7 @@ class Modules_model extends CI_Model
      * @throws Exception
      * @return bool|string
      */
-    public function updateModule($identifier, $update_repository_url = null,$is_update = true)
+    public function updateModule($identifier, $update_repository_url = null, $is_update = true)
     {
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
@@ -106,7 +109,7 @@ class Modules_model extends CI_Model
                 } else {
                     $old_version = '0';
                 }
-                $this->run_migrations($identifier, $old_module, $module['modules_repository_version']);
+                $this->run_migrations($identifier, $old_version, $module['modules_repository_version']);
 
                 //Update database module version
                 $this->db->where('modules_identifier', $identifier)->update('modules', [
@@ -116,7 +119,7 @@ class Modules_model extends CI_Model
                 ]);
 
                 //Rimuovo eventuali moduli duplicati
-                while ($this->db->where('modules_identifier',$identifier)->count_all_results('modules') > 1) {
+                while ($this->db->where('modules_identifier', $identifier)->count_all_results('modules') > 1) {
                     $duplicate = $this->db->where('modules_identifier', $identifier)->get('modules')->row_array();
                     $this->db->where('modules_id', $duplicate['modules_id'])->delete('modules');
                     $this->mycache->clearCache();
@@ -143,7 +146,7 @@ class Modules_model extends CI_Model
 
 
     }
-    public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
+    public function getModuleRepositoryData($module_identifier, $update_repository_url = null, $project_id = null, $token = null)
     {
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
@@ -154,8 +157,8 @@ class Modules_model extends CI_Model
         }
 
         //Fare curl ad admin o openbuilder?
-        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier;
-
+        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier . '/' . $project_id . '/' . $token;
+        //debug($get_module_info_url);
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
 
@@ -186,6 +189,7 @@ class Modules_model extends CI_Model
                     uksort($updates, 'my_version_compare');
 
                     foreach ($updates as $key => $value) {
+
                         $version_compare_old = version_compare($key, $old_version);
                         //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
                         if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
@@ -489,12 +493,12 @@ class Modules_model extends CI_Model
 
                 if (!empty($layout['conditions'])) {
                     //debug($layout, true);
-                    $conditions = array_merge($conditions, $layout['conditions']);
-                    
+                    $conditions = array_merge($conditions, [$layout['conditions']]);
+
                 }
                 unset($layout['conditions']);
-                
-                
+
+
 
                 if ($layout_exists->num_rows() == 0) {
                     unset($layout['layouts_id']);
@@ -512,6 +516,7 @@ class Modules_model extends CI_Model
                     // debug($layouts_id_map, true);
                 }
             }
+
             log_message('debug', "Module install: end layouts creation");
 
             log_message('debug', "Module install: start forms creation");
@@ -564,7 +569,7 @@ class Modules_model extends CI_Model
                     $new_form_id = $form_exists->row()->forms_id;
                     $this->db->where('forms_id', $new_form_id)->update('forms', $form);
                 }
-                
+
                 $forms_id_map[$old_form_id] = $new_form_id;
 
                 log_message('debug', "Module install: form {$form['forms_name']} created");
@@ -578,9 +583,9 @@ class Modules_model extends CI_Model
             foreach ($json['forms'] as $form) {
                 foreach ($form['fields'] as $field) {
                     if (!empty($field['conditions'])) {
-                        $conditions = array_merge($conditions, $field['conditions']);
+                        $conditions = array_merge($conditions, [$field['conditions']]);
                     }
-                    
+
                     unset($field['conditions']);
 
                     if ($field['forms_fields_subform_id']) {
@@ -605,7 +610,7 @@ class Modules_model extends CI_Model
                     $field['forms_fields_forms_id'] = $forms_id_map[$form['forms_id']];
 
 
-                     $duplicate_forms_fields = $this->db->where(
+                    $duplicate_forms_fields = $this->db->where(
                         "
                             forms_fields_forms_id = '{$field['forms_fields_forms_id']}'
                             AND
@@ -614,14 +619,15 @@ class Modules_model extends CI_Model
                         null,
                         false
                     )->join('fields', 'fields_id = forms_fields_fields_id', 'LEFT')->delete('forms_fields');
-                   
-                    
+
+
 
 
                     $this->db->insert('forms_fields', $field);
                     //log_message('debug', "Module install: form {$form['forms_name']} - field {$field['forms_fields_fields_id']} created");
                 }
             }
+
             log_message('debug', "Module install: end forms creation");
 
             log_message('debug', "Module install: Start menu creation");
@@ -645,7 +651,7 @@ class Modules_model extends CI_Model
             foreach ($json['menu'] as $menu) {
                 $c++;
                 progress($c, $total, 'menu creation (step 1)');
-                
+
                 if ($menu['menu_parent']) { //Skippo quelli che hanno parent, li riprocesso dopo
                     continue;
                 }
@@ -674,18 +680,20 @@ class Modules_model extends CI_Model
                         $menu['menu_link'] = str_replace("form/$f_id", "form/$new_f_id", $menu['menu_link']);
                     }
                 }
-                $conditions = array_merge($conditions, $menu['conditions']);
+                $conditions = array_merge($conditions, [$menu['conditions']]);
+
+
                 unset($menu['conditions']);
 
                 //Vedo se esiste già un menu parent con questa label. In caso riutilizzo questo senza crearne uno nuovo...
                 //$check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_label = '{$menu['menu_label']}' AND menu_module = '$identifier'");
                 $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
-                
-                
-                
+
+
+
                 if ($check_menu_exists->num_rows() > 0) {
                     $menu_esistente = $check_menu_exists->row_array();
-                    
+
                     if ($is_update && ($menu['menu_position'] == 'sidebar')) {
                         //Se sto aggiornando, il menu esiste già e il menu è posizionato in sidebar, unsetto position e parent in modo che se lo sposto per un cliente non venga più sovrascritta la posizione
                         unset($menu['menu_parent']);
@@ -705,8 +713,8 @@ class Modules_model extends CI_Model
             $c = 0;
             //Creo i menu
             foreach ($json['menu'] as $menu) {
-                
-                
+
+
                 $c++;
                 progress($c, $total, 'menu creation (step 2)');
                 if (!$menu['menu_parent']) { //Skippo quelli che non hanno parent
@@ -730,39 +738,39 @@ class Modules_model extends CI_Model
                     }
                     $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
                 }
-                $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']]??null;
+                $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']] ?? null;
 
-                $conditions = array_merge($conditions, $menu['conditions']);
+                $conditions = array_merge($conditions, [$menu['conditions']]);
                 unset($menu['conditions']);
-                    
+
 
 
                 $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
 
                 if ($check_menu_exists->num_rows() > 0) {
-                    
+
                     if ($is_update && ($menu['menu_position'] == 'sidebar')) {
                         //Se sto aggiornando, il menu esiste già e il menu è posizionato in sidebar, unsetto position e parent in modo che se lo sposto per un cliente non venga più sovrascritta la posizione
                         unset($menu['menu_parent']);
                         unset($menu['menu_position']);
                         unset($menu['menu_order']);
-                        
+
                     }
                     $menu_esistente = $check_menu_exists->row_array();
 
-                    
+
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
                 } else {
                     //TODO: check menu already exists (see code before..)
                     //debug($menu,true);
 
-                    
+
 
                     $this->db->insert('menu', $menu);
                     $menuid = $this->db->insert_id();
                 }
-                
+
             }
             log_message('debug', "Module install: End menu creation");
 
@@ -876,7 +884,7 @@ class Modules_model extends CI_Model
             foreach ($json['grids'] as $grid) {
                 $total += count($grid['fields']);
             }
-
+            $grids_fields_id_map = [];
             //I fields dei form li inserisco dopo aver inserito tutti i form (per non rischiare di avere sub_form_id come chiavi esterne di form non ancora creati...
             foreach ($json['grids'] as $grid) {
                 $old_grid_id = $grid['grids_id'];
@@ -935,7 +943,7 @@ class Modules_model extends CI_Model
                                 //debug($this->db->last_query(), true);
                             }
                         }
-                        
+                        $old_grids_fields_id = $field['grids_fields_id'];
 
                         unset($field['grids_fields_id']);
                         unset($field['fields_id']);
@@ -955,10 +963,11 @@ class Modules_model extends CI_Model
                         unset($field['fields_multilingual']);
                         unset($field['fields_xssclean']);
 
-                        $conditions = array_merge($conditions, $field['conditions']);
+                        $conditions = array_merge($conditions, [$field['conditions']]);
                         unset($field['conditions']);
 
                         $this->db->insert('grids_fields', $field);
+                        $grids_fields_id_map[$old_grids_fields_id] = $this->db->insert_id();
                     }
                 }
             }
@@ -969,7 +978,7 @@ class Modules_model extends CI_Model
             foreach ($json['grids'] as $grid) {
                 $total += count($grid['actions']);
             }
-
+            $grids_actions_map = [];
             foreach ($json['grids'] as $grid) {
                 $old_grid_id = $grid['grids_id'];
                 $grid_id = $grids_id_map[$old_grid_id];
@@ -980,6 +989,7 @@ class Modules_model extends CI_Model
                         $c++;
                         progress($c, $total, 'grids actions');
                         $action['grids_actions_grids_id'] = $grid_id;
+                        $old_grids_actions_id = $action['grids_actions_id'];
                         unset($action['grids_actions_id']);
 
                         //Rimappo i layout legati alle actions...
@@ -993,12 +1003,14 @@ class Modules_model extends CI_Model
                         }
                         //Rimappo i form legati alle actions...
                         if (!empty($action['grids_actions_form'])) {
-                            $action['grids_actions_form'] = $forms_id_map[$action['grids_actions_form']]??null;
+                            $action['grids_actions_form'] = $forms_id_map[$action['grids_actions_form']] ?? null;
                         }
-                        $conditions = array_merge($conditions, $action['conditions']);
+                        $conditions = array_merge($conditions, [$action['conditions']]);
                         unset($action['conditions']);
 
                         $this->db->insert('grids_actions', $action);
+
+                        $grids_actions_map[$old_grids_actions_id] = $this->db->insert_id();
                     }
                 }
             }
@@ -1341,7 +1353,7 @@ class Modules_model extends CI_Model
                     $lb['layouts_boxes_dragable'] = DB_BOOL_FALSE;
                 }
 
-                $conditions = array_merge($conditions, $lb['conditions']);
+                $conditions = array_merge($conditions, [$lb['conditions']]);
                 unset($lb['conditions']);
 
                 $this->db->insert('layouts_boxes', $lb);
@@ -1372,7 +1384,7 @@ class Modules_model extends CI_Model
                             if (!empty($layout_box_map[$_old_layout_box_id])) {
                                 $new_lays[] = $layout_box_map[$_old_layout_box_id];
                             }
-                            
+
                         }
 
                         //debug($new_lays);
@@ -1391,7 +1403,7 @@ class Modules_model extends CI_Model
                     $lb['layouts_boxes_dragable'] = DB_BOOL_FALSE;
                 }
 
-                $conditions = array_merge($conditions, $lb['conditions']);
+                $conditions = array_merge($conditions, [$lb['conditions']]);
                 unset($lb['conditions']);
 
                 $this->db->insert('layouts_boxes', $lb);
@@ -1545,9 +1557,53 @@ class Modules_model extends CI_Model
             }
 
             log_message('debug', "Module install: start creating conditions");
-            //debug($conditions, true);
+            $conditions = array_filter($conditions, function ($condition) {
+                //debug($condition,true);
+                return $condition != [];
+            });
+            $c = 0;
+            $total = count($conditions);
             foreach ($conditions as $condition) {
-                //debug($condition, true);
+                $c++;
+                progress($c, $total, 'Conditions');
+                if (!empty($condition['conditions_module_key'])) {
+                    $condition_exists = $this->db->where('conditions_module_key', $condition['conditions_module_key'])->get('_conditions')->row_array();
+                } else {
+                    $condition_exists = [];
+                }
+                //debug($condition);
+                unset($condition['conditions_id']);
+
+                //Remap id based on conditions_what
+                switch ($condition['conditions_what']) {
+                    case 'layouts_boxes':
+                        $condition['conditions_ref'] = $layout_box_map[$condition['conditions_ref']];
+                        break;
+                    case 'grids_actions':
+                        $condition['conditions_ref'] = $grids_actions_map[$condition['conditions_ref']];
+                        break;
+                    case 'layouts':
+                        $condition['conditions_ref'] = $layouts_id_map[$condition['conditions_ref']];
+                        break;
+                    case 'menu':
+                        $condition['conditions_ref'] = $menus_id_map[$condition['conditions_ref']];
+                        break;
+                    case 'grids_fields':
+                        $condition['conditions_ref'] = $grids_fields_id_map[$condition['conditions_ref']];
+                        break;
+                    default:
+                        debug($condition);
+                        debug("Condition '{$condition['conditions_what']}' not recognized");
+                        log_message('error', "Condition '{$condition['conditions_what']}' not recognized");
+                        break;
+                }
+
+                if ($condition_exists) {
+                    $this->db->where('conditions_id', $condition_exists['conditions_id'])->update('_conditions', $condition);
+                } else {
+                    $this->db->insert('_conditions', $condition);
+                }
+
             }
 
             log_message('debug', "Module install: start raw data insert");
@@ -1575,13 +1631,13 @@ class Modules_model extends CI_Model
                             //debug($row);
                             //Verifico se il record esiste già basandomi sulla pk
                             if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
-                                
+
                                 $this->db->insert($entity['entity_name'], $row);
                             }
-                        
+
                         }
                     }
-                    
+
                 }
                 //Aggiorno i raw_data_update
                 if (array_key_exists('raw_data_update', $entity)) {

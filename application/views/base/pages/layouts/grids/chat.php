@@ -119,6 +119,13 @@
                 var widget = event.data;
                 
                 var form = $(this);
+
+                var message_text = $('[name="text"]', form).val();
+
+                if (!message_text || message_text.length <= 0) {
+                    return;
+                }
+
                 $.post(form.attr('action'), form.serialize(), function(json) {
                     widget.appendMessage(json);
                     

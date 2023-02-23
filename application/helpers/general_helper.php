@@ -1273,6 +1273,7 @@ if (!function_exists('my_version_compare')) {
     function my_version_compare($v1, $v2)
     {
         if (is_string($v1) && is_string($v2)) {
+            
             return version_compare($v1, $v2);
         } else {
             // debug($v1);

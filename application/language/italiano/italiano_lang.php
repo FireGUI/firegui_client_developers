@@ -1782,3 +1782,7 @@ $lang['Demo'] = 'Demo';
 $lang['CRM'] = 'CRM';
 $lang['Marketing'] = 'Marketing';
 $lang['Self assign ticket'] = 'Self assign ticket';
+$lang['Dashboard magazzino'] = 'Dashboard magazzino';
+$lang['Controllo rapportini'] = 'Controllo rapportini';
+$lang['Gestione operatori'] = 'Gestione operatori';
+$lang['Guida Applicazione'] = 'Guida Applicazione';

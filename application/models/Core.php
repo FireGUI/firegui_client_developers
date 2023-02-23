@@ -302,10 +302,11 @@ if ($indexes_update) {
         return $this->core_modules->installModule($identifier, $update_repository_url);
 
     }
-    public function getModuleRepositoryData($module_identifier, $update_repository_url = null)
+    public function getModuleRepositoryData($module_identifier, $update_repository_url = null, $project_id = null, $token = null)
     {
+        
         $this->load->model('core/modules_model', 'core_modules');
-        return $this->core_modules->getModuleRepositoryData($module_identifier, $update_repository_url);
+        return $this->core_modules->getModuleRepositoryData($module_identifier, $update_repository_url, $project_id, $token);
 
     }
 
