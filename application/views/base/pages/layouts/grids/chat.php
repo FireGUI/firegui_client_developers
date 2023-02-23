@@ -123,7 +123,6 @@
                 var message_text = $('[name="text"]', form).val();
 
                 if (!message_text || message_text.length <= 0) {
-                    alert('Non puoi inviare messaggi vuoti.');
                     return;
                 }
 
