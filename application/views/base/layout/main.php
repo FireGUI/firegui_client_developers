@@ -22,10 +22,8 @@
 
     <script src="<?php echo base_url_scripts("script/js/grep_config.js?v=" . VERSION); ?>"></script>
 
-
-
+    {tpl-pre-header}
     <div class="wrapper">
-        {tpl-pre-header}
         <header class="main-header">
             <?php echo $header; ?>
         </header>
