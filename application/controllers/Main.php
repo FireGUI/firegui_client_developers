@@ -110,7 +110,10 @@ class Main extends MY_Controller
             $pagina = $this->load->view("pages/layout_unaccessible", null, true);
             $this->layout->setLayoutModule();
             $dati = [
-                'status' => 1, 'type' => 'html', 'content' => $pagina, 'value_id' => $value_id,
+                'status' => 1,
+                'type' => 'html',
+                'content' => $pagina,
+                'value_id' => $value_id,
             ];
             //$dati['title_prefix'] = ucfirst(t(trim(implode(', ', array_filter([$dati['layout_container']['layouts_title'], $dati['layout_container']['layouts_subtitle']])))));
 
@@ -394,14 +397,28 @@ class Main extends MY_Controller
         //Get all settings layout
         $layouts = $this->db
             ->where('layouts_settings', DB_BOOL_TRUE)
+            ->where('modules_core', DB_BOOL_FALSE)
             ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
             ->order_by('modules_name', 'ASC')
             ->order_by('layouts_title')
             ->get('layouts')
             ->result_array();
-        
+
         foreach ($layouts as $layout) {
             $dati['settings_layout'][$layout['modules_name']][] = $layout;
+        }
+
+        //Get all settings layout
+        $layouts = $this->db
+            ->where('modules_core', DB_BOOL_TRUE)
+            ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
+            ->order_by('modules_name', 'ASC')
+            ->order_by('layouts_title')
+            ->get('layouts')
+            ->result_array();
+
+        foreach ($layouts as $layout) {
+            $dati['core_settings_layout'][$layout['modules_name']][] = $layout;
         }
 
         $pagina = $this->load->view("pages/settings", array('dati' => $dati), true);

@@ -75,6 +75,31 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                 </div>
             </div>
 
+
+            <?php if ($this->auth->is_admin() && !empty($dati['core_settings_layout'])): ?>
+             <div class="box box-solid">
+                <div class="box-header with-border">
+                    <i class="fa fa-code"></i>
+
+                    <h3 class="box-title">Core modules</h3>
+                </div>
+                <div class="box-body">
+                        <?php foreach ($dati['core_settings_layout'] as $key => $layouts): ?>
+                            <h5>
+                                <?php echo ($key) ? $key : t('Generic'); ?>
+                            </h5>
+                            <ul>
+                                <?php foreach ($layouts as $layout): ?>
+                                    <li><a href="<?php echo base_url('main/layout/' . $layout['layouts_id']); ?>"><?php e(ucfirst(str_replace(array('_', '-'), ' ', $layout['layouts_title']))); ?></a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endforeach; ?>
+                                
+                </div>
+            </div>
+              <?php endif; ?>
+
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <i class="fa fa-cog"></i>
@@ -90,10 +115,10 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                         <?php if ($this->auth->is_admin()): ?>
                         <li><a href="<?php echo base_url('main/trash'); ?>"><?php e('Trash');?></a></li>
                         <?php endif;?>
-                        <li><?php e('SMTP Configuration');?></li>
                     </ul>
                 </div>
             </div>
+
 
             <div class="box box-solid">
                 <div class="box-header with-border">
