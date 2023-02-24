@@ -6,7 +6,7 @@ $CI = get_instance();
 if ($CI === null) {
 
     new MX_Controller();
-    $CI = &get_instance();
+    $CI = & get_instance();
 }
 if (empty($CI->db->conn_id)) {
     $error['type'] = 'database_connection';
@@ -75,7 +75,7 @@ log_message('error', "*** WARNING *** Databse error: " . $error['error_message']
             padding: 12px 10px 12px 10px;
         }
 
-        #container {
+        .container {
             margin: 10px;
             border: 1px solid #D0D0D0;
             box-shadow: 0 0 8px #D0D0D0;
@@ -88,14 +88,35 @@ log_message('error', "*** WARNING *** Databse error: " . $error['error_message']
 </head>
 
 <body>
-    <div id="container">
-        <h1><?php echo $heading; ?></h1>
+    <div class="container">
+        <h1>
+            <?php echo $heading; ?>
+        </h1>
         <pre><?php echo $message; ?></pre>
 
-        <?php if (is_maintenance() || is_development()) : ?>
-            <?php debug('***DEBUG TECNICO***'); ?>
-        <?php endif; ?>
     </div>
+
+
+    <?php if (is_maintenance() || is_development()): ?>
+        <div class="container">
+            <h1>
+                Backtrace
+            </h1>
+            <pre> <?php debug('*** DEBUG ***'); ?></pre>
+        </div>
+
+    <?php endif; ?>
+
+    <?php if ($CI->auth->is_admin()): ?>
+        <div class="container">
+            <h1>
+                Developers utility
+            </h1>
+            <p>When you get a db error, try to <a target="_blank"
+                    href="<?php echo base_url('install/update'); ?>">update</a> your database
+                schema. </p>
+        </div>
+    <?php endif; ?>
 </body>
 
 </html>

@@ -21,7 +21,7 @@ class Install extends MY_Controller
     {
 
         if (!$this->datab->is_admin() || (!is_cli() && !is_development())) {
-            echo_log("error", "Cannot access without admin or cli...");
+            echo_log("error", "Cannot access without admin (in maintenance) or cli...");
             return false;
         }
         echo_log("debug", "Start update database...");
