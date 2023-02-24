@@ -36,7 +36,9 @@ function initDropzones() {
             maxThumbnailFilesize: maxuploadsize,
             maxFilesize: maxuploadsize,
             clickable: true,
-
+            params: {
+                [token_name]: token_hash,
+            },
             init: function () {
                 this.on("addedfiles", function (files) {
                     if (typeof $('.modal', modalContainer).data('bs.modal') != 'undefined') {
