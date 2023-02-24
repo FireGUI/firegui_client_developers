@@ -286,11 +286,12 @@ class Main extends MY_Controller
             $this->template['foot'] = $this->load->view('layout/foot', null, true);
         }
 
-        foreach ($this->template as $key => $html) {
-            $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
-        }
-
-        $this->load->view('layout/main', $this->template);
+        // foreach ($this->template as $key => $html) {
+        //     $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
+        // }
+        $page = $this->load->view('layout/main', $this->template, true);
+        $page = $this->layout->replaceTemplateHooks($page, $value_id);
+        $this->output->append_output($page);
     }
     public function print_barcode($type)
     {
@@ -410,6 +411,7 @@ class Main extends MY_Controller
 
         //Get all settings layout
         $layouts = $this->db
+            ->where('layouts_settings', DB_BOOL_TRUE)
             ->where('modules_core', DB_BOOL_TRUE)
             ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
             ->order_by('modules_name', 'ASC')
