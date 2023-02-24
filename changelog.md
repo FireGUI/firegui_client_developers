@@ -1,3 +1,5 @@
-Changelog version 2.6.1
+Changelog version 2.6.2
  
-beta
+Changed chat view
+Compatibility fix in install process
+user_token table purge in cron
