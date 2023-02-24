@@ -1819,3 +1819,4 @@ $lang['ID Timesheet Settings Utilizzo'] = 'ID Timesheet Settings Utilizzo';
 $lang['Timesheet Settings Utilizzo'] = 'Timesheet Settings Utilizzo';
 $lang['ID Users Type'] = 'ID Users Type';
 $lang['Users Type'] = 'Users Type';
+$lang['Mail up sync settings'] = 'Mail up sync settings';
