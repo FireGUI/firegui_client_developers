@@ -1,6 +1,3 @@
-Changelog version 2.6.3
+Changelog version 2.6.4
  
-New settings for core modules
 Module bridge fix
-multiupload js fixed with csrf
-Dev tool enabled on error db page
