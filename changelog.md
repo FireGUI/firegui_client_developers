@@ -1,5 +1,6 @@
-Changelog version 2.6.2
+Changelog version 2.6.3
  
-Changed chat view
-Compatibility fix in install process
-user_token table purge in cron
+New settings for core modules
+Module bridge fix
+multiupload js fixed with csrf
+Dev tool enabled on error db page
