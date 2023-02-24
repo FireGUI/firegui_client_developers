@@ -25,7 +25,7 @@ if ($file === false) {
     } else {
 
         // Aggiungiamo la nuova riga di testo dopo la stringa di ricerca trovata
-        $insertString = "\n\tRewriteRule ^module_bridge/(.*)$ modulebridge.php/$1 [L]";
+        $insertString = "\n\tRewriteRule ^module_bridge/(.*)$ modulebridge.php?/$1 [L]";
 
         if(strpos($fileContent, $insertString) === false) {
         $newContent = substr_replace($fileContent, $insertString, $position + strlen($searchString), 0);

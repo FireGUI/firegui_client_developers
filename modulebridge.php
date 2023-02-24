@@ -1,5 +1,5 @@
 <?php
-$resource = $_SERVER['PATH_INFO'];
+$resource = $_SERVER['QUERY_STRING'];
 $exploded = array_filter(explode('/', $resource));
 //print_r($exploded);
 $module_name = array_shift($exploded);
