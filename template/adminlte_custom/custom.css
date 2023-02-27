@@ -945,6 +945,7 @@ table.dataTable.nowrap td {
 } 
 
 td div.action-list {
+  white-space: nowrap;
   min-width: 62px;
 }
 
