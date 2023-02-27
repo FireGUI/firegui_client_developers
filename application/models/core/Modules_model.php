@@ -29,17 +29,19 @@ class Modules_model extends CI_Model
         $return = $this->updateModule($identifier, $update_repository_url, false);
         if ($return) {
             $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
-            $this->db->insert('modules', array(
-                'modules_name' => $module['modules_repository_name'],
-                'modules_version' => $module['modules_repository_version'],
-                'modules_identifier' => $module['modules_repository_identifier'],
-                'modules_version_code' => $module['modules_repository_version_code'],
-                'modules_description' => $module['modules_repository_description'],
-                'modules_created_by_user' => $module['modules_repository_created_by_user'],
-                'modules_thumbnail' => $module['modules_repository_thumbnail'],
-                'modules_version_date' => $module['modules_repository_last_update'],
-                'modules_core' => $module['modules_repository_core'],
-            )
+            $this->db->insert(
+                'modules',
+                array(
+                    'modules_name' => $module['modules_repository_name'],
+                    'modules_version' => $module['modules_repository_version'],
+                    'modules_identifier' => $module['modules_repository_identifier'],
+                    'modules_version_code' => $module['modules_repository_version_code'],
+                    'modules_description' => $module['modules_repository_description'],
+                    'modules_created_by_user' => $module['modules_repository_created_by_user'],
+                    'modules_thumbnail' => $module['modules_repository_thumbnail'],
+                    'modules_version_date' => $module['modules_repository_last_update'],
+                    'modules_core' => $module['modules_repository_core'],
+                )
             );
         }
         return $return;
@@ -113,10 +115,16 @@ class Modules_model extends CI_Model
 
                 //Update database module version
                 $this->db->where('modules_identifier', $identifier)->update('modules', [
+                    'modules_name' => $module['modules_repository_name'],
                     'modules_version' => $module['modules_repository_version'],
+                    'modules_description' => $module['modules_repository_description'],
+                    'modules_created_by_user' => $module['modules_repository_created_by_user'],
+                    'modules_thumbnail' => $module['modules_repository_thumbnail'],
                     'modules_version_code' => $module['modules_repository_version_code'],
                     'modules_version_date' => $module['modules_repository_last_update'],
+                    'modules_core' => $module['modules_repository_core'],
                 ]);
+
 
                 //Rimuovo eventuali moduli duplicati
                 while ($this->db->where('modules_identifier', $identifier)->count_all_results('modules') > 1) {
