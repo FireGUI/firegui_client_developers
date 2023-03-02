@@ -21,8 +21,10 @@ class Modules_model extends CI_Model
             $this->load->model('Utils/mysqli_utils', 'utils');
         }
 
-        $this->settings = $this->apilib->searchFirst('settings');
+        $this->settings = $this->apilib->searchFirst('modules_manager_settings');
         $this->temp_folder = FCPATH . 'uploads/tmp/';
+        $this->_license_token = $this->settings['modules_manager_settings_license_token'];
+        $this->_project_id = (defined('ADMIN_PROJECT') && !empty(ADMIN_PROJECT)) ? ADMIN_PROJECT : 0;
     }
     public function installModule($identifier, $update_repository_url = null)
     {
@@ -64,7 +66,7 @@ class Modules_model extends CI_Model
             log_message('error', 'No module repository url defined');
             return false;
         }
-        $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
+        $module = $this->getModuleRepositoryData($identifier, $update_repository_url, $this->_project_id, $this->_license_token);
         //debug($module, true);
         // Check Min. client version
         if (!empty($module['modules_repository_min_client_version']) && version_compare($module['modules_repository_min_client_version'], VERSION, '>')) {
