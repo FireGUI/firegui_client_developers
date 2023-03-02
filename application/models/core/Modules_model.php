@@ -156,7 +156,7 @@ class Modules_model extends CI_Model
 
 
     }
-    public function getModuleRepositoryData($module_identifier, $update_repository_url = null, $project_id = null, $token = null)
+    public function getModuleRepositoryData($module_identifier, $update_repository_url = null, $project_id = 0, $token = null)
     {
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
