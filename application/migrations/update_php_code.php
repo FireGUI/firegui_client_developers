@@ -71,6 +71,9 @@ $updates['2.6.3'] = [
 $updates['2.6.4'] = [
     'include' => ['2.7.0_add_htaccess_template_bridge.php'],
 ];
+$updates['2.6.6'] = [
+    'include' => ['2.7.0_add_htaccess_template_bridge.php'],
+];
 $updates['2.7.0'] = [
     'include' => [
         '2.7.0_add_htaccess_module_bridge.php',
