@@ -1,4 +1,4 @@
-Changelog version 2.6.5
+Changelog version 2.6.6
  
 Fix update module core model
 Modules install fix
