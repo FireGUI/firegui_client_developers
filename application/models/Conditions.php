@@ -176,7 +176,9 @@ class Conditions extends CI_Model
              */
             //Creo uno switch per le condizioni speciali, ovvero che non sono semplici operatori di confronto ma serve un codice ad hoc per questa verifica
             switch ($rule['id']) {
-                case 'foo_special':
+                case '_query':
+                     return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value']);
+                    break;
                 case 'special2':
 
                     return $this->doFooSpecialOperation($rule['id'], $rule['operator'], $rule['value']);
@@ -206,6 +208,7 @@ class Conditions extends CI_Model
                     return $return;
                     break;
                 default:
+                    debug($rule,true);
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
                         // debug($rule);
                         // debug($dati);
@@ -236,6 +239,26 @@ class Conditions extends CI_Model
                 break;
         }
     }
+    public function doQueryOperation($id, $ruleOperator, $query)
+    {
+        
+        switch ($ruleOperator) {
+
+            case 'num rows >= 1':
+                return $this->db->query($query)->num_rows() >= 1;
+
+            case 'num rows = 0':
+                return $this->db->query($query)->num_rows() == 0;
+
+            default:
+                debug("Rule operator '$ruleOperator' not recognized!");
+                break;
+        }
+        return false;
+
+    }
+    
+
     public function doModuleInstalledOperation($id, $ruleOperator, $ruleValue)
     {
 
