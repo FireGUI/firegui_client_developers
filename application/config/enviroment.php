@@ -24,7 +24,7 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('LOG_ENTITIES_ARRAY', ['tasks']); //Put in this array the entitie's names you want to log
 
-    define('ADMIN_PROJECT', 1995);
+    define('ADMIN_PROJECT', 1901);
     /*
  * ============================================================
  * E-mail system

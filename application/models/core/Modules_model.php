@@ -616,6 +616,11 @@ class Modules_model extends CI_Model
                         $field['forms_fields_default_value'] = str_replace('{login_entity}', $login_entity['entity_name'], $field['forms_fields_default_value']);
                     }
 
+                    // if (empty($fields_id_map[$field['forms_fields_fields_id']])) {
+                    //     debug($form);
+                    //     debug($field,true);
+                    // }
+
                     $field['forms_fields_fields_id'] = $fields_id_map[$field['forms_fields_fields_id']];
                     $field['forms_fields_forms_id'] = $forms_id_map[$form['forms_id']];
 
@@ -815,10 +820,29 @@ class Modules_model extends CI_Model
                     $c++;
                     progress($c, $total, "grids (step " . ($i + 1) . ")");
                     log_message('debug', "Module install: create grid {$grid['grids_name']}");
+
+                    $orig_grid = $grid;
+                    //Clean joined fields from grid
+                    foreach ($grid as $column_name => $val) {
+                        if (strpos($column_name, 'grids_') !== 0) {
+                            unset($grid[$column_name]);
+                        }
+                    }
+
                     $old_grid_id = $grid['grids_id'];
                     unset($grid['grids_id']);
                     if (!array_key_exists($grid['grids_entity_id'], $entities_id_map)) {
-                        //Se non esiste, probabilmente si tratta di una grid che punta a un entità di un altro modulo. Non cambio l'id (darebbe errore visto che non può essere null) e spero che poi venga installato l'altro modulo
+                        
+                        //If entity is not in module and it's a system entity (or event entity exists), proceed with remapping entity_id
+                            $entity_exists = $this->entities->entity_exists($orig_grid['entity_name']);
+                            if ($entity_exists) {
+                                $entities_id_map[$grid['grids_entity_id']] = $entity_exists['entity_id'];
+                                $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
+                            } else {
+                                //Se non esiste, probabilmente si tratta di una grid che punta a un entità di un altro modulo. Non cambio l'id (darebbe errore visto che non può essere null) e spero che poi venga installato l'altro modulo
+                            }
+                           
+                        
                     } else {
                         $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
                     }
@@ -866,6 +890,8 @@ class Modules_model extends CI_Model
                         if (!empty($grid['grids_sub_grid_id']) && $i == 1) { //Solo al secondo passaggio sono sicuro di aver mappato tutte le grid e quindi posso sovrascrivere la sub_grid eventuale...
                             $grid['grids_sub_grid_id'] = $grids_id_map[$grid['grids_sub_grid_id']];
                         }
+                        
+                        
                         $this->db->where('grids_id', $existing_grid['grids_id'])->update('grids', $grid);
                         $new_grid_id = $existing_grid['grids_id'];
                         //Rimuovo però fields e actions, se la grid non è lockata altrimenti duplica tutto dopo...

@@ -1822,4 +1822,5 @@ $lang['Users Type'] = 'Users Type';
 $lang['Mail up sync settings'] = 'Mail up sync settings';
 $lang['Access Denied'] = 'Accesso negato';
 $lang['The page you requested does not exist'] = 'La pagina non esiste';
-$lang['or you don\'t have the right permissions.'] = 'oppure non hai i permessi per accedervi.';
+$lang['or you don\'t have the right permissions.'] = 'oppure non hai i permessi per accedervi.';$lang['Elenco prenotazioni'] = 'Elenco prenotazioni';
+$lang['Prenotazioni settings'] = 'Prenotazioni settings';
