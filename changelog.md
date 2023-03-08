@@ -1,10 +1,8 @@
-Changelog version 2.6.6
+Changelog version 2.6.7
  
-Fix update module core model
-Modules install fix
-Fix line-break action list
-Update module detail from repository
-Bugfix module brigde
-New template bridge
-Change hook pre-header
-Add hook pre-top header
+Fix module install for grids with system entity
+New session configurations
+New query conditions
+Changed get_lock query for session locking
+Changed layout_unaccessible layout
+Added layout unaccessible translations
