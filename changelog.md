@@ -1,8 +1,3 @@
-Changelog version 2.6.7
+Changelog version 2.6.8
  
-Fix module install for grids with system entity
-New session configurations
-New query conditions
-Changed get_lock query for session locking
-Changed layout_unaccessible layout
-Added layout unaccessible translations
+Bugfix for session primary key error

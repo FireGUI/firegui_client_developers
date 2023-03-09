@@ -1317,6 +1317,12 @@ class Datab extends CI_Model
                         // Metto in pratica i filtri e li aggiungo all'array
                         // delle condizioni del where
                         if (in_array($field->fields_draw_html_type, array('date', 'date_time'))) {
+                            if ($condition['value'] == '-2') {
+                                //Special condition: means "field empty"...
+                                $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = ''))";
+                                
+                                continue;
+                            }
                             $values = explode(' - ', $condition['value']);
                             if (count($values) === 2) {
                                 $start = preg_replace('/([0-9]+)\/([0-9]+)\/([0-9]+)/', '$3-$2-$1', $values[0]);
