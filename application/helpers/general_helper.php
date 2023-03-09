@@ -20,7 +20,6 @@ if (!function_exists('command_exists')) {
         return !empty($return);
     }
 }
-
 /**
  * 
  */

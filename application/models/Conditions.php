@@ -208,7 +208,7 @@ class Conditions extends CI_Model
                     return $return;
                     break;
                 default:
-                    debug($rule,true);
+                    
                     if (!array_key_exists($rule['id'], $this->rules_mapping)) {
                         // debug($rule);
                         // debug($dati);
