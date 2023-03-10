@@ -30,7 +30,7 @@ class Modules_model extends CI_Model
     {
         $return = $this->updateModule($identifier, $update_repository_url, false);
         if ($return) {
-            $module = $this->getModuleRepositoryData($identifier, $update_repository_url);
+            $module = $this->getModuleRepositoryData($identifier, $update_repository_url, $this->_project_id, $this->_license_token);
             $this->db->insert(
                 'modules',
                 array(
