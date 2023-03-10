@@ -47,7 +47,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link		https://codeigniter.com/user_guide/libraries/language.html
  */
-class CI_Lang
+class MY_Lang extends CI_Lang
 {
 
 	/**
@@ -71,7 +71,8 @@ class CI_Lang
 	 */
 	public function __construct()
 	{
-		log_message('info', 'Language Class Initialized');
+		//die('test1');
+		log_message('info', 'My Language Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -89,7 +90,7 @@ class CI_Lang
 	 */
 	public function load($langfile, $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '')
 	{
-		
+		//die('test');
 		if (is_array($langfile)) {
 			foreach ($langfile as $value) {
 				$this->load($value, $idiom, $return, $add_suffix, $alt_path);
@@ -100,6 +101,7 @@ class CI_Lang
 
 		$langfile = str_replace('.php', '', $langfile);
 
+		$cleaned_langfile = $langfile;
 		if ($add_suffix === TRUE) {
 			$langfile = preg_replace('/_lang$/', '', $langfile) . '_lang';
 		}
@@ -117,6 +119,7 @@ class CI_Lang
 
 		// Load the base file, so any others found can override it
 		$basepath = BASEPATH . 'language/' . $idiom . '/' . $langfile;
+		
 		if (($found = file_exists($basepath)) === TRUE) {
 			include($basepath);
 		}
@@ -137,6 +140,13 @@ class CI_Lang
 					break;
 				}
 			}
+		}
+
+		$custom_path = sprintf('%slanguage/%s/%s_lang_custom.php', APPPATH, $idiom, $cleaned_langfile);
+		
+		if (file_exists($custom_path)) {
+			//debug($custom_path,true);
+			include $custom_path;
 		}
 
 		if ($found !== TRUE) {
@@ -163,28 +173,5 @@ class CI_Lang
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Language line
-	 *
-	 * Fetches a single line of text from the language array
-	 *
-	 * @param	string	$line		Language line key
-	 * @param	bool	$log_errors	Whether to log an error message if the line is not found
-	 * @return	string	Translation
-	 */
-	public function line($line, $log_errors = TRUE)
-	{
-		$value = isset($this->language[$line]) ? $this->language[$line] : FALSE;
-
-		//debug($this->language[$line], true);
-
-		// Because killer robots like unicorns!
-		if ($value === FALSE && $log_errors === TRUE) {
-			log_message('info', 'Could not find the language line "' . $line . '"');
-		}
-
-		return $value;
-	}
+	
 }

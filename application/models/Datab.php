@@ -3499,6 +3499,8 @@ class Datab extends CI_Model
             file_put_contents($langfile, "<?php \n\n");
         }
 
+
+        //dd($this->lang);
         // Rimuovo le traduzioni caricate in modo da poter ricaricare tutto
         $this->lang->language = [];
         $this->lang->is_loaded = [];

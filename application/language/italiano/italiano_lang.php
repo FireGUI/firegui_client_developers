@@ -1493,7 +1493,7 @@ $lang['Download id'] = 'Download id';
 $lang['List download allegati'] = 'List download allegati';
 $lang['Download Allegati'] = 'Download Allegati';
 $lang['download allegati'] = 'download allegati';
-$lang['Dashboard Dipendente'] = 'Dashboard Dipendente';
+
 $lang['Warning: an user with this email already exists.'] = 'Warning: an user with this email already exists.';
 $lang['New user'] = 'New user';
 $lang['Configurations'] = 'Configurations';
@@ -1824,3 +1824,4 @@ $lang['Access Denied'] = 'Accesso negato';
 $lang['The page you requested does not exist'] = 'La pagina non esiste';
 $lang['or you don\'t have the right permissions.'] = 'oppure non hai i permessi per accedervi.';$lang['Elenco prenotazioni'] = 'Elenco prenotazioni';
 $lang['Prenotazioni settings'] = 'Prenotazioni settings';
+

@@ -15,7 +15,10 @@ $portletBgColorMap = [];
 
     <section class="content-header page-title">
         <h1>
-            <?php e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?>
+            <?php
+
+            
+            e(ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title']))); ?>
             <small><?php e($dati['layout_container']['layouts_subtitle']); ?></small>
         </h1>
         <ol class="breadcrumb">
