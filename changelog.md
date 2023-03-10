@@ -1,3 +1,4 @@
-Changelog version 2.6.8
+Changelog version 2.6.9
  
-Bugfix for session primary key error
+Removed unusefull debug
+Bugfix for reverse date filters
