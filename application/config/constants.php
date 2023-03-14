@@ -15,7 +15,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '2.7.0');
+defined('VERSION') or define('VERSION', '2.7.0');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -51,28 +51,32 @@ define('SESS_WHERE_DATA', 'master_crm_where_data');
 define('SESS_WEBAUTHN', 'session_webauthn');
 
 /*********** Operatori filtri *********/
-define('OPERATORS', serialize(
-    array(
-        'eq' => array('html' => '=', 'sql' => '='),
-        'lt' => array('html' => '<', 'sql' => '<'),
-        'gt' => array('html' => '>', 'sql' => '>'),
-        'le' => array('html' => '&le;', 'sql' => '<='),
-        'ge' => array('html' => '&ge;', 'sql' => '>='),
-        'in' => array('html' => 'IN', 'sql' => 'IN'),
-        'like' => array('html' => 'LIKE', 'sql' => 'ILIKE'),
-        //'rangein'  => array( 'html' => 'Range in',    'sql' => '<@' ),
-        'rangein' => array('html' => 'Range in', 'sql' => '&&'),
+define(
+    'OPERATORS',
+    serialize(
+        array(
+            'eq' => array('html' => '=', 'sql' => '='),
+            'lt' => array('html' => '<', 'sql' => '<'),
+            'gt' => array('html' => '>', 'sql' => '>'),
+            'le' => array('html' => '&le;', 'sql' => '<='),
+            'ge' => array('html' => '&ge;', 'sql' => '>='),
+            'in' => array('html' => 'IN', 'sql' => 'IN'),
+            'like' => array('html' => 'LIKE', 'sql' => 'ILIKE'),
+            //'rangein'  => array( 'html' => 'Range in',    'sql' => '<@' ),
+            'rangein' => array('html' => 'Range in', 'sql' => '&&'),
+        )
     )
-)
 );
 
-define('CRON_TYPES', serialize(
-    array(
-        'mail' => 'Mail',
-        'php_file' => 'PHP FILE',
-        'curl' => 'CURL',
+define(
+    'CRON_TYPES',
+    serialize(
+        array(
+            'mail' => 'Mail',
+            'php_file' => 'PHP FILE',
+            'curl' => 'CURL',
+        )
     )
-)
 );
 
 /* ============
@@ -159,15 +163,6 @@ define('ENTITY_TYPE_SUPPORT_TABLE', 2);
 define('ENTITY_TYPE_RELATION', 3);
 define('ENTITY_TYPE_MODULE', 4);
 
-/* ========================
- * Tipi di notifica
- * ======================== */
-define('NOTIFICATION_TYPE_ERROR', 0);
-define('NOTIFICATION_TYPE_INFO', 1);
-define('NOTIFICATION_TYPE_WARNING', 2);
-define('NOTIFICATION_TYPE_MESSAGE', 3);
-define('NOTIFICATION_TYPE_SYSTEM', 4);
-define('NOTIFICATION_TYPE_AUTO_OPEN', 5);
 
 define('FIELDS_PERMISSIONS', serialize([
     0 => 'No permission',
