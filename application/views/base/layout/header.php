@@ -111,9 +111,7 @@ $this->layout->addDinamicStylesheet($data, "header.css");
 
             <?php if (file_exists(__DIR__ . '/custom/header-menu.php')) $this->load->view('layout/custom/header-menu'); ?>
 
-
-
-            <?php $this->load->view('box/notification_dropdown_list'); ?>
+            {tpl-pre-header_navbar}
             <?php $this->hook->message_dropdown(); ?>
 
             <!-- BEGIN LANGUAGES DROPDOWN -->

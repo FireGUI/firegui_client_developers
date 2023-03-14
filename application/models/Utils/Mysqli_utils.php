@@ -452,17 +452,17 @@ class Mysqli_utils extends Utils
         /* ============================
          * Notifications
          * ============================ */
-        $this->morphTable('notifications', [
-            'notifications_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
-            'notifications_type' => ['type' => 'BIGINT'],
-            'notifications_user_id' => ['type' => 'BIGINT'],
-            'notifications_title' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 80],
-            'notifications_message' => ['type' => 'TEXT', 'null' => true],
-            'notifications_read' => ['type' => 'BOOLEAN', 'default' => false],
-            'notifications_desktop_notified' => ['type' => 'BOOLEAN', 'default' => false],
-            'notifications_date_creation' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
-            'notifications_link' => ['type' => 'VARCHAR', 'constraint' => 255],
-        ]);
+        // $this->morphTable('notifications', [
+        //     'notifications_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
+        //     'notifications_type' => ['type' => 'BIGINT'],
+        //     'notifications_user_id' => ['type' => 'BIGINT'],
+        //     'notifications_title' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 80],
+        //     'notifications_message' => ['type' => 'TEXT', 'null' => true],
+        //     'notifications_read' => ['type' => 'BOOLEAN', 'default' => false],
+        //     'notifications_desktop_notified' => ['type' => 'BOOLEAN', 'default' => false],
+        //     'notifications_date_creation' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+        //     'notifications_link' => ['type' => 'VARCHAR', 'constraint' => 255],
+        // ]);
 
         /* ============================
          * PostProcess

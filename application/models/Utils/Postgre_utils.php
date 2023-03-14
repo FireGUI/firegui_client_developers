@@ -424,17 +424,17 @@ class Postgre_utils extends Utils
         /* ============================
          * Notifications
          * ============================ */
-        $this->morphTable('notifications', [
-            'notifications_id' => ['type' => 'SERIAL UNIQUE', 'unsigned' => true, 'auto_increment' => true],
-            'notifications_type' => ['type' => 'INT'],
-            'notifications_user_id' => ['type' => 'INT'],
-            'notifications_title' => ['type' => 'VARCHAR', 'null' => true],
-            'notifications_message' => ['type' => 'TEXT', 'null' => true],
-            'notifications_read' => ['type' => 'BOOL', 'default' => false],
-            'notifications_date_creation' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'default' => 'NOW()'],
-            'notifications_link' => ['type' => 'VARCHAR', 'null' => true],
-            'notifications_desktop_notified' => ['type' => 'BOOLEAN', 'default' => false],
-        ]);
+        // $this->morphTable('notifications', [
+        //     'notifications_id' => ['type' => 'SERIAL UNIQUE', 'unsigned' => true, 'auto_increment' => true],
+        //     'notifications_type' => ['type' => 'INT'],
+        //     'notifications_user_id' => ['type' => 'INT'],
+        //     'notifications_title' => ['type' => 'VARCHAR', 'null' => true],
+        //     'notifications_message' => ['type' => 'TEXT', 'null' => true],
+        //     'notifications_read' => ['type' => 'BOOL', 'default' => false],
+        //     'notifications_date_creation' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'default' => 'NOW()'],
+        //     'notifications_link' => ['type' => 'VARCHAR', 'null' => true],
+        //     'notifications_desktop_notified' => ['type' => 'BOOLEAN', 'default' => false],
+        // ]);
 
         /* ============================
          * PostProcess

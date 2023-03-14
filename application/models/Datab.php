@@ -1211,7 +1211,7 @@ class Datab extends CI_Model
         if (!empty($element[$element_type . '_entity_id'])) {
             $entity = $this->get_entity($element[$element_type . '_entity_id']);
         }
-        
+
 
         // Verifico se questo oggetto ha un where di suo
         if ($other_where) {
@@ -1304,7 +1304,7 @@ class Datab extends CI_Model
                         } else {
                             // Sto filtrando in un campo dell'entità principale
                             // Metto comunque il nome della tabella come prefisso per evitare il classico errore che il campo compare in più tabelle...
-                            $where_prefix = (!empty($entity))?"{$entity['entity_name']}.":'';
+                            $where_prefix = (!empty($entity)) ? "{$entity['entity_name']}." : '';
                             $where_suffix = '';
                         }
 
@@ -1320,7 +1320,7 @@ class Datab extends CI_Model
                             if ($condition['value'] == '-2') {
                                 //Special condition: means "field empty"...
                                 $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = ''))";
-                                
+
                                 continue;
                             }
                             $values = explode(' - ', $condition['value']);
@@ -1548,29 +1548,6 @@ class Datab extends CI_Model
     }
 
     /**
-     * Notifiche
-     */
-    public function get_notifications($limit = null, $offset = 0)
-    {
-        return $this->notifications->search([], $limit, $offset);
-    }
-
-    public function readAllNotifications()
-    {
-        return $this->notifications->setReadAll();
-    }
-
-    public function readNotification($notificationId)
-    {
-        $this->notifications->setRead($notificationId);
-    }
-
-    public function readDesktopNotified($notificationId)
-    {
-        $this->notifications->setDesktopNotified($notificationId);
-    }
-
-    /**
      * Post process
      */
     public function run_post_process($entity_id, $when, $data = array())
@@ -1701,7 +1678,7 @@ class Datab extends CI_Model
     {
         if ($user_id === null || $user_id == $this->auth->get(LOGIN_ENTITY . "_id")) {
             // Sto controllando me stesso
-            
+
             return $this->auth->is_admin();
         } else {
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
@@ -1831,15 +1808,15 @@ class Datab extends CI_Model
         if (!$layout_id) {
             return false;
         }
-    
+
         if (!is_numeric($layout_id)) {
             $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
-        
+
             if (!$layout_id) {
                 return false;
             }
         }
-        
+
         if (isset($this->_accessibleLayouts[$layout_id]) or isset($this->_forwardedLayouts[$layout_id])) {
             return $this->conditions->accessible('layouts', $layout_id, $value_id);
         } else {
@@ -2642,7 +2619,7 @@ class Datab extends CI_Model
         if ($isEmptyString or $isRefWithoutValue) {
             // Il campo non è stampabile, quindi torno il placeholder se ce l'ho
             $placeholder = trim($field['fields_draw_placeholder']);
-            return $placeholder ? 
+            return $placeholder ?
                 sprintf('<small class="text-muted">%s</small>', $placeholder) : '';
         }
 
@@ -3290,7 +3267,7 @@ class Datab extends CI_Model
                 $module_view = $this->getModuleViewData($contentRef);
                 // debug($module_view);
                 // debug($contentRef, true);
-    
+
                 if (!empty($module_view) && (file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}") || file_exists(FCPATH . "application/views/custom/{$module_view['module_name']}/{$module_view['module_view']}.php"))) {
 
                     $html = $this->load->view("custom/{$module_view['module_name']}/{$module_view['module_view']}", ['value_id' => $value_id, 'layout_data_detail' => $layoutEntityData], true);

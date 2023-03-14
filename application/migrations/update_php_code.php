@@ -12,7 +12,8 @@ $updates['1.6.6.6'] = [
 ];
 
 $updates['1.6.9.7'] = [
-    'include' => ['1.6.9.7_rename_crm_configuration.php',
+    'include' => [
+        '1.6.9.7_rename_crm_configuration.php',
     ],
 ];
 
@@ -78,5 +79,10 @@ $updates['2.7.0'] = [
     'include' => [
         '2.7.0_add_htaccess_module_bridge.php',
         '2.7.0_add_htaccess_template_bridge.php'
+    ],
+];
+$updates['2.7.1'] = [
+    'include' => [
+        '2.7.1_notifications.php',
     ],
 ];

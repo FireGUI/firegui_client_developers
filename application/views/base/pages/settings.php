@@ -68,8 +68,6 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                         <?php endforeach;?>
 
                         <?php endif;?>
-                        <li><?php e('Send notifications');?></li>
-                        <li><?php e('Send emails');?></li>
                         </li>
                     </ul>
                 </div>

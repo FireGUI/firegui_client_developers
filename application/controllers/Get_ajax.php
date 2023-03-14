@@ -87,7 +87,8 @@ class Get_ajax extends MY_Controller
             'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
             'content' => $pagina,
             'footer' => null,
-        ));
+        )
+        );
         $this->layout->setLayoutModule();
     }
 
@@ -172,8 +173,8 @@ class Get_ajax extends MY_Controller
 
         if ($hookSuffix && is_numeric($hookRef) && $hookSuffix !== 'layout') {
             $layout['content'] = $this->datab->getHookContent('pre-' . $hookSuffix, $hookRef, $value_id) .
-            $layout['content'] .
-            $this->datab->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
+                $layout['content'] .
+                $this->datab->getHookContent('post-' . $hookSuffix, $hookRef, $value_id);
         }
         $this->load->view('layout/content_return', ['content' => $layout['content']]);
 
@@ -328,12 +329,14 @@ class Get_ajax extends MY_Controller
                 //Check if a preview field is related to an entity, so add that entity preview fields in $fields
                 foreach ($fields as $key => $field) {
                     if ($field['fields_ref']) {
-                        $fields[$key]['support_fields'] = array_values(array_filter(
-                            $this->crmentity->getFields($field['fields_ref']),
-                            function ($field) {
-                                return $field['fields_preview'] == DB_BOOL_TRUE;
-                            }
-                        ));
+                        $fields[$key]['support_fields'] = array_values(
+                            array_filter(
+                                $this->crmentity->getFields($field['fields_ref']),
+                                function ($field) {
+                                    return $field['fields_preview'] == DB_BOOL_TRUE;
+                                }
+                            )
+                        );
                     }
                 }
 
@@ -559,7 +562,7 @@ class Get_ajax extends MY_Controller
         } else {
             $referer = ($_SERVER['HTTP_REFERER'] ?? '');
 
-//Set current layout the same as the layout who caused this call
+            //Set current layout the same as the layout who caused this call
             if ($referer) {
                 //catch layout id
                 $ref_expl = explode('/', explode('?', $referer)[0]);
@@ -691,12 +694,16 @@ class Get_ajax extends MY_Controller
             $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
             $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
 
-            $this->load->view('layout/json_return', ['json' => json_encode(array(
-                'iTotalRecords' => $totalRecords,
-                'iTotalDisplayRecords' => $totalDisplayRecord,
-                'sEcho' => $s_echo,
-                'aaData' => $out_array,
-            ))]);
+            $this->load->view('layout/json_return', [
+                'json' => json_encode(
+                    array(
+                        'iTotalRecords' => $totalRecords,
+                        'iTotalDisplayRecords' => $totalDisplayRecord,
+                        'sEcho' => $s_echo,
+                        'aaData' => $out_array,
+                    )
+                )
+            ]);
 
         }
     }
@@ -1020,51 +1027,9 @@ class Get_ajax extends MY_Controller
             }
         }
 
-//        echo json_encode($events);
+        //        echo json_encode($events);
         $this->load->view('layout/json_return', ['json' => json_encode($events)]);
 
-    }
-
-    public function dropdown_notification_list()
-    {
-        // Se non sono loggato allora semplicemente uccido la richiesta
-        if ($this->auth->guest()) {
-            set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
-        }
-
-        $notifications = $this->datab->get_notifications(30, 0);
-
-        //Check client version. If old add a notification on top
-        if ($version = checkClientVersion()) {
-            $notifications = array_merge([[
-                'notifications_type' => NOTIFICATION_TYPE_SYSTEM,
-                'notifications_id' => null,
-                'notifications_user_id' => null,
-                'notifications_title' => '[System] Update available',
-                'notifications_message' => "new version available ({$version})!<br />Click here to update.",
-                'notifications_read' => DB_BOOL_FALSE,
-                'notifications_date_creation' => date('Y-m-d h:i:s'),
-                'notifications_link' => base_url('openbuilder/updateClient/1'),
-                'href' => base_url('openbuilder/updateClient/1'),
-                'label' => [
-                    'class' => 'label-info',
-                    'icon' => 'fas fa-globe-americas',
-                ],
-                'datespan' => date('d M'),
-            ]], $notifications);
-        }
-
-        echo json_encode(array(
-            'view' => $this->load->view('box/notification_dropdown_item', array('notifications' => $notifications), true),
-            'count' => count($unread = array_filter($notifications, function ($n) {
-                return $n['notifications_read'] === DB_BOOL_FALSE;
-            })),
-            'errors' => count(array_filter($unread, function ($n) {
-                return $n['notifications_type'] == 0;
-            })),
-            'data' => $notifications,
-        ));
     }
 
     public function permission_table()
@@ -1442,7 +1407,7 @@ class Get_ajax extends MY_Controller
             set_status_header(401); // Unauthorized
             die('Non sei loggato nel sistema');
         }
-        
+
         try {
             $entity = $this->crmentity->getEntity($entity);
         } catch (Exception $ex) {
@@ -1453,9 +1418,9 @@ class Get_ajax extends MY_Controller
             ]);
             die();
         }
-        
+
         $record = $this->apilib->view($entity['entity_name'], $id, $depth);
-        
+
         echo json_encode([
             'status' => 0,
             'data' => $record,

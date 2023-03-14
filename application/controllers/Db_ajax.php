@@ -36,20 +36,21 @@ class Db_ajax extends MY_Controller
         if (isset($_POST[0])) {
             unset($_POST[0]);
         }
-    
+
         if (!is_numeric($form_id)) {
             $this->db->where('forms_identifier', $form_id);
         } else {
             $this->db->where('forms_id', $form_id);
         }
-    
+
         // ==========================
         // Load form related infos
         // ==========================
         $form = $this->db->join('entity', 'forms_entity_id=entity_id', 'left')->get('forms')->row_array();
-    
-        if (!$form) show_error(t('Form not found!'));
-    
+
+        if (!$form)
+            show_error(t('Form not found!'));
+
         $form = $this->db->join('entity', 'forms_entity_id=entity_id', 'left')->get_where('forms', array('forms_id' => $form_id))->row_array();
         $form['fields'] = $this->db->join('fields', 'forms_fields_fields_id=fields_id', 'left')
             ->join('fields_draw', 'fields_draw_fields_id=fields_id', 'left')
@@ -169,12 +170,14 @@ class Db_ajax extends MY_Controller
                 }
             }
             if (in_array($status, [0, 1, 2, 3, 4, 5])) {
-                echo json_encode(array(
-                    'status' => $status,
-                    'txt' => str_replace($replaceFrom, $replaceTo, $message),
-                    'data' => $saved,
-                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
-                ), JSON_INVALID_UTF8_SUBSTITUTE,
+                echo json_encode(
+                    array(
+                        'status' => $status,
+                        'txt' => str_replace($replaceFrom, $replaceTo, $message),
+                        'data' => $saved,
+                        'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
+                    ),
+                    JSON_INVALID_UTF8_SUBSTITUTE,
 
                 );
             } elseif (in_array($status, [6, 7])) {
@@ -227,8 +230,8 @@ class Db_ajax extends MY_Controller
                 $output[$replace] = $newChatMessage[$gridField['fields_name']];
             }
         }
-        
-        $output['id'] = $newChatMessage[$grid['grids']['entity_name'].'_id'];
+
+        $output['id'] = $newChatMessage[$grid['grids']['entity_name'] . '_id'];
 
         if (!empty($output['thumbnail'])) {
             $output['thumbnail'] = base_url_uploads("uploads/{$output['thumbnail']}");
@@ -331,9 +334,12 @@ class Db_ajax extends MY_Controller
         //debug($entity, true);
         $entity_name = $entity['entity']['entity_name'];
         if (in_array($status, [0, 1, 2, 3, 4, 5])) {
-            echo json_encode(array(
-                'status' => $status, 'txt' => $message,
-            ));
+            echo json_encode(
+                array(
+                    'status' => $status,
+                    'txt' => $message,
+                )
+            );
         } elseif (in_array($status, [6, 7])) {
             if ($this->input->post('clear-filters')) {
                 $reset_form = true;
@@ -521,7 +527,8 @@ class Db_ajax extends MY_Controller
                         'permissions_entities_permissions_id' => $permissionId,
                         'permissions_entities_entity_id' => $entity_id,
                         'permissions_entities_value' => $permission_value,
-                    ));
+                    )
+                    );
                 }
 
                 foreach ($modules as $mod_name => $permission_value) {
@@ -529,7 +536,8 @@ class Db_ajax extends MY_Controller
                         'permissions_modules_permissions_id' => $permissionId,
                         'permissions_modules_module_name' => $mod_name,
                         'permissions_modules_value' => $permission_value,
-                    ));
+                    )
+                    );
                 }
             }
         }
@@ -903,21 +911,6 @@ class Db_ajax extends MY_Controller
         }
     }
 
-    public function notify_read($notificationId = null)
-    {
-        if ($notificationId && is_numeric($notificationId)) {
-            $this->datab->readNotification($notificationId);
-        } else {
-            $this->datab->readAllNotifications();
-        }
-    }
-
-    public function notify_desktop_notified($notificationId = null)
-    {
-        if ($notificationId && is_numeric($notificationId)) {
-            $this->datab->readDesktopNotified($notificationId);
-        }
-    }
 
     public function ck_uploader()
     {
@@ -968,10 +961,12 @@ class Db_ajax extends MY_Controller
                 //Cerco il campo file e lo uso per inserire
                 $field_insert = false;
                 foreach ($entity_data['fields'] as $_field) {
-                    if (in_array(
-                        $_field['fields_draw_html_type'],
-                        ['upload_image', 'upload']
-                    )) {
+                    if (
+                        in_array(
+                            $_field['fields_draw_html_type'],
+                            ['upload_image', 'upload']
+                        )
+                    ) {
                         $field_insert = $_field;
                     }
                 }
@@ -1050,7 +1045,8 @@ class Db_ajax extends MY_Controller
                 'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
                 'encrypt_name' => false,
                 'file_name' => $filename,
-            ));
+            )
+            );
 
             $uploaded = $this->upload->do_upload($field['fields_name']);
             if (!$uploaded) {
