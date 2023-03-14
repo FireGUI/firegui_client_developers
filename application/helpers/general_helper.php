@@ -617,6 +617,7 @@ if (!function_exists('array_key_value_map')) {
 if (!function_exists('e')) {
     function e($string, $ucfirst = true, $params = array())
     {
+        
         echo t($string, $ucfirst, $params);
     }
 }
@@ -625,7 +626,7 @@ if (!function_exists('t')) {
     function t($string, $ucfirst = false, $params = array())
     {
         $translation = lang($string);
-
+        
         if ($translation === false) {
             $CI = get_instance();
             $lang_array = $CI->datab->getLanguage();
@@ -645,6 +646,7 @@ if (!function_exists('t')) {
             }
 
             if ($module_name) {
+                //debug('test 1');
                 $path = sprintf('%smodules/%s/language/%s/%s_lang.php', APPPATH, $module_name, $language, $language);
             } else {
                 $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
@@ -655,6 +657,12 @@ if (!function_exists('t')) {
 
             if (file_exists($path)) {
                 include $path;
+            }
+            $custom_path = sprintf('%slanguage/%s/%s_lang_custom.php', APPPATH, $language, $language);
+            if (file_exists($custom_path)) {
+                include $custom_path;
+
+                
             }
 
             if (!isset($lang) or !array_key_exists($string, $lang) && is_development()) {
@@ -673,7 +681,13 @@ if (!function_exists('t')) {
             }
 
             // Siccome la traduzione è vuota mantieni l'originale
-            $translation = $string;
+            $translation = lang($string);
+            
+            
+            if ($translation === false) {
+                $translation = $string;
+            }
+            
         }
 
         // Rimpiazza parametri
@@ -687,7 +701,7 @@ if (!function_exists('t')) {
         if (isset($modifiers[$ucfirst])) {
             call_user_func($modifiers[$ucfirst], $translation);
         }
-
+//debug($translation);
         return $translation;
     }
 }

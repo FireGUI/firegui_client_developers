@@ -171,7 +171,7 @@ if ( ! function_exists('load_class'))
 		if (file_exists(APPPATH.$directory.'/'.config_item('subclass_prefix').$class.'.php'))
 		{
 			$name = config_item('subclass_prefix').$class;
-
+			
 			if (class_exists($name, FALSE) === FALSE)
 			{
 				require_once(APPPATH.$directory.'/'.$name.'.php');
@@ -194,6 +194,8 @@ if ( ! function_exists('load_class'))
 		$_classes[$class] = isset($param)
 			? new $name($param)
 			: new $name();
+
+			
 		return $_classes[$class];
 	}
 }
