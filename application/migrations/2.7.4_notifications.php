@@ -1,6 +1,6 @@
 <?php
 
-log_message('debug', 'Started migration 2.7.3...');
+log_message('debug', 'Started migration 2.7.4...');
 
 $this->load->model('core');
 
@@ -14,4 +14,4 @@ if ($this->datab->module_installed($module)) {
 }
 
 
-log_message('debug', 'Finished migration 2.7.3...');
+log_message('debug', 'Finished migration 2.7.4...');
