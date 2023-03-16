@@ -4,7 +4,7 @@ log_message('debug', 'Started migration 2.8.0...');
 
 $this->load->model('core');
 
-if ($this->datab->module_installed($module)) {
+if ($this->datab->module_installed('core-notifications')) {
     //nothing...
 } else {
     // Drop native notifications table
