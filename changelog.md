@@ -1,3 +1,3 @@
-Changelog version 2.7.3
+Changelog version 2.7.4
  
-Removed native notifications
+Add notification migrations
