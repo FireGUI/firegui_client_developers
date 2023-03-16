@@ -1,3 +1,3 @@
-Changelog version 2.7.2
+Changelog version 2.7.3
  
-Empty patch
+Removed native notifications
