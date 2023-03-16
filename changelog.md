@@ -1,3 +1,3 @@
-Changelog version 2.7.1
+Changelog version 2.7.2
  
-Bugfix sessions
+Empty patch
