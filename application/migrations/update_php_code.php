@@ -81,8 +81,16 @@ $updates['2.7.0'] = [
         '2.7.0_add_htaccess_template_bridge.php'
     ],
 ];
-$updates['2.7.1'] = [
+$updates['2.7.4'] = [
     'include' => [
-        '2.7.1_notifications.php',
+        '2.7.4_notifications.php',
+    ],
+];
+
+
+
+$updates['2.8.0'] = [
+    'include' => [
+        '2.8.0_notifications.php',
     ],
 ];
