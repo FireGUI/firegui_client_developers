@@ -289,7 +289,7 @@ class MY_Output extends CI_Output
                 }
 
                 if (!empty($user_id)) {
-                    log_message('debug', "utente connesso: {$user_id}");
+                    log_message('info', "utente connesso: {$user_id}");
                     $this->path .= $user_id . '/';
                     if ($filters_md5) {
                         $this->path .= $filters_md5 . '/';
@@ -300,7 +300,7 @@ class MY_Output extends CI_Output
 
                     }
                 } else {
-                    log_message('debug', "utente non trovato in sessione!");
+                    log_message('info', "utente non trovato in sessione!");
                     return false;
                 }
 

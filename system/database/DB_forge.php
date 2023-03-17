@@ -685,7 +685,7 @@ abstract class CI_DB_forge {
 			$sqls[] = $sql
 				.($field[$i]['_literal'] !== FALSE ? $field[$i]['_literal'] : $this->_process_column($field[$i]));
 		}
-
+		
 		return $sqls;
 	}
 
@@ -765,7 +765,7 @@ abstract class CI_DB_forge {
 
 			$this->_attr_auto_increment($attributes, $field);
 			$this->_attr_unique($attributes, $field);
-
+			
 			if (isset($attributes['COMMENT']))
 			{
 				$field['comment'] = $this->db->escape($attributes['COMMENT']);

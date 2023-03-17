@@ -310,7 +310,9 @@ class Get_ajax extends MY_Controller
             }
         } else {
             if ($id !== null) {
+                
                 $row = $this->datab->get_entity_preview_by_name($table, "{$table}_id = {$id}");
+                
                 if (!empty($row)) {
                     reset($row); // Puntatore array su prima posizione
                     $key = key($row); // Ottengo la prima e unica chiave
@@ -329,6 +331,7 @@ class Get_ajax extends MY_Controller
                 //Check if a preview field is related to an entity, so add that entity preview fields in $fields
                 foreach ($fields as $key => $field) {
                     if ($field['fields_ref']) {
+                        
                         $fields[$key]['support_fields'] = array_values(
                             array_filter(
                                 $this->crmentity->getFields($field['fields_ref']),

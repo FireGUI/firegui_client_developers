@@ -29,6 +29,7 @@
         <?php endif;?>
         <?php if (isset($field['support_data'])): ?>
             <?php foreach ((array) $field['support_data'] as $id => $name): ?>
+                
                 <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
             <?php endforeach;?>
         <?php endif;?>

@@ -675,6 +675,7 @@ class Datab extends CI_Model
             }
 
             foreach ($fields as $key => $field) {
+                
                 if (!$this->conditions->accessible('forms_fields', "{$field['forms_fields_forms_id']},{$field['forms_fields_fields_id']}", $value_id, $formData)) {
                     unset($fields[$key]);
                     continue;
@@ -688,13 +689,16 @@ class Datab extends CI_Model
                         ->row_array()[$field['fields_name']];
                     $formData[$field['fields_name']] = $value_json;
                 }
+                
             }
 
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
+                
                 $fields[$key] = $this->processFieldMapping($field, $form);
+                
             }
             unset($field);
 
@@ -716,6 +720,7 @@ class Datab extends CI_Model
              */
             $hidden = $shown = [];
             foreach ($fields as $field) {
+                
                 $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type'] : $field['fields_draw_html_type'];
                 if ($type === 'input_hidden') {
                     $hidden[] = $field;
@@ -729,6 +734,7 @@ class Datab extends CI_Model
             }
 
             foreach ($shown as $k => $field) {
+                
                 // Dimensione del field:
                 //  - cerca prima un valore valido in `forms_fields_override_colsize`
                 //  - altrimenti controlla se è un wysiwyg e impostala a 12
@@ -741,7 +747,7 @@ class Datab extends CI_Model
                 if (!$colsize && $type === 'wysiwyg') {
                     $colsize = 12;
                 }
-
+                
                 $shown[$k] = [
                     'id' => $field['fields_id'],
                     'name' => $field['fields_name'],
@@ -1189,6 +1195,7 @@ class Datab extends CI_Model
             $visible_fields_supports = $this->db->query("SELECT * FROM fields LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
                                                          WHERE fields_entity_id = '{$entity['entity_id']}' AND fields_preview = '" . DB_BOOL_TRUE . "'")->result_array();
             $support_fields = $this->fields_implode($visible_fields_supports);
+            
             $select = $field_support_id . ($support_fields ? ',' . $support_fields : '');
 
             //TODO: don't use query, but apilib search....
@@ -1637,6 +1644,8 @@ class Datab extends CI_Model
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->layout->getRelatedEntities());
             }
         }
+
+        
         return $dati;
     }
 
@@ -2590,6 +2599,8 @@ class Datab extends CI_Model
         $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == DB_BOOL_TRUE;
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
 
+        
+
         if ($processMultilingual && $multilingual) {
             if (!$value) {
                 return '';
@@ -2627,13 +2638,16 @@ class Datab extends CI_Model
         // Stampa del campo
         //
 
+
         if ($field['fields_ref'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
+            
+
             if (is_array($value)) {
                 // Ho una relazione molti a molti - non mi serve alcuna
                 // informazione sui field ref, poiché ho già la preview stampata
                 $referenced = $this->crmentity->getReferencedEntity($field);
                 $lnk = $referenced ? $this->get_detail_layout_link($referenced['entity_id']) : false;
-
+                
                 if ($lnk) {
                     foreach ($value as $id => $name) {
                         $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
@@ -2644,6 +2658,9 @@ class Datab extends CI_Model
                 // Ho un field ref semplice - per stamparlo ho bisogno dei
                 // support fields (che sono i campi preview dell'entità
                 // referenziata)
+
+                
+
                 $link = $value ? $this->get_detail_layout_link($field['support_fields'][0]['fields_entity_id']) : false;
                 $idKey = $field['fields_ref'] . '_id';
 
@@ -2653,68 +2670,84 @@ class Datab extends CI_Model
                 } else {
                     $hasAllFields = true;
                     $_text = array();
-                    foreach ($field['support_fields'] as $support_field) {
-                        $prefixedKey = $field['fields_name'] . '_' . $support_field['fields_name'];
-                        $simpleKey = $support_field['fields_name'];
 
-                        if (array_key_exists($prefixedKey, $dato)) {
-                            // Il caso migliore:    entitàReferenziata_entitàPrincipale_nomeBaseCampo
-                            $previewSegment = '';
-                            if ($support_field['fields_multilingual'] === DB_BOOL_TRUE) {
-                                $contents = json_decode($dato[$prefixedKey], true);
-                                foreach ($contents as $idLang => $valueLang) {
-                                    $style = ($idLang != $this->_currentLanguage) ? 'style="display:none"' : '';
-                                    $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
-                                }
-                            } else {
-                                $previewSegment = $dato[$prefixedKey];
-                            }
-                            $_text[] = $previewSegment;
-                        } elseif (array_key_exists($simpleKey, $dato) && (!array_key_exists($idKey, $dato) or $dato[$idKey] == $value)) {
-                            // Appendo il nuovo campo preview all'array della preview $_text
-                            // Attenzione qua però, se l'id è settato ed è
-                            // diverso dal mio value id allora non va bene
-                            // prendere questo
-                            $previewSegment = '';
-                            if ($support_field['fields_multilingual'] === DB_BOOL_TRUE) {
-                                $contents = json_decode($dato[$simpleKey], true);
-                                if (is_array($contents)) {
+                    //Check if entity has a special/custom preview rule
+                    $field_ref_entity = $this->get_entity_by_name($field['fields_ref']);
+                    $entity_preview = ($field_ref_entity['entity_preview_custom']??false);
+        if (!$entity_preview) {
+            $entity_preview = ($field_ref_entity['entity_preview_base']??false);
+        }
+
+        //Check if entity_preview_base or custom is set
+                    if ($entity_preview) {
+                        $text = str_replace_placeholders($entity_preview, $dato);
+                        //debug($text,true);
+                    } else {
+
+                        foreach ($field['support_fields'] as $support_field) {
+                            $prefixedKey = $field['fields_name'] . '_' . $support_field['fields_name'];
+                            $simpleKey = $support_field['fields_name'];
+
+                            if (array_key_exists($prefixedKey, $dato)) {
+                                // Il caso migliore:    entitàReferenziata_entitàPrincipale_nomeBaseCampo
+                                $previewSegment = '';
+                                if ($support_field['fields_multilingual'] === DB_BOOL_TRUE) {
+                                    $contents = json_decode($dato[$prefixedKey], true);
                                     foreach ($contents as $idLang => $valueLang) {
                                         $style = ($idLang != $this->_currentLanguage) ? 'style="display:none"' : '';
                                         $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
                                     }
+                                } else {
+                                    $previewSegment = $dato[$prefixedKey];
                                 }
+                                $_text[] = $previewSegment;
+                            } elseif (array_key_exists($simpleKey, $dato) && (!array_key_exists($idKey, $dato) or $dato[$idKey] == $value)) {
+                                // Appendo il nuovo campo preview all'array della preview $_text
+                                // Attenzione qua però, se l'id è settato ed è
+                                // diverso dal mio value id allora non va bene
+                                // prendere questo
+                                $previewSegment = '';
+                                if ($support_field['fields_multilingual'] === DB_BOOL_TRUE) {
+                                    $contents = json_decode($dato[$simpleKey], true);
+                                    if (is_array($contents)) {
+                                        foreach ($contents as $idLang => $valueLang) {
+                                            $style = ($idLang != $this->_currentLanguage) ? 'style="display:none"' : '';
+                                            $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
+                                        }
+                                    }
+                                } else {
+                                    $previewSegment = $dato[$simpleKey];
+                                }
+                                $_text[] = $previewSegment;
                             } else {
-                                $previewSegment = $dato[$simpleKey];
+                                // Non posso continuare a stampare la preview perché ci sono campi non presenti
+                                $hasAllFields = false;
+                                break;
                             }
-                            $_text[] = $previewSegment;
+                        }
+
+                        if ($hasAllFields) {
+                            // La preview completa sta nell'arrat $_text
+                            $text = implode(' ', $_text);
                         } else {
-                            // Non posso continuare a stampare la preview perché ci sono campi non presenti
-                            $hasAllFields = false;
-                            break;
+                            // Non ho tutti i campi preview disponibili (ad es. nelle relazioni NxM), quindi faccio una chiamata alla get entity preview
+                            $value_id = (int) $value;
+                            $preview = $this->get_entity_preview_by_name($field['fields_ref'], "{$idKey} = '{$value_id}'", 1);
+                            $text = array_key_exists($value_id, $preview) ? $preview[$value_id] : $value_id;
                         }
                     }
-
-                    if ($hasAllFields) {
-                        // La preview completa sta nell'arrat $_text
-                        $text = implode(' ', $_text);
-                    } else {
-                        // Non ho tutti i campi preview disponibili (ad es. nelle relazioni NxM), quindi faccio una chiamata alla get entity preview
-                        $value_id = (int) $value;
-                        $preview = $this->get_entity_preview_by_name($field['fields_ref'], "{$idKey} = '{$value_id}'", 1);
-                        $text = array_key_exists($value_id, $preview) ? $preview[$value_id] : $value_id;
-                    }
                 }
-
+                
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
             }
         } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
             $link = $value ? $this->get_detail_layout_link($field['fields_entity_id']) : false;
+            
             $entity = $this->get_entity($field['fields_entity_id']);
             $idKey = $entity['entity_name'] . '_id';
             $text = $value;
-
+            
             if (array_key_exists($idKey, $dato)) {
                 return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
             } else {
@@ -2974,6 +3007,8 @@ class Datab extends CI_Model
      */
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
+        
+        
         if (!$value && !empty($field['forms_fields_default_value'])) {
             $value = $this->get_default_fields_value($field, $value_id);
         }
@@ -3083,7 +3118,7 @@ class Datab extends CI_Model
 
             $output .= $view;
         }
-
+        
         return $output;
     }
 

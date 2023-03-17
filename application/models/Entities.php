@@ -154,7 +154,7 @@ class Entities extends CI_Model
         $grid_id = $this->new_grid(
             $fgName,
             $entity_id,
-            'datatable_ajax',
+            'table',
             null,
             DB_BOOL_TRUE
         );
@@ -1023,6 +1023,14 @@ class Entities extends CI_Model
         }
         //        debug($fields);
         //debug($defaults);
+        //20230116 - MP - Spostato prima questa query così dopo potrà fare correttamente gli alter table senza avere colonne null e generando l'errore data truncated....
+        foreach ($not_nulls as $field_name) {
+            // Forse dovrei farlo sempre non solo con i not null...
+            $this->selected_db->query("UPDATE {$entity_name} SET {$field_name} = DEFAULT WHERE {$field_name} IS NULL");
+            if ($this->selected_db->dbdriver == 'postgre') { // Se sono su mysql l'ho già fatto prima
+                $this->selected_db->query("ALTER TABLE {$entity_name} {$this->alter_text} {$field_name} SET NOT NULL");
+            }
+        }
         foreach ($defaults as $field_name => $default_expression) {
             //debug("test: {$default_expression}", true);
             if ($this->selected_db->dbdriver != 'postgre') {
@@ -1033,6 +1041,10 @@ class Entities extends CI_Model
                             $size_text = ($field['fields_size']) ? "({$field['fields_size']})" : "(255)";
                         } else {
                             $size_text = '';
+                        }
+                        //20230116 - MP - Fix per forzare al valore di default eventuali colonne null che stanno per essere modificate
+                        if ($field['fields_required'] == FIELD_REQUIRED) {
+                            $this->selected_db->query("UPDATE {$entity_name} SET {$field_name} = '$default_expression' WHERE {$field_name} IS NULL");
                         }
                         $query = "ALTER TABLE {$entity_name} {$this->alter_text} {$field_name} {$field['fields_type']}{$size_text} {$null_text} DEFAULT '{$default_expression}'";
                         //die($query);
@@ -1045,13 +1057,7 @@ class Entities extends CI_Model
             }
         }
 
-        foreach ($not_nulls as $field_name) {
-            // Forse dovrei farlo sempre non solo con i not null...
-            $this->selected_db->query("UPDATE {$entity_name} SET {$field_name} = DEFAULT WHERE {$field_name} IS NULL");
-            if ($this->selected_db->dbdriver == 'postgre') { // Se sono su mysql l'ho già fatto prima
-                $this->selected_db->query("ALTER TABLE {$entity_name} {$this->alter_text} {$field_name} SET NOT NULL");
-            }
-        }
+       
 
         return $return;
     }

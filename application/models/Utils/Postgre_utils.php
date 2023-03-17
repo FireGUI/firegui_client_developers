@@ -50,6 +50,9 @@ class Postgre_utils extends Utils
             'entity_action_fields' => ['type' => 'JSON', 'null' => true],
 
             'entity_module' => ['type' => 'VARCHAR', 'constraint' => 250],
+
+            'entity_preview_base' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+            'entity_preview_custom' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
         ]);
 
         // Relations

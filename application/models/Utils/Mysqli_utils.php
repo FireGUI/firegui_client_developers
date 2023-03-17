@@ -62,6 +62,8 @@ class Mysqli_utils extends Utils
             'entity_type' => ['type' => 'BIGINT', 'default' => ENTITY_TYPE_DEFAULT, 'unsigned' => true],
             'entity_action_fields' => ['type' => 'LONGTEXT', 'null' => true],
             'entity_module' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+            'entity_preview_base' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+            'entity_preview_custom' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
         ]);
 
         // Relations
@@ -97,6 +99,9 @@ class Mysqli_utils extends Utils
             'fields_multilingual' => ['type' => 'BOOLEAN', 'default' => '0'],
             //'fields_searchable' => ['type' => 'BOOLEAN', 'default' => '1'],
             'fields_xssclean' => ['type' => 'BOOLEAN', 'default' => '1', 'null' => false],
+
+            'fields_preview_base' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+            'fields_preview_custom' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
         ]);
 
         $this->addForeignKey('fields', 'fields_entity_id', 'entity', 'entity_id');
@@ -652,7 +657,7 @@ class Mysqli_utils extends Utils
          * Tabella hooks
          * ============================ */
         $this->morphTable('hooks', [
-            'hooks_id' => ['type' => 'serial unique', 'unsigned' => true, 'auto_increment' => true],
+            'hooks_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true, 'unique' => false],
             'hooks_title' => ['type' => 'varchar', 'constraint' => 250],
             'hooks_type' => ['type' => 'varchar', 'constraint' => 250],
             'hooks_ref' => ['type' => 'int', 'unsigned' => true, 'null' => true],
@@ -706,7 +711,7 @@ class Mysqli_utils extends Utils
             'api_manager_tokens_active' => ['type' => 'BOOLEAN', 'default' => true],
         ]);
         $this->morphTable('api_manager_permissions', [
-            'api_manager_permissions_id' => ['type' => 'serial unique', 'unsigned' => true, 'auto_increment' => true],
+            'api_manager_permissions_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
             'api_manager_permissions_entity' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => false],
             'api_manager_permissions_token' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => false],
             'api_manager_permissions_chmod' => ['type' => 'int', 'unsigned' => true, 'null' => true],

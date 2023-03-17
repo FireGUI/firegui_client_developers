@@ -819,14 +819,25 @@ class Crmentity extends CI_Model
      */
     public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0)
     {
+        //debug($entityIdentifier);
         $key = sprintf('apilib/previews-%s', md5(serialize(func_get_args())));
         $entity = $this->getEntity($entityIdentifier);
+
+        $entity_preview = ($entity['entity_preview_custom']??false);
+        if (!$entity_preview) {
+$entity_preview = ($entity['entity_preview_base']??false);
+        }
+
+        
+
         $entity_name = $entity['entity_name'];
         $tags = $this->mycache->buildTagsFromEntity($entity_name);
-        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name) {
+        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name, $entity_preview) {
 
             $previewFields = $this->getEntityPreviewFields($entityIdentifier);
-
+            
+            //debug($previewFields);
+            
             $entity_id = $entity['entity_id'];
 
             $select = array_key_map($previewFields, 'fields_name');
@@ -872,31 +883,36 @@ class Crmentity extends CI_Model
             $result = [];
             foreach ($records as $record) {
                 $id = array_get($record, $entity_name . '_id');
-                $preview = "";
+                if ($entity_preview) {
+                    $result[$id] = str_replace_placeholders($entity_preview, $record);
+                } else {
+                
+                    $preview = "";
 
-                foreach ($previewFields as $field) {
-                    $rawval = array_get($record, $field['fields_name']);
+                    foreach ($previewFields as $field) {
+                        $rawval = array_get($record, $field['fields_name']);
 
-                    $val = ($field['fields_multilingual'] === DB_BOOL_TRUE) ? $this->translateValue($rawval) : $rawval;
+                        $val = ($field['fields_multilingual'] === DB_BOOL_TRUE) ? $this->translateValue($rawval) : $rawval;
 
-                    // Se non abbiamo nessuna lingua impostata, translateValue
-                    // mi ritorna un array, generando un warning array-to-string
-                    // nell'append successivo - quindi per ora implode sulla
-                    // virgola
-                    if (is_array($val)) {
-                        $val = implode(',', $val);
+                        // Se non abbiamo nessuna lingua impostata, translateValue
+                        // mi ritorna un array, generando un warning array-to-string
+                        // nell'append successivo - quindi per ora implode sulla
+                        // virgola
+                        if (is_array($val)) {
+                            $val = implode(',', $val);
+                        }
+
+                        // Se vuoto (null o stringa vuota - voglio tenere eventuali 0),
+                        // allora lo skippo
+                        if (is_null($val) or $val === '') {
+                            continue;
+                        }
+
+                        $preview .= "{$val} ";
                     }
 
-                    // Se vuoto (null o stringa vuota - voglio tenere eventuali 0),
-                    // allora lo skippo
-                    if (is_null($val) or $val === '') {
-                        continue;
-                    }
-
-                    $preview .= "{$val} ";
+                    $result[$id] = (trim($preview) || trim($preview) === '0') ? trim($preview) : "ID #{$id}";
                 }
-
-                $result[$id] = (trim($preview) || trim($preview) === '0') ? trim($preview) : "ID #{$id}";
             }
 
             return $result;
@@ -1174,41 +1190,56 @@ class Crmentity extends CI_Model
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
         $entity_name = $e['entity_name'];
-        //$tags = $this->mycache->buildTagsFromEntity($entity_name);
-        $tags = []; //Preview fields does not depend on data changes in entity, so keep these always in cache, event if any data changes
-        return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid) {
-            $preview = [];
-            $fields = $this->getVisibleFields($eid);
+        $entity_preview = ($e['entity_preview_custom']??false);
+        if (!$entity_preview) {
+            $entity_preview = ($e['entity_preview_base']??false);
+        }
 
-            foreach ($fields as $field) {
+        //Check if entity_preview_base or custom is set
+        if ($entity_preview) {
+            //debug('test',true);
+            return [];
+        } else {
+            //$tags = $this->mycache->buildTagsFromEntity($entity_name);
+            $tags = []; //Preview fields does not depend on data changes in entity, so keep these always in cache, event if any data changes
+            return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid) {
+                $preview = [];
+                $fields = $this->getVisibleFields($eid);
 
-                // Non interessato alle non preview
-                if ($field['fields_preview'] !== DB_BOOL_TRUE) {
-                    continue;
-                }
+                foreach ($fields as $field) {
 
-                // Sono preview...
-                // Field normale? Inseriscilo nei miei campi preview
-                if (!$field['fields_ref']) {
-                    $preview[] = $field;
-                    continue;
-                }
+                    // Non interessato alle non preview
+                    if ($field['fields_preview'] !== DB_BOOL_TRUE) {
+                        continue;
+                    }
 
-                // Caso `complesso`: preview in un field ref - prendo tutti i campi
-                // preview del ref
-                $subfields = $this->getVisibleFields($field['fields_ref']);
-                foreach ($subfields as $subfield) {
-                    if ($subfield['fields_preview'] == DB_BOOL_TRUE && !$subfield['fields_ref']) {
-                        $preview[] = $subfield;
+                    // Sono preview...
+                    // Field normale? Inseriscilo nei miei campi preview
+                    if (!$field['fields_ref']) {
+                        $preview[] = $field;
+                        continue;
+                    }
+
+                    // Caso `complesso`: preview in un field ref - prendo tutti i campi
+                    // preview del ref
+                    $subfields = $this->getVisibleFields($field['fields_ref']);
+                    foreach ($subfields as $subfield) {
+                        if ($subfield['fields_preview'] == DB_BOOL_TRUE && !$subfield['fields_ref']) {
+                            $preview[] = $subfield;
+                        }
                     }
                 }
-            }
-            //Sort by field id
-            $ids = array_column($preview, 'fields_id');
-            array_multisort($ids, SORT_ASC, $preview);
+                //Sort by field id
+                $ids = array_column($preview, 'fields_id');
+                array_multisort($ids, SORT_ASC, $preview);
+                //debug($preview,true);
+                return $preview;
+            }, $tags);
+        }
 
-            return $preview;
-        }, $tags);
+
+
+        
     }
 
     /**
