@@ -32,15 +32,37 @@ if ($value) {
 ?>
 <?php echo $label; ?>
 
+
 <input <?php echo "id='{$input}'"; ?> type="hidden" name="<?php echo $field['fields_name']; ?>" class="<?php echo $class ?>" value="<?php echo $value; ?>" data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>" />
 <div class="location-search-container">
-    <div class="input-group">
-        <input type="text" class="form-control js_map_search" placeholder="<?php e('find localtion') ?>" />
-        <span class="input-group-btn">
-            <button class="btn btn-default btn-search" type="button"><i class="fas fa-search"></i></button>
-        </span>
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="input-group">
+                <input type="text" class="form-control js_map_search" placeholder="<?php e('find localtion') ?>">
+                <span class="input-group-btn">
+                    <button class="btn btn-default btn-search" type="button"><i class="fas fa-search"></i></button>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <div class="form-check">
+                    <input class="form-check-input search_method" type="radio" id="search_method_city" value="city" checked>
+                    <label class="form-check-label" for="search_method_city">
+                    <?php e('City') ?>
+                    </label>
+                    <input class="form-check-input search_method" type="radio" id="search_method_address" value="address">
+                    <label class="form-check-label" for="search_method_address">
+                        <?php e('Address') ?>
+                    </label>
+                </div>
+
+            </div>
+        </div>
     </div>
-    <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
+</div>
+        <div class="location-map-container" <?php echo "id='{$map}'"; ?> <?php echo $onclick; ?>></div>
 </div>
 <?php echo $help; ?>
 
@@ -118,20 +140,40 @@ if ($value) {
          */
         var searchInput = $('.js_map_search', $('#<?php echo $map; ?>').parent());
         var btnSearch = $('.btn-search', $('#<?php echo $map; ?>').parent());
+        
+
+        //var methodSearch = $('.btn-search', $('#<?php echo $map; ?>').parent());
         var geocoding = new L.Geocoding({
             providers: {
                 custom: function(arg) {
                     var that = this,
                         query = arg.query,
-                        cb = arg.cb;
+                        cb = arg.cb,
+                        
+                        searchMethodRadios = document.querySelectorAll('.search_method'),
+                        searchMethodValue;
+                    
+                    searchMethodRadios.forEach(radio => {
+                        if (radio.checked) {
+                            searchMethodValue = radio.value;
+                        }
+                    });
+                    
+                    var data = {
+                        format: 'json'
+                    };
+                    
+                    if (searchMethodValue === 'address') {
+                        data.q = query;
+                    } else {
+                        data.city = query;
+                    }
+                    
                     $.ajax({
                         url: 'https://nominatim.openstreetmap.org/search',
                         dataType: 'jsonp',
                         jsonp: 'json_callback',
-                        data: {
-                            q: query,
-                            format: 'json'
-                        }
+                        data: data
                     }).done(function(data) {
                         if (data.length > 0) {
                             var res = data[0];
@@ -148,6 +190,7 @@ if ($value) {
             }
         });
 
+
         // Set custom provider default
         geocoding.setOptions({
             provider: 'custom'
@@ -158,6 +201,7 @@ if ($value) {
 
         btnSearch.on('click', function() {
             'use strict';
+
             geocoding.geocode(searchInput.val());
         });
 
@@ -212,5 +256,10 @@ if ($value) {
             }, 1000);
         <?php endif; ?>
 
+        //controllo che venga cliccata solo una delle option
+        $('.search_method').on('click', function() {
+            // Deseleziona tutti gli input radio della stessa classe
+            $('.search_method').not(this).prop('checked', false);
+        });
     });
 </script>
