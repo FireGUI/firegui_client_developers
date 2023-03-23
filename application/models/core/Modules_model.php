@@ -113,6 +113,9 @@ class Modules_model extends CI_Model
                 } else {
                     $old_version = '0';
                 }
+
+                
+
                 $this->run_migrations($identifier, $old_version, $module['modules_repository_version']);
 
                 //Update database module version
@@ -200,7 +203,9 @@ class Modules_model extends CI_Model
 
                     foreach ($updates as $key => $value) {
 
-                        $version_compare_old = version_compare($key, $old_version);
+                        $version_compare_old = version_compare($key, $old_version, '>');
+                        
+
                         //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
                         if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
                             foreach ($value as $key_type => $code) {
@@ -211,6 +216,10 @@ class Modules_model extends CI_Model
                                         foreach ($code as $file_to_include) {
                                             $file_migration = "$migration_dir/$file_to_include";
                                             if (file_exists($file_migration)) {
+
+
+                                                //debug("Eseguo migration $file_migration",true);
+
                                                 include $file_migration;
                                             } else {
                                                 echo_log('error', "Migration file {$file_migration} missing!");
@@ -1182,6 +1191,7 @@ class Modules_model extends CI_Model
                 $old_calendar_id = $calendar['calendars_id'];
                 unset($calendar['calendars_id']);
                 $calendar['calendars_entity_id'] = $entities_id_map[$calendar['calendars_entity_id']];
+                //TODO: se punta a users e users giustamente non è del modulo, è un problema... basarsi sul entity_name
                 $calendar['calendars_filter_entity_id'] = (array_key_exists($calendar['calendars_filter_entity_id'], $entities_id_map) ? $entities_id_map[$calendar['calendars_filter_entity_id']] : $calendar['calendars_filter_entity_id']);
 
                 unset($calendar['fields']);

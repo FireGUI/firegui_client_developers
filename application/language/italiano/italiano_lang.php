@@ -1825,3 +1825,4 @@ $lang['The page you requested does not exist'] = 'La pagina non esiste';
 $lang['or you don\'t have the right permissions.'] = 'oppure non hai i permessi per accedervi.';$lang['Elenco prenotazioni'] = 'Elenco prenotazioni';
 $lang['Prenotazioni settings'] = 'Prenotazioni settings';
 
+$lang['Autocomplete'] = 'Autocomplete';
