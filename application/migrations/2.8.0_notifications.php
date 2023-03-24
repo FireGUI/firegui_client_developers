@@ -9,7 +9,7 @@ if ($this->datab->module_installed('core-notifications')) {
 } else {
     // Drop native notifications table
     $this->db->query("DROP TABLE IF EXISTS notifications;");
-
+    $this->mycache->clearCache();
     $this->core->installModule('core-notifications');
 }
 
