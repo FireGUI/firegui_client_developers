@@ -141,13 +141,14 @@ function initTinymce(container = null) {
     autosave_ask_before_unload: false,
     powerpaste_allow_local_images: true,
     paste_data_images: true,
-    relative_urls: true,
-    remove_script_host: false,
+    relative_urls: false,
+    remove_script_host: true,
+    convert_urls: false,
     plugins:
-      "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
+        "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
     menubar: "",
     toolbar:
-      "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor codesample",
+        "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor codesample",
     toolbar_sticky: false,
     automatic_uploads: true,
     images_upload_handler: function (blobInfo, success, failure) {
