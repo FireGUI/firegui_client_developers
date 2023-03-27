@@ -990,26 +990,17 @@ class Modules_model extends CI_Model
                         }
                         $old_grids_fields_id = $field['grids_fields_id'];
 
-                        unset($field['grids_fields_id']);
-                        unset($field['fields_id']);
-                        unset($field['fields_entity_id']);
-                        unset($field['fields_default']);
-                        unset($field['fields_name']);
-                        unset($field['fields_type']);
-                        unset($field['fields_size']);
-                        unset($field['fields_required']);
-                        unset($field['fields_preview']);
-                        unset($field['fields_visible']);
-                        unset($field['fields_ref']);
-                        unset($field['fields_ref_auto_left_join']);
-                        unset($field['fields_ref_auto_right_join']);
-                        unset($field['fields_source']);
-                        unset($field['fields_select_where']);
-                        unset($field['fields_multilingual']);
-                        unset($field['fields_xssclean']);
 
                         $conditions = array_merge($conditions, [$field['conditions']]);
-                        unset($field['conditions']);
+                        unset($field['grids_fields_id']);
+                        
+                        foreach ($field as $column_name => $val) {
+                            if (strpos($column_name, 'grids_fields') !== 0) {
+                                unset($field[$column_name]);
+                            }
+                        }
+
+                        
 
                         $this->db->insert('grids_fields', $field);
                         $grids_fields_id_map[$old_grids_fields_id] = $this->db->insert_id();
