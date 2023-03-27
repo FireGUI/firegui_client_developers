@@ -13,6 +13,11 @@ class Export extends MY_Controller
     function __construct()
     {
         parent::__construct();
+    
+        if ($this->auth->guest()) {
+            set_status_header(401); // Unauthorized
+            die('Non sei loggato nel sistema');
+        }
 
         // Qualunque chiamata alle apilib da qua dentro è considerata una
         // chiamata in modalità CRM_FORM
