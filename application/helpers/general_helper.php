@@ -638,7 +638,7 @@ if (!function_exists('t')) {
             $module_name = array_get($params, 'module_name', $CI->layout->getLayoutModule());
 
             foreach ($traces as $trace) {
-                if (stripos($trace['file'], 'application/modules')) {
+                if (!empty($trace['file']) && stripos($trace['file'], 'application/modules')) {
                     $module_name = explode('application/modules/', $trace['file'])[1];
                     $module_name = explode('/', $module_name)[0];
                     break;
