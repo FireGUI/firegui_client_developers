@@ -336,9 +336,9 @@ class Apilib
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
-
+        
         $_data = $this->extractInputData($data);
-
+        
         //rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
 
@@ -364,8 +364,9 @@ class Apilib
                 $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
             }
         }
-
+        //debug($_data);
         if ($this->processData($entity, $_data, false)) {
+            //debug($_data, true);
             if (!$this->db->insert($entity, $_data)) {
                 $this->showError(self::ERR_GENERIC);
             }
@@ -963,6 +964,7 @@ class Apilib
                 
          
                 $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
+                
                 if ($this->isCacheEnabled()) {
                     $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
                 }
@@ -1177,7 +1179,7 @@ class Apilib
      */
     private function processData($entity, array&$data, $editMode = false, $value_id = null)
     {
-
+        
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -1215,7 +1217,7 @@ class Apilib
         } else {
             $value_id = null;
         }
-
+        
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
 
         // Recupera dati di validazione
@@ -1325,10 +1327,11 @@ class Apilib
                 $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
             }
         }
-        //debug($rules, true);
+        
         /**
          * Eseguo il process di pre-validation
          */
+        
         $_predata = $data;
         $mode = $editMode ? 'update' : 'insert';
         $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-validation specifico
@@ -1589,6 +1592,8 @@ class Apilib
          * Prima di uscire memorizzo i relationsBundle
          */
         $this->pendingRelations = $relationBundles;
+
+        
         return true;
     }
 
@@ -1911,6 +1916,7 @@ class Apilib
                     }
 
                     $value = str_replace('.', '', $value);
+                    
                 }
 
                 $float = str_replace(',', '.', $value);

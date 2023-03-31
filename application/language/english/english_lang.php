@@ -1273,3 +1273,4 @@ $lang['Configurazioni contabilita'] = 'Configurazioni contabilita';
 $lang['Impostazioni Contabilita'] = 'Impostazioni Contabilita';
 $lang['Customers module settings'] = 'Customers module settings';
 $lang['World Countries'] = 'World Countries';
+$lang['Log in Now'] = 'Log in Now';

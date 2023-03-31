@@ -147,6 +147,7 @@ class Crmentity extends CI_Model
             $extra_data = true;
            
             $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'group_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
+            
             //debug($entity_id);
             // Se è count ho finito qua, ma anche se non ho nessun risultato
             if ($count or !$data['data']) {
@@ -549,13 +550,14 @@ class Crmentity extends CI_Model
         // =====================================================================
         //debug('test');
         $qResult = $this->db->get();
-
+        
         if (!$qResult instanceof CI_DB_result) {
             // Errore, la query
             throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
         }
 
         $dati['data'] = $qResult->result_array();
+        
         $qResult->free_result();
 
         // =====================================================================

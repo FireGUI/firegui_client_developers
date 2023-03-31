@@ -114,7 +114,7 @@ class Modules_model extends CI_Model
                     $old_version = '0';
                 }
 
-                
+
 
                 $this->run_migrations($identifier, $old_version, $module['modules_repository_version']);
 
@@ -204,7 +204,7 @@ class Modules_model extends CI_Model
                     foreach ($updates as $key => $value) {
 
                         $version_compare_old = version_compare($key, $old_version, '>');
-                        
+
 
                         //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
                         if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
@@ -375,6 +375,8 @@ class Modules_model extends CI_Model
 
                 log_message('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'");
                 foreach ($entity['fields'] as $field) {
+
+
                     $c++;
                     progress($c, $total, 'fields');
                     $this->db->cache_delete_all();
@@ -431,8 +433,13 @@ class Modules_model extends CI_Model
                         }
                     }
                 }
-                //Una volta che ho i fields creati, creo le fields_draw....
+                $fv_count = count($entity['fields_draw']);
+                $fvc = 0;
+                //Una volta che ho i fields creati, creo le fields_validations....
                 foreach ($entity['fields_validation'] as $fv) {
+                    $fvc++;
+                    progress($fvc, $fv_count, 'fields validation');
+                    unset($fd['fields_draw_id']);
                     unset($fv['fields_validation_id']);
                     $fv['fields_validation_fields_id'] = $fields_id_map[$fv['fields_validation_fields_id']];
                     $validation_exists = $this->db->get_where('fields_validation', [
@@ -445,6 +452,26 @@ class Modules_model extends CI_Model
                         $this->db->insert('fields_validation', $fv);
                     } else {
                         $this->db->where('fields_validation_id', $validation_exists->row()->fields_validation_id)->update('fields_validation', $fv);
+                    }
+                }
+
+                //Una volta che ho i fields creati, creo le fields_draws....
+                $fd_count = count($entity['fields_draw']);
+                $fdc = 0;
+                foreach ($entity['fields_draw'] as $fd) {
+                    $fdc++;
+                    progress($fdc, $fd_count, 'fields draw');
+                    unset($fd['fields_draw_id']);
+                    $fd['fields_draw_fields_id'] = $fields_id_map[$fd['fields_draw_fields_id']];
+                    $draw_exists = $this->db->get_where('fields_draw', [
+                        'fields_draw_fields_id' => $fd['fields_draw_fields_id'],
+                    ]);
+
+                    if (!$draw_exists->num_rows() >= 1) {
+
+                        $this->db->insert('fields_draw', $fd);
+                    } else {
+                        $this->db->where('fields_draw_id', $draw_exists->row()->fields_draw_id)->update('fields_draw', $fd);
                     }
                 }
             }
@@ -841,17 +868,17 @@ class Modules_model extends CI_Model
                     $old_grid_id = $grid['grids_id'];
                     unset($grid['grids_id']);
                     if (!array_key_exists($grid['grids_entity_id'], $entities_id_map)) {
-                        
+
                         //If entity is not in module and it's a system entity (or event entity exists), proceed with remapping entity_id
-                            $entity_exists = $this->entities->entity_exists($orig_grid['entity_name']);
-                            if ($entity_exists) {
-                                $entities_id_map[$grid['grids_entity_id']] = $entity_exists['entity_id'];
-                                $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
-                            } else {
-                                //Se non esiste, probabilmente si tratta di una grid che punta a un entità di un altro modulo. Non cambio l'id (darebbe errore visto che non può essere null) e spero che poi venga installato l'altro modulo
-                            }
-                           
-                        
+                        $entity_exists = $this->entities->entity_exists($orig_grid['entity_name']);
+                        if ($entity_exists) {
+                            $entities_id_map[$grid['grids_entity_id']] = $entity_exists['entity_id'];
+                            $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
+                        } else {
+                            //Se non esiste, probabilmente si tratta di una grid che punta a un entità di un altro modulo. Non cambio l'id (darebbe errore visto che non può essere null) e spero che poi venga installato l'altro modulo
+                        }
+
+
                     } else {
                         $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
                     }
@@ -896,28 +923,33 @@ class Modules_model extends CI_Model
                         $grids_id_map[$old_grid_id] = $new_grid_id;
                     } else {
                         $existing_grid = $grid_exists->row_array();
-                        if (!empty($grid['grids_sub_grid_id']) && $i == 1) { //Solo al secondo passaggio sono sicuro di aver mappato tutte le grid e quindi posso sovrascrivere la sub_grid eventuale...
-                            $grid['grids_sub_grid_id'] = $grids_id_map[$grid['grids_sub_grid_id']];
-                        }
-                        
-                        
-                        $this->db->where('grids_id', $existing_grid['grids_id'])->update('grids', $grid);
                         $new_grid_id = $existing_grid['grids_id'];
-                        //Rimuovo però fields e actions, se la grid non è lockata altrimenti duplica tutto dopo...
-                        if ($this->db->query("SELECT * FROM locked_elements WHERE locked_elements_type = 'grid' AND locked_elements_ref_id = '$new_grid_id'")->num_rows() == 0) {
-                            if ($new_grid_id == 64) {
-                                //debug("GRID '$new_grid_id' NON BLOCCATA", true);
-
+                        $check_lock = $this->db->query("SELECT
+                            locked_elements_ref_id
+                        FROM
+                            locked_elements
+                        WHERE
+                            locked_elements_type = 'grid' AND locked_elements_ref_id = '$new_grid_id'");
+                        if ($check_lock->num_rows() == 0) {
+                            if (!empty($grid['grids_sub_grid_id']) && $i == 1) { //Solo al secondo passaggio sono sicuro di aver mappato tutte le grid e quindi posso sovrascrivere la sub_grid eventuale...
+                                $grid['grids_sub_grid_id'] = $grids_id_map[$grid['grids_sub_grid_id']];
                             }
 
-                            $this->db
-                                ->where('grids_fields_grids_id', $new_grid_id)
-                                ->where('grids_fields_module', $identifier)
-                                ->delete('grids_fields');
 
-                            $this->db->where('grids_actions_grids_id', $new_grid_id)->delete('grids_actions');
+                            $this->db->where('grids_id', $existing_grid['grids_id'])->update('grids', $grid);
 
+                            //Rimuovo però fields e actions, se la grid non è lockata altrimenti duplica tutto dopo...
+                            if ($this->db->query("SELECT * FROM locked_elements WHERE locked_elements_type = 'grid' AND locked_elements_ref_id = '$new_grid_id'")->num_rows() == 0) {
+                                $this->db
+                                    ->where('grids_fields_grids_id', $new_grid_id)
+                                    ->where('grids_fields_module', $identifier)
+                                    ->delete('grids_fields');
+
+                                $this->db->where('grids_actions_grids_id', $new_grid_id)->delete('grids_actions');
+
+                            }
                         }
+
                         $grids_id_map[$old_grid_id] = $new_grid_id;
 
                     }
@@ -993,14 +1025,14 @@ class Modules_model extends CI_Model
 
                         $conditions = array_merge($conditions, [$field['conditions']]);
                         unset($field['grids_fields_id']);
-                        
+
                         foreach ($field as $column_name => $val) {
                             if (strpos($column_name, 'grids_fields') !== 0) {
                                 unset($field[$column_name]);
                             }
                         }
 
-                        
+
 
                         $this->db->insert('grids_fields', $field);
                         $grids_fields_id_map[$old_grids_fields_id] = $this->db->insert_id();
