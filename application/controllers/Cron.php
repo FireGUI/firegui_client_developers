@@ -8,6 +8,17 @@ class Cron extends MY_Controller
 {
     public const ENABLE_TRACKING = false;
 
+    public function __construct()
+    {
+        parent::__construct();
+        if (!is_cli()) {
+            set_log_scope('cron_web');
+        } else {
+            set_log_scope('cron_cli');
+        }
+
+    }
+
 
     /**
      *  Spostare su controller autoupdate
@@ -62,6 +73,7 @@ class Cron extends MY_Controller
      */
     public function cli()
     {
+
         if (!is_cli()) {
             echo_log("error", "Invoked cli cron method from url? Nope...");
             return false;
@@ -198,7 +210,7 @@ class Cron extends MY_Controller
                     ->delete('ci_sessions');
 
 
-                
+
             }
         }
         // ============= End Delete logs =============

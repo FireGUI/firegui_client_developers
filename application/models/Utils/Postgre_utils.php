@@ -412,7 +412,7 @@ class Postgre_utils extends Utils
             'modules_base64_zip' => ['type' => 'TEXT'],
             'modules_raw_data_install' => ['type' => 'TEXT'],
             'modules_raw_data_update' => ['type' => 'TEXT'],
-            'modules_raw_data' => ['type' => 'TEXT'],
+            //'modules_raw_data' => ['type' => 'TEXT'],
             //20190510 Matteo - Teniamo ancora per un po' per retrocompatibilità...
             'modules_created_by_user' => ['type' => 'INT'],
             'modules_version_code' => ['type' => 'INT'],

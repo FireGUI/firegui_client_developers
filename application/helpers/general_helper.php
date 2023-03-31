@@ -1686,6 +1686,36 @@ if (!function_exists('echo_log')) {
     }
 }
 
+if (!function_exists('set_log_scope')) {
+    function set_log_scope($scope)
+    {
+        static $_log;
+
+        if ($_log === NULL) {
+            // references cannot be directly assigned to static variables, so we use an array
+            $_log[0] =& load_class('Log', 'core');
+        }
+
+        $_log[0]->setScope($scope);
+
+    }
+}
+
+if (!function_exists('my_log')) {
+    function my_log($level, $message, $scope = false)
+    {
+        static $_log;
+
+        if ($_log === NULL) {
+            // references cannot be directly assigned to static variables, so we use an array
+            $_log[0] =& load_class('Log', 'core');
+        }
+        if ($scope) {
+            $_log[0]->setScope($scope);
+        }
+        $_log[0]->write_log($level, $message);
+    }
+}
 
 if (!function_exists('progress')) {
     function progress($current, $total, $selector_id = 'js_progress')

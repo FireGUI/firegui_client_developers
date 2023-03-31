@@ -1826,3 +1826,9 @@ $lang['or you don\'t have the right permissions.'] = 'oppure non hai i permessi 
 $lang['Prenotazioni settings'] = 'Prenotazioni settings';
 
 $lang['Autocomplete'] = 'Autocomplete';
+$lang['Conto corrente'] = 'Conto corrente';
+$lang['Saldato da'] = 'Saldato da';
+$lang['Metodo di pagamento'] = 'Metodo di pagamento';
+$lang['Saldato da'] = 'Saldato da';
+$lang['Conto corrente'] = 'Conto corrente';
+$lang['Saldato da'] = 'Saldato da';

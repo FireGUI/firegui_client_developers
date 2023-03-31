@@ -441,7 +441,7 @@ class Mysqli_utils extends Utils
             'modules_base64_zip' => ['type' => 'TEXT', 'null' => true],
             'modules_raw_data_install' => ['type' => 'TEXT', 'null' => true],
             'modules_raw_data_update' => ['type' => 'TEXT', 'null' => true],
-            'modules_raw_data' => ['type' => 'TEXT', 'null' => true],
+            //'modules_raw_data' => ['type' => 'TEXT', 'null' => true],
             //20190510 Matteo - Teniamo ancora per un po' per retrocompatibilità...
             'modules_created_by_user' => ['type' => 'BIGINT'],
             'modules_version_code' => ['type' => 'BIGINT', 'null' => true],

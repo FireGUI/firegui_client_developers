@@ -358,6 +358,8 @@ class Datab extends CI_Model
                 $dati = $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
             } else {
                 $dati = $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
+                
+                
             }
             if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($entity_id));
@@ -997,7 +999,7 @@ class Datab extends CI_Model
             } else {
                 $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             }
-
+            //debug($data,true);
             // Riabilita sistema traduzioni
             $this->apilib->setLanguage($clanguage, $flanguage);
 
@@ -2545,7 +2547,7 @@ class Datab extends CI_Model
 
             case 'eval':
             case 'placeholder':
-
+                //debug($dato['flussi_cassa_importo']);
                 $field['grids_fields_replace'] = $this->buildEvalGridCell($field['grids_fields_replace'], $dato, $field);
                 $return = $this->buildPlaceholderGridCell($field['grids_fields_replace'], $dato);
                 //debug($return);

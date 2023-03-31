@@ -657,7 +657,7 @@ class Get_ajax extends MY_Controller
             //debug($where);
             $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : null, $offset, $order_by, false, ['group_by' => $group_by, 'search' => $search, 'preview_fields' => $preview_fields]);
 
-            //debug($grid_data, true);
+            
 
             $out_array = array();
             foreach ($grid_data as $dato) {
@@ -667,6 +667,7 @@ class Get_ajax extends MY_Controller
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
                 }
                 foreach ($grid['grids_fields'] as $field) {
+                    
                     $tr[] = $this->datab->build_grid_cell($field, $dato);
                 }
                 //Unset to avoi override
