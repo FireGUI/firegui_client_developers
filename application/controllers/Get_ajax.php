@@ -909,7 +909,7 @@ class Get_ajax extends MY_Controller
                         break;
                 }
             }
-
+            
             if ($start_field && $end_field) {
                 if ($this->db->dbdriver != 'postgre') {
                     $where[] = "(
@@ -990,26 +990,33 @@ class Get_ajax extends MY_Controller
 
             }
             //debug($ev);
-
-            $ev['start'] = date('c', strtotime($ev['start']));
-
-            if (!empty($ev['end'])) {
-                $ev['end'] = date('c', strtotime($ev['end']));
-
-            } else {
-                $start = substr($ev['start'], 0, 10);
-
-                if (array_key_exists('hours_end', $ev) && $ev['hours_end'] != '') {
-
-                    $ev['end'] = "{$start} {$ev['hours_end']}:00";
-
-                    $ev['end'] = date('c', strtotime($ev['end']));
-
-                } else {
-                    $ev['end'] = date('c', strtotime($ev['start'] . ' +1 hour'));
-
+    
+            if (array_key_exists('date_start', $ev)) {
+                $hours_start = '00:00';
+                if (array_key_exists('hours_start', $ev)) {
+                    $hours_start = $ev['hours_start'];
                 }
-
+    
+                $hours_end = '00:00';
+                if (array_key_exists('hours_end', $ev)) {
+                    $hours_end = $ev['hours_end'];
+                }
+                
+                $ev['start'] = (new DateTime($ev['start']))->format("Y-m-d\T{$hours_start}:00");
+                
+                if (!array_key_exists('date_end', $ev)) {
+                    $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format("Y-m-d\T{$hours_end}:00");
+                } else {
+                    $ev['end'] = (new DateTime($ev['end']))->format("Y-m-d\T{$hours_end}:00");
+                }
+            } else {
+                $ev['start'] = (new DateTime($ev['start']))->format('Y-m-d\TH:i:s');
+    
+                if (!empty($ev['end'])) {
+                    $ev['end'] = (new DateTime($ev['end']))->format('Y-m-d\TH:i:s');
+                } else {
+                    $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format('Y-m-d\TH:i:s');
+                }
             }
 
             if (empty($ev['all_day'])) {

@@ -47,6 +47,45 @@ $edit_permission = (!empty($data['update_form']) && $data['calendars']['calendar
 $calendars_default_view = (!empty($data['cal_layout']['calendars_default_view'])) ? $data['cal_layout']['calendars_default_view'] : 'timeGridWeek';
 $filter_default_view = (!empty($data['cal_layout']) && $data['cal_layout']['calendars_default_sidebar_toggle_all_filters'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
 
+$attributes = [
+    'id' => $calendarId,
+    'data-calendar' => base64_encode(json_encode($data['calendars'])),
+    'class' => 'has-toolbar calendar_full_json_sidebar',
+    'data-view' => $calendars_default_view,
+    'data-allow_create' => $create_permission,
+    'data-allow_edit' => $edit_permission,
+    'data-sourceurl' => base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"),
+    'data-mintime' => (array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'),
+    'data-maxtime' => (array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'),
+    'data-language' => (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en',
+    'data-allday' => array_key_exists('all_day', $calendar_map) ? $calendar_map['all_day'] : false,
+    'data-formurl' => base_url("get_ajax/modal_form/{$data['create_form']}"),
+    'data-formedit' => base_url("get_ajax/modal_form/{$data['update_form']}"),
+    'data-updateurl' => base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"),
+    'data-fieldid' => $calendar_map['id'],
+];
+
+if (array_key_exists('start', $calendar_map)) {
+    $attributes['data-start'] = $calendar_map['start'];
+    $attributes['data-start-is-datetime'] = true;
+} elseif (array_key_exists('date_start', $calendar_map)) {
+    $attributes['data-start'] = $calendar_map['date_start'];
+    $attributes['data-start-is-datetime'] = false;
+}
+
+if (array_key_exists('end', $calendar_map)) {
+    $attributes['data-end'] = $calendar_map['end'];
+    $attributes['data-end-is-datetime'] = true;
+} elseif (array_key_exists('date_end', $calendar_map)) {
+    $attributes['data-end'] = $calendar_map['date_end'];
+    $attributes['data-end-is-datetime'] = false;
+}
+
+$attributesString = '';
+foreach ($attributes as $key => $value) {
+    $attributesString .= sprintf('%s="%s" ', $key, $value);
+}
+
 ?>
 
 <style>
@@ -128,7 +167,6 @@ natcasesort($filter_data);
     </div>
 
     <div class="col-lg-10 col-md-9">
-        <div <?php echo sprintf('id="%s"', $calendarId); ?> data-calendar="<?php echo base64_encode(json_encode($data['calendars'])); ?>" class="has-toolbar calendar_full_json_sidebar" data-view="<?php echo $calendars_default_view; ?>" data-allow_create="<?php echo $create_permission; ?>" data-allow_edit="<?php echo $edit_permission; ?>" data-sourceurl="<?php echo base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}/{$element_id}"); ?>" data-mintime="<?php echo (array_get($data['calendars'], 'calendars_min_time') ?: '06:00:00'); ?>" data-maxtime="<?php echo (array_get($data['calendars'], 'calendars_max_time') ?: '22:00:00'); ?>" data-language="<?php echo (!empty($settings['languages_code'])) ? (explode('-', $settings['languages_code'])[0]) : 'en'; ?>" data-start="<?php echo ($calendar_map['start']); ?>" data-end="<?php echo ($calendar_map['end']); ?>" data-allday="<?php echo $calendar_map['all_day']; ?>" data-formurl="<?php echo base_url("get_ajax/modal_form/{$data['create_form']}"); ?>" data-formedit="<?php echo base_url("get_ajax/modal_form/{$data['update_form']}"); ?>" data-updateurl="<?php echo base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"); ?>" data-fieldid="<?php echo $calendar_map['id']; ?>">
-        </div>
+        <div <?php echo $attributesString; ?>></div>
     </div>
 </div>
