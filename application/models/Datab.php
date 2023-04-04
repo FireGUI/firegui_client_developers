@@ -1369,7 +1369,7 @@ class Datab extends CI_Model
 
                             if ($condition['value'] == '-2') {
                                 //Special condition: means "field empty"...
-                                $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = ''))";
+                                $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = '' AND {$where_prefix}{$field->fields_name} <> 0))";
                                 continue;
                             }
 
