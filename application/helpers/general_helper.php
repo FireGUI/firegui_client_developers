@@ -1704,16 +1704,15 @@ if (!function_exists('set_log_scope')) {
 if (!function_exists('my_log')) {
     function my_log($level, $message, $scope = false)
     {
+        
         static $_log;
 
         if ($_log === NULL) {
             // references cannot be directly assigned to static variables, so we use an array
             $_log[0] =& load_class('Log', 'core');
         }
-        if ($scope) {
-            $_log[0]->setScope($scope);
-        }
-        $_log[0]->write_log($level, $message);
+        
+        $_log[0]->write_log($level, $message, $scope);
     }
 }
 

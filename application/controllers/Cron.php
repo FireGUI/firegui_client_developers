@@ -11,11 +11,12 @@ class Cron extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!is_cli()) {
-            set_log_scope('cron_web');
-        } else {
-            set_log_scope('cron_cli');
-        }
+        set_log_scope('cron');
+        // if (!is_cli()) {
+        //     set_log_scope('cron_web');
+        // } else {
+        //     set_log_scope('cron_cli');
+        // }
 
     }
 

@@ -72,12 +72,12 @@ class Core extends CI_Model
      */
     public function update($indexes_update = false)
     {
-        log_message("debug", "Core: Start UPDATE Database from Utils");
+        my_log("debug", "Core: Start UPDATE Database from Utils", 'update');
         $this->utils->migrationProcess();
-if ($indexes_update) {
-    $this->utils->indexesUpdate();
-}
-    
+        if ($indexes_update) {
+            $this->utils->indexesUpdate();
+        }
+
 
 
         $this->mycache->clearCache();
@@ -115,7 +115,7 @@ if ($indexes_update) {
     {
 
         if (!class_exists('ZipArchive')) {
-            log_message('error', "updateClient failed, ziparchive class is not exists");
+            my_log('error', "updateClient failed, ziparchive class is not exists",'update');
             return false;
         }
 
@@ -125,7 +125,7 @@ if ($indexes_update) {
 
         // Check Update in progress and set true
         if (is_update_in_progress()) {
-            log_message('error', 'updateClient failed, other update is already in progress...');
+            my_log('error', 'updateClient failed, other update is already in progress...','update');
             return false;
         }
 
@@ -138,7 +138,7 @@ if ($indexes_update) {
 
             // Check if there is a patch
             if (empty($patch['clients_releases_file'])) {
-                log_message('debug', 'updatePatches, no pathes found...');
+                my_log('debug', 'updatePatches, no pathes found...','update');
                 return false;
             }
 
@@ -152,7 +152,7 @@ if ($indexes_update) {
         }
 
         //Pay attention: even if I ask the $version_code, $file_link could contains different version because intermediate version (or versions) need a migration or updatedb, so we just need to pass throught this update before
-        log_message('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}");
+        my_log('debug', "Updating from {$old_version} to {$new_version} ($new_version_code), file {$file_link}", 'update');
 
         $newfile = './tmp_file.zip';
 
@@ -208,7 +208,7 @@ if ($indexes_update) {
                                                 if (file_exists($file_migration)) {
                                                     include $file_migration;
                                                 } else {
-                                                    log_message('error', "Migration file {$file_migration} missing!");
+                                                    my_log('error', "Migration file {$file_migration} missing!", 'update');
                                                 }
                                             }
                                         } else {
@@ -217,13 +217,13 @@ if ($indexes_update) {
                                             if (file_exists($file_migration)) {
                                                 include $file_migration;
                                             } else {
-                                                log_message('error', "Migration file {$file_migration} missing!");
+                                                my_log('error', "Migration file {$file_migration} missing!", 'update');
                                             }
                                         }
                                     }
                                 }
                             } else {
-                                log_message('debug', "new version: $new_version, key: $key");
+                                my_log('debug', "new version: $new_version, key: $key", 'update');
                             }
                         }
                     }
@@ -252,7 +252,7 @@ if ($indexes_update) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
-            log_message('error', 'No module repository url defined');
+            my_log('error', 'No module repository url defined', 'update');
             return false;
         }
         $data = $this->getModuleRepositoryData($identifier, $update_repository_url);
@@ -278,7 +278,7 @@ if ($indexes_update) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
-            log_message('error', 'No module repository url defined');
+            my_log('error', 'No module repository url defined', 'update');
             return false;
         }
         $this->load->model('core/modules_model', 'core_modules');
@@ -293,7 +293,7 @@ if ($indexes_update) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
-            log_message('error', 'No module repository url defined');
+            my_log('error', 'No module repository url defined', 'update');
             return false;
         }
         $this->load->model('core/modules_model', 'core_modules');
@@ -304,7 +304,7 @@ if ($indexes_update) {
     }
     public function getModuleRepositoryData($module_identifier, $update_repository_url = null, $project_id = null, $token = null)
     {
-        
+
         $this->load->model('core/modules_model', 'core_modules');
         return $this->core_modules->getModuleRepositoryData($module_identifier, $update_repository_url, $project_id, $token);
 

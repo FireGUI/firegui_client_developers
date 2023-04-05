@@ -63,7 +63,7 @@ class Modules_model extends CI_Model
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
-            log_message('error', 'No module repository url defined');
+            my_log('error', 'No module repository url defined', 'update');
             return false;
         }
         $module = $this->getModuleRepositoryData($identifier, $update_repository_url, $this->_project_id, $this->_license_token);
@@ -165,7 +165,7 @@ class Modules_model extends CI_Model
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }
         if (!$update_repository_url) {
-            log_message('error', 'No module repository url defined');
+            my_log('error', 'No module repository url defined', 'update');
             return false;
         }
 
@@ -278,7 +278,7 @@ class Modules_model extends CI_Model
 
             //Creo tutte le entità
             $entities_id_map = [];
-            log_message('debug', "Module install: start entities creation");
+            my_log('debug', "Module install: start entities creation", 'update');
             $total = count($json['entities']);
             $c = 0;
             foreach ($json['entities'] as $old_entity_id => $entity) {
@@ -287,7 +287,7 @@ class Modules_model extends CI_Model
 
                 $entity_action_fields = json_decode($entity['entity_action_fields'], true);
 
-                log_message('debug', "Module install: creating '{$entity['entity_name']}' (type: '{$entity['entity_type']}')");
+                my_log('debug', "Module install: creating '{$entity['entity_name']}' (type: '{$entity['entity_type']}')", 'update');
                 //debug($entity,true);
 
                 if ($entity['entity_type'] != ENTITY_TYPE_RELATION) {
@@ -302,9 +302,9 @@ class Modules_model extends CI_Model
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);
                     if (!$entity_exists) {
                         $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
-                        log_message('debug', "Module install: '{$entity['entity_name']}' created");
+                        my_log('debug', "Module install: '{$entity['entity_name']}' created", 'update');
                     } else {
-                        log_message('debug', "Module install: entity '{$entity['entity_name']}' already present");
+                        my_log('debug', "Module install: entity '{$entity['entity_name']}' already present", 'update');
 
                         $this->db->where('entity_id', $entity_exists['entity_id'])->update('entity', $data);
 
@@ -318,10 +318,10 @@ class Modules_model extends CI_Model
                 //                unset($entity_action_fields['create_time']);
                 //                unset($entity_action_fields['update_time']);
             }
-            log_message('debug', "Module install: end entities creation");
+            my_log('debug', "Module install: end entities creation", 'update');
 
             //Adesso posso creare le relazioni...
-            log_message('debug', "Module install: start relations creation");
+            my_log('debug', "Module install: start relations creation", 'update');
             $total = count($json['entities']);
             $c = 0;
             foreach ($json['entities'] as $old_entity_id => $entity) {
@@ -350,7 +350,7 @@ class Modules_model extends CI_Model
                 }
                 //
             }
-            log_message('debug', "Module install: end relation creation");
+            my_log('debug', "Module install: end relation creation", 'update');
 
             //Creo tutti i campi (non dovrebbero esserci problemi col field ref in quanto le entità son già tutte create
             $fields_id_map = [];
@@ -373,7 +373,7 @@ class Modules_model extends CI_Model
                 $return = [];
                 //$entity['fields'] = $this->entities->changeMySqlTypes($entity['fields']);
 
-                log_message('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'");
+                my_log('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'", 'update');
                 foreach ($entity['fields'] as $field) {
 
 
@@ -423,7 +423,7 @@ class Modules_model extends CI_Model
                         //debug($return);
                     }
                 }
-                log_message('debug', "Module install: end fields creation");
+                my_log('debug', "Module install: end fields creation", 'update');
 
                 foreach ($return as $field_name => $new_field_id) {
                     foreach ($entity['fields'] as $field) {
@@ -485,7 +485,7 @@ class Modules_model extends CI_Model
             $layouts_id_map = [
                 -1 => -1, //Fake per non avere un array vuoto (dopo mi serve l'implode in una query)
             ];
-            log_message('debug', "Module install: start layouts creation");
+            my_log('debug', "Module install: start layouts creation", 'update');
             $total = count($json['layouts']);
             $c = 0;
             foreach ($json['layouts'] as $layout) {
@@ -513,7 +513,7 @@ class Modules_model extends CI_Model
                     // debug($key, true);
                     continue;
                 }
-                log_message('debug', "Module install: create layout '{$layout['layouts_title']}'");
+                my_log('debug', "Module install: create layout '{$layout['layouts_title']}'", 'update');
                 $this->db->cache_delete_all();
                 $this->db->data_cache = [];
                 $old_layout_id = $layout['layouts_id'];
@@ -525,7 +525,7 @@ class Modules_model extends CI_Model
                 //debug($layout);
                 if (!empty($layout['layouts_entity_id'])) {
                     if (!array_key_exists($layout['layouts_entity_id'], $entities_id_map)) {
-                        log_message('debug', "Entity '{$layout['layouts_entity_id']}' missing for layout '{$layout['layouts_title']}'. Fix and re-build again.");
+                        my_log('debug', "Entity '{$layout['layouts_entity_id']}' missing for layout '{$layout['layouts_title']}'. Fix and re-build again.", 'update');
                         $layout['layouts_entity_id'] = null;
                     } else {
                         $layout['layouts_entity_id'] = $entities_id_map[$layout['layouts_entity_id']];
@@ -563,9 +563,9 @@ class Modules_model extends CI_Model
                 }
             }
 
-            log_message('debug', "Module install: end layouts creation");
+            my_log('debug', "Module install: end layouts creation", 'update');
 
-            log_message('debug', "Module install: start forms creation");
+            my_log('debug', "Module install: start forms creation", 'update');
             //Creo i forms
             $forms_id_map = [];
 
@@ -618,7 +618,7 @@ class Modules_model extends CI_Model
 
                 $forms_id_map[$old_form_id] = $new_form_id;
 
-                log_message('debug', "Module install: form {$form['forms_name']} created");
+                my_log('debug', "Module install: form {$form['forms_name']} created", 'update');
             }
             $total = 0;
             foreach ($json['forms'] as $form) {
@@ -675,13 +675,13 @@ class Modules_model extends CI_Model
 
 
                     $this->db->insert('forms_fields', $field);
-                    //log_message('debug', "Module install: form {$form['forms_name']} - field {$field['forms_fields_fields_id']} created");
+                    //my_log('debug', "Module install: form {$form['forms_name']} - field {$field['forms_fields_fields_id']} created", 'update');
                 }
             }
 
-            log_message('debug', "Module install: end forms creation");
+            my_log('debug', "Module install: end forms creation", 'update');
 
-            log_message('debug', "Module install: Start menu creation");
+            my_log('debug', "Module install: Start menu creation", 'update');
             //Creo i menu
             $menus_id_map = [];
 
@@ -710,14 +710,14 @@ class Modules_model extends CI_Model
                 unset($menu['menu_id']);
                 if ($menu['menu_layout'] && $menu['menu_layout'] != -2) {
                     if (!array_key_exists($menu['menu_layout'], $layouts_id_map)) {
-                        log_message('error', "Layout '{$menu['menu_layout']}' missing for menu '{$menu['menu_label']}'. Fix and re-build again.");
+                        my_log('error', "Layout '{$menu['menu_layout']}' missing for menu '{$menu['menu_label']}'. Fix and re-build again.", 'update');
                     } else {
                         $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
                     }
                 }
                 if ($menu['menu_form']) {
                     if (!array_key_exists($menu['menu_form'], $forms_id_map)) {
-                        log_message('error', "Form '{$menu['menu_form']}' missing for menu '{$menu['menu_label']}'. Fix and re-build again.");
+                        my_log('error', "Form '{$menu['menu_form']}' missing for menu '{$menu['menu_label']}'. Fix and re-build again.", 'update');
                     } else {
                         $menu['menu_form'] = $forms_id_map[$menu['menu_form']];
                     }
@@ -784,7 +784,7 @@ class Modules_model extends CI_Model
                 }
                 if ($menu['menu_layout'] && $menu['menu_layout'] != -2) {
                     if (!array_key_exists($menu['menu_layout'], $layouts_id_map)) {
-                        log_message('debug', "Layout '{$menu['menu_layout']}' missing for menu '{$menu['menu_label']}'. Fix and re-build again.");
+                        my_log('debug', "Layout '{$menu['menu_layout']}' missing for menu '{$menu['menu_label']}'. Fix and re-build again.", 'update');
                         debug($menu, true);
                     }
                     $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
@@ -823,9 +823,9 @@ class Modules_model extends CI_Model
                 }
 
             }
-            log_message('debug', "Module install: End menu creation");
+            my_log('debug', "Module install: End menu creation", 'update');
 
-            log_message('debug', "Module install: start grids creation");
+            my_log('debug', "Module install: start grids creation", 'update');
             //Creo Le grid
             $grids_id_map = [];
 
@@ -855,7 +855,7 @@ class Modules_model extends CI_Model
                 foreach ($json['grids'] as $grid) {
                     $c++;
                     progress($c, $total, "grids (step " . ($i + 1) . ")");
-                    log_message('debug', "Module install: create grid {$grid['grids_name']}");
+                    my_log('debug', "Module install: create grid {$grid['grids_name']}", 'update');
 
                     $orig_grid = $grid;
                     //Clean joined fields from grid
@@ -888,7 +888,7 @@ class Modules_model extends CI_Model
 
                     if (!empty($grid['grids_inline_form'])) {
                         if (!array_key_exists($grid['grids_inline_form'], $forms_id_map)) {
-                            log_message('error', "Form '{$grid['grids_inline_form']}' missing for grid '{$grid['grids_name']}'. Fix and re-build again.");
+                            my_log('error', "Form '{$grid['grids_inline_form']}' missing for grid '{$grid['grids_name']}'. Fix and re-build again.", 'update');
                         } else {
                             $grid['grids_inline_form'] = $forms_id_map[$grid['grids_inline_form']];
                         }
@@ -896,7 +896,7 @@ class Modules_model extends CI_Model
 
                     if (!empty($grid['grids_bulk_edit_form'])) {
                         if (!array_key_exists($grid['grids_bulk_edit_form'], $forms_id_map)) {
-                            log_message('error', "Form '{$grid['grids_bulk_edit_form']}' missing for grid '{$grid['grids_name']}'. Fix and re-build again.");
+                            my_log('error', "Form '{$grid['grids_bulk_edit_form']}' missing for grid '{$grid['grids_name']}'. Fix and re-build again.", 'update');
                         } else {
                             $grid['grids_bulk_edit_form'] = $forms_id_map[$grid['grids_bulk_edit_form']];
                         }
@@ -979,7 +979,7 @@ class Modules_model extends CI_Model
                                 if (array_key_exists($field['fields_name'], $all_fields_map)) {
                                     $field['grids_fields_fields_id'] = $all_fields_map[$field['fields_name']];
                                 } else {
-                                    log_message('debug', "Field '{$field['fields_name']}' missing for entity '{$field['fields_ref']}'. Fix and re-build again.");
+                                    my_log('debug', "Field '{$field['fields_name']}' missing for entity '{$field['fields_ref']}'. Fix and re-build again.", 'update');
                                     continue;
                                     //debug($field, true);
                                 }
@@ -1065,7 +1065,7 @@ class Modules_model extends CI_Model
                             if (!array_key_exists($action['grids_actions_layout'], $layouts_id_map)) {
                                 // debug($grid);
                                 // debug($action, true);
-                                log_message('debug', 'TODO: fare in modo che in fase di export module, si porti dietro anche i layouts legati alle grid actions così da avere qui le mappature corrette');
+                                my_log('debug', 'TODO: fare in modo che in fase di export module, si porti dietro anche i layouts legati alle grid actions così da avere qui le mappature corrette', 'update');
                             }
                             $action['grids_actions_layout'] = $layouts_id_map[$action['grids_actions_layout']];
                         }
@@ -1083,7 +1083,7 @@ class Modules_model extends CI_Model
                 }
             }
 
-            log_message('debug', "Module install: end grids creation");
+            my_log('debug', "Module install: end grids creation", 'update');
 
             //Inserisco i grafici
             $this->db->query(
@@ -1221,14 +1221,14 @@ class Modules_model extends CI_Model
 
                 if (!empty($calendar['calendars_form_edit'])) {
                     if (!array_key_exists($calendar['calendars_form_edit'], $forms_id_map)) {
-                        log_message('debug', "Form '{$calendar['calendars_form_edit']}' missing for calendar '{$calendar['calendars_name']}'. Fix and re-build again.");
+                        my_log('debug', "Form '{$calendar['calendars_form_edit']}' missing for calendar '{$calendar['calendars_name']}'. Fix and re-build again.", 'update');
                     } else {
                         $calendar['calendars_form_edit'] = $forms_id_map[$calendar['calendars_form_edit']];
                     }
                 }
                 if (!empty($calendar['calendars_form_create'])) {
                     if (!array_key_exists($calendar['calendars_form_create'], $forms_id_map)) {
-                        log_message('debug', "Form '{$calendar['calendars_form_create']}' missing for calendar '{$calendar['calendars_name']}'. Fix and re-build again.");
+                        my_log('debug', "Form '{$calendar['calendars_form_create']}' missing for calendar '{$calendar['calendars_name']}'. Fix and re-build again.", 'update');
                     } else {
                         $calendar['calendars_form_create'] = $forms_id_map[$calendar['calendars_form_create']];
                     }
@@ -1285,7 +1285,7 @@ class Modules_model extends CI_Model
                 }
             }
 
-            log_message('debug', "Module install: start layouts boxes creation");
+            my_log('debug', "Module install: start layouts boxes creation", 'update');
             //Inserisco i layoutbox
             $layout_box_map = [];
 
@@ -1314,7 +1314,7 @@ class Modules_model extends CI_Model
                 unset($lb['layouts_boxes_id']);
 
                 if (!array_key_exists($lb['layouts_boxes_layout'], $layouts_id_map)) {
-                    log_message('debug', "Layout '{$lb['layouts_boxes_layout']}' not found");
+                    my_log('debug', "Layout '{$lb['layouts_boxes_layout']}' not found", 'update');
 
                     continue;
                 }
@@ -1384,7 +1384,7 @@ class Modules_model extends CI_Model
                         break;
                     case 'layout':
                         if (!array_key_exists($lb['layouts_boxes_content_ref'], $layouts_id_map)) {
-                            log_message('error', "Module install: Layout '{$lb['layouts_boxes_content_ref']}' not found.");
+                            my_log('error', "Module install: Layout '{$lb['layouts_boxes_content_ref']}' not found.", 'update');
                             debug('Questo layout ci deve essere!', true);
                             continue 2;
                         }
@@ -1479,9 +1479,9 @@ class Modules_model extends CI_Model
                 $new_lb_id = $this->db->insert_id();
                 $layout_box_map[$old_layout_box_id] = $new_lb_id;
             }
-            log_message('debug', "Module install: end layouts boxes creation");
+            my_log('debug', "Module install: end layouts boxes creation", 'update');
 
-            log_message('debug', "Module install: start events creation");
+            my_log('debug', "Module install: start events creation", 'update');
             $this->db->where('fi_events_module', $identifier)->delete('fi_events');
             $this->db->where('post_process_module', $identifier)->delete('post_process');
             $this->db->where('hooks_module', $identifier)->delete('hooks');
@@ -1601,9 +1601,9 @@ class Modules_model extends CI_Model
                 }
             }
 
-            log_message('debug', "Module install: end events creation");
+            my_log('debug', "Module install: end events creation", 'update');
 
-            log_message('debug', "Module install: start emails creation");
+            my_log('debug', "Module install: start emails creation", 'update');
 
             $this->db->where('emails_module', $identifier)->delete('emails');
             if (!empty($json['emails'])) {
@@ -1617,7 +1617,7 @@ class Modules_model extends CI_Model
                     $this->db->insert('emails', $email);
                 }
             }
-            log_message('debug', "Module install: end emails creation");
+            my_log('debug', "Module install: end emails creation", 'update');
 
             //Importo i raw_data
 
@@ -1625,7 +1625,7 @@ class Modules_model extends CI_Model
                 $this->db->query("SET FOREIGN_KEY_CHECKS=0;");
             }
 
-            log_message('debug', "Module install: start creating conditions");
+            my_log('debug', "Module install: start creating conditions", 'update');
             $conditions = array_filter($conditions, function ($condition) {
                 //debug($condition,true);
                 return $condition != [];
@@ -1663,7 +1663,7 @@ class Modules_model extends CI_Model
                     default:
                         debug($condition);
                         debug("Condition '{$condition['conditions_what']}' not recognized");
-                        log_message('error', "Condition '{$condition['conditions_what']}' not recognized");
+                        my_log('error', "Condition '{$condition['conditions_what']}' not recognized", 'update');
                         break;
                 }
 
@@ -1675,7 +1675,7 @@ class Modules_model extends CI_Model
 
             }
 
-            log_message('debug', "Module install: start raw data insert");
+            my_log('debug', "Module install: start raw data insert", 'update');
 
             $c = $cu = 0;
             $total = $totalu = 0;
@@ -1689,7 +1689,7 @@ class Modules_model extends CI_Model
                 //Inserisco i raw_data_install
                 if (array_key_exists('raw_data_install', $entity)) {
                     if ($entity['raw_data_install']) {
-                        log_message('debug', "Module install: raw data insert - {$entity['entity_name']}");
+                        my_log('debug', "Module install: raw data insert - {$entity['entity_name']}", 'update');
                     }
                     //20230210 - MP - Modificata la logica: inserisco solo se la tabella è vuota perchè se non è vuota vuol dire che è già stato inserito l'install o che il cliente si è inserito i suoi valori custom
                     $count_table_records = $this->db->count_all($entity['entity_name']);
@@ -1711,7 +1711,7 @@ class Modules_model extends CI_Model
                 //Aggiorno i raw_data_update
                 if (array_key_exists('raw_data_update', $entity)) {
                     if ($entity['raw_data_update']) {
-                        log_message('debug', "Module install: raw data update - {$entity['entity_name']}");
+                        my_log('debug', "Module install: raw data update - {$entity['entity_name']}", 'update');
                     }
                     foreach ($entity['raw_data_update'] as $row) {
                         $cu++;
@@ -1728,7 +1728,7 @@ class Modules_model extends CI_Model
                     }
                 }
             }
-            log_message('debug', "Module install: end raw data insert");
+            my_log('debug', "Module install: end raw data insert", 'update');
 
             //A questo punto rimappare eventuali hook custom (grid, layout ecc...)
 
@@ -1745,7 +1745,7 @@ class Modules_model extends CI_Model
             return true;
 
         } catch (Exception $e) {
-            log_message('error', 'Install module error: ' . $e->getMessage());
+            my_log('error', 'Install module error: ' . $e->getMessage(), 'update');
             die($e->getMessage());
             //$this->db->trans_rollback();
         }

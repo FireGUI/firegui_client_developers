@@ -11,7 +11,7 @@ class MY_Log extends CI_Log
     {
         $this->_scope = $scope;
     }
-    public function write_log($level, $msg)
+    public function write_log($level, $msg, $scope = false)
     {
         if ($this->_enabled === FALSE) {
             return FALSE;
@@ -27,10 +27,14 @@ class MY_Log extends CI_Log
         }
 
         $filepath = $this->_log_path . 'log-' . date('Y-m-d');
-
-        if ($this->_scope !== '') {
-            $filepath .= '-' . $this->_scope;
+        if ($scope) {
+            $filepath .= '-' . $scope;
+        } else {
+            if ($this->_scope !== '') {
+                $filepath .= '-' . $this->_scope;
+            }
         }
+        
 
         $filepath .= '.' . $this->_file_ext;
 

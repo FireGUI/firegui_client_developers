@@ -6,13 +6,17 @@ $CI = get_instance();
 if ($CI === null) {
 
     new MX_Controller();
-    $CI = & get_instance();
+    $CI = &get_instance();
 }
 if (empty($CI->db->conn_id)) {
     $error['type'] = 'database_connection';
 } else {
     $error['type'] = 'database';
 }
+
+//Trick to avoid ci query where/select not flushed after query fail
+$CI->db->reset_query();
+
 $CI->load->helper('url');
 $error['error_title'] = 'Database Error';
 $error['error_type'] = $heading;
@@ -107,7 +111,7 @@ log_message('error', "*** WARNING *** Databse error: " . $error['error_message']
 
     <?php endif; ?>
 
-    <?php if ($CI->auth->is_admin()): ?>
+    <?php if ((!empty($CI->db->conn_id)) && $CI->auth->is_admin()): ?>
         <div class="container">
             <h1>
                 Developers utility
