@@ -439,7 +439,7 @@ class Modules_model extends CI_Model
                 foreach ($entity['fields_validation'] as $fv) {
                     $fvc++;
                     progress($fvc, $fv_count, 'fields validation');
-                    unset($fd['fields_draw_id']);
+                    unset($fv['fields_draw_id']);
                     unset($fv['fields_validation_id']);
                     $fv['fields_validation_fields_id'] = $fields_id_map[$fv['fields_validation_fields_id']];
                     $validation_exists = $this->db->get_where('fields_validation', [
