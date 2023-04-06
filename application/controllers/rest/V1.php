@@ -11,6 +11,7 @@ class V1 extends MY_Controller
     {
         parent::__construct();
         set_log_scope('api');
+        
         // Imposto l'apilib:
         // ---
         // 1)   L'apilib deve funzionare in modalità API per quanto riguarda i
