@@ -115,7 +115,7 @@ class Core extends CI_Model
     {
 
         if (!class_exists('ZipArchive')) {
-            my_log('error', "updateClient failed, ziparchive class is not exists",'update');
+            my_log('error', "updateClient failed, ziparchive class is not exists", 'update');
             return false;
         }
 
@@ -125,7 +125,7 @@ class Core extends CI_Model
 
         // Check Update in progress and set true
         if (is_update_in_progress()) {
-            my_log('error', 'updateClient failed, other update is already in progress...','update');
+            my_log('error', 'updateClient failed, other update is already in progress...', 'update');
             return false;
         }
 
@@ -138,7 +138,7 @@ class Core extends CI_Model
 
             // Check if there is a patch
             if (empty($patch['clients_releases_file'])) {
-                my_log('debug', 'updatePatches, no pathes found...','update');
+                my_log('debug', 'updatePatches, no pathes found...', 'update');
                 return false;
             }
 
@@ -246,7 +246,7 @@ class Core extends CI_Model
      * @param mixed $update_channel
      * @return bool|string
      */
-    function checkModuleUpdate($identifier, $update_repository_url = null)
+    function checkModuleUpdate($identifier, $update_repository_url = null, $project_id = null, $token = null)
     {
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
@@ -255,9 +255,12 @@ class Core extends CI_Model
             my_log('error', 'No module repository url defined', 'update');
             return false;
         }
-        $data = $this->getModuleRepositoryData($identifier, $update_repository_url);
+        $data = $this->getModuleRepositoryData($identifier, $update_repository_url, $project_id, $token);
 
         $current_module = $this->db->get_where('modules', ['modules_identifier' => $identifier])->row_array();
+
+
+
         if (version_compare($data['modules_repository_version_code'], $current_module['modules_version_code'], '>')) {
             return $data['modules_repository_version_code'];
         } else {
