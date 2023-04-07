@@ -340,6 +340,9 @@ class Modules_model extends CI_Model
 
                     if ($this->db->where('relations_name', $rel_name)->get('relations')->num_rows() == 0) {
                         $this->entities->relation($rel_name, $table1, $table2, $rel_type);
+                    } elseif (!$this->entities->entity_exists($entity['entity_name']))  { //20230407 - MP - E' capitato che fosse presente il record in relations ma la tabella non esistesse... oin questo caso forzo una nuova creazione.
+                        $this->db->where('relations_name', $rel_name)->delete('relations');
+                        $this->entities->relation($rel_name, $table1, $table2, $rel_type);
                     }
 
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);

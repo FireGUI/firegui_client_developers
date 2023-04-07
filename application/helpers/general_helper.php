@@ -1682,7 +1682,7 @@ if (!function_exists('echo_log')) {
     function echo_log($type, $message)
     {
         echo $message . "\r\n";
-        log_message($type, $message);
+        my_log($type, $message);
     }
 }
 

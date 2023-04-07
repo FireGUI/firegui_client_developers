@@ -457,12 +457,15 @@ class Cron extends MY_Controller
             $path = str_replace("/", " ", $cron['crons_file']);
             $path = str_replace("{base_url}", "", $path);
             $cmd = "cd " . FCPATH . " && php index.php " . $path;
-            exec($cmd);
+            //exec($cmd);
         } else {
-            $cmd = $cron['crons_file'];
+
+            $cmd = "cd " . FCPATH . " && " . $cron['crons_file'];
         }
         echo_log("debug", "Execute CURL via CLI: $cmd");
-        exec($cmd);
+        $output = '';
+        exec($cmd, $output);
+        my_log('debug', $output);
     }
 
     public function cron_curl($cron)
