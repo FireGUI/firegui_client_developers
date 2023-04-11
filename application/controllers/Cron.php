@@ -404,7 +404,7 @@ class Cron extends MY_Controller
                 }
             }
         }
-
+        echo_log('debug', "Stop cron check...");
         //Send output to the browser if running cron check from client (not cli) and user is logged in as admin
         if ($this->auth->is_admin()) {
             echo $out;
@@ -462,9 +462,10 @@ class Cron extends MY_Controller
 
             $cmd = "cd " . FCPATH . " && " . $cron['crons_file'];
         }
+        
         echo_log("debug", "Execute CURL via CLI: $cmd");
-        $output = '';
-        exec($cmd, $output);
+
+        $output = shell_exec($cmd);
         my_log('debug', $output);
     }
 
