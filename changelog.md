@@ -19,3 +19,5 @@ Remove .safurai folder from git
 Bugfix for install module grids_fields
 Fix mail model
 Protected export controller
+Bugfix core autoupdate modules
+Bugfix cron cli
