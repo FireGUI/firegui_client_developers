@@ -207,7 +207,7 @@ class Modules_model extends CI_Model
 
 
                         //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
-                        if ($version_compare_old || ($old_version == 0)) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
+                        if ($version_compare_old || ($old_version == 0 || $key === '*')) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
                             foreach ($value as $key_type => $code) {
                                 if ($key_type == 'eval') {
                                     eval($code);
