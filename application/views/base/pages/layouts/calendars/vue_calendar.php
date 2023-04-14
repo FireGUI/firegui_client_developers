@@ -183,6 +183,10 @@ $imploded_config = implode(',', $config);
     border-radius: 4px;
 }
 
+.vuecal__event_description {
+    font-size: 12px;
+    margin-top: 8px;
+}
 
 @media screen and (max-width: 499px) {
     .main-demo .day-split-header strong {
@@ -220,6 +224,8 @@ $currentLangauge = $this->datab->getLanguage()['code'];
             <div class="event-content" :style="{ backgroundColor: event.backgroundColor }" style="height: 100%; color: #ffffff;">
                 <div class="vuecal__event-title" v-html="event.title"></div>
                 {{ event.start.formatTime() }} - {{ event.end.formatTime() }}
+                <div>{{ event.start.formatTime() }} - {{ event.end.formatTime() }}</div>
+                <div v-if="event.description" v-html="event.description" class="vuecal__event_description"></div>
             </div>
         </template>
     </vue-cal>
