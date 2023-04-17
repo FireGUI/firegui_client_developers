@@ -169,6 +169,14 @@ class Modules_model extends CI_Model
             return false;
         }
 
+        if (!$project_id || $project_id == 0) {
+            $project_id = $this->_project_id;
+        }
+
+        if (!$token) {
+            $token = $this->_license_token;
+        }
+
         //Fare curl ad admin o openbuilder?
         $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier . '/' . $project_id . '/' . $token;
         //debug($get_module_info_url);
