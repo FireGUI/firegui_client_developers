@@ -1050,6 +1050,50 @@ if (!function_exists('mese_testuale')) {
         return $months[$month];
     }
 }
+if (!function_exists('delete_older_files')) {
+    /**
+     * Generate dump
+     * @param mixed $destination
+     * @param mixed $filename
+     * @return bool
+     */
+    function delete_older_files($folder, $days)
+    {
+        // Converti $days in secondi
+        $seconds = $days * 24 * 60 * 60;
+
+        // Verifica se la folder esiste
+        if (!is_dir($folder)) {
+            my_log('error', "Dump failed... File does note exists or too small. Check");
+            return false;
+        }
+
+        // Loop attraverso i file nella folder
+        $dir = opendir($folder);
+        while (($file = readdir($dir)) !== false) {
+            // Salta se il file è una folder o una directory padre
+            if ($file == '.' || $file == '..' || is_dir("$folder/$file")) {
+                continue;
+            }
+
+            // Ottieni la data di ultima modifica del file
+            $lastModified = filemtime("$folder/$file");
+
+            // Calcola da quanti secondi è stato modificato il file
+            $diff = time() - $lastModified;
+
+            // Cancella il file se è più vecchio di $days giorni
+            if ($diff > $seconds) {
+                unlink("$folder/$file");
+            }
+        }
+
+        // Chiudi la directory
+        closedir($dir);
+
+        return true;
+    }
+}
 
 if (!function_exists('generate_dump')) {
     /**
