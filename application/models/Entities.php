@@ -1725,4 +1725,78 @@ $field = $this->get_field($entity_field_id);
                 break;
         }
     }
+
+    /**
+     * @param int|array $field_id
+     * @param bool $physical_drop
+     * @return bool
+     */
+    public function deleteField($field_id, bool $physical_drop = true): bool
+    {
+        if (is_array($field_id)) {
+            if (empty($field_id['fields_id'])) return false;
+
+            $field_id = $field_id['fields_id'];
+        }
+
+        $field = $this->selected_db->query("SELECT * FROM fields LEFT JOIN entity ON fields.fields_entity_id = entity.entity_id WHERE fields_id = '$field_id'")->row_array();
+
+        if (empty($field)) return false;
+
+        $entityName = $field['entity_name'];
+        $fieldName = $field['fields_name'];
+
+        $this->selected_db->trans_begin();
+
+        try {
+            // Se il field ha una action speciale, devo aggiornare il dato
+            if (isset($field['entity_action_fields']) && $field['entity_action_fields']) {
+                $actions = json_decode($field['entity_action_fields'], true);
+                $actionsForThisField = array_keys($actions, $fieldName);
+                $jsonOrNull = $this->entities->processEntityCustomActionFields($field['entity_action_fields'], array_fill_keys($actionsForThisField, null));
+                $this->selected_db->update('entity', ['entity_action_fields' => $jsonOrNull], ['entity_id' => $field['entity_id']]);
+            }
+
+            // Elimino dalla tabella
+            $this->selected_db->delete('fields', array('fields_id' => $field_id));
+
+            // Elimino da draw
+            $this->selected_db->delete('fields_draw', array('fields_draw_fields_id' => $field_id));
+
+            // Elimino da forms fields
+            $this->selected_db->delete('forms_fields', array('forms_fields_fields_id' => $field_id));
+
+            // Elimino da grids fields
+            $this->selected_db->delete('grids_fields', array('grids_fields_fields_id' => $field_id));
+
+            // Elimino da calendars fields
+            $this->selected_db->delete('calendars_fields', array('calendars_fields_fields_id' => $field_id));
+
+            // Elimino da maps fields
+            $this->selected_db->delete('maps_fields', array('maps_fields_fields_id' => $field_id));
+
+            // Elimino da charts fields
+            $this->selected_db->delete('charts_elements', array('charts_elements_fields_id' => $field_id));
+
+            // Elimino da fields validations
+            $this->selected_db->delete('fields_validation', array('fields_validation_fields_id' => $field_id));
+
+            // Elimino la colonna (per qualche motivo potrebbe fallire: magari esiste in fields, ma non esiste nella tabella). Metto quindi in un try/catch
+            if ($physical_drop) {
+                if ($this->selected_db->table_exists($entityName)) {
+                    if ($this->selected_db->field_exists($fieldName, $entityName)) {
+                        $this->dbforge->drop_column($entityName, $fieldName);
+                    }
+                }
+            }
+
+            $this->selected_db->trans_complete();
+
+            return true;
+        } catch (Exception $e) {
+            log_message('error', "ERROR WHILE DELETING FIELD {$fieldName} FROM ENTITY {$entityName} -> " . $e->getMessage());
+            $this->selected_db->trans_rollback();
+            return false;
+        }
+    }
 }
