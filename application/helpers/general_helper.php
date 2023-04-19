@@ -1057,7 +1057,7 @@ if (!function_exists('delete_older_files')) {
      * @param mixed $filename
      * @return bool
      */
-    function delete_older_files($folder, $days)
+    function delete_older_files($folder, $days, $name_contain = "")
     {
         // Converti $days in secondi
         $seconds = $days * 24 * 60 * 60;
@@ -1073,6 +1073,11 @@ if (!function_exists('delete_older_files')) {
         while (($file = readdir($dir)) !== false) {
             // Salta se il file è una folder o una directory padre
             if ($file == '.' || $file == '..' || is_dir("$folder/$file")) {
+                continue;
+            }
+
+            // Check string contain
+            if ($name_contain && strpos($file, $name_contain) === false) {
                 continue;
             }
 
@@ -1748,14 +1753,14 @@ if (!function_exists('set_log_scope')) {
 if (!function_exists('my_log')) {
     function my_log($level, $message, $scope = false)
     {
-        
+
         static $_log;
 
         if ($_log === NULL) {
             // references cannot be directly assigned to static variables, so we use an array
             $_log[0] =& load_class('Log', 'core');
         }
-        
+
         $_log[0]->write_log($level, $message, $scope);
     }
 }
