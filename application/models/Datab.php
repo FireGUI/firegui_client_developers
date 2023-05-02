@@ -2132,7 +2132,7 @@ class Datab extends CI_Model
 
     public function module_installed($name)
     {
-        $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where('modules_name', $name)->or_where('modules_identifier', $name)->get();
+        $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
         return $query->num_rows() > 0;
     }
 

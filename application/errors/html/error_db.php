@@ -101,7 +101,7 @@ log_message('error', "*** WARNING *** Databse error: " . $error['error_message']
     </div>
 
 
-    <?php if (is_maintenance() || is_development()): ?>
+    <?php if ((!empty($CI->db->conn_id) && is_maintenance()) || is_development()): ?>
         <div class="container">
             <h1>
                 Backtrace

@@ -1,3 +1,3 @@
-Changelog version 2.9.3
+Changelog version 2.9.4
  
-Added method deleteField in Entities model
+Fix older file function with name
