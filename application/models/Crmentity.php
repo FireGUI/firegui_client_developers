@@ -1102,12 +1102,13 @@ $entity_preview = ($entity['entity_preview_base']??false);
      */
     public function getFieldsRefBy($entity, $right_join = true)
     {
-        if (!$this->_fields_ref_by) {
-            if ($right_join) {
-                $column_join = 'fields_ref_auto_right_join';
-            } else {
-                $column_join = 'fields_ref_auto_left_join';
-            }
+        if ($right_join) {
+            $column_join = 'fields_ref_auto_right_join';
+        } else {
+            $column_join = 'fields_ref_auto_left_join';
+        }
+        if (!array_key_exists($column_join, $this->_fields_ref_by)) {
+
 
             $_allFieldsRefBy = $this->db->query("
                 SELECT entity_id, entity_name, fields_name, fields_type, fields_ref
@@ -1115,13 +1116,14 @@ $entity_preview = ($entity['entity_preview_base']??false);
                 WHERE fields_ref IS NOT NULL AND fields_ref != '' AND $column_join = '" . DB_BOOL_TRUE . "'
             ")->result_array();
 
+
             foreach ($_allFieldsRefBy as $field) {
-                $this->_fields_ref_by[$field['fields_ref']][] = $field;
+                $this->_fields_ref_by[$column_join][$field['fields_ref']][] = $field;
             }
         }
 
         $ename = $this->getEntity($entity)['entity_name'];
-        return array_get($this->_fields_ref_by, $ename, []);
+        return array_get($this->_fields_ref_by[$column_join], $ename, []);
     }
 
     /**
