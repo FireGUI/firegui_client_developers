@@ -995,6 +995,13 @@ class Datab extends CI_Model
             $this->apilib->setLanguage();
 
             if (!empty($grid['grids']['grids_custom_query'])) {
+                //Rimpiazzo eventuali placeholder
+                $replaces['value_id'] = $value_id;
+                if (is_array($additional_data) && $additional_data) {
+                    $replaces = array_merge($replaces, $additional_data);
+                }
+                $grid['grids']['grids_custom_query'] = $this->replace_superglobal_data(str_replace_placeholders($grid['grids']['grids_custom_query'], $replaces));
+
                 $data = $this->getDataEntityByQuery($grid['grids']['grids_entity_id'], $grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             } else {
                 $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
