@@ -1186,6 +1186,9 @@ function openCreationForm(formId, entity, onSuccess) {
     $.fancybox.open({
       maxWidth: 600,
       padding: 25,
+      helpers: {
+        overlay : {closeClick: false} // prevents closing when clicking OUTSIDE fancybox
+      },
       wrapCSS: "fancybox-white",
       type: "ajax",
       href: base_url + "main/form/" + formId,
