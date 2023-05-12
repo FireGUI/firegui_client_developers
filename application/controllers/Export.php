@@ -30,13 +30,13 @@ class Export extends MY_Controller
         $grid = $this->datab->get_grid($grid_id);
 
         $grid_data = $this->datab->get_grid_data($grid, $value_id, '', NULL, 0, null);
-
         $out_array = array();
         foreach ($grid_data as $dato) {
             $tr = array();
 
             foreach ($grid['grids_fields'] as $field) {
-                $tr[] = trim(strip_tags($this->datab->build_grid_cell($field, $dato, false)));
+                $tr[] = trim(strip_tags($this->datab->build_grid_cell($field, $dato, false,true,true)));
+
             }
 
             $out_array[] = $tr;
@@ -91,7 +91,6 @@ class Export extends MY_Controller
         $fields = $grid['grids_fields'];
 
         $data = $this->prepareData($grid_id, $value_id);
-
         $objPHPExcel = new Spreadsheet();
 
         $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '', 'A1');
@@ -105,7 +104,8 @@ class Export extends MY_Controller
                 $cells[$key] = $field['grids_fields_column_name'];
             }
         }
-
+        /*dump($cells);
+        exit;*/
         if (!empty($numeric_cells)) {
             foreach (array_slice($data, 0, 10) as $key => $dato) {
                 foreach ($dato as $column => $value) {
@@ -126,7 +126,8 @@ class Export extends MY_Controller
                 }
             }
         }
-
+        /*dump($numeric_cells);
+        exit;*/
         $cells = array_merge($cells, $numeric_cells);
 
         foreach ($data as $key => $dato) {
@@ -138,7 +139,6 @@ class Export extends MY_Controller
                 }
             }
         }
-
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
 
         $filename = "grid{$grid_id}";

@@ -995,13 +995,6 @@ class Datab extends CI_Model
             $this->apilib->setLanguage();
 
             if (!empty($grid['grids']['grids_custom_query'])) {
-                //Rimpiazzo eventuali placeholder
-                $replaces['value_id'] = $value_id;
-                if (is_array($additional_data) && $additional_data) {
-                    $replaces = array_merge($replaces, $additional_data);
-                }
-                $grid['grids']['grids_custom_query'] = $this->replace_superglobal_data(str_replace_placeholders($grid['grids']['grids_custom_query'], $replaces));
-
                 $data = $this->getDataEntityByQuery($grid['grids']['grids_entity_id'], $grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             } else {
                 $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
@@ -2542,7 +2535,7 @@ class Datab extends CI_Model
     /**
      * Build della cella
      */
-    public function build_grid_cell($field, $dato, $escape_date = true, $crop = true)
+    public function build_grid_cell($field, $dato, $escape_date = true, $crop = true,$download = false)
     {
         // Valuta eventuali grid fields eval e placeholder
         $type = isset($field['grids_fields_replace_type']) ? $field['grids_fields_replace_type'] : 'field';
@@ -2562,11 +2555,16 @@ class Datab extends CI_Model
                 break;
             case 'field':
             default:
-                $return = $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop);
+                $return = $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop, $download);
                 break;
         }
-        $inline_actions = $this->buildInlineActions($field, $dato);
-        return $return . $inline_actions;
+        if($download == false ){
+            $inline_actions = $this->buildInlineActions($field, $dato);
+            return $return . $inline_actions;
+        } else {
+            return $return;
+        }
+
     }
     private function buildInlineActions($field, $dato)
     {
@@ -2599,7 +2597,7 @@ class Datab extends CI_Model
 
         return $return;
     }
-    private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true)
+    private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true,$download = false )
     {
         // =====================================================================
         // Controllo multilingua:
@@ -2646,23 +2644,29 @@ class Datab extends CI_Model
         // =====================================================================
         // Stampa del campo
         //
-
-
         if ($field['fields_ref'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
-            
+
 
             if (is_array($value)) {
                 // Ho una relazione molti a molti - non mi serve alcuna
                 // informazione sui field ref, poiché ho già la preview stampata
                 $referenced = $this->crmentity->getReferencedEntity($field);
                 $lnk = $referenced ? $this->get_detail_layout_link($referenced['entity_id']) : false;
-                
                 if ($lnk) {
-                    foreach ($value as $id => $name) {
-                        $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
+                    if ($download) {
+
+                        $result = array_values($value);
+                        return implode(';', $result);
+
+                    } else {
+
+                        foreach ($value as $id => $name) {
+                            $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
+                        }
+                        return implode('<br/>', $value);
+
                     }
                 }
-                return implode('<br/>', $value);
             } elseif (!empty($field['support_fields'])) {
                 // Ho un field ref semplice - per stamparlo ho bisogno dei
                 // support fields (che sono i campi preview dell'entità
@@ -2683,16 +2687,15 @@ class Datab extends CI_Model
                     //Check if entity has a special/custom preview rule
                     $field_ref_entity = $this->get_entity_by_name($field['fields_ref']);
                     $entity_preview = ($field_ref_entity['entity_preview_custom']??false);
-        if (!$entity_preview) {
-            $entity_preview = ($field_ref_entity['entity_preview_base']??false);
-        }
+            if (!$entity_preview) {
+                $entity_preview = ($field_ref_entity['entity_preview_base']??false);
+            }
 
-        //Check if entity_preview_base or custom is set
+            //Check if entity_preview_base or custom is set
                     if ($entity_preview) {
                         $text = str_replace_placeholders($entity_preview, $dato);
                         //debug($text,true);
                     } else {
-
                         foreach ($field['support_fields'] as $support_field) {
                             $prefixedKey = $field['fields_name'] . '_' . $support_field['fields_name'];
                             $simpleKey = $support_field['fields_name'];
@@ -2751,6 +2754,7 @@ class Datab extends CI_Model
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
             }
         } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
+
             $link = $value ? $this->get_detail_layout_link($field['fields_entity_id']) : false;
             
             $entity = $this->get_entity($field['fields_entity_id']);
@@ -2758,11 +2762,13 @@ class Datab extends CI_Model
             $text = $value;
             
             if (array_key_exists($idKey, $dato)) {
+
                 return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
             } else {
                 return $text;
             }
         } elseif ($field['grids_fields_switch_inline'] == DB_BOOL_TRUE) {
+
             $entity = $this->get_entity($field['fields_entity_id']);
             $idKey = $entity['entity_name'] . '_id';
             return $this->load->view('box/grid/switch_bool', ['field' => $field, 'value' => $value, 'row_id' => $dato[$idKey]], true);
