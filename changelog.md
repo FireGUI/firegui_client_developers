@@ -1,3 +1,3 @@
-Changelog version 2.9.5
+Changelog version 2.9.6
  
-Added grid pdf export
+Generic bugfixes
