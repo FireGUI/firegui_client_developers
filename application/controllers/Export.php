@@ -66,7 +66,7 @@ class Export extends MY_Controller
         $data = $this->prepareData($grid_id, $value_id);
         $csv = $this->arrayToCsv($data, ',');
         
-        $filename = "grid{$grid_id}";
+        $filename = t('Export table') . " #{$grid_id}";
         
         if (!empty($this->input->get('filename'))) {
             $filename = $this->input->get('filename');
@@ -81,15 +81,31 @@ class Export extends MY_Controller
         exit;
     }
     
+    /**
+     * Download PDF
+     *
+     * Downloads a PDF file generated from a table with the specified grid ID and optional value ID.
+     *
+     * @param int      $grid_id  The ID of the grid.
+     * @param int|null $value_id The ID of the value (optional).
+     *
+     * @return void
+     *
+     * @uses $_GET['html']        (string)  If set to '1', it displays the generated HTML instead of generating a PDF.
+     * @uses $_GET['orientation'] (string)  Specifies the orientation of the PDF ('landscape' or 'portrait').
+     * @uses $_GET['filename']    (string)  Specifies the filename for the downloaded PDF. If empty, a default filename is used.
+     * @uses $_GET['preview']     (string)  If set, the PDF is displayed inline; otherwise, it is downloaded as an attachment.
+     */
     public function download_pdf($grid_id, $value_id = null)
     {
-        error_reporting(0);
+        error_reporting(0);  // Disable error reporting
         ini_set('display_errors', false);
         ini_set('display_startup_errors', false);
-        setlocale(LC_MONETARY, 'it_IT');
+        setlocale(LC_MONETARY, 'it_IT');  // Set the locale for monetary formatting
         
-        $this->load->library('table');
+        $this->load->library('table');  // Load the table library
         
+        // Set the table base template with css classes
         $template = [
             'table_open' => '<table class="table table-condensed table-bordered table-striped export_pdf_table">',
             
@@ -104,49 +120,49 @@ class Export extends MY_Controller
             'cell_start' => '<td class="export_pdf_tbody_col">',
         ];
         
-        $this->table->set_template($template);
+        $this->table->set_template($template);  // Set the template for the table
         
-        $data = $this->prepareData($grid_id, $value_id);
-        $header = array_unique(array_merge(...array_map('array_keys', $data)));
+        $data = $this->prepareData($grid_id, $value_id);  // Prepare the data for the table
+        $header = array_unique(array_merge(...array_map('array_keys', $data)));  // Get unique headers from the data
         
-        $tpl_folder = $this->db->join('settings_template', 'settings_template_id = settings_template', 'LEFT')->get('settings')->row()->settings_template_folder;
+        $tpl_folder = $this->db->join('settings_template', 'settings_template_id = settings_template', 'LEFT')->get('settings')->row()->settings_template_folder;  // Get the template folder
         
-        $this->table->set_heading($header);
+        $this->table->set_heading($header);  // Set the table heading
         foreach ($data as $row) {
-            $this->table->add_row(array_values($row));
+            $this->table->add_row(array_values($row));  // Add rows to the table
         }
         
-        $html_table = $this->table->generate();
+        $html_table = $this->table->generate();  // Generate the HTML table
         
         if (file_exists(APPPATH . 'views/custom/layout/pdf_custom.php')) {
-            $html = $this->load->view('custom/layout/pdf_custom', ['html' => $html_table], true);
+            $html = $this->load->view('custom/layout/pdf_custom', ['html' => $html_table], true);  // Load custom layout if available
         } elseif (file_exists(APPPATH . 'views/' . $tpl_folder . '/layout/pdf_custom.php')) {
-            $html = $this->load->view($tpl_folder . '/layout/pdf_custom', ['html' => $html_table], true);
+            $html = $this->load->view($tpl_folder . '/layout/pdf_custom', ['html' => $html_table], true);  // Load template-specific layout if available
         } else {
-            $html = $this->load->view('base/layout/pdf_custom', ['html' => $html_table], true);
+            $html = $this->load->view('base/layout/pdf_custom', ['html' => $html_table], true);  // Load default layout
         }
         
-        if ($this->input->get('html') == '1') {
+        if ($this->input->get('html') == '1') { // Display the generated HTML if the 'html' GET parameter is set to '1'
             die($html);
         }
         
-        $pdf = $this->layout->generate_pdf($html, ($this->input->get('orientation') == 'landscape' ? 'landscape' : 'portrait'), '', [], false, true);
+        $pdf = $this->layout->generate_pdf($html, ($this->input->get('orientation') == 'landscape' ? 'landscape' : 'portrait'), '', [], false, true);  // Generate the PDF using the specified orientation
         
-        $filename = "grid{$grid_id}";
+        $filename = t('Export table') . " #{$grid_id}";  // Set the default filename
         
         if (!empty($this->input->get('filename'))) {
-            $filename = $this->input->get('filename');
-            $filename = ucfirst($filename);
-            $filename = str_ireplace([' ', '-'], '_', $filename);
+            $filename = $this->input->get('filename');  // Use the specified filename if provided
+            $filename = ucfirst($filename);  // Capitalize the filename
+            $filename = str_ireplace([' ', '-'], '_', $filename);  // Replace spaces and dashes with underscores
         }
         
-        $fp = fopen($pdf, 'rb');
+        $fp = fopen($pdf, 'rb');  // Open the PDF file in binary mode
         
-        header('Content-Type: application/pdf');
-        header('Content-Length: ' . filesize($pdf));
-        header('Content-disposition: ' . ($this->input->get('preview') !== null ? 'inline' : 'attachment') . "; filename=\"{$filename}.pdf\"");
+        header('Content-Type: application/pdf');  // Set the content type header to indicate PDF
+        header('Content-Length: ' . filesize($pdf));  // Set the content length header
+        header('Content-disposition: ' . ($this->input->get('preview') !== null ? 'inline' : 'attachment') . "; filename=\"{$filename}.pdf\"");  // Set the content disposition header to specify inline or attachment
         
-        fpassthru($fp);
+        fpassthru($fp);  // Output the PDF file
     }
     
     public function download_excel($grid_id, $value_id = null)
@@ -210,7 +226,7 @@ class Export extends MY_Controller
         }
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
         
-        $filename = "grid{$grid_id}";
+        $filename = t('Export table') . " #{$grid_id}";
         
         if (!empty($this->input->get('filename'))) {
             $filename = $this->input->get('filename');
