@@ -1341,6 +1341,25 @@ $(function () {
     }
   });
 
+  var dropUp = function() {
+    var windowHeight = $(window).innerHeight();
+    var pageScroll = $('body').scrollTop();
+
+    $( ".export_grid_data" ).each( function() {
+      var offset = $( this ).offset().top;
+      var space = windowHeight - ( offset - pageScroll );
+
+      if( space < 150 ) {
+        $( this ).closest('.btn-group').addClass( "dropup" );
+      } else  {
+        $( this ).closest('.btn-group').removeClass( "dropup" );
+      }
+    });
+  }
+
+  $(window).load(dropUp);
+  $(window).bind('resize scroll mousewheel', dropUp);
+
   //jQuery in automatico appende ?_={timestamp} su tutti i js caricati da jquery.plugin. Così non lo fa...
   $.ajaxSetup({ cache: true });
 });
