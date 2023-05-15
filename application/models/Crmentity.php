@@ -1108,7 +1108,7 @@ $entity_preview = ($entity['entity_preview_base']??false);
             $column_join = 'fields_ref_auto_left_join';
         }
         if (!array_key_exists($column_join, $this->_fields_ref_by)) {
-
+            $this->_fields_ref_by[$column_join] = [];
 
             $_allFieldsRefBy = $this->db->query("
                 SELECT entity_id, entity_name, fields_name, fields_type, fields_ref
