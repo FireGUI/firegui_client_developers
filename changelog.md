@@ -1,3 +1,4 @@
 Changelog version 2.9.6
  
-Generic bugfixes
+Hotfix undefined index in Crmentity model
+Dynamic dropdown open for grid export button
