@@ -12,7 +12,10 @@
                 <a target="_blank" href="<?php echo base_url("export/download_excel/{$grid['grids']['grids_id']}/$value_id"); ?><?php echo ($_SERVER['QUERY_STRING']) ? "/?{$_SERVER['QUERY_STRING']}" : ''; ?>"><?php e('Excel (xls)'); ?></a>
             </li>
             <li>
-                <a target='_blank' href="<?php echo base_url("export/download_pdf/{$grid['grids']['grids_id']}/$value_id"); ?><?php echo ($_SERVER['QUERY_STRING']) ? "/?{$_SERVER['QUERY_STRING']}" : ''; ?>"><?php e('PDF'); ?></a>
+                <a target='_blank' href="<?php echo base_url("export/download_pdf/{$grid['grids']['grids_id']}/$value_id"); ?><?php echo ($_SERVER['QUERY_STRING']) ? "/?{$_SERVER['QUERY_STRING']}" : ''; ?>"><?php e('PDF (verticale)'); ?></a>
+            </li>
+            <li>
+                <a target='_blank' href="<?php echo base_url("export/download_pdf/{$grid['grids']['grids_id']}/$value_id"); ?><?php echo ($_SERVER['QUERY_STRING']) ? "/?{$_SERVER['QUERY_STRING']}&orientation=landscape" : '/?orientation=landscape'; ?>"><?php e('PDF (orizzontale)'); ?></a>
             </li>
         </ul>
     </div>
