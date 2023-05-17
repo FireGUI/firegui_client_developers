@@ -223,7 +223,6 @@ $currentLangauge = $this->datab->getLanguage()['code'];
         <template #event="{ event, view }">
             <div class="event-content" :style="{ backgroundColor: event.backgroundColor }" style="height: 100%; color: #ffffff;">
                 <div class="vuecal__event-title" v-html="event.title"></div>
-                {{ event.start.formatTime() }} - {{ event.end.formatTime() }}
                 <div>{{ event.start.formatTime() }} - {{ event.end.formatTime() }}</div>
                 <div v-if="event.description" v-html="event.description" class="vuecal__event_description"></div>
             </div>

@@ -1,3 +1,4 @@
-Changelog version 2.9.4
+Changelog version 2.9.6
  
-Fix older file function with name
+Hotfix undefined index in Crmentity model
+Dynamic dropdown open for grid export button
