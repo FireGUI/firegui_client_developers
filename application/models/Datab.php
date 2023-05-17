@@ -2741,6 +2741,7 @@ class Datab extends CI_Model
                         } else {
                             // Non ho tutti i campi preview disponibili (ad es. nelle relazioni NxM), quindi faccio una chiamata alla get entity preview
                             $value_id = (int) $value;
+                            my_log('debug', "Query data select empty for key '{$idKey}'. Check grid '{$field['grids_fields_grids_id']}'. Running avoidable query...");
                             $preview = $this->get_entity_preview_by_name($field['fields_ref'], "{$idKey} = '{$value_id}'", 1);
                             $text = array_key_exists($value_id, $preview) ? $preview[$value_id] : $value_id;
                         }
