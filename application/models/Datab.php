@@ -2652,21 +2652,18 @@ class Datab extends CI_Model
                 // informazione sui field ref, poiché ho già la preview stampata
                 $referenced = $this->crmentity->getReferencedEntity($field);
                 $lnk = $referenced ? $this->get_detail_layout_link($referenced['entity_id']) : false;
-                if ($lnk) {
-                    if ($download) {
+                if ($download) {
 
-                        $result = array_values($value);
-                        return implode(';', $result);
+                    $result = array_values($value);
+                    return implode(';', $result);
 
-                    } else {
-
-                        foreach ($value as $id => $name) {
-                            $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
-                        }
-                        return implode('<br/>', $value);
-
+                }
+                elseif ($lnk) {
+                    foreach ($value as $id => $name) {
+                        $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
                     }
                 }
+                return implode('<br/>', $value);
             } elseif (!empty($field['support_fields'])) {
                 // Ho un field ref semplice - per stamparlo ho bisogno dei
                 // support fields (che sono i campi preview dell'entità
