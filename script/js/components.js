@@ -136,7 +136,7 @@ function initTinymce(container = null) {
 
   var tinymce_config = {
     selector: "textarea.js_tinymce",
-    height: 300,
+    height: 400,
     resize: true,
     autosave_ask_before_unload: false,
     powerpaste_allow_local_images: true,
@@ -145,10 +145,10 @@ function initTinymce(container = null) {
     remove_script_host: true,
     convert_urls: false,
     plugins:
-        "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
+      "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
     menubar: "",
     toolbar:
-        "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor codesample",
+      "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image emoticons | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor code",
     toolbar_sticky: false,
     automatic_uploads: true,
     images_upload_handler: function (blobInfo, success, failure) {
@@ -1187,7 +1187,7 @@ function openCreationForm(formId, entity, onSuccess) {
       maxWidth: 600,
       padding: 25,
       helpers: {
-        overlay : {closeClick: false} // prevents closing when clicking OUTSIDE fancybox
+        overlay: { closeClick: false } // prevents closing when clicking OUTSIDE fancybox
       },
       wrapCSS: "fancybox-white",
       type: "ajax",
@@ -1341,18 +1341,18 @@ $(function () {
     }
   });
 
-  var dropUp = function() {
+  var dropUp = function () {
     var windowHeight = $(window).innerHeight();
     var pageScroll = $('body').scrollTop();
 
-    $( ".export_grid_data" ).each( function() {
-      var offset = $( this ).offset().top;
-      var space = windowHeight - ( offset - pageScroll );
+    $(".export_grid_data").each(function () {
+      var offset = $(this).offset().top;
+      var space = windowHeight - (offset - pageScroll);
 
-      if( space < 150 ) {
-        $( this ).closest('.btn-group').addClass( "dropup" );
-      } else  {
-        $( this ).closest('.btn-group').removeClass( "dropup" );
+      if (space < 150) {
+        $(this).closest('.btn-group').addClass("dropup");
+      } else {
+        $(this).closest('.btn-group').removeClass("dropup");
       }
     });
   }
