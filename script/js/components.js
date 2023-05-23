@@ -148,7 +148,7 @@ function initTinymce(container = null) {
       "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
     menubar: "",
     toolbar:
-      "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image emoticons | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor code",
+      "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor code",
     toolbar_sticky: false,
     automatic_uploads: true,
     images_upload_handler: function (blobInfo, success, failure) {
