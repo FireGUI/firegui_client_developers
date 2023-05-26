@@ -17,9 +17,13 @@ define('CACHE', true);
 define('ROOT_PATH', '../../');
 define('WRITABLE_DIR', './writable/');
 define('ACCEPTED_EXTENSIONS', [
-    1 => 'gif',
+    1 => 'jpg',
     2 => 'jpeg',
-    3 => 'png'
+    3 => 'png',
+    4 => 'gif',
+    5 => 'bmp',
+    6 => 'svg',
+    7 => 'webp',
 ]);
 define('UPLOAD_DEPTH_LEVEL', 3);
 define('DIR_WRITE_MODE', 0755);
