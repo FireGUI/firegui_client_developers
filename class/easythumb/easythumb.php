@@ -9,10 +9,11 @@ include_once './includes/ThumbException.php';
 include_once './includes/GeneralHelper.php';
 include_once './includes/ImageHelper.php';
 
+$param_string = urldecode($_SERVER['QUERY_STRING']);
 
-$param_string = $_SERVER['QUERY_STRING'];
 $ext = strtolower(pathinfo($param_string, PATHINFO_EXTENSION));
 $ext = str_ireplace('jpg', 'jpeg', $ext);
+
 if (!in_array($ext, ACCEPTED_EXTENSIONS)) {
     throw new ThumbException("Extension '$ext' not supported.");
 }
