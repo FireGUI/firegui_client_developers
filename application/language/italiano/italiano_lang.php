@@ -1837,3 +1837,6 @@ $lang['Entities'] = 'Entities';
 $lang['Entities Query'] = 'Entities Query';
 $lang['Log & Create Notifications'] = 'Log & Create Notifications';
 $lang['Contracts Module Settings'] = 'Contracts Module Settings';
+$lang['Reservations'] = 'Reservations';
+$lang['Book calendars'] = 'Book calendars';
+$lang['Method payments'] = 'Method payments';

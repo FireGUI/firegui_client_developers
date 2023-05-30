@@ -177,6 +177,9 @@ class Conditions extends CI_Model
             //Creo uno switch per le condizioni speciali, ovvero che non sono semplici operatori di confronto ma serve un codice ad hoc per questa verifica
             switch ($rule['id']) {
                 case '_query':
+
+                    
+
                      return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value']);
                     break;
                 case 'special2':
@@ -241,13 +244,14 @@ class Conditions extends CI_Model
     }
     public function doQueryOperation($id, $ruleOperator, $query)
     {
-        
+        $query = $this->datab->replace_superglobal_data($query);
         switch ($ruleOperator) {
 
             case 'num rows >= 1':
                 return $this->db->query($query)->num_rows() >= 1;
 
             case 'num rows = 0':
+                
                 return $this->db->query($query)->num_rows() == 0;
 
             default:
