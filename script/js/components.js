@@ -145,7 +145,7 @@ function initTinymce(container = null) {
     remove_script_host: true,
     convert_urls: false,
     plugins:
-      "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
+      "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
     menubar: "",
     toolbar:
       "undo redo | bold italic underline strikethrough | bullist numlist forecolor backcolor image | fontselect fontsizeselect formatselect table | alignleft aligncenter alignright alignjustify outdent indent | removeformat pagebreak | insertfile media link anchor code",
