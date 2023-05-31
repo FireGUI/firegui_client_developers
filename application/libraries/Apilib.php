@@ -670,9 +670,15 @@ class Apilib
      */
     public function delete($entity = null, $id = null)
     {
+        //Accept id as array so I expect to have all data (ex: foreach $rows as $row... $this->apilib->delete('entity_name', $row));
+        if (is_array($id)) {
+            $id = $id[$entity . '_id'];
+        }
         if (!$entity || !$id) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
+
+        
 
         // integrazione soft-delete
         // Recupero i dati dell'entità

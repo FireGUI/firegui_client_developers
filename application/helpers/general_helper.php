@@ -1422,15 +1422,17 @@ if (!function_exists('scanAllDir')) {
 
         while (false !== ($file = readdir($dir))) {
 
-            if (($file != '.') && ($file != '..')) {
+            if ($file && ($file != '.') && ($file != '..')) {
 
                 if (is_dir($src . '/' . $file)) {
 
                     recurse_copy($src . '/' . $file, $dst . '/' . $file);
 
                 } else {
+                    if (file_exists($src . '/' . $file)) {
+                        copy($src . '/' . $file, $dst . '/' . $file);
+                    }
 
-                    copy($src . '/' . $file, $dst . '/' . $file);
 
                 }
 
