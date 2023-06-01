@@ -145,8 +145,10 @@ class Modules_model extends CI_Model
                 $this->mycache->clearCache();
                 return true;
             } else {
+                
                 deleteDirRecursive($unzip_destination_folder);
                 echo_log('error', "Missing data.json in module $identifier");
+
                 return false;
             }
 
@@ -287,6 +289,9 @@ class Modules_model extends CI_Model
             //Creo tutte le entità
             $entities_id_map = [];
             my_log('debug', "Module install: start entities creation", 'update');
+            if (empty($json['entities'])) {
+                $json['entities'] = [];
+            }
             $total = count($json['entities']);
             $c = 0;
             foreach ($json['entities'] as $old_entity_id => $entity) {

@@ -1417,28 +1417,29 @@ if (!function_exists('scanAllDir')) {
     {
 
         $dir = opendir($src);
+if ($dir) {
+    @mkdir($dst);
 
-        @mkdir($dst);
+    while (false !== ($file = readdir($dir))) {
 
-        while (false !== ($file = readdir($dir))) {
+        if ($file && ($file != '.') && ($file != '..')) {
 
-            if ($file && ($file != '.') && ($file != '..')) {
+            if (is_dir($src . '/' . $file)) {
 
-                if (is_dir($src . '/' . $file)) {
+                recurse_copy($src . '/' . $file, $dst . '/' . $file);
 
-                    recurse_copy($src . '/' . $file, $dst . '/' . $file);
-
-                } else {
-                    if (file_exists($src . '/' . $file)) {
-                        copy($src . '/' . $file, $dst . '/' . $file);
-                    }
-
-
+            } else {
+                if (file_exists($src . '/' . $file)) {
+                    copy($src . '/' . $file, $dst . '/' . $file);
                 }
+
 
             }
 
         }
+
+    }
+}
 
         closedir($dir);
 
