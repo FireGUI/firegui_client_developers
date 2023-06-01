@@ -2998,10 +2998,9 @@ class Datab extends CI_Model
                     } elseif (filter_var($value, FILTER_VALIDATE_EMAIL)) {
                         return mailto($value);
                     } elseif (filter_var($value, FILTER_VALIDATE_URL) || (is_string($value) && preg_match("/\A^www.( [^\s]* ).[a-zA-Z]$\z/ix", $value) && filter_var('http://' . $value, FILTER_VALIDATE_URL) !== false)) {
-                        if (stripos($value, 'http://') === false) {
+                        if ((stripos($value, 'http://') === false) && (stripos($value, 'https://') === false)) {
                             $value = 'http://' . $value;
                         }
-
                         return anchor($value, str_replace(array('http://', 'https://'), '', $value), array('target' => '_blank'));
                     } elseif ($field['fields_type'] === 'INT4RANGE' || $field['fields_type'] === 'INT8RANGE') {
                         return $value['from'] . ' - ' . $value['to'];
