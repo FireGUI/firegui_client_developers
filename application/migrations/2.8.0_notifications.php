@@ -7,11 +7,13 @@ $this->load->model('core');
 if ($this->datab->module_installed('core-notifications')) {
     //nothing...
 } else {
-    // Drop native notifications table
-    $this->db->query("DROP TABLE IF EXISTS notifications;");
-    $this->mycache->clearCache();
-    $this->core->installModule('core-notifications');
-}
 
+    if ($this->datab->module_installed('module-manager')) {
+        // Drop native notifications table
+        $this->db->query("DROP TABLE IF EXISTS notifications;");
+        $this->mycache->clearCache();
+        $this->core->installModule('core-notifications');
+    }
+}
 
 log_message('debug', 'Finished migration 2.8.0...');
