@@ -52,6 +52,15 @@ if (empty($custom_action['grids_actions_link'])) {
         } else {
             $url = "{base_url}db_ajax/generic_delete/{$grid['entity_name']}/$id";
         }
+    } elseif (!empty($custom_action['grids_actions_type']) && 'duplicate_edit' == $custom_action['grids_actions_type']) {
+        $url = "{base_url}main/form/{$custom_action['grids_actions_form']}/$id/true";
+        if ('modal' == $custom_action['grids_actions_mode']) {
+            $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id/true";
+        } elseif ('modal_large' == $custom_action['grids_actions_mode']) {
+            $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id/true?_size=large";
+        } elseif ('modal_extra' == $custom_action['grids_actions_mode']) {
+            $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id/true?_size=extra";
+        }
     } elseif (!empty($custom_action['grids_actions_type']) && 'edit_form' == $custom_action['grids_actions_type']) {
         $url = "{base_url}main/form/{$custom_action['grids_actions_form']}/$id";
         if ('modal' == $custom_action['grids_actions_mode']) {

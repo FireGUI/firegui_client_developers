@@ -97,7 +97,7 @@ class Get_ajax extends MY_Controller
      * @param int $form_id
      * @param int $value_id
      */
-    public function modal_form($form_id, $value_id = null)
+    public function modal_form($form_id, $value_id = null, $duplicated = false)
     {
         // Check if i have form id or identifier
         if (!is_numeric($form_id)) {
@@ -123,7 +123,13 @@ class Get_ajax extends MY_Controller
             $this->layout->setLayoutModule($form_entity_module);
         }
         $form = $this->datab->get_form($form_id, $value_id);
-
+        if($duplicated == true){
+            $action_form = $form['forms']['action_url'];
+            $parts = explode("/", $action_form); // Dividi l'URL in base al carattere "/"
+            $key = array_search("true", $parts); // Trova l'indice della stringa "true"
+            $result = implode("/", array_slice($parts, 0, $key)); // Unisci tutte le parti dell'URL fino all'indice "true"
+            $form['forms']['action_url'] = $result;
+        }
         if (!$form) {
             $this->load->view("box/errors/missing_form", ['form_id' => $form_id]);
             return;
