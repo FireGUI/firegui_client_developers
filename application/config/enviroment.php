@@ -22,7 +22,7 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('MAX_UPLOAD_SIZE', 30000);
 
-    define('LOG_ENTITIES_ARRAY', ['tasks']); //Put in this array the entitie's names you want to log
+    define('LOG_ENTITIES_ARRAY', []); //Put in this array the entitie's names you want to log
 
     define('ADMIN_PROJECT', 1901);
     /*

@@ -40,7 +40,7 @@ class Conditions extends CI_Model
             //debug($dati);
             foreach ($rules as $rule) {
                 //debug($rule);
-                $applicable = $this->isApplicableRule($rule['_rule'], $dati);
+                $applicable = $this->isApplicableRule($rule['_rule'], $dati, $value_id);
                 switch ($rule['conditions_action']) {
                     case 1: //Allow
                         $accessible = $applicable;
@@ -136,7 +136,7 @@ class Conditions extends CI_Model
      * @param array $prenoData
      * @return boolean
      */
-    private function isApplicableRule(array $rule, array $dati)
+    private function isApplicableRule(array $rule, array $dati, $value_id = null)
     {
         //debug($rule, true);
         $contains_rules = (isset($rule['condition']) && isset($rule['rules']));
@@ -149,7 +149,7 @@ class Conditions extends CI_Model
              */
             $is_and = strtoupper($rule['condition']) === 'AND';
             foreach ($rule['rules'] as $sub_rule) {
-                $is_applicable = $this->isApplicableRule($sub_rule, $dati);
+                $is_applicable = $this->isApplicableRule($sub_rule, $dati, $value_id);
 
                 // Se devono essere tutte vere e la mia regola corrente è falsa,
                 // allora non proseguo e ritorno false
@@ -180,7 +180,7 @@ class Conditions extends CI_Model
 
                     
 
-                     return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value']);
+                     return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value'], $value_id);
                     break;
                 case 'special2':
 
@@ -242,8 +242,10 @@ class Conditions extends CI_Model
                 break;
         }
     }
-    public function doQueryOperation($id, $ruleOperator, $query)
+    public function doQueryOperation($id, $ruleOperator, $query, $value_id = null)
     {
+        $replaces['value_id'] = $value_id;
+        $query = str_replace_placeholders($query, $replaces);
         $query = $this->datab->replace_superglobal_data($query);
         switch ($ruleOperator) {
 
