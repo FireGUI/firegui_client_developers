@@ -177,9 +177,6 @@ class Conditions extends CI_Model
             //Creo uno switch per le condizioni speciali, ovvero che non sono semplici operatori di confronto ma serve un codice ad hoc per questa verifica
             switch ($rule['id']) {
                 case '_query':
-
-                    
-
                      return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value'], $value_id);
                     break;
                 case 'special2':

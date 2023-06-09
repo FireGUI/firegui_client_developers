@@ -245,7 +245,7 @@ class Layout extends CI_Model
 
         return $box;
     }
-    public function getBoxes($layoutId)
+    public function getBoxes($layoutId,$value_id = null)
     {
 
         $queriedBoxes = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
@@ -255,7 +255,7 @@ class Layout extends CI_Model
 // Rimappo i box in modo tale da avere i parent che contengono i sub
         $boxes = $allSubboxes = $lboxes = [];
         foreach ($queriedBoxes as $key => $box) {
-            if (!$this->conditions->accessible('layouts_boxes', $box['layouts_boxes_id'])) {
+            if (!$this->conditions->accessible('layouts_boxes', $box['layouts_boxes_id'],$value_id)) {
                 unset($queriedBoxes[$key]);
                 continue;
             }

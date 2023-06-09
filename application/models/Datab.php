@@ -2419,7 +2419,7 @@ class Datab extends CI_Model
                 return null;
             }
 
-            $layouts = $this->layout->getBoxes($layout_id);
+            $layouts = $this->layout->getBoxes($layout_id,$value_id);
 
             if ($dati['layout_container']['layouts_pdf'] != DB_BOOL_TRUE) {
                 $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id);
