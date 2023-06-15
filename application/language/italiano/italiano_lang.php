@@ -1840,3 +1840,6 @@ $lang['Contracts Module Settings'] = 'Contracts Module Settings';
 $lang['Reservations'] = 'Reservations';
 $lang['Book calendars'] = 'Book calendars';
 $lang['Method payments'] = 'Method payments';
+$lang['Current Password'] = 'Password corrente';
+$lang['Requires at least one number<br/>Requires at least one lowercase letter<br/>Requires at least one uppercase letter<br/>Requires at least one special character of following ones: @$!%*?&<br/>The password must be at least 8 characters long<br/>'] = 'Richiesto almeno un numero<br/>Richiesto almeno una lettera minuscola<br/>Richiesto almeno una lettera maiuscola<br/>Richiesto almeno un carattere speciale dei seguenti: @$!%*?& <br/>La password deve essere lunga almeno 8 caratteri<br/>';
+$lang['Password Confirmation'] = 'Conferma password';
