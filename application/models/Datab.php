@@ -1632,7 +1632,7 @@ class Datab extends CI_Model
      */
     public function get_detail_layout_link($entityIdentifier, $value_id = null, $modal = false)
     {
-        $cache_key = "apilib/datab.get_detail_layout_link." . $this->auth->get(LOGIN_ENTITY . "_id") . '.' . $entityIdentifier;
+        $cache_key = "apilib/datab.get_detail_layout_link.{$value_id}." . $this->auth->get(LOGIN_ENTITY . "_id") . '.' . $entityIdentifier;
         if (!($dati = $this->mycache->get($cache_key))) {
             // Che sia name o id a getEntity non importa...
             $entity_id = $this->crmentity->getEntity($entityIdentifier)['entity_id'];
