@@ -126,7 +126,7 @@ function mapsInit() {
             'use strict';
 
             $('.js_map:visible').each(function () {
-
+                
                 var url = $(this).data('ajaxurl');
                 var clusterize = $(this).data('clusters');
 
