@@ -445,6 +445,9 @@ new Vue({
                     var _splits = [];
 
                     if (data.length > 0) {
+                        //Order events based on start date and hours
+                        data.sort((a, b) => a.start.localeCompare(b.start));
+
                         self.events = [...data];
 
                         self.events.forEach((element, index) => {
