@@ -65,7 +65,7 @@ class MY_Loader extends MX_Loader
                 $_ci_path = FCPATH . "application/views/base/".$view_file;
                  
                 if ($template != 'base') {
-                    log_message('debug', 'Template file not found: ' . $view_file . ' Loaded base file');
+                    log_message('info', 'Template file not found: ' . $view_file . ' Loaded base file');
                 }
             }
             if (!file_exists($_ci_path)) {

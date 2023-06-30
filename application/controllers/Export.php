@@ -24,37 +24,7 @@ class Export extends MY_Controller
         $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
     }
     
-    private function prepareData($grid_id = null, $value_id = null)
-    {
-        //prendo tutti i dati della grid (filtri compresi) e li metto in un array associativo, pronto per essere esportato
-        $grid = $this->datab->get_grid($grid_id);
-        
-        $grid_data = $this->datab->get_grid_data($grid, $value_id, '', null, 0, null);
-        $out_array = [];
-        foreach ($grid_data as $dato) {
-            $tr = [];
-            
-            foreach ($grid['grids_fields'] as $field) {
-                $tr[] = trim(strip_tags($this->datab->build_grid_cell($field, $dato, false, true, true)));
-                
-            }
-            
-            $out_array[] = $tr;
-        }
-        
-        $columns_names = [];
-        
-        //Rimpiazzo i nomi delle colonne
-        foreach ($grid['grids_fields'] as $key => $field) {
-            $columns_names[$key . $field['fields_name']] = $field['grids_fields_column_name'];
-        }
-        
-        array_walk($out_array, function ($value, $key) use ($columns_names, &$out_array) {
-            $out_array[$key] = array_combine($columns_names, $value);
-        });
-        
-        return $out_array;
-    }
+    
     
     public function download_csv($grid_id, $value_id = null)
     {
@@ -63,8 +33,8 @@ class Export extends MY_Controller
         ini_set('display_startup_errors', false);
         setlocale(LC_MONETARY, 'it_IT');
         
-        $data = $this->prepareData($grid_id, $value_id);
-        $csv = $this->arrayToCsv($data, ',');
+        $data = $this->datab->prepareData($grid_id, $value_id);
+        $csv = $this->datab->arrayToCsv($data, ',');
         
         $filename = t('Export table') . " #{$grid_id}";
         
@@ -122,7 +92,7 @@ class Export extends MY_Controller
         
         $this->table->set_template($template);  // Set the template for the table
         
-        $data = $this->prepareData($grid_id, $value_id);  // Prepare the data for the table
+        $data = $this->datab->prepareData($grid_id, $value_id);  // Prepare the data for the table
         $header = array_unique(array_merge(...array_map('array_keys', $data)));  // Get unique headers from the data
         
         $tpl_folder = $this->db->join('settings_template', 'settings_template_id = settings_template', 'LEFT')->get('settings')->row()->settings_template_folder;  // Get the template folder
@@ -175,7 +145,7 @@ class Export extends MY_Controller
         $grid = $this->datab->get_grid($grid_id);
         $fields = $grid['grids_fields'];
         
-        $data = $this->prepareData($grid_id, $value_id);
+        $data = $this->datab->prepareData($grid_id, $value_id);
         $objPHPExcel = new Spreadsheet();
         
         $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '', 'A1');
@@ -253,41 +223,5 @@ class Export extends MY_Controller
     }
     
     
-    private function arrayToCsv(array $data, $delim = ',', $enclosure = '"')
-    {
-        if (!$data) {
-            return '';
-        }
-        
-        // Apri un nuovo file, mi serve per avere un handler per usare
-        // nativamente fputcsv che fa gli escape corretti
-        $tmp = tmpfile() or show_error('Impossibile creare file temporaneo');
-        
-        $keys = array_keys(array_values($data)[0]);
-        fputcsv($tmp, $keys, $delim, $enclosure);
-        
-        
-        foreach ($data as $row) {
-            if (fputcsv($tmp, $row, $delim, $enclosure) === false) {
-                show_error('Impossibile scrivere sul file temporaneo');
-            }
-        }
-        
-        // Chiudendo il file qua, lo eliminerei completamente, quindi lo leggo
-        // per intero e lo muovo in filedata. fseek mi serve perché in questo
-        // momento il puntatore si trova alla fine del file e devo resettarlo
-        $filedata = '';
-        fseek($tmp, 0);
-        
-        do {
-            $buffer = fread($tmp, 8192);
-            if ($buffer === false) {
-                show_error('Non è stato possibile leggere');
-            }
-            $filedata .= $buffer;
-        } while (strlen($buffer) > 0);
-        
-        fclose($tmp);   // Rilascia risorsa
-        return $filedata;
-    }
+    
 }

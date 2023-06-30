@@ -12,7 +12,7 @@ $get_parameters = http_build_query($_GET);
 <div id="results">
     <div class="row mt-30">
         <div class="col-md-12">
-            <div <?php echo sprintf('id="%s"', $mapId); ?> class="map-container js_map" data-ajaxurl="<?php echo $ajaxURL; ?>" data-initzoom="<?php echo ($data['maps']['maps_init_zoom']) ?: 5; ?>" data-clusters="1" data-get_parameters="<?php echo $get_parameters; ?>"></div>
+            <div <?php echo sprintf('id="%s"', $mapId); ?> class="map-container js_map" data-ajaxurl="<?php echo $ajaxURL; ?>" data-initlatlon="<?php echo ($data['maps']['maps_init_latlon'])?:''; ?>" data-initzoom="<?php echo ($data['maps']['maps_init_zoom']) ?: 5; ?>" data-clusters="1" data-get_parameters="<?php echo $get_parameters; ?>"></div>
         </div>
     </div>
 </div>

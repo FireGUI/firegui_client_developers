@@ -24,6 +24,7 @@ define('ACCEPTED_EXTENSIONS', [
     5 => 'bmp',
     6 => 'svg',
     7 => 'webp',
+    18 => 'webp',
 ]);
 define('UPLOAD_DEPTH_LEVEL', 3);
 define('DIR_WRITE_MODE', 0755);
