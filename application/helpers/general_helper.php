@@ -1415,31 +1415,34 @@ if (!function_exists('scanAllDir')) {
 
     function recurse_copy($src, $dst)
     {
+        $src = preg_replace('#/{2,}#', '/', $src);
+        $dst = preg_replace('#/{2,}#', '/', $dst);
 
         $dir = opendir($src);
-if ($dir) {
-    @mkdir($dst);
 
-    while (false !== ($file = readdir($dir))) {
+        if ($dir) {
+            @mkdir($dst);
 
-        if ($file && ($file != '.') && ($file != '..')) {
+            while (false !== ($file = readdir($dir))) {
 
-            if (is_dir($src . '/' . $file)) {
+                if ($file && ($file != '.') && ($file != '..')) {
 
-                recurse_copy($src . '/' . $file, $dst . '/' . $file);
+                    if (is_dir($src . '/' . $file)) {
 
-            } else {
-                if (file_exists($src . '/' . $file)) {
-                    copy($src . '/' . $file, $dst . '/' . $file);
+                        recurse_copy($src . '/' . $file, $dst . '/' . $file);
+
+                    } else {
+                        if (file_exists($src . '/' . $file)) {
+                            copy($src . '/' . $file, $dst . '/' . $file);
+                        }
+
+
+                    }
+
                 }
 
-
             }
-
         }
-
-    }
-}
 
         closedir($dir);
 
