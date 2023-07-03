@@ -39,6 +39,7 @@ class Modules_model extends CI_Model
                     'modules_identifier' => $module['modules_repository_identifier'],
                     'modules_version_code' => $module['modules_repository_version_code'],
                     'modules_description' => $module['modules_repository_description'],
+                    'modules_notification_message' => $module['modules_repository_notification_message'],
                     'modules_created_by_user' => $module['modules_repository_created_by_user'],
                     'modules_thumbnail' => $module['modules_repository_thumbnail'],
                     'modules_version_date' => $module['modules_repository_last_update'],
@@ -123,6 +124,7 @@ class Modules_model extends CI_Model
                     'modules_name' => $module['modules_repository_name'],
                     'modules_version' => $module['modules_repository_version'],
                     'modules_description' => $module['modules_repository_description'],
+                    'modules_notification_message' => $module['modules_repository_notification_message'],
                     'modules_created_by_user' => $module['modules_repository_created_by_user'],
                     'modules_thumbnail' => $module['modules_repository_thumbnail'],
                     'modules_version_code' => $module['modules_repository_version_code'],
@@ -143,7 +145,7 @@ class Modules_model extends CI_Model
                 deleteDirRecursive($unzip_destination_folder);
 
                 $this->mycache->clearCache();
-                return true;
+                return $module;
             } else {
                 
                 deleteDirRecursive($unzip_destination_folder);

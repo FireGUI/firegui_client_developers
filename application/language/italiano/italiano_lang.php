@@ -1859,3 +1859,6 @@ $lang['Nuovo feedback'] = 'Nuovo feedback';
 $lang['Esito'] = 'Esito';
 $lang['Vendite'] = 'Vendite';
 $lang['Other'] = 'Other';
+$lang['Prenotazioni ADMIN'] = 'Prenotazioni ADMIN';
+$lang['Attention!'] = 'Attention!';
+$lang['You are working on localhost server but you are connected to a remote database!'] = 'You are working on localhost server but you are connected to a remote database!';
