@@ -1,6 +1,8 @@
-Changelog version 3.0.3
+Changelog version 3.0.4
  
-Fix get_detail_layout_link cache
-Re-enabled PASSWORD_REGEX_VALIDATION environment constant
-Changed log level for template not found
-Delete ci_sessions rows for crons
+Export grids now uses model datab
+Managed map bounds for mysql
+Added methods in datab for grids export
+Added initlatlon parameter in maps
+Bugfix for maps refreshing and loop requests
+Bounds passed from maps to get_markers method

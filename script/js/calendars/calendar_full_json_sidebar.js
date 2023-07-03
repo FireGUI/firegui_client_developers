@@ -72,14 +72,15 @@ function initCalendars() {
 
             $('#' + calendarId).html('');
             var defaultView = (typeof localStorage.getItem("fcDefaultView_" + calendarId) !== 'undefined' && localStorage.getItem("fcDefaultView_" + calendarId) !== null) ? localStorage.getItem("fcDefaultView_" + calendarId) : calendars_default_view;
+            var defaultDate = (typeof localStorage.getItem("fcDefaultDate_" + calendarId) !== 'undefined' && localStorage.getItem("fcDefaultDate_" + calendarId) !== null) ? localStorage.getItem("fcDefaultDate_" + calendarId) : moment().format('YYYY-MM-DD HH:mm');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 defaultView: defaultView,
-                defaultDate: moment().format('YYYY-MM-DD HH:mm'),
+                defaultDate: defaultDate,
                 header: {
                     left: 'title',
-                    right: 'prev,next,dayGridMonth,timeGridWeek,timeGridDay'
+                    right: 'today,prev,next,dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 datesRender: function (info) {
                     localStorage.setItem('fcDefaultView_' + calendarId, info.view.type);
@@ -178,6 +179,8 @@ function initCalendars() {
                                 values.push($(this).val());
                             }
                         });
+
+                        localStorage.setItem('fcDefaultDate_' + calendarId, moment(fetchInfo.start).format('YYYY-MM-DD HH:mm'));
 
                         $.ajax({
                             type: 'POST',

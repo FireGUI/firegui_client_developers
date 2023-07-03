@@ -213,6 +213,52 @@ class Layout extends CI_Model
         }
     }
 
+    public function generate_image($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false, $options = []) {
+
+        if ($options !== null) {
+
+            $_options = $options;
+
+            $options = '';
+            foreach ($_options as $key => $value) {
+                $options .= "--{$key} {$value} ";
+            }
+        } else {
+            $options = "--quality 100";
+        }
+
+        $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);       
+        $physicalDir = FCPATH . "/uploads/image";
+        if (!is_dir($physicalDir)) {
+            mkdir($physicalDir, 0755, true);
+        }
+        // 2022-04-19 - Added random_int because it can happen that a generation of pdf deriving from an array,
+        // is done in the same second. so this guarantees a little more uniqueness ... Would microseconds be better?
+        $filename = date('Ymd_His') . '_' . random_int(1, 100);
+        $outputFile = "{$physicalDir}/{$filename}.png";
+
+        // Percorso del file temporaneo
+        $tempFile = "{$physicalDir}/temp.html";
+
+
+        // Salva il testo in un file temporaneo
+        file_put_contents($tempFile, $content);
+        // Comando wkhtmltoimage
+        $command = 'wkhtmltoimage --format png ' . $options . ' ' . $tempFile . ' ' . $outputFile;
+
+        // Esecuzione del comando utilizzando exec()
+        exec($command, $output, $returnCode);
+
+        // Verifica del codice di ritorno
+        if ($returnCode === 0) {
+            // Rimuovi il file temporaneo
+            unlink($tempFile);
+            return $filename.".png";
+        } else {
+            echo 'Si è verificato un errore durante la conversione.';
+        }            
+    }
+
     public function getLayout($layoutId)
     {
         $layout = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->get_where('layouts',
