@@ -44,6 +44,24 @@ if (!empty($calendar_map['all_day'])) {
     $config[] = "{$calendar_map['all_day']}: allDay";
 }
 
+$default_view = "week";
+if(!empty($data['calendars']['calendars_default_view'])) {
+    switch ($data['calendars']['calendars_default_view']) {
+        case 'dayGridMonth':
+            $default_view = "month";
+            break;
+        case 'timeGridWeek':
+            $default_view = "week";
+            break;
+        case 'timeGridDay':
+            $default_view = "day";
+            break;
+        default:
+            $default_view = "week";
+            break;
+    }
+}
+
 $imploded_config = implode(',', $config);
 
 // $calendar_group_by = $data['calendars']['calendars_group_by'];
@@ -217,7 +235,7 @@ $currentLangauge = $this->datab->getLanguage()['code'];
 //Capire se necessario 700px di altezza o se possiamo lasciarlo vuoto... meglio ancora copn parametro
 ?>
 <div id="app">
-    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="day" :selected-date="selectedDate" :time-from="<?php echo time_to_minutes($min_time); ?>" :time-to="<?php echo time_to_minutes($max_time); ?>" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" events-on-month-view="short" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30" locale="<?php echo substr($currentLangauge, 0, 2); ?>"><template #split-label="{ split, view }">
+    <vue-cal class="demo full-cal vuecal--full-height-delete" style="height: 700px;" :disable-views="['years']" :selected-date="selectedDate" :show-all-day-events="true" active-view="<?php echo $default_view; ?>" :selected-date="selectedDate" :time-from="<?php echo time_to_minutes($min_time); ?>" :time-to="<?php echo time_to_minutes($max_time); ?>" :editable-events="editable" :split-days="splits" sticky-split-labels="sticky-split-labels" events-on-month-view="short" @ready="initCalendar" @view-change="initCalendar" :events="events" @event-drag-create="onEventCreate" @event-drop="onEventDrop" @event-duration-change="onEventResize" :on-event-click="onEventClick" @cell-focus="selectedDate = $event.date || $event" :snap-to-time="30" locale="<?php echo substr($currentLangauge, 0, 2); ?>"><template #split-label="{ split, view }">
             <strong :style="`color: ${split.color}`">{{ split.label }}</strong>
         </template>
         <template #event="{ event, view }">
@@ -478,7 +496,7 @@ new Vue({
                         });
                     }
                     self.splits = _splits;
-                    console.log(self.events);
+                    //console.log(self.events);
                 }
             } catch (error) {
                 console.log(error);
