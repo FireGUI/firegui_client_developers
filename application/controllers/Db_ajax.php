@@ -185,9 +185,9 @@ class Db_ajax extends MY_Controller
                     'status' => $status,
                     'txt' => str_replace($replaceFrom, $replaceTo, $message),
                     'close_modals' => 1,
-                    'refresh_grids' => 1,
+                    'refresh_grids' => (bool) ($status == 7),
                     'related_entity' => $entity,
-                    'reset_form' => 1,
+                    'reset_form' => (bool) ($status == 7),
                     'data' => $saved,
                     'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
                 );
