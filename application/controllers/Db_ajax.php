@@ -185,12 +185,15 @@ class Db_ajax extends MY_Controller
                     'status' => $status,
                     'txt' => str_replace($replaceFrom, $replaceTo, $message),
                     'close_modals' => 1,
-                    'refresh_grids' => (bool) ($status == 7),
                     'related_entity' => $entity,
-                    'reset_form' => (bool) ($status == 7),
                     'data' => $saved,
-                    'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
                 );
+
+                if ($status == 7) {
+                    $return_data['reset_form'] = DB_BOOL_TRUE;
+                    $return_data['refresh_grids'] = DB_BOOL_TRUE;
+                    $return_data['cache_tags'] = $this->mycache->buildTagsFromEntity($entity);
+                }
 
                 echo json_encode($return_data, JSON_INVALID_UTF8_SUBSTITUTE);
             } else {
