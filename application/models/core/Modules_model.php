@@ -401,9 +401,13 @@ class Modules_model extends CI_Model
                 $return = [];
                 //$entity['fields'] = $this->entities->changeMySqlTypes($entity['fields']);
 
+                if (empty($entities_id_map[$old_entity_id])) {
+                    continue;
+                }
+
                 my_log('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'", 'update');
                 foreach ($entity['fields'] as $field) {
-
+                    
 
                     $c++;
                     progress($c, $total, 'fields');
