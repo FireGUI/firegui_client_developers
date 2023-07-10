@@ -1376,7 +1376,7 @@ class Modules_model extends CI_Model
                         if (!array_key_exists($lb['layouts_boxes_content_ref'], $grids_id_map)) {
                             debug($lb);
                             debug($grids_id_map);
-                            debug("ANOMALIA... Grid non trovata!", true);
+                            my_log('error', "ANOMALIA... Grid nel layout '{$lb['layouts_boxes_title']}' non trovata!", 'update');
                             continue 2;
                         }
 
