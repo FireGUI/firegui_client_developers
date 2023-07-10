@@ -911,6 +911,8 @@ class Modules_model extends CI_Model
                             $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
                         } else {
                             //Se non esiste, probabilmente si tratta di una grid che punta a un entità di un altro modulo. Non cambio l'id (darebbe errore visto che non può essere null) e spero che poi venga installato l'altro modulo
+                            //20230710 - Cambiato logica... skippo proprio questa grid!
+                            continue;
                         }
 
 
@@ -1001,6 +1003,11 @@ class Modules_model extends CI_Model
             foreach ($json['grids'] as $grid) {
                 $old_grid_id = $grid['grids_id'];
                 $grid_id = $grids_id_map[$old_grid_id];
+
+                if (!$grid_id) {
+                    continue;
+                }
+
                 //debug($grid,true);
                 if ($this->db->query("SELECT * FROM locked_elements WHERE locked_elements_type = 'grid' AND locked_elements_ref_id = '$grid_id'")->num_rows() == 0) {
 
