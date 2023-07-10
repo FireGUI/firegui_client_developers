@@ -1727,7 +1727,9 @@ class Modules_model extends CI_Model
             }
 
             foreach ($json['entities'] as $entity) {
-
+                if (!$this->crmentity->entityExists($entity['entity_name'])) {
+                    continue;
+                }
                 //Inserisco i raw_data_install
                 if (array_key_exists('raw_data_install', $entity)) {
                     if ($entity['raw_data_install']) {
