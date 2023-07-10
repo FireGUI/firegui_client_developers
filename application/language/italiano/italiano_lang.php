@@ -1862,3 +1862,6 @@ $lang['Other'] = 'Other';
 $lang['Prenotazioni ADMIN'] = 'Prenotazioni ADMIN';
 $lang['Attention!'] = 'Attention!';
 $lang['You are working on localhost server but you are connected to a remote database!'] = 'You are working on localhost server but you are connected to a remote database!';
+$lang['Paintball movimenti'] = 'Paintball movimenti';
+$lang['Coupons'] = 'Coupons';
+$lang['Tickets'] = 'Tickets';

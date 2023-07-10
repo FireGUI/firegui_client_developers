@@ -291,6 +291,10 @@ class Modules_model extends CI_Model
             //Creo tutte le entità
             $entities_id_map = [];
             my_log('debug', "Module install: start entities creation", 'update');
+
+            
+
+
             if (empty($json['entities'])) {
                 $json['entities'] = [];
             }
@@ -316,7 +320,13 @@ class Modules_model extends CI_Model
                     ];
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);
                     if (!$entity_exists) {
-                        $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
+                        try {
+                            $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
+                        } catch (RuntimeException $e) {
+                            my_log('error', "Entity '{$entity['entity_name']}' creation failed! (ex: {$e->getMessage()})", 'update');
+                            continue;
+                        }
+                        
                         my_log('debug', "Module install: '{$entity['entity_name']}' created", 'update');
                     } else {
                         my_log('debug', "Module install: entity '{$entity['entity_name']}' already present", 'update');
@@ -481,6 +491,9 @@ class Modules_model extends CI_Model
                     progress($fdc, $fd_count, 'fields draw');
                     unset($fd['fields_draw_id']);
                     $fd['fields_draw_fields_id'] = $fields_id_map[$fd['fields_draw_fields_id']];
+                    if (empty($fd['fields_draw_fields_id'])) {
+                        //debug($fd,true);
+                    }
                     $draw_exists = $this->db->get_where('fields_draw', [
                         'fields_draw_fields_id' => $fd['fields_draw_fields_id'],
                     ]);
