@@ -1,3 +1,3 @@
-Changelog version 3.1.0
+Changelog version 3.1.1
  
-Beta for notifications test
+Fix inline action showing even if is show type of "bulk"
