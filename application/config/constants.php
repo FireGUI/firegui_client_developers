@@ -85,6 +85,7 @@ define(
 define(
     'COLORS_PALETTE',
     array(
+        'Blue' => '#4b8ffc',
         'Blue default' => '#222d32',
         'Blue speech' => '#3c40c6',
         'Blue disco' => '#0fbcf9',
