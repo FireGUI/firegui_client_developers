@@ -769,6 +769,9 @@ class Get_ajax extends MY_Controller
 
         // Geography data
         $bounds = $this->input->post('bounds');
+        if (!is_array($bounds)) {
+            $bounds = json_decode($bounds,true);
+        }
         if ($this->db->dbdriver == 'postgre') {
             if ($latlng_field !== null && $bounds && !$isSearchMode) {
                 $ne_lat = $bounds['ne_lat'];
@@ -782,17 +785,19 @@ class Get_ajax extends MY_Controller
             }
         } else {
             if ($latlng_field !== null && $bounds && !$isSearchMode) {
+                //debug($bounds,true);
                 $ne_lat = $bounds['ne_lat'];
                 $ne_lng = $bounds['ne_lng'];
                 $sw_lat = $bounds['sw_lat'];
                 $sw_lng = $bounds['sw_lng'];
 
                 if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
-                    //TODO: check mariadb lat/long inversion
-                    $where[] = "ST_Intersects(ST_GeomCollFromText('POLYGON(({$ne_lng} {$ne_lat},{$ne_lng} {$sw_lat},{$sw_lng} {$sw_lat},{$sw_lng} {$ne_lat},{$ne_lng} {$ne_lat}))'), {$latlng_field})";
+                    $where[] = "(SUBSTRING_INDEX({$latlng_field}, ';', 1) BETWEEN {$sw_lat} AND {$ne_lat}) AND (SUBSTRING_INDEX({$latlng_field}, ';', -1) BETWEEN {$sw_lng} AND {$ne_lng})";
                 }
             }
         }
+
+        //debug($where,true);
 
         $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : null;
         $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), null, null, $order_by, 2, false, [], ['group_by' => null]);

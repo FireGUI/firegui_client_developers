@@ -503,7 +503,9 @@ class Crmentity extends CI_Model
 
         //Join entities
         foreach ($dati['visible_fields'] as $key => $campo) {
-
+            if (count($joined) >= 60) {
+                break;
+            }
             //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
             $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 

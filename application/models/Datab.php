@@ -1632,7 +1632,7 @@ class Datab extends CI_Model
      */
     public function get_detail_layout_link($entityIdentifier, $value_id = null, $modal = false)
     {
-        $cache_key = "apilib/datab.get_detail_layout_link." . $this->auth->get(LOGIN_ENTITY . "_id") . '.' . $entityIdentifier;
+        $cache_key = "apilib/datab.get_detail_layout_link.{$value_id}." . $this->auth->get(LOGIN_ENTITY . "_id") . '.' . $entityIdentifier;
         if (!($dati = $this->mycache->get($cache_key))) {
             // Che sia name o id a getEntity non importa...
             $entity_id = $this->crmentity->getEntity($entityIdentifier)['entity_id'];
@@ -3540,5 +3540,77 @@ class Datab extends CI_Model
         $this->lang->is_loaded = [];
 
         $this->load->language($language, $language);
+    }
+
+    /*
+    Functions to prepare data for grid export
+    */
+    public function prepareData($grid_id = null, $value_id = null)
+    {
+        //prendo tutti i dati della grid (filtri compresi) e li metto in un array associativo, pronto per essere esportato
+        $grid = $this->datab->get_grid($grid_id);
+
+        $grid_data = $this->datab->get_grid_data($grid, $value_id, '', null, 0, null);
+        $out_array = [];
+        foreach ($grid_data as $dato) {
+            $tr = [];
+
+            foreach ($grid['grids_fields'] as $field) {
+                $tr[] = trim(strip_tags($this->datab->build_grid_cell($field, $dato, false, true, true)));
+
+            }
+
+            $out_array[] = $tr;
+        }
+
+        $columns_names = [];
+
+        //Rimpiazzo i nomi delle colonne
+        foreach ($grid['grids_fields'] as $key => $field) {
+            $columns_names[$key . $field['fields_name']] = $field['grids_fields_column_name'];
+        }
+
+        array_walk($out_array, function ($value, $key) use ($columns_names, &$out_array) {
+            $out_array[$key] = array_combine($columns_names, $value);
+        });
+
+        return $out_array;
+    }
+    public function arrayToCsv(array $data, $delim = ',', $enclosure = '"')
+    {
+        if (!$data) {
+            return '';
+        }
+
+        // Apri un nuovo file, mi serve per avere un handler per usare
+        // nativamente fputcsv che fa gli escape corretti
+        $tmp = tmpfile() or show_error('Impossibile creare file temporaneo');
+
+        $keys = array_keys(array_values($data)[0]);
+        fputcsv($tmp, $keys, $delim, $enclosure);
+
+
+        foreach ($data as $row) {
+            if (fputcsv($tmp, $row, $delim, $enclosure) === false) {
+                show_error('Impossibile scrivere sul file temporaneo');
+            }
+        }
+
+        // Chiudendo il file qua, lo eliminerei completamente, quindi lo leggo
+        // per intero e lo muovo in filedata. fseek mi serve perché in questo
+        // momento il puntatore si trova alla fine del file e devo resettarlo
+        $filedata = '';
+        fseek($tmp, 0);
+
+        do {
+            $buffer = fread($tmp, 8192);
+            if ($buffer === false) {
+                show_error('Non è stato possibile leggere');
+            }
+            $filedata .= $buffer;
+        } while (strlen($buffer) > 0);
+
+        fclose($tmp); // Rilascia risorsa
+        return $filedata;
     }
 }

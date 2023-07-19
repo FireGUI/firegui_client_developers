@@ -1417,8 +1417,11 @@ if (!function_exists('scanAllDir')) {
 
     function recurse_copy($src, $dst)
     {
+        $src = preg_replace('#/{2,}#', '/', $src);
+        $dst = preg_replace('#/{2,}#', '/', $dst);
 
         $dir = opendir($src);
+
         if ($dir) {
             @mkdir($dst);
 

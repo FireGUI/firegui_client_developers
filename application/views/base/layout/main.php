@@ -52,6 +52,21 @@
                     </div>
                 </section>
             <?php endif; ?>
+
+            <?php if ($_SERVER['SERVER_NAME'] == 'localhost' && $this->db->hostname != 'localhost' && is_development()): ?>
+                <section class="content-header">
+                    <div class="callout callout-danger">
+                        <h4>
+                            <?php e('Attention!'); ?>
+                        </h4>
+
+                        <p>
+                            <?php e('You are working on localhost server but you are connected to a remote database!'); echo " ({$this->db->hostname})"; ?>
+                        </p>
+                    </div>
+                </section>
+            <?php endif; ?>
+
             <div class="js_page_content"
                 data-layout-id="<?php echo (!empty($dati['layout_id'])) ? $dati['layout_id'] : ''; ?>"
                 data-value_id="<?php echo (!empty($value_id)) ? $value_id : ''; ?>"

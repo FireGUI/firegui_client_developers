@@ -115,16 +115,16 @@ $                   Match the end of the string.
 
 */
 
-    $regex_msg = 'Require that at least one number<br/>';
-    $regex_msg .= 'Require that at least one lowercase letter<br/>';
-    $regex_msg .= 'Require that at least one uppercase letter<br/>';
-    $regex_msg .= 'Require that at least one special character of following ones: @$!%*?&<br/>';
-    $regex_msg .= 'The password must be at least 12 characters long<br/>';
+    $regex_msg = 'Requires at least one number<br/>';
+    $regex_msg .= 'Requires at least one lowercase letter<br/>';
+    $regex_msg .= 'Requires at least one uppercase letter<br/>';
+    $regex_msg .= 'Requires at least one special character of following ones: @$!%*?&<br/>';
+    $regex_msg .= 'The password must be at least 8 characters long<br/>';
 
-    // define('PASSWORD_REGEX_VALIDATION', [
-    //     'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/',
-    //     'msg' => $regex_msg
-    // ]);
+    define('PASSWORD_REGEX_VALIDATION', [
+        'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+        'msg' => $regex_msg
+    ]);
 
     /*
  * ============================================================
