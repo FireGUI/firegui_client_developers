@@ -511,6 +511,17 @@ class Apilib
         }
     }
 
+    /*
+    Usefull to centralize saving methods in on call
+    */
+    public function save($entity = null, $data, $id = null)
+    {
+        if ($id) {
+            return $this->edit($entity, $id, $data);
+        } else {
+            return $this->create($entity, $data);
+        }
+    }
     public function createMany($entity = null, $data = null)
     {
 
