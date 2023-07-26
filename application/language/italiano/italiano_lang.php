@@ -1865,3 +1865,17 @@ $lang['You are working on localhost server but you are connected to a remote dat
 $lang['Paintball movimenti'] = 'Paintball movimenti';
 $lang['Coupons'] = 'Coupons';
 $lang['Tickets'] = 'Tickets';
+$lang['Tutorial'] = 'Tutorial';
+$lang['Statistics'] = 'Statistics';
+$lang['New Test'] = 'New Test';
+$lang['Int'] = 'Int';
+$lang['Int required'] = 'Int required';
+$lang['Float'] = 'Float';
+$lang['Float required'] = 'Float required';
+$lang['Int default'] = 'Int default';
+$lang['Float default'] = 'Float default';
+$lang['product name'] = 'product name';
+$lang['product quantity'] = 'product quantity';
+$lang['Support tables Manager'] = 'Support tables Manager';
+$lang['Git Manager   Settings'] = 'Git Manager   Settings';
+$lang['Genera ricorrenze'] = 'Genera ricorrenze';

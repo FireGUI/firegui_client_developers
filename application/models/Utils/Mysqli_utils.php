@@ -482,6 +482,7 @@ class Mysqli_utils extends Utils
             'post_process_api' => ['type' => 'BOOLEAN', 'default' => '1'],
             'post_process_crm' => ['type' => 'BOOLEAN', 'default' => '1'],
             'post_process_module' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'post_process_background' => ['type' => 'BOOLEAN', 'default' => '0'],
         ]);
 
         $this->addForeignKey('post_process', 'post_process_entity_id', 'entity', 'entity_id');
@@ -602,6 +603,20 @@ class Mysqli_utils extends Utils
             'emails_headers' => ['type' => 'TEXT'],
             'emails_module' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
         ]);
+
+        /* ============================
+         * Background postprocess
+         * ============================ */
+        $this->morphTable('_queue_pp', [
+            '_queue_pp_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
+            '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+            '_queue_pp_execution_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+            '_queue_pp_code' => ['type' => 'TEXT'],
+            '_queue_pp_executed' => ['type' => 'BOOLEAN', 'default' => false],
+            '_queue_pp_data' => ['type' => 'TEXT'],
+            '_queue_pp_event_data' => ['type' => 'TEXT'],
+        ]);
+
 
         try {
             $this->entitiesBaseSetup();

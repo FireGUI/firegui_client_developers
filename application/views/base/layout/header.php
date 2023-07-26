@@ -112,7 +112,18 @@ $this->layout->addDinamicStylesheet($data, "header.css");
             <?php if (file_exists(__DIR__ . '/custom/header-menu.php')) $this->load->view('layout/custom/header-menu'); ?>
 
             {tpl-pre-header_navbar}
-            <?php $this->hook->message_dropdown(); ?>
+            <?php //$this->hook->message_dropdown(); ?>
+
+            <!-- BEGIN show pending processes -->
+            <?php $pending_processes = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->get('_queue_pp')->num_rows(); ?>
+            <?php if ($pending_processes > 0): ?>
+            <li class=" pending_processes" style="color:white;" id="pending_processes">
+
+            Pending processes: <?php echo $pending_processes; ?>
+
+            </li>
+            <?php endif; ?>
+            <!-- END show pending processes -->
 
             <!-- BEGIN LANGUAGES DROPDOWN -->
             <li class="dropdown languages" id="languages">

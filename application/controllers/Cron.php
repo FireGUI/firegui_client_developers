@@ -260,6 +260,9 @@ class Cron extends MY_Controller
             $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
         }
 
+        //First of all run queue pp processes
+        $this->runBackgroundProcesses();
+        
 
         $cronKey = uniqid();
 
@@ -573,6 +576,32 @@ class Cron extends MY_Controller
     private function getKey()
     {
         return 'crons' . substr(sha1(__FILE__), 0, 6);
+    }
+
+    public function runBackgroundProcesses() {
+        $_queue_pps = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->limit(10)->order_by('_queue_pp_date', 'ASC')->get('_queue_pp')->result_array();
+        $i=0;
+        $c = count($_queue_pps);
+        foreach ($_queue_pps as $pp) {
+            $i++;
+            progress($i, $c, 'background processes');
+            $function = json_decode($pp['_queue_pp_event_data'], true);
+            $decoded_data = json_decode($pp['_queue_pp_data'], true);
+            $data = $decoded_data['data'];
+
+            $this->db->where('_queue_pp_id', $pp['_queue_pp_id'])->update('_queue_pp', [
+                '_queue_pp_execution_date' => date('Y-m-d H:i:s'),
+                '_queue_pp_executed' => DB_BOOL_TRUE
+            ]);
+            
+
+            if (empty($function['fi_events_post_process_id'])) {
+                    $this->apilib->runEvent($function, $data);
+                } else {
+                    //TODO: deprecated... use onlu fi_events table
+                    eval($function['post_process_what']);
+                }
+        }
     }
 }
 

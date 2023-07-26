@@ -46,6 +46,13 @@ class Apilib
     const LOG_EDIT = 7; // Apilib::edit action
     const LOG_DELETE = 8; // Apilib::delete action
 
+    private $not_deferrable_pp = [
+        'pre-login', 'login', 'search', 'pre-save', 'pre-delete', 'pre-update', 'pre-insert','pre-validation-update',
+        'pre-validation-insert','pre-validation-save'
+    ];
+    private $deferrable_pp = [
+        'update', 'delete','insert','save'
+    ];
     private $error = 0;
     private $errorMessage = '';
     private $errorMessages = [
@@ -2189,6 +2196,7 @@ class Apilib
 
     public function runDataProcessing($entity_id, $pptype, $data = [])
     {
+        
         if (!$this->processEnabled) {
             return $data;
         }
@@ -2214,16 +2222,47 @@ class Apilib
 
         if (!empty($dataProcessToRun)) {
             foreach ($dataProcessToRun as $function) {
-                try {
-                    if (empty($function['fi_events_post_process_id'])) {
-                        $this->runEvent($function, $data);
-                    } else {
-                        //TODO: deprecated... use onlu fi_events table
-                        eval($function['post_process_what']);
-                    }
-                } catch (Exception $ex) {
-                    throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
+                if (!in_array($pptype, array_merge($this->not_deferrable_pp,$this->deferrable_pp))) {
+                    debug($pptype);
+                    debug($function);
+                    debug($data,true);
                 }
+                
+                if (in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
+                    /*
+                    '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+                    '_queue_pp_execution_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+                    '_queue_pp_code' => ['type' => 'TEXT'],
+                    '_queue_pp_executed' => ['type' => 'BOOLEAN', 'default' => false],
+                    '_queue_pp_data' => ['type' => 'TEXT'],
+                    */
+                    $this->db->insert('_queue_pp', [
+                        '_queue_pp_date' => date('Y-m-d H:i:s'),
+                        '_queue_pp_code' => $function['post_process_what'],
+                        '_queue_pp_executed' => DB_BOOL_FALSE,
+                        '_queue_pp_data' => json_encode([
+                            'data' => $data, 
+                            '_session' => $_SESSION, 
+                            '_query_string'=>$_SERVER['QUERY_STRING'],
+                            '_post' => $this->input->post(),
+                            'original_post' => $this->originalPost
+                        ]),
+                        '_queue_pp_event_data' => json_encode($function)
+                    ]);
+                } else {
+                    try {
+                        if (empty($function['fi_events_post_process_id'])) {
+                            $this->runEvent($function, $data);
+                        } else {
+                            //TODO: deprecated... use onlu fi_events table
+                            eval($function['post_process_what']);
+                        }
+                    } catch (Exception $ex) {
+                        throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
+                    }
+                }
+
+                
             }
         }
         if (!empty($data['entity']) && is_array($data)) {
