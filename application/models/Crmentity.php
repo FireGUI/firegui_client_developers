@@ -255,9 +255,11 @@ class Crmentity extends CI_Model
                 //Per i campi float li formato number_format 2, altrimenti mysql fa le bizze e mostra cose tipo 123.359999999999996
                 if ($this->db->dbdriver != 'postgre') {
                     foreach ($fieldsFloat as $field) {
-                        $_data[$field['fields_name']] = number_format($_data[$field['fields_name']], 3, '.', '');
-                        if (substr($_data[$field['fields_name']], -1) === '0') {
-                            $_data[$field['fields_name']] = substr($_data[$field['fields_name']], 0, -1);
+                        if (!empty($_data[$field['fields_name']]) && $_data[$field['fields_name']] !== null) {
+                            $_data[$field['fields_name']] = number_format($_data[$field['fields_name']], 3, '.', '');
+                            if (substr($_data[$field['fields_name']], -1) === '0') {
+                                $_data[$field['fields_name']] = substr($_data[$field['fields_name']], 0, -1);
+                            }
                         }
                     }
                 }
