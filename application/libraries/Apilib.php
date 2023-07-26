@@ -1521,7 +1521,12 @@ class Apilib
             }
 
             //if (!$editMode && empty($data[$name]) && $this->db->dbdriver == 'postgre' && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
-            if (!$editMode && empty($data[$name]) && (array_key_exists($name, $data) && $data[$name] !== '0') && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
+//            if (!$editMode && empty($data[$name]) && (array_key_exists($name, $data) && $data[$name] !== '0') && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int', 'double', 'float'])) {
+
+            // Michael / Matteo - 25/07/2023 - Aggiunti float e double in quanto non è giusto che se non è required venga comunque forzato a 0.
+            // inoltre è anche sbagliato che tutto questo non venga eseguito (anche per gli int) in fase di edit del record.
+            // perciò ho duplicato la riga togliendo il !$editMode e commentata quella vecchia versione
+            if (empty($data[$name]) && (array_key_exists($name, $data) && $data[$name] !== '0') && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int', 'double', 'float'])) {
                 if (array_key_exists($name, $data)) {
                     //Avoid numbers to be 0 in case of empty. Forced to null
                     $data[$name] = null;
