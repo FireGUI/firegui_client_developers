@@ -2233,7 +2233,7 @@ class Apilib
                     debug($data,true);
                 }
                 
-                if (in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
+                if (!is_maintenance() && in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
                     /*
                     '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
                     '_queue_pp_execution_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
