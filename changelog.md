@@ -1,11 +1,5 @@
-Changelog version 3.1.2
+Changelog version 3.1.3
  
-Added version also in settings page
-parameterized success function in submitajax.js
-codeformatting in submitajax.js
-Added blue variant hex color in constants.php
-Add log message api helper
-Added module installed version to repository
-Added method save in Apilib
-Fix set float null if not required and not populated in the form
-Major fix: background post processing
+Background post process now runs in real time if maintanance is active
+Fixed loading of views that have an overwritten file in "views/custom" folder
+Added "pre-search" to $not_deferrable_pp array
