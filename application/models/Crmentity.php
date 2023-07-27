@@ -958,9 +958,11 @@ $entity_preview = ($entity['entity_preview_base']??false);
     // =========================================================================
     public function reloadSchemaCache()
     {
+        $this->_schemaCache = null;
         $this->mycache->delete(self::SCHEMA_CACHE_KEY);
         $this->buildSchemaCacheIfNotValid();
     }
+
 
     protected function buildSchemaCacheIfNotValid()
     {

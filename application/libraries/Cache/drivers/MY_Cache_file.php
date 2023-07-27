@@ -411,7 +411,8 @@ class MY_Cache_file extends CI_Driver
 
     public function clearCache($drop_template_files = false, $key = null)
     {
-
+        $CI = &get_instance();
+        $CI->crmentity->reloadSchemaCache();
         if ($key) {
             //debug($key);
             if ($key == 'raw_queries') {
