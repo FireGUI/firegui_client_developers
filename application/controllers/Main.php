@@ -341,6 +341,28 @@ class Main extends MY_Controller
         }
     }
 
+
+    /**
+     * Events Queue
+     */
+    public function events_queue()
+    {
+        if (!$this->datab->is_admin()) {
+            $pagina = '<h1 style="color: #cc0000;">Permission denied</h1>';
+            $this->stampa($pagina);
+            return;
+        }
+
+        $dati['current_page'] = 'events_queue';
+
+        $dati['events_not_executed'] = $this->db->query("SELECT * FROM _queue_pp WHERE _queue_pp_executed = 0 ORDER BY _queue_pp_id ASC ")->result_array();
+        $dati['events_executed'] = $this->db->query("SELECT * FROM _queue_pp WHERE _queue_pp_executed = 1 ORDER BY _queue_pp_id DESC LIMIT 500 ")->result_array();
+
+        $pagina = $this->load->view("pages/events_queue", array('dati' => $dati), true);
+        $this->stampa($pagina);
+    }
+
+
     /**
      * Log CRM page
      */
