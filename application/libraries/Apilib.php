@@ -47,7 +47,7 @@ class Apilib
     const LOG_DELETE = 8; // Apilib::delete action
 
     private $not_deferrable_pp = [
-        'pre-login', 'login', 'search', 'pre-save', 'pre-delete', 'pre-update', 'pre-insert','pre-validation-update',
+        'pre-login', 'login', 'pre-search', 'search', 'pre-save', 'pre-delete', 'pre-update', 'pre-insert','pre-validation-update',
         'pre-validation-insert','pre-validation-save'
     ];
     private $deferrable_pp = [

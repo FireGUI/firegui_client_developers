@@ -179,34 +179,50 @@ class Modules
 	 * Also scans application directories for models, plugins and views.
 	 * Generates fatal error if file not found.
 	 **/
-	public static function find($file, $module, $base)
-	{
-		$segments = explode('/', $file);
+    public static function find($file, $module, $base)
+    {
+        $segments = explode('/', $file);
 
-		$file = array_pop($segments);
-		$file_ext = (pathinfo($file, PATHINFO_EXTENSION)) ? $file : $file . EXT;
+        $file = array_pop($segments);
+        $file_ext = (pathinfo($file, PATHINFO_EXTENSION)) ? $file : $file . EXT;
 
-		$path = ltrim(implode('/', $segments) . '/', '/');
-		$module ? $modules[$module] = $path : $modules = array();
+        $path = ltrim(implode('/', $segments) . '/', '/');
+        $module ? $modules[$module] = $path : $modules = array();
 
-		if (!empty($segments)) {
-			$modules[array_shift($segments)] = ltrim(implode('/', $segments) . '/', '/');
-		}
+        if (!empty($segments)) {
+            $modules[array_shift($segments)] = ltrim(implode('/', $segments) . '/', '/');
+        }
 
-		foreach (Modules::$locations as $location => $offset) {
-			foreach ($modules as $module => $subpath) {
-				$fullpath = $location . $module . '/' . $base . $subpath;
+        foreach (Modules::$locations as $location => $offset) {
+            foreach ($modules as $module => $subpath) {
+                $fullpath = $location . $module . '/' . $base . $subpath;
 
-				if ($base == 'libraries/' or $base == 'models/') {
-					if (is_file($fullpath . ucfirst($file_ext))) return array($fullpath, ucfirst($file));
-				} else
-					/* load non-class files */
-					if (is_file($fullpath . $file_ext)) return array($fullpath, $file);
-			}
-		}
+                $custom_path = null;
+                if (is_dir(APPPATH . $base . 'custom/') && is_dir(APPPATH . $base . 'custom/' . $module)) {
+                    $custom_path = APPPATH . $base . 'custom/' . $module . '/' . $subpath;
+                } else {
 
-		return array(FALSE, $file);
-	}
+                }
+
+                if ($base == 'libraries/' or $base == 'models/') {
+                    if (is_dir($custom_path) && is_file($custom_path . ucfirst($file_ext))) {
+                        return array($custom_path, ucfirst($file));
+                    } elseif (is_file($fullpath . ucfirst($file_ext))) {
+                        return array($fullpath, ucfirst($file));
+                    }
+                } else {
+                    /* load non-class files */
+                    if (is_dir($custom_path) && is_file($custom_path . ucfirst($file_ext))) {
+                        return array($custom_path, ucfirst($file));
+                    } elseif (is_file($fullpath . ucfirst($file_ext))) {
+                        return array($fullpath, ucfirst($file));
+                    }
+                }
+            }
+        }
+
+        return array(FALSE, $file);
+    }
 
 	/** Parse module routes **/
 	public static function parse_routes($module, $uri)
