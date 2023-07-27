@@ -115,7 +115,11 @@ $this->layout->addDinamicStylesheet($data, "header.css");
             <?php //$this->hook->message_dropdown(); ?>
 
             <!-- BEGIN show pending processes -->
-            <?php $pending_processes = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->get('_queue_pp')->num_rows(); ?>
+            <?php
+            $this->db->cache_off();
+            $pending_processes = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->get('_queue_pp')->num_rows();
+            $this->db->cache_on();
+            ?>
             <?php if ($pending_processes > 0): ?>
             <li class=" pending_processes" style="color:white;" id="pending_processes">
 
