@@ -260,8 +260,7 @@ class Cron extends MY_Controller
             $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
         }
 
-        //First of all run queue pp processes
-        $this->runBackgroundProcesses();
+        
         
 
         $cronKey = uniqid();
@@ -409,6 +408,10 @@ class Cron extends MY_Controller
                 }
             }
         }
+
+        //First of all run queue pp processes
+        $this->runBackgroundProcesses();
+
         echo_log('debug', "Stop cron check...");
         //Send output to the browser if running cron check from client (not cli) and user is logged in as admin
         if ($this->auth->is_admin()) {
