@@ -260,9 +260,6 @@ class Cron extends MY_Controller
             $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
         }
 
-        
-        
-
         $cronKey = uniqid();
 
         if (self::ENABLE_TRACKING) {
