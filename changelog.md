@@ -1,3 +1,4 @@
-Changelog version 3.1.8
+Changelog version 3.1.9
  
-Foo release to apply updateDb
+Bugfix float casting in apilib
+Added options array to generatePdf function
