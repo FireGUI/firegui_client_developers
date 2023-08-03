@@ -211,11 +211,7 @@ class Layout extends CI_Model
 
             $params = '';
             if (!empty($options)) {
-                if (is_array($options)) {
-                    $params = implode(' ', $options);
-                } else {
-                    $params = $options;
-                }
+                $params = implode(' ', $options);
             } else {
                 // No $options? then $params is empty
             }
