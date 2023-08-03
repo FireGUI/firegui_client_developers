@@ -1,5 +1,4 @@
-Changelog version 3.1.6
+Changelog version 3.1.9
  
-Add Events queue page
-Bugfix pending_process with db cache enabled
-Bugfix support table not installed on module install
+Bugfix float casting in apilib
+Added options array to generatePdf function
