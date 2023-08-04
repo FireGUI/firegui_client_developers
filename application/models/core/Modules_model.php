@@ -196,7 +196,7 @@ class Modules_model extends CI_Model
         //debug($get_module_info_url);
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
-
+        
         // Decodifica il contenuto JSON in un oggetto PHP
         $data = json_decode($json, true);
 
@@ -281,6 +281,9 @@ class Modules_model extends CI_Model
     private function json_process($content, $module, $is_update)
     {
         $json = json_decode($content, true);
+
+        //debug($json['entities'], true);
+
         $uninstall = false;
         $conditions = [];
         try {
@@ -1728,14 +1731,14 @@ class Modules_model extends CI_Model
             }
 
             my_log('debug', "Module install: start raw data insert", 'update');
-
+            //debug($json['entities'],true);
             $c = $cu = 0;
             $total = $totalu = 0;
             foreach ($json['entities'] as $entity) {
                 $total += count($entity['raw_data_install']);
                 $totalu += count($entity['raw_data_update']);
             }
-
+            $this->mycache->clearCache();
             foreach ($json['entities'] as $entity) {
                 if (!$this->crmentity->entityExists($entity['entity_name'])) {
                     continue;

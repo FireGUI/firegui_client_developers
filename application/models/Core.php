@@ -73,6 +73,8 @@ class Core extends CI_Model
     public function update($indexes_update = false)
     {
         my_log("debug", "Core: Start UPDATE Database from Utils", 'update');
+        //TODO: qui c'è un bug: le utils sono state caricate prima che venissero sovrascritte dall'aggiornamento, quindi di fatto la migrationProcess che viene eseguita è quella vecchia!
+        //Sostituire con CURL?
         $this->utils->migrationProcess();
         if ($indexes_update) {
             $this->utils->indexesUpdate();

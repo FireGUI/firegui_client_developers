@@ -1,4 +1,3 @@
-Changelog version 3.1.5
+Changelog version 3.2.0
  
-Bugfix reloadSchemaCache
-clearCache function now force also reloadSchemaCache
+Restore Apilib int casting
