@@ -12,7 +12,7 @@ class Openbuilder extends MY_Controller
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
             //$this->output->cache(0);
         }
-        $permitted_routes = ['get_client_version'];
+        $permitted_routes = ['get_client_version', 'get_status']; // TODO: GET_STATUS MUST BE PUBLIC?
         $route = $this->uri->segment(2);
         $unallowed = false;
         if (!in_array($route, $permitted_routes) && (!$this->auth->check() || !$this->auth->is_admin())) {
@@ -39,6 +39,42 @@ class Openbuilder extends MY_Controller
         }
     }
 
+    /*
+     * Method called via OpenBuilder/Partner portal to get progeject information and status
+     *
+     */
+    public function get_status()
+    {
+        // Client version
+        $data['client_version'] = VERSION;
+
+        // Cron Check
+        $data['crons_last_execution'] = $this->db->query("SELECT crons_last_execution FROM crons ORDER BY crons_last_execution DESC LIMIT 1")->row()->crons_last_execution;
+
+        // All Settings (to get autoupdate informations and more)
+        $data['settings'] = $this->apilib->search("settings", [], 1);
+
+        // All Modules
+        $data['modules'] = $this->db->query("SELECT * FROM modules")->result_array();
+
+        // Last Log Crm
+        $data['last_log_crm'] = $this->db->query("SELECT * FROM log_crm ORDER BY log_crm_id DESC LIMIT 1")->row_array();
+
+        // COUNT ci_sessions and log_crm
+        $data['count']['ci_sessions'] = $this->db->query("SELECT COUNT(*) AS c FROM ci_sessions")->row()->c;
+        $data['count']['log_crm'] = $this->db->query("SELECT COUNT(*) AS c FROM log_crm")->row()->c;
+
+        // Free space
+        $free_space = disk_free_space(".");
+        $free_space = $free_space / (1024 * 1024 * 1024);
+        $data['free_space'] = number_format($free_space, 2);
+
+        $free_space = disk_free_space("./uploads/");
+        $free_space = $free_space / (1024 * 1024 * 1024);
+        $data['free_space_uploads'] = number_format($free_space, 2);
+
+        e_json($data);
+    }
     public function createModule($identifier)
     {
         //Creo le cartelle necessarie
@@ -208,7 +244,7 @@ class Openbuilder extends MY_Controller
     {
         $this->load->model('core/modules_model', 'core_modules');
 
-        
+
         $return = $this->core_modules->run_migrations($module_identifier, $old_version, $new_version);
         die('ok');
     }
@@ -272,7 +308,7 @@ class Openbuilder extends MY_Controller
 
     private function deleteDir($path)
     {
-        return is_file($path) ? 
+        return is_file($path) ?
             @unlink($path) :
             array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
     }
