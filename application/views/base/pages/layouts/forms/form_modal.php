@@ -159,7 +159,7 @@ foreach ($form['forms_fields'] as $key => $field) {
                     if ($(this).is(':checked')) {
                         $(':input:not(.js_field_check)', $(this).closest('.js_field_container')).removeAttr('disabled');
                     } else {
-                        $(':input:not(.js_field_check,button,[type="hidden"])', $(this).closest('.js_field_container')).attr('disabled', 'disabled');
+                        $(':input:not(.js_field_check,button,[type="hidden"])', $(this).closest('.js_field_container')).val('').trigger('change').attr('disabled', 'disabled');
                     }
 
                 });

@@ -1122,7 +1122,7 @@ if (!function_exists('generate_dump')) {
         }
         $filepath = $destination . "/" . $filename;
 
-        $cmd = "mysqldump -h $DBHOST -u $DBUSER --password=$DBPASSWD $DATABASE | gzip --best > $filepath";
+        $cmd = "mysqldump -h $DBHOST -u $DBUSER --password='$DBPASSWD' $DATABASE | gzip --best > $filepath";
         shell_exec($cmd);
         // Check exists zip file and size if already 0.1mb
         if (!file_exists($filepath) || filesize($filepath) < 100000) {

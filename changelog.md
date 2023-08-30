@@ -1,4 +1,3 @@
-Changelog version 3.1.9
+Changelog version 3.2.0
  
-Bugfix float casting in apilib
-Added options array to generatePdf function
+Restore Apilib int casting
