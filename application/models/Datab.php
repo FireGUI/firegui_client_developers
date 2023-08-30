@@ -570,6 +570,13 @@ class Datab extends CI_Model
                         $value = "{$first_year_day} - {$last_year_day}";
                         //debug($value);
                         break;
+                    case '{last_day}':
+                        $timeobj = new DateTime();
+                        $last_year_day = $timeobj->format('m/d/Y');
+                        $first_year_day = $last_year_day;
+                        $value = "{$first_year_day} - {$last_year_day}";
+                        //debug($value);
+                        break;
                     default:
 
                         debug("NON GESTITA DEFAULT TYPE FUNCTION '{$func}'");
