@@ -563,7 +563,7 @@ class Crmentity extends CI_Model
         $dati['data'] = $qResult->result_array();
         
         $qResult->free_result();
-
+        
         // =====================================================================
         // SUPPORTO MULTI-JOIN
         // ---
@@ -587,7 +587,10 @@ class Crmentity extends CI_Model
 
                 // Ritrova i dati - jData sono i dati grezzi, mentre mergeable
                 // sono i dati pronti ad essere uniti ai dati principali
+                // debug($main_field);
+                // debug("{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})");
                 $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", ['depth' => $depth - 1]);
+                
                 $mergeable = [];
 
                 foreach ($jData as $record) {
@@ -798,9 +801,9 @@ class Crmentity extends CI_Model
      */
     private function buildWhereInList(array $values)
     {
-        $out = implode("','", array_map(function ($value) {
+        $out = implode("','", array_unique(array_map(function ($value) {
             return str_replace("'", "''", $value);
-        }, array_filter($values)));
+        }, array_filter($values))));
         return $out ? "'{$out}'" : '';
     }
 
@@ -823,9 +826,11 @@ class Crmentity extends CI_Model
     /**
      *  Utility methods
      */
-    public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0)
+    public function getEntityPreview($entityIdentifier, $where = null, $limit = null, $offset = 0, $options = [])
     {
-        //debug($entityIdentifier);
+
+        $depth = array_get($options, 'depth', 2);
+
         $key = sprintf('apilib/previews-%s', md5(serialize(func_get_args())));
         $entity = $this->getEntity($entityIdentifier);
 
@@ -838,7 +843,7 @@ $entity_preview = ($entity['entity_preview_base']??false);
 
         $entity_name = $entity['entity_name'];
         $tags = $this->mycache->buildTagsFromEntity($entity_name);
-        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name, $entity_preview) {
+        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name, $entity_preview,  $depth) {
 
             $previewFields = $this->getEntityPreviewFields($entityIdentifier);
             
@@ -883,7 +888,7 @@ $entity_preview = ($entity['entity_preview_base']??false);
                 }
             }
 
-            $records = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'select', 'order_by'));
+            $records = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'select', 'order_by', 'depth'));
 
             /* Build preview */
             $result = [];

@@ -878,9 +878,12 @@ class Datab extends CI_Model
         }
         // TODO Calculate order by
 
-        $order_by = null;
+        $limit = null;
+        $offset = 0;
 
-        $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $order_by);
+        $options['depth'] = 1;
+
+        $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $limit, $offset, $options);
 
         return $field;
     }
