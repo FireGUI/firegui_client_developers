@@ -303,7 +303,7 @@ class V1 extends MY_Controller
     public function search($entity = null)
     {
         try {
-            $limit = ($this->input->post('limit')) ? $this->input->post('limit') : 1000;
+            $limit = ($this->input->post('limit')) ? $this->input->post('limit') : null;
             $offset = ($this->input->post('offset')) ? $this->input->post('offset') : 0;
             $orderBy = ($this->input->post('orderby')) ? $this->input->post('orderby') : null;
 
