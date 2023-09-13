@@ -87,7 +87,7 @@ if (!function_exists('json_validate')) {
 }
 
 
-// Todo to nativo
+// Native function to use our api system from/to other openbuilder projects
 if (!function_exists('my_api')) {
     function my_api($url, $public_key, $post_data = null)
     {
@@ -111,6 +111,8 @@ if (!function_exists('my_api')) {
             return $data;
         } else {
             log_message('error', 'My API request failed. Excpected json output. ');
+            log_message('error', 'URL: ' . $url);
+            log_message('error', 'Response: ' . $jsonData);
             return false;
         }
     }
@@ -1120,7 +1122,7 @@ if (!function_exists('generate_dump')) {
         }
         $filepath = $destination . "/" . $filename;
 
-        $cmd = "mysqldump -h $DBHOST -u $DBUSER --password=$DBPASSWD $DATABASE | gzip --best > $filepath";
+        $cmd = "mysqldump -h $DBHOST -u $DBUSER --password='$DBPASSWD' $DATABASE | gzip --best > $filepath";
         shell_exec($cmd);
         // Check exists zip file and size if already 0.1mb
         if (!file_exists($filepath) || filesize($filepath) < 100000) {
@@ -1415,31 +1417,34 @@ if (!function_exists('scanAllDir')) {
 
     function recurse_copy($src, $dst)
     {
+        $src = preg_replace('#/{2,}#', '/', $src);
+        $dst = preg_replace('#/{2,}#', '/', $dst);
 
         $dir = opendir($src);
-if ($dir) {
-    @mkdir($dst);
 
-    while (false !== ($file = readdir($dir))) {
+        if ($dir) {
+            @mkdir($dst);
 
-        if ($file && ($file != '.') && ($file != '..')) {
+            while (false !== ($file = readdir($dir))) {
 
-            if (is_dir($src . '/' . $file)) {
+                if ($file && ($file != '.') && ($file != '..')) {
 
-                recurse_copy($src . '/' . $file, $dst . '/' . $file);
+                    if (is_dir($src . '/' . $file)) {
 
-            } else {
-                if (file_exists($src . '/' . $file)) {
-                    copy($src . '/' . $file, $dst . '/' . $file);
+                        recurse_copy($src . '/' . $file, $dst . '/' . $file);
+
+                    } else {
+                        if (file_exists($src . '/' . $file)) {
+                            copy($src . '/' . $file, $dst . '/' . $file);
+                        }
+
+
+                    }
+
                 }
 
-
             }
-
         }
-
-    }
-}
 
         closedir($dir);
 

@@ -187,8 +187,8 @@ class Cron extends MY_Controller
         //Execute only on time a day
         if (date('H') == 11) {
             if ($this->db->dbdriver != 'postgre') {
-                $this->db->where("log_api_date < now() - interval 280 day", null, false)->delete('log_api');
-                $this->db->where("log_crm_time < now() - interval 280 day", null, false)->delete('log_crm');
+                $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
+                $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
                 $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 7 DAY", null, false)->delete('ci_sessions');
 
                 $this->db->where("requested_url like '/cron/%'", null, false)->delete('ci_sessions');
@@ -201,6 +201,8 @@ class Cron extends MY_Controller
                         ) t
                         WHERE t.row_num <= 3
                     );");
+
+                
             } else {
                 $this->db
                     ->where("log_api_date < NOW() - INTERVAL '6 MONTH'", null, false)
@@ -259,7 +261,6 @@ class Cron extends MY_Controller
         if ($check_col->num_rows() > 0) {
             $this->db->query("UPDATE settings SET settings_last_cron_check = NOW()");
         }
-
 
         $cronKey = uniqid();
 
@@ -406,6 +407,10 @@ class Cron extends MY_Controller
                 }
             }
         }
+
+        //First of all run queue pp processes
+        $this->runBackgroundProcesses();
+
         echo_log('debug', "Stop cron check...");
         //Send output to the browser if running cron check from client (not cli) and user is logged in as admin
         if ($this->auth->is_admin()) {
@@ -573,6 +578,32 @@ class Cron extends MY_Controller
     private function getKey()
     {
         return 'crons' . substr(sha1(__FILE__), 0, 6);
+    }
+
+    public function runBackgroundProcesses() {
+        $_queue_pps = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->limit(10)->order_by('_queue_pp_date', 'ASC')->get('_queue_pp')->result_array();
+        $i=0;
+        $c = count($_queue_pps);
+        foreach ($_queue_pps as $pp) {
+            $i++;
+            progress($i, $c, 'background processes');
+            $function = json_decode($pp['_queue_pp_event_data'], true);
+            $decoded_data = json_decode($pp['_queue_pp_data'], true);
+            $data = $decoded_data['data'];
+
+            $this->db->where('_queue_pp_id', $pp['_queue_pp_id'])->update('_queue_pp', [
+                '_queue_pp_execution_date' => date('Y-m-d H:i:s'),
+                '_queue_pp_executed' => DB_BOOL_TRUE
+            ]);
+            
+
+            if (empty($function['fi_events_post_process_id'])) {
+                    $this->apilib->runEvent($function, $data);
+                } else {
+                    //TODO: deprecated... use onlu fi_events table
+                    eval($function['post_process_what']);
+                }
+        }
     }
 }
 

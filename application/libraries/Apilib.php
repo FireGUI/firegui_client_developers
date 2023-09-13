@@ -46,6 +46,13 @@ class Apilib
     const LOG_EDIT = 7; // Apilib::edit action
     const LOG_DELETE = 8; // Apilib::delete action
 
+    private $not_deferrable_pp = [
+        'pre-login', 'login', 'pre-search', 'search', 'pre-save', 'pre-delete', 'pre-update', 'pre-insert','pre-validation-update',
+        'pre-validation-insert','pre-validation-save'
+    ];
+    private $deferrable_pp = [
+        'update', 'delete','insert','save'
+    ];
     private $error = 0;
     private $errorMessage = '';
     private $errorMessages = [
@@ -511,6 +518,17 @@ class Apilib
         }
     }
 
+    /*
+    Usefull to centralize saving methods in on call
+    */
+    public function save($entity = null, $data, $id = null)
+    {
+        if ($id) {
+            return $this->edit($entity, $id, $data);
+        } else {
+            return $this->create($entity, $data);
+        }
+    }
     public function createMany($entity = null, $data = null)
     {
 
@@ -1510,7 +1528,22 @@ class Apilib
             }
 
             //if (!$editMode && empty($data[$name]) && $this->db->dbdriver == 'postgre' && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
+//            if (!$editMode && empty($data[$name]) && (array_key_exists($name, $data) && $data[$name] !== '0') && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int', 'double', 'float'])) {
+
+            // Michael / Matteo - 25/07/2023 - Aggiunti float e double in quanto non è giusto che se non è required venga comunque forzato a 0.
+            // inoltre è anche sbagliato che tutto questo non venga eseguito (anche per gli int) in fase di edit del record.
+            // perciò ho duplicato la riga togliendo il !$editMode e commentata quella vecchia versione
+
+            // if (in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
+            //     $is_zero = $data[$name] !== '0' && $data[$name] !== '0';
+            // } else {
+            //     $is_zero = $data[$name] !== '0.00' && $data[$name] !== '0.00';
+            // }
+
+            //if (empty($data[$name]) && (array_key_exists($name, $data) && $is_zero) && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int', 'double', 'float'])) {
+            //20230803 - MP - Rimesso tutto come prima... va risolto con molta calma e molti test prima di risolvere il problema dei form che salvano 0 invece di null...
             if (!$editMode && empty($data[$name]) && (array_key_exists($name, $data) && $data[$name] !== '0') && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
+                
                 if (array_key_exists($name, $data)) {
                     //Avoid numbers to be 0 in case of empty. Forced to null
                     $data[$name] = null;
@@ -2178,6 +2211,7 @@ class Apilib
 
     public function runDataProcessing($entity_id, $pptype, $data = [])
     {
+        
         if (!$this->processEnabled) {
             return $data;
         }
@@ -2203,16 +2237,47 @@ class Apilib
 
         if (!empty($dataProcessToRun)) {
             foreach ($dataProcessToRun as $function) {
-                try {
-                    if (empty($function['fi_events_post_process_id'])) {
-                        $this->runEvent($function, $data);
-                    } else {
-                        //TODO: deprecated... use onlu fi_events table
-                        eval($function['post_process_what']);
-                    }
-                } catch (Exception $ex) {
-                    throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
+                if (!in_array($pptype, array_merge($this->not_deferrable_pp,$this->deferrable_pp))) {
+                    debug($pptype);
+                    debug($function);
+                    debug($data,true);
                 }
+                
+                if (!is_maintenance() && in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
+                    /*
+                    '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+                    '_queue_pp_execution_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
+                    '_queue_pp_code' => ['type' => 'TEXT'],
+                    '_queue_pp_executed' => ['type' => 'BOOLEAN', 'default' => false],
+                    '_queue_pp_data' => ['type' => 'TEXT'],
+                    */
+                    $this->db->insert('_queue_pp', [
+                        '_queue_pp_date' => date('Y-m-d H:i:s'),
+                        '_queue_pp_code' => $function['post_process_what'],
+                        '_queue_pp_executed' => DB_BOOL_FALSE,
+                        '_queue_pp_data' => json_encode([
+                            'data' => $data, 
+                            '_session' => $_SESSION, 
+                            '_query_string'=>$_SERVER['QUERY_STRING'],
+                            '_post' => $this->input->post(),
+                            'original_post' => $this->originalPost
+                        ]),
+                        '_queue_pp_event_data' => json_encode($function)
+                    ]);
+                } else {
+                    try {
+                        if (empty($function['fi_events_post_process_id'])) {
+                            $this->runEvent($function, $data);
+                        } else {
+                            //TODO: deprecated... use onlu fi_events table
+                            eval($function['post_process_what']);
+                        }
+                    } catch (Exception $ex) {
+                        throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
+                    }
+                }
+
+                
             }
         }
         if (!empty($data['entity']) && is_array($data)) {

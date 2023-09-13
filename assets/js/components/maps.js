@@ -149,7 +149,7 @@ function mapsInit() {
 
 
 
-                var osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+                var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
                 var baseMaps = {
                     "OpenStreetMap": osm,

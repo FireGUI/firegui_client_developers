@@ -39,6 +39,7 @@ class Modules_model extends CI_Model
                     'modules_identifier' => $module['modules_repository_identifier'],
                     'modules_version_code' => $module['modules_repository_version_code'],
                     'modules_description' => $module['modules_repository_description'],
+                    'modules_notification_message' => $module['modules_repository_notification_message'],
                     'modules_created_by_user' => $module['modules_repository_created_by_user'],
                     'modules_thumbnail' => $module['modules_repository_thumbnail'],
                     'modules_version_date' => $module['modules_repository_last_update'],
@@ -123,6 +124,7 @@ class Modules_model extends CI_Model
                     'modules_name' => $module['modules_repository_name'],
                     'modules_version' => $module['modules_repository_version'],
                     'modules_description' => $module['modules_repository_description'],
+                    'modules_notification_message' => $module['modules_repository_notification_message'],
                     'modules_created_by_user' => $module['modules_repository_created_by_user'],
                     'modules_thumbnail' => $module['modules_repository_thumbnail'],
                     'modules_version_code' => $module['modules_repository_version_code'],
@@ -143,9 +145,9 @@ class Modules_model extends CI_Model
                 deleteDirRecursive($unzip_destination_folder);
 
                 $this->mycache->clearCache();
-                return true;
+                return $module;
             } else {
-                
+
                 deleteDirRecursive($unzip_destination_folder);
                 echo_log('error', "Missing data.json in module $identifier");
 
@@ -179,12 +181,22 @@ class Modules_model extends CI_Model
             $token = $this->_license_token;
         }
 
+        // Check module version
+        $module = $this->db->get_where('modules', ['modules_identifier' => $module_identifier])->row_array();
+
+        if (!empty($module)) {
+            $module_installed_version = $module['modules_version'];
+        } else {
+            $module_installed_version = "";
+        }
+
         //Fare curl ad admin o openbuilder?
-        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier . '/' . $project_id . '/' . $token;
+        $get_module_info_url = $update_repository_url . '/public/client/get_module_info/' . $module_identifier . '/' . $project_id . '/' . $token . '/' . $module_installed_version;
+
         //debug($get_module_info_url);
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
-
+        
         // Decodifica il contenuto JSON in un oggetto PHP
         $data = json_decode($json, true);
 
@@ -269,6 +281,9 @@ class Modules_model extends CI_Model
     private function json_process($content, $module, $is_update)
     {
         $json = json_decode($content, true);
+
+        //debug($json['entities'], true);
+
         $uninstall = false;
         $conditions = [];
         try {
@@ -289,6 +304,10 @@ class Modules_model extends CI_Model
             //Creo tutte le entità
             $entities_id_map = [];
             my_log('debug', "Module install: start entities creation", 'update');
+
+
+
+
             if (empty($json['entities'])) {
                 $json['entities'] = [];
             }
@@ -314,7 +333,13 @@ class Modules_model extends CI_Model
                     ];
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);
                     if (!$entity_exists) {
-                        $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
+                        try {
+                            $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
+                        } catch (RuntimeException $e) {
+                            my_log('error', "Entity '{$entity['entity_name']}' creation failed! (ex: {$e->getMessage()})", 'update');
+                            continue;
+                        }
+
                         my_log('debug', "Module install: '{$entity['entity_name']}' created", 'update');
                     } else {
                         my_log('debug', "Module install: entity '{$entity['entity_name']}' already present", 'update');
@@ -353,7 +378,7 @@ class Modules_model extends CI_Model
 
                     if ($this->db->where('relations_name', $rel_name)->get('relations')->num_rows() == 0) {
                         $this->entities->relation($rel_name, $table1, $table2, $rel_type);
-                    } elseif (!$this->entities->entity_exists($entity['entity_name']))  { //20230407 - MP - E' capitato che fosse presente il record in relations ma la tabella non esistesse... oin questo caso forzo una nuova creazione.
+                    } elseif (!$this->entities->entity_exists($entity['entity_name'])) { //20230407 - MP - E' capitato che fosse presente il record in relations ma la tabella non esistesse... oin questo caso forzo una nuova creazione.
                         $this->db->where('relations_name', $rel_name)->delete('relations');
                         $this->entities->relation($rel_name, $table1, $table2, $rel_type);
                     }
@@ -388,6 +413,10 @@ class Modules_model extends CI_Model
 
                 $return = [];
                 //$entity['fields'] = $this->entities->changeMySqlTypes($entity['fields']);
+
+                if (empty($entities_id_map[$old_entity_id])) {
+                    continue;
+                }
 
                 my_log('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'", 'update');
                 foreach ($entity['fields'] as $field) {
@@ -479,6 +508,9 @@ class Modules_model extends CI_Model
                     progress($fdc, $fd_count, 'fields draw');
                     unset($fd['fields_draw_id']);
                     $fd['fields_draw_fields_id'] = $fields_id_map[$fd['fields_draw_fields_id']];
+                    if (empty($fd['fields_draw_fields_id'])) {
+                        //debug($fd,true);
+                    }
                     $draw_exists = $this->db->get_where('fields_draw', [
                         'fields_draw_fields_id' => $fd['fields_draw_fields_id'],
                     ]);
@@ -892,6 +924,8 @@ class Modules_model extends CI_Model
                             $grid['grids_entity_id'] = $entities_id_map[$grid['grids_entity_id']];
                         } else {
                             //Se non esiste, probabilmente si tratta di una grid che punta a un entità di un altro modulo. Non cambio l'id (darebbe errore visto che non può essere null) e spero che poi venga installato l'altro modulo
+                            //20230710 - Cambiato logica... skippo proprio questa grid!
+                            continue;
                         }
 
 
@@ -982,6 +1016,11 @@ class Modules_model extends CI_Model
             foreach ($json['grids'] as $grid) {
                 $old_grid_id = $grid['grids_id'];
                 $grid_id = $grids_id_map[$old_grid_id];
+
+                if (!$grid_id) {
+                    continue;
+                }
+
                 //debug($grid,true);
                 if ($this->db->query("SELECT * FROM locked_elements WHERE locked_elements_type = 'grid' AND locked_elements_ref_id = '$grid_id'")->num_rows() == 0) {
 
@@ -1350,7 +1389,7 @@ class Modules_model extends CI_Model
                         if (!array_key_exists($lb['layouts_boxes_content_ref'], $grids_id_map)) {
                             debug($lb);
                             debug($grids_id_map);
-                            debug("ANOMALIA... Grid non trovata!", true);
+                            my_log('error', "ANOMALIA... Grid nel layout '{$lb['layouts_boxes_title']}' non trovata!", 'update');
                             continue 2;
                         }
 
@@ -1692,16 +1731,18 @@ class Modules_model extends CI_Model
             }
 
             my_log('debug', "Module install: start raw data insert", 'update');
-
+            //debug($json['entities'],true);
             $c = $cu = 0;
             $total = $totalu = 0;
             foreach ($json['entities'] as $entity) {
                 $total += count($entity['raw_data_install']);
                 $totalu += count($entity['raw_data_update']);
             }
-
+            $this->mycache->clearCache();
             foreach ($json['entities'] as $entity) {
-
+                if (!$this->crmentity->entityExists($entity['entity_name'])) {
+                    continue;
+                }
                 //Inserisco i raw_data_install
                 if (array_key_exists('raw_data_install', $entity)) {
                     if ($entity['raw_data_install']) {

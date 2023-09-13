@@ -233,6 +233,7 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                              <?php endif;?>
                                 <br /><small>Last update: - </small>
                                 <br /><small>Update in progress: <?php if ($this->settings['settings_update_in_progress'] == DB_BOOL_TRUE): ?>Yes now...<?php else:?>No<?php endif;?> </small>
+                                <br /><small>Current Version: <b><?php echo VERSION; ?></b> </small>
                             </div>
                         <?php endif;?>
                 </div>

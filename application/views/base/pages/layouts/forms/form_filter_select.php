@@ -198,16 +198,19 @@ if ($value) {
 
                                     <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
                                         <?php
-$filter_ref = $field['filterref'];
-$entity = $this->crmentity->getEntity($filter_ref);
-if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
-    $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
-
-    $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2']);
-} else {
-    $support_data = $this->crmentity->getEntityPreview($field['filterref']);
-}
-?>
+                                        $filter_ref = $field['filterref'];
+                                        $entity = $this->crmentity->getEntity($filter_ref);
+                                        if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
+                                            $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
+                                                                                    
+                                            $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2'],$field['original_field']['fields_select_where']);
+                                        } else {
+                                                                                                    
+                                            $support_data = $this->crmentity->getEntityPreview($field['filterref'],$field['original_field']['fields_select_where']);
+                                        }
+                                                                                
+                                                                                                
+                                        ?>
                                         <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
                                         <?php foreach ($support_data as $id => $name): ?>
                                             <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
@@ -254,6 +257,10 @@ if ($referenced = $this->crmentity->getReferencedEntity($field['name'])) {
 
                             <?php else: ?>
                                 <?php $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array());?>
+
+
+                                
+
                                 <?php if ($field['type'] == 'multiselect'): ?>
                                     <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
 

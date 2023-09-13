@@ -15,7 +15,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
 
 // Client Version
-defined('VERSION') OR define('VERSION', '3.0.4');
+defined('VERSION') OR define('VERSION', '3.2.2');
 /*
 |--------------------------------------------------------------------------
 | File and Directory Modes
@@ -85,6 +85,7 @@ define(
 define(
     'COLORS_PALETTE',
     array(
+        'Blue' => '#4b8ffc',
         'Blue default' => '#222d32',
         'Blue speech' => '#3c40c6',
         'Blue disco' => '#0fbcf9',

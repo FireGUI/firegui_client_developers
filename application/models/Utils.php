@@ -51,6 +51,7 @@ class Utils extends CI_Model
         'locked_elements',
         'fi_events',
         '_conditions',
+        '_queue_pp',
     ];
 
     public function __construct()

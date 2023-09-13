@@ -199,15 +199,25 @@ class Layout extends CI_Model
             if ($this->input->get('options') !== null) {
                 $_options = $this->input->get('options');
 
-                $options = '';
                 foreach ($_options as $key => $value) {
-                    $options .= "-{$key} {$value} ";
+                    $options[] = "-{$key} {$value}";
                 }
             } else {
-                $options = "-T '5mm' -B '5mm'";
+                $options[] = "-T '5mm' -B '5mm'";
             }
+
+            $options = array_filter($options); // this removes empty data
+            $options = array_unique($options); // this makes array to be unique
+
+            $params = '';
+            if (!empty($options)) {
+                $params = implode(' ', $options);
+            } else {
+                // No $options? then $params is empty
+            }
+
             //die("wkhtmltopdf {$options} -O {$orientation} --footer-right \"Page [page] of [topage]\" --viewport-size 1024 {$tmpHtml} {$pdfFile}");
-            exec("wkhtmltopdf {$options} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
+            exec("wkhtmltopdf {$params} -O {$orientation} --viewport-size 1024 {$tmpHtml} {$pdfFile}");
             @unlink($tmpHtml);
             return $pdfFile;
         }
