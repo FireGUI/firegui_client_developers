@@ -180,7 +180,12 @@ function initCalendars() {
                             }
                         });
 
-                        localStorage.setItem('fcDefaultDate_' + calendarId, moment(fetchInfo.start).format('YYYY-MM-DD HH:mm'));
+                        var start = moment(fetchInfo.start);
+                        var end = moment(fetchInfo.end);
+                        // Calcola la data intermedia tra start e end
+                        var middleDate = start.clone().add(end.diff(start) / 2, 'milliseconds');
+                        // Salva la data intermedia in localStorage
+                        localStorage.setItem('fcDefaultDate_' + calendarId, middleDate.format('YYYY-MM-DD HH:mm'));
 
                         $.ajax({
                             type: 'POST',
@@ -207,7 +212,7 @@ function initCalendars() {
                     color: '#4B8DF8', // a non-ajax option
                     textColor: 'white' // a non-ajax option
                 }],
-                eventRender: function(info) {
+                eventRender: function (info) {
                     if (typeof info.event.extendedProps.description !== 'undefined' && info.event.extendedProps.description) {
                         $(info.el).popover({
                             title: info.event.title,
