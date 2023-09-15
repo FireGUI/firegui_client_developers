@@ -1,9 +1,5 @@
-Changelog version 3.2.1
+Changelog version 3.2.2
  
-Empty values of bulk edit form when "edit this" is unchecked
-Get status function
-Fix generatedump dbpass
-Updated .gitignore
-Forced default limit to 1000 in api search
-Added placeholder last_day in filters
-Bugfix depth 2 on processFieldMapping function
+log_crm automaticaly remove after 180 days
+Removed api search default limit 1000
+Bugfix for multiselect filters with join where condition
