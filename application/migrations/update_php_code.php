@@ -94,3 +94,8 @@ $updates['2.8.0'] = [
         '2.8.0_notifications.php',
     ],
 ];
+$updates['3.2.3'] = [
+    'include' => [
+        '3.2.3_fields_settings_background_pp.php',
+    ],
+];

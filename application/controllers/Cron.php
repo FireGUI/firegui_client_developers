@@ -580,9 +580,13 @@ class Cron extends MY_Controller
         return 'crons' . substr(sha1(__FILE__), 0, 6);
     }
 
-    public function runBackgroundProcesses() {
-        $_queue_pps = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->limit(10)->order_by('_queue_pp_date', 'ASC')->get('_queue_pp')->result_array();
-        $i=0;
+    public function runBackgroundProcesses($limit = 20)
+    {
+        if (!empty($this->settings['settings_background_pp']) && $this->settings['settings_background_pp'] > 0) {
+            $limit = $this->settings['settings_background_pp'];
+        }
+        $_queue_pps = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->limit($limit)->order_by('_queue_pp_date', 'ASC')->get('_queue_pp')->result_array();
+        $i = 0;
         $c = count($_queue_pps);
         foreach ($_queue_pps as $pp) {
             $i++;
@@ -595,14 +599,14 @@ class Cron extends MY_Controller
                 '_queue_pp_execution_date' => date('Y-m-d H:i:s'),
                 '_queue_pp_executed' => DB_BOOL_TRUE
             ]);
-            
+
 
             if (empty($function['fi_events_post_process_id'])) {
-                    $this->apilib->runEvent($function, $data);
-                } else {
-                    //TODO: deprecated... use onlu fi_events table
-                    eval($function['post_process_what']);
-                }
+                $this->apilib->runEvent($function, $data);
+            } else {
+                //TODO: deprecated... use onlu fi_events table
+                eval($function['post_process_what']);
+            }
         }
     }
 }
