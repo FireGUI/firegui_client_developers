@@ -49,3 +49,5 @@ $dati = array(
 );
 
 $this->db->insert('forms_fields', $dati);
+
+$this->db->query("ALTER TABLE settings ADD COLUMN settings_background_pp integer NOT NULL DEFAULT 20;");
