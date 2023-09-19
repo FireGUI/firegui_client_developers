@@ -97,11 +97,13 @@ class Mysqli_utils extends Utils
             'fields_source' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'fields_select_where' => ['type' => 'TEXT', 'null' => true],
             'fields_multilingual' => ['type' => 'BOOLEAN', 'default' => '0'],
-            //'fields_searchable' => ['type' => 'BOOLEAN', 'default' => '1'],
+            'fields_searchable' => ['type' => 'BOOLEAN', 'default' => '1'],
             'fields_xssclean' => ['type' => 'BOOLEAN', 'default' => '1', 'null' => false],
 
             'fields_preview_base' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'fields_preview_custom' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+
+            
         ]);
 
         $this->addForeignKey('fields', 'fields_entity_id', 'entity', 'entity_id');

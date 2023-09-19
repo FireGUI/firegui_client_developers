@@ -330,6 +330,7 @@ class Modules_model extends CI_Model
                         'entity_action_fields' => $entity['entity_action_fields'],
                         'entity_visible' => $entity['entity_visible'],
                         'entity_module' => $entity['entity_module'],
+                        'entity_preview_base' => $entity['entity_preview_base'],
                     ];
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);
                     if (!$entity_exists) {

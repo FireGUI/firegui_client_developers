@@ -87,7 +87,7 @@ class Postgre_utils extends Utils
             'fields_source' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'fields_select_where' => ['type' => 'TEXT', 'null' => true],
             'fields_multilingual' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
-            //'fields_searchable' => ['type' => 'BOOL', 'default' => 't'],
+            'fields_searchable' => ['type' => 'BOOL', 'default' => 't'],
             'fields_xssclean' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_TRUE, 'null' => false],
         ]);
 

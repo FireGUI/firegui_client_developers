@@ -81,13 +81,15 @@ class Get_ajax extends MY_Controller
             $pagina = $this->load->view("pages/layout", array('dati' => $dati, 'value_id' => $value_id, 'modal' => $modal), true);
         }
 
-        $this->load->view("layout/modal_container", array(
-            'size' => $modalSize,
-            'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
-            'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
-            'content' => $pagina,
-            'footer' => null,
-        )
+        $this->load->view(
+            "layout/modal_container",
+            array(
+                'size' => $modalSize,
+                'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
+                'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
+                'content' => $pagina,
+                'footer' => null,
+            )
         );
         $this->layout->setLayoutModule();
     }
@@ -123,7 +125,7 @@ class Get_ajax extends MY_Controller
             $this->layout->setLayoutModule($form_entity_module);
         }
         $form = $this->datab->get_form($form_id, $value_id);
-        if($duplicated == true){
+        if ($duplicated == true) {
             $action_form = $form['forms']['action_url'];
             $parts = explode("/", $action_form); // Dividi l'URL in base al carattere "/"
             $key = array_search("true", $parts); // Trova l'indice della stringa "true"
@@ -316,9 +318,9 @@ class Get_ajax extends MY_Controller
             }
         } else {
             if ($id !== null) {
-                
+
                 $row = $this->datab->get_entity_preview_by_name($table, "{$table}_id = {$id}");
-                
+
                 if (!empty($row)) {
                     reset($row); // Puntatore array su prima posizione
                     $key = key($row); // Ottengo la prima e unica chiave
@@ -330,19 +332,19 @@ class Get_ajax extends MY_Controller
                     'fields',
                     array(
                         'fields_entity_id' => $entity['entity_id'],
-                        'fields_preview' => DB_BOOL_TRUE,
+                        "fields_preview = 1 OR fields_searchable = 1"
                     )
                 )->result_array();
 
                 //Check if a preview field is related to an entity, so add that entity preview fields in $fields
                 foreach ($fields as $key => $field) {
                     if ($field['fields_ref']) {
-                        
+
                         $fields[$key]['support_fields'] = array_values(
                             array_filter(
                                 $this->crmentity->getFields($field['fields_ref']),
                                 function ($field) {
-                                    return $field['fields_preview'] == DB_BOOL_TRUE;
+                                    return $field['fields_preview'] == DB_BOOL_TRUE || $field['fields_searchable'] == DB_BOOL_TRUE;
                                 }
                             )
                         );
@@ -663,7 +665,7 @@ class Get_ajax extends MY_Controller
             //debug($where);
             $grid_data = $this->datab->get_grid_data($grid, $valueID, $where, (is_numeric($limit) && $limit > 0) ? $limit : null, $offset, $order_by, false, ['group_by' => $group_by, 'search' => $search, 'preview_fields' => $preview_fields]);
 
-            
+
 
             $out_array = array();
             foreach ($grid_data as $dato) {
@@ -673,7 +675,7 @@ class Get_ajax extends MY_Controller
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
                 }
                 foreach ($grid['grids_fields'] as $field) {
-                    
+
                     $tr[] = $this->datab->build_grid_cell($field, $dato);
                 }
                 //Unset to avoi override
@@ -770,7 +772,7 @@ class Get_ajax extends MY_Controller
         // Geography data
         $bounds = $this->input->post('bounds');
         if (!is_array($bounds)) {
-            $bounds = json_decode($bounds,true);
+            $bounds = json_decode($bounds, true);
         }
         if ($this->db->dbdriver == 'postgre') {
             if ($latlng_field !== null && $bounds && !$isSearchMode) {
@@ -921,7 +923,7 @@ class Get_ajax extends MY_Controller
                         break;
                 }
             }
-            
+
             if ($start_field && $end_field) {
                 if ($this->db->dbdriver != 'postgre') {
                     $where[] = "(
@@ -1002,20 +1004,20 @@ class Get_ajax extends MY_Controller
 
             }
             //debug($ev);
-    
+
             if (array_key_exists('date_start', $ev)) {
                 $hours_start = '00:00';
                 if (array_key_exists('hours_start', $ev)) {
                     $hours_start = $ev['hours_start'];
                 }
-    
+
                 $hours_end = '00:00';
                 if (array_key_exists('hours_end', $ev)) {
                     $hours_end = $ev['hours_end'];
                 }
-                
+
                 $ev['start'] = (new DateTime($ev['start']))->format("Y-m-d\T{$hours_start}:00");
-                
+
                 if (!array_key_exists('date_end', $ev)) {
                     $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format("Y-m-d\T{$hours_end}:00");
                 } else {
@@ -1023,7 +1025,7 @@ class Get_ajax extends MY_Controller
                 }
             } else {
                 $ev['start'] = (new DateTime($ev['start']))->format('Y-m-d\TH:i:s');
-    
+
                 if (!empty($ev['end'])) {
                     $ev['end'] = (new DateTime($ev['end']))->format('Y-m-d\TH:i:s');
                 } else {
