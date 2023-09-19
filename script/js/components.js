@@ -580,6 +580,20 @@ function initComponents(container, reset = false) {
   /*
    * Select, Multiselect e AjaxSelect
    */
+  function matcher(params, data) {
+    if ($.trim(params.term) === '') {
+      return data;
+    }
+
+    const terms = (params.term).split(" ");
+    //const terms = new Array(params.term);
+
+    for (var i = 0; i < terms.length; i++) {
+      if (((data.text).toUpperCase()).indexOf((terms[i]).toUpperCase()) == -1)
+        return null;
+    }
+    return data;
+  }
   try {
     $(".js_multiselect:not(.select2-offscreen):not(.select2-container)", container).each(function () {
       var that = $(this);
@@ -587,10 +601,11 @@ function initComponents(container, reset = false) {
       that.select2({
         allowClear: true,
         minimumInputLength: minInput ? minInput : 0,
+        matcher: matcher
       });
     });
 
-    $(".select2me", container).select2({ allowClear: true });
+    $(".select2me", container).select2({ allowClear: true, matcher: matcher });
   } catch (e) { }
 
   $(".select2_standard", container).select2();
