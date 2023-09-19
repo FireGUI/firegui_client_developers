@@ -118,8 +118,12 @@ function load_marker(map, url, clusterize) {
             if ($('#' + map._container.id).length > 0) {
                 try {
                     //alert(1);
-                        
+                    if (Object.keys(bounds).length !== 0) {
                         map.fitBounds(bounds);
+                    } else if (map.getZoom() > 2) {
+                        map.setZoom(5);
+                        }
+                        
 
                     
                     map.addLayer(map.my_markers);
@@ -131,6 +135,7 @@ function load_marker(map, url, clusterize) {
 
                     //map.invalidateSize();
                 } catch (e) {
+                    
                     console.log(e);
                     //alert(1);
                     //setTimeout(function () { mapsInit(); }, 3000);
