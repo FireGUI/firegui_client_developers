@@ -1,4 +1,7 @@
-Changelog version 3.2.3
+Changelog version 3.2.4
  
-fix fcDefaultDate_ on full json calendar
-Configurable max background processes
+Added import entity_preview_base field in module install
+Ajax now search in preview and searchable fields
+Restored fields_searchable attribute
+Optimized matcher function for select2
+Bugfix maps when no markers are available in bounds
