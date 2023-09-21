@@ -278,12 +278,12 @@ class Auth extends CI_Model
      */
     public function is_admin()
     {
-        
+
         if ($this->isAdmin === null) {
             $user_id = $this->get(LOGIN_ENTITY . "_id");
             $query = $this->db->where('permissions_user_id', $user_id)->get('permissions');
 
-            
+
             $this->isAdmin = (($query->num_rows() > 0 && $query->row()->permissions_admin === DB_BOOL_TRUE) ? true : false);
 
             /** FIX: se non ci sono amministratori questo utente lo diventa (ma non viene salvata su db, quindi se per caso dessi i permessi ad un nuovo utente, questo non lo sarebbe più) * */
@@ -291,7 +291,7 @@ class Auth extends CI_Model
                 $this->isAdmin = ($this->db->where('permissions_admin', DB_BOOL_TRUE)->count_all_results('permissions') < 1);
             }
         }
-        
+
         return (is_bool($this->isAdmin) ? $this->isAdmin : false);
     }
 
@@ -320,15 +320,28 @@ class Auth extends CI_Model
             // Cookie creation
             $secure_cookie = (bool) config_item('cookie_secure');
             $cookie_samesite = config_item('cookie_samesite');
-            set_cookie(array(
-                'name' => static::$rememberTokenName,
-                'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
-                'expire' => (int) (time() + (31 * 24 * 60 * 60)),
-                'domain' => '.' . $_SERVER['HTTP_HOST'],
-                'path' => ($this->config->item('cookie_path')) ?: '/',
-                'samesite' => $cookie_samesite,
-                'secure' => $secure_cookie,
-            ));
+            // 20230921 Remove set_cookie (codeigniter helper) and integrate setcookie() php native function to fix expire cookie on mobile
+            // set_cookie(
+            //     array(
+            //         'name' => static::$rememberTokenName,
+            //         'value' => json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
+            //         'expire' => (int) (time() + (31 * 24 * 60 * 60)),
+            //         'domain' => '.' . $_SERVER['HTTP_HOST'],
+            //         'path' => ($this->config->item('cookie_path')) ?: '/',
+            //         'samesite' => $cookie_samesite,
+            //         'secure' => $secure_cookie,
+            //     )
+            // );
+
+            setcookie(
+                static::$rememberTokenName,
+                json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
+                (int) (time() + (31 * 24 * 60 * 60)),
+                ($this->config->item('cookie_path')) ?: '/',
+                '.' . $_SERVER['HTTP_HOST'],
+                $secure_cookie,
+                false
+            );
 
             //Before inserting user token, delete old user tokens
             if ($this->db->dbdriver != 'postgre') {
