@@ -44,6 +44,7 @@ class Modules_model extends CI_Model
                     'modules_thumbnail' => $module['modules_repository_thumbnail'],
                     'modules_version_date' => $module['modules_repository_last_update'],
                     'modules_core' => $module['modules_repository_core'],
+                    'modules_auto_update' => DB_BOOL_TRUE,
                 )
             );
         }
@@ -196,7 +197,7 @@ class Modules_model extends CI_Model
         //debug($get_module_info_url);
         // Scarica il contenuto JSON dall'URL specificato
         $json = file_get_contents($get_module_info_url);
-        
+
         // Decodifica il contenuto JSON in un oggetto PHP
         $data = json_decode($json, true);
 
@@ -532,7 +533,8 @@ class Modules_model extends CI_Model
 
             //Creo i layouts
             $layouts_id_map = [
-                -1 => -1, //Fake per non avere un array vuoto (dopo mi serve l'implode in una query)
+                -1 => -1,
+                //Fake per non avere un array vuoto (dopo mi serve l'implode in una query)
             ];
             my_log('debug', "Module install: start layouts creation", 'update');
             $total = count($json['layouts']);
