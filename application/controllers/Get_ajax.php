@@ -344,7 +344,7 @@ class Get_ajax extends MY_Controller
                             array_filter(
                                 $this->crmentity->getFields($field['fields_ref']),
                                 function ($field) {
-                                    return $field['fields_preview'] == DB_BOOL_TRUE || $field['fields_searchable'] == DB_BOOL_TRUE;
+                                    return $field['fields_preview'] == DB_BOOL_TRUE || (!empty($field['fields_searchable']) && $field['fields_searchable'] == DB_BOOL_TRUE);
                                 }
                             )
                         );
