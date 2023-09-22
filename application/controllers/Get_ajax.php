@@ -151,7 +151,12 @@ class Get_ajax extends MY_Controller
             );
 
             $content = $this->datab->getHookContent('pre-form', $form_id, $value_id ?: null);
-            $content .= $this->load->view('pages/layouts/forms/form_modal', $viewData, true);
+
+            if ($this->input->get('_mode') == 'side_view') {
+                $content .= $this->load->view('pages/layouts/forms/form_modal_sideview', $viewData, true);
+            } else {
+                $content .= $this->load->view('pages/layouts/forms/form_modal', $viewData, true);
+            }
             $content .= $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
 
             $this->load->view('layout/content_return', ['content' => $content]);
