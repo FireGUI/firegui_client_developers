@@ -1075,12 +1075,24 @@ function loadModal(url, data, callbackSuccess, method) {
 
         $("#modal-side-content-form-view").html(data);
         $("#modal-side-view").addClass("modal-side-visible");
+        loading(false);
 
+        // Close
         $("#close-modal-side-view").click(function () {
           $("#modal-side-view").removeClass("modal-side-visible");
         });
-      } else {
+        $(document).click(function (event) {
+          // Verifica se l'elemento cliccato è all'interno della modale
+          if (!$(event.target).closest("#modal-side-view").length) {
+            // Verifica se l'elemento cliccato è all'interno di una modale diversa
+            if (!$(event.target).closest(".modal").length) {
+              // Chiudi la modale solo se l'evento di clic non si è verificato all'interno di nessuna modale
+              $("#modal-side-view").removeClass("modal-side-visible");
+            }
+          }
+        });
 
+      } else {
         modalContainer.html(data);
         $(".modal", modalContainer)
           .modal()
