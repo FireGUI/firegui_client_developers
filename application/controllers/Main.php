@@ -420,7 +420,7 @@ class Main extends MY_Controller
         //Get all settings layouts
         $layouts = $this->db
             ->where('layouts_settings', DB_BOOL_TRUE)
-            //            ->where('modules_core', DB_BOOL_FALSE)
+            ->where('modules_core', DB_BOOL_FALSE)
             ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
             ->order_by('modules_name', 'ASC')
             ->order_by('layouts_title')
