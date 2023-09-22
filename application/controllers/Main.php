@@ -416,22 +416,22 @@ class Main extends MY_Controller
     public function settings()
     {
         $dati['current_page'] = 'settings';
-
-        //Get all settings layout
+        
+        //Get all settings layouts
         $layouts = $this->db
             ->where('layouts_settings', DB_BOOL_TRUE)
-            ->where('modules_core', DB_BOOL_FALSE)
+            //            ->where('modules_core', DB_BOOL_FALSE)
             ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
             ->order_by('modules_name', 'ASC')
             ->order_by('layouts_title')
             ->get('layouts')
             ->result_array();
-
+        
         foreach ($layouts as $layout) {
             $dati['settings_layout'][$layout['modules_name']][] = $layout;
         }
-
-        //Get all settings layout
+        
+        //Get core settings layouts
         $layouts = $this->db
             ->where('layouts_settings', DB_BOOL_TRUE)
             ->where('modules_core', DB_BOOL_TRUE)
@@ -440,11 +440,11 @@ class Main extends MY_Controller
             ->order_by('layouts_title')
             ->get('layouts')
             ->result_array();
-
+        
         foreach ($layouts as $layout) {
             $dati['core_settings_layout'][$layout['modules_name']][] = $layout;
         }
-
+        
         $pagina = $this->load->view("pages/settings", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
