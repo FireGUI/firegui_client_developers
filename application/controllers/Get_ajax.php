@@ -81,16 +81,21 @@ class Get_ajax extends MY_Controller
             $pagina = $this->load->view("pages/layout", array('dati' => $dati, 'value_id' => $value_id, 'modal' => $modal), true);
         }
 
-        $this->load->view(
-            "layout/modal_container",
-            array(
-                'size' => $modalSize,
-                'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
-                'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
-                'content' => $pagina,
-                'footer' => null,
-            )
-        );
+        // Standard modal
+        if ($this->input->get('_mode') == 'side_view') {
+            echo $pagina;
+        } else {
+            $this->load->view(
+                "layout/modal_container",
+                array(
+                    'size' => $modalSize,
+                    'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
+                    'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
+                    'content' => $pagina,
+                    'footer' => null,
+                )
+            );
+        }
         $this->layout->setLayoutModule();
     }
 

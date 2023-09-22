@@ -1,7 +1,7 @@
 <div class="js_action_inline action_inline">
-    <?php if (isset($links['custom']) && $links['custom']) : ?>
+    <?php if (isset($links['custom']) && $links['custom']): ?>
         <?php
-        
+
 
         // Filtra tutti i valori array e oggetto dall'array dati
         $row_data = array_filter(isset($row_data) ? $row_data : array(), function ($value) {
@@ -16,13 +16,15 @@
         $replace_to[] = $id;
 
 
-        
+
         ?>
-        <?php foreach ($links['custom'] as $key => $custom_action) : ?>
+        <?php foreach ($links['custom'] as $key => $custom_action): ?>
 
-            <?php if (!$this->conditions->accessible('grids_actions', $custom_action['grids_actions_id'],$id, $row_data) || $custom_action['grids_actions_show'] == 'bulk') {continue;} ?>
+            <?php if (!$this->conditions->accessible('grids_actions', $custom_action['grids_actions_id'], $id, $row_data) || $custom_action['grids_actions_show'] == 'bulk') {
+                continue;
+            } ?>
 
-            <?php if (!empty($custom_action['grids_actions_html']) && (empty($custom_action['grids_actions_type']) || 'custom' == $custom_action['grids_actions_type'])) : ?>
+            <?php if (!empty($custom_action['grids_actions_html']) && (empty($custom_action['grids_actions_type']) || 'custom' == $custom_action['grids_actions_type'])): ?>
                 <?php
                 ob_start();
                 eval(' ?> ' . str_replace($replace_from, $replace_to, $custom_action['grids_actions_html']) . ' <?php ');
@@ -31,10 +33,11 @@
                     continue;
                 }
                 ?>
-                <?php if ($key != 0) : ?> | <?php endif; ?>
+                <?php if ($key != 0): ?> |
+                <?php endif; ?>
 
                 <?php echo $action; ?>
-            <?php else : ?>
+            <?php else: ?>
 
                 <?php
                 $confirm = false;
@@ -47,6 +50,8 @@
                             $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_size=large";
                         } elseif ('modal_extra' == $custom_action['grids_actions_mode']) {
                             $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_size=extra";
+                        } elseif ('side_view' == $custom_action['grids_actions_mode']) {
+                            $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_mode=side_view";
                         }
                     } elseif (!empty($custom_action['grids_actions_type']) && 'delete' == $custom_action['grids_actions_type']) {
                         if ($skip_delete) {
@@ -67,6 +72,8 @@
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=large";
                         } elseif ('modal_extra' == $custom_action['grids_actions_mode']) {
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=extra";
+                        } elseif ('side_view' == $custom_action['grids_actions_mode']) {
+                            $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_mode=side_view";
                         }
                     } else {
                         $url = '';
@@ -82,9 +89,13 @@
                 $url = str_replace('{base_url}', base_url(), $url);
 
                 ?>
-                <?php if ($key != 0) : ?> | <?php endif; ?>
+                <?php if ($key != 0): ?> |
+                <?php endif; ?>
 
-                <a class="<?php if ($confirm) : ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> js_open_modal <?php endif; ?>" href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab') : ?>target="_blank" <?php endif; ?>style="color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm) : ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])) : ?> data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
+                <a class="<?php if ($confirm): ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra', 'side_view'])): ?> js_open_modal <?php endif; ?>"
+                    href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab'): ?>target="_blank" <?php endif; ?>style="color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm): ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?>
+                    <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])): ?>
+                        data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>
                     <?php echo t($custom_action['grids_actions_name']); ?>
                 </a>
 

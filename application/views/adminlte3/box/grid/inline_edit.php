@@ -1,1 +1,0 @@
-<a href="#" class="js_edit"><?php e('Edit'); ?></a>
