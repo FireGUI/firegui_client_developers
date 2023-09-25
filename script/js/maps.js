@@ -119,18 +119,11 @@ function load_marker(map, url, clusterize) {
                 try {
                     //alert(1);
                     if (Object.keys(bounds).length !== 0) {
-                        map.fitBounds(bounds);
+                        //map.fitBounds(bounds);
                     } else if (map.getZoom() > 2) {
                         map.setZoom(5);
                         }
-                        
-
-                    
                     map.addLayer(map.my_markers);
-
-
-
-                    
 
 
                     //map.invalidateSize();
