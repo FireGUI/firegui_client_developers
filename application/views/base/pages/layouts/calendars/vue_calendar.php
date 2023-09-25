@@ -471,7 +471,12 @@ new Vue({
                         self.events.forEach((element, index) => {
                             //console.log(element)
                             element.start = moment(element.start).format('YYYY-MM-DD HH:mm');
+                            //se finisce a mezzanotte devo tirare indietro di un minuto per visualizzarlo
+                            if ((element.end).endsWith("00:00:00")) {
+                                element.end = (element.end).replace("00:00:00", "23:59:00");
+                            }
                             element.end = moment(element.end).format('YYYY-MM-DD HH:mm');
+
                             if (element.color) {
                                 element.backgroundColor = element.color;
                             } else {
