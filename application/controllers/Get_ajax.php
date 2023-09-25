@@ -611,6 +611,9 @@ class Get_ajax extends MY_Controller
             $order_col = $this->input->post('iSortCol_0');
             $order_dir = $this->input->post('sSortDir_0') ?: null;
 
+            
+
+
             // Prendo i dati della grid
             $grid = $this->datab->get_grid($grid_id);
 
@@ -663,6 +666,18 @@ class Get_ajax extends MY_Controller
             }
 
             $group_by = ($grid['grids']['grids_group_by']) ?: null;
+
+            //Arrivato qui mi salvo in sessione sia la colonna di ordinamento, sia l'eventuale ricerca, così posso ripescarla in fase di export xml
+            $grids_ajax_params = $this->session->userdata('grids_ajax_params');
+            if (empty($grids_ajax_params)) {
+                $grids_ajax_params = [];
+            }
+            $grids_ajax_params[$grid_id] = [
+                'search' => $search,
+                'order_by' => $order_by,
+            ];
+            $this->session->set_userdata('grids_ajax_params',$grids_ajax_params);
+            //debug($grids_ajax_params,true);
 
             // Added where_append in get ajax
             if ($where_append = $this->input->get('where_append')) {

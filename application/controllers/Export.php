@@ -32,8 +32,15 @@ class Export extends MY_Controller
         ini_set('display_errors', false);
         ini_set('display_startup_errors', false);
         setlocale(LC_MONETARY, 'it_IT');
+
+        $grids_ajax_params = $this->session->userdata('grids_ajax_params');
+        if (!empty($grids_ajax_params[$grid_id])) {
+            $params = $grids_ajax_params[$grid_id];
+        } else {
+            $params = [];
+        }
         
-        $data = $this->datab->prepareData($grid_id, $value_id);
+        $data = $this->datab->prepareData($grid_id, $value_id, $params);
         $csv = $this->datab->arrayToCsv($data, ',');
         
         $filename = t('Export table') . " #{$grid_id}";
@@ -91,8 +98,15 @@ class Export extends MY_Controller
         ];
         
         $this->table->set_template($template);  // Set the template for the table
-        
-        $data = $this->datab->prepareData($grid_id, $value_id);  // Prepare the data for the table
+
+        $grids_ajax_params = $this->session->userdata('grids_ajax_params');
+        if (!empty($grids_ajax_params[$grid_id])) {
+            $params = $grids_ajax_params[$grid_id];
+        } else {
+            $params = [];
+        }
+
+        $data = $this->datab->prepareData($grid_id, $value_id, $params);  // Prepare the data for the table
         $header = array_unique(array_merge(...array_map('array_keys', $data)));  // Get unique headers from the data
         
         $tpl_folder = $this->db->join('settings_template', 'settings_template_id = settings_template', 'LEFT')->get('settings')->row()->settings_template_folder;  // Get the template folder
@@ -141,11 +155,18 @@ class Export extends MY_Controller
         ini_set('display_errors', false);
         ini_set('display_startup_errors', false);
         setlocale(LC_MONETARY, 'it_IT');
-        
+
+        $grids_ajax_params = $this->session->userdata('grids_ajax_params');
+        if (!empty($grids_ajax_params[$grid_id])) {
+            $params = $grids_ajax_params[$grid_id];
+        } else {
+            $params = [];
+        }
+
         $grid = $this->datab->get_grid($grid_id);
         $fields = $grid['grids_fields'];
         
-        $data = $this->datab->prepareData($grid_id, $value_id);
+        $data = $this->datab->prepareData($grid_id, $value_id, $params);
         $objPHPExcel = new Spreadsheet();
         
         $objPHPExcel->getActiveSheet()->fromArray(array_keys($data[0]), '', 'A1');

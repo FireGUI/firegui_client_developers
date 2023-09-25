@@ -1931,3 +1931,4 @@ $lang['Note fornitore'] = 'Note fornitore';
 $lang['N ordine fornitore'] = 'N ordine fornitore';
 $lang['Data ordine fornitore'] = 'Data ordine fornitore';
 $lang['H2 Supervisor'] = 'H2 Supervisor';
+$lang['Export table'] = 'Export table';
