@@ -998,7 +998,21 @@ function initComponents(container, reset = false) {
 var mAjaxCall = null,
   mArgs = null;
 
+
 function loadModal(url, data, callbackSuccess, method) {
+  loading(true);
+
+  // URL PARAMS 
+  const parsedUrl = new URL(url);
+  const params = parsedUrl.searchParams;
+
+  if (params.has('_mode') && params.get('_mode') === 'side_view') {
+    var modalMode = 'side';
+  } else {
+    var modalMode = 'modal';
+  }
+
+  // CSRF
   try {
     var token = JSON.parse(atob($(this).data("csrf")));
     var token_name = token.name;
@@ -1009,7 +1023,7 @@ function loadModal(url, data, callbackSuccess, method) {
     var token_hash = token.hash;
   }
 
-  var modalContainer = $("#js_modal_container");
+  // DATA
 
   if (typeof data === "undefined") {
     data = [];
@@ -1019,6 +1033,9 @@ function loadModal(url, data, callbackSuccess, method) {
   } else {
     data[token_name] = token_hash;
   }
+
+
+  var modalContainer = $("#js_modal_container");
 
   /*** La modale è già aperta? */
   var modalLoaded = modalContainer.find("> .modal");
@@ -1036,7 +1053,7 @@ function loadModal(url, data, callbackSuccess, method) {
     mAjaxCall.abort();
   }
 
-  loading(true);
+
 
   mAjaxCall = $.ajax({
     url: url,
@@ -1053,42 +1070,65 @@ function loadModal(url, data, callbackSuccess, method) {
         verb: method,
       };
 
-      modalContainer.html(data);
-      $(".modal", modalContainer)
-        .modal()
-        .on("shown.bs.modal", function (e) {
-          loading(false);
-          reset_theme_components();
-          console.log("Check here...");
-          //initComponents(modalContainer);
-          // Disable by default the confirmation request
-          $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose = false;
 
-          if ($("form", modalContainer).length > 0) {
-            $("input:not([type=hidden]), select, textarea", modalContainer).on("change", function () {
-              $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose = true;
-            });
-          }
-        })
-        .on("hide.bs.modal", function (e) {
-          // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
-          if ($(".modal", modalContainer).is(e.target)) {
-            var askConfirmationOnClose = $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose;
+      if (modalMode == 'side') {
 
-            if (askConfirmationOnClose && !confirm("Are you sure?")) {
-              // Stop hiding the modal
-              $(".modal", modalContainer).data("bs.modal").isShown = false;
-            } else {
-              $(".modal", modalContainer).data("bs.modal").isShown = true;
+        $("#modal-side-content-form-view").html(data);
+        $("#modal-side-view").addClass("modal-side-visible");
+        loading(false);
+
+        // Close
+        $("#close-modal-side-view").click(function () {
+          $("#modal-side-view").removeClass("modal-side-visible");
+        });
+        $(document).click(function (event) {
+          // Verifica se l'elemento cliccato è all'interno della modale
+          if (!$(event.target).closest("#modal-side-view").length) {
+            // Verifica se l'elemento cliccato è all'interno di una modale diversa
+            if (!$(event.target).closest(".modal").length) {
+              // Chiudi la modale solo se l'evento di clic non si è verificato all'interno di nessuna modale
+              $("#modal-side-view").removeClass("modal-side-visible");
             }
           }
-        })
-        .on("hidden.bs.modal", function (e) {
-          mArgs = oldModalArgs;
-          if (typeof callbackSuccess === "function") {
-            callbackSuccess();
-          }
         });
+
+      } else {
+        modalContainer.html(data);
+        $(".modal", modalContainer)
+          .modal()
+          .on("shown.bs.modal", function (e) {
+            loading(false);
+            reset_theme_components();
+            //initComponents(modalContainer);
+            // Disable by default the confirmation request
+            $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose = false;
+
+            if ($("form", modalContainer).length > 0) {
+              $("input:not([type=hidden]), select, textarea", modalContainer).on("change", function () {
+                $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose = true;
+              });
+            }
+          })
+          .on("hide.bs.modal", function (e) {
+            // FIX: ogni tanto viene lanciato un evento per niente - ad esempio sui datepicker
+            if ($(".modal", modalContainer).is(e.target)) {
+              var askConfirmationOnClose = $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose;
+
+              if (askConfirmationOnClose && !confirm("Are you sure?")) {
+                // Stop hiding the modal
+                $(".modal", modalContainer).data("bs.modal").isShown = false;
+              } else {
+                $(".modal", modalContainer).data("bs.modal").isShown = true;
+              }
+            }
+          })
+          .on("hidden.bs.modal", function (e) {
+            mArgs = oldModalArgs;
+            if (typeof callbackSuccess === "function") {
+              callbackSuccess();
+            }
+          });
+      }
       mAjaxCall = null;
     },
     error: function () {
