@@ -320,6 +320,8 @@ class Auth extends CI_Model
             // Cookie creation
             $secure_cookie = (bool) config_item('cookie_secure');
             $cookie_samesite = config_item('cookie_samesite');
+            $cookie_encryption_key = config_item('encryption_key');
+
             // 20230921 Remove set_cookie (codeigniter helper) and integrate setcookie() php native function to fix expire cookie on mobile
             // set_cookie(
             //     array(
@@ -334,7 +336,7 @@ class Auth extends CI_Model
             // );
 
             setcookie(
-                static::$rememberTokenName,
+                $cookie_encryption_key . static::$rememberTokenName,
                 json_encode(['token_string' => $token_string, 'timeout' => time() + ($timeout * 60)]),
                 (int) (time() + (31 * 24 * 60 * 60)),
                 ($this->config->item('cookie_path')) ?: '/',
