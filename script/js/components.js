@@ -1076,7 +1076,7 @@ function loadModal(url, data, callbackSuccess, method) {
         $("#modal-side-content-form-view").html(data);
         $("#modal-side-view").addClass("modal-side-visible");
         loading(false);
-
+        reset_theme_components();
         // Close
         $("#close-modal-side-view").click(function () {
           $("#modal-side-view").removeClass("modal-side-visible");

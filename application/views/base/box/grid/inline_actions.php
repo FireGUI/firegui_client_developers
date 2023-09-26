@@ -73,7 +73,7 @@
                         } elseif ('modal_extra' == $custom_action['grids_actions_mode']) {
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=extra";
                         } elseif ('side_view' == $custom_action['grids_actions_mode']) {
-                            $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_mode=side_view";
+                            $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_form']}/$id?_mode=side_view";
                         }
                     } else {
                         $url = '';
