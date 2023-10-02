@@ -64,7 +64,7 @@
                         } elseif ('modal_extra' == $custom_action['grids_actions_mode']) {
                             $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_size=extra";
                         } elseif ('side_view' == $custom_action['grids_actions_mode']) {
-                            $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_layout']}/$id?_mode=side_view";
+                            $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_mode=side_view";
                         }
                     } else {
                         die('TODO type!!!');
@@ -92,11 +92,11 @@
                         $confirm = false;
                         $btn_attrs .= 'data-id="' . $id . '" ';
                     } /*elseif ($custom_action['grids_actions_type'] == 'edit_form') {
-                     $btn_href = '#';
-                     $btn_classes .= 'js_edit ';
-                     $confirm = false;
-                     $btn_attrs .= 'data-id="' . $id . '" ';
-                 }*/else {
+                   $btn_href = '#';
+                   $btn_classes .= 'js_edit ';
+                   $confirm = false;
+                   $btn_attrs .= 'data-id="' . $id . '" ';
+               }*/else {
                         //$btn_classes .= 'js_link_ajax '; // Michael - 2022 - Commento questo perchè qualsiasi custom action che viene messa gli viene appenso js_link_ajax, il che è sbagliato
                     }
 
