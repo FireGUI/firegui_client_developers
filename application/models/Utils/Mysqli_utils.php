@@ -103,6 +103,8 @@ class Mysqli_utils extends Utils
             'fields_preview_base' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'fields_preview_custom' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
 
+            'fields_additional_data' => ['type' => 'TEXT', 'null' => true],
+
             
         ]);
 

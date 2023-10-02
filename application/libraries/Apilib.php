@@ -48,7 +48,7 @@ class Apilib
 
     private $not_deferrable_pp = [
         'pre-login', 'login', 'pre-search', 'search', 'pre-save', 'pre-delete', 'pre-update', 'pre-insert','pre-validation-update',
-        'pre-validation-insert','pre-validation-save'
+        'pre-validation-insert','pre-validation-save', 'pre-validation'
     ];
     private $deferrable_pp = [
         'update', 'delete','insert','save'

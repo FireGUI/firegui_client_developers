@@ -89,6 +89,7 @@ class Postgre_utils extends Utils
             'fields_multilingual' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'fields_searchable' => ['type' => 'BOOL', 'default' => 't'],
             'fields_xssclean' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_TRUE, 'null' => false],
+            'fields_additional_data' => ['type' => 'TEXT', 'null' => true],
         ]);
 
         $this->addForeignKey('fields', 'fields_entity_id', 'entity', 'entity_id');

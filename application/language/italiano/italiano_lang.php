@@ -1932,3 +1932,6 @@ $lang['N ordine fornitore'] = 'N ordine fornitore';
 $lang['Data ordine fornitore'] = 'Data ordine fornitore';
 $lang['H2 Supervisor'] = 'H2 Supervisor';
 $lang['Export table'] = 'Export table';
+$lang['Manutenzione mezzi'] = 'Manutenzione mezzi';
+$lang['App settings'] = 'App settings';
+$lang['Image Manipulation Settings'] = 'Image Manipulation Settings';

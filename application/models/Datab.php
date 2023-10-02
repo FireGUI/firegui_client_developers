@@ -26,6 +26,8 @@ class Datab extends CI_Model
 
     private $_grids_data = [];
 
+    private $_layout_boxes_benchmark = [];
+
     public $executed_hooks = [];
 
     public function __construct()
@@ -358,8 +360,8 @@ class Datab extends CI_Model
                 $dati = $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
             } else {
                 $dati = $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
-                
-                
+
+
             }
             if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($entity_id));
@@ -684,7 +686,7 @@ class Datab extends CI_Model
             }
 
             foreach ($fields as $key => $field) {
-                
+
                 if (!$this->conditions->accessible('forms_fields', "{$field['forms_fields_forms_id']},{$field['forms_fields_fields_id']}", $value_id, $formData)) {
                     unset($fields[$key]);
                     continue;
@@ -698,16 +700,16 @@ class Datab extends CI_Model
                         ->row_array()[$field['fields_name']];
                     $formData[$field['fields_name']] = $value_json;
                 }
-                
+
             }
 
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
-                
+
                 $fields[$key] = $this->processFieldMapping($field, $form);
-                
+
             }
             unset($field);
 
@@ -729,7 +731,7 @@ class Datab extends CI_Model
              */
             $hidden = $shown = [];
             foreach ($fields as $field) {
-                
+
                 $type = !empty($field['forms_fields_override_type']) ? $field['forms_fields_override_type'] : $field['fields_draw_html_type'];
                 if ($type === 'input_hidden') {
                     $hidden[] = $field;
@@ -743,7 +745,7 @@ class Datab extends CI_Model
             }
 
             foreach ($shown as $k => $field) {
-                
+
                 // Dimensione del field:
                 //  - cerca prima un valore valido in `forms_fields_override_colsize`
                 //  - altrimenti controlla se è un wysiwyg e impostala a 12
@@ -756,7 +758,7 @@ class Datab extends CI_Model
                 if (!$colsize && $type === 'wysiwyg') {
                     $colsize = 12;
                 }
-                
+
                 $shown[$k] = [
                     'id' => $field['fields_id'],
                     'name' => $field['fields_name'],
@@ -791,6 +793,11 @@ class Datab extends CI_Model
         // Il ref è il nome della tabella/entità di supporto/da joinare
         // quindi estraggo i valori da proporre
         if (!$field['fields_ref']) {
+            //Potrebbe essere comunque una select con dati da pescare da fields_additional_data (valori separati da virgola)
+            if (!empty($field['fields_additional_data'])) {
+                $support_data = explode(',', $field['fields_additional_data']);
+                $field['support_data'] = array_combine($support_data, $support_data);
+            }
             return $field;
         }
 
@@ -882,6 +889,8 @@ class Datab extends CI_Model
         $offset = 0;
 
         $options['depth'] = 1;
+
+        
 
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $limit, $offset, $options);
 
@@ -1217,7 +1226,7 @@ class Datab extends CI_Model
             $visible_fields_supports = $this->db->query("SELECT * FROM fields LEFT JOIN fields_draw ON fields.fields_id = fields_draw.fields_draw_fields_id
                                                          WHERE fields_entity_id = '{$entity['entity_id']}' AND fields_preview = '" . DB_BOOL_TRUE . "'")->result_array();
             $support_fields = $this->fields_implode($visible_fields_supports);
-            
+
             $select = $field_support_id . ($support_fields ? ',' . $support_fields : '');
 
             //TODO: don't use query, but apilib search....
@@ -1296,7 +1305,11 @@ class Datab extends CI_Model
                             // Sto cercando in un'entità diversa
                             $other_entity = $this->get_entity($field->fields_entity_id);
 
-                            $other_field_select = $this->db->get_where('fields', array('fields_entity_id' => $field->fields_entity_id, 'fields_ref' => $entity['entity_name']))->row();
+                            $other_field_select = $this->db->get_where('fields', array(
+                                'fields_entity_id' => $field->fields_entity_id,
+                                'fields_ref' => $entity['entity_name']
+                            )
+                            )->row();
                             if (isset($other_field_select->fields_name)) {
                                 // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
                                 $where_prefix = "{$entity['entity_name']}.{$entity['entity_name']}_id IN (SELECT {$other_field_select->fields_name} FROM {$other_entity['entity_name']} WHERE ";
@@ -1306,7 +1319,10 @@ class Datab extends CI_Model
                                 $field_referencing = $this->db->get_where('fields', array('fields_entity_id' => $entity['entity_id'], 'fields_ref' => $other_entity['entity_name']))->row();
                                 if (empty($field_referencing)) {
                                     // Non so come gestirlo, per ora piazzo un continue e tolgo debug
-                                    continue;
+                                    //continue;
+
+                                    //Non so come gestirlo ma ci provo mettendo il filtro così com'è (es.: customers.customers_group = 2, sperando che customers sia joinata in qualche modo...)
+                                    $where_prefix = "({$other_entity['entity_name']}.";
                                 }
 
                                 $where_prefix = "{$entity['entity_name']}.{$field_referencing->fields_name} IN (SELECT {$other_entity['entity_name']}_id FROM {$other_entity['entity_name']} WHERE ";
@@ -1667,7 +1683,7 @@ class Datab extends CI_Model
             }
         }
 
-        
+
         return $dati;
     }
 
@@ -2386,6 +2402,7 @@ class Datab extends CI_Model
      */
     public function build_layout($layout_id, $value_id, $layout_data_detail = null)
     {
+
         $cache_key = "apilib/datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET) . serialize($_POST) . serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
@@ -2429,7 +2446,7 @@ class Datab extends CI_Model
                 return null;
             }
 
-            $layouts = $this->layout->getBoxes($layout_id,$value_id);
+            $layouts = $this->layout->getBoxes($layout_id, $value_id);
 
             if ($dati['layout_container']['layouts_pdf'] != DB_BOOL_TRUE) {
                 $dati['pre-layout'] = $this->getHookContent('pre-layout', $layout_id, $value_id);
@@ -2441,6 +2458,7 @@ class Datab extends CI_Model
 
             $dati['layout'] = array();
 
+
             // Ricavo il content se necessario
             foreach ($layouts as $layout) {
                 // Recupero del contenuto del layout
@@ -2448,8 +2466,19 @@ class Datab extends CI_Model
                 // Precedentemente questa operazione veniva effettuata in questo
                 // punto, ma per motivi di dimensione e complessità della procedura
                 // è stata spostata in un metodo a se `getBoxContent`
-
+                $start = microtime(true);
                 $layout['content'] = $this->getBoxContent($layout, $value_id, $layout_data_detail);
+                if ($this->output->enable_profiler) {
+
+                    $this->_layout_boxes_benchmark[$layout['layouts_boxes_title']] =
+                        [
+                            'container' => $dati['layout_container']['layouts_title'],
+                            'layouts_id' => $dati['layout_container']['layouts_id'],
+                            'time' => elapsed_time($start)
+                        ]
+                    ;
+                    //debug("{$layout['layouts_boxes_title']}: " . elapsed_time($start));
+                }
 
                 // Fa il wrap degli hook pre e post che devono esistere per ogni
                 // componente ad eccezione di custom views e custom php code
@@ -2555,7 +2584,7 @@ class Datab extends CI_Model
     /**
      * Build della cella
      */
-    public function build_grid_cell($field, $dato, $escape_date = true, $crop = true,$download = false)
+    public function build_grid_cell($field, $dato, $escape_date = true, $crop = true, $download = false)
     {
         // Valuta eventuali grid fields eval e placeholder
         $type = isset($field['grids_fields_replace_type']) ? $field['grids_fields_replace_type'] : 'field';
@@ -2578,7 +2607,7 @@ class Datab extends CI_Model
                 $return = $this->buildFieldGridCell($field, $dato, true, $escape_date, $crop, $download);
                 break;
         }
-        if($download == false ){
+        if ($download == false) {
             $inline_actions = $this->buildInlineActions($field, $dato);
             return $return . $inline_actions;
         } else {
@@ -2617,7 +2646,7 @@ class Datab extends CI_Model
 
         return $return;
     }
-    private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true,$download = false )
+    private function buildFieldGridCell($field, $dato, $processMultilingual, $escape_date = true, $crop = true, $download = false)
     {
         // =====================================================================
         // Controllo multilingua:
@@ -2626,7 +2655,7 @@ class Datab extends CI_Model
         $multilingual = defined('LANG_ENTITY') && LANG_ENTITY && $field['fields_multilingual'] == DB_BOOL_TRUE;
         $value = array_key_exists($field['fields_name'], $dato) ? $dato[$field['fields_name']] : '';
 
-        
+
 
         if ($processMultilingual && $multilingual) {
             if (!$value) {
@@ -2677,8 +2706,7 @@ class Datab extends CI_Model
                     $result = array_values($value);
                     return implode(';', $result);
 
-                }
-                elseif ($lnk) {
+                } elseif ($lnk) {
                     foreach ($value as $id => $name) {
                         $value[$id] = anchor("{$lnk}/{$id}", $name ?: t('view'));
                     }
@@ -2689,7 +2717,7 @@ class Datab extends CI_Model
                 // support fields (che sono i campi preview dell'entità
                 // referenziata)
 
-                
+
 
                 $link = $value ? $this->get_detail_layout_link($field['support_fields'][0]['fields_entity_id']) : false;
                 $idKey = $field['fields_ref'] . '_id';
@@ -2703,12 +2731,12 @@ class Datab extends CI_Model
 
                     //Check if entity has a special/custom preview rule
                     $field_ref_entity = $this->get_entity_by_name($field['fields_ref']);
-                    $entity_preview = ($field_ref_entity['entity_preview_custom']??false);
-            if (!$entity_preview) {
-                $entity_preview = ($field_ref_entity['entity_preview_base']??false);
-            }
+                    $entity_preview = ($field_ref_entity['entity_preview_custom'] ?? false);
+                    if (!$entity_preview) {
+                        $entity_preview = ($field_ref_entity['entity_preview_base'] ?? false);
+                    }
 
-            //Check if entity_preview_base or custom is set
+                    //Check if entity_preview_base or custom is set
                     if ($entity_preview) {
                         $text = str_replace_placeholders($entity_preview, $dato);
                         //debug($text,true);
@@ -2767,18 +2795,18 @@ class Datab extends CI_Model
                         }
                     }
                 }
-                
+
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
             }
         } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
 
             $link = $value ? $this->get_detail_layout_link($field['fields_entity_id']) : false;
-            
+
             $entity = $this->get_entity($field['fields_entity_id']);
             $idKey = $entity['entity_name'] . '_id';
             $text = $value;
-            
+
             if (array_key_exists($idKey, $dato)) {
 
                 return $link ? anchor(rtrim($link, '/') . '/' . $dato[$idKey], $text) : $text;
@@ -3039,8 +3067,8 @@ class Datab extends CI_Model
      */
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
-        
-        
+
+
         if (!$value && !empty($field['forms_fields_default_value'])) {
             $value = $this->get_default_fields_value($field, $value_id);
         }
@@ -3150,7 +3178,7 @@ class Datab extends CI_Model
 
             $output .= $view;
         }
-        
+
         return $output;
     }
 
@@ -3165,6 +3193,7 @@ class Datab extends CI_Model
      */
     public function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [])
     {
+
         if (is_numeric($layoutBoxData)) {
             $layoutBoxData = $this->layout->getLayoutBox($layoutBoxData);
         }
@@ -3568,12 +3597,12 @@ class Datab extends CI_Model
         if (!empty($params['search'])) {
             $where = $this->search_like($params['search'], array_merge($grid['grids_fields'], $preview_fields));
         }
-if (!empty($params['order_by'])) {
+        if (!empty($params['order_by'])) {
             $order_by = $params['order_by'];
-} else {
+        } else {
             $order_by = null;
-}
-        
+        }
+
 
         $grid_data = $this->datab->get_grid_data($grid, $value_id, $where, null, 0, $order_by);
         $out_array = [];
@@ -3637,5 +3666,10 @@ if (!empty($params['order_by'])) {
 
         fclose($tmp); // Rilascia risorsa
         return $filedata;
+    }
+
+    public function getLayoutBoxesBenchmark()
+    {
+        return $this->_layout_boxes_benchmark;
     }
 }

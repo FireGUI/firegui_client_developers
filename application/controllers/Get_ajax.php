@@ -10,6 +10,9 @@ class Get_ajax extends MY_Controller
     {
 
         parent::__construct();
+        if ($this->input->is_ajax_request()) {
+            $this->output->enable_profiler(false);
+        }
 
     }
     /**
@@ -611,7 +614,7 @@ class Get_ajax extends MY_Controller
             $order_col = $this->input->post('iSortCol_0');
             $order_dir = $this->input->post('sSortDir_0') ?: null;
 
-            
+
 
 
             // Prendo i dati della grid
@@ -676,7 +679,7 @@ class Get_ajax extends MY_Controller
                 'search' => $search,
                 'order_by' => $order_by,
             ];
-            $this->session->set_userdata('grids_ajax_params',$grids_ajax_params);
+            $this->session->set_userdata('grids_ajax_params', $grids_ajax_params);
             //debug($grids_ajax_params,true);
 
             // Added where_append in get ajax
