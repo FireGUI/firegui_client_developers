@@ -486,8 +486,8 @@ class Crmentity extends CI_Model
         // =================
         $dati = $this->getEntityFullData($entity_id);
         $this->buildSelect($dati, $options);
-        
-        
+
+
         
 
         $this->buildWhere($where);

@@ -351,8 +351,8 @@ class Get_ajax extends MY_Controller
 
                 //Check if a preview field is related to an entity, so add that entity preview fields in $fields
                 foreach ($fields as $key => $field) {
-                    if ($field['fields_ref']) {
-
+                    if ($field['fields_ref'] && $field['fields_ref_auto_left_join']) {
+                        //debug($field['fields_ref']);
                         $fields[$key]['support_fields'] = array_values(
                             array_filter(
                                 $this->crmentity->getFields($field['fields_ref']),
@@ -363,14 +363,15 @@ class Get_ajax extends MY_Controller
                         );
                     }
                 }
-
+                //debug($fields,true);
                 $where = $this->datab->search_like($search, $fields);
+                
                 if ($where && $where_limit) {
                     $where .= " AND ({$where_limit})";
                 } elseif ($where_limit) {
                     $where = $where_limit;
                 }
-
+                
                 if ($where_referer) {
                     $where = ($where ? "{$where} AND ({$where_referer})" : $where_referer);
                 }

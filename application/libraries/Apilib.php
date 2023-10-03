@@ -908,6 +908,7 @@ class Apilib
             $input = $input ? [$input] : [];
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
+        
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
@@ -936,7 +937,7 @@ class Apilib
                     $where[] = $value;
                 }
             }
-
+            
             try {
                 $this->load->model('crmentity');
                 
@@ -957,7 +958,7 @@ class Apilib
                     $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                 }
             }
-
+            
             $order_array = [];
             if ($orderBy) {
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
