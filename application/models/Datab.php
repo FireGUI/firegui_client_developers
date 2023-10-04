@@ -2173,7 +2173,7 @@ class Datab extends CI_Model
 
         // $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
         // return $query->num_rows() > 0;
-        $this->module->moduleExists($name);
+        return $this->module->moduleExists($name);
     }
 
     public function module_access($name)
