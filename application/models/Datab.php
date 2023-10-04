@@ -890,7 +890,7 @@ class Datab extends CI_Model
 
         $options['depth'] = 1;
 
-        
+
 
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $limit, $offset, $options);
 
@@ -985,7 +985,7 @@ class Datab extends CI_Model
             if (empty($order_by)) {
                 // Recupero i dati dell'entità
                 try {
-                    $this->load->model('crmentity');
+                    //$this->load->model('crmentity');
                     $entity_data = $this->crmentity->getEntity($grid['grids']['grids_entity_id']);
                 } catch (Exception $ex) {
                     $this->error = self::ERR_VALIDATION_FAILED;
@@ -1305,10 +1305,12 @@ class Datab extends CI_Model
                             // Sto cercando in un'entità diversa
                             $other_entity = $this->get_entity($field->fields_entity_id);
 
-                            $other_field_select = $this->db->get_where('fields', array(
-                                'fields_entity_id' => $field->fields_entity_id,
-                                'fields_ref' => $entity['entity_name']
-                            )
+                            $other_field_select = $this->db->get_where(
+                                'fields',
+                                array(
+                                    'fields_entity_id' => $field->fields_entity_id,
+                                    'fields_ref' => $entity['entity_name']
+                                )
                             )->row();
                             if (isset($other_field_select->fields_name)) {
                                 // Caso 1: è l'altra entità che ha il ref nell'entità in cui eseguo la ricerca
@@ -2168,8 +2170,10 @@ class Datab extends CI_Model
 
     public function module_installed($name)
     {
-        $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
-        return $query->num_rows() > 0;
+
+        // $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
+        // return $query->num_rows() > 0;
+        $this->module->moduleExists($name);
     }
 
     public function module_access($name)

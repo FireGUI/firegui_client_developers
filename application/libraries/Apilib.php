@@ -47,11 +47,24 @@ class Apilib
     const LOG_DELETE = 8; // Apilib::delete action
 
     private $not_deferrable_pp = [
-        'pre-login', 'login', 'pre-search', 'search', 'pre-save', 'pre-delete', 'pre-update', 'pre-insert','pre-validation-update',
-        'pre-validation-insert','pre-validation-save', 'pre-validation'
+        'pre-login',
+        'login',
+        'pre-search',
+        'search',
+        'pre-save',
+        'pre-delete',
+        'pre-update',
+        'pre-insert',
+        'pre-validation-update',
+        'pre-validation-insert',
+        'pre-validation-save',
+        'pre-validation'
     ];
     private $deferrable_pp = [
-        'update', 'delete','insert','save'
+        'update',
+        'delete',
+        'insert',
+        'save'
     ];
     private $error = 0;
     private $errorMessage = '';
@@ -102,11 +115,13 @@ class Apilib
         // Prima carica la libreria di cache e dopo carica la crm entity
         //TODO: extend my_cache_file driver to work also with other driver...
         $this->load->model('crmentity');
+        $this->crmEntity = $this->crmentity; //Backward compatibiliy
         $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
         //debug(get_class_methods($this->cache), true);
         $this->previousDebug = $this->db->db_debug;
-        $this->crmEntity = $this->getCrmEntity();
+        //$this->crmEntity = $this->getCrmEntity();
+
 
         $this->cache_config = $this->mycache->getCurrentConfig();
 
@@ -230,7 +245,7 @@ class Apilib
 
         $cache_key = "apilib/apilib.list.{$entity}";
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
-            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, [], null, 0, null, null, false, $depth);
+            $out = $this->crmentity->get_data_full_list($entity, null, [], null, 0, null, null, false, $depth);
             if ($this->isCacheEnabled()) {
                 $tags = $this->mycache->buildTagsFromEntity($entity);
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
@@ -254,7 +269,7 @@ class Apilib
 
         $cache_key = "apilib/apilib.item.{$entity}.{$id}";
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
-            $out = $this->getCrmEntity($entity)->get_data_full($id, $maxDepthLevel);
+            $out = $this->crmentity->get_data_full($entity, $id, $maxDepthLevel);
             if ($this->isCacheEnabled()) {
                 $tags = $this->mycache->buildTagsFromEntity($entity, $id);
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $tags);
@@ -343,9 +358,9 @@ class Apilib
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
-        
+
         $_data = $this->extractInputData($data);
-        
+
         //rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
 
@@ -503,10 +518,12 @@ class Apilib
                 $this->logActivity(self::LOG_EDIT, [
                     'entity_data' => $entity_data,
                     'data_id' => $id,
-                    'json_data' => json_encode(array_merge(
-                        ['data' => $_data, 'post' => $_POST],
-                        $data_for_processing
-                    )),
+                    'json_data' => json_encode(
+                        array_merge(
+                            ['data' => $_data, 'post' => $_POST],
+                            $data_for_processing
+                        )
+                    ),
                     'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id']),
                 ]);
             }
@@ -668,7 +685,7 @@ class Apilib
             if ($field['fields_source'] && empty($data[$field['fields_source']])) {
                 if (!empty($data[$field['fields_name']])) {
                     $fill_value =
-                    $this->getFieldSourceValue($field, $data[$field['fields_name']], $fields);
+                        $this->getFieldSourceValue($field, $data[$field['fields_name']], $fields);
 
                     //Retry for all fields because now &$data has changed and potential has more fields values
                     if ($fill_value) {
@@ -696,7 +713,7 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        
+
 
         // integrazione soft-delete
         // Recupero i dati dell'entità
@@ -794,7 +811,7 @@ class Apilib
     }
     // public function tableList()
     // {
-        
+
     //     $entities = $this->db->order_by('entity_name')->get('entity')->result_array();
 
     //     $tables = [];
@@ -816,30 +833,30 @@ class Apilib
 
     //Rewrited function by chatgpt3!
     public function tableList()
-{
-    $query = $this->db->query("
+    {
+        $query = $this->db->query("
         SELECT e.entity_name, f.fields_name, f.fields_ref
         FROM entity e
         LEFT JOIN fields f ON f.fields_entity_id = e.entity_id
         ORDER BY e.entity_name, f.fields_name
     ");
 
-    $results = $query->result_array();
+        $results = $query->result_array();
 
-    $tables = [];
-    foreach ($results as $row) {
-        $name = $row['entity_name'];
-        if (!isset($tables[$name])) {
-            $tables[$name] = [
-                'name' => $name,
-                'fields' => [],
-            ];
+        $tables = [];
+        foreach ($results as $row) {
+            $name = $row['entity_name'];
+            if (!isset($tables[$name])) {
+                $tables[$name] = [
+                    'name' => $name,
+                    'fields' => [],
+                ];
+            }
+            $tables[$name]['fields'][] = $row['fields_name'] . ($row['fields_ref'] ? ' <small>[ref. from: <strong>' . $row['fields_ref'] . '</strong>]</small>' : '');
         }
-        $tables[$name]['fields'][] = $row['fields_name'] . ($row['fields_ref'] ? ' <small>[ref. from: <strong>' . $row['fields_ref'] . '</strong>]</small>' : '');
-    }
 
-    return array_values($tables);
-}
+        return array_values($tables);
+    }
 
     public function entityList()
     {
@@ -899,7 +916,7 @@ class Apilib
 
     public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
     {
-        
+
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
@@ -908,7 +925,7 @@ class Apilib
             $input = $input ? [$input] : [];
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
-        
+
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
@@ -937,10 +954,10 @@ class Apilib
                     $where[] = $value;
                 }
             }
-            
+
             try {
-                $this->load->model('crmentity');
-                
+                //$this->load->model('crmentity');
+
                 $entity_data = $this->crmentity->getEntity($entity);
             } catch (Exception $ex) {
                 $this->error = self::ERR_VALIDATION_FAILED;
@@ -958,7 +975,7 @@ class Apilib
                     $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                 }
             }
-            
+
             $order_array = [];
             if ($orderBy) {
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
@@ -986,10 +1003,10 @@ class Apilib
             $order = empty($order_array) ? null : implode(', ', $order_array);
 
             try {
-                
-         
-                $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
-                
+
+
+                $out = $this->crmEntity->get_data_full_list($entity, null, $where, $limit ?: null, $offset, $order, false, $maxDepth, [], ['group_by' => $group_by]);
+
                 if ($this->isCacheEnabled()) {
                     $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
                 }
@@ -1008,9 +1025,10 @@ class Apilib
             throw new ApiException("Passed input is not an array!");
         }
 
-        
+
 
         // aggiunti parametri come per la search (serve per passare 0 dalla api->login come profondità, ad esempio).
+        //debug($entity);
         $out = $this->search($entity, $input, 1, $offset, $orderBy, $orderDir, $maxDepth, [], $additional_parameters);
         return array_shift($out) ?: [];
     }
@@ -1067,7 +1085,7 @@ class Apilib
                 }
             }
 
-            $out = $this->getCrmEntity($entity)->get_data_full_list(null, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
+            $out = $this->crmentity->get_data_full_list($entity, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
             if ($this->isCacheEnabled()) {
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
             }
@@ -1202,9 +1220,9 @@ class Apilib
     /**
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
-    private function processData($entity, array&$data, $editMode = false, $value_id = null)
+    private function processData($entity, array &$data, $editMode = false, $value_id = null)
     {
-        
+
         // Recupero i dati dell'entità
         try {
             $entity_data = $this->crmEntity->getEntity($entity);
@@ -1242,7 +1260,7 @@ class Apilib
         } else {
             $value_id = null;
         }
-        
+
         $fields = $this->crmEntity->getFields($entity_data['entity_id']);
 
         // Recupera dati di validazione
@@ -1263,10 +1281,12 @@ class Apilib
                 // Enter the required rule for the fields that require it
                 // (a password is required only if creating the record for the
                 // first time)
-                if (($field['fields_required'] == FIELD_REQUIRED && ($field['fields_default'] === '' || $field['fields_default'] === null) ||
-                    //If field is soft-required and passed in $originalData
-                    $field['fields_required'] == FIELD_SOFT_REQUIRED && array_key_exists($field['fields_name'], $originalData)
-                )) {
+                if (
+                    ($field['fields_required'] == FIELD_REQUIRED && ($field['fields_default'] === '' || $field['fields_default'] === null) ||
+                        //If field is soft-required and passed in $originalData
+                        $field['fields_required'] == FIELD_SOFT_REQUIRED && array_key_exists($field['fields_name'], $originalData)
+                    )
+                ) {
                     switch ($field['fields_draw_html_type']) {
                         // this because upload is made after validation rules
                         case 'upload':
@@ -1352,11 +1372,11 @@ class Apilib
                 $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
             }
         }
-        
+
         /**
          * Eseguo il process di pre-validation
          */
-        
+
         $_predata = $data;
         $mode = $editMode ? 'update' : 'insert';
         $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-validation specifico
@@ -1544,7 +1564,7 @@ class Apilib
             //if (empty($data[$name]) && (array_key_exists($name, $data) && $is_zero) && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int', 'double', 'float'])) {
             //20230803 - MP - Rimesso tutto come prima... va risolto con molta calma e molti test prima di risolvere il problema dei form che salvano 0 invece di null...
             if (!$editMode && empty($data[$name]) && (array_key_exists($name, $data) && $data[$name] !== '0') && in_array(strtolower($field['fields_type']), [DB_INTEGER_IDENTIFIER, 'integer', 'int4', 'int'])) {
-                
+
                 if (array_key_exists($name, $data)) {
                     //Avoid numbers to be 0 in case of empty. Forced to null
                     $data[$name] = null;
@@ -1633,7 +1653,7 @@ class Apilib
          */
         $this->pendingRelations = $relationBundles;
 
-        
+
         return true;
     }
 
@@ -1956,7 +1976,7 @@ class Apilib
                     }
 
                     $value = str_replace('.', '', $value);
-                    
+
                 }
 
                 $float = str_replace(',', '.', $value);
@@ -2122,7 +2142,7 @@ class Apilib
                         ksort($polygon_expl);
                         $polygon_expl[] = $last;
                         $polygon_expl = array_values($polygon_expl); // Normalizzo le chiavi
-
+    
                         $polygon = implode(',', $polygon_expl);
                         //Aggiungo le parentesi aperta e chiusa
                         return '(' . $polygon . ')';
@@ -2212,7 +2232,7 @@ class Apilib
 
     public function runDataProcessing($entity_id, $pptype, $data = [])
     {
-        
+
         if (!$this->processEnabled) {
             return $data;
         }
@@ -2238,12 +2258,12 @@ class Apilib
 
         if (!empty($dataProcessToRun)) {
             foreach ($dataProcessToRun as $function) {
-                if (!in_array($pptype, array_merge($this->not_deferrable_pp,$this->deferrable_pp))) {
+                if (!in_array($pptype, array_merge($this->not_deferrable_pp, $this->deferrable_pp))) {
                     debug($pptype);
                     debug($function);
-                    debug($data,true);
+                    debug($data, true);
                 }
-                
+
                 if (!is_maintenance() && in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
                     /*
                     '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
@@ -2257,9 +2277,9 @@ class Apilib
                         '_queue_pp_code' => $function['post_process_what'],
                         '_queue_pp_executed' => DB_BOOL_FALSE,
                         '_queue_pp_data' => json_encode([
-                            'data' => $data, 
-                            '_session' => $_SESSION, 
-                            '_query_string'=>$_SERVER['QUERY_STRING'],
+                            'data' => $data,
+                            '_session' => $_SESSION,
+                            '_query_string' => $_SERVER['QUERY_STRING'],
                             '_post' => $this->input->post(),
                             'original_post' => $this->originalPost
                         ]),
@@ -2278,7 +2298,7 @@ class Apilib
                     }
                 }
 
-                
+
             }
         }
         if (!empty($data['entity']) && is_array($data)) {
@@ -2566,7 +2586,8 @@ class Apilib
             'log_crm_user_agent' => filter_input(INPUT_SERVER, 'HTTP_USER_AGENT') ?: null,
             'log_crm_referer' => filter_input(INPUT_SERVER, 'HTTP_REFERER') ?: null,
 
-            'log_crm_time' => date('Y-m-d H:i:s'), // Server time
+            'log_crm_time' => date('Y-m-d H:i:s'),
+            // Server time
             'log_crm_type' => (int) $type,
             'log_crm_system' => $system ? DB_BOOL_TRUE : DB_BOOL_FALSE,
             'log_crm_extra' => $extra,
@@ -2616,7 +2637,8 @@ class Apilib
             'fi_activities_user_agent' => filter_input(INPUT_SERVER, 'HTTP_USER_AGENT') ?: null,
             'fi_activities_referer' => filter_input(INPUT_SERVER, 'HTTP_REFERER') ?: null,
 
-            'fi_activities_date' => date('Y-m-d H:i:s'), // Server time
+            'fi_activities_date' => date('Y-m-d H:i:s'),
+            // Server time
             'fi_activities_type' => (int) $type,
 
             //'fi_activities_json_data' => $json_data,
@@ -2633,10 +2655,11 @@ class Apilib
      */
     private function getCrmEntity($entity = null)
     {
-        return new Crmentity($entity, [
-            $this->currentLanguage,
-            $this->fallbackLanguage,
-        ]);
+        // return new Crmentity($entity, [
+        //     $this->currentLanguage,
+        //     $this->fallbackLanguage,
+        // ]);
+        return $this->crmEntity;
     }
 
 }

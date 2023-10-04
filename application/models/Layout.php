@@ -10,6 +10,9 @@ class Layout extends CI_Model
     public $current_module_identifier = false;
     public $related_entities = [];
 
+    private $_layouts_by_id = [];
+    private $_layouts_by_identifier = [];
+
     /**
      * @param int $layoutId
      */
@@ -46,12 +49,16 @@ class Layout extends CI_Model
 
     public function getLayoutByIdentifier($layout_identifier)
     {
-        $result = $this->db->where('layouts_identifier', $layout_identifier)->get('layouts');
+        if (empty($this->_layouts_by_identifier[$layout_identifier])) {
+            $this->_layouts_by_identifier[$layout_identifier] = $this->db->where('layouts_identifier', $layout_identifier)->get('layouts')->row_array();
 
-        if ($result->num_rows() == 0) {
+        }
+
+        $result = $this->_layouts_by_identifier[$layout_identifier];
+        if (!$result) {
             return false;
         } else {
-            return $result->row()->layouts_id;
+            return $result['layouts_id'];
         }
     }
     /**
@@ -60,12 +67,23 @@ class Layout extends CI_Model
     public function getCurrentLayoutIdentifier()
     {
         $layout_id = $this->getCurrentLayout();
-        $layout = $this->db->query("SELECT * FROM layouts WHERE layouts_id = '$layout_id'")->row_array();
-        if (!empty($layout)) {
-            return $layout['layouts_identifier'];
-        } else {
-            return false;
+
+        if (empty($this->_layouts_by_id[$layout_id])) {
+            $this->_layouts_by_id[$layout_id] = $this->db
+                ->join('modules', 'layouts_module = modules_identifier', 'LEFT')
+                ->where('layouts_id', $layout_id)
+                ->get('layouts')->row_array();
         }
+
+        $result = $this->_layouts_by_id[$layout_id];
+        if (!$result) {
+            return false;
+        } else {
+            return $result['layouts_identifier'];
+        }
+
+
+
     }
     public function getLoadedLayoutsIds()
     {
@@ -123,8 +141,15 @@ class Layout extends CI_Model
         return $content;
     }
 
-    public function generate_pdf($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false,
-        $content_html = false, $options = []) {
+    public function generate_pdf(
+        $view,
+        $orientation = "landscape",
+        $relative_path = "",
+        $extra_data = [],
+        $module = false,
+        $content_html = false,
+        $options = []
+    ) {
         $useMpdf = array_get($options, 'useMpdf', false);
 
         $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);
@@ -223,7 +248,8 @@ class Layout extends CI_Model
         }
     }
 
-    public function generate_image($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false, $options = []) {
+    public function generate_image($view, $orientation = "landscape", $relative_path = "", $extra_data = [], $module = false, $content_html = false, $options = [])
+    {
 
         if ($options !== null) {
 
@@ -237,7 +263,7 @@ class Layout extends CI_Model
             $options = "--quality 100";
         }
 
-        $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);       
+        $content = $this->generate_html($view, $relative_path, $extra_data, $module, $content_html);
         $physicalDir = FCPATH . "/uploads/image";
         if (!is_dir($physicalDir)) {
             mkdir($physicalDir, 0755, true);
@@ -263,16 +289,24 @@ class Layout extends CI_Model
         if ($returnCode === 0) {
             // Rimuovi il file temporaneo
             unlink($tempFile);
-            return $filename.".png";
+            return $filename . ".png";
         } else {
             echo 'Si è verificato un errore durante la conversione.';
-        }            
+        }
     }
 
     public function getLayout($layoutId)
     {
-        $layout = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->get_where('layouts',
-            array('layouts_id' => $layoutId))->row_array();
+        if (!$layoutId) {
+            return false;
+        }
+        if (empty($this->_layouts_by_id[$layoutId])) {
+            $this->_layouts_by_id[$layoutId] = $this->db->join('modules', 'layouts_module = modules_identifier', 'LEFT')->get_where(
+                'layouts',
+                array('layouts_id' => $layoutId)
+            )->row_array();
+        }
+        $layout = $this->_layouts_by_id[$layoutId];
         return $layout;
     }
 
@@ -301,17 +335,17 @@ class Layout extends CI_Model
 
         return $box;
     }
-    public function getBoxes($layoutId,$value_id = null)
+    public function getBoxes($layoutId, $value_id = null)
     {
 
         $queriedBoxes = $this->db->order_by('layouts_boxes_row, layouts_boxes_position, layouts_boxes_cols')
             ->join('layouts', 'layouts.layouts_id = layouts_boxes.layouts_boxes_layout', 'left')
             ->get_where('layouts_boxes', ['layouts_id' => $layoutId])->result_array();
 
-// Rimappo i box in modo tale da avere i parent che contengono i sub
+        // Rimappo i box in modo tale da avere i parent che contengono i sub
         $boxes = $allSubboxes = $lboxes = [];
         foreach ($queriedBoxes as $key => $box) {
-            if (!$this->conditions->accessible('layouts_boxes', $box['layouts_boxes_id'],$value_id)) {
+            if (!$this->conditions->accessible('layouts_boxes', $box['layouts_boxes_id'], $value_id)) {
                 unset($queriedBoxes[$key]);
                 continue;
             }
@@ -390,7 +424,7 @@ class Layout extends CI_Model
 
     public function templateAssets($template_folder, $file)
     {
-        
+
         $path = base_url("template_bridge/{$template_folder}/$file");
         return $path;
 
@@ -413,7 +447,7 @@ class Layout extends CI_Model
         //         $path = base_url("template_bridge/{$template_folder}/$file");
         //     }
         // }
-        
+
         // return $path;
     }
 
@@ -431,7 +465,7 @@ class Layout extends CI_Model
         echo '<script src="' . $path . '"></script>';
     }
 
-//Functions to include dinamic generate css or js
+    //Functions to include dinamic generate css or js
     public function addDinamicStylesheet($data, $file, $clear = false)
     {
         if (!file_exists('template/build')) {
@@ -463,7 +497,7 @@ class Layout extends CI_Model
                         }
                         break;
                     default:
-// debug($vals);
+                        // debug($vals);
 // log_message('error', "Key '$key' not recognized for dinamic stylesheet");
                         break;
                 }
@@ -475,7 +509,7 @@ class Layout extends CI_Model
 <link rel="stylesheet" type="text/css" href="' . base_url($file) . '" />';
     }
 
-//Functions to include dinamic generate css or js
+    //Functions to include dinamic generate css or js
     public function addDinamicJavascript($data, $file)
     {
         if (!file_exists('template/build')) {
@@ -496,21 +530,21 @@ class Layout extends CI_Model
 
     public function replaceTemplateHooks($html, $value_id)
     {
-//debug($html, true);
+        //debug($html, true);
         preg_match_all("/\{tpl-[^\}]*\}/", $html, $matches);
         foreach ($matches[0] as $placeholder) {
 
-//debug(strpos($placeholder, '{tpl-'), true);
+            //debug(strpos($placeholder, '{tpl-'), true);
 
-//if (strpos($placeholder, '{tpl-') === 0) {
+            //if (strpos($placeholder, '{tpl-') === 0) {
             $hook_key = trim($placeholder, "{}");
             $hook_key = str_replace('tpl-', '', $hook_key);
-//debug($hook_key, true);
+            //debug($hook_key, true);
 
             $hooks_contents = $this->fi_events->getHooksContents($hook_key, $value_id);
 
             $html = str_replace($placeholder, $hooks_contents, $html);
-//}
+            //}
         }
         return $html;
     }

@@ -1952,3 +1952,4 @@ $lang['Codice IBAN'] = 'Codice IBAN';
 $lang['Entrata'] = 'Entrata';
 $lang['Valore Pocket'] = 'Valore Pocket';
 $lang['Ospite'] = 'Ospite';
+$lang['Rimborsi'] = 'Rimborsi';

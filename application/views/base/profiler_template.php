@@ -10,6 +10,71 @@
 		   - top
 	*/
 $bar_location = 'top-right';
+function raggruppa_query($queries)
+{
+	$aggregatedData = [];
+
+	foreach ($queries as $queryInfo) {
+		$query = $queryInfo['query'];
+		$executionTime = $queryInfo['time'];
+		$file = $queryInfo['file'];
+		$line = $queryInfo['line'];
+
+		// Se la query non è già nell'array, inizializza i dati aggregati
+		if (!isset($aggregatedData[$query])) {
+			$aggregatedData[$query] = [
+				'totalQueries' => 0,
+				'totalExecutionTime' => 0,
+				'minExecutionTime' => null,
+				'maxExecutionTime' => null,
+				'locations' => [],
+				// Array per le posizioni (file e linea) della query
+			];
+		}
+
+		// Aggiorna i dati aggregati per questa query
+		$aggregatedData[$query]['totalQueries']++;
+		$aggregatedData[$query]['totalExecutionTime'] += $executionTime;
+
+		if ($aggregatedData[$query]['minExecutionTime'] === null || $executionTime < $aggregatedData[$query]['minExecutionTime']) {
+			$aggregatedData[$query]['minExecutionTime'] = $executionTime;
+		}
+
+		if ($aggregatedData[$query]['maxExecutionTime'] === null || $executionTime > $aggregatedData[$query]['maxExecutionTime']) {
+			$aggregatedData[$query]['maxExecutionTime'] = $executionTime;
+		}
+
+		// Aggiungi il file e la linea al subarray "locations"
+		$aggregatedData[$query]['locations'][] = [
+			'file' => $file,
+			'line' => $line,
+		];
+	}
+
+	// Calcola la media per ciascuna query
+	foreach ($aggregatedData as &$data) {
+		$data['averageExecutionTime'] = ($data['totalQueries'] > 0) ? ($data['totalExecutionTime'] / $data['totalQueries']) : 0;
+
+		// Uniforma i tempi a 4 cifre decimali
+		$data['totalExecutionTime'] = number_format($data['totalExecutionTime'], 4);
+		$data['minExecutionTime'] = number_format($data['minExecutionTime'], 4);
+		$data['maxExecutionTime'] = number_format($data['maxExecutionTime'], 4);
+		$data['averageExecutionTime'] = number_format($data['averageExecutionTime'], 4);
+	}
+
+	// Ordina l'array in base al tempo massimo di esecuzione (ordine decrescente)
+	uasort($aggregatedData, function ($a, $b) {
+		return $b['totalQueries'] <=> $a['totalQueries'];
+	});
+
+	return $aggregatedData;
+}
+$query_logs = $this->db->get_query_logs();
+
+$query_raggruppate = raggruppa_query($query_logs);
+//debug($query_raggruppate,true);
+
+
 ?>
 
 <style type="text/css">
@@ -213,6 +278,7 @@ $bar_location = 'top-right';
 
 	#codeigniter-profiler table .hilight {
 		color: #FFFD70 !important;
+		width: 250px;
 	}
 
 	#codeigniter-profiler table .faded {
@@ -599,18 +665,48 @@ $bar_location = 'top-right';
 
 				<?php if (is_array($sections['queries'])): ?>
 
+					<!-- <table class="main" cellspacing="0">
+				<?php foreach ($sections['queries'] as $key => $queries): ?>
+					<?php foreach ($queries as $time => $query): ?>
+						<tr><td class="hilight"><?php echo $time ?></td><td><?php echo $query ?></td></tr>
+					<?php endforeach; ?>
+				<?php endforeach; ?>
+				</table> -->
 					<table class="main" cellspacing="0">
-						<?php foreach ($sections['queries'] as $key => $queries): ?>
-							<?php foreach ($queries as $time => $query): ?>
-								<tr>
-									<td class="hilight">
-										<?php echo $time ?>
-									</td>
-									<td>
-										<?php echo $query ?>
-									</td>
-								</tr>
-							<?php endforeach; ?>
+						<?php foreach ($query_raggruppate as $query => $data): ?>
+
+							<tr>
+								<td class="hilight">
+									<?php if ('Total Query Execution Time' == trim($query)): ?>
+										tot.
+										<?php echo $data['totalExecutionTime'] ?>
+
+									<?php else: ?>
+										tot.
+										<?php echo $data['totalExecutionTime'] ?> / avg.
+										<?php echo $data['averageExecutionTime'] ?> / max
+										<?php echo $data['maxExecutionTime'] ?>
+									<?php endif; ?>
+
+								</td>
+								<td>
+									<?php echo $query ?>
+								</td>
+								<td>
+									<button class="show-locations">Mostra backtrace (
+										<?php echo count($data['locations']); ?>)
+									</button>
+									<ul class="locations-list" style="display: none;">
+										<?php foreach ($data['locations'] as $location): ?>
+											<li>File:
+												<?php echo $location['file'] ?>, Linea:
+												<?php echo $location['line'] ?>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								</td>
+							</tr>
+
 						<?php endforeach; ?>
 					</table>
 
@@ -807,4 +903,27 @@ $bar_location = 'top-right';
 
 	<?php endif; ?>
 
-</div> <!-- /codeigniter_profiler -->
+</div>
+<script>
+	$(document).ready(function () {
+		$(".show-locations").on("click", function () {
+			var locationsList = $(this).next(".locations-list");
+			var tdElement = $(this).closest('td');
+
+			if (locationsList.is(":visible")) {
+				// Nascondi l'elenco delle locations e rimuovi la larghezza
+				locationsList.hide();
+				tdElement.css('width', ''); // Rimuovi la larghezza
+				$(this).text("Mostra backtrace");
+			} else {
+				// Mostra l'elenco delle locations e impostala a 600px
+				locationsList.show();
+				tdElement.css('width', '600px');
+				$(this).text("Nascondi");
+			}
+		});
+	});
+</script>
+
+
+<!-- /codeigniter_profiler -->

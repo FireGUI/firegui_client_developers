@@ -1571,4 +1571,22 @@ class Get_ajax extends MY_Controller
 
         $this->load->view('pages/iframe_pdf_preview', ['path' => $path]);
     }
+
+    public function test_getData() {
+        $menu = $this->db->get('menu')->result_array();
+        $layouts = $this->db->get('layouts')->result_array();
+        $layouts_boxes = $this->db->get('layouts_boxes')->result_array();
+
+        $jsonData = array(
+            'menuData' => $menu,
+            'layoutData' => $layouts,
+            'layoutBoxData' => $layouts_boxes
+        );
+
+        // Imposta le intestazioni HTTP per indicare che stai restituendo JSON
+        header('Content-Type: application/json');
+
+        // Restituisci i dati in formato JSON
+        echo json_encode($jsonData);
+    }
 }

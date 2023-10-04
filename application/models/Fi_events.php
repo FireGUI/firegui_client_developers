@@ -3,7 +3,7 @@
 
 class Fi_events extends CI_Model
 {
-
+    private $_events = [];
     public function __construct()
     {
 
@@ -12,14 +12,15 @@ class Fi_events extends CI_Model
 
     public function getHooksContents($hook_key, $valueId = null)
     {
-
-        $events = $this->db
-            ->where('fi_events_type', 'hook')
-            ->where("fi_events_ref <> ''", null, false)
-            ->order_by('fi_events_order ASC, fi_events_creation_date')
-            ->get('fi_events')
-            ->result_array();
-
+        if (empty($this->_events)) {
+            $this->_events = $this->db
+                ->where('fi_events_type', 'hook')
+                ->where("fi_events_ref <> ''", null, false)
+                ->order_by('fi_events_order ASC, fi_events_creation_date')
+                ->get('fi_events')
+                ->result_array();
+        }
+        $events = $this->_events;
         $content = '';
         foreach ($events as $key => $event) {
             $json_data = json_decode($event['fi_events_json_data'], true);

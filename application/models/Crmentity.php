@@ -16,11 +16,6 @@ class Crmentity extends CI_Model
     private $_visible_fields = [];
     private $_schemaCache = null;
 
-    /** Dati della entity */
-    private $entity_name = '';
-    private $entity_id = null;
-    private $table;
-    private $languages;
 
     private $_default_grids = [];
     private $_default_forms = [];
@@ -41,12 +36,12 @@ class Crmentity extends CI_Model
 
         $this->setLanguages($languageId);
 
-        if ($entity_name) {
-            $this->entity_name = $entity_name;
-            $this->table = $entity_name;
-            $entity = $this->getEntity($entity_name);
-            $this->entity_id = $entity['entity_id'];
-        }
+        // if ($entity_name) {
+        //     $this->entity_name = $entity_name;
+        //     $this->table = $entity_name;
+        //     $entity = $this->getEntity($entity_name);
+        //     $this->entity_id = $entity['entity_id'];
+        // }
     }
 
     /**
@@ -90,9 +85,10 @@ class Crmentity extends CI_Model
      * @param int $maxDepthLevel
      * @return array
      */
-    public function get_data_full($id, $maxDepthLevel = 2)
+    public function get_data_full($entity, $id, $maxDepthLevel = 2)
     {
-        $arr = $this->get_data_full_list($this->entity_id, null, "{$this->entity_name}.{$this->entity_name}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
+
+        $arr = $this->get_data_full_list($entity, null, "{$entity}.{$entity}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
         return array_get($arr, 0, []);
     }
 
@@ -119,12 +115,11 @@ class Crmentity extends CI_Model
      */
     public function get_data_full_list($entity_id = null, $unused_entity_name = null, $where = [], $limit = null, $offset = 0, $order_by = null, $count = false, $depth = 2, $eval_cachable_fields = [], $additional_parameters = [])
     {
-        if (!$entity_id) {
-            if (!$this->entity_id) {
-                throw new Exception("Impossibile eseguire la query: entità non specificata.");
-            }
 
-            $entity_id = $this->entity_id;
+        if (!$entity_id) {
+
+            throw new Exception("Impossibile eseguire la query: entità non specificata.");
+
         }
 
         $group_by = array_get($additional_parameters, 'group_by', null);
@@ -145,9 +140,9 @@ class Crmentity extends CI_Model
 
         return $this->getFromCache($_cache_key, function () use ($entity_id, $entity_name, $where, $limit, $offset, $order_by, $group_by, $count, $depth, $eval_cachable_fields) {
             $extra_data = true;
-           
+
             $data = $this->get_data_simple_list($entity_id, $where, compact('limit', 'offset', 'order_by', 'group_by', 'count', 'extra_data', 'depth', 'eval_cachable_fields'));
-            
+
             //debug($entity_id);
             // Se è count ho finito qua, ma anche se non ho nessun risultato
             if ($count or !$data['data']) {
@@ -468,11 +463,11 @@ class Crmentity extends CI_Model
     public function get_data_simple_list($entity_id = null, $where = null, array $options = [])
     {
         if (!$entity_id) {
-            if (!$this->entity_id) {
-                throw new Exception("Impossibile eseguire la query: entità non specificata.");
-            }
 
-            $entity_id = $this->entity_id;
+            throw new Exception("Impossibile eseguire la query: entità non specificata.");
+
+
+
         }
 
         // Params extraction
@@ -482,13 +477,13 @@ class Crmentity extends CI_Model
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
 
-        
+
         // =================
         $dati = $this->getEntityFullData($entity_id);
         $this->buildSelect($dati, $options);
 
 
-        
+
 
         $this->buildWhere($where);
         $this->buildLimitOffsetOrder($options);
@@ -499,7 +494,7 @@ class Crmentity extends CI_Model
         $joined = array($dati['entity']['entity_name']);
         $to_join_later = [];
 
-        
+
 
         $permission_entities = [$entity_id]; // Lista delle entità su cui devo applicare i limiti
 
@@ -534,7 +529,7 @@ class Crmentity extends CI_Model
                 }
             }
         }
-        
+
         // =====================================================================
         // QUERY OUT - COUNT
         // ---
@@ -554,16 +549,16 @@ class Crmentity extends CI_Model
         // =====================================================================
         //debug('test');
         $qResult = $this->db->get();
-        
+
         if (!$qResult instanceof CI_DB_result) {
             // Errore, la query
             throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
         }
 
         $dati['data'] = $qResult->result_array();
-        
+
         $qResult->free_result();
-        
+
         // =====================================================================
         // SUPPORTO MULTI-JOIN
         // ---
@@ -590,7 +585,7 @@ class Crmentity extends CI_Model
                 // debug($main_field);
                 // debug("{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})");
                 $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", ['depth' => $depth - 1]);
-                
+
                 $mergeable = [];
 
                 foreach ($jData as $record) {
@@ -623,7 +618,7 @@ class Crmentity extends CI_Model
      * @param array $entityFullData
      * @param array $options
      */
-    private function buildSelect(array&$entityFullData, array $options = [])
+    private function buildSelect(array &$entityFullData, array $options = [])
     {
         // Inizializzo i fields: se ho specificato una select allora sono a
         // posto, altrimenti li autocalcolo in base ai fields entità
@@ -636,7 +631,7 @@ class Crmentity extends CI_Model
         $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
         $entityName = $entityFullData['entity']['entity_name'];
-        
+
         if (!$visible_fields) {
             foreach ($entityFullData['visible_fields'] as $campo) {
                 // Aggiungo il campo alla select
@@ -663,15 +658,15 @@ class Crmentity extends CI_Model
                             //debug($depth,true);
                         }
 
-                        
-                        
-                        foreach ($this->getVisibleFields($entity['entity_id'], $depth-1) as $supfield) {
-                                                    
+
+
+                        foreach ($this->getVisibleFields($entity['entity_id'], $depth - 1) as $supfield) {
+
                             $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
                             $entityFullData['visible_fields'][] = $supfield;
                         }
-                        
-                        
+
+
                     }
                 }
             }
@@ -713,8 +708,8 @@ class Crmentity extends CI_Model
         }
 
         if ($entityFullData['entity']['entity_name'] == 'timesheet') {
-                    //debug($this->db->get_compiled_select());
-                    //debug($entityFullData,true);
+            //debug($this->db->get_compiled_select());
+            //debug($entityFullData,true);
         }
     }
 
@@ -834,21 +829,21 @@ class Crmentity extends CI_Model
         $key = sprintf('apilib/previews-%s', md5(serialize(func_get_args())));
         $entity = $this->getEntity($entityIdentifier);
 
-        $entity_preview = ($entity['entity_preview_custom']??false);
+        $entity_preview = ($entity['entity_preview_custom'] ?? false);
         if (!$entity_preview) {
-$entity_preview = ($entity['entity_preview_base']??false);
+            $entity_preview = ($entity['entity_preview_base'] ?? false);
         }
 
-        
+
 
         $entity_name = $entity['entity_name'];
         $tags = $this->mycache->buildTagsFromEntity($entity_name);
-        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name, $entity_preview,  $depth) {
+        return $this->getFromCache($key, function () use ($entityIdentifier, $where, $limit, $offset, $entity, $entity_name, $entity_preview, $depth) {
 
             $previewFields = $this->getEntityPreviewFields($entityIdentifier);
-            
+
             //debug($previewFields);
-            
+
             $entity_id = $entity['entity_id'];
 
             $select = array_key_map($previewFields, 'fields_name');
@@ -897,7 +892,7 @@ $entity_preview = ($entity['entity_preview_base']??false);
                 if ($entity_preview) {
                     $result[$id] = str_replace_placeholders($entity_preview, $record);
                 } else {
-                
+
                     $preview = "";
 
                     foreach ($previewFields as $field) {
@@ -1119,6 +1114,8 @@ $entity_preview = ($entity['entity_preview_base']??false);
             $column_join = 'fields_ref_auto_left_join';
         }
         if (!array_key_exists($column_join, $this->_fields_ref_by)) {
+            // debug($column_join);
+            // debug($this->_fields_ref_by);
             $this->_fields_ref_by[$column_join] = [];
 
             $_allFieldsRefBy = $this->db->query("
@@ -1131,6 +1128,7 @@ $entity_preview = ($entity['entity_preview_base']??false);
             foreach ($_allFieldsRefBy as $field) {
                 $this->_fields_ref_by[$column_join][$field['fields_ref']][] = $field;
             }
+            //debug($this->_fields_ref_by);
         }
 
         $ename = $this->getEntity($entity)['entity_name'];
@@ -1151,23 +1149,23 @@ $entity_preview = ($entity['entity_preview_base']??false);
             $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function ($item) {
                 return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
             });
-            
+
             while ($depth > 1) {
                 $depth--;
                 foreach ($this->_visible_fields[$entity] as $field) {
-                    
+
                     $isJoinable = $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
                     if (!empty($field['fields_ref']) && $isJoinable) {
-                        
+
                         $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
                     }
                 }
             }
         }
         if ($entity == 20) {
-                
-                //debug(count($this->_visible_fields[$entity]));
-            }
+
+            //debug(count($this->_visible_fields[$entity]));
+        }
         return $this->_visible_fields[$entity];
     }
 
@@ -1205,9 +1203,9 @@ $entity_preview = ($entity['entity_preview_base']??false);
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
         $entity_name = $e['entity_name'];
-        $entity_preview = ($e['entity_preview_custom']??false);
+        $entity_preview = ($e['entity_preview_custom'] ?? false);
         if (!$entity_preview) {
-            $entity_preview = ($e['entity_preview_base']??false);
+            $entity_preview = ($e['entity_preview_base'] ?? false);
         }
 
         //Check if entity_preview_base or custom is set
@@ -1254,7 +1252,7 @@ $entity_preview = ($entity['entity_preview_base']??false);
 
 
 
-        
+
     }
 
     /**
@@ -1316,8 +1314,10 @@ $entity_preview = ($entity['entity_preview_base']??false);
         if (!array_key_exists($entity, $this->_default_grids)) {
             $entity_id = $this->getEntity($entity)['entity_id'];
             $query = $this->db->get_where('grids', array(
-                'grids_entity_id' => $entity_id, 'grids_default' => DB_BOOL_TRUE,
-            ));
+                'grids_entity_id' => $entity_id,
+                'grids_default' => DB_BOOL_TRUE,
+            )
+            );
 
             $this->_default_grids[$entity] = $query->row_array();
             return $this->_default_grids[$entity];
@@ -1332,8 +1332,10 @@ $entity_preview = ($entity['entity_preview_base']??false);
         if (!array_key_exists($entity, $this->_default_forms)) {
             $entity_id = $this->getEntity($entity)['entity_id'];
             $query = $this->db->get_where('forms', array(
-                'forms_entity_id' => $entity_id, 'forms_default' => DB_BOOL_TRUE,
-            ));
+                'forms_entity_id' => $entity_id,
+                'forms_default' => DB_BOOL_TRUE,
+            )
+            );
 
             $this->_default_forms[$entity] = $query->row_array();
             return $this->_default_forms[$entity];

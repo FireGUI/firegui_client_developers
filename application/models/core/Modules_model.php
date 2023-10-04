@@ -541,6 +541,7 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['layouts'] as $layout) {
 
+                
 
                 $c++;
                 progress($c, $total, 'layouts delete');
@@ -587,6 +588,10 @@ class Modules_model extends CI_Model
                 //$layout_exists = $this->db->query("SELECT * FROM layouts WHERE layouts_module = '$identifier' AND layouts_module_key = '{$layout['layouts_module_key']}'");
 
                 $layout_exists = $this->db->query("SELECT * FROM layouts WHERE layouts_module_key = '{$layout['layouts_module_key']}'");
+
+                if ($layout['layouts_module_key'] == 'modulo-hr-layout-532') {
+                    //debug($layout,true);
+                }
 
                 if (!empty($layout['conditions'])) {
                     //debug($layout, true);
@@ -1271,9 +1276,20 @@ class Modules_model extends CI_Model
                 //debug($calendar,true);
                 $old_calendar_id = $calendar['calendars_id'];
                 unset($calendar['calendars_id']);
+
+                if ($calendar['calendars_name'] == 'Calendario prenotazione automezzo') {
+                    //debug($calendar);
+                    //debug($entities_id_map);
+                }
+
                 $calendar['calendars_entity_id'] = $entities_id_map[$calendar['calendars_entity_id']];
                 //TODO: se punta a users e users giustamente non è del modulo, è un problema... basarsi sul entity_name
                 $calendar['calendars_filter_entity_id'] = (array_key_exists($calendar['calendars_filter_entity_id'], $entities_id_map) ? $entities_id_map[$calendar['calendars_filter_entity_id']] : $calendar['calendars_filter_entity_id']);
+
+                if ($calendar['calendars_name'] == 'Calendario prenotazione automezzo') {
+                    //debug($calendar,true);
+                }
+
 
                 unset($calendar['fields']);
 

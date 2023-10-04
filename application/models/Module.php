@@ -3,7 +3,7 @@
 
 class Module extends CI_Model
 {
-
+    private $_modules_installed = [];
     public function __construct()
     {
         parent::__construct();
@@ -28,12 +28,17 @@ class Module extends CI_Model
 
     public function moduleExists($identifier)
     {
-        $result = $this->db->where('modules_identifier', $identifier)->get('modules');
+        if (!array_key_exists($identifier, $this->_modules_installed)) {
+            $result = $this->db->where('modules_identifier', $identifier)->get('modules');
 
-        if ($result->num_rows()) {
-            return true;
-        } else {
-            return false;
+            if ($result->num_rows()) {
+                $this->_modules_installed[$identifier] = true;
+            } else {
+                $this->_modules_installed[$identifier] = false;
+            }
         }
+
+
+        return $this->_modules_installed[$identifier];
     }
 }

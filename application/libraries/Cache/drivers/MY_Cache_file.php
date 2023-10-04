@@ -116,13 +116,14 @@ class MY_Cache_file extends CI_Driver
         if (!is_dir($folder)) {
             mkdir($folder, DIR_WRITE_MODE, true);
         }
-        if (write_file($this->_cache_path . $id, serialize($contents))) {
+        if ($result = write_file($this->_cache_path . $id, serialize($contents))) {
             @chmod($this->_cache_path . $id, 0640);
 
             //if tags are specified, save this id for each tags, so that i can remove it easily later
             $this->saveTagsMapping($id, $tags);
             return true;
         } else {
+            debug($result);
             debug($this->_cache_path . $id, true);
         }
 
@@ -225,8 +226,8 @@ class MY_Cache_file extends CI_Driver
 
         $new_value = $data['data'] + $offset;
         return $this->save($id, $new_value, $data['ttl'])
-        ? $new_value
-        : false;
+            ? $new_value
+            : false;
     }
 
     // ------------------------------------------------------------------------
@@ -250,8 +251,8 @@ class MY_Cache_file extends CI_Driver
 
         $new_value = $data['data'] - $offset;
         return $this->save($id, $new_value, $data['ttl'])
-        ? $new_value
-        : false;
+            ? $new_value
+            : false;
     }
 
     // ------------------------------------------------------------------------
