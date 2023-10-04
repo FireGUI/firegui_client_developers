@@ -50,10 +50,12 @@ function raggruppa_query($queries)
 			'line' => $line,
 		];
 	}
-
+	$total_time = 0;
 	// Calcola la media per ciascuna query
 	foreach ($aggregatedData as &$data) {
 		$data['averageExecutionTime'] = ($data['totalQueries'] > 0) ? ($data['totalExecutionTime'] / $data['totalQueries']) : 0;
+
+		$total_time += $data['totalExecutionTime'];
 
 		// Uniforma i tempi a 4 cifre decimali
 		$data['totalExecutionTime'] = number_format($data['totalExecutionTime'], 4);
@@ -62,10 +64,18 @@ function raggruppa_query($queries)
 		$data['averageExecutionTime'] = number_format($data['averageExecutionTime'], 4);
 	}
 
+	//Aggiungo il totale
+	$aggregatedData['Total Query Execution Time'] = [
+		'totalExecutionTime' => number_format($total_time, 4),
+		'totalQueries' => 99999,
+	];
+
 	// Ordina l'array in base al tempo massimo di esecuzione (ordine decrescente)
 	uasort($aggregatedData, function ($a, $b) {
 		return $b['totalQueries'] <=> $a['totalQueries'];
 	});
+
+
 
 	return $aggregatedData;
 }
@@ -693,17 +703,19 @@ $query_raggruppate = raggruppa_query($query_logs);
 									<?php echo $query ?>
 								</td>
 								<td>
-									<button class="show-locations">Mostra backtrace (
-										<?php echo count($data['locations']); ?>)
-									</button>
-									<ul class="locations-list" style="display: none;">
-										<?php foreach ($data['locations'] as $location): ?>
-											<li>File:
-												<?php echo $location['file'] ?>, Linea:
-												<?php echo $location['line'] ?>
-											</li>
-										<?php endforeach; ?>
-									</ul>
+									<?php if ('Total Query Execution Time' != trim($query)): ?>
+										<button class="show-locations">Mostra backtrace (
+											<?php echo count($data['locations']); ?>)
+										</button>
+										<ul class="locations-list" style="display: none;">
+											<?php foreach ($data['locations'] as $location): ?>
+												<li>File:
+													<?php echo $location['file'] ?>, Linea:
+													<?php echo $location['line'] ?>
+												</li>
+											<?php endforeach; ?>
+										</ul>
+									<?php endif; ?>
 								</td>
 							</tr>
 
