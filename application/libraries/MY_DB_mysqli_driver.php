@@ -16,7 +16,7 @@ class MY_DB_mysqli_driver extends CI_DB_mysqli_driver
             $time_end = microtime(true);
 
             $query_info = [
-                'query' => $sql,
+                'query' => $this->compile_binds($sql, $binds),
                 'time' => $time_end - $time_start,
                 'file' => '',
                 // Inizializza con il nome del file corrente

@@ -30,6 +30,8 @@ class Datab extends CI_Model
 
     public $executed_hooks = [];
 
+    private $_permissions = [];
+
     public function __construct()
     {
         parent::__construct();
@@ -1922,15 +1924,19 @@ class Datab extends CI_Model
 
     public function getPermission($userOrGroup, $throwException = true)
     {
-        if (is_numeric($userOrGroup)) {
-            // Is User
-            $perm = $this->db->get_where('permissions', array('permissions_user_id' => $userOrGroup))->row_array();
-        } else {
-            // Is Group
-            $perm = $this->db->where('permissions_user_id IS NULL')
-                ->get_where('permissions', array('permissions_group' => $userOrGroup))->row_array();
+        if (!array_key_exists($userOrGroup, $this->_permissions)) {
+            if (is_numeric($userOrGroup)) {
+                // Is User
+                $perm = $this->db->get_where('permissions', array('permissions_user_id' => $userOrGroup))->row_array();
+            } else {
+                // Is Group
+                $perm = $this->db->where('permissions_user_id IS NULL')
+                    ->get_where('permissions', array('permissions_group' => $userOrGroup))->row_array();
+            }
+            $this->_permissions[$userOrGroup] = $perm;
         }
 
+        $perm = $this->_permissions[$userOrGroup];
         if (empty($perm)) {
             if ($throwException) {
                 throw new Exception(sprintf('Nessun utente o gruppo trovato per %s', $userOrGroup));
@@ -2627,7 +2633,7 @@ class Datab extends CI_Model
             $skip_delete = true;
             $id_record = $dato[$field['fields_name']];
             $grid_id = $grid_db['grids_id'];
-            $grid = $this->datab->get_grid($grid_id);
+            $grid = $this->get_grid($grid_id);
         } elseif (array_key_exists('grids_fields_grids_id', $field)) {
             $grid = $this->datab->get_grid($field['grids_fields_grids_id']);
             if (!empty($dato[$grid['grids']['entity_name'] . "_id"])) {
