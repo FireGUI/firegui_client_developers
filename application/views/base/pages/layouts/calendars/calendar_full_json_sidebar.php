@@ -46,6 +46,7 @@ $create_permission = (!empty($data['create_form']) && $data['calendars']['calend
 $edit_permission = (!empty($data['update_form']) && $data['calendars']['calendars_allow_edit'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
 $calendars_default_view = (!empty($data['cal_layout']['calendars_default_view'])) ? $data['cal_layout']['calendars_default_view'] : 'timeGridWeek';
 $filter_default_view = (!empty($data['cal_layout']) && $data['cal_layout']['calendars_default_sidebar_toggle_all_filters'] == DB_BOOL_TRUE) ? DB_BOOL_TRUE : DB_BOOL_FALSE;
+$url_parameters = (!empty($data['create_form'])) ? $data['cal_layout']['calendars_link'] : '';
 
 $attributes = [
     'id' => $calendarId,
@@ -63,6 +64,7 @@ $attributes = [
     'data-formedit' => base_url("get_ajax/modal_form/{$data['update_form']}"),
     'data-updateurl' => base_url("db_ajax/update_calendar_event/{$data['calendars']['calendars_id']}"),
     'data-fieldid' => $calendar_map['id'],
+    'data-url-parameters' => $url_parameters
 ];
 
 if (array_key_exists('start', $calendar_map)) {

@@ -3355,6 +3355,21 @@ class Datab extends CI_Model
             case "calendar":
                 $data = $this->get_calendar($contentRef);
                 $data['cal_layout'] = $this->db->get_where('calendars', ['calendars_id' => $contentRef])->row_array();
+                
+                // Rimpiazzo i placeholders sul campo "link / extra parameters"
+                if ($layoutEntityData !== null && is_array($layoutEntityData) && !empty($data['cal_layout']['calendars_link'])) {
+                    $layoutEntityData['value_id'] = $value_id;
+                    $replace_data = array();
+                    foreach ($layoutEntityData as $key => $value) {
+                        if (!is_numeric($key) && !is_array($value)) {
+                            $replace_data['{' . $key . '}'] = $value;
+                        }
+                    }
+                    
+                    $data['cal_layout']['calendars_link'] = str_replace(array_keys($replace_data), array_values($replace_data), $data['cal_layout']['calendars_link']);
+                    $data['cal_layout']['calendars_link'] = $this->replace_superglobal_data($data['cal_layout']['calendars_link']);
+                }
+                
                 $cal_layout = $data['cal_layout']['calendars_layout'] ?: DEFAULT_LAYOUT_CALENDAR;
                 return $this->load->view("pages/layouts/calendars/{$cal_layout}", array('data' => $data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
 

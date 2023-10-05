@@ -15,6 +15,7 @@ $calendars_default_view = (!empty($data['calendars']['calendars_default_view']))
 
 $settings = $this->db->join('languages', 'languages_id = settings_default_language', 'LEFT')->get('settings')->row_array();
 
+$url_parameters = $data['cal_layout']['calendars_link'] ?? '';
 
 $config = [];
 //debug($calendar_map, true);
@@ -303,7 +304,7 @@ new Vue({
                 <?php echo $imploded_config; ?>
             };
             //console.log(data)
-            loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}")); ?>, data, function() {
+            loadModal(<?php echo json_encode(base_url("get_ajax/modal_form/{$data['create_form']}{$url_parameters}")); ?>, data, function() {
 
 
                 self.initCalendar(self.options);

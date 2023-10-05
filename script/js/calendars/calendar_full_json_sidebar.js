@@ -16,6 +16,7 @@ function initCalendars() {
             var endField = $(this).data('end');
             var alldayfield = $(this).data('allday');
             var formurl = $(this).data('formurl');
+            var url_parameters = $(this).data('url-parameters');
             var formedit = $(this).data('formedit');
             var fieldid = $(this).data('fieldid');
             var updateurl = $(this).data('updateurl');
@@ -134,7 +135,7 @@ function initCalendars() {
                             data[alldayfield] = date.allDay;
                         }
 
-                        loadModal(formurl, data, function () {
+                        loadModal(formurl + url_parameters, data, function () {
                             calendar.refetchEvents();
                         }, 'get');
                     }
