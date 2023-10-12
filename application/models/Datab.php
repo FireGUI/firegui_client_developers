@@ -442,6 +442,7 @@ class Datab extends CI_Model
                 break;
             case 'static_value':
                 $value = $fields['forms_fields_default_value'];
+                
                 break;
 
             case 'function':
@@ -709,8 +710,10 @@ class Datab extends CI_Model
 
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
-
+                
                 $fields[$key] = $this->processFieldMapping($field, $form);
+
+                
 
             }
             unset($field);
@@ -718,7 +721,7 @@ class Datab extends CI_Model
             /*
              * Combino i form data col get per fare il render dei fields
              */
-
+            
             $formData = array_merge($formData, $this->input->get() ?: [], array_filter($formData, function ($val) {
                 return is_null($val) or $val === '';
             }));
@@ -743,6 +746,7 @@ class Datab extends CI_Model
             }
 
             foreach ($hidden as $k => $field) {
+                
                 $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id);
             }
 
@@ -780,7 +784,7 @@ class Datab extends CI_Model
                     'onclick' => $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '',
                     'original_field' => $field,
                 ];
-
+                
                 $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
                 if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                     $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($form['forms_entity_id']));
@@ -3078,9 +3082,12 @@ class Datab extends CI_Model
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
 
-
-        if (!$value && !empty($field['forms_fields_default_value'])) {
+        
+        if (!$value && $field['forms_fields_default_value'] <> '') {
+            
             $value = $this->get_default_fields_value($field, $value_id);
+
+            
         }
 
         $output = '';
@@ -3178,7 +3185,7 @@ class Datab extends CI_Model
 
             if ($baseType == 'multi_upload') {
             }
-
+            
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
 
             if ($baseType !== 'input_hidden') {
@@ -3620,7 +3627,7 @@ class Datab extends CI_Model
             $tr = [];
 
             foreach ($grid['grids_fields'] as $field) {
-                $tr[] = trim(strip_tags($this->datab->build_grid_cell($field, $dato, false, true, true)));
+                $tr[] = trim(strip_tags($this->build_grid_cell($field, $dato, false, true, true)));
 
             }
 

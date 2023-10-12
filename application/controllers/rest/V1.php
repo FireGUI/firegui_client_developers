@@ -9,9 +9,12 @@ class V1 extends MY_Controller
 
     public function __construct()
     {
+        
         parent::__construct();
         set_log_scope('api');
-        
+
+        //$this->session->setTimeoutLock(1);
+
         // Imposto l'apilib:
         // ---
         // 1)   L'apilib deve funzionare in modalità API per quanto riguarda i
@@ -316,13 +319,14 @@ class V1 extends MY_Controller
             } else {
                 $where = [];
             }
-
+            
             $postData = $this->apilib->runDataProcessing($entity, 'pre-search', $postData);
 
             //non uso le apilib altrimenti mi fa left join e non è detto che abbia i permessi per le altre entità... una soluzione potrebbe essere quella di ciclare tutti i permessi e rimuovere nella
             ////filterOutputFields anche le tabelle joinate, ma è un lavorone... per ora no
+            
             $output = $this->apilib->search($entity, array_merge($where, $postData), $limit, $offset, $orderBy, $orderDir, $maxDepth);
-
+            // debug($output,true);
             $this->filterOutputFields($entity, $output);
 
             $this->logAction(__FUNCTION__, func_get_args(), $output);
@@ -725,7 +729,12 @@ class V1 extends MY_Controller
         $serial_get = json_encode($_GET);
         $serial_post = json_encode($_POST);
         $serial_files = json_encode($_FILES);
+        
         $serial_output = json_encode($output);
+if (strlen($serial_output) > 2000) {
+            $serial_output = json_encode('***TOO MANY RECORDS***');
+}
+        
 
         $this->db->insert('log_api', array(
             'log_api_method' => $method,

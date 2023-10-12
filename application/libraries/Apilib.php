@@ -1698,11 +1698,12 @@ class Apilib
             if (!in_array($field['entity_name'], [$relation->relations_table_1, $relation->relations_table_2])) {
                 return false;
             }
-
+            $reverse = !($field['entity_name'] == $relation->relations_table_1);
+            
             $dataToInsert = array(
                 'entity' => $relation->relations_name,
-                'relations_field_1' => $relation->relations_field_1,
-                'relations_field_2' => $relation->relations_field_2,
+                'relations_field_1' => ($reverse ? $relation->relations_field_2 : $relation->relations_field_1),
+                'relations_field_2' => ($reverse ? $relation->relations_field_1 : $relation->relations_field_2),
                 'value' => $dataToInsert,
             );
 

@@ -1001,6 +1001,19 @@ class Crmentity extends CI_Model
         foreach ($relations as $relation) {
             $relbyname[$relation['relations_name']] = $relation;
             $relbyent[$relation['relations_table_1']][] = $relation;
+
+            //Also reversable relations are valid!
+
+            $reverse_relation = [
+                'relations_name' => $relation['relations_name'],
+                'relations_table_1' => $relation['relations_table_2'],
+                'relations_table_2' => $relation['relations_table_1'],
+                'relations_field_1' => $relation['relations_field_2'],
+                'relations_field_2' => $relation['relations_field_1'],
+                'relations_type' => $relation['relations_type'],
+                'relations_module' => $relation['relations_module']
+            ];
+            $relbyent[$reverse_relation['relations_table_1']][] = $reverse_relation;
         }
 
         // Build the cached array

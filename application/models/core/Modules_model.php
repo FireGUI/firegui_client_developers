@@ -1362,11 +1362,11 @@ class Modules_model extends CI_Model
             my_log('debug', "Module install: start layouts boxes creation", 'update');
             //Inserisco i layoutbox
             $layout_box_map = [];
-
+            
             $this->db->query(
                 "DELETE FROM layouts_boxes
                 WHERE
-                    layouts_boxes_layout IN (" . implode(',', $layouts_id_map) . ")
+                    layouts_boxes_layout IN (" . implode(',', array_filter($layouts_id_map)) . ")
                     AND layouts_boxes_layout IN (SELECT layouts_id FROM layouts WHERE layouts_module = '{$identifier}')
                     AND layouts_boxes_id NOT IN (
                         SELECT
