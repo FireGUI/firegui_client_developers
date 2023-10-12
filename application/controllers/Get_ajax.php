@@ -10,6 +10,12 @@ class Get_ajax extends MY_Controller
     {
 
         parent::__construct();
+        
+        if ($this->auth->guest()) {
+            set_status_header(401); // Unauthorized
+            die('Non sei loggato nel sistema');
+        }
+        
         if ($this->input->is_ajax_request()) {
             $this->output->enable_profiler(false);
         }
