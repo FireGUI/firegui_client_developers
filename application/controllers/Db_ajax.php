@@ -10,6 +10,8 @@ class Db_ajax extends MY_Controller
     {
         parent::__construct();
         
+        // michael - 16-10-2023 - io e matteo abbiamo considerato l'idea di aggiungere un campo sui form (quindi gestibile da openbuilder) per definire se un form può essere pubblico o no.
+        // quindi lascio questo commento per ricordare che andrebbe aggiunto il controllo insieme a $this->auth->guest() e verificare che se l'endpoint è save_form ed è un form pubblico, allora si lascia andare avanti il processo altrimenti si blocca con l'unauthorized.
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
             die('Non sei loggato nel sistema');
