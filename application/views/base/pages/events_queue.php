@@ -2,8 +2,10 @@
     <h1>
         <?php e('Events Queue'); ?>
         <small>
-            <?php e('Configure events queue to get records here'); ?>
+            <?php e('Configure events queue to get records here'); ?> - <?php e('Copy this link to force queue: '); ?> <?php echo base_url('cron/runBackgroundProcesses/20'); ?>
         </small>
+
+
     </h1>
 </section>
 

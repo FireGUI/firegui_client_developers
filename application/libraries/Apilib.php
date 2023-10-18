@@ -420,7 +420,8 @@ class Apilib
 
                 ]);
             }
-
+            //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
+            $this->originalPost = [];
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -527,7 +528,8 @@ class Apilib
                     'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id']),
                 ]);
             }
-
+            //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
+            $this->originalPost = [];
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -602,7 +604,8 @@ class Apilib
 
         // Prima di uscire voglio ripristinare il post precedentemente modificato
         $_POST = $this->originalPost;
-
+        //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
+        $this->originalPost = [];
         // Inserisco il log
         $this->logSystemAction(self::LOG_CREATE_MANY, ['entity' => $entity, 'ids' => $ids]);
         return $ids;

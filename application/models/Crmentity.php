@@ -1363,4 +1363,8 @@ class Crmentity extends CI_Model
         $entities = $this->db->order_by('entity_name')->get('entity')->result_array();
         return $entities;
     }
+    public function getEntities()
+    {
+        return $this->getAllEntities();
+    }
 }

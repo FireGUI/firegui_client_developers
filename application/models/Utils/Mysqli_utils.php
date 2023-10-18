@@ -195,6 +195,8 @@ class Mysqli_utils extends Utils
             'forms_fields_module_key' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'forms_fields_module' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
 
+            'forms_field_full_data' => ['type' => 'BOOLEAN', 'default' => false],
+
         ]);
 
         $this->addForeignKey('forms_fields', 'forms_fields_forms_id', 'forms', 'forms_id');

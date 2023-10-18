@@ -1330,6 +1330,7 @@ class Datab extends CI_Model
                                     //continue;
 
                                     //Non so come gestirlo ma ci provo mettendo il filtro così com'è (es.: customers.customers_group = 2, sperando che customers sia joinata in qualche modo...)
+                                    $field_referencing = $field;
                                     $where_prefix = "({$other_entity['entity_name']}.";
                                 }
 

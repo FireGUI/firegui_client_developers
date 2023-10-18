@@ -88,7 +88,7 @@ class Postgre_utils extends Utils
             'fields_select_where' => ['type' => 'TEXT', 'null' => true],
             'fields_multilingual' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'fields_searchable' => ['type' => 'BOOL', 'default' => 't'],
-            'fields_xssclean' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_TRUE, 'null' => false],
+            'fields_xssclean' => ['type' => 'BOOL', 'default' => DB_BOOL_TRUE, 'null' => false],
             'fields_additional_data' => ['type' => 'TEXT', 'null' => true],
         ]);
 
@@ -164,7 +164,7 @@ class Postgre_utils extends Utils
             'forms_fields_override_colsize' => ['type' => 'INT', 'null' => true],
             'forms_fields_show_required' => ['type' => 'BOOL', 'null' => true],
             'forms_fields_show_label' => ['type' => 'BOOL', 'default' => true],
-            'forms_fields_allow_reverse' => ['type' => 'BOOLEAN', 'default' => false],
+            'forms_fields_allow_reverse' => ['type' => 'BOOL', 'default' => false],
             // Possibilità di scegliere un form dal quale creare una nuova entità
             'forms_fields_subform_id' => ['type' => 'INT', 'null' => true],
             'forms_fields_min' => ['type' => 'INT', 'default' => 0],
@@ -172,6 +172,8 @@ class Postgre_utils extends Utils
 
             'forms_fields_module_key' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'forms_fields_module' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
+
+            'forms_field_full_data' => ['type' => 'BOOL', 'default' => false],
 
         ]);
 
@@ -205,13 +207,13 @@ class Postgre_utils extends Utils
             'grids_inline_form' => ['type' => 'INT', 'constraint' => 10, 'unsigned' => true, 'null' => true],
             'grids_module_key' => ['type' => 'VARCHAR', 'constraint' => 250],
             'grids_depth' => ['type' => 'INT', 'constraint' => 5, 'null' => true],
-            'grids_actions_column' => ['type' => 'BOOLEAN', 'default' => 't'],
+            'grids_actions_column' => ['type' => 'BOOL', 'default' => 't'],
             'grids_identifier' => ['type' => 'VARCHAR', 'constraint' => 45],
-            'grids_datatable' => ['type' => 'BOOLEAN', 'default' => 'f'],
-            'grids_ajax' => ['type' => 'BOOLEAN', 'default' => 'f'],
-            'grids_searchable' => ['type' => 'BOOLEAN', 'default' => 'f'],
+            'grids_datatable' => ['type' => 'BOOL', 'default' => 'f'],
+            'grids_ajax' => ['type' => 'BOOL', 'default' => 'f'],
+            'grids_searchable' => ['type' => 'BOOL', 'default' => 'f'],
             'grids_pagination' => ['type' => 'INT', 'constraint' => 10, 'unsigned' => true, 'null' => true],
-            'grids_inline_edit' => ['type' => 'BOOLEAN', 'default' => 'f'],
+            'grids_inline_edit' => ['type' => 'BOOL', 'default' => 'f'],
             'grids_design' => ['type' => 'INT', 'constraint' => 10, 'unsigned' => true, 'null' => true],
             'grids_limit' => ['type' => 'INT', 'constraint' => 10, 'unsigned' => true, 'null' => true],
             'grids_custom_query' => ['type' => 'TEXT', 'null' => true],
@@ -235,7 +237,7 @@ class Postgre_utils extends Utils
             'grids_fields_eval_cache_data' => ['type' => 'TEXT', 'null' => true],
             'grids_fields_totalable' => ['type' => 'BOOL', 'default' => 'f'],
             'grids_fields_with_actions' => ['type' => 'BOOL', 'default' => 'f'],
-            'grids_fields_switch_inline' => ['type' => 'BOOLEAN', 'default' => 'f', 'null' => true],
+            'grids_fields_switch_inline' => ['type' => 'BOOL', 'default' => 'f', 'null' => true],
             'grids_fields_width' => ['type' => 'INT', 'constraint' => 3, 'null' => true],
             'grids_fields_module_key' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'grids_fields_module' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
@@ -293,7 +295,7 @@ class Postgre_utils extends Utils
             'calendars_min_time' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'calendars_max_time' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
 
-            'calendars_default_sidebar_toggle_all_filters' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_TRUE],
+            'calendars_default_sidebar_toggle_all_filters' => ['type' => 'BOOL', 'default' => DB_BOOL_TRUE],
             'calendars_default_view' => ['type' => 'VARCHAR', 'constraint' => 250, 'default' => 'timeGridWeek'],
 
             // <===== Update 21/06/2022 - Michael - Added custom query field =====>
@@ -341,9 +343,9 @@ class Postgre_utils extends Utils
             'maps_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'maps_init_zoom' => ['type' => 'BIGINT', 'null' => true],
             'maps_init_latlon' => ['type' => 'BIGINT', 'null' => true],
-            'maps_cluster' => ['type' => 'BOOLEAN', 'null' => true],
-            'maps_sidebar' => ['type' => 'BOOLEAN', 'null' => true],
-            'maps_geocoding' => ['type' => 'BOOLEAN', 'null' => true],
+            'maps_cluster' => ['type' => 'BOOL', 'null' => true],
+            'maps_sidebar' => ['type' => 'BOOL', 'null' => true],
+            'maps_geocoding' => ['type' => 'BOOL', 'null' => true],
             'maps_module' => ['type' => 'VARCHAR', 'constraint' => 250],
             'maps_module_key' => ['type' => 'VARCHAR', 'constraint' => 250],
         ]);
@@ -387,7 +389,7 @@ class Postgre_utils extends Utils
             'charts_elements_where' => ['type' => 'TEXT'],
             'charts_elements_additional_where' => ['type' => 'TEXT'],
             'charts_elements_groupby' => ['type' => 'TEXT'],
-            'charts_elements_use_full_query' => ['type' => 'BOOLEAN', 'null' => true],
+            'charts_elements_use_full_query' => ['type' => 'BOOL', 'null' => true],
             'charts_elements_order' => ['type' => 'varchar', 'constraint' => 250, 'default' => 'ASC'],
             'charts_elements_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'charts_elements_full_query' => ['type' => 'TEXT', 'null' => true],
@@ -420,9 +422,9 @@ class Postgre_utils extends Utils
             'modules_thumbnail' => ['type' => 'VARCHAR', 'null' => true],
             //20190711 Michael - Campo per salvare il nome del file dell'icona modulo
             'modules_min_client_version' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
-            'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
+            'modules_auto_update' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'modules_last_update' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'default' => 'NOW()'],
-            'modules_core' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
+            'modules_core' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
         ]);
 
         /* ============================
@@ -437,7 +439,7 @@ class Postgre_utils extends Utils
         //     'notifications_read' => ['type' => 'BOOL', 'default' => false],
         //     'notifications_date_creation' => ['type' => 'TIMESTAMP WITHOUT TIME ZONE', 'default' => 'NOW()'],
         //     'notifications_link' => ['type' => 'VARCHAR', 'null' => true],
-        //     'notifications_desktop_notified' => ['type' => 'BOOLEAN', 'default' => false],
+        //     'notifications_desktop_notified' => ['type' => 'BOOL', 'default' => false],
         // ]);
 
         /* ============================
