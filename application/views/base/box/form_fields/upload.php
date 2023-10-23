@@ -8,7 +8,26 @@
         <input type="file" name="<?php echo $field['fields_name']; ?>">
     </span>
 
-    <span class="fileinput-filename "><?php echo $value ?></span>
+    <span class="fileinput-filename ">
+        <?php
+        if (!empty($value)) {
+            // Decodifica le entità HTML
+            $value = html_entity_decode($value);
+            
+            // Verifica se $value è un JSON valido
+            if (json_decode($value) !== null && json_last_error() === JSON_ERROR_NONE) {
+                // Se è un JSON valido, convertilo in un array
+                $value = json_decode($value, true);
+            }
+            
+            if (is_array($value)) {
+                echo $value['client_name'];
+            } else {
+                echo $value;
+            }
+        }
+        ?>
+    </span>
     &nbsp;
     <a href="javascript:;" class="fileinput-exists" data-dismiss="fileinput"><i class="fas fa-times"></i> <?php e('Remove'); ?></a>
 </div>

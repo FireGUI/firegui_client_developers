@@ -974,7 +974,7 @@ class Db_ajax extends MY_Controller
                     if (
                         in_array(
                             $_field['fields_draw_html_type'],
-                            ['upload_image', 'upload']
+                            ['upload_image', 'upload', 'single_upload']
                         )
                     ) {
                         $field_insert = $_field;
@@ -1008,13 +1008,13 @@ class Db_ajax extends MY_Controller
                 $field_insert = false;
 
                 foreach ($entity_data['fields'] as $_field) {
-                    if (in_array($_field['fields_draw_html_type'], ['upload_image', 'upload'])) {
+                    if (in_array($_field['fields_draw_html_type'], ['upload_image', 'upload', 'single_upload'])) {
                         $field_insert = $_field;
                     }
                 }
 
                 if (!$field_insert) {
-                    echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload)!"]);
+                    echo json_encode(['status' => 0, 'txt' => "Entity '$file_table' don't have any field of type upload_image or upload or single_upload)!"]);
                     exit;
                 }
                 //Change key of files to be inserted in the other entity
