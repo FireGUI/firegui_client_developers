@@ -105,7 +105,7 @@ class Mysqli_utils extends Utils
 
             'fields_additional_data' => ['type' => 'TEXT', 'null' => true],
 
-            
+
         ]);
 
         $this->addForeignKey('fields', 'fields_entity_id', 'entity', 'entity_id');
@@ -456,7 +456,7 @@ class Mysqli_utils extends Utils
             'modules_auto_update' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
             'modules_last_update' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
             'modules_core' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
-            'modules_notification_message' => ['type' => 'TEXT'],
+            'modules_notification_message' => ['type' => 'TEXT', 'null' => true],
         ], 'modules_id');
 
         /* ============================
