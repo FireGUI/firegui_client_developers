@@ -1330,6 +1330,7 @@ class Datab extends CI_Model
                                     //continue;
 
                                     //Non so come gestirlo ma ci provo mettendo il filtro così com'è (es.: customers.customers_group = 2, sperando che customers sia joinata in qualche modo...)
+                                    $field_referencing = $field;
                                     $where_prefix = "({$other_entity['entity_name']}.";
                                 }
 
@@ -2881,6 +2882,35 @@ class Datab extends CI_Model
                         $path = base_url_admin('images/no-image-50x50.gif');
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
+                case 'single_upload':
+                    if (!empty($value)) {
+                        $item = json_decode($value, true);
+                        
+                        $filename = is_array($item) ? $item['client_name'] : 'Download file';
+                        $value = is_array($item) ? $item['path_local'] : $value;
+                        
+                        if (file_exists(FCPATH . "uploads/$value")) {
+                            $file = mime_content_type(FCPATH . "uploads/$value");
+                            $doc_ext = array('doc', 'docx', 'ods', 'odt', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx', 'txt');
+                            $ext = pathinfo($value, PATHINFO_EXTENSION);
+                            if (in_array($ext, $doc_ext)) {
+                                return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img width='30px' height='30px' src=" . base_url("images/download.png") . ">{$filename}</a>";
+                            } elseif (strstr($file, "audio/")) {
+                                // this code for audio
+                                return "<a href=" . base_url("uploads/$value") . " target='_blank'>Ascolta file</a>";
+                            } elseif (strstr($file, "video/")) {
+                                return anchor(base_url_uploads("uploads/$value"), 'Download ' . $filename, array('class' => 'js_open_modal_link_file'));
+                            } elseif (strstr($file, "image/")) {
+                                return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img src=" . base_url_uploads("thumb/50/50/1/uploads/$value") . " alt='{$filename}'></a>";
+                            } else {
+                                return anchor(base_url_uploads("uploads/$value"), $filename, array('class' => 'js_open_modal_link_file'));
+                            }
+                        } else {
+                            return "";
+                        }
+                    } else {
+                        return "";
+                    }
                 // no break
                 case 'multi_upload':
                 case 'multi_upload_no_preview':
@@ -3186,6 +3216,10 @@ class Datab extends CI_Model
             if ($baseType == 'multi_upload') {
             }
             
+            if ($baseType == 'single_upload') {
+                $baseType = 'upload';
+            }
+
             $view = $this->load->view("box/form_fields/{$baseType}", $data, true);
 
             if ($baseType !== 'input_hidden') {

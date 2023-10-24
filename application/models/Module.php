@@ -41,4 +41,8 @@ class Module extends CI_Model
 
         return $this->_modules_installed[$identifier];
     }
+    public function generate_key($identifier, $type, $id)
+    {
+        return "{$identifier}-{$type}-{$id}";
+    }
 }

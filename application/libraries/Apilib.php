@@ -420,7 +420,8 @@ class Apilib
 
                 ]);
             }
-
+            //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
+            $this->originalPost = [];
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -527,7 +528,8 @@ class Apilib
                     'entity_full_data' => $this->crmentity->getEntityFullData($entity_data['entity_id']),
                 ]);
             }
-
+            //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
+            $this->originalPost = [];
             return $returnRecord ? $this->view($entity, $id) : $id;
         } else {
             $_POST = $this->originalPost;
@@ -602,7 +604,8 @@ class Apilib
 
         // Prima di uscire voglio ripristinare il post precedentemente modificato
         $_POST = $this->originalPost;
-
+        //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
+        $this->originalPost = [];
         // Inserisco il log
         $this->logSystemAction(self::LOG_CREATE_MANY, ['entity' => $entity, 'ids' => $ids]);
         return $ids;
@@ -1291,6 +1294,7 @@ class Apilib
                         // this because upload is made after validation rules
                         case 'upload':
                         case 'upload_image':
+                        case 'single_upload':
                             if (!array_key_exists($field['fields_name'], $_FILES)) {
                                 $rule[] = 'required';
                             }
@@ -1433,9 +1437,26 @@ class Apilib
          * return false;
          */
         $result = $this->uploadAll(true);
+        
         if ($result === false) {
             return false;
-        } elseif ($result && is_array($result)) {
+        }
+        
+        if (is_array($result)) {
+            foreach ($result as $field_name => $arr) {
+                foreach ($fields as $field) {
+                    if ($field_name == $field['fields_name']) {
+                        if (in_array($field['fields_draw_html_type'], ['upload', 'upload_image'])) {
+                            $result[$field_name] = $arr['path_local'];
+                        } elseif($field['fields_draw_html_type'] == 'single_upload') {
+                            $result[$field_name] = json_encode($arr);
+                        } else {
+                            $result[$field_name] = $arr;
+                        }
+                    }
+                }
+            }
+            
             $data = array_merge($data, $result);
             $originalData = array_merge($originalData, $result);
         }
@@ -1860,6 +1881,7 @@ class Apilib
 
             case 'upload':
             case 'upload_image':
+            case 'single_upload':
                 $value = $value ?: null;
                 break;
 
@@ -2449,7 +2471,7 @@ class Apilib
 
                 // Upload ok
                 $uploadData = $this->upload->data();
-
+                
                 defined('LOGIN_ENTITY') or @include __DIR__ . '/../config/enviroment.php';
                 $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
 
@@ -2468,11 +2490,16 @@ class Apilib
                     }
 
                     if (rename(FCPATH . 'uploads/' . $uploadData['file_name'], FCPATH . 'uploads/' . $localFolder . $uploadData['file_name'])) {
-                        $uploadData['file_name'] = $localFolder . $uploadData['file_name'];
+                        $uploadData['orig_name'] = $uploadData['file_name'];
+                        $uploadData['file_path'] = FCPATH . 'uploads/' . $localFolder;
+                        $uploadData['full_path'] = FCPATH . 'uploads/' . $localFolder . $uploadData['file_name'];
                     }
+                    $uploadData['original_filename'] = $uploadData['client_name'];
+                    $uploadData['path_local'] = $localFolder . $uploadData['file_name'];
                 }
 
-                $output[$fieldName] = $uploadData['file_name'];
+//                $output[$fieldName] = $uploadData['file_name']; // 11/10/2023 - michael - ho commentato questo e messo la riga sotto per la funzionalità del nuovo campo "single_upload" che è un upload normale che però contiene tutte le informazioni dei file... è una via di mezzo tra upload e multiupload
+                $output[$fieldName] = $uploadData;
             }
 
             if ($clearFilesSuperglobal) {

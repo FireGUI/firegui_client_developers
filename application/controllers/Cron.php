@@ -201,7 +201,7 @@ class Cron extends MY_Controller
                         ) t
                         WHERE t.row_num <= 3
                     );");
-
+                $this->db->where("_queue_pp_date < now() - interval 7 day", null, false)->where('_queue_pp_executed', '1')->delete('_queue_pp');
                 
             } else {
                 $this->db
