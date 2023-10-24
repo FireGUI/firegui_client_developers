@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
+use PhpOffice\PhpSpreadsheet\Shared\Date as SharedDateHelper;
 class Export extends MY_Controller
 {
     
@@ -149,6 +149,19 @@ class Export extends MY_Controller
         fpassthru($fp);  // Output the PDF file
     }
     
+private function numeroToLettere($numero)
+    {
+        $lettere = '';
+
+        while ($numero >= 0) {
+            $resto = $numero % 26;
+            $lettere = chr(65 + $resto) . $lettere;
+            $numero = intval($numero / 26) - 1;
+        }
+
+        return $lettere;
+    }
+
     public function download_excel($grid_id, $value_id = null)
     {
         error_reporting(0);
@@ -211,10 +224,27 @@ class Export extends MY_Controller
                 if (ctype_digit($dato[$cell])) {
                     $data[$key][$cell] = (float)tofloat($dato[$cell]);
                 } else {
-                    $data[$key][$cell] = $dato[$cell];
+                    // Controlla se il valore è una data e formattalo
+                    if (false && (substr_count($dato[$cell], '/') == 2 || substr_count($dato[$cell], '-') == 2) && strtotime($dato[$cell])) {
+                        $timestamp = strtotime($dato[$cell]);
+                        $datetime = gmmktime(
+                            gmdate("H", $timestamp),
+                            gmdate("i", $timestamp),
+                            gmdate("s", $timestamp),
+                            gmdate("n", $timestamp),
+                            gmdate("j", $timestamp),
+                            gmdate("Y", $timestamp)
+                        );
+                        //debug(get_class_methods($objPHPExcel),true);
+                        $data[$key][$cell] = SharedDateHelper::PHPToExcel($datetime); // Formatta come 'AAAA-MM-GG'
+                        
+                    } else {
+                        $data[$key][$cell] = $dato[$cell];
+                    }
                 }
             }
         }
+        //debug($data,true);
         $objPHPExcel->getActiveSheet()->fromArray($data, '', 'A2');
         
         $filename = t('Export table') . " #{$grid_id}";
