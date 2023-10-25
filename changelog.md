@@ -1,9 +1,13 @@
-Changelog version 3.4.1
+Changelog version 3.5.0
  
-Added possibility to use field calendars_link to add url parameters to form that opens when new event is being created
-Protected db_ajax and get_ajax controllers
-Bugfix for api search with large results
-Relations now works both for source and destination entity
-Bugfix for input hidden with default value = ''
-Bugfix for module install without any layout
-New classes and elements in layout (for toolbar compatibility)
+Cronjob now delete queue pp after 30 days
+Bugfix originalPost reset in apilib
+Alias for getAllEntities in Crmentity model
+Bugfix for filters of depth > 2
+Select and multiselect now have the possibility to retrive full record data
+Multiselect with relation now works for both related entities
+Add link for run and force background queue processes
+New functionality: single upload with json data
+queue_pp remove after 7 days
+Beta excel export dates
+New function generate_key in module model
