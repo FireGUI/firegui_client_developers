@@ -1418,3 +1418,4 @@ $(function () {
   //jQuery in automatico appende ?_={timestamp} su tutti i js caricati da jquery.plugin. Così non lo fa...
   $.ajaxSetup({ cache: true });
 });
+
