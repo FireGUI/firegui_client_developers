@@ -1,10 +1,11 @@
-
-$(document).ready(function () {
-    'use strict';
-    $('.js-bulk-action > option[value=""]').attr('selected', 'selected').trigger('change');
-    $('input:checkbox.js_bulk_check,.js-bulk-select-all').removeAttr('checked').trigger('change');
+function initBulkGrids(container) {
+    if (typeof container === 'undefined') {
+        container = $('body');
+    }
+    $('.js-bulk-action > option[value=""]', container).attr('selected', 'selected').trigger('change');
+    $('input:checkbox.js_bulk_check,.js-bulk-select-all', container).removeAttr('checked').trigger('change');
     $.uniform.update();
-    $('.content-wrapper,.page-content-wrapper').on('click', '.js-bulk-select-all', function () {
+    $('.content-wrapper,.page-content-wrapper,.modal-content', container).on('click', '.js-bulk-select-all', function () {
 
         var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
         if ($(this).is(':checked')) {
@@ -30,7 +31,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.content-wrapper,.page-content-wrapper').on('click', 'input:checkbox.js_bulk_check', function () {
+    $('.content-wrapper,.page-content-wrapper,.modal-content', container).on('click', 'input:checkbox.js_bulk_check', function () {
         //Questo ridisegna le checkbox metronic
         $.uniform.update();
         var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
@@ -49,7 +50,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.content-wrapper,.page-content-wrapper').on('change', '.js-bulk-action', function () {
+    $('.content-wrapper,.page-content-wrapper,.modal-content', container).on('change', '.js-bulk-action', function () {
         var grid_container = $(this).closest('div[data-layout-box]');
         if ($(this).val() != '') {
 
@@ -155,4 +156,9 @@ $(document).ready(function () {
             }
         }
     });
+}
+$(document).ready(function () {
+    'use strict';
+    initBulkGrids();
+
 });

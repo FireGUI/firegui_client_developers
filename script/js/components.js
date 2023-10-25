@@ -1000,6 +1000,7 @@ var mAjaxCall = null,
 
 
 function loadModal(url, data, callbackSuccess, method) {
+
   loading(true);
 
   // URL PARAMS 
@@ -1099,6 +1100,7 @@ function loadModal(url, data, callbackSuccess, method) {
           .on("shown.bs.modal", function (e) {
             loading(false);
             reset_theme_components();
+            initBulkGrids(modalContainer);
             //initComponents(modalContainer);
             // Disable by default the confirmation request
             $(".modal", modalContainer).data("bs.modal").askConfirmationOnClose = false;
@@ -1418,4 +1420,3 @@ $(function () {
   //jQuery in automatico appende ?_={timestamp} su tutti i js caricati da jquery.plugin. Così non lo fa...
   $.ajaxSetup({ cache: true });
 });
-
