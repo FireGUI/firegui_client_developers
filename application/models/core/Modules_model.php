@@ -12,14 +12,14 @@ class Modules_model extends CI_Model
         parent::__construct();
 
 
-        $this->load->model('utils', 'utils_base');
+        //$this->load->model('utils', 'utils_base');
 
         // Load utils model
-        if ($this->db->dbdriver == 'postgre') {
-            $this->load->model('Utils/postgre_utils', 'utils');
-        } else if ($this->db->dbdriver == 'mysqli') {
-            $this->load->model('Utils/mysqli_utils', 'utils');
-        }
+        // if ($this->db->dbdriver == 'postgre') {
+        //     $this->load->model('Utils/postgre_utils', 'utils');
+        // } else if ($this->db->dbdriver == 'mysqli') {
+        //     $this->load->model('Utils/mysqli_utils', 'utils');
+        // }
 
         $this->settings = $this->apilib->searchFirst('modules_manager_settings');
         $this->temp_folder = FCPATH . 'uploads/tmp/';

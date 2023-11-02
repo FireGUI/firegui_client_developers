@@ -12,14 +12,14 @@ class Core extends CI_Model
         parent::__construct();
 
 
-        $this->load->model('utils', 'utils_base');
+        // $this->load->model('utils', 'utils_base');
 
         // Load utils model
-        if ($this->db->dbdriver == 'postgre') {
-            $this->load->model('Utils/postgre_utils', 'utils');
-        } else if ($this->db->dbdriver == 'mysqli') {
-            $this->load->model('Utils/mysqli_utils', 'utils');
-        }
+        // if ($this->db->dbdriver == 'postgre') {
+        //     $this->load->model('Utils/postgre_utils', 'utils');
+        // } else if ($this->db->dbdriver == 'mysqli') {
+        //     $this->load->model('Utils/mysqli_utils', 'utils');
+        // }
 
         $this->settings = $this->apilib->searchFirst('settings');
 
@@ -73,14 +73,21 @@ class Core extends CI_Model
     public function update($indexes_update = false)
     {
         my_log("debug", "Core: Start UPDATE Database from Utils", 'update');
-        //TODO: qui c'è un bug: le utils sono state caricate prima che venissero sovrascritte dall'aggiornamento, quindi di fatto la migrationProcess che viene eseguita è quella vecchia!
-        //Sostituire con CURL?
+        //20231102 - MP - Removed from construct preload of utils. It's used only in this function and moreover, utils will be loaded after rewrote by the update processes (load them before can cause a older model loaded, instead of the new overwrittend files)
+        
+        $this->load->model('utils', 'utils_base');
+
+        // Load specific utils model
+        if ($this->db->dbdriver == 'postgre') {
+            $this->load->model('Utils/postgre_utils', 'utils');
+        } else if ($this->db->dbdriver == 'mysqli') {
+            $this->load->model('Utils/mysqli_utils', 'utils');
+        }
+
         $this->utils->migrationProcess();
         if ($indexes_update) {
             $this->utils->indexesUpdate();
         }
-
-
 
         $this->mycache->clearCache();
     }

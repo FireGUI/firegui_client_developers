@@ -79,16 +79,30 @@ if ($sess_value === null && $sess_value !== '-1') {
             $where_data[$filterSessionKey] = [];
         }
 
-        $where_data[$filterSessionKey] = array_unique(array_merge(
-            $where_data[$filterSessionKey],
-            [
-                $field['id'] => [
-                    'field_id' => $field['id'],
-                    'operator' => 'eq',
-                    'value' => $value,
-                ],
-            ]
-        ), SORT_REGULAR);
+        // $where_data[$filterSessionKey] = array_unique(array_merge(
+        //     $where_data[$filterSessionKey],
+        //     [
+        //         $field['id'] => [
+        //             'field_id' => $field['id'],
+        //             'operator' => 'eq',
+        //             'value' => $value,
+        //         ],
+        //     ]
+        // ), SORT_REGULAR);
+                    
+                                $where_data[$filterSessionKey] = array_unique(
+                                    
+                                    [
+                                            $field['id'] => [
+                                                'field_id' => $field['id'],
+                                                'operator' => 'eq',
+                                                'value' => $value,
+                                            ],
+                                    ]+    
+                                    $where_data[$filterSessionKey], SORT_REGULAR 
+                                        
+                                    );
+
 
         $this->session->set_userdata(SESS_WHERE_DATA, array_filter($where_data));
     }
