@@ -11,3 +11,6 @@ New functionality: single upload with json data
 queue_pp remove after 7 days
 Beta excel export dates
 New function generate_key in module model
+Bugfix vue_calendar
+Bugfix bulk edit checkboxes in modal
+user_tokens remove after 10 logins
