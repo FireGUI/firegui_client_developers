@@ -105,7 +105,7 @@ class Mysqli_utils extends Utils
 
             'fields_additional_data' => ['type' => 'TEXT', 'null' => true],
 
-
+            'fields_foo' => ['type' => 'TEXT', 'null' => true],
         ]);
 
         $this->addForeignKey('fields', 'fields_entity_id', 'entity', 'entity_id');
