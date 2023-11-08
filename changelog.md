@@ -1,3 +1,3 @@
-Changelog version 3.5.4
+Changelog version 3.5.5
  
-Bugfix vue calendar
+Bugfix date filters in calendars
