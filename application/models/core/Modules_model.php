@@ -25,6 +25,8 @@ class Modules_model extends CI_Model
         $this->temp_folder = FCPATH . 'uploads/tmp/';
         $this->_license_token = $this->settings['modules_manager_settings_license_token'];
         $this->_project_id = (defined('ADMIN_PROJECT') && !empty(ADMIN_PROJECT)) ? ADMIN_PROJECT : 0;
+        
+        $this->load->model('entities');
     }
     public function installModule($identifier, $update_repository_url = null)
     {
