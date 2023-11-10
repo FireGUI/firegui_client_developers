@@ -34,8 +34,6 @@
             <option></option>
         <?php //endif; ?>
         <?php if (isset($field['support_data'])): ?>
-            <option></option>
-        
             <?php foreach ((array) $field['support_data'] as $id => $name): ?>
                 <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?><?php if ($field['forms_field_full_data'] == DB_BOOL_TRUE): ?>
                         data-full_data="<?php echo base64_encode(json_encode($this->apilib->view($field['fields_ref'], $id))); ?>" <?php endif; ?>>
