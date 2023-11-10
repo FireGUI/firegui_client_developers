@@ -2753,7 +2753,7 @@ class Datab extends CI_Model
 
                     //Check if entity_preview_base or custom is set
                     if ($entity_preview) {
-                        $text = str_replace_placeholders($entity_preview, $dato);
+                        $text = str_replace_placeholders($entity_preview, $dato, true, true);
                         //debug($text,true);
                     } else {
                         foreach ($field['support_fields'] as $support_field) {
