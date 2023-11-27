@@ -214,9 +214,10 @@ $imploded_config = implode(',', $config);
 </style>
 
 <?php
+
 $min_time = $data['calendars']['calendars_min_time'];
 $max_time = $data['calendars']['calendars_max_time'];
-
+ 
 if (!function_exists('time_to_minutes')) {
     function time_to_minutes($time)
     {

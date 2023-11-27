@@ -10,12 +10,12 @@ class Get_ajax extends MY_Controller
     {
 
         parent::__construct();
-        
+
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
             die('Non sei loggato nel sistema');
         }
-        
+
         if ($this->input->is_ajax_request()) {
             $this->output->enable_profiler(false);
         }
@@ -371,13 +371,13 @@ class Get_ajax extends MY_Controller
                 }
                 //debug($fields,true);
                 $where = $this->datab->search_like($search, $fields);
-                
+
                 if ($where && $where_limit) {
                     $where .= " AND ({$where_limit})";
                 } elseif ($where_limit) {
                     $where = $where_limit;
                 }
-                
+
                 if ($where_referer) {
                     $where = ($where ? "{$where} AND ({$where_referer})" : $where_referer);
                 }
@@ -942,6 +942,8 @@ class Get_ajax extends MY_Controller
         $ts_start = $this->input->post('start');
         $ts_end = $this->input->post('end');
 
+
+
         if ($ts_start && $ts_end) {
             $start = dateTime_toDbFormat($ts_start);
             $end = dateTime_toDbFormat($ts_end);
@@ -951,12 +953,17 @@ class Get_ajax extends MY_Controller
             foreach ($data['calendars_fields'] as $field) {
                 switch ($field['calendars_fields_type']) {
                     case 'start':
+                    case 'date_start':
                         $start_field = $field['fields_name'];
                         break;
                     case 'end':
+                    case 'date_end':
                         $end_field = $field['fields_name'];
                         break;
                 }
+            }
+            if ($start_field && !$end_field) {
+                $end_field = $start_field;
             }
 
             if ($start_field && $end_field) {
@@ -977,6 +984,8 @@ class Get_ajax extends MY_Controller
         }
 
         $generatedWhere = $this->datab->generate_where('calendars', $calendar_id, $value_id, $where);
+
+        //debug($generatedWhere, true);
 
         if (!empty($data['calendars']['calendars_custom_query'])) {
             $data_entity = $this->datab->getDataEntityByQuery($data['calendars']['calendars_entity_id'], $data['calendars']['calendars_custom_query'], $generatedWhere);
@@ -1578,7 +1587,8 @@ class Get_ajax extends MY_Controller
         $this->load->view('pages/iframe_pdf_preview', ['path' => $path]);
     }
 
-    public function test_getData() {
+    public function test_getData()
+    {
         $menu = $this->db->get('menu')->result_array();
         $layouts = $this->db->get('layouts')->result_array();
         $layouts_boxes = $this->db->get('layouts_boxes')->result_array();

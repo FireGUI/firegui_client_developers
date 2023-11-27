@@ -890,7 +890,7 @@ class Crmentity extends CI_Model
             foreach ($records as $record) {
                 $id = array_get($record, $entity_name . '_id');
                 if ($entity_preview) {
-                    $result[$id] = str_replace_placeholders($entity_preview, $record);
+                    $result[$id] = str_replace_placeholders($entity_preview, $record, true, true);
                 } else {
 
                     $preview = "";

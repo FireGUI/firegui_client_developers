@@ -270,9 +270,20 @@ if ($referenced = $this->crmentity->getReferencedEntity($field['name'])) {
                                 <?php endif;?>
 
                             <?php else: ?>
-                                <?php $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array());?>
+                                <?php
+                                    $field = array_merge($field, $this->db->where('fields_id', $field['id'])->join('entity', '(fields_entity_id = entity_id)', 'LEFT')->get('fields')->row_array());
+                                
+                                    $soft_delete_flag = '';
+                                    if (!empty($field['entity_action_fields'])) {
+                                        $action_fields = json_decode($field['entity_action_fields'], true);
 
-
+                                        if (!empty($action_fields['soft_delete_flag'])) {
+                                            $soft_delete_field = $action_fields['soft_delete_flag'];
+                                            $soft_delete_flag = " WHERE ($soft_delete_field IS NULL OR $soft_delete_field = '' OR $soft_delete_field = '".DB_BOOL_FALSE."')";
+                                        }
+                                    }
+                                    
+                                    ?>
                                 
 
                                 <?php if ($field['type'] == 'multiselect'): ?>
@@ -280,7 +291,7 @@ if ($referenced = $this->crmentity->getReferencedEntity($field['name'])) {
 
                                     <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
                                     <option value="-2" <?php echo (in_array(-2, explode(',', $value))) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
-                                        <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row): ?>
+                                        <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} $soft_delete_flag ORDER BY {$field['name']}")->result_array() as $row): ?>
                                             <?php if ($row['valore']): ?>
                                                 <option value="<?php echo $row['valore']; ?>" <?php echo (in_array($row['valore'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $row['valore']; ?></option>
                                             <?php endif;?>
@@ -293,7 +304,7 @@ if ($referenced = $this->crmentity->getReferencedEntity($field['name'])) {
                                         <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
                                         <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
 
-                                        <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} ORDER BY {$field['name']}")->result_array() as $row): ?>
+                                        <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} $soft_delete_flag ORDER BY {$field['name']}")->result_array() as $row): ?>
                                             <?php if (!empty($row['valore'])): ?><option value="<?php echo $row['valore']; ?>" <?php if ($value == $row['valore']): ?> selected="selected" <?php endif;?>><?php echo $row['valore']; ?></option><?php endif;?>
                                         <?php endforeach;?>
                                     <?php endif;?>
