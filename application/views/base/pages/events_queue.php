@@ -50,12 +50,36 @@
                                     <?php echo $event['_queue_pp_execution_date']; ?>
                                 </td>
                                 <td>
-                                    <?php echo character_limiter($event['_queue_pp_code'], 20); ?>
+                                    <?php
+                                    $textContainerID = $event['_queue_pp_id'];
+                                    $javascript = "event.preventDefault();$(this).parent().hide(); $('.text_{$textContainerID}').show();";
+
+                        ?>
+                        <div>
+                            <div onclick="<?php echo $javascript; ?>" style="cursor:pointer;"><?php echo nl2br(character_limiter(strip_tags($event['_queue_pp_code']), 20)); ?></div>
+                            <a onclick="<?php echo $javascript; ?>" href="#">Vedi tutto</a></div>
+                            <div class="text_<?php echo $textContainerID; ?>" style="display:none;"><?php echo strip_tags($event['_queue_pp_code']); ?></div>
+                        
+                                    
                                 </td>
                                 <td>
-                                    <?php echo character_limiter($event['_queue_pp_data'], 20); ?>
-                                </td>
-                            </tr>
+                                <?php
+                                    $textContainerID = $event['_queue_pp_id'];
+                                    $javascript = "event.preventDefault();$(this).parent().hide(); $('.text_{$textContainerID}2').show();";
+
+                                    ?>
+                                    <div>
+                                        <div onclick="<?php echo $javascript; ?>" style="cursor:pointer;">
+                                            <?php echo nl2br(character_limiter(strip_tags($event['_queue_pp_data']), 20)); ?>
+                                        </div>
+                                        <a onclick="<?php echo $javascript; ?>" href="#">Vedi tutto</a></div>
+                                        <div class="text_<?php echo $textContainerID; ?>2" style="display:none;">
+                                            <?php echo strip_tags($event['_queue_pp_data']); ?>
+                                        </div>
+                                    
+                                    
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -108,12 +132,42 @@
                                     <?php echo $event['_queue_pp_execution_date']; ?>
                                 </td>
                                 <td>
-                                    <?php echo character_limiter($event['_queue_pp_code'], 20); ?>
-                                </td>
-                                <td>
-                                    <?php echo character_limiter($event['_queue_pp_data'], 20); ?>
-                                </td>
-                            </tr>
+                                    <?php
+                                        $textContainerID = $event['_queue_pp_id'];
+                                        $javascript = "event.preventDefault();$(this).parent().hide(); $('.text_{$textContainerID}').show();";
+
+                                        ?>
+                                        <div>
+                                            <div onclick="<?php echo $javascript; ?>" style="cursor:pointer;">
+                                                <?php echo nl2br(character_limiter(strip_tags($event['_queue_pp_code']), 20)); ?>
+                                            </div>
+                                            <a onclick="<?php echo $javascript; ?>" href="#">Vedi tutto</a>
+                                        </div>
+                                        <div class="text_<?php echo $textContainerID; ?>" style="display:none;">
+                                            <?php echo strip_tags($event['_queue_pp_code']); ?>
+                                        </div>
+                                
+                                
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $textContainerID = $event['_queue_pp_id'];
+                                        $javascript = "event.preventDefault();$(this).parent().hide(); $('.text_{$textContainerID}2').show();";
+
+                                        ?>
+                                        <div>
+                                            <div onclick="<?php echo $javascript; ?>" style="cursor:pointer;">
+                                                <?php echo nl2br(character_limiter(strip_tags($event['_queue_pp_data']), 20)); ?>
+                                            </div>
+                                            <a onclick="<?php echo $javascript; ?>" href="#">Vedi tutto</a>
+                                        </div>
+                                        <div class="text_<?php echo $textContainerID; ?>2" style="display:none;">
+                                            <?php echo strip_tags($event['_queue_pp_data']); ?>
+                                        </div>
+                                
+                                
+                                    </td>
+                                </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>

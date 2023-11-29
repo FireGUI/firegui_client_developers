@@ -1,9 +1,7 @@
 <?php
 
-class Mysqli_utils extends Utils
-{
-    public function __construct()
-    {
+class Mysqli_utils extends Utils {
+    public function __construct() {
         parent::__construct();
 
         $this->load->model('entities');
@@ -19,8 +17,7 @@ class Mysqli_utils extends Utils
      * Ritrova tutte le filter session keys definite nei form
      * @return array
      */
-    public function get_filter_session_keys()
-    {
+    public function get_filter_session_keys() {
         $filter_session_keys = $this->selected_db->where("forms_filter_session_key IS NOT NULL AND forms_filter_session_key <> ''")->get('forms')->result_array();
         return array_map(function ($filter) {
             return $filter['forms_filter_session_key'];
@@ -30,10 +27,9 @@ class Mysqli_utils extends Utils
     /**
      * Lancia il processo di aggiornamento
      */
-    public function migrationProcess()
-    {
+    public function migrationProcess() {
 
-        if (empty($this->selected_db)) {
+        if(empty($this->selected_db)) {
             log_message('ERROR', "selected_db missing in Mysqli_utils!");
             $this->set_selected_db();
             //die('selected_db missing in Mysqli_utils!');
@@ -105,7 +101,7 @@ class Mysqli_utils extends Utils
 
             'fields_additional_data' => ['type' => 'TEXT', 'null' => true],
 
-            
+
         ]);
 
         $this->addForeignKey('fields', 'fields_entity_id', 'entity', 'entity_id');
@@ -621,6 +617,9 @@ class Mysqli_utils extends Utils
             '_queue_pp_executed' => ['type' => 'BOOLEAN', 'default' => false],
             '_queue_pp_data' => ['type' => 'TEXT'],
             '_queue_pp_event_data' => ['type' => 'TEXT'],
+            //New column for debugging
+            '_queue_pp_event_id' => ['type' => 'BIGINT'],
+            '_queue_pp_referer' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
         ]);
 
 
@@ -868,13 +867,13 @@ class Mysqli_utils extends Utils
 
         $_foreign_keys = $this->db->query($sql_get_all_foreign)->result_array();
         $foreign_keys = [];
-        foreach ($_foreign_keys as $fk) {
+        foreach($_foreign_keys as $fk) {
             $duplicate_index_key = "{$fk['foreign_table']}#{$fk['primary_table']}#{$fk['fk_columns']}";
             $foreign_keys[$duplicate_index_key][] = [$fk['foreign_table'], $fk['constraint_name']];
         }
         //debug($foreign_keys,true);
-        foreach ($foreign_keys as $duplicate_index_key => $fkeys_names) {
-            while (count($fkeys_names) > 1) {
+        foreach($foreign_keys as $duplicate_index_key => $fkeys_names) {
+            while(count($fkeys_names) > 1) {
                 $popped = array_pop($fkeys_names);
                 $foreign_name_to_remove = $popped[1];
                 $table = $popped[0];
@@ -897,14 +896,13 @@ class Mysqli_utils extends Utils
      * @param array $fields
      * @param string|null $primaryKey
      */
-    private function morphTable($tableName, array $fields, $primaryKey = null, $do_remove = true)
-    {
+    private function morphTable($tableName, array $fields, $primaryKey = null, $do_remove = true) {
         $this->selected_db->cache_delete_all();
 
         $exists = $this->selected_db->table_exists($tableName);
-        $primary = (!$primaryKey && isset($fields[$tableName . '_id'])) ? $tableName . '_id' : $primaryKey;
+        $primary = (!$primaryKey && isset($fields[$tableName.'_id'])) ? $tableName.'_id' : $primaryKey;
 
-        if (!in_array($tableName, parent::$defaultDrops) && $do_remove) {
+        if(!in_array($tableName, parent::$defaultDrops) && $do_remove) {
             show_error(sprintf("Inserire la tabella %s dentro alla variabile defaultDrops del controller install", $tableName));
         }
 
@@ -912,9 +910,9 @@ class Mysqli_utils extends Utils
         // Allora posso creare direttamente i campi senza preoccuparmi di nulla,
         // dei dettagli se ne occupa CI.
 
-        if (!$exists) {
+        if(!$exists) {
             //debug($primaryKey);
-            if ($primary) {
+            if($primary) {
                 $this->dbforge->add_key($primary, true);
             }
 
@@ -946,7 +944,7 @@ class Mysqli_utils extends Utils
         $remove = array_diff($actualFields, $passedFields);
         $update = array_diff_key($fields, array_keys($create), array_keys($remove));
 
-        foreach ($update as $name => $field) {
+        foreach($update as $name => $field) {
             // Rimuovo l'eventuale redefinizione di un campo autoincrement
 
             //            if (!empty($field['auto_increment']) && $this->selected_db->dbdriver == 'postgre') {
@@ -955,29 +953,29 @@ class Mysqli_utils extends Utils
             //            }
 
             // Se alla fine degli unset ho svuotato l'array allora lo rimuovo
-            if (!$update[$name]) {
+            if(!$update[$name]) {
                 unset($update[$name]);
             }
         }
 
-        if ($create) {
+        if($create) {
             log_message('debug', "Create columns on '$tableName'.");
             $this->dbforge->add_column($tableName, $create);
             log_message('debug', "Columns on '$tableName' created.");
         }
 
-        if ($update) {
+        if($update) {
             //            debug($tableName);
             //debug($update);
             //log_message('debug', "Edit columns on '$tableName'.");
             $this->dbforge->modify_column($tableName, $update);
             log_message('debug', "Columns on '$tableName' edited.");
         }
-        if ($do_remove) {
-            foreach ($remove as $field) {
+        if($do_remove) {
+            foreach($remove as $field) {
                 // Controllo se esiste ancora perché potrebbe essere stato già
                 // rinominato
-                if ($this->selected_db->field_exists($field, $tableName)) {
+                if($this->selected_db->field_exists($field, $tableName)) {
                     //log_message('debug', "Drop columns on '$tableName'.");
                     $this->dbforge->drop_column($tableName, $field);
                     log_message('debug', "Columns on '$tableName' dropped.");
@@ -995,23 +993,22 @@ class Mysqli_utils extends Utils
      * @param string $toTable
      * @param string $toField
      */
-    private function addForeignKey($fromTable, $fromField, $toTable, $toField)
-    {
+    private function addForeignKey($fromTable, $fromField, $toTable, $toField) {
         $this->selected_db->cache_delete_all();
         $this->selected_db->data_cache = [];
-        if (!$this->selected_db->table_exists($fromTable)) {
+        if(!$this->selected_db->table_exists($fromTable)) {
             show_error(sprintf("La tabella from %s non esiste", $fromTable));
         }
 
-        if (!$this->selected_db->table_exists($toTable)) {
+        if(!$this->selected_db->table_exists($toTable)) {
             show_error(sprintf("La tabella to %s non esiste", $toTable));
         }
 
-        if (!$this->selected_db->field_exists($fromField, $fromTable)) {
+        if(!$this->selected_db->field_exists($fromField, $fromTable)) {
             show_error(sprintf("Il campo %s non esiste nella tabella %s", $fromTable));
         }
 
-        if (!$this->selected_db->field_exists($toField, $toTable)) {
+        if(!$this->selected_db->field_exists($toField, $toTable)) {
             show_error(sprintf("Il campo %s non esiste nella tabella %s", $toTable));
         }
         //if ($this->selected_db->dbdriver == 'postgre') {
@@ -1022,13 +1019,13 @@ class Mysqli_utils extends Utils
         //            }
         //        } else {
         // Dai un nome univoco per le chiavi esterne del core
-        $conname = 'core_' . $fromTable . '_' . $fromField . '_fkey';
-        if (strlen($conname) > 64) {
+        $conname = 'core_'.$fromTable.'_'.$fromField.'_fkey';
+        if(strlen($conname) > 64) {
             $conname = substr($conname, -64);
         }
         $exists = $this->selected_db->query("SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = '$conname' AND CONSTRAINT_SCHEMA = '{$this->selected_db->database}'")->num_rows() > 0;
         //debug($conname,true);
-        if (!$exists) {
+        if(!$exists) {
             $this->dbforge->add_column($fromTable, "CONSTRAINT $conname FOREIGN KEY ($fromField) REFERENCES $toTable($toField) ON DELETE CASCADE ON UPDATE CASCADE");
         }
 
@@ -1038,8 +1035,7 @@ class Mysqli_utils extends Utils
     /**
      * Crea le entità di sistema
      */
-    private function entitiesBaseSetup()
-    {
+    private function entitiesBaseSetup() {
         $this->selected_db->cache_delete_all();
 
         try {
@@ -1162,9 +1158,8 @@ class Mysqli_utils extends Utils
     /**
      * Pulisce tutti i dati inutili (o refusi del periodo senza foreign keys)
      */
-    public function dbClear()
-    {
-        if (empty($this->selected_db)) {
+    public function dbClear() {
+        if(empty($this->selected_db)) {
             $this->set_selected_db();
         }
         // Inizia transazione
@@ -1204,8 +1199,7 @@ class Mysqli_utils extends Utils
         $this->selected_db->trans_complete();
     }
 
-    public function indexesUpdate()
-    {
+    public function indexesUpdate() {
 
 
         $current_indexes = $this->db->query("
@@ -1217,9 +1211,9 @@ class Mysqli_utils extends Utils
             WHERE TABLE_SCHEMA = '{$this->db->database}'")
             ->result_array();
         $tables_indexes_count = [];
-        foreach ($current_indexes as $idx) {
+        foreach($current_indexes as $idx) {
             //debug($idx,true);
-            if (empty($tables_indexes_count[$idx['TABLE_NAME']])) {
+            if(empty($tables_indexes_count[$idx['TABLE_NAME']])) {
                 $tables_indexes_count[$idx['TABLE_NAME']] = 1;
             } else {
                 $tables_indexes_count[$idx['TABLE_NAME']]++;
@@ -1268,7 +1262,7 @@ class Mysqli_utils extends Utils
                                 )
                         )
                 )
-                OR fields_preview = '" . DB_BOOL_TRUE . "'
+                OR fields_preview = '".DB_BOOL_TRUE."'
             )
             ",
                 null,
@@ -1288,15 +1282,15 @@ class Mysqli_utils extends Utils
 
         $i = 0;
 
-        foreach ($fields_indexes_needed as $field) {
+        foreach($fields_indexes_needed as $field) {
             $i++;
             progress($i, $count, 'Indexes update');
             //debug($field['entity_name']);
-            if (!empty($tables_indexes_count[$field['entity_name']]) && $tables_indexes_count[$field['entity_name']] > 50) {
+            if(!empty($tables_indexes_count[$field['entity_name']]) && $tables_indexes_count[$field['entity_name']] > 50) {
                 //debug('skip');
                 continue;
             } else {
-                if (empty($tables_indexes_count[$field['entity_name']])) {
+                if(empty($tables_indexes_count[$field['entity_name']])) {
                     $tables_indexes_count[$field['entity_name']] = 1;
                 } else {
                     $tables_indexes_count[$field['entity_name']]++;

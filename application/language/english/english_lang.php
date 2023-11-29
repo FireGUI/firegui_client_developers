@@ -1279,3 +1279,9 @@ $lang['You are working on localhost server but you are connected to a remote dat
 $lang['Access Denied'] = 'Access Denied';
 $lang['The page you requested does not exist'] = 'The page you requested does not exist';
 $lang['or you don\'t have the right permissions.'] = 'or you don\'t have the right permissions.';
+$lang['Support tables Manager'] = 'Support tables Manager';
+$lang['Log & Create Notifications'] = 'Log & Create Notifications';
+$lang['Ingegno template'] = 'Ingegno template';
+$lang['Festivita'] = 'Festivita';
+$lang['Impostazioni HR'] = 'Impostazioni HR';
+$lang['Reminders Settings'] = 'Reminders Settings';

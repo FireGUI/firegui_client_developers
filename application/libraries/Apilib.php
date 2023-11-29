@@ -1385,6 +1385,9 @@ class Apilib
         $mode = $editMode ? 'update' : 'insert';
         $processed_predata_1 = $this->runDataProcessing($entity_data['entity_id'], "pre-validation-{$mode}", ['post' => $_predata, 'value_id' => $value_id, 'original_post' => $this->originalPost]); // Pre-validation specifico
         $processed_predata_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-validation', $processed_predata_1); // Pre-validation generico
+        //Tento comunque di eseguire anche i pre-validation-save (non so se per retrocompatibilità o che, ma alcuni pre-validation sono salvati come pre-validation, altri come pre-validation-save)
+        $processed_predata_2 = $this->runDataProcessing($entity_data['entity_id'], 'pre-validation-save', $processed_predata_2); // Pre-validation generico
+
         if (isset($processed_predata_2['post'])) {
             // Metto i dati processati nel post
             $_POST = $data = $processed_predata_2['post'];
@@ -2306,7 +2309,9 @@ class Apilib
                             '_post' => $this->input->post(),
                             'original_post' => $this->originalPost
                         ]),
-                        '_queue_pp_event_data' => json_encode($function)
+                        '_queue_pp_event_data' => json_encode($function),
+                        '_queue_pp_event_id' => $function['fi_events_id'],
+                        '_queue_pp_referer' => empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER'],
                     ]);
                 } else {
                     try {

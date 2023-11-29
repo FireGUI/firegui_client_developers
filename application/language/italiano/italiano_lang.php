@@ -1953,3 +1953,6 @@ $lang['Entrata'] = 'Entrata';
 $lang['Valore Pocket'] = 'Valore Pocket';
 $lang['Ospite'] = 'Ospite';
 $lang['Rimborsi'] = 'Rimborsi';
+$lang['Map generator'] = 'Map generator';
+$lang['Map generator images'] = 'Map generator images';
+$lang['Map generator areas'] = 'Map generator areas';
