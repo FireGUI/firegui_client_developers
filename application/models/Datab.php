@@ -2685,6 +2685,8 @@ class Datab extends CI_Model
                     $style = ($idLang != $this->_currentLanguage) ? 'style="display:none"' : '';
                     $out[] = "<div data-lang='{$idLang}' {$style}>" . $this->buildFieldGridCell($field, $dato, false) . '</div>';
                 }
+            } else { // 20231129 - michael - ho aggiunto questo else perchè da qualche parte si è modificato il sistema di traduzione dei campi di tipo multilingua, di conseguenza nelle grid apparivano le celle vuote in caso di multilang
+                return $value;
             }
 
             return implode(PHP_EOL, $out);
@@ -2753,7 +2755,7 @@ class Datab extends CI_Model
 
                     //Check if entity_preview_base or custom is set
                     if ($entity_preview) {
-                        $text = str_replace_placeholders($entity_preview, $dato);
+                        $text = str_replace_placeholders($entity_preview, $dato, true, true);
                         //debug($text,true);
                     } else {
                         foreach ($field['support_fields'] as $support_field) {

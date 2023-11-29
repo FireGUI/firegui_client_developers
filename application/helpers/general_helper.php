@@ -1653,18 +1653,17 @@ if (!function_exists('time_elapsed')) {
 
 function getReverseGeocoding($address)
 {
-    $address = urlencode(strtolower($address));
-
     $ch = curl_init();
-
+    
     $get = http_build_query([
         'format' => 'json',
         'addressdetails' => 1,
         'limit' => 1,
         'polygon_svg' => 1,
+        'q' => $address,
     ]);
-
-    $url = "https://nominatim.openstreetmap.org/search/{$address}?{$get}";
+    
+    $url = "https://nominatim.openstreetmap.org/search.php?{$get}";
 
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
