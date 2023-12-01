@@ -355,8 +355,8 @@ class Main extends MY_Controller
 
         $dati['current_page'] = 'events_queue';
 
-        $dati['events_not_executed'] = $this->db->query("SELECT * FROM _queue_pp WHERE _queue_pp_executed = 0 ORDER BY _queue_pp_id ASC ")->result_array();
-        $dati['events_executed'] = $this->db->query("SELECT * FROM _queue_pp WHERE _queue_pp_executed = 1 ORDER BY _queue_pp_id DESC LIMIT 500 ")->result_array();
+        $dati['events_not_executed'] = $this->db->query("SELECT * FROM _queue_pp LEFT JOIN fi_events ON (fi_events_id = _queue_pp_event_id) WHERE _queue_pp_executed = 0 ORDER BY _queue_pp_id ASC ")->result_array();
+        $dati['events_executed'] = $this->db->query("SELECT * FROM _queue_pp LEFT JOIN fi_events ON (fi_events_id = _queue_pp_event_id) WHERE _queue_pp_executed = 1 ORDER BY _queue_pp_id DESC LIMIT 500 ")->result_array();
 
         $pagina = $this->load->view("pages/events_queue", array('dati' => $dati), true);
         $this->stampa($pagina);
