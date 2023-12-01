@@ -35,8 +35,6 @@ class Main extends MX_Controller
             $this->token = null;
         }
 
-        $this->settings = $this->apilib->searchFirst('modules_manager_settings');
-
         $this->load->model('core');
         //$this->load->model('module-manager/modules_model');
 
