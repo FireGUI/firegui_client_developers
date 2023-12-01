@@ -7,6 +7,7 @@
 class Modules_model extends CI_Model
 {
     var $temp_folder;
+
     public function __construct()
     {
         parent::__construct();
@@ -14,20 +15,24 @@ class Modules_model extends CI_Model
 
         //$this->load->model('utils', 'utils_base');
 
-        // Load utils model
-        // if ($this->db->dbdriver == 'postgre') {
-        //     $this->load->model('Utils/postgre_utils', 'utils');
-        // } else if ($this->db->dbdriver == 'mysqli') {
-        //     $this->load->model('Utils/mysqli_utils', 'utils');
-        // }
+        // Check because Module manager can work without modules_manager_settings! (like when che project is new)
+        $check_settings = $this->crmentity->entityExists('modules_manager_settings');
 
-        $this->settings = $this->apilib->searchFirst('modules_manager_settings');
+        if ($check_settings) {
+            $this->settings = $this->apilib->searchFirst('modules_manager_settings');
+            $this->_license_token = $this->settings['modules_manager_settings_license_token'];
+        } else {
+            $this->settings = "";
+            $this->_license_token = null;
+        }
+        
         $this->temp_folder = FCPATH . 'uploads/tmp/';
-        $this->_license_token = $this->settings['modules_manager_settings_license_token'];
+        
         $this->_project_id = (defined('ADMIN_PROJECT') && !empty(ADMIN_PROJECT)) ? ADMIN_PROJECT : 0;
         
         $this->load->model('entities');
     }
+
     public function installModule($identifier, $update_repository_url = null)
     {
         $return = $this->updateModule($identifier, $update_repository_url, false);
