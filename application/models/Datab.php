@@ -2685,6 +2685,8 @@ class Datab extends CI_Model
                     $style = ($idLang != $this->_currentLanguage) ? 'style="display:none"' : '';
                     $out[] = "<div data-lang='{$idLang}' {$style}>" . $this->buildFieldGridCell($field, $dato, false) . '</div>';
                 }
+            } else { // 20231129 - michael - ho aggiunto questo else perchè da qualche parte si è modificato il sistema di traduzione dei campi di tipo multilingua, di conseguenza nelle grid apparivano le celle vuote in caso di multilang
+                return $value;
             }
 
             return implode(PHP_EOL, $out);

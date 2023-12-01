@@ -1083,13 +1083,14 @@ function loadModal(url, data, callbackSuccess, method) {
           $("#modal-side-view").removeClass("modal-side-visible");
         });
         $(document).click(function (event) {
-          // Verifica se l'elemento cliccato è all'interno della modale
-          if (!$(event.target).closest("#modal-side-view").length) {
-            // Verifica se l'elemento cliccato è all'interno di una modale diversa
-            if (!$(event.target).closest(".modal").length) {
-              // Chiudi la modale solo se l'evento di clic non si è verificato all'interno di nessuna modale
-              $("#modal-side-view").removeClass("modal-side-visible");
-            }
+          // Check if the clicked element is not inside the modal or Select2 dropdown
+          if (
+            !$(event.target).closest("#modal-side-view").length &&
+            !$(event.target).closest(".modal").length &&
+            !$(event.target).closest(".select2-selection__choice").length
+          ) {
+            // Close the modal or perform other actions
+            $("#modal-side-view").removeClass("modal-side-visible");
           }
         });
 
