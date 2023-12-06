@@ -64,6 +64,7 @@ var handleSuccess = function (msg, container = null) {
             break;
         case 9:
             // Callback
+            submitBtn.show();
             eval(msg.txt);
             break;
         case 10:
