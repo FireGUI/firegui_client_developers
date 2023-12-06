@@ -960,7 +960,7 @@ class Datab extends CI_Model
             }
 
             /** GRID LIMIT (Michael, 2021-12-09) */
-            if (!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) {
+            if ( (!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) && !$limit) {
                 $limit = $grid['grids']['grids_limit'];
             }
 
