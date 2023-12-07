@@ -54,6 +54,10 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                     <ul>
                         <li><a href="<?php echo base_url('main/cache_manager'); ?>"><?php e('Cache manager');?></a>
                         <li><a href="<?php echo base_url('main/permissions'); ?>"><?php e('User permissions');?></a>
+                        <li><a href="<?php echo base_url('main/check_requirements'); ?>">
+                                <?php e('Check requirements'); ?>
+                            </a>
+                        
                         </li>
                         <?php if (!empty($settings_menu_list)): ?>
                             <?php foreach ($settings_menu_list as $menu): ?>

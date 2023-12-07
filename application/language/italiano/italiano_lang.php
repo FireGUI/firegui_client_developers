@@ -1956,3 +1956,5 @@ $lang['Rimborsi'] = 'Rimborsi';
 $lang['Map generator'] = 'Map generator';
 $lang['Map generator images'] = 'Map generator images';
 $lang['Map generator areas'] = 'Map generator areas';
+$lang['Check requirements'] = 'Check requirements';
+$lang['Leads   Module Settings'] = 'Leads   Module Settings';
