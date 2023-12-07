@@ -960,7 +960,7 @@ class Datab extends CI_Model
             }
 
             /** GRID LIMIT (Michael, 2021-12-09) */
-            if (!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) {
+            if ( (!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) && !$limit) {
                 $limit = $grid['grids']['grids_limit'];
             }
 
@@ -3739,5 +3739,105 @@ class Datab extends CI_Model
     public function getLayoutBoxesBenchmark()
     {
         return $this->_layout_boxes_benchmark;
+    }
+    /**
+     * @param $element
+     * @param $id
+     * @param $return_data
+     */
+    public function clone_element($element, $id, $return_id = true) {
+        if (!$this->auth->is_admin()) {
+            return t('Unauthorized');
+        }
+        
+        switch($element) {
+            case 'grid':
+                return $this->clone_grid($id, $return_id);
+            case 'layout':
+            case 'layout_box':
+            case 'form':
+            // @todo 20231206 - michael - clonare gli altri elementi in base al bisogno.
+            default:
+                return t('Element unknown or unmanaged');
+        }
+    }
+    
+    private function clone_grid($id, $return_id = false)
+    {
+        $grid = $this->db->get_where('grids', array('grids_id' => $id))->row_array();
+        
+        if (empty($grid)) {
+            return t('Grid not found');
+        }
+        
+        $fields = $this->db->get_where('grids_fields', array('grids_fields_grids_id' => $id))->result_array();
+        $actions = $this->db->get_where('grids_actions', array('grids_actions_grids_id' => $id))->result_array();
+        
+        // Inserisci una nuova grid - togli l'id
+        unset($grid['grids_id']);
+        
+        $grid['grids_name'] .= " - duplicated";
+        $grid['grids_default'] = DB_BOOL_FALSE;
+        
+        unset($grid['grids_module_key']);
+        
+        $this->db->insert('grids', $grid);
+        $new_id = $this->db->insert_id();
+        
+        if (!empty($grid['grids_module_key'])) {
+            $old_key_expl = explode('-', $grid['grids_module_key']);
+            $this->db->where('grids_id', $new_id)->update('grids', ['grids_module_key' => "{$old_key_expl[0]}-grid-{$new_id}"]);
+        }
+        
+        // Aggiungi tutti i fields
+        foreach ($fields as $field) {
+            $field['grids_fields_grids_id'] = $new_id;
+            
+            unset($field['grids_fields_id']);
+            
+            $this->db->insert('grids_fields', $field);
+        }
+        
+        // Aggiungi tutte le custom actions
+        foreach ($actions as $action) {
+            unset($action['grids_actions_id']);
+            
+            $action['grids_actions_grids_id'] = $new_id;
+            
+            $this->db->insert('grids_actions', $action);
+        }
+        
+        if ($return_id) {
+            return $new_id;
+        } else {
+            return $this->get_grid($new_id);
+        }
+    }
+    
+    /**
+     * @param $type
+     * @param $id
+     * @description Function to lock an element and avoid accidental remove or overwrite (often when updating modules...)
+     * @return string|true
+     */
+    public function lock_element($type, $id)
+    {
+        if (!$this->auth->is_admin()) {
+            return t('Unauthorized');
+        }
+        
+        try {
+            //Controllo se presente, se si unlocko, se no locko
+            $exists = $this->db->get_where('locked_elements', ['locked_elements_type' => $type, 'locked_elements_ref_id' => $id]);
+            if ($exists->num_rows() >= 1) {
+                $this->db->where(['locked_elements_type' => $type, 'locked_elements_ref_id' => $id])->delete('locked_elements');
+            } else {
+                $this->db->insert('locked_elements', ['locked_elements_type' => $type, 'locked_elements_ref_id' => $id]);
+            }
+            
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

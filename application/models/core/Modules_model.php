@@ -715,10 +715,11 @@ class Modules_model extends CI_Model
                         $field['forms_fields_default_value'] = str_replace('{login_entity}', $login_entity['entity_name'], $field['forms_fields_default_value']);
                     }
 
-                    // if (empty($fields_id_map[$field['forms_fields_fields_id']])) {
-                    //     debug($form);
-                    //     debug($field,true);
-                    // }
+                    if (empty($fields_id_map[$field['forms_fields_fields_id']])) {
+                        continue;
+                        debug($form);
+                        debug($field,true);
+                    }
 
                     $field['forms_fields_fields_id'] = $fields_id_map[$field['forms_fields_fields_id']];
                     $field['forms_fields_forms_id'] = $forms_id_map[$form['forms_id']];
