@@ -1956,3 +1956,5 @@ $lang['Rimborsi'] = 'Rimborsi';
 $lang['Map generator'] = 'Map generator';
 $lang['Map generator images'] = 'Map generator images';
 $lang['Map generator areas'] = 'Map generator areas';
+$lang['Firma'] = 'Firma';
+$lang['documenti'] = 'documenti';
