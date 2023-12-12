@@ -1087,9 +1087,12 @@ function loadModal(url, data, callbackSuccess, method) {
           if (
             !$(event.target).closest("#modal-side-view").length &&
             !$(event.target).closest(".modal").length &&
+            !$(event.target).closest(".fancybox-skin").length &&
+            !$(event.target).closest(".fancybox-item").length &&
             !$(event.target).closest(".select2-selection__choice").length
           ) {
             // Close the modal or perform other actions
+            console.log($(event.target));
             $("#modal-side-view").removeClass("modal-side-visible");
           }
         });
