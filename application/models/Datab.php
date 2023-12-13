@@ -2885,9 +2885,12 @@ class Datab extends CI_Model
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
                 case 'single_upload':
+                case 'signature':
+                    
                     if (!empty($value)) {
                         $item = json_decode($value, true);
-                        
+                        // debug($item);
+                        // debug($value);
                         $filename = is_array($item) ? $item['client_name'] : 'Download file';
                         $value = is_array($item) ? $item['path_local'] : $value;
                         

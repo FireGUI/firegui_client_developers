@@ -1300,3 +1300,7 @@ $lang['Firma'] = 'Firma';
 $lang['New documents'] = 'New documents';
 $lang['List documents'] = 'List documents';
 $lang['documenti'] = 'documenti';
+$lang['Insert scope'] = 'Insert scope';
+$lang['Edit scope'] = 'Edit scope';
+$lang['Detail documenti'] = 'Detail documenti';
+$lang['Documenti details'] = 'Documenti details';
