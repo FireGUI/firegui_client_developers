@@ -139,6 +139,7 @@ class Db_ajax extends MY_Controller
                         }
                     }
                 } else {
+                    
                     $savedId = $this->apilib->create($entity, $dati, false);
                 }
             }

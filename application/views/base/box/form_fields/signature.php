@@ -1,6 +1,9 @@
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 
-<?php echo $label; ?>
+<?php
+
+//debug($field);
+echo $label; ?>
 <br />
 <div class="<?php echo $class ?>">
 
@@ -51,7 +54,7 @@
     .firma {
         width: 100%;
         /*height: 100vh;*/
-        height: calc(95vh - (100px + 150px));
+        height: 250px!important;/*calc(95vh - (100px + 150px));*/
         background-color: pink;
         display: flex;
         justify-content: center;
@@ -148,7 +151,7 @@
         }
 
         .firma {
-            height: calc(98vh - (100px + 150px)) !important;
+            height: 250px;/*calc(98vh - (100px + 150px)) !important;*/
         }
 
         .canvas_ct {

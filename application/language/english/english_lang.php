@@ -1296,3 +1296,7 @@ $lang['Multiupload no preview'] = 'Multiupload no preview';
 $lang['PDF (verticale)'] = 'PDF (verticale)';
 $lang['PDF (orizzontale)'] = 'PDF (orizzontale)';
 $lang['Select file'] = 'Select file';
+$lang['Firma'] = 'Firma';
+$lang['New documents'] = 'New documents';
+$lang['List documents'] = 'List documents';
+$lang['documenti'] = 'documenti';
