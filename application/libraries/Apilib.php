@@ -1411,7 +1411,7 @@ class Apilib
                 }
                 $data_img = base64_decode($data_img);
 
-                $uploadFolder = '/var/www/html/firegui_client_developers/uploads/';
+                $uploadFolder = FCPATH . '/uploads/';
                 $fileName = uniqid() . '.' . $type;
                 $filePath = $uploadFolder . $fileName;
 
