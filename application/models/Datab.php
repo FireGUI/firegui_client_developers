@@ -3667,6 +3667,8 @@ class Datab extends CI_Model
             ->result_array();
         if (!empty($params['search'])) {
             $where = $this->search_like($params['search'], array_merge($grid['grids_fields'], $preview_fields));
+        } else {
+            $where = null;
         }
         if (!empty($params['order_by'])) {
             $order_by = $params['order_by'];
