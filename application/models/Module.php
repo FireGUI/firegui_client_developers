@@ -26,9 +26,12 @@ class Module extends CI_Model
         return $lang;
     }
 
-    public function moduleExists($identifier)
+    public function moduleExists($identifier, $only_installed = false)
     {
         if (!array_key_exists($identifier, $this->_modules_installed)) {
+            if ($only_installed) {
+                $this->db->where('modules_installed', 1);
+            }
             $result = $this->db->where('modules_identifier', $identifier)->get('modules');
 
             if ($result->num_rows()) {
@@ -37,7 +40,6 @@ class Module extends CI_Model
                 $this->_modules_installed[$identifier] = false;
             }
         }
-
 
         return $this->_modules_installed[$identifier];
     }

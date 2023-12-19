@@ -2184,7 +2184,8 @@ class Datab extends CI_Model
 
         // $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
         // return $query->num_rows() > 0;
-        return $this->module->moduleExists($name);
+        
+        return $this->module->moduleExists($name,true );
     }
 
     public function module_access($name)
@@ -2885,12 +2886,10 @@ class Datab extends CI_Model
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
                 case 'single_upload':
-                case 'signature':
-                    
+                    case 'signature':
                     if (!empty($value)) {
                         $item = json_decode($value, true);
-                        // debug($item);
-                        // debug($value);
+                        
                         $filename = is_array($item) ? $item['client_name'] : 'Download file';
                         $value = is_array($item) ? $item['path_local'] : $value;
                         
@@ -3152,7 +3151,8 @@ class Datab extends CI_Model
         $basePlaceholder = $field['forms_fields_override_placeholder'] ?: $field['fields_draw_placeholder'];
         $baseHelpText = $field['fields_draw_help_text'] ? '<span class="help-block">' . t($field['fields_draw_help_text']) . '</span>' : '';
         $baseShow = $field['fields_draw_display_none'] == DB_BOOL_FALSE;
-        $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default']));
+        //$baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default']));
+        $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED);
         $baseShowLabel = $field['forms_fields_show_label'] ? $field['forms_fields_show_label'] == DB_BOOL_TRUE : true; // Se è vuoto mostro sempre la label di default, altrimenti valuto il campo
         $baseOnclick = $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '';
 
