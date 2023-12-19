@@ -262,7 +262,8 @@ class Export extends MY_Controller
                 $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex);
                 //debug($columnLetter,true);
                 $objPHPExcel->getActiveSheet()->getStyle($columnLetter)->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY);
+                $objPHPExcel->getActiveSheet()->getStyle($columnLetter)->getAlignment()->setHorizontal('right');
             }
 
 

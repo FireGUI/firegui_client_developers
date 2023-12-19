@@ -202,37 +202,39 @@ echo $label; ?>
     function initSignature(element_id) {
         try {
             console.log('init signature');
-        
-            const wrapper = document.getElementById(element_id);
-            // const clearButton = wrapper.querySelector("[data-action=clear]");
             
+            const wrapper = document.getElementById(element_id);
             const canvas = wrapper.querySelector("canvas");
             const signaturePad = new SignaturePad(canvas);
-            canvas.addEventListener('mousemove',function () {
-                //alert(1);
+            
+            function updateSignature() {
                 let firma = signaturePad.toDataURL();
                 firma = firma.replace('data:image/png;base64,', '');
                 $('#js_field_<?php echo $field['fields_id']; ?>').val(firma);
-            });
-            // On mobile devices it might make more sense to listen to orientation change,
-            // rather than window resize events.
-            $(window).on('resize orientationchange', function() {
-                resizeCanvas(signaturePad, canvas)
-            }).trigger('resize');
+            }
             
+            // Aggiungi eventi sia per mousemove che per touchmove
+            canvas.addEventListener('mousemove', updateSignature);
+            canvas.addEventListener('touchmove', updateSignature);
+            
+            // Aggiungi l'evento resize/orientationchange come avevi già fatto
+            window.addEventListener('resize', function() {
+                resizeCanvas(signaturePad, canvas);
+            });
+            
+            // Chiara la firma se necessario
+            // const clearButton = wrapper.querySelector("[data-action=clear]");
             // clearButton.addEventListener("click", () => {
             //     signaturePad.clear();
             // });
-
-            
             
             return signaturePad;
         } catch (e){
             console.log(e);
-            setTimeout(function () {initSignature(element_id);},500);
+            setTimeout(function () {initSignature(element_id);}, 500);
         }
-        
     }
+    
     $(() => {
         $('.canvas-loading').addClass('hide');
             $('.signature_pad_ct').removeClass('hide');

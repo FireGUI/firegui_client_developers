@@ -1410,16 +1410,17 @@ class Apilib
                     $type = 'png'; // jpg, png, gif
                 }
                 $data_img = base64_decode($data_img);
-
-                $uploadFolder = '/var/www/html/firegui_client_developers/uploads/';
+                
+                $uploadFolder = FCPATH . '/uploads/';
                 $fileName = uniqid() . '.' . $type;
                 $filePath = $uploadFolder . $fileName;
-
+                
                 if (!file_exists($uploadFolder)) {
                     mkdir($uploadFolder, 0777, true);
                 }
+                
                 $name = 'signature_' . time() . '.'.$type;
-                if (file_put_contents($filePath, $data_img)) {
+                if (file_put_contents($filePath, $data_img) !== false) {
                     $uploadData = [
                         'file_name' => $fileName,
                         'file_type' => 'image/' . $type,
@@ -1443,24 +1444,16 @@ class Apilib
                     $uploadData['image_height'] = $height;
                     $uploadData['image_type'] = image_type_to_extension($imageType, false);
                     $uploadData['image_size_str'] = $sizeStr;
-                    //debug($uploadData, true);
                     // Chiama la funzione moveFileToUploadsFolder
                     $this->moveFileToUploadsFolder($uploadData);
-
+                    
                     $data[$field['fields_name']] = json_encode($uploadData);
                     //debug($field,true);
                 } else {
                     $this->error = self::ERR_UPLOAD_FAILED;
-                    $this->errorMessage = $this->upload->display_errors();
+                    $this->errorMessage = t('Error while saving signature file');//$this->upload->display_errors();
                     return false;
                 }
-
-
-                    
-                
-
-
-
             }
         }
 
