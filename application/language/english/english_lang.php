@@ -1304,3 +1304,5 @@ $lang['Insert scope'] = 'Insert scope';
 $lang['Edit scope'] = 'Edit scope';
 $lang['Detail documenti'] = 'Detail documenti';
 $lang['Documenti details'] = 'Documenti details';
+$lang['Check requirements'] = 'Check requirements';
+$lang['Image Manipulation Settings'] = 'Image Manipulation Settings';
