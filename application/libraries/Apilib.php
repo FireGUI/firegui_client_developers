@@ -1744,6 +1744,7 @@ class Apilib
         }
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
+                
                 $this->error = self::ERR_VALIDATION_FAILED;
                 $this->errorMessage = t("Fields %s are not accepted in entity '$entity'", 0, [implode(', ', $invalidFields)]);
                 return false;

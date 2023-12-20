@@ -40,6 +40,7 @@ class Db_ajax extends MY_Controller
             // Per tutti gli altri metodi, verifica sempre l'autenticazione
             $this->checkAuth();
         }
+        $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
     }
 
     private function checkAuth()
