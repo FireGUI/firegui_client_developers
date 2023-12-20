@@ -1,4 +1,5 @@
-Changelog version 3.6.3
+Changelog version 3.6.4
  
-Forms can be marked as "public" to bypass auth->check() control in Db_ajax.php
-Apilib->create force csrf token unset from input post data
+Changed excel export date format from DDMMYYYY to YYYYMMDD2
+Bugfix setProcessingMode in Db_ajax
+Removed unset csrf in Apilib
