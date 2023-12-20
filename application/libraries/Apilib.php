@@ -360,7 +360,7 @@ class Apilib
         }
 
         $_data = $this->extractInputData($data);
-        unset($_data[$this->security->get_csrf_token_name()]);
+        //unset($_data[$this->security->get_csrf_token_name()]);
 
         
         //rimuovo i campi password passati vuoti...
