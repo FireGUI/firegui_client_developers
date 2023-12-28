@@ -233,13 +233,16 @@ class Export extends MY_Controller
                         // $dato[$cell] contiene la data in formato stringa, ad esempio '2023-11-20'
                         $cells_date_type[] = $cell;
                         $dataAsString = $dato[$cell];
-
+                        
+                        
                         // Converti la data in formato stringa in un oggetto DateTime
                         $dateTime = new DateTime($dataAsString);
-
+                        
                         // Utilizza SharedDateHelper per convertire l'oggetto DateTime in un numero di serie Excel
                         $excelDate = SharedDateHelper::dateTimeToExcel($dateTime);
-
+                        if ($dataAsString == '2023-07-03') {
+                            //debug($dateTime, true);
+                        }
                         // Assegna il numero di serie Excel alla cella
                         $data[$key][$cell] = $excelDate;
                         //debug($data[$key][$cell],true);
@@ -263,6 +266,7 @@ class Export extends MY_Controller
                 //debug($columnLetter,true);
                 $objPHPExcel->getActiveSheet()->getStyle($columnLetter)->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
+                $objPHPExcel->getActiveSheet()->getStyle($columnLetter)->getAlignment()->setHorizontal('right');
             }
 
 

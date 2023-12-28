@@ -158,6 +158,8 @@ class Mysqli_utils extends Utils {
             'forms_identifier' => ['type' => 'varchar', 'constraint' => 45, 'null' => true],
             'forms_json' => ['type' => 'LONGTEXT', 'null' => true],
             'forms_module_key' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+            //20231220 - MP - attribute to specify that form is public or private
+            'forms_public' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
         ]);
 
         $this->addForeignKey('forms', 'forms_entity_id', 'entity', 'entity_id');

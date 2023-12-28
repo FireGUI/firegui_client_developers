@@ -711,7 +711,7 @@ class Datab extends CI_Model
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
                 
-                $fields[$key] = $this->processFieldMapping($field, $form);
+                $fields[$key] = $this->processFieldMapping($field, $form, $edit_id);
 
                 
 
@@ -794,7 +794,7 @@ class Datab extends CI_Model
         //debug($dati['forms_fields']);
         return $dati;
     }
-    public function processFieldMapping($field, $form)
+    public function processFieldMapping($field, $form, $value_id = null)
     {
         // Il ref è il nome della tabella/entità di supporto/da joinare
         // quindi estraggo i valori da proporre
@@ -864,7 +864,8 @@ class Datab extends CI_Model
 
         // Prendo la field select where
         if (($fieldWhere = trim($field['fields_select_where']))) {
-            $wheres[] = $this->replace_superglobal_data($fieldWhere);
+            $replaces = ['value_id' => $value_id];
+            $wheres[] = $this->replace_superglobal_data(str_replace_placeholders($fieldWhere, $replaces));
         }
 
         //If any pre-search are present, run it before extract data
@@ -2184,7 +2185,8 @@ class Datab extends CI_Model
 
         // $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
         // return $query->num_rows() > 0;
-        return $this->module->moduleExists($name);
+        
+        return $this->module->moduleExists($name,true );
     }
 
     public function module_access($name)
@@ -2885,6 +2887,7 @@ class Datab extends CI_Model
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
                 case 'single_upload':
+                    case 'signature':
                     if (!empty($value)) {
                         $item = json_decode($value, true);
                         
@@ -3149,7 +3152,8 @@ class Datab extends CI_Model
         $basePlaceholder = $field['forms_fields_override_placeholder'] ?: $field['fields_draw_placeholder'];
         $baseHelpText = $field['fields_draw_help_text'] ? '<span class="help-block">' . t($field['fields_draw_help_text']) . '</span>' : '';
         $baseShow = $field['fields_draw_display_none'] == DB_BOOL_FALSE;
-        $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default']));
+        //$baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default']));
+        $baseShowRequired = $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED);
         $baseShowLabel = $field['forms_fields_show_label'] ? $field['forms_fields_show_label'] == DB_BOOL_TRUE : true; // Se è vuoto mostro sempre la label di default, altrimenti valuto il campo
         $baseOnclick = $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '';
 
@@ -3664,6 +3668,8 @@ class Datab extends CI_Model
             ->result_array();
         if (!empty($params['search'])) {
             $where = $this->search_like($params['search'], array_merge($grid['grids_fields'], $preview_fields));
+        } else {
+            $where = null;
         }
         if (!empty($params['order_by'])) {
             $order_by = $params['order_by'];

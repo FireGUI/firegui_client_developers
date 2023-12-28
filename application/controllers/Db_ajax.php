@@ -9,21 +9,46 @@ class Db_ajax extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+
+        // Ottieni il nome del metodo corrente
+        $currentMethod = $this->router->fetch_method();
+        $guest = $this->auth->guest();
+        // Verifica se il metodo corrente è 'save_form'
+        if ($currentMethod == 'save_form' && $guest) {
+            // Qui dovresti implementare la logica per controllare se il form è pubblico o meno
+            // Ad esempio, ottenere l'ID del form dai segmenti dell'URL e poi interrogare il database
+            $formId = $this->uri->segment(3); // Assumendo che l'ID del form sia il terzo segmento dell'URL
+            //debug($formId,true);
+            $this->db->where('forms_id', $formId);
+            $form = $this->db->get('forms')->row_array();
+
+            if ($form && $form['forms_public'] == DB_BOOL_FALSE) {
+                // Il form non è pubblico, quindi verifica l'autenticazione
+                $this->checkAuth();
+            }
+            // Altrimenti, se il form è pubblico, non fare nulla (non richiedere l'autenticazione)
+        } elseif ($currentMethod == 'multi_upload_async' && $guest) {
+            $field_id = $this->uri->segment(3); 
+            //$field = $this->datab->get_field($field_id);
+            $form = $this->db->query("SELECT * FROM forms WHERE forms_public = '1' AND forms_id IN (SELECT forms_fields_forms_id FROM forms_fields WHERE forms_fields_fields_id = '$field_id')")->row_array();
+            if (!$form) {
+                // Il form non è pubblico, quindi verifica l'autenticazione
+                $this->checkAuth();
+            }
+            
+        } elseif ($guest) {
+            // Per tutti gli altri metodi, verifica sempre l'autenticazione
+            $this->checkAuth();
+        }
+        $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
+    }
+
+    private function checkAuth()
+    {
         
-        // michael - 16-10-2023 - io e matteo abbiamo considerato l'idea di aggiungere un campo sui form (quindi gestibile da openbuilder) per definire se un form può essere pubblico o no.
-        // quindi lascio questo commento per ricordare che andrebbe aggiunto il controllo insieme a $this->auth->guest() e verificare che se l'endpoint è save_form ed è un form pubblico, allora si lascia andare avanti il processo altrimenti si blocca con l'unauthorized.
-        if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
             die('Non sei loggato nel sistema');
-        }
-
-        // Qualunque chiamata alle apilib da qua dentro è considerata una
-        // chiamata in modalità CRM_FORM
-        $this->apilib->setProcessingMode(Apilib::MODE_CRM_FORM);
-
-        if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
-            $this->output->cache(0);
-        }
+        
     }
 
     public function save_form($form_id = null, $edit = false, $value_id = null)
@@ -139,6 +164,7 @@ class Db_ajax extends MY_Controller
                         }
                     }
                 } else {
+                    
                     $savedId = $this->apilib->create($entity, $dati, false);
                 }
             }
@@ -1020,7 +1046,7 @@ class Db_ajax extends MY_Controller
                 //Change key of files to be inserted in the other entity
                 unset($_FILES[$field['fields_name']]);
                 $_FILES[$field_insert['fields_name']] = $old_file_data;
-
+                
                 $id = $this->apilib->create($file_table, [], false);
                 echo json_encode(['status' => 1, 'file' => $id]);
             }
