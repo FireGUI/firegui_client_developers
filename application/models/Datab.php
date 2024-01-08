@@ -3770,14 +3770,20 @@ class Datab extends CI_Model
     
     private function clone_grid($id, $return_id = false)
     {
-        $grid = $this->db->get_where('grids', array('grids_id' => $id))->row_array();
+        if (!is_numeric($id)) {
+            $this->db->where('grids_identifier', $id);
+        } else {
+            $this->db->where('grids_id', $id);
+        }
+        
+        $grid = $this->db->get('grids')->row_array();
         
         if (empty($grid)) {
             return t('Grid not found');
         }
         
-        $fields = $this->db->get_where('grids_fields', array('grids_fields_grids_id' => $id))->result_array();
-        $actions = $this->db->get_where('grids_actions', array('grids_actions_grids_id' => $id))->result_array();
+        $fields = $this->db->get_where('grids_fields', array('grids_fields_grids_id' => $grid['grids_id']))->result_array();
+        $actions = $this->db->get_where('grids_actions', array('grids_actions_grids_id' => $grid['grids_id']))->result_array();
         
         // Inserisci una nuova grid - togli l'id
         unset($grid['grids_id']);
