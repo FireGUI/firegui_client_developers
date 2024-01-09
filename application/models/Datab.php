@@ -711,7 +711,7 @@ class Datab extends CI_Model
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
                 
-                $fields[$key] = $this->processFieldMapping($field, $form);
+                $fields[$key] = $this->processFieldMapping($field, $form, $edit_id);
 
                 
 
@@ -794,7 +794,7 @@ class Datab extends CI_Model
         //debug($dati['forms_fields']);
         return $dati;
     }
-    public function processFieldMapping($field, $form)
+    public function processFieldMapping($field, $form, $value_id = null)
     {
         // Il ref è il nome della tabella/entità di supporto/da joinare
         // quindi estraggo i valori da proporre
@@ -864,7 +864,8 @@ class Datab extends CI_Model
 
         // Prendo la field select where
         if (($fieldWhere = trim($field['fields_select_where']))) {
-            $wheres[] = $this->replace_superglobal_data($fieldWhere);
+            $replaces = ['value_id' => $value_id];
+            $wheres[] = $this->replace_superglobal_data(str_replace_placeholders($fieldWhere, $replaces));
         }
 
         //If any pre-search are present, run it before extract data
@@ -3769,14 +3770,20 @@ class Datab extends CI_Model
     
     private function clone_grid($id, $return_id = false)
     {
-        $grid = $this->db->get_where('grids', array('grids_id' => $id))->row_array();
+        if (!is_numeric($id)) {
+            $this->db->where('grids_identifier', $id);
+        } else {
+            $this->db->where('grids_id', $id);
+        }
+        
+        $grid = $this->db->get('grids')->row_array();
         
         if (empty($grid)) {
             return t('Grid not found');
         }
         
-        $fields = $this->db->get_where('grids_fields', array('grids_fields_grids_id' => $id))->result_array();
-        $actions = $this->db->get_where('grids_actions', array('grids_actions_grids_id' => $id))->result_array();
+        $fields = $this->db->get_where('grids_fields', array('grids_fields_grids_id' => $grid['grids_id']))->result_array();
+        $actions = $this->db->get_where('grids_actions', array('grids_actions_grids_id' => $grid['grids_id']))->result_array();
         
         // Inserisci una nuova grid - togli l'id
         unset($grid['grids_id']);

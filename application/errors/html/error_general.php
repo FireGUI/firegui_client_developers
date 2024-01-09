@@ -82,8 +82,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <body>
     <div id="container">
-        <h1><?php echo $heading; ?></h1>
+        <h1>
+            <?php echo $heading; ?>
+        </h1>
         <?php echo $message; ?>
+
+        <p>If this error persists, try <a href="<?php echo base_url('access/logout'); ?>">logging out</a>.</p>
     </div>
 </body>
 
