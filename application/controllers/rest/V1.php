@@ -231,7 +231,7 @@ class V1 extends MY_Controller
         try {
             $_output = $this->apilib->search($entity, $where, null, 0, null, 'ASC', $depth);
             $this->filterOutputFields($entity, $_output);
-            $output = $_output[0];
+            $output = $_output[0] ?? [];
             $this->logAction(__FUNCTION__, func_get_args(), $output);
             $this->showOutput($output);
         } catch (ApiException $e) {
