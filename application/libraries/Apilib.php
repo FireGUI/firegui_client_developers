@@ -1378,10 +1378,12 @@ class Apilib
             if (!empty($rule)) {
                 $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
             }
-
+            //debug($data);
             //Signature field type management
-            if ($field['fields_draw_html_type'] == 'signature') {
+            if ($field['fields_draw_html_type'] == 'signature' && base64_encode(base64_decode($data[$field['fields_name']], true)) === $data[$field['fields_name']]) {
                 $signature_b64 = $data[$field['fields_name']];
+
+                //debug($signature_b64);
                 //Convert to phisical file
                 //Save to uploads folder
                 //Extract other info and add them to the json array
@@ -1456,7 +1458,7 @@ class Apilib
                 }
             }
         }
-
+        //debug($data,true);
         /**
          * Eseguo il process di pre-validation
          */
