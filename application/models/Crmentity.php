@@ -1211,7 +1211,7 @@ class Crmentity extends CI_Model
      * @param string|int $entity
      * @return array
      */
-    protected function getEntityPreviewFields($entity)
+    public function getEntityPreviewFields($entity)
     {
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
