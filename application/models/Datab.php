@@ -689,8 +689,7 @@ class Datab extends CI_Model
             }
 
             foreach ($fields as $key => $field) {
-
-                if (!$this->conditions->accessible('forms_fields', "{$field['forms_fields_forms_id']},{$field['forms_fields_fields_id']}", $value_id, $formData)) {
+                if (!$this->conditions->accessible('forms_fields', "{$field['forms_fields_forms_id']},{$field['forms_fields_fields_id']}", $value_id, $formData, $edit_id)) {
                     unset($fields[$key]);
                     continue;
                 }
