@@ -29,7 +29,7 @@ class Conditions extends CI_Model
         //Preload rules
         $this->_preloadRules();
     }
-    public function accessible($what, $ref, $value_id = null, $_dati = null)
+    public function accessible($what, $ref, $value_id = null, $_dati = null, $edit_id = null)
     {
         $accessible = true;
         if (!empty($this->_rules[$what][$ref])) {
@@ -40,7 +40,7 @@ class Conditions extends CI_Model
             //debug($dati);
             foreach ($rules as $rule) {
                 //debug($rule);
-                $applicable = $this->isApplicableRule($rule['_rule'], $dati, $value_id);
+                $applicable = $this->isApplicableRule($rule['_rule'], $dati, $value_id , $edit_id);
                 switch ($rule['conditions_action']) {
                     case 1: //Allow
                         $accessible = $applicable;
@@ -136,7 +136,7 @@ class Conditions extends CI_Model
      * @param array $prenoData
      * @return boolean
      */
-    private function isApplicableRule(array $rule, array $dati, $value_id = null)
+    private function isApplicableRule(array $rule, array $dati, $value_id = null , $edit_id = null)
     {
         //debug($rule, true);
         $contains_rules = (isset($rule['condition']) && isset($rule['rules']));
@@ -149,7 +149,7 @@ class Conditions extends CI_Model
              */
             $is_and = strtoupper($rule['condition']) === 'AND';
             foreach ($rule['rules'] as $sub_rule) {
-                $is_applicable = $this->isApplicableRule($sub_rule, $dati, $value_id);
+                $is_applicable = $this->isApplicableRule($sub_rule, $dati, $value_id, $edit_id);
 
                 // Se devono essere tutte vere e la mia regola corrente è falsa,
                 // allora non proseguo e ritorno false
@@ -177,7 +177,7 @@ class Conditions extends CI_Model
             //Creo uno switch per le condizioni speciali, ovvero che non sono semplici operatori di confronto ma serve un codice ad hoc per questa verifica
             switch ($rule['id']) {
                 case '_query':
-                     return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value'], $value_id);
+                    return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value'], $value_id, $edit_id);
                     break;
                 case 'special2':
 
@@ -239,9 +239,13 @@ class Conditions extends CI_Model
                 break;
         }
     }
-    public function doQueryOperation($id, $ruleOperator, $query, $value_id = null)
+    public function doQueryOperation($id, $ruleOperator, $query, $value_id = null , $edit_id = null)
     {
+        
         $replaces['value_id'] = $value_id;
+        $replaces['edit_id'] = $edit_id;
+
+
         $query = str_replace_placeholders($query, $replaces);
         $query = $this->datab->replace_superglobal_data($query);
         switch ($ruleOperator) {
@@ -260,7 +264,6 @@ class Conditions extends CI_Model
         return false;
 
     }
-    
 
     public function doModuleInstalledOperation($id, $ruleOperator, $ruleValue)
     {
