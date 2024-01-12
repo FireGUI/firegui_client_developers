@@ -144,9 +144,10 @@ $(document).ready(function () {
                     $.ajax({
                         url: url,
                         type: 'POST',
+                        dataType: 'json',
                         data: data_post,
                         success: function (json) {
-                            location.reload();
+                            handleSuccess(json);
                         },
                     });
                 }
