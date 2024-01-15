@@ -147,9 +147,11 @@ function initBulkGrids(container) {
                     $.ajax({
                         url: url,
                         type: 'POST',
+                        dataType: 'json',
                         data: data_post,
                         success: function (json) {
-                            location.reload();
+                            //location.reload();
+                            handleSuccess(json);
                         },
                     });
                 }

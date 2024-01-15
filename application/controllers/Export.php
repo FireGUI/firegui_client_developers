@@ -241,18 +241,24 @@ class Export extends MY_Controller
                     $data[$key][$cell] = (float) tofloat($dato[$cell]);
                 } else {
                     // Controlla se il valore è una data e formattalo
-                    if ((substr_count($dato[$cell], '/') == 2 || substr_count($dato[$cell], '-') == 2) && strtotime($dato[$cell])) {
+                    if ((substr_count($dato[$cell], '/') == 2)) {
+                        $expl = explode('/', $dato[$cell]);
+                        $dato[$cell] = "{$expl['2']}-{$expl['1']}-{$expl['0']}";
+                    }
+
+                    if (substr_count($dato[$cell], '-') == 2 && strtotime($dato[$cell])) {
                         // $dato[$cell] contiene la data in formato stringa, ad esempio '2023-11-20'
                         $cells_date_type[] = $cell;
                         $dataAsString = $dato[$cell];
-                        
+
+
                         // Converti la data in formato stringa in un oggetto DateTime
                         $dateTime = new DateTime($dataAsString);
-                        
+
                         // Utilizza SharedDateHelper per convertire l'oggetto DateTime in un numero di serie Excel
                         $excelDate = SharedDateHelper::dateTimeToExcel($dateTime);
-                        
-                        if ($dataAsString == '2023-07-03') {
+                        // debug($dataAsString);
+                        if (substr($dataAsString, 0, 10) == '2023-11-03') {
                             //debug($dateTime, true);
                         }
                         // Assegna il numero di serie Excel alla cella
