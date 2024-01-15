@@ -45,8 +45,9 @@ class Access extends MY_Controller
     
     public function change_password()
     {
-        
-        $this->load->view('layout/change-password');
+
+        $data['actual_password'] = $this->session->actual_password;
+        $this->load->view('layout/change-password', $data);
     }
     
     public function logout()
@@ -71,12 +72,10 @@ class Access extends MY_Controller
         $data = $this->apilib->runDataProcessing(LOGIN_ENTITY, 'pre-login', $data);
 
         $this->session->unset_userdata('change_password_email');
-        
         if (empty($data['users_users_email']) || empty($data['users_users_password'])) {
             echo json_encode(array('status' => 0, 'txt' => t('Insert a valid email and/or password')));
             die();
         }
-        
         $success = $this->auth->login_attempt($data['users_users_email'], $data['users_users_password'], $remember, $timeout);
         
         //TODO: aggiungere gli auto right join in modo che se un utente è associato a un'altra entità (esempio: aziende che fanno login, dipendenti seven, ecc...)
@@ -86,12 +85,12 @@ class Access extends MY_Controller
     
             if ($this->module->moduleExists('user-extender')) {
                 $user_manager = $this->apilib->searchFirst('users_manager_configurations');
-        
                 if (
                     $user_manager['users_manager_configurations_enable_password_validation'] == DB_BOOL_TRUE
                     && !empty($user_manager['users_manager_configurations_password_validation_regex'])
                     && !preg_match($user_manager['users_manager_configurations_password_validation_regex'], $data['users_users_password'])
                 ) {
+                    $this->session->set_userdata('actual_password', $data['users_users_password']);
                     $redirection_url = base_url("access/change_password");
                     // $this->session->set_userdata('change_password_email', $data['users_users_email']);
                     if ($this->input->is_ajax_request()) {
@@ -102,9 +101,10 @@ class Access extends MY_Controller
                     exit;
                 }
             }
-            
+
             $user_last_changed_days = 90; // @todo check ultima data di cambio pwd
             if (false && $user_last_changed_days >= PASSWORD_EXPIRE_DAYS) { // 2021-06-03 - Per ora lo lascio if == false poi si vedrà
+                $this->session->set_userdata('actual_password', $data['users_users_password']);
                 $redirection_url = base_url("access/change_password");
                 $this->session->set_userdata('change_password_email', $data['users_users_email']);
             } else if (!empty($data['webauthn_enable']) && $data['webauthn_enable'] == 1 && defined('LOGIN_WEBAUTHN_DATA')) {
@@ -117,7 +117,6 @@ class Access extends MY_Controller
                     $redirection_url = base_url('main/dashboard');
                 }
             }
-            
             $this->auth->reset_intended_url();
             
             // Imposta il log di login
@@ -157,7 +156,6 @@ class Access extends MY_Controller
             echo json_encode(['status' => 1, 'txt' => base_url('access/login')]);
             exit;
         }
-        
         $this->form_validation->set_rules('users_users_current_password', t('Current Password'), 'required');
         $this->form_validation->set_rules('users_users_password', t('Password'), 'required|regex_match[' . PASSWORD_REGEX_VALIDATION['regex'] . ']', ['regex_match' => t('The Password field does not match required security validation.') . '<br/>' . t(PASSWORD_REGEX_VALIDATION['msg'])]);
         $this->form_validation->set_rules('users_users_confirm_password', t('Password Confirmation'), 'required|matches[users_users_password]');
@@ -173,7 +171,8 @@ class Access extends MY_Controller
             echo json_encode(['status' => 0, 'txt' => t('Password validation failed')]);
             exit;
         }
-        
+        $this->session->unset_userdata('actual_password');
+
         echo json_encode(['status' => 1, 'txt' => base_url('access/login')]);
     }
     
