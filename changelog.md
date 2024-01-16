@@ -1,6 +1,3 @@
-Changelog version 3.6.6
+Changelog version 3.6.7
  
-add edit_id in doQueryOperation
-Fix bulk delete
-Bugfix in export for date format
-modify change password
+add check PASSEPARTOUT in form login
