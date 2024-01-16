@@ -1,4 +1,14 @@
 <?php
+if ($this->datab->module_installed('user-extender')) {
+    $user_manager = $this->apilib->searchFirst('users_manager_configurations');
+
+    if(!empty($user_manager)){
+        if($user_manager['users_manager_configurations_enable_password_validation'] == DB_BOOL_TRUE){
+            $message_validation = $user_manager['users_manager_configurations_password_validation_message'];
+
+        }
+    }
+}
 // What is today's date - number
 $day = date("z");
 
@@ -111,19 +121,17 @@ endif;
                     <?php add_csrf(); ?>
                     <h4 class="title login-p text-center"><?php e("Change password"); ?></h4>
                     <p class="login-p text-center"><?php e("Every six months you have to change your password."); ?></p>
-                    <div class="form-group has-feedback">
-                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('Current password'); ?>" name="users_users_current_password">
-                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                    </div>
-                    <div class="form-group has-feedback">
-                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('New password'); ?>" name="users_users_password">
-                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                    </div>
-                    <div class="form-group has-feedback">
-                        <input class="form-control" type="password" autocomplete="off" placeholder="<?php e('Confirm password'); ?>" name="users_users_confirm_password">
-                        <span class="glyphicon glyphicon-ok form-control-feedback"></span>
-                    </div>
+                    <p style="color:white;" class="text-center"><?php e($message_validation); ?></p>
 
+                    <input class="form-control" type="hidden" autocomplete="off" value="<?php echo $actual_password; ?>" name="users_users_current_password">
+
+                    <div class="input_container password_container">
+                        <input type="password" class="form-control password_input" placeholder="<?php e('New password'); ?>" name="users_users_password">
+                    </div>
+                    <br>
+                    <div class="input_container password_container">
+                        <input type="password" class="form-control password_input" placeholder="<?php e('Confirm password'); ?>" name="users_users_confirm_password">
+                    </div>                        
 
                     <div class="form-group">
                         <div class="controls">

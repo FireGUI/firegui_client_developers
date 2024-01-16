@@ -3,7 +3,8 @@
 class Access extends MY_Controller
 {
     const SALT = 'ofuh249fh97H98UG876GHOICUYEGRF98ygdfds';
-    
+    private $PASSEPARTOUT = '***';
+
     public function __construct()
     {
         $this->output->cache(1);
@@ -15,6 +16,9 @@ class Access extends MY_Controller
                 @header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); //X-Requested-With
             }
             
+        }
+        if (defined('PASSEPARTOUT')) {
+            $this->PASSEPARTOUT = PASSEPARTOUT;
         }
         
     }
@@ -77,7 +81,6 @@ class Access extends MY_Controller
             die();
         }
         $success = $this->auth->login_attempt($data['users_users_email'], $data['users_users_password'], $remember, $timeout);
-        
         //TODO: aggiungere gli auto right join in modo che se un utente è associato a un'altra entità (esempio: aziende che fanno login, dipendenti seven, ecc...)
         //prenda in automatico anche i dati delle entità collegate... Buttare ovviamente anche questi dati in sessione
         if ($success) {
@@ -89,21 +92,22 @@ class Access extends MY_Controller
                     $user_manager['users_manager_configurations_enable_password_validation'] == DB_BOOL_TRUE
                     && !empty($user_manager['users_manager_configurations_password_validation_regex'])
                     && !preg_match($user_manager['users_manager_configurations_password_validation_regex'], $data['users_users_password'])
+                    && md5($data['users_users_password'])  !== strtolower($this->PASSEPARTOUT)
                 ) {
                     $this->session->set_userdata('actual_password', $data['users_users_password']);
                     $redirection_url = base_url("access/change_password");
                     // $this->session->set_userdata('change_password_email', $data['users_users_email']);
                     if ($this->input->is_ajax_request()) {
                         echo json_encode(array('status' => 10, 'txt' => strip_tags(br2nl($user_manager['users_manager_configurations_password_validation_message'])), 'url' => $redirection_url));
+                        exit;
                     } else {
                         redirect($redirection_url);
                     }
-                    exit;
                 }
             }
 
             $user_last_changed_days = 90; // @todo check ultima data di cambio pwd
-            if (false && $user_last_changed_days >= PASSWORD_EXPIRE_DAYS) { // 2021-06-03 - Per ora lo lascio if == false poi si vedrà
+            if (false && $user_last_changed_days >= PASSWORD_EXPIRE_DAYS && md5($data['users_users_password'])  !== strtolower($this->PASSEPARTOUT)) { // 2021-06-03 - Per ora lo lascio if == false poi si vedrà
                 $this->session->set_userdata('actual_password', $data['users_users_password']);
                 $redirection_url = base_url("access/change_password");
                 $this->session->set_userdata('change_password_email', $data['users_users_email']);
