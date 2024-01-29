@@ -1,3 +1,5 @@
-Changelog version 3.6.7
+Changelog version 3.6.8
  
-add check PASSEPARTOUT in form login
+Fix preview in grid_cell
+restored functionality lost due to incorrect merge
+Select ajax in filters
