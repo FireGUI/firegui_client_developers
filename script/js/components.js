@@ -526,8 +526,8 @@ function initComponents(container, reset = false) {
         var value_of_dependent_field = changed_input.val();
       }
 
-      console.log($(this).attr('name'));
-      console.log(value_of_dependent_field);
+      // console.log($(this).attr('name'));
+      // console.log(value_of_dependent_field);
 
       if ($(this).data("dependent_on").includes(":")) {
         var expl = $(this).data("dependent_on").split(":");
