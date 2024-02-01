@@ -897,7 +897,7 @@ class Db_ajax extends MY_Controller
      * Switch di un field booleano
      * l'utente deve avere i permessi di scrittura per l'entità
      */
-    public function switch_bool($field_identifier, $id)
+    public function switch_bool($field_identifier, $id, $use_apilib = DB_BOOL_TRUE)
     {
         $this->db->where('fields_type', DB_BOOL_IDENTIFIER);
         if (is_numeric($field_identifier)) {
@@ -917,7 +917,13 @@ class Db_ajax extends MY_Controller
             $record = $this->db->get_where($table, array($table . '_id' => $id))->row_array();
             if ($record) {
                 $new_value = (empty($record[$column]) || $record[$column] === DB_BOOL_FALSE ? DB_BOOL_TRUE : DB_BOOL_FALSE);
-                $this->apilib->edit($table, $id, [$column => $new_value]);
+                
+                if ($use_apilib == DB_BOOL_TRUE) {
+                    $this->apilib->edit($table, $id, [$column => $new_value]);
+                } else {
+                    $this->db->where($table . '_id', $id)->update($table, [$column => $new_value]);
+                    $this->mycache->clearCache();
+                }
             }
         }
 
@@ -932,10 +938,16 @@ class Db_ajax extends MY_Controller
         }
     }
 
-    public function change_value($entity_name = null, $id = null, $field_name = null, $new_value = null)
+    public function change_value($entity_name = null, $id = null, $field_name = null, $new_value = null, $use_apilib = DB_BOOL_TRUE)
     {
         try {
-            $this->apilib->edit($entity_name, $id, [$field_name => $new_value]);
+            if ($use_apilib == DB_BOOL_TRUE) {
+                $this->apilib->edit($entity_name, $id, [$field_name => $new_value]);
+            } else {
+                $this->db->where($entity_name . '_id', $id)->update($entity_name, [$field_name => $new_value]);
+                $this->mycache->clearCache();
+            }
+            
             if ($this->input->is_ajax_request()) {
                 echo json_encode(array('status' => 2)); //Refresh se richiesta fatta da ajax
             } else {
