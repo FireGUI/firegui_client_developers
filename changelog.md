@@ -1,6 +1,5 @@
-Changelog version 3.6.6
+Changelog version 3.6.8
  
-add edit_id in doQueryOperation
-Fix bulk delete
-Bugfix in export for date format
-modify change password
+Fix preview in grid_cell
+restored functionality lost due to incorrect merge
+Select ajax in filters

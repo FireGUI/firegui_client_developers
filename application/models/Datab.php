@@ -2789,6 +2789,8 @@ class Datab extends CI_Model
                                             $style = ($idLang != $this->_currentLanguage) ? 'style="display:none"' : '';
                                             $previewSegment .= "<div data-lang='{$idLang}' {$style}>" . $valueLang . '</div>';
                                         }
+                                    } else {
+                                        $previewSegment = $dato[$prefixedKey];
                                     }
                                 } else {
                                     $previewSegment = $dato[$simpleKey];
