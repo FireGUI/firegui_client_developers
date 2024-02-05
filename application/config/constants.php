@@ -107,7 +107,7 @@ define(
         'Grey medium' => '#808e9b',
         'Grey steel' => '#4b4b4b',
         'Grey strong' => '#dcdde1',
-        'light gray beige' => '#ACA89F',
+        'light gray beige' => '#aca89f',
         'Violet' => '#575fcf',
         'Violet light' => '#8c7ae6',
         'Violet lavender' => '#82589F',
