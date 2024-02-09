@@ -490,14 +490,14 @@ function initComponents(container, reset = false) {
           'Oggi': [moment(), moment()],
           'Ieri': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
           'Domani': [moment().add(1, 'days'), moment().add(1, 'days')],
-          
+
           'Ultimi 7 Giorni': [moment().subtract(6, 'days'), moment()],
           'Ultimi 30 Giorni': [moment().subtract(29, 'days'), moment()],
-          
+
           'Mese corrente': [moment().startOf('month'), moment().endOf('month')],
           'Mese precedente': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
           'Mese successivo': [moment().add(1, 'month').startOf('month'), moment().add(1, 'month').endOf('month')],
-          
+
           'Anno corrente': [moment().startOf('year'), moment().endOf('year')],
           'Anno precedente': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
           'Anno successivo': [moment().add(1, 'year').startOf('year'), moment().add(1, 'year').endOf('year')]
@@ -1095,7 +1095,8 @@ function loadModal(url, data, callbackSuccess, method) {
             !$(event.target).closest(".modal").length &&
             !$(event.target).closest(".fancybox-skin").length &&
             !$(event.target).closest(".fancybox-item").length &&
-            !$(event.target).closest(".select2-selection__choice").length
+            !$(event.target).closest(".select2-selection__choice").length &&
+            !$(event.target).closest(".btn-grid-action-s").length
           ) {
             // Close the modal or perform other actions
             console.log($(event.target));

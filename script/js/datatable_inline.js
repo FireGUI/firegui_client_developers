@@ -42,7 +42,7 @@ CrmNewInlineTable.prototype.createRow = function (id) {
             tr.append($('<td></td>'));
         } else if (typeof name == 'undefined') {
             //Vuol dire che sono nella colonna action o in un eval o in un checkbox
-            tr.append($('<td></td>'));
+            // tr.append($('<td></td>')); // disabilitato per evitare che venga inserito un td vuoto
         } else {
             //Trovo il campo tra quelli del form
             var fields = $('[name*="' + name + '"]', form);
@@ -75,7 +75,9 @@ CrmNewInlineTable.prototype.createRow = function (id) {
                     }
                 }
 
+
                 tr.append($('<td>' + field_html + '</td>'));
+
             }
         }
     });
