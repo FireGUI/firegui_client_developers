@@ -179,10 +179,7 @@ class Conditions extends CI_Model
                 case '_query':
                     return $this->doQueryOperation($rule['id'], $rule['operator'], $rule['value'], $value_id, $edit_id);
                     break;
-                case 'special2':
-
-                    return $this->doFooSpecialOperation($rule['id'], $rule['operator'], $rule['value']);
-                    break;
+                
                 case '_module_installed':
 
                     return $this->doModuleInstalledOperation($rule['id'], $rule['operator'], $rule['value']);
@@ -206,6 +203,9 @@ class Conditions extends CI_Model
                     $return = $this->doOperation($rule['id'], $rule['operator'], is_maintenance());
 
                     return $return;
+                    break;
+                case '_is_super_admin':
+                    return $this->doOperation($rule['id'], $rule['operator'], $this->auth->is_admin());
                     break;
                 default:
                     
