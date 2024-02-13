@@ -949,13 +949,16 @@ class Db_ajax extends MY_Controller
             }
             
             if ($this->input->is_ajax_request()) {
-                echo json_encode(array('status' => 2)); //Refresh se richiesta fatta da ajax
+                die(json_encode(['status' => 2, 'txt' => null]));
             } else {
                 redirect(base_url());
             }
         } catch (Exception $ex) {
-            set_status_header(400); // Bad-Request se fallisce
-            die(json_encode($ex->getMessage()));
+            if ($this->input->is_ajax_request()) {
+                die(json_encode(['status' => 3, 'txt' => $ex->getMessage()]));
+            } else {
+                die($ex->getMessage());
+            }
         }
     }
 
