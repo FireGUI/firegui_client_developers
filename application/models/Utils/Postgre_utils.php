@@ -773,6 +773,7 @@ class Postgre_utils extends Utils
 
         $this->morphTable('layouts_boxes', [
             'layouts_boxes_show_container' => ['type' => 'BOOL', 'default' => 't', 'null' => false],
+            'layouts_boxes_module_key' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
         ], null, false);
 
         //        $this->morphTable('settings', [
