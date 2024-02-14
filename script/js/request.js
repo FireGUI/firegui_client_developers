@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 /**
  * Performs asynchronous AJAX requests with support for various HTTP methods, content types, and customized headers.
@@ -18,7 +18,7 @@
  *   .catch(error => console.error(error));
  */
 
-async function request(url = '', data = {}, method = "GET", payload = false, useFormData = false, headers = {}, customOptions = {}) {
+async function request(url = "", data = {}, method = "GET", payload = false, useFormData = false, headers = {}, customOptions = {}) {
     const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
     
     // Normalize the method to uppercase for consistency
@@ -30,17 +30,17 @@ async function request(url = '', data = {}, method = "GET", payload = false, use
     // Setup base options for fetch API
     let fetchOptions = {
         method: method, // *GET, POST, PUT, PATCH, DELETE
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
         headers: {},
-        redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     };
     
     // Override default fetch options with custom options, except for 'method'
-    fetchOptions = {...fetchOptions, ...customOptions, method: method};
-    fetchOptions.headers = {...fetchOptions.headers, ...headers};
+    fetchOptions = { ...fetchOptions, ...customOptions, method: method };
+    fetchOptions.headers = { ...fetchOptions.headers, ...headers };
     
     // Handle logic specific to POST method
     if (method === "POST") {
@@ -62,8 +62,9 @@ async function request(url = '', data = {}, method = "GET", payload = false, use
             // If payload is true, treat data as JSON
             fetchOptions.body = JSON.stringify(data);
             fetchOptions.headers = {
+                ...headers,
                 "Content-Type": "application/json",
-                'Accept': 'application/json'
+                Accept: "application/json",
             };
         } else {
             // Otherwise, treat data as URL-encoded form data
@@ -75,26 +76,30 @@ async function request(url = '', data = {}, method = "GET", payload = false, use
             }
             formBody = formBody.join("&");
             fetchOptions.body = formBody;
-            fetchOptions.headers = { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" };
+            fetchOptions.headers = {
+                ...headers,
+                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            };
         }
     } else if (method === "GET") {
         // Append data as query string for GET requests
-        let queryString = '';
+        let queryString = "";
         for (const property in data) {
-            if (queryString !== '') {
-                queryString += '&';
+            if (queryString !== "") {
+                queryString += "&";
             }
-            queryString += encodeURIComponent(property) + '=' + encodeURIComponent(data[property]);
+            queryString += encodeURIComponent(property) + "=" + encodeURIComponent(data[property]);
         }
-        url += (url.indexOf('?') === -1 ? '?' : '&') + queryString;
+        url += (url.indexOf("?") === -1 ? "?" : "&") + queryString;
     }
     
     try {
         const response = await fetch(url, fetchOptions);
         
         // Verifica se lo stato della risposta indica un errore
-        if (!response.ok) { // response.ok è true per uno stato 200-299
-            throw new Error(response.status + ' ' + response.statusText);
+        if (!response.ok) {
+            // response.ok è true per uno stato 200-299
+            throw new Error(response.status + " " + response.statusText);
         }
 
         const text = await response.text(); // Parse it as text
