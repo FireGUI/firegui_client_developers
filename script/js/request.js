@@ -10,22 +10,57 @@
  * @param {boolean} [useFormData=false] Specifies if the request body should be sent as FormData. This is useful for multipart/form-data content types, typically used for file uploads.
  * @param {Object} [headers={}] Additional headers to send with the request. These headers are merged with any default headers set by the fetch options, with precedence given to the headers specified in this parameter.
  * @param {Object} [customOptions={}] Additional fetch options to customize the request further. The 'method' specified in this object is ignored to ensure the method parameter is used.
+ * @param {number} [retryCount=0] Number of retry attempts for the request in case of failure.
+ * @param {number} [retryDelay=1000] Delay between retries in milliseconds.
  * @returns {Promise<Object|String>} A Promise that resolves to the response data. The response is parsed as JSON by default but can be parsed differently based on the 'Accept' header or the response content type.
  *
- * Example usage:
- * request('https://example.com/api/data', { key: 'value' }, 'POST', true, false, { 'Content-Type': 'application/json' })
+ *
+ * Example usages:
+ *
+ * // Basic GET request
+ * request('https://example.com/api/data')
  *   .then(data => console.log(data))
  *   .catch(error => console.error(error));
+ *
+ * // POST request with JSON data
+ * request('https://example.com/api/post', { name: 'John Doe', age: 30 }, 'POST', true)
+ *   .then(data => console.log(data))
+ *   .catch(error => console.error(error));
+ *
+ * // PUT request with JSON data
+ * request('https://example.com/api/update/1', { name: 'Jane Doe', age: 25 }, 'PUT', true)
+ *   .then(data => console.log(data))
+ *   .catch(error => console.error(error));
+ *
+ * // DELETE request
+ * request('https://example.com/api/delete/1', {}, 'DELETE')
+ *   .then(data => console.log(data))
+ *   .catch(error => console.error(error));
+ *
+ * // Using FormData for file uploads
+ * let formData = new FormData();
+ * formData.append('file', fileInput.files[0]);
+ * request('https://example.com/api/upload', formData, 'POST', false, true)
+ *   .then(data => console.log(data))
+ *   .catch(error => console.error(error));
+ *
+ * // Retry logic example: Retrying a GET request up to 3 times in case of failure
+ * request('https://example.com/api/data', {}, 'GET', false, false, {}, {}, 3, 2000)
+ *   .then(data => console.log(data))
+ *   .catch(error => console.error(`Final error after retries: ${error}`));
  */
 
-async function request(url = "", data = {}, method = "GET", payload = false, useFormData = false, headers = {}, customOptions = {}) {
+
+async function request(url = "", data = {}, method = "GET", payload = false, useFormData = false, headers = {}, customOptions = {}, retryCount = 0, retryDelay = 1000) {
     const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
     
     // Normalize the method to uppercase for consistency
     method = method.toUpperCase();
     
     // Check that the method is supported
-    if (!validMethods.includes(method)) return false;
+    if (!validMethods.includes(method)) {
+        throw new Error(`HTTP method ${method} is not supported.`);
+    }
     
     // Setup base options for fetch API
     let fetchOptions = {
@@ -42,18 +77,15 @@ async function request(url = "", data = {}, method = "GET", payload = false, use
     fetchOptions = { ...fetchOptions, ...customOptions, method: method };
     fetchOptions.headers = { ...fetchOptions.headers, ...headers };
     
-    // Handle logic specific to POST method
-    if (method === "POST") {
-        // Treat data as FormData if requested
+    // Logic for methods that can contain a body
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
         if (useFormData) {
             // Convert data object to FormData if not already
             if (!(data instanceof FormData)) {
                 const formData = new FormData();
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        formData.append(key, data[key]);
-                    }
-                }
+                Object.keys(data).forEach(key => {
+                    formData.append(key, data[key]);
+                });
                 data = formData;
             }
             // Use FormData instance directly as the body
@@ -62,35 +94,35 @@ async function request(url = "", data = {}, method = "GET", payload = false, use
             // If payload is true, treat data as JSON
             fetchOptions.body = JSON.stringify(data);
             fetchOptions.headers = {
-                ...headers,
+                ...fetchOptions.headers,
                 "Content-Type": "application/json",
                 Accept: "application/json",
             };
         } else {
             // Otherwise, treat data as URL-encoded form data
             let formBody = [];
-            for (const property in data) {
-                const encodedKey = encodeURIComponent(property);
-                const encodedValue = encodeURIComponent(data[property]);
-                formBody.push(encodedKey + "=" + encodedValue);
+            if (data) {
+                Object.keys(data).forEach(property => {
+                    const encodedKey = encodeURIComponent(property);
+                    const encodedValue = encodeURIComponent(data[property]);
+                    formBody.push(encodedKey + "=" + encodedValue);
+                });
             }
             formBody = formBody.join("&");
             fetchOptions.body = formBody;
             fetchOptions.headers = {
-                ...headers,
+                ...fetchOptions.headers,
                 "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
             };
         }
-    } else if (method === "GET") {
-        // Append data as query string for GET requests
-        let queryString = "";
-        for (const property in data) {
-            if (queryString !== "") {
-                queryString += "&";
-            }
-            queryString += encodeURIComponent(property) + "=" + encodeURIComponent(data[property]);
+    }
+    
+    // Adjust URL for GET and HEAD methods
+    if (["GET", "HEAD"].includes(method)) {
+        if (data) {
+            const queryString = Object.keys(data).map(property => `${encodeURIComponent(property)}=${encodeURIComponent(data[property])}`).join("&");
+            url += (url.includes("?") ? "&" : "?") + queryString;
         }
-        url += (url.indexOf("?") === -1 ? "?" : "&") + queryString;
     }
     
     try {
@@ -98,21 +130,25 @@ async function request(url = "", data = {}, method = "GET", payload = false, use
         
         // Verifica se lo stato della risposta indica un errore
         if (!response.ok) {
-            // response.ok è true per uno stato 200-299
-            throw new Error(response.status + " " + response.statusText);
+            throw new Error(`${response.status} ${response.statusText}`);
         }
-
-        const text = await response.text(); // Parse it as text
         
-        let data;
-        try {
-            data = JSON.parse(text); // Try to parse it as JSON
-        } catch (err) {
-            data = text;
+        const contentType = response.headers.get("Content-Type");
+        if (contentType && contentType.includes("application/json")) {
+            return response.json();
+        } else {
+            return response.text();
         }
-
-        return data;
     } catch (err) {
-        throw new Error(err);
+        console.error(`Request failed: ${err.message}`);
+        
+        // Check for retry logic
+        if (retryCount > 0) {
+            console.log(`Retrying request... Attempts left: ${retryCount}`);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            return request(url, data, method, payload, useFormData, headers, customOptions, retryCount - 1, retryDelay);
+        } else {
+            throw new Error(`Fetch error after retries: ${err.message}`);
+        }
     }
 }
