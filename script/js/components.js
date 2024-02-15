@@ -746,7 +746,8 @@ function initComponents(container, reset = false) {
           });
 
           if (previousValueFound) {
-            if (isNormalSelect) {
+            // 2024-02-15 - michael - I made this fix as the "isNormalSelect" variable was calculated incorrectly.
+            if (typeof jsMultiselect.attr('name') == 'undefined' || jsMultiselect.attr('name') == false) {
               jsMultiselect.val(previousValue[0]); // Solo UN valore
               jsMultiselect.select2("val", previousValue);
             } else {
