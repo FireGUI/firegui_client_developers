@@ -133,12 +133,16 @@ async function request(url = "", data = {}, method = "GET", payload = false, use
             throw new Error(`${response.status} ${response.statusText}`);
         }
         
-        const contentType = response.headers.get("Content-Type");
-        if (contentType && contentType.includes("application/json")) {
-            return response.json();
-        } else {
-            return response.text();
+        const text = await response.text(); // Parse it as text
+        
+        let data;
+        try {
+            data = JSON.parse(text); // Try to parse it as JSON
+        } catch (err) {
+            data = text;
         }
+        
+        return data;
     } catch (err) {
         console.error(`Request failed: ${err.message}`);
         
