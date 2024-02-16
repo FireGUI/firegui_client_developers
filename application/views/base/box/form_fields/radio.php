@@ -13,6 +13,8 @@ if (empty($field['support_data'])) {
 $inline = true; //count($choiches) < 3;
 ?>
 <?php echo $label; ?>
+
+
 <div>
     <div class="radio-list firegui_radio-list">
         <?php foreach ($choiches as $id => $name) : ?>
@@ -22,5 +24,7 @@ $inline = true; //count($choiches) < 3;
             </label>
         <?php endforeach; ?>
     </div>
+    
 </div>
+
 <?php echo $help; ?>

@@ -495,8 +495,6 @@ function refreshLayoutBoxesByEntity(entity_name) {
                                 document.title = data.dati.title_prefix;
                                 console.log('TODO: clone js_page_content instead of creating div...');
 
-
-
                                 var clonedContainerHtml = '<div class="js_page_content" data-layout-id="' + layout_id + '" data-title="' + data.dati.title_prefix + '" data-related_entities="' + data.dati.related_entities.join(',') + '"></div>';
                                 // $();
                                 //clonedContainer.html(data.content);

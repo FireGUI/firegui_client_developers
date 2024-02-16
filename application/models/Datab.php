@@ -3199,20 +3199,32 @@ class Datab extends CI_Model
             }
 
             $style = $langShow ? '' : 'style="display:none"';
-            $label = $baseShowLabel ? '<label class="control-label">' . t($langLabel) . '</label>' . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk firegui_fontsize85"></small>' : '') : '';
-            //debug($baseOnclick);
+            // Verifica se il testo di aiuto è lungo più di 20 caratteri e prepara l'icona di aiuto
+            if (strlen($baseHelpText) > 20) {
+                // Se il testo di aiuto è più lungo di 20 caratteri, usa un'icona con tooltip
+                $helpIcon = '<i class="far fa-question-circle" aria-hidden="true" data-toggle="tooltip" title="' . htmlspecialchars(strip_tags($baseHelpText)) . '"></i>';
+            } else {
+                // Se il testo di aiuto è breve o vuoto, non mostrare l'icona del tooltip
+                $helpIcon = '';
+            }
+
+            // Costruisce il testo della label, includendo l'icona del tooltip direttamente all'interno del tag label se necessario
+            $label = $baseShowLabel ? '<label class="control-label">' . t($langLabel) . ($baseShowRequired ? ' <small class="text-danger fas fa-asterisk firegui_fontsize85"></small>' : '') . ' ' . $helpIcon . '</label>' : '';
+
+            // Prepara il resto dei dati come prima
             $data = [
                 'lang' => $langId,
                 'field' => $field,
                 'value' => is_string($langValue) ? htmlspecialchars($langValue) : $langValue,
                 'label' => $label,
                 'placeholder' => $basePlaceholder,
-                'help' => $baseHelpText,
+                'help' => strlen($baseHelpText) > 20 ? '' : $baseHelpText, // Non includere il testo di aiuto qui se è lungo
                 'class' => $class,
                 'attr' => $attr,
                 'onclick' => $baseOnclick,
                 'subform' => $subform,
             ];
+
 
             // Aggiungo la preview del value, da usare nelle nuove select_ajax
             if (!empty($data['value']) && !is_array($data['value']) && !empty($field['fields_ref']) && $field['forms_fields_override_type'] != 'input_hidden') {

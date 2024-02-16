@@ -554,7 +554,7 @@ function initComponents(container, reset = false) {
   });
 
   $(".js_form_fieldset legend").off("click").on("click", function () {
-    $(".row, legend span, i", $(this).closest(".js_form_fieldset")).toggle();
+    $(".row, legend span", $(this).closest(".js_form_fieldset")).toggle();
     $(this).closest(".js_form_fieldset").toggleClass("fieldset_visible");
   });
 
