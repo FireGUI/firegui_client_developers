@@ -6,7 +6,7 @@ var formAjaxIsSubmitting = false;
 var handleSuccess = function (msg, container = null) {
     // console.log(msg);
     // alert(1);
-    var submittedForm = $('#'+formAjaxSubmittedFormId);
+    var submittedForm = $('#' + formAjaxSubmittedFormId);
     var submitBtn = $('button[type="submit"]', submittedForm);
 
     switch (parseInt(msg.status)) {
@@ -57,10 +57,14 @@ var handleSuccess = function (msg, container = null) {
             submitBtn.show();
             break;
         case 7:
+
             refreshAjaxLayoutBoxes();
+
             if (container) {
+
                 closeContainingPopups(container);
             }
+
             success(msg.txt);
             submitBtn.show();
             break;
@@ -226,7 +230,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
                 // Default
                 handleSuccess(msg);
             }
-
+            //alert(1);
             // Eventually close all modals if needed
             if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
                 closeContainingPopups(form);
@@ -424,6 +428,7 @@ function refreshAjaxLayoutBoxes() {
     } else {
         var container = $('body');
     }
+
     $('.layout_box:visible', container).each(function () {
 
         if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
@@ -442,7 +447,7 @@ function refreshAjaxLayoutBoxes() {
 
 }
 var refreshed_layouts = [];
-function refreshLayoutBoxesByEntity (entity_name) {
+function refreshLayoutBoxesByEntity(entity_name) {
 
     var link_href = window.location.href;
     var get_params = link_href.split('?');
@@ -451,10 +456,11 @@ function refreshLayoutBoxesByEntity (entity_name) {
     } else {
         get_params = '';
     }
-    $('.js_page_content').each (function () {
+    $('.js_page_content').each(function () {
 
         var related_entities_string = $(this).data('related_entities');
-        //console.log(related_entities_string);
+        // console.log(related_entities_string);
+        // alert('1');
         if (typeof related_entities_string != 'undefined') {
             var related_entities = related_entities_string.split(',');
             console.log(related_entities);
@@ -464,8 +470,10 @@ function refreshLayoutBoxesByEntity (entity_name) {
                 var layout_id = $(this).data('layout-id');
 
                 if (refreshed_layouts.includes(layout_id)) {
-                    console.log('Already refreshed layout '+layout_id);
+                    //alert(2);
+                    console.log('Already refreshed layout ' + layout_id);
                 } else {
+                    //alert(3);
                     var value_id = $(this).data('value_id');
                     refreshed_layouts.push(layout_id);
                     $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
@@ -481,16 +489,19 @@ function refreshLayoutBoxesByEntity (entity_name) {
                             }
                             if (data.status == 1) {
 
-                                $('.js_page_content[data-layout-id="'+layout_id+'"]').remove();
+                                $('.js_page_content[data-layout-id="' + layout_id + '"]').remove();
 
                                 $('.js_page_content').hide();
                                 document.title = data.dati.title_prefix;
                                 console.log('TODO: clone js_page_content instead of creating div...');
-                                var clonedContainerHtml = '<div class="js_page_content" data-layout-id="'+layout_id+'" data-title="'+data.dati.title_prefix+'"></div>';
+
+
+
+                                var clonedContainerHtml = '<div class="js_page_content" data-layout-id="' + layout_id + '" data-title="' + data.dati.title_prefix + '" data-related_entities="' + data.dati.related_entities.join(',') + '"></div>';
                                 // $();
                                 //clonedContainer.html(data.content);
                                 $('#js_layout_content_wrapper').append(clonedContainerHtml);
-                                var clonedContainer = $('.js_page_content[data-layout-id="'+layout_id+'"]');
+                                var clonedContainer = $('.js_page_content[data-layout-id="' + layout_id + '"]');
                                 clonedContainer.html(data.content);
                                 window.history.pushState("", "", link_href);
                                 initComponents(clonedContainer, true);
