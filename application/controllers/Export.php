@@ -246,7 +246,7 @@ class Export extends MY_Controller
                     // Controlla se il valore è una data e formattalo
                     $isdmyDate = DateTime::createFromFormat('d/m/Y', $dato[$cell]);
                     
-                    if ($isdmyDate instanceof DateTime) {
+                    if ($isdmyDate !== false) {
                         $data[$key][$cell] = $isdmyDate->format('Y-m-d');
                     }
                     
