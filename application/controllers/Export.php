@@ -244,10 +244,18 @@ class Export extends MY_Controller
                     $data[$key][$cell] = (float) tofloat($dato[$cell]);
                 } else {
                     // Controlla se il valore è una data e formattalo
-                    if ((substr_count($dato[$cell], '/') == 2)) {
-                        $expl = explode('/', $dato[$cell]);
-                        $dato[$cell] = "{$expl['2']}-{$expl['1']}-{$expl['0']}";
+                    $isdmyDate = DateTime::createFromFormat('d/m/Y', $dato[$cell]);
+                    
+                    if ($isdmyDate instanceof DateTime) {
+                        $data[$key][$cell] = $isdmyDate->format('Y-m-d');
                     }
+                    
+                    // michael - 20/02/2024 - disattivo questa parte in quanto crea problemi nel caso di celle con slash
+                    //                    if ((substr_count($dato[$cell], '/') == 2)) {
+                    //                        $expl = explode('/', $dato[$cell]);
+                    //                        $dato[$cell] = "{$expl['2']}-{$expl['1']}-{$expl['0']}";
+                    //                    }
+                    ///////////////////
                     /* Per decodificare correttamente le date, se un cliente aveva due // nell'indirizzo, veniva interpretato come data */
                     /*$dateObject = DateTime::createFromFormat('d/m/Y', $dato[$cell]);
                     if ($dateObject !== false && $dateObject->format('d/m/Y') == $dato[$cell]) {
