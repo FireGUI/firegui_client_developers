@@ -212,48 +212,55 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         
                         <?php if ($field['type'] == 'multiselect'): ?>
                         
-                        <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
-                            
-                            <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
-                                <?php
-                                $filter_ref = $field['filterref'];
-                                $entity = $this->crmentity->getEntity($filter_ref);
-                                if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
-                                    $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
-                                    
-                                    $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2'],$field['original_field']['fields_select_where']);
-                                } else {
-                                    
-                                    $support_data = $this->crmentity->getEntityPreview($field['filterref'],$field['original_field']['fields_select_where']);
-                                }
+                            <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                                 
+                                <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
+                                    <?php
+                                    $filter_ref = $field['filterref'];
+                                    $entity = $this->crmentity->getEntity($filter_ref);
+                                    if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
+                                        $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
+                                        
+                                        $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2'],$field['original_field']['fields_select_where']);
+                                    } else {
+                                        
+                                        $support_data = $this->crmentity->getEntityPreview($field['filterref'],$field['original_field']['fields_select_where']);
+                                    }
+                                    
+                                    
+                                    ?>
+                                    <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
+                                    <?php foreach ($support_data as $id => $name): ?>
+                                        <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                                    <?php endforeach;?>
                                 
-                                ?>
-                                <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
-                                <?php foreach ($support_data as $id => $name): ?>
-                                    <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
-                                <?php endforeach;?>
-                            
-                            </select>
+                                </select>
                         <?php elseif ($field['type'] == 'select_ajax'): ?>
-                        <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
-                            
-                            <select class="js_select_ajax_new form-control " name="conditions[<?php echo $k; ?>][value]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
-                                <?php if (isset($field['support_data'])) : ?>
-                                    <?php foreach ((array) $field['support_data'] as $id => $name) : ?>
-                                        <?php if ($id != $value) {
-                                            continue;
-                                        } ?>
-                                        <option value="<?php echo $id; ?>" selected><?php echo $name; ?></option>
-                                    <?php endforeach; ?>
-                                <?php elseif ($value) : ?>
-                                    <option value="<?php echo $value; ?>" selected="selected"><?php echo $value_preview; ?></option>
-                                <?php endif; ?>
-                            
-                            </select>
+                                
+                            <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
+                                
+                                <select class="js_select_ajax_new form-control " name="conditions[<?php echo $k; ?>][value]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
+                                    <?php if (isset($field['support_data'])) : ?>
+                                        <?php foreach ((array) $field['support_data'] as $id => $name) : ?>
+                                            <?php if ($id != $value) {
+                                                continue;
+                                            } ?>
+                                            <option value="<?php echo $id; ?>" selected><?php echo $name; ?></option>
+                                        <?php endforeach; ?>
+                                    <?php elseif ($value) : ?>
+                                        <option value="<?php echo $value; ?>" selected="selected"><?php echo $value_preview; ?></option>
+                                    <?php endif; ?>
+                                
+                                </select>
+
+                          
+                        
+
+
                         <?php else: ?>
-                            <?php
-                            $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
+
+                                <?php
+                                $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
                             $where = '1';
                             foreach ($data as $campo => $valore) {
                                 if ($campo) {
@@ -279,15 +286,47 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             
                             ?>
                             
-                            <select class="form-control select2_standard <?php echo (!empty($class)) ? $class : ''; ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $field['onclick']; ?>>
+                            <?php // ---------------- NEW SELECT BIG BUTTONS -------------- ?>
+
+
+                              <?php if ($field['type'] == 'select_big_buttons'):
+                                  ?>
+                           
+                                 <input id="js_badge_hidden_<?php echo $field['id']; ?>" type="hidden" class="form-control <?php echo (!empty($class)) ? $class : ''; ?>" 
+                                                data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" 
+                                                name="conditions[<?php echo $k; ?>][value]" 
+                                                data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" 
+                                                value="<?php echo $value; ?>" />
                                 
-                                <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
-                                <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
-                                
-                                <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name): ?>
-                                    <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
-                                <?php endforeach;?>
-                            </select>
+                                <div class="badge_form_field_container">
+                                    <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name): ?>
+                                        <span class="badge badge_form_field js_badge_form_field <?php echo ($id == $value) ? 'badge_form_field_active' : ''; ?>" data-hidden_field="js_badge_hidden_<?php echo $field['id']; ?>" data-value_id="<?php echo $id; ?>" ><?php echo $name; ?></span>
+                                    <?php endforeach;?>
+                                </div>
+
+
+                           
+                            <?php else:?>
+
+                                <?php // ---------------- STANDARD SELECT --------------  ?>
+                                            <select class="form-control select2_standard <?php echo (!empty($class)) ? $class : ''; ?>"
+                            data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>"
+                            name="conditions[<?php echo $k; ?>][value]"
+                            data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>"
+                            <?php echo $field['onclick']; ?>>
+
+                            <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
+                            <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>>
+                                <?php e('Field empty'); ?>
+                            </option>
+
+                            <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name): ?>
+                                <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>>
+                                    <?php echo $name; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                                <?php endif;?>
                         <?php endif;?>
                         
                         <?php else: ?>

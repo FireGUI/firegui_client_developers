@@ -617,6 +617,23 @@ function initComponents(container, reset = false) {
   $(".select2_standard", container).select2();
 
   /*
+  * Select Big Buttons
+  */
+
+  $("body").on("click", ".js_badge_form_field", function (e) {
+    var hidden_field = $(this).data('hidden_field');
+    var value_id = $(this).data('value_id');
+
+    $('#' + hidden_field).val(value_id);
+
+    // Add class active
+    $(this).addClass('badge_form_field_active');
+    // Remove class active to other
+
+    $(this).siblings().removeClass('badge_form_field_active');
+  });
+
+  /*
    * Select ajax
    */
 
