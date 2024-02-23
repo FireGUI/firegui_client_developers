@@ -624,7 +624,14 @@ function initComponents(container, reset = false) {
     var hidden_field = $(this).data('hidden_field');
     var value_id = $(this).data('value_id');
 
-    $('#' + hidden_field).val(value_id);
+    if ($(this).hasClass('js_badge_form_field_year') || $(this).hasClass('js_badge_form_field_month')) {
+      // Il selettore $(this) ha la classe js_badge_form_field_year
+      // Aggiungi qui la logica aggiuntiva che desideri eseguire
+    } else {
+      // Set value
+      $('.' + hidden_field).val(value_id);
+    }
+
 
     // Add class active
     $(this).addClass('badge_form_field_active');
