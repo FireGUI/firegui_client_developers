@@ -34,7 +34,7 @@ foreach ($form['forms_fields'] as $key => $field) {
     unset($form['forms_fields'][$key]);
 }
 ?>
-fffffff
+
 <form <?php echo "id='{$form_id}'"; ?> role="form" method="post" action="<?php echo $form['forms']['action_url']; ?>"
     class="form formAjax <?php echo ($form['forms']['forms_css_extra']) ?? null; ?>" enctype="multipart/form-data" <?php if (!is_array($value_id)): ?>data-edit-id="<?php echo $value_id; ?>" <?php else: ?>data-edit-id="" <?php endif; ?>>
     <?php add_csrf(); ?>
@@ -55,10 +55,10 @@ fffffff
                     </legend>
                 <?php endif; ?>
 
+                <div class="row sortableForm_DEPRECATED">
 
+                    <?php foreach ($fields as $field): ?>
 
-                <?php foreach ($fields as $field): ?>
-                    <div class="row sortableForm_DEPRECATED">
                         <div id="<?php echo $field['id']; ?>" data-form_id="<?php echo $form['forms']['forms_id']; ?>"
                             class=" formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>"
                             data-id="<?php echo $field['id']; ?>" data-cols="<?php echo $field['size']; ?>">
@@ -86,11 +86,12 @@ fffffff
 
                         </div>
 
-                    </div>
-                    <?php if ($bulk_mode): ?>
-                </div>
-            <?php endif; ?>
-        <?php endforeach; ?>
+
+                        <?php if ($bulk_mode): ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+        </div>
 
         <?php if ($field_set_title != '__main_fields'): ?>
             </fieldset>
