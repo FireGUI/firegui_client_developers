@@ -652,12 +652,12 @@ function initComponents(container, reset = false) {
       get_params = "";
     }
     var input = $(this);
-
-    var $allow_clear = false;
+    
+    var $allow_clear = true;
     var field_required = $(this).data("required");
-
-    if (field_required == 0) {
-      $allow_clear = true;
+    
+    if (field_required == 1) {
+      $allow_clear = false;
     }
 
     input.select2({
