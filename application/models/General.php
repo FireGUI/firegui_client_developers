@@ -189,4 +189,6 @@ class General extends CI_Model
 
         $this->db->insert('user_logs', $logEntry);
     }
+
+   
 }
