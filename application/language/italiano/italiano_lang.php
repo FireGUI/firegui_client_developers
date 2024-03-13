@@ -2089,3 +2089,4 @@ $lang['September'] = 'Settembre';
 $lang['October'] = 'Ottobre';
 $lang['November'] = 'Novembre';
 $lang['December'] = 'Dicembre';
+$lang['Duplicate'] = 'Duplica';
