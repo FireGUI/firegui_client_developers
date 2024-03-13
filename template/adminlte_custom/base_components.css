@@ -1,4 +1,18 @@
- /*
+/* SELECT BIG BUTTONS */
+.badge_form_field {
+		padding: 7px 12px;
+  		font-size: 15px;
+  		margin-bottom: 4px;
+  		font-weight: initial;
+        cursor: pointer;
+        background-color: #086fa3;
+    }
+
+.badge_form_field_active {
+    background-color: #00c0ef;
+}
+
+/*
 * SIDE VIEW
  */
 

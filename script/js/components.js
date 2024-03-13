@@ -617,6 +617,30 @@ function initComponents(container, reset = false) {
   $(".select2_standard", container).select2();
 
   /*
+  * Select Big Buttons
+  */
+
+  $("body").on("click", ".js_badge_form_field", function (e) {
+    var hidden_field = $(this).data('hidden_field');
+    var value_id = $(this).data('value_id');
+
+    if ($(this).hasClass('js_badge_form_field_year') || $(this).hasClass('js_badge_form_field_month')) {
+      // Il selettore $(this) ha la classe js_badge_form_field_year
+      // Aggiungi qui la logica aggiuntiva che desideri eseguire
+    } else {
+      // Set value
+      $('.' + hidden_field).val(value_id);
+    }
+
+
+    // Add class active
+    $(this).addClass('badge_form_field_active');
+    // Remove class active to other
+
+    $(this).siblings().removeClass('badge_form_field_active');
+  });
+
+  /*
    * Select ajax
    */
 
@@ -628,12 +652,12 @@ function initComponents(container, reset = false) {
       get_params = "";
     }
     var input = $(this);
-
-    var $allow_clear = false;
+    
+    var $allow_clear = true;
     var field_required = $(this).data("required");
-
-    if (field_required == 0) {
-      $allow_clear = true;
+    
+    if (field_required == 1) {
+      $allow_clear = false;
     }
 
     input.select2({

@@ -135,7 +135,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             </div>
                         <?php elseif ($field['datatype'] == DB_BOOL_IDENTIFIER): ?>
                         
-                        
+                    
                         <?php //debug($field);
                         ?>
                             
@@ -204,6 +204,9 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                 });
                             </script>
                         <?php else: ?>
+
+                    
+
                         
                         <?php if ($field['filterref']):
                         $preview = $this->datab->get_entity_preview_by_name($field['filterref'], "{$field['filterref']}_id = '{$value}'", 1);
@@ -212,48 +215,51 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         
                         <?php if ($field['type'] == 'multiselect'): ?>
                         
-                        <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
-                            
-                            <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
-                                <?php
-                                $filter_ref = $field['filterref'];
-                                $entity = $this->crmentity->getEntity($filter_ref);
-                                if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
-                                    $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
-                                    
-                                    $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2'],$field['original_field']['fields_select_where']);
-                                } else {
-                                    
-                                    $support_data = $this->crmentity->getEntityPreview($field['filterref'],$field['original_field']['fields_select_where']);
-                                }
+                            <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                                 
+                                <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
+                                    <?php
+                                    $filter_ref = $field['filterref'];
+                                    $entity = $this->crmentity->getEntity($filter_ref);
+                                    if ($entity['entity_type'] == ENTITY_TYPE_RELATION) {
+                                        $relation = $this->db->get_where('relations', ['relations_name' => $entity['entity_name']])->row_array();
+                                        
+                                        $support_data = $this->crmentity->getEntityPreview($relation['relations_table_2'],$field['original_field']['fields_select_where']);
+                                    } else {
+                                        
+                                        $support_data = $this->crmentity->getEntityPreview($field['filterref'],$field['original_field']['fields_select_where']);
+                                    }
+                                    
+                                    
+                                    ?>
+                                    <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
+                                    <?php foreach ($support_data as $id => $name): ?>
+                                        <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                                    <?php endforeach;?>
                                 
-                                ?>
-                                <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
-                                <?php foreach ($support_data as $id => $name): ?>
-                                    <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
-                                <?php endforeach;?>
-                            
-                            </select>
+                                </select>
                         <?php elseif ($field['type'] == 'select_ajax'): ?>
-                        <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
-                            
-                            <select class="js_select_ajax_new form-control " name="conditions[<?php echo $k; ?>][value]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
-                                <?php if (isset($field['support_data'])) : ?>
-                                    <?php foreach ((array) $field['support_data'] as $id => $name) : ?>
-                                        <?php if ($id != $value) {
-                                            continue;
-                                        } ?>
-                                        <option value="<?php echo $id; ?>" selected><?php echo $name; ?></option>
-                                    <?php endforeach; ?>
-                                <?php elseif ($value) : ?>
-                                    <option value="<?php echo $value; ?>" selected="selected"><?php echo $value_preview; ?></option>
-                                <?php endif; ?>
-                            
-                            </select>
+                                
+                            <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
+                                
+                                <select class="js_select_ajax_new form-control " name="conditions[<?php echo $k; ?>][value]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="" data-minimum-input-length="0">
+                                    <?php if (isset($field['support_data'])) : ?>
+                                        <?php foreach ((array) $field['support_data'] as $id => $name) : ?>
+                                            <?php if ($id != $value) {
+                                                continue;
+                                            } ?>
+                                            <option value="<?php echo $id; ?>" selected><?php echo $name; ?></option>
+                                        <?php endforeach; ?>
+                                    <?php elseif ($value) : ?>
+                                        <option value="<?php echo $value; ?>" selected="selected"><?php echo $value_preview; ?></option>
+                                    <?php endif; ?>
+                                
+                                </select>
+
                         <?php else: ?>
-                            <?php
-                            $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
+
+                                <?php
+                                $data = $this->apilib->runDataProcessing($field['filterref'], 'pre-search');
                             $where = '1';
                             foreach ($data as $campo => $valore) {
                                 if ($campo) {
@@ -279,15 +285,45 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             
                             ?>
                             
-                            <select class="form-control select2_standard <?php echo (!empty($class)) ? $class : ''; ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" name="conditions[<?php echo $k; ?>][value]" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>" <?php echo $field['onclick']; ?>>
+                            <?php // ---------------- NEW SELECT BIG BUTTONS -------------- ?>
+
+                              <?php if ($field['type'] == 'select_big_buttons'):
+                                  ?>
+                           
+                                 <input type="hidden" class="form-control js_badge_hidden_<?php echo $field['id']; ?> <?php echo (!empty($class)) ? $class : ''; ?>" 
+                                                data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" 
+                                                name="conditions[<?php echo $k; ?>][value]" 
+                                                data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" 
+                                                value="<?php echo $value; ?>" />
                                 
-                                <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
-                                <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
-                                
-                                <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name): ?>
-                                    <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>><?php echo $name; ?></option>
-                                <?php endforeach;?>
-                            </select>
+                                <div class="badge_form_field_container">
+                                    <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name): ?>
+                                        <span class="badge badge_form_field js_badge_form_field <?php echo ($id == $value) ? 'badge_form_field_active' : ''; ?>" data-hidden_field="js_badge_hidden_<?php echo $field['id']; ?>" data-value_id="<?php echo $id; ?>" ><?php echo $name; ?></span>
+                                    <?php endforeach;?>
+                                </div>
+
+                           
+                            <?php else:?>
+
+                                <?php // ---------------- STANDARD SELECT --------------  ?>
+                                            <select class="form-control select2_standard <?php echo (!empty($class)) ? $class : ''; ?>"
+                            data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>"
+                            name="conditions[<?php echo $k; ?>][value]"
+                            data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>"
+                            <?php echo $field['onclick']; ?>>
+
+                            <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
+                            <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>>
+                                <?php e('Field empty'); ?>
+                            </option>
+
+                            <?php foreach ($this->crmentity->getEntityPreview($entity, $where) as $id => $name): ?>
+                                <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?>>
+                                    <?php echo $name; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                                <?php endif;?>
                         <?php endif;?>
                         
                         <?php else: ?>
@@ -339,8 +375,138 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         
                         <?php else: ?>
                             
-                            
-                            
+                                    <?php // ----------------- SELECT BIG BUTTONS YEAR -------------------- ?>
+                                    <?php if ($field['type'] == 'select_big_buttons_years'):  ?>
+                                        
+                                        <input type="hidden"
+                                            class="form-control js_badge_hidden_<?php echo $field['id']; ?> <?php echo (!empty($class)) ? $class : ''; ?>"
+                                            data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>"
+                                            name="conditions[<?php echo $k; ?>][value]"
+                                            data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" value="<?php echo $value; ?>" />
+                                    
+                                        <div class="badge_form_field_container">                                        
+                                                <?php for ($i = date('Y') - 2; $i <= date('Y') + 2; $i++): ?>
+                                                    <?php $range_value = '01/01/' . $i . ' - 31/12/' . $i; ?>
+                                                    <span class="badge badge_form_field js_badge_form_field <?php echo ($range_value == $value) ? 'badge_form_field_active' : ''; ?>"
+                                                        data-hidden_field="js_badge_hidden_<?php echo $field['id']; ?>" data-value_id="<?php echo $range_value; ?>">
+                                                        <?php echo $i; ?>
+                                                    </span>
+                                                <?php endfor; ?>
+                                                
+                                        </div>
+
+                                            <?php // ----------------- SELECT BIG BUTTONS YEAR AND MONTH --------------------  ?>
+                                    <?php elseif ($field['type'] == 'select_big_buttons_years_month'):  ?>
+                                        
+                                        <input type="hidden"
+                                            class="form-control js_badge_hidden_<?php echo $field['id']; ?> <?php echo (!empty($class)) ? $class : ''; ?>"
+                                            data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>"
+                                            name="conditions[<?php echo $k; ?>][value]"
+                                            data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" value="<?php echo $value; ?>" />
+                                    
+                                        <div class="badge_form_field_container">                                        
+                                                <?php for ($i = date('Y') - 2; $i <= date('Y') + 2; $i++): ?>
+                                                    <?php $range_value = '01/01/' . $i . ' - 31/12/' . $i; ?>
+                                                    <span class="badge badge_form_field js_badge_form_field_year js_badge_form_field <?php echo ($range_value == $value) ? 'badge_form_field_active' : ''; ?>"
+                                                        data-hidden_field="js_badge_hidden_<?php echo $field['id']; ?>" data-year="<?php echo $i;?>" data-value_id="<?php echo $range_value; ?>">
+                                                        <?php echo $i; ?>
+                                                    </span>
+                                                <?php endfor; ?>
+                                                <div class="badge_form_field_container_month">
+                                                    <?php for ($i = 1; $i <= 12; $i++): ?>
+                                                        <?php $month_value = str_pad($i, 2, '0', STR_PAD_LEFT); ?>
+                                                        <span class="badge badge_form_field js_badge_form_field_month js_badge_form_field <?php echo ($month_value == $value) ? 'badge_form_field_active' : ''; ?>"
+                                                            data-type_value="month" data-hidden_field="js_badge_hidden_<?php echo $field['id']; ?>" data-month="<?php echo $month_value;?>" data-value_id="<?php echo $month_value; ?>">
+                                                            <?php echo t(date('F', mktime(0, 0, 0, $i, 1))); ?>
+                                                        </span>
+                                                    <?php endfor; ?>
+                                                    </div>
+                                        </div>
+
+                                        <script>
+
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                            // Ottiene il valore dell'input nascosto
+                                            const hiddenInputValue = document.querySelector('.js_badge_hidden_<?php echo $field['id']; ?>').value;
+
+                                            // Estrae l'anno, il mese e il giorno dal valore dell'input
+                                            const match = hiddenInputValue.match(/(\d{2})\/(\d{2})\/(\d{4}) - (\d{2})\/(\d{2})\/(\d{4})/);
+                                            if (match) {
+                                                const startDay = match[1];
+                                                const startMonth = match[2];
+                                                const startYear = match[3];
+                                                const endDay = match[4];
+                                                const endMonth = match[5];
+                                                const endYear = match[6];
+                                                // Seleziona e attiva il pulsante dell'anno corrispondente
+                                                const yearButton = document.querySelector(`span[data-year="${startYear}"]`);
+                                                if (yearButton) {
+                                                    yearButton.classList.add('badge_form_field_active');
+                                                   
+                                                }
+
+                                                if (startMonth == endMonth) {
+                                                    // Seleziona e attiva il pulsante del mese corrispondente
+                                                    const monthButton = document.querySelector(`span[data-month="${startMonth}"]`);
+                                                    if (monthButton) {
+                                                        monthButton.classList.add('badge_form_field_active');
+                                                    }
+                                                }
+                                            }
+                                        });
+
+
+
+                                           document.addEventListener('DOMContentLoaded', function() {
+                                                // Funzione per estrarre l'anno dal valore dell'input nascosto
+                                                function getSelectedYearFromHiddenInput(hiddenFieldClass) {
+                                                    const hiddenInput = document.querySelector('.' + hiddenFieldClass);
+                                                    if (hiddenInput && hiddenInput.value) {
+                                                        const yearMatch = hiddenInput.value.match(/\d{4}/); // Trova l'anno nel formato 'YYYY'
+                                                        return yearMatch ? yearMatch[0] : '';
+                                                    }
+                                                    return '';
+                                                }
+
+                                                // Gestisce il click su un anno
+                                                document.querySelectorAll('.js_badge_form_field_year').forEach(function(span) {
+                                                    span.addEventListener('click', function() {
+                                                        const hiddenFieldClass = this.getAttribute('data-hidden_field');
+                                                        const value = this.getAttribute('data-value_id');
+                                                        // Aggiorna il campo nascosto
+                                                        document.querySelector('.' + hiddenFieldClass).value = value;
+                                                    });
+                                                });
+
+                                                // Gestisce il click su un mese
+                                                document.querySelectorAll('.js_badge_form_field_month').forEach(function(span) {
+                                                    span.addEventListener('click', function() {
+                                                        const hiddenFieldClass = this.getAttribute('data-hidden_field');
+                                                        const hiddenInput = document.querySelector('.' + hiddenFieldClass);
+                                                        // Estrai l'anno dal valore corrente dell'input nascosto
+                                                        let selectedYear = getSelectedYearFromHiddenInput(hiddenFieldClass);
+
+                                                        if (!selectedYear) {
+                                                            selectedYear = "<?php echo date('Y'); ?>";
+                                                            const element = document.querySelector('span.js_badge_form_field_year[data-year="'+selectedYear+'"]');
+                                                            console.log(element);
+                                                            element.classList.add('badge_form_field_active');
+                                                        }
+
+                                                        const month = this.getAttribute('data-value_id');
+                                                        const lastDayOfMonth = new Date(selectedYear, month, 0).getDate();
+
+                                                        // Formatta il valore per il campo nascosto
+                                                        const value = `01/${month}/${selectedYear} - ${lastDayOfMonth}/${month}/${selectedYear}`;
+                                                        hiddenInput.value = value;
+                                                    });
+                                                });
+                                            });
+
+
+                                            </script>
+
+                                    <?php else: ?>
                             <select class="form-control select2_standard <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-source-field="<?php echo $field['fields_source'] ?>" data-ref="<?php echo $field['fields_ref'] ?>" data-val="<?php echo $value; ?>" <?php echo $field['onclick']; ?>>
                             
                             <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
@@ -349,6 +515,8 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} $soft_delete_flag ORDER BY {$field['name']}")->result_array() as $row): ?>
                                 <?php if (!empty($row['valore'])): ?><option value="<?php echo $row['valore']; ?>" <?php if ($value == $row['valore']): ?> selected="selected" <?php endif;?>><?php echo $row['valore']; ?></option><?php endif;?>
                             <?php endforeach;?>
+
+<?php endif;?>
                         <?php endif;?>
                         </select>
                         <?php endif;?>
