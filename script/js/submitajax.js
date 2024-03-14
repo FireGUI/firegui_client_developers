@@ -228,8 +228,8 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             formAjaxIsSubmitting = false;
         },
         success: function (msg) {
-
-            if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
+            
+            if (formEvents && ('form-ajax-success' in formEvents)) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
             } else {
