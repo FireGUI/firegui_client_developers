@@ -143,6 +143,7 @@ function initTinymce(container = null) {
     paste_data_images: true,
     relative_urls: false,
     remove_script_host: true,
+    contextmenu: false,
     convert_urls: false,
     plugins:
       "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
