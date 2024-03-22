@@ -268,6 +268,7 @@ class Api_manager extends MY_Controller
     }
 
 
+
     /**
      * Template renderer
      * ---
@@ -275,15 +276,48 @@ class Api_manager extends MY_Controller
      *
      * @param string $pagina
      */
-    protected function stampa($pagina)
+    protected function stampa($pagina, $value_id = null)
     {
-        $this->template['head'] = $this->load->view('layout/head', array(), true);
-        $this->template['header'] = $this->load->view('layout/header', array(), true);
-        $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
-        $this->template['page'] = $pagina;
-        $this->template['footer'] = $this->load->view('layout/footer', null, true);
+        $this->output->setTags($this->layout->getRelatedEntities());
 
-        echo $this->load->view('layout/main', $this->template, true);
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/head.php")) {
+            $this->template['head'] = $this->load->view('custom/layout/head', array(), true);
+        } else {
+            $this->template['head'] = $this->load->view('layout/head', array(), true);
+        }
+
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/header.php")) {
+            $this->template['header'] = $this->load->view('custom/layout/header', array(), true);
+        } else {
+            $this->template['header'] = $this->load->view('layout/header', array(), true);
+        }
+
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/sidebar.php")) {
+            $this->template['sidebar'] = $this->load->view('custom/layout/sidebar', array(), true);
+        } else {
+            $this->template['sidebar'] = $this->load->view('layout/sidebar', array(), true);
+        }
+
+        $this->template['page'] = $pagina;
+
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/footer.php")) {
+            $this->template['footer'] = $this->load->view('custom/layout/footer', null, true);
+        } else {
+            $this->template['footer'] = $this->load->view('layout/footer', null, true);
+        }
+
+        if (file_exists(FCPATH . "application/views_adminlte/custom/layout/foot.php")) {
+            $this->template['foot'] = $this->load->view('custom/layout/foot', null, true);
+        } else {
+            $this->template['foot'] = $this->load->view('layout/foot', null, true);
+        }
+
+        // foreach ($this->template as $key => $html) {
+        //     $this->template[$key] = $this->layout->replaceTemplateHooks($html, $value_id);
+        // }
+        $page = $this->load->view('layout/main', $this->template, true);
+        $page = $this->layout->replaceTemplateHooks($page, $value_id);
+        $this->output->append_output($page);
     }
 
     //DA QUI INIZIANO LE CHIAMATE API VERE E PROPRIE
