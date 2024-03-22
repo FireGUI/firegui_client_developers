@@ -2347,6 +2347,7 @@ class Datab extends CI_Model
                         switch (($type = strtoupper($field['fields_type']))) {
                             case 'VARCHAR':
                             case 'TEXT':
+                            case 'LONGTEXT':
                                 if ($this->db->dbdriver != 'postgre') {
                                     $chunk = strtolower($chunk);
                                     $inner_where[] = "LOWER({$field['fields_name']}) LIKE '%{$chunk}%'";
