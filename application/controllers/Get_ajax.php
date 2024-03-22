@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('BASEPATH')) {
-    exit('No direct script access allowed');
+    exit ('No direct script access allowed');
 }
 
 class Get_ajax extends MY_Controller
@@ -13,7 +13,7 @@ class Get_ajax extends MY_Controller
 
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         if ($this->input->is_ajax_request()) {
@@ -31,7 +31,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         //Se non è un numero, vuol dire che sto passando un url-key
@@ -122,7 +122,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('No log in session found');
+            die ('No log in session found');
         }
 
         $modalSize = $this->input->get('_size');
@@ -131,7 +131,7 @@ class Get_ajax extends MY_Controller
         }
 
         $post_ids = $this->input->post('ids');
-        if (empty($value_id) && !(empty($post_ids))) {
+        if (empty ($value_id) && !(empty ($post_ids))) {
             $value_id = $this->input->post('ids');
         }
         if ($form_entity_module = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON (forms_entity_id = entity_id) WHERE forms_id = '{$form_id}'")->row()->entity_module) {
@@ -229,7 +229,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         //Per retrocompatibilità, metronic passava q, mentre adminlte (col nuovo select2) passa q[term]
@@ -246,14 +246,14 @@ class Get_ajax extends MY_Controller
 
         if (!$table) {
             set_status_header(401); // Unauthorized
-            die('Entità non specificata');
+            die ('Entità non specificata');
         }
 
         /* Devo distinguere i due casi: support table e relazione */
         $entity = $this->datab->get_entity_by_name($table);
 
         // Non ho l'entity id quindi l'entità non esiste
-        if (empty($entity['entity_id'])) {
+        if (empty ($entity['entity_id'])) {
             echo json_encode(array());
             return;
         }
@@ -268,7 +268,7 @@ class Get_ajax extends MY_Controller
         if ($user_id) {
             $operators = unserialize(OPERATORS);
             $field_limit = $this->db->query("SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = ? AND fields_entity_id = ?", [$user_id, $entity['entity_id']])->row_array();
-            if (!empty($field_limit)) {
+            if (!empty ($field_limit)) {
                 $field = $field_limit['fields_name'];
                 $op = $field_limit['limits_operator'];
                 $value = $field_limit['limits_value'];
@@ -297,7 +297,7 @@ class Get_ajax extends MY_Controller
         $where_referer = '';
         if ($referer) {
             $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
-            if (!empty($fReferer->fields_select_where)) {
+            if (!empty ($fReferer->fields_select_where)) {
                 $where_referer = $this->datab->replace_superglobal_data(trim($fReferer->fields_select_where));
             }
         }
@@ -340,7 +340,7 @@ class Get_ajax extends MY_Controller
 
                 $row = $this->datab->get_entity_preview_by_name($table, "{$table}_id = {$id}");
 
-                if (!empty($row)) {
+                if (!empty ($row)) {
                     reset($row); // Puntatore array su prima posizione
                     $key = key($row); // Ottengo la prima e unica chiave
                     $result_json = array('id' => $key, 'name' => $row[$key]);
@@ -363,7 +363,7 @@ class Get_ajax extends MY_Controller
                             array_filter(
                                 $this->crmentity->getFields($field['fields_ref']),
                                 function ($field) {
-                                    return $field['fields_preview'] == DB_BOOL_TRUE || (!empty($field['fields_searchable']) && $field['fields_searchable'] == DB_BOOL_TRUE);
+                                    return $field['fields_preview'] == DB_BOOL_TRUE || (!empty ($field['fields_searchable']) && $field['fields_searchable'] == DB_BOOL_TRUE);
                                 }
                             )
                         );
@@ -392,7 +392,7 @@ class Get_ajax extends MY_Controller
                     $whereIdInList = sprintf('%s IN (%s)', $idKey, implode(',', array_key_map($preSearchRecords, $idKey)));
 
                     $result_array = $this->datab->get_entity_preview_by_name($table, $whereIdInList, $limit);
-                    if (!empty($result_array)) {
+                    if (!empty ($result_array)) {
                         foreach ($result_array as $id => $name) {
                             $result_json[] = array('id' => $id, 'name' => $name);
                         }
@@ -402,8 +402,8 @@ class Get_ajax extends MY_Controller
         }
 
         // Questa cosa la faccio solo se non ho impostato un campo di ordinamento predefinito nell'entità
-        $entityCustomActions = empty($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
-        if (empty($entityCustomActions['order_by_asc']) && empty($entityCustomActions['order_by_desc'])) {
+        $entityCustomActions = empty ($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
+        if (empty ($entityCustomActions['order_by_asc']) && empty ($entityCustomActions['order_by_desc'])) {
 
             // Riordina per rilevanza i risultati [se ho ricerca > 2] oppure per
             // nome [se ricerca < 3] - solo se ho una lista di risultati e non uno
@@ -457,7 +457,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $search = str_replace("'", "''", $this->input->post('q'));
@@ -471,7 +471,7 @@ class Get_ajax extends MY_Controller
         /* Devo distinguere i due casi: support table e relazione */
         $field = $this->db->from('fields')->join('entity', 'fields_entity_id = entity_id', 'left')->where('fields_id', $field_id)->get()->row_array();
 
-        if (!empty($field)) {
+        if (!empty ($field)) {
             /**
              * Applico limiti permessi
              */
@@ -479,7 +479,7 @@ class Get_ajax extends MY_Controller
             $operators = unserialize(OPERATORS);
             $field_limit = $this->db->query("SELECT * FROM limits JOIN fields ON (limits_fields_id = fields_id) WHERE limits_user_id = {$user_id} AND fields_id = {$field_id}")->row_array();
             $where_limit = '';
-            if (!empty($field_limit)) {
+            if (!empty ($field_limit)) {
                 $field = $field_limit['fields_name'];
                 $op = $field_limit['limits_operator'];
                 $value = $field_limit['limits_value'];
@@ -551,7 +551,7 @@ class Get_ajax extends MY_Controller
                             }
                     }
 
-                    if (empty($where_search)) {
+                    if (empty ($where_search)) {
                         // Workaround to force having non-empty filter
                         $full_where = ($where_limit ? "{$where_search} AND {$where_limit}" : "1=1");
                     } else {
@@ -562,7 +562,7 @@ class Get_ajax extends MY_Controller
                 }
             }
 
-            if (isset($result_array)) {
+            if (isset ($result_array)) {
                 if ($id) {
                     $result_json = array('id' => $result_array[$field_name_select], 'name' => $result_array[$field_name_search]);
                 } else {
@@ -627,7 +627,7 @@ class Get_ajax extends MY_Controller
             // Prendo i dati della grid
             $grid = $this->datab->get_grid($grid_id);
 
-            $has_bulk = !empty($grid['grids']['grids_bulk_mode']);
+            $has_bulk = !empty ($grid['grids']['grids_bulk_mode']);
 
             $preview_fields = $this->db->join('entity', 'fields_entity_id = entity_id')->get_where(
                 'fields',
@@ -650,7 +650,7 @@ class Get_ajax extends MY_Controller
                     $order_col -= 1;
                 }
 
-                if (isset($grid['grids_fields'][$order_col]['fields_name'])) {
+                if (isset ($grid['grids_fields'][$order_col]['fields_name'])) {
                     //Se il campo è multilingua, forzo l'ordinamento per chiave lingua corrente
                     if ($grid['grids_fields'][$order_col]['fields_multilingual'] == DB_BOOL_TRUE) {
                         if ($this->db->dbdriver == 'postgre') {
@@ -665,7 +665,7 @@ class Get_ajax extends MY_Controller
                     }
                 } else {
                     //Se entro qui, verifico se il campo passato per l'ordinamento non sia per caso un eval cachable...
-                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent' || !empty($grid['grids_fields'][$order_col]['grids_fields_eval_cache_data'])) {
+                    if ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_type'] == 'query_equivalent' || !empty ($grid['grids_fields'][$order_col]['grids_fields_eval_cache_data'])) {
                         $order_by = "{$grid['grids_fields'][$order_col]['grids_fields_eval_cache_data']} {$order_dir}";
                     } else {
                         $order_by = null;
@@ -679,7 +679,7 @@ class Get_ajax extends MY_Controller
 
             //Arrivato qui mi salvo in sessione sia la colonna di ordinamento, sia l'eventuale ricerca, così posso ripescarla in fase di export xml
             $grids_ajax_params = $this->session->userdata('grids_ajax_params');
-            if (empty($grids_ajax_params)) {
+            if (empty ($grids_ajax_params)) {
                 $grids_ajax_params = [];
             }
             $grids_ajax_params[$grid_id] = [
@@ -760,7 +760,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $data = $this->datab->get_map($map_id);
@@ -783,7 +783,7 @@ class Get_ajax extends MY_Controller
             }
         }
 
-        if (!empty($post_where)) {
+        if (!empty ($post_where)) {
             foreach ($post_where as $post_cond) {
                 $field = $post_cond['name'];
                 $value = $post_cond['value'];
@@ -840,7 +840,7 @@ class Get_ajax extends MY_Controller
         $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), null, null, $order_by, 2, false, [], ['group_by' => null]);
 
         $markers = array();
-        if (!empty($data_entity)) {
+        if (!empty ($data_entity)) {
             // Cerco un link se c'è qui per non fare una query ogni ciclo
             $link = $this->datab->get_detail_layout_link($data['maps']['maps_entity_id']);
 
@@ -890,17 +890,17 @@ class Get_ajax extends MY_Controller
                 }
 
                 // Get the id
-                if (empty($mark['id'])) {
+                if (empty ($mark['id'])) {
                     $mark['id'] = $marker[$data['maps']['entity_name'] . "_id"];
                 }
 
-                if (empty($mark['title'])) {
+                if (empty ($mark['title'])) {
                     $mark['title'] = '#' . $mark['id'];
                 }
 
                 // Elaboro le coordinate
-                if ((!empty($mark['latlng']) || !empty($mark['lat']))) {
-                    if (isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
+                if ((!empty ($mark['latlng']) || !empty ($mark['lat']))) {
+                    if (isset ($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
                         $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                         $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     } elseif ($latlng_field) {
@@ -928,10 +928,11 @@ class Get_ajax extends MY_Controller
 
     public function get_calendar_events($calendar_id, $value_id = null)
     {
+
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $data = $this->datab->get_calendar($calendar_id);
@@ -987,21 +988,30 @@ class Get_ajax extends MY_Controller
 
         //debug($generatedWhere, true);
 
-        if (!empty($data['calendars']['calendars_custom_query'])) {
+        if (!empty ($data['calendars']['calendars_custom_query'])) {
             $data_entity = $this->datab->getDataEntityByQuery($data['calendars']['calendars_entity_id'], $data['calendars']['calendars_custom_query'], $generatedWhere);
         } else {
 
+
+
+            // Esegui la chiamata
             $data_entity = $this->apilib->search($data['calendars']['entity_name'], $generatedWhere, null, null, null, null, 3);
+
+
         }
 
         $previews = array();
         foreach ($data['calendars_fields'] as $field) {
             if ($field['fields_ref']) {
+
                 $ids = array_filter(array_unique(array_map(function ($dato) use ($field) {
+                    if (!array_key_exists($field['fields_name'], $dato)) {
+                        return '';
+                    }
                     return $dato[$field['fields_name']];
                 }, $data_entity)));
 
-                if (empty($ids)) {
+                if (empty ($ids)) {
                     $previews[$field['fields_ref']] = array();
                 } else {
                     $previews[$field['fields_ref']] = $this->datab->get_entity_preview_by_name($field['fields_ref'], "{$field['fields_ref']}_id IN (" . implode(',', $ids) . ")");
@@ -1014,8 +1024,8 @@ class Get_ajax extends MY_Controller
         foreach ($data_entity as $event) {
             $ev = array();
             foreach ($data['calendars_fields'] as $field) {
-                if ($field['calendars_fields_type'] !== 'title' || (!empty($event[$field['fields_name']]) && empty($ev['title']))) {
-                    if ($field['fields_ref'] && isset($previews[$field['fields_ref']][$event[$field['fields_name']]]) && in_array($field['calendars_fields_type'], array('title', 'description'))) {
+                if ($field['calendars_fields_type'] !== 'title' || (!empty ($event[$field['fields_name']]) && empty ($ev['title']))) {
+                    if ($field['fields_ref'] && isset ($previews[$field['fields_ref']][$event[$field['fields_name']]]) && in_array($field['calendars_fields_type'], array('title', 'description'))) {
                         $ev[$field['calendars_fields_type']] = $previews[$field['fields_ref']][$event[$field['fields_name']]];
                     } else {
                         $ev[$field['calendars_fields_type']] = $event[$field['fields_name']];
@@ -1024,7 +1034,7 @@ class Get_ajax extends MY_Controller
             }
 
             // Non ha senso controllare il filtro se manca uno di questi due campi
-            if (isset($ev['filter']) && isset($data['calendars']['calendars_filter_entity_id'])) {
+            if (isset ($ev['filter']) && isset ($data['calendars']['calendars_filter_entity_id'])) {
                 // Se settati il campo su cui filtrare e il valore del filtro, allora applico il filtro
                 if (!in_array($ev['filter'], $filter)) {
                     continue;
@@ -1032,7 +1042,7 @@ class Get_ajax extends MY_Controller
             }
 
             // Get the id
-            if (!isset($ev['id']) || !$ev['id']) {
+            if (!isset ($ev['id']) || !$ev['id']) {
                 $ev['id'] = $event[$data['calendars']['entity_name'] . "_id"];
             }
             //debug($ev);
@@ -1070,14 +1080,14 @@ class Get_ajax extends MY_Controller
             } else {
                 $ev['start'] = (new DateTime($ev['start']))->format('Y-m-d\TH:i:s');
 
-                if (!empty($ev['end'])) {
+                if (!empty ($ev['end'])) {
                     $ev['end'] = (new DateTime($ev['end']))->format('Y-m-d\TH:i:s');
                 } else {
                     $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format('Y-m-d\TH:i:s');
                 }
             }
 
-            if (empty($ev['all_day'])) {
+            if (empty ($ev['all_day'])) {
                 $arr_start = explode('T', $ev['start']);
                 $arr_end = explode('T', $ev['end']);
                 //Fix per efficiente che aveva un campo timestamp ma draw html type date, quindi salvava sempre e comunque 00:00:00 nell'ora fine.
@@ -1086,7 +1096,7 @@ class Get_ajax extends MY_Controller
                 $ev['allDay'] = ($ev['all_day'] === DB_BOOL_TRUE);
             }
 
-            if (empty($ev['title'])) {
+            if (empty ($ev['title'])) {
                 $ev['title'] = 'No title';
             }
 
@@ -1094,6 +1104,8 @@ class Get_ajax extends MY_Controller
                 array_push($events, $ev);
             }
         }
+
+
 
         //        echo json_encode($events);
         $this->load->view('layout/json_return', ['json' => json_encode($events)]);
@@ -1105,7 +1117,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $identifier = $this->input->post('identifier');
@@ -1132,7 +1144,7 @@ class Get_ajax extends MY_Controller
 
         $dati['permissions_entities'] = array();
         $dati['permissions_modules'] = array();
-        if (isset($dati['permissions']['permissions_id'])) {
+        if (isset ($dati['permissions']['permissions_id'])) {
             $permissions_entities = $this->db->get_where('permissions_entities', array('permissions_entities_permissions_id' => $dati['permissions']['permissions_id']))->result_array();
             $permissions_modules = $this->db->get_where('permissions_modules', array('permissions_modules_permissions_id' => $dati['permissions']['permissions_id']))->result_array();
             foreach ($permissions_entities as $ent) {
@@ -1160,20 +1172,20 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $entity_id = $this->input->post('entity_id');
         $entity = $this->datab->get_entity($entity_id);
         $return = array();
-        if (!empty($entity)) {
+        if (!empty ($entity)) {
             switch ($entity['entity_type']) {
                 case ENTITY_TYPE_SUPPORT_TABLE:
                     $return = $this->db->from('fields')->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id', 'left')
                         ->join('entity', 'entity.entity_id = fields.fields_entity_id', 'left')->where('fields_entity_id', $entity_id)->get()->result_array();
 
                     foreach ($return as $k => $row) {
-                        if (empty($row['fields_draw_label'])) {
+                        if (empty ($row['fields_draw_label'])) {
                             $row['fields_draw_label'] = ucwords(str_replace($entity['entity_name'] . '_', '', $row['fields_name']));
                         }
                         $return[$k] = $row;
@@ -1192,7 +1204,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $this->db->from('fields')->join('fields_draw', 'fields.fields_id = fields_draw.fields_draw_fields_id', 'left')
@@ -1207,7 +1219,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         // Leggi post e recupera field
@@ -1220,7 +1232,7 @@ class Get_ajax extends MY_Controller
             ->join('entity', 'entity.entity_id = fields.fields_entity_id', 'left')
             ->where('fields_id', $field_id);
         $field = $this->db->get()->row_array();
-        if (empty($field)) {
+        if (empty ($field)) {
             die();
         }
 
@@ -1256,7 +1268,7 @@ class Get_ajax extends MY_Controller
                     $results = $this->db->query("SELECT * FROM {$field['entity_name']} {$where} LIMIT 100")->result_array();
                 }
                 foreach ($results as $row) {
-                    if (!empty($row[$field['fields_name']])) {
+                    if (!empty ($row[$field['fields_name']])) {
                         $item = ['id' => $row[$field['fields_name']], 'name' => $row[$field['fields_name']]];
                         $return[$item['id']] = $item;
                     }
@@ -1276,7 +1288,7 @@ class Get_ajax extends MY_Controller
                         }
 
                         foreach ($results as $row) {
-                            if (!empty($row[$field['fields_name']])) {
+                            if (!empty ($row[$field['fields_name']])) {
                                 $item = ['id' => $row[$ref_entity['entity_name'] . '_id'], 'name' => $row[$ref_entity['entity_name'] . '_value']];
                                 $return[$item['id']] = $item;
                             }
@@ -1313,7 +1325,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         /**
@@ -1328,7 +1340,7 @@ class Get_ajax extends MY_Controller
 
         if (!$entity) {
             set_status_header(401); // Unauthorized
-            die('Entità non specificata');
+            die ('Entità non specificata');
         }
 
         $entity_name = $entity['entity_name'];
@@ -1341,7 +1353,7 @@ class Get_ajax extends MY_Controller
 
         // Bisogna verificare innanzitutto se il campo to fa riferimento ad una tabella esterna
         $field_to = $this->db->get_where('fields', array('fields_name' => $field_name_to, 'fields_ref' => $entity_name))->row_array();
-        if (empty($field_to) || empty($field_to['fields_source'])) {
+        if (empty ($field_to) || empty ($field_to['fields_source'])) {
             die();
         }
 
@@ -1397,7 +1409,7 @@ class Get_ajax extends MY_Controller
         } else {
             $where_referer[] = "{$field_name_filter} = '{$from_val}'";
         }
-        if (!empty($field_to['fields_select_where'])) {
+        if (!empty ($field_to['fields_select_where'])) {
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
         }
 
@@ -1410,7 +1422,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         $cur = $this->datab->getLanguage();
@@ -1430,7 +1442,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         try {
@@ -1450,10 +1462,10 @@ class Get_ajax extends MY_Controller
 
         $id = $preview = null;
 
-        if (isset($result[$idField])) {
+        if (isset ($result[$idField])) {
             $id = (int) $result[$idField];
             $previews = $this->crmentity->getEntityPreview($entity['entity_id'], sprintf('%s = %d', $idField, $id));
-            if (isset($previews[$id])) {
+            if (isset ($previews[$id])) {
                 // Potrebbe succedere che non venga trovata per qualche motivo [?]
                 $preview = $previews[$id];
             }
@@ -1473,7 +1485,7 @@ class Get_ajax extends MY_Controller
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
+            die ('Non sei loggato nel sistema');
         }
 
         try {
@@ -1530,8 +1542,8 @@ class Get_ajax extends MY_Controller
     {
         $post = $this->input->post();
 
-        if (empty($post) || empty($post['base64'])) {
-            die(json_encode(['status' => 0, 'txt' => t('No base64 given')]));
+        if (empty ($post) || empty ($post['base64'])) {
+            die (json_encode(['status' => 0, 'txt' => t('No base64 given')]));
         }
 
         $image = base64_decode($post['base64']);
@@ -1548,9 +1560,9 @@ class Get_ajax extends MY_Controller
 
             file_put_contents($filepath, $image);
 
-            die(json_encode(['status' => 0, 'txt' => base_url($basepath)]));
+            die (json_encode(['status' => 0, 'txt' => base_url($basepath)]));
         } else {
-            die(json_encode(['status' => 0, 'txt' => t('Error')]));
+            die (json_encode(['status' => 0, 'txt' => t('Error')]));
         }
     }
 
@@ -1558,7 +1570,7 @@ class Get_ajax extends MY_Controller
     {
         $post = $this->security->xss_clean($this->input->post());
 
-        if (empty($post) || empty($post['keyword'])) {
+        if (empty ($post) || empty ($post['keyword'])) {
             // die(e_json(['status' => 0, 'txt' => t('No data passed')]));
         }
 
@@ -1567,8 +1579,8 @@ class Get_ajax extends MY_Controller
 
         $field_db = $this->db->join('entity', 'entity_id = fields_entity_id')->where('fields_name', $requested_field)->get('fields')->row_array();
 
-        if (empty($field_db)) {
-            die(e_json(['status' => 0, 'txt' => t('Field not found')]));
+        if (empty ($field_db)) {
+            die (e_json(['status' => 0, 'txt' => t('Field not found')]));
         }
 
         try {
@@ -1576,7 +1588,7 @@ class Get_ajax extends MY_Controller
 
             e_json(['status' => 1, 'txt' => $results]);
         } catch (Exception $e) {
-            die(e_json(['status' => 0, 'txt' => $e->getMessage()]));
+            die (e_json(['status' => 0, 'txt' => $e->getMessage()]));
         }
     }
 

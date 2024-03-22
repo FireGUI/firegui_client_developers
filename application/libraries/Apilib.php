@@ -2373,7 +2373,7 @@ class Apilib
                     debug($function);
                     debug($data, true);
                 }
-
+                log_message('debug', 'Running post process ' . $function['fi_events_title'] . ' on ' . $entity_id . ' ' . $pptype);
                 if (!is_maintenance() && in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
                     /*
                     '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
