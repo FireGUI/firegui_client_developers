@@ -146,7 +146,13 @@ $(document).ready(function () {
         e.stopImmediatePropagation(); // Prevent other handlers to be fired
 
         var url = $(this).attr('href');
+        var confirm = $(this).data('confirm') ?? null;
         var container = $(this);
+        
+        if (confirm !== null && !window.confirm(confirm)) {
+            return false;
+        }
+        
         loading(true);
         $.ajax({
             url: url,
@@ -222,8 +228,8 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             formAjaxIsSubmitting = false;
         },
         success: function (msg) {
-
-            if (formEvents && formEvents.hasOwnProperty('form-ajax-success')) {
+            
+            if (formEvents && ('form-ajax-success' in formEvents)) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
             } else {

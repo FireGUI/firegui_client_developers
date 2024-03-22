@@ -27,5 +27,6 @@ $form_id = $field['forms_fields_forms_id'];
 
     </div>
 
+    <p class="help-block dz-helptext" style="display: none"><i class="fas fa-info fa-fw"></i><?php e('Files has been uploaded successfully. Now you can save'); ?></p>
 </div>
 <?php echo $help; ?>

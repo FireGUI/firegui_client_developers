@@ -143,6 +143,7 @@ function initTinymce(container = null) {
     paste_data_images: true,
     relative_urls: false,
     remove_script_host: true,
+    contextmenu: false,
     convert_urls: false,
     plugins:
       "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount textpattern noneditable charmap quickbars emoticons",
@@ -652,12 +653,12 @@ function initComponents(container, reset = false) {
       get_params = "";
     }
     var input = $(this);
-
-    var $allow_clear = false;
+    
+    var $allow_clear = true;
     var field_required = $(this).data("required");
-
-    if (field_required == 0) {
-      $allow_clear = true;
+    
+    if (field_required == 1) {
+      $allow_clear = false;
     }
 
     input.select2({

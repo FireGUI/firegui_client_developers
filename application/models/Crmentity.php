@@ -233,7 +233,7 @@ class Crmentity extends CI_Model
                 // contenenti un HTML
                 foreach ($fieldsWysiwyg as $field) {
                     $name = $field['fields_name'];
-                    if (!empty($_data[$name])) {
+                    if (!empty ($_data[$name])) {
                         $_data[$name] = str_replace('{base_url}', $baseUrl, $_data[$name]);
                     }
                 }
@@ -250,7 +250,7 @@ class Crmentity extends CI_Model
                 //Per i campi float li formato number_format 2, altrimenti mysql fa le bizze e mostra cose tipo 123.359999999999996
                 if ($this->db->dbdriver != 'postgre') {
                     foreach ($fieldsFloat as $field) {
-                        if (!empty($_data[$field['fields_name']]) && $_data[$field['fields_name']] !== null) {
+                        if (!empty ($_data[$field['fields_name']]) && $_data[$field['fields_name']] !== null) {
                             $_data[$field['fields_name']] = number_format($_data[$field['fields_name']], 3, '.', '');
                             if (substr($_data[$field['fields_name']], -1) === '0') {
                                 $_data[$field['fields_name']] = substr($_data[$field['fields_name']], 0, -1);
@@ -293,7 +293,7 @@ class Crmentity extends CI_Model
 
                 $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
 
-                if (!empty($referingData)) {
+                if (!empty ($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
                         // ma non viene incluso nel risultato... quindi si
@@ -358,7 +358,7 @@ class Crmentity extends CI_Model
                 $relation_data_by_ids = [];
                 $related_data = [];
                 foreach ($relation_data as $relation_dato) {
-                    if (empty($relation_data_by_ids[$relation_dato[$field]])) {
+                    if (empty ($relation_data_by_ids[$relation_dato[$field]])) {
                         $relation_data_by_ids[$relation_dato[$field]] = [];
                     }
 
@@ -367,12 +367,12 @@ class Crmentity extends CI_Model
                 }
 
                 // Prendo le preview dei record relazionati
-                if (!empty($related_data)) {
+                if (!empty ($related_data)) {
                     //if entity is soft deletable, remove filter here to access deleted records in previews
                     $other_entity_table = $this->getEntity($other_table);
-                    $entityCustomActions = empty($other_entity_table['entity_action_fields']) ? [] : json_decode($other_entity_table['entity_action_fields'], true);
+                    $entityCustomActions = empty ($other_entity_table['entity_action_fields']) ? [] : json_decode($other_entity_table['entity_action_fields'], true);
                     $where_related_data = ["{$other_table}.{$other} IN (" . implode(',', $related_data) . ")"];
-                    if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
+                    if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty ($entityCustomActions['soft_delete_flag'])) {
                         $where_related_data[] = "({$entityCustomActions['soft_delete_flag']} = 1 OR 1=1)";
 
                     }
@@ -380,7 +380,7 @@ class Crmentity extends CI_Model
                     $related_data_preview = $this->getEntityPreview($other_table, $where_related_data_str);
                     //debug($related_data_preview);
                     foreach ($data['data'] as $key => $dato) {
-                        if (isset($relation_data_by_ids[$dato[$field]])) {
+                        if (isset ($relation_data_by_ids[$dato[$field]])) {
                             foreach ($relation_data_by_ids[$dato[$field]] as $related_value) {
 
                                 // Se il campo non è un array per il momento non ho soluzioni migliori se non farlo diventare un array vuoto
@@ -401,7 +401,7 @@ class Crmentity extends CI_Model
             // Recupero le eventuali fake relations, cioè tutti i fields con
             // fields_ref che hanno fields_type o VARCHAR o TEXT
             $fake_relations_fields = array_filter($data['visible_fields'], function ($field) {
-                return $field['fields_ref'] && in_array($field['fields_type'], array('VARCHAR', 'TEXT'));
+                return $field['fields_ref'] && in_array($field['fields_type'], array ('VARCHAR', 'TEXT'));
             });
 
             $names = [];
@@ -423,7 +423,7 @@ class Crmentity extends CI_Model
                 }
 
                 $fullData = [];
-                if (!empty($fake_relation_ids)) {
+                if (!empty ($fake_relation_ids)) {
                     $imploded_fake_relation_ids = implode(',', $fake_relation_ids);
                     $frEntity = $this->getEntity($related);
                     //debug('test');
@@ -462,6 +462,11 @@ class Crmentity extends CI_Model
      */
     public function get_data_simple_list($entity_id = null, $where = null, array $options = [])
     {
+        //TODO: cache
+        $key = 'apilib/' . __METHOD__ . ':' . md5(serialize(func_get_args()));
+        $tags = $this->mycache->buildTagsFromEntity($entity_id);
+
+
         if (!$entity_id) {
 
             throw new Exception("Impossibile eseguire la query: entità non specificata.");
@@ -470,143 +475,147 @@ class Crmentity extends CI_Model
 
         }
 
-        // Params extraction
-        $count = array_get($options, 'count', false);
-        $extra_data = array_get($options, 'extra_data', false);
-        $depth = array_get($options, 'depth', 2);
-        $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
+        return $this->getFromCache($key, function () use ($entity_id, $where, $options) {
+
+
+            // Params extraction
+            $count = array_get($options, 'count', false);
+            $extra_data = array_get($options, 'extra_data', false);
+            $depth = array_get($options, 'depth', 2);
+            $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
 
 
-        // =================
-        $dati = $this->getEntityFullData($entity_id);
-        $this->buildSelect($dati, $options);
+            // =================
+            $dati = $this->getEntityFullData($entity_id);
+            $this->buildSelect($dati, $options);
 
 
 
 
-        $this->buildWhere($where);
-        $this->buildLimitOffsetOrder($options);
-        $this->buildGroupBy($options);
+            $this->buildWhere($where);
+            $this->buildLimitOffsetOrder($options);
+            $this->buildGroupBy($options);
 
-        // Save list of joined entity, to avoid double joins...
-        $this->db->from($dati['entity']['entity_name']);
-        $joined = array($dati['entity']['entity_name']);
-        $to_join_later = [];
+            // Save list of joined entity, to avoid double joins...
+            $this->db->from($dati['entity']['entity_name']);
+            $joined = array ($dati['entity']['entity_name']);
+            $to_join_later = [];
 
 
 
-        $permission_entities = [$entity_id]; // Lista delle entità su cui devo applicare i limiti
+            $permission_entities = [$entity_id]; // Lista delle entità su cui devo applicare i limiti
 
-        //Join entities
-        foreach ($dati['visible_fields'] as $key => $campo) {
-            if (count($joined) >= 60) {
-                break;
-            }
-            //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
-            $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
+            //Join entities
+            foreach ($dati['visible_fields'] as $key => $campo) {
+                if (count($joined) >= 60) {
+                    break;
+                }
+                //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
+                $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
 
-            // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
-            if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
-                if (in_array($campo['fields_ref'], $joined)) {
-                    // Metto nella lista dei join later
-                    $to_join_later[$campo['fields_name']] = $campo['fields_ref'];
-                } else {
-                    if ($campo['fields_ref'] == 'rel_impianto_immagine') {
-                        // debug($dati['entity']['entity_name']);
-                        // debug($dati['relations']);
-                    }
+                // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
+                if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
+                    if (in_array($campo['fields_ref'], $joined)) {
+                        // Metto nella lista dei join later
+                        $to_join_later[$campo['fields_name']] = $campo['fields_ref'];
+                    } else {
+                        if ($campo['fields_ref'] == 'rel_impianto_immagine') {
+                            // debug($dati['entity']['entity_name']);
+                            // debug($dati['relations']);
+                        }
 
-                    $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
-                    array_push($joined, $campo['fields_ref']);
+                        $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
+                        array_push($joined, $campo['fields_ref']);
 
-                    // Devo fare il controllo dei limiti sui field ref
-                    $ent = $this->getEntity($campo['fields_ref'], false);
+                        // Devo fare il controllo dei limiti sui field ref
+                        $ent = $this->getEntity($campo['fields_ref'], false);
 
-                    if ($ent && !in_array($ent['entity_id'], $permission_entities)) {
-                        $permission_entities[] = $ent['entity_id'];
+                        if ($ent && !in_array($ent['entity_id'], $permission_entities)) {
+                            $permission_entities[] = $ent['entity_id'];
+                        }
                     }
                 }
             }
-        }
 
-        // =====================================================================
-        // QUERY OUT - COUNT
-        // ---
-        // Se ho un count allora non procedo, ritorno direttamente il risultato
-        // richiesto (in base al fatto che voglia gli extra_data o meno)
-        // =====================================================================
-        if ($count) {
-            $dati['data'] = $this->db->count_all_results();
+            // =====================================================================
+            // QUERY OUT - COUNT
+            // ---
+            // Se ho un count allora non procedo, ritorno direttamente il risultato
+            // richiesto (in base al fatto che voglia gli extra_data o meno)
+            // =====================================================================
+            if ($count) {
+                $dati['data'] = $this->db->count_all_results();
+                return $extra_data ? $dati : $dati['data'];
+            }
+
+            // =====================================================================
+            // QUERY OUT - RESULTS
+            // ---
+            // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
+            // query sia andata a buon fine
+            // =====================================================================
+            //debug('test');
+            $qResult = $this->db->get();
+
+            if (!$qResult instanceof CI_DB_result) {
+                // Errore, la query
+                throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
+            }
+
+            $dati['data'] = $qResult->result_array();
+
+            $qResult->free_result();
+
+            // =====================================================================
+            // SUPPORTO MULTI-JOIN
+            // ---
+            // Un'entità (A) può essere joinata più di una volta ad un'altra entità
+            // (B) mediante altrettanti campi (ab1 e ab2). Non posso fare tutto in
+            // una query perché dovrei usare degli alias e, per retrocompatibilità,
+            // questo non è possibile (tutte le query inserite scoppierebbero).
+            // Quindi nella query appena fatta ho joinato 1 solo campo, mentre gli
+            // altri campi li "joino" ora. Non si tratta di un vero e proprio join,
+            // in quanto devo estrarre manualmente i dati.
+            // =====================================================================
+            if ($dati['data'] && $depth > 0) {
+                foreach ($to_join_later as $main_field => $sub_entity_name) {
+                    $sub_entity = $this->getEntity($sub_entity_name);
+
+                    $main_field_values = $this->buildWhereInList(array_filter(array_key_map($dati['data'], $main_field)));
+
+                    if (!$main_field_values) {
+                        continue;
+                    }
+
+                    // Ritrova i dati - jData sono i dati grezzi, mentre mergeable
+                    // sono i dati pronti ad essere uniti ai dati principali
+                    // debug($main_field);
+                    // debug("{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})");
+                    $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", ['depth' => $depth - 1]);
+
+                    $mergeable = [];
+
+                    foreach ($jData as $record) {
+                        // Rimappo ogni valore in modo da avere il main field
+                        // anteposto al vero field. Quindi se ho
+                        // messaggi con campo messaggi_utente che ha ref a
+                        // utenti, ogni campo recuperato da questa join sarà
+                        // rinominato in messaggi_utente_utenti_*
+                        $mergeable[$record[$sub_entity_name . '_id']] = array_combine(array_map(function ($key) use ($main_field) {
+                            return $main_field . '_' . $key;
+                        }, array_keys($record)), array_values($record));
+                    }
+
+                    foreach ($dati['data'] as $k => $record) {
+                        $id = $record[$main_field];
+                        $dati['data'][$k] = array_merge($record, array_get($mergeable, $id, []));
+                    }
+                }
+            }
+
             return $extra_data ? $dati : $dati['data'];
-        }
-
-        // =====================================================================
-        // QUERY OUT - RESULTS
-        // ---
-        // Qui invece devo ritornare dei risultati, quindi mi assicuro che la
-        // query sia andata a buon fine
-        // =====================================================================
-        //debug('test');
-        $qResult = $this->db->get();
-
-        if (!$qResult instanceof CI_DB_result) {
-            // Errore, la query
-            throw new Exception('Si è verificato un errore estraendo i dati' . PHP_EOL . 'Ultima query:' . PHP_EOL . $this->db->last_query());
-        }
-
-        $dati['data'] = $qResult->result_array();
-
-        $qResult->free_result();
-
-        // =====================================================================
-        // SUPPORTO MULTI-JOIN
-        // ---
-        // Un'entità (A) può essere joinata più di una volta ad un'altra entità
-        // (B) mediante altrettanti campi (ab1 e ab2). Non posso fare tutto in
-        // una query perché dovrei usare degli alias e, per retrocompatibilità,
-        // questo non è possibile (tutte le query inserite scoppierebbero).
-        // Quindi nella query appena fatta ho joinato 1 solo campo, mentre gli
-        // altri campi li "joino" ora. Non si tratta di un vero e proprio join,
-        // in quanto devo estrarre manualmente i dati.
-        // =====================================================================
-        if ($dati['data'] && $depth > 0) {
-            foreach ($to_join_later as $main_field => $sub_entity_name) {
-                $sub_entity = $this->getEntity($sub_entity_name);
-
-                $main_field_values = $this->buildWhereInList(array_filter(array_key_map($dati['data'], $main_field)));
-
-                if (!$main_field_values) {
-                    continue;
-                }
-
-                // Ritrova i dati - jData sono i dati grezzi, mentre mergeable
-                // sono i dati pronti ad essere uniti ai dati principali
-                // debug($main_field);
-                // debug("{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})");
-                $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", ['depth' => $depth - 1]);
-
-                $mergeable = [];
-
-                foreach ($jData as $record) {
-                    // Rimappo ogni valore in modo da avere il main field
-                    // anteposto al vero field. Quindi se ho
-                    // messaggi con campo messaggi_utente che ha ref a
-                    // utenti, ogni campo recuperato da questa join sarà
-                    // rinominato in messaggi_utente_utenti_*
-                    $mergeable[$record[$sub_entity_name . '_id']] = array_combine(array_map(function ($key) use ($main_field) {
-                        return $main_field . '_' . $key;
-                    }, array_keys($record)), array_values($record));
-                }
-
-                foreach ($dati['data'] as $k => $record) {
-                    $id = $record[$main_field];
-                    $dati['data'][$k] = array_merge($record, array_get($mergeable, $id, []));
-                }
-            }
-        }
-
-        return $extra_data ? $dati : $dati['data'];
+        }, $tags);
     }
 
     /**
@@ -740,7 +749,7 @@ class Crmentity extends CI_Model
             //array_filter does not work well. It removes also filters with value 0 or '0'. Ex.: WHERE field=0 will be removed.
             //so we used a custom function
             $func_empty = function ($value) {
-                if (empty($value) && $value !== 0 && $value !== '0') {
+                if (empty ($value) && $value !== 0 && $value !== '0') {
                     return false;
                 } else {
                     return true;
@@ -849,24 +858,24 @@ class Crmentity extends CI_Model
             $select = array_key_map($previewFields, 'fields_name');
 
             //Aggiungo ordinamento qualora l'entità ne avesse configurato uno di default
-            $entityCustomActions = empty($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
+            $entityCustomActions = empty ($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
 
-            if (isset($entityCustomActions['order_by_asc'])) {
+            if (isset ($entityCustomActions['order_by_asc'])) {
                 $order_by = $entityCustomActions['order_by_asc'] . ' ASC';
-            } elseif (isset($entityCustomActions['order_by_desc'])) {
+            } elseif (isset ($entityCustomActions['order_by_desc'])) {
                 $order_by = $entityCustomActions['order_by_desc'] . ' DESC';
             } else {
                 $order_by = null;
             }
 
             // Filtro per soft-delete se non viene specificato questo filtro nel where della grid
-            if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
+            if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty ($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
 
                 // Where can be an array, so it's not correct to check online the where string conditions, but consider it different...
                 if (is_array($where)) {
                     if (!array_key_exists($entityCustomActions['soft_delete_flag'], $where)) {
-                        if (empty($where)) {
+                        if (empty ($where)) {
                             $where = ["({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)"];
                         } else {
                             $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
@@ -874,7 +883,7 @@ class Crmentity extends CI_Model
                     }
                 } else { // If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
                     if (stripos($where, $entityCustomActions['soft_delete_flag']) === false) {
-                        if (empty($where)) {
+                        if (empty ($where)) {
                             $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                         } else {
                             $where .= " AND ({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
@@ -1326,10 +1335,12 @@ class Crmentity extends CI_Model
     {
         if (!array_key_exists($entity, $this->_default_grids)) {
             $entity_id = $this->getEntity($entity)['entity_id'];
-            $query = $this->db->get_where('grids', array(
-                'grids_entity_id' => $entity_id,
-                'grids_default' => DB_BOOL_TRUE,
-            )
+            $query = $this->db->get_where(
+                'grids',
+                array(
+                    'grids_entity_id' => $entity_id,
+                    'grids_default' => DB_BOOL_TRUE,
+                )
             );
 
             $this->_default_grids[$entity] = $query->row_array();
@@ -1344,10 +1355,12 @@ class Crmentity extends CI_Model
     {
         if (!array_key_exists($entity, $this->_default_forms)) {
             $entity_id = $this->getEntity($entity)['entity_id'];
-            $query = $this->db->get_where('forms', array(
-                'forms_entity_id' => $entity_id,
-                'forms_default' => DB_BOOL_TRUE,
-            )
+            $query = $this->db->get_where(
+                'forms',
+                array(
+                    'forms_entity_id' => $entity_id,
+                    'forms_default' => DB_BOOL_TRUE,
+                )
             );
 
             $this->_default_forms[$entity] = $query->row_array();

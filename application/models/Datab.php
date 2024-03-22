@@ -2847,10 +2847,10 @@ class Datab extends CI_Model
                         $doc_ext = array('doc', 'docx', 'ods', 'odt', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx', 'txt');
                         $ext = pathinfo($value, PATHINFO_EXTENSION);
                         if (in_array($ext, $doc_ext)) {
-                            return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img width='30px' height='30px' src=" . base_url("images/download.png") . ">Download file</a>";
+                            return "<a href='" . base_url_uploads("uploads/$value") . "' class='fancybox'><img width='30px' height='30px' src='" . base_url("images/download.png") . "'>Download file</a>";
                         } elseif (strstr($file, "audio/")) {
                             // this code for audio
-                            return "<a href=" . base_url("uploads/$value") . " target='_blank'>Ascolta file</a>";
+                            return "<a href='" . base_url("uploads/$value") . "' target='_blank'>Ascolta file</a>";
                         } elseif (strstr($file, "video/")) {
                             // this code for video
                             //return"<video controls><source src=".base_url_uploads("uploads/$value")." type='video/mp4'>Your browser does not support the video tag.</video>";
@@ -2865,7 +2865,7 @@ class Datab extends CI_Model
                             ));*/
                             return anchor(base_url_uploads("uploads/$value"), 'Download file', array('class' => 'js_open_modal_link_file'));
                         } elseif (strstr($file, "image/")) {
-                            return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img src=" . base_url_uploads("thumb/50/50/1/uploads/$value") . "></a>";
+                            return "<a href='" . base_url_uploads("uploads/$value") . "' class='fancybox'><img src='" . base_url_uploads("thumb/50/50/1/uploads/$value") . "'></a>";
                         } else {
                             return anchor(base_url_uploads("uploads/$value"), 'Download file', array('class' => 'js_open_modal_link_file'));
                         }
@@ -2900,14 +2900,14 @@ class Datab extends CI_Model
                             $doc_ext = array('doc', 'docx', 'ods', 'odt', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx', 'txt');
                             $ext = pathinfo($value, PATHINFO_EXTENSION);
                             if (in_array($ext, $doc_ext)) {
-                                return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img width='30px' height='30px' src=" . base_url("images/download.png") . ">{$filename}</a>";
+                                return "<a href='" . base_url_uploads("uploads/$value") . "' class='fancybox'><img width='30px' height='30px' src=" . base_url("images/download.png") . ">{$filename}</a>";
                             } elseif (strstr($file, "audio/")) {
                                 // this code for audio
-                                return "<a href=" . base_url("uploads/$value") . " target='_blank'>Ascolta file</a>";
+                                return "<a href='" . base_url("uploads/$value") . "' target='_blank'>Ascolta file</a>";
                             } elseif (strstr($file, "video/")) {
                                 return anchor(base_url_uploads("uploads/$value"), 'Download ' . $filename, array('class' => 'js_open_modal_link_file'));
                             } elseif (strstr($file, "image/")) {
-                                return "<a href=" . base_url_uploads("uploads/$value") . " class='fancybox'><img src=" . base_url_uploads("thumb/50/50/1/uploads/$value") . " alt='{$filename}'></a>";
+                                return "<a href='" . base_url_uploads("uploads/$value") . "' class='fancybox'><img src='" . base_url_uploads("thumb/50/50/1/uploads/$value") . "' alt='{$filename}'></a>";
                             } else {
                                 return anchor(base_url_uploads("uploads/$value"), $filename, array('class' => 'js_open_modal_link_file'));
                             }

@@ -1,12 +1,12 @@
 /* SELECT BIG BUTTONS */
 .badge_form_field {
-		padding: 7px 12px;
-  		font-size: 15px;
-  		margin-bottom: 4px;
-  		font-weight: initial;
-        cursor: pointer;
-        background-color: #086fa3;
-    }
+    padding: 7px 12px;
+    font-size: 15px;
+    margin-bottom: 4px;
+    font-weight: initial;
+    cursor: pointer;
+    background-color: #086fa3;
+}
 
 .badge_form_field_active {
     background-color: #00c0ef;
@@ -16,152 +16,177 @@
 * SIDE VIEW
  */
 
- .modal-side-hidden {
-     position: fixed;
-     top: 0;
-     right: -30%;
-     /* Larghezza del 40% */
-     width: 30%;
-     /* Larghezza del 40% */
-     height: calc(100% - 43px);
-     background-color: white;
-     box-shadow: -4px 0px 4px rgba(0, 0, 0, 0.1);
-     transition: right 0.3s ease-in-out;
-     z-index: 1031;
-     overflow-y: auto;
- }
+.modal-side-hidden {
+    position: fixed;
+    top: 0;
+    right: -30%;
+    /* Larghezza del 40% */
+    width: 30%;
+    /* Larghezza del 40% */
+    height: calc(100% - 43px);
+    background-color: white;
+    box-shadow: -4px 0px 4px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1031;
+    overflow-y: auto;
+}
 
- /* Stili per dispositivi mobili */
- @media (max-width: 768px) {
-     .modal-side-hidden {
-         right: -100%;
-         /* Larghezza del 100% */
-         width: 100%;
-         /* Larghezza del 100% */
-     }
- }
+/* Stili per dispositivi mobili */
+@media (min-width: 1200px) {
+    .modal-side-hidden {
+        right: -40%;
+        width: 40%;
+    }
+}
 
- @media (max-width: 1600px) {
-     .modal-side-hidden {
-         right: -40%;
-         /* Larghezza del 40% */
-         width: 40% !important;
-         /* Larghezza del 40% */
-     }
- }
+@media (min-width: 992px) and (max-width: 1199px) {
+    .modal-side-hidden {
+        right: -50%;
+        width: 50%;
+    }
+}
 
- @media (max-width: 992px) {
-     .modal-side-hidden {
-         width: 60%;
-     }
- }
+@media (min-width: 768px) and (max-width: 991px) {
+    .modal-side-hidden {
+        right: -70%;
+        width: 70%;
+    }
+}
 
- #modal-side-content,
- #modal-side-content-view {
-     width: 100%;
-     /* Imposta la larghezza al 100% del contenitore */
-     padding: 20px;
-     /* Aggiungi spazio interno */
-     box-sizing: border-box;
-     /* Considera il padding nell'area totale */
-     /*text-align: center;*/
-     /* Centra il contenuto orizzontalmente */
- }
+@media (max-width: 767px) {
+    .modal-side-hidden {
+        right: -100%;
+        width: 100%;
+    }
+}
 
- .modal-side-visible {
-     right: 0;
- }
+/* @media (max-width: 768px) {
+    .modal-side-hidden {
+        right: -100%;
+        width: 100%;
+    }
+}
 
- .modal-side-close-button {
-     position: absolute;
-     top: 10px;
-     right: 10px;
-     padding: 5px;
-     background-color: transparent;
-     border: none;
-     font-size: 20px;
-     cursor: pointer;
- }
+@media (max-width: 1600px) {
+    .modal-side-hidden {
+        right: -40%;
+        width: 40% !important;
+    }
+}
 
- /*
+@media (max-width: 992px) {
+    .modal-side-hidden {
+        width: 60%;
+    }
+} */
+
+#modal-side-content,
+#modal-side-content-view {
+    width: 100%;
+    /* Imposta la larghezza al 100% del contenitore */
+    padding: 20px;
+    /* Aggiungi spazio interno */
+    box-sizing: border-box;
+    /* Considera il padding nell'area totale */
+    /*text-align: center;*/
+    /* Centra il contenuto orizzontalmente */
+    padding-top: 30px;
+}
+
+.modal-side-visible {
+    right: 0;
+}
+
+.modal-side-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/*
 * ACTIONS COLORS
 */
- .bgF44336 {
-     background-color: #F44336;
- }
+.bgF44336 {
+    background-color: #F44336;
+}
 
- .bgE91E63 {
-     background-color: #E91E63;
- }
+.bgE91E63 {
+    background-color: #E91E63;
+}
 
- .bg9C27B0 {
-     background-color: #9C27B0;
- }
+.bg9C27B0 {
+    background-color: #9C27B0;
+}
 
- .bg673AB7 {
-     background-color: #673AB7;
- }
+.bg673AB7 {
+    background-color: #673AB7;
+}
 
- .bg3F51B5 {
-     background-color: #3F51B5;
- }
+.bg3F51B5 {
+    background-color: #3F51B5;
+}
 
- .bg2196F3 {
-     background-color: #2196F3;
- }
+.bg2196F3 {
+    background-color: #2196F3;
+}
 
- .bg03A9F4 {
-     background-color: #03A9F4;
- }
+.bg03A9F4 {
+    background-color: #03A9F4;
+}
 
- .bg00BCD4 {
-     background-color: #00BCD4;
- }
+.bg00BCD4 {
+    background-color: #00BCD4;
+}
 
- .bg009688 {
-     background-color: #009688;
- }
+.bg009688 {
+    background-color: #009688;
+}
 
- .bg4CAF50 {
-     background-color: #4CAF50;
- }
+.bg4CAF50 {
+    background-color: #4CAF50;
+}
 
- .bg8BC34A {
-     background-color: #8BC34A;
- }
+.bg8BC34A {
+    background-color: #8BC34A;
+}
 
- .bgCDDC39 {
-     background-color: #CDDC39;
- }
+.bgCDDC39 {
+    background-color: #CDDC39;
+}
 
- .bgFFEB3B {
-     background-color: #FFEB3B;
- }
+.bgFFEB3B {
+    background-color: #FFEB3B;
+}
 
- .bgFFC107 {
-     background-color: #FFC107;
- }
+.bgFFC107 {
+    background-color: #FFC107;
+}
 
- .bgFF9800 {
-     background-color: #FF9800;
- }
+.bgFF9800 {
+    background-color: #FF9800;
+}
 
- .bgFF5722 {
-     background-color: #FF5722;
- }
+.bgFF5722 {
+    background-color: #FF5722;
+}
 
- .bg795548 {
-     background-color: #795548;
- }
+.bg795548 {
+    background-color: #795548;
+}
 
- .bg9E9E9E {
-     background-color: #9E9E9E;
- }
+.bg9E9E9E {
+    background-color: #9E9E9E;
+}
 
- .bg607D8B {
-     background-color: #607D8B;
- }
+.bg607D8B {
+    background-color: #607D8B;
+}
 
- .bg000000 {
-     background-color: #000000;
- }
+.bg000000 {
+    background-color: #000000;
+}

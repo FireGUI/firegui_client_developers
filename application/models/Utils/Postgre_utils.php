@@ -135,6 +135,7 @@ class Postgre_utils extends Utils
             'forms_layout' => ['type' => 'VARCHAR', 'constraint' => 250],
             'forms_one_record' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'forms_show_delete' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
+            'forms_show_duplicate' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'forms_css_extra' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'forms_display_none' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'forms_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],

@@ -147,6 +147,7 @@ class Mysqli_utils extends Utils {
             'forms_layout' => ['type' => 'VARCHAR', 'constraint' => 250],
             'forms_one_record' => ['type' => 'BOOLEAN', 'default' => '0'],
             'forms_show_delete' => ['type' => 'BOOLEAN', 'default' => '0'],
+            'forms_show_duplicate' => ['type' => 'BOOLEAN', 'default' => '0'],
             'forms_css_extra' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'forms_display_none' => ['type' => 'BOOLEAN', 'default' => '0'],
             'forms_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
