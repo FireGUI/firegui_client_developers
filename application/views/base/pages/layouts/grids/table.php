@@ -181,7 +181,7 @@ if(defined('DEFAULT_GRID_LIMIT')) {
                             <option value="" class="js-bulk-first-option" selected="selected"></option>
 
                             <?php foreach ($grid['grids']['links']['custom'] as $bulk_action): ?>
-                                <?php if ($bulk_action['grids_actions_show'] == "table" || empty($bulk_action['grids_actions_show'])) {
+                                <?php if ($bulk_action['grids_actions_show'] == "dropdown" || $bulk_action['grids_actions_show'] == "table" || empty($bulk_action['grids_actions_show'])) {
                                     continue;
                                 }
                                 ?>
