@@ -1726,10 +1726,17 @@ if (!function_exists('curlRequest')) {
 }
 
 if (!function_exists('e_money')) {
-    function e_money($number, $format = '{number}', $decimals = 2)
+    function e_money($number, $format = '{number}')
     {
-        $return = str_ireplace('{number}', number_format($number, $decimals, ',', '.'), $format);
+        $return = r_money($number, $format);
         echo $return;
+    }
+}
+
+if (!function_exists('r_money')) {
+    function r_money($number, $format = '{number}')
+    {
+        return str_ireplace('{number}', number_format($number, 2, ',', '.'), $format);
     }
 }
 
