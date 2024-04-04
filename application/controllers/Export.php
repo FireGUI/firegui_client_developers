@@ -46,6 +46,12 @@ class Export extends MY_Controller
         }
         
         $data = $this->datab->prepareData($grid_id, $value_id, $params);
+        
+        if (empty($data)) {
+            e('No data to export.');  // Display an error message if there is no data to export
+            return false;
+        }
+        
         $csv = $this->datab->arrayToCsv($data, ',');
         
         $filename = t('Export table') . " #{$grid_id}";
@@ -119,6 +125,12 @@ class Export extends MY_Controller
         }
         
         $data = $this->datab->prepareData($grid_id, $value_id, $params);  // Prepare the data for the table
+        
+        if (empty($data)) {
+            e('No data to export.');  // Display an error message if there is no data to export
+            return false;
+        }
+        
         $header = array_unique(array_merge(...array_map('array_keys', $data)));  // Get unique headers from the data
         
         if (!empty($this->input->get('show_line_number')) && $this->input->get('show_line_number') == '1') {
@@ -206,6 +218,12 @@ class Export extends MY_Controller
         $fields = $grid['grids_fields'];
         
         $data = $this->datab->prepareData($grid_id, $value_id, $params);
+        
+        if (empty($data)) {
+            e('No data to export.');  // Display an error message if there is no data to export
+            return false;
+        }
+        
         $objPHPExcel = new Spreadsheet();
         
         $header = array_keys($data[0]);
