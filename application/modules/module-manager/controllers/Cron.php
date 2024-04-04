@@ -78,7 +78,9 @@ class Cron extends MY_Controller
                 "uploads",
                 "tmp",
                 ".git",
-                "logs"
+                "logs",
+                "application/logs",
+                "application/cache",
             );
             $destination = $tempDir . "/last_backup.zip";
             ci_zip_folder(FCPATH, $destination, $exclude_dirs);
