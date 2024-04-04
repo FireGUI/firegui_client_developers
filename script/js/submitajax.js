@@ -50,18 +50,16 @@ var handleSuccess = function (msg, container = null) {
             success(msg.txt);
             submitBtn.show();
             break;
+
         case 6:
             // Success
-
             success(msg.txt, false);
             submitBtn.show();
             break;
+
         case 7:
-
             refreshAjaxLayoutBoxes();
-
             if (container) {
-
                 closeContainingPopups(container);
             }
 
@@ -83,6 +81,20 @@ var handleSuccess = function (msg, container = null) {
             } else {
                 window.location = msg.url;
             }
+            break;
+
+        case 11:
+            // Toast Success
+            toast((msg.title) ? msg.title : 'Success', 'success', msg.txt, 'toastr', false, { timeOut: (msg.timeout) ? msg.timout : 5000, closeButton: false });
+            break;
+
+        case 12:
+            // Toast Error
+            toast((msg.title) ? msg.title : 'Error', 'error', msg.txt, 'toastr', false, { timeOut: (msg.timeout) ? msg.timout : 5000, closeButton: false });
+            break;
+
+        default:
+            console.log('Submitajax unknown status: ' + msg.status);
             break;
     }
 };
@@ -148,11 +160,11 @@ $(document).ready(function () {
         var url = $(this).attr('href');
         var confirm = $(this).data('confirm') ?? null;
         var container = $(this);
-        
+
         if (confirm !== null && !window.confirm(confirm)) {
             return false;
         }
-        
+
         loading(true);
         $.ajax({
             url: url,
@@ -228,7 +240,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             formAjaxIsSubmitting = false;
         },
         success: function (msg) {
-            
+
             if (formEvents && ('form-ajax-success' in formEvents)) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
