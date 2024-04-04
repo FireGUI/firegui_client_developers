@@ -1421,12 +1421,24 @@ $(function () {
   });
   $("body").on("keyup", ".js_money", function () {
     var val = $(this).val();
+    
+    // Rimuovere tutti i caratteri non numerici eccetto il segno meno (-) e la virgola
+    val = val.replace(/[^\d,\-]/g, "");
+    
+    // Assicurarsi che il segno meno appaia solo una volta all'inizio
+    var hasMinus = val.startsWith("-");
+    val = val.replace(/\-/g, ""); // Rimuove tutti i segni meno
+    if (hasMinus) {
+      val = "-" + val; // Aggiunge un segno meno all'inizio se presente originariamente
+    }
+    
+    // Conversione in formato numerico, mantenendo la logica esistente
     val = val
-      .replace(/[^\d,]/g, "")
-      .replace(/^(\d*\,)(.*)\,(.*)$/, "$1$2$3")
-      .replace(/\,(\d{2})\d+/, ",$1")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
+        .replace(/^(\d*\,)(.*)\,(.*)$/, "$1$2$3") // Gestisce correttamente i valori con più di una virgola
+        .replace(/\,(\d{2})\d+/, ",$1") // Assicura che ci siano solo due cifre decimali
+        .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Aggiunge punti come separatori delle migliaia
+    
+    // Gestione del caso in cui il primo carattere sia una virgola
     var first_char = val.charAt(0);
     if (first_char === ",") {
       $(this).val("0" + val);
