@@ -41,22 +41,27 @@ class Guest extends MY_Controller
         if (!$this->datab->can_access_layout($layout_id, $value_id)) {
             redirect();
         } else {
+            $layout = $this->layout->getLayout($layout_id);
+            
+            $salt = null;
+            if ($this->datab->module_installed('user-extender')) {
+                if (!$this->db->table_exists('users_manager_configurations')) {
+                    redirect();
+                }
+                
+                $user_manager_config = $this->db->get('users_manager_configurations')->row();
+                
+                $salt = $user_manager_config->users_manager_configurations_salt;
+            }
+            
+            $realHash = substr(md5($layout_id.$salt), 0, 6);
+            if (
+                $layout['layouts_is_public'] == DB_BOOL_FALSE && empty($salt)
+                && (empty($this->input->get('token')) || $this->input->get('token') !== $realHash)) {
+                redirect();
+            }
             
             //If layout is module dependent, preload translations
-    
-            if (!$this->db->table_exists('users_manager_configurations')) {
-                redirect();
-            }
-    
-            $salt = $this->db->get('users_manager_configurations')->row();
-    
-            $layout = $this->layout->getLayout($layout_id);
-    
-            $realHash = substr(md5($layout_id.$salt->users_manager_configurations_salt), 0, 6);
-            if ($layout['layouts_is_public'] == DB_BOOL_FALSE && empty($salt->users_manager_configurations_salt) && (empty($this->input->get('token')) || $this->input->get('token') !== $realHash)) {
-                redirect();
-            }
-    
             if ($layout['layouts_module']) {
                 $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($layout['layouts_module'], @array_values($this->lang->is_loaded)[0]));
                 $this->layout->setLayoutModule($layout['layouts_module']);
