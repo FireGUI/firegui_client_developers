@@ -2091,3 +2091,4 @@ $lang['November'] = 'Novembre';
 $lang['December'] = 'Dicembre';
 $lang['Duplicate'] = 'Duplica';
 $lang['Files has been uploaded successfully. Now you can save'] = 'I file sono stati caricati con successo. Ora puoi salvare';$lang['Festività'] = 'Festività';
+$lang['No data to export.'] = 'Nessun dato da esportare.';
