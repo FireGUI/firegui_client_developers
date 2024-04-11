@@ -293,7 +293,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                                  <input type="hidden" class="form-control js_badge_hidden_<?php echo $field['id']; ?> <?php echo (!empty($class)) ? $class : ''; ?>" 
                                                 data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" 
                                                 name="conditions[<?php echo $k; ?>][value]" 
-                                                data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" 
+                                                data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>"
                                                 value="<?php echo $value; ?>" />
                                 
                                 <div class="badge_form_field_container">
@@ -305,11 +305,12 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                            
                             <?php else:?>
 
-                                <?php // ---------------- STANDARD SELECT --------------  ?>
+                                <?php // ---------------- STANDARD SELECT --------------   ?>
                                             <select class="form-control select2_standard <?php echo (!empty($class)) ? $class : ''; ?>"
                             data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>"
+                            data-field_name="<?php echo $field['name'] ?>"
                             name="conditions[<?php echo $k; ?>][value]"
-                            data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : '' ?>" data-val="<?php echo $value; ?>"
+                            data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : ($field['filterref'] ?? '') ?>" data-val="<?php echo $value; ?>"
                             <?php echo $field['onclick']; ?>>
 
                             <option value="-1" <?php echo ('-1' == $value) ? 'selected' : ''; ?>>---</option>
