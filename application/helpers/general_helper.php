@@ -2177,3 +2177,52 @@ if (!function_exists('hours_to_human')) {
         return $return_formatted ? $return : ['hours' => $hours, 'minutes' => $minutes, 'seconds' => $seconds];
     }
 }
+
+
+function validateXMLAgainstXSD($xmlPath, $xsdPath)
+{
+    // Abilita la gestione degli errori basata su libxml
+    libxml_use_internal_errors(true);
+
+    // Crea un nuovo oggetto DOMDocument e carica l'XML
+    $xml = new DOMDocument();
+    $xml->load($xmlPath);
+
+    // Carica lo schema XSD
+    if (!$xml->schemaValidate($xsdPath)) {
+        // Se la validazione fallisce, recupera gli errori da libxml
+        $errors = libxml_get_errors();
+        $errorString = "Errore di validazione XML:\n";
+        foreach ($errors as $error) {
+            $errorString .= libxml_display_error($error);
+        }
+        libxml_clear_errors(); // Pulisci gli errori di libxml per evitare conflitti con altre parti dell'applicazione
+
+        return $errorString; // Ritorna una stringa contenente tutti gli errori di validazione
+    }
+
+    return true; // Ritorna true se la validazione è riuscita senza errori
+}
+
+function libxml_display_error($error)
+{
+    $return = "[Errore LibXML] ";
+    switch ($error->level) {
+        case LIBXML_ERR_WARNING:
+            $return .= "Attenzione $error->code: ";
+            break;
+        case LIBXML_ERR_ERROR:
+            $return .= "Errore $error->code: ";
+            break;
+        case LIBXML_ERR_FATAL:
+            $return .= "Errore fatale $error->code: ";
+            break;
+    }
+    $return .= trim($error->message);
+    if ($error->file) {
+        $return .= " nel file $error->file";
+    }
+    $return .= " alla linea $error->line\n";
+
+    return $return;
+}
