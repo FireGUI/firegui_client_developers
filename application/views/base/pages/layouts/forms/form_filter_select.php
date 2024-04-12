@@ -217,7 +217,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                         
                             <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                                 
-                                <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="<?php echo $field['field_ref']; ?>" data-minimum-input-length="0">
+                                <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>"  data-field_name="<?php echo $field['name'] ?>" data-ref="<?php echo (!empty($field['fields_ref'])) ? $field['fields_ref'] : ($field['filterref'] ?? '') ?>" data-source-field="<?php echo (!empty($field['fields_source'])) ? $field['fields_source'] : '' ?>" data-minimum-input-length="0">
                                     <?php
                                     $filter_ref = $field['filterref'];
                                     $entity = $this->crmentity->getEntity($filter_ref);
@@ -347,7 +347,7 @@ $where_data = array_combine(array_key_map($_sess_where_data, 'field_id'), $_sess
                             <?php if ($field['type'] == 'multiselect'): ?>
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                             
-                            <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="<?php echo $field['field_ref'] ?>" data-minimum-input-length="0">
+                            <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="<?php echo $field['fields_source'] ?>" data-minimum-input-length="0">
                                 <option value="-2" <?php echo (in_array(-2, explode(',', $value))) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
                                 <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} $soft_delete_flag ORDER BY {$field['name']}")->result_array() as $row): ?>
                                     <?php if ($row['valore']): ?>
