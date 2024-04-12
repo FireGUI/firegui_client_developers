@@ -1196,4 +1196,28 @@ class Db_ajax extends MY_Controller
             echo json_encode(['success' => false, 'lang' => null]);
         }
     }
+
+    public function run_php_code($grid_action_id, $value_id) {
+
+        $grid_action = $this->db->get_where('grids_actions', ['grids_actions_id' => $grid_action_id])->row_array();
+        $grid = $this->db->get_where('grids', ['grids_id' => $grid_action['grids_actions_grids_id']])->row_array();
+
+        $entity = $this->db->get_where('entity', ['entity_id' => $grid['grids_entity_id']])->row_array();
+        $entity_name = $entity['entity_name'];
+
+        $row_data = $this->apilib->view($entity_name, $value_id);
+
+        $code_to_run = $grid_action['grids_actions_html'];
+        
+        
+        $return = eval (' ?> ' . $code_to_run . ' <?php ');
+
+        if (!empty($return['status'])) {
+            e_json($return);
+        } else {
+            //Di default forzo refresh
+            e_json(['status' => 2]);
+        }
+        
+    }
 }

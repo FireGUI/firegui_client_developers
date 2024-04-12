@@ -104,7 +104,10 @@
                             } elseif ('side_view' == $custom_action['grids_actions_mode']) {
                                 $url = "{base_url}get_ajax/modal_form/{$custom_action['grids_actions_form']}/$id?_mode=side_view";
                             }
-                        } else {
+                        } elseif ('run_php_code' == $custom_action['grids_actions_type']) {
+                        //debug('Gestire il ritorno come se fosse un submit ajax...',true);
+                        $url = "{base_url}db_ajax/run_php_code/{$custom_action['grids_actions_id']}/$id";
+                    }else {
                             $url = '';
                         }
                     } else {
@@ -197,7 +200,7 @@
                 //debug($custom_action);
                 ?>
                 <span <?php echo $custom_action['grids_actions_name'] ? "data-toggle='tooltip' title='" . t($custom_action['grids_actions_name']) . "'" : null; ?>>
-                    <a class="js-action_button btn btn-grid-action-s
+                    <a class="js-action_button btn btn-grid-action-s <?php if ($custom_action['grids_actions_type'] == 'run_php_code') : ?> js_link_ajax <?php endif; ?>
                     bg<?php echo strtoupper(rgb_string_to_hex($custom_action['grids_actions_color'])) ?: 'CCCCCC'; ?>
                     <?php if ($confirm): ?> js_confirm_button js_link_ajax<?php endif; ?>
                     <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra', 'side_view'])): ?> js_open_modal <?php endif; ?>"

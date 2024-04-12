@@ -37,6 +37,8 @@
                 <?php endif; ?>
 
                 <?php echo $action; ?>
+           
+
             <?php else: ?>
 
                 <?php
@@ -75,6 +77,9 @@
                         } elseif ('side_view' == $custom_action['grids_actions_mode']) {
                             $url = "{base_url}get_ajax/layout_modal/{$custom_action['grids_actions_form']}/$id?_mode=side_view";
                         }
+                    } elseif ( 'run_php_code' == $custom_action['grids_actions_type']) {
+                        //debug('Gestire il ritorno come se fosse un submit ajax...',true);
+                        $url = "{base_url}db_ajax/run_php_code/{$custom_action['grids_actions_id']}/$id";
                     } else {
                         $url = '';
                     }
@@ -92,7 +97,7 @@
                 <?php if ($key != 0): ?> |
                 <?php endif; ?>
 
-                <a class="<?php if ($confirm): ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra', 'side_view'])): ?> js_open_modal <?php endif; ?>"
+                <a class="<?php if ($confirm): ?> js_confirm_button js_link_ajax<?php endif; ?> <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra', 'side_view'])): ?> js_open_modal <?php endif; ?><?php if ('run_php_code' == $custom_action['grids_actions_type']): ?> js_link_ajax<?php endif; ?>"
                     href="<?php echo $url; ?>" <?php if ($custom_action['grids_actions_mode'] == 'new_tab'): ?>target="_blank" <?php endif; ?>style="color: <?php echo ($custom_action['grids_actions_color']) ?: '#CCCCCC'; ?>" <?php if ($confirm): ?> data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" data-toggle="tooltip" <?php endif; ?>
                     <?php if (in_array($custom_action['grids_actions_mode'], ['modal', 'modal_large', 'modal_extra'])): ?>
                         data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" <?php endif; ?>>

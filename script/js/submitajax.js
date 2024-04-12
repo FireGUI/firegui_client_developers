@@ -8,7 +8,7 @@ var handleSuccess = function (msg, container = null) {
     // alert(1);
     var submittedForm = $('#' + formAjaxSubmittedFormId);
     var submitBtn = $('button[type="submit"]', submittedForm);
-
+    
     switch (parseInt(msg.status)) {
         case 0:
             //Show message
@@ -153,6 +153,7 @@ $(document).ready(function () {
     });
 
     $('body').on('click', '.js_link_ajax', function (e) {
+        
         e.preventDefault(); // Prevent follow links
         e.stopPropagation(); // Prevent propagation on parent DOM elements
         e.stopImmediatePropagation(); // Prevent other handlers to be fired
