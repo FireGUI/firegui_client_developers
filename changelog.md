@@ -1,8 +1,5 @@
-Changelog version 3.7.5
+Changelog version 3.7.6
  
-Added r_money helper function
-Fix input_money form field with correctly formatted value
-Fix e_money and r_money helper functions
-Added check for data in export controller
-Fixed salt check when user-extender module not installed
-New xml functions in general helper
+Fix form_filter_select source field
+Fix source field multiselect
+New actions type 'run_php_code' to allow executing custom code passing row_data and value_id
