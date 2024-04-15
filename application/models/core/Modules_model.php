@@ -751,17 +751,22 @@ class Modules_model extends CI_Model
 
             $total = count($json['menu']);
             $c = 0;
-            // 20230215 - MP - Non rimuovo i menu, ma faccio dopo il controllo if exists
-            // foreach ($json['menu'] as $menu) {
-            //     $c++;
-            //     progress($c, $total, 'menu delete');
-            //     if (!$menu['menu_parent']) { //I parent non li cancello, altrimenti perdo anche tutti i figli già dentro...
-            //         //debug("COMMENTATO CODICE CHE TOGLIE I MENU... CI SARANNO MENU DOPPI O TRIPLI SICURO");
-            //         $this->db->query(
-            //             "DELETE FROM menu WHERE menu_module = '{$identifier}'"
-            //         );
-            //     }
-            // }
+            //20240415 - MP - I menu del modulo (tranne quelli sidebar) li cancello proprio
+            $this->db->query(
+
+                "DELETE FROM menu
+                 WHERE
+                    menu_module = '$identifier'
+                    AND menu_id NOT IN (
+                        SELECT
+                            locked_elements_ref_id
+                        FROM
+                            locked_elements
+                        WHERE
+                            locked_elements_type = 'menu'
+                    ) AND menu_position <> 'sidebar'
+                    "
+            );
             $c = 0;
             foreach ($json['menu'] as $menu) {
                 $c++;
