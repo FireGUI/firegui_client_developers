@@ -1399,7 +1399,7 @@ class Get_ajax extends MY_Controller
 
             $field_name_filter = $field_filter['fields_name'];
         } else {
-            $field_filter = $this->db->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
+            $field_filter = $this->db->order_by('fields_ref_auto_left_join', 'DESC')->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
             $field_name_filter = $field_filter['fields_name'];
         }
 
