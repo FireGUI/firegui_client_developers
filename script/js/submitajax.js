@@ -503,7 +503,7 @@ function refreshLayoutBoxesByEntity(entity_name) {
 
         var $firstChild = $(this).children().first();
 
-        $firstChild.addClass('pulsing-background');
+        
 
 
 
@@ -517,6 +517,7 @@ function refreshLayoutBoxesByEntity(entity_name) {
             // console.log(related_entities);
             // console.log(entity_name);
             if (related_entities.includes(entity_name)) {
+                $firstChild.addClass('pulsing-background');
                 loading(true);
                 var layout_id = $(this).data('layout-id');
                 //alert(layout_id);
