@@ -1,12 +1,12 @@
 'use strict';
-function startDataTables() {
-    $('.js_datatable:not(.dataTable)').each(function () {
+function startDataTables(container) {
+    $('.js_datatable:not(.dataTable)', container).each(function () {
         var lengthMenu =
             typeof $(this).attr('data-lengthmenu') === 'undefined'
                 ? [
-                      [10, 50, 100, 200, 500],
-                      [10, 50, 100, 200, 500],
-                  ]
+                    [10, 50, 100, 200, 500],
+                    [10, 50, 100, 200, 500],
+                ]
                 : JSON.parse($(this).attr('data-lengthmenu'));
 
         var bEnableOrder = typeof $(this).attr('data-prevent-order') === 'undefined';

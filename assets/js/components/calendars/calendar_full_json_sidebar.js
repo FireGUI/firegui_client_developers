@@ -1,7 +1,7 @@
-function initCalendars() {
+function initCalendars(container) {
     $(function() {
         'use strict';
-        $('.calendar_full_json_sidebar').each(function() {
+        $('.calendar_full_json_sidebar', container).each(function() {
             var jqCalendarView;
 
             var jqCalendar = $(this);

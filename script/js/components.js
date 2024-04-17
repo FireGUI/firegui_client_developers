@@ -191,6 +191,9 @@ function initComponents(container, reset = false) {
     return;
   }
   initializing = true;
+  if (typeof container === 'undefined') {
+    container = $('body');
+  }
   if (reset) {
     try {
       $("select", container).each(function () {
@@ -515,7 +518,7 @@ function initComponents(container, reset = false) {
   /*
     FORM FIELDS EVENTS
     */
-  $(":input").on("change", function () {
+  $(":input", container).on("change", function () {
 
     var changed_input = $(this);
     $(':input[data-dependent_on*="' + $(this).attr("name") + '"]', changed_input.closest("form")).each(function () {
@@ -554,12 +557,12 @@ function initComponents(container, reset = false) {
     });
   });
 
-  $(".js_form_fieldset legend").off("click").on("click", function () {
+  $(".js_form_fieldset legend", container).off("click").on("click", function () {
     $(".row, legend span", $(this).closest(".js_form_fieldset")).toggle();
     $(this).closest(".js_form_fieldset").toggleClass("fieldset_visible");
   });
 
-  $(":input").each(function () {
+  $(":input", container).each(function () {
     if ($(':input[data-dependent_on*="' + $(this).attr("name") + '"]', $(this).closest("form")).length > 0) {
       $(this).trigger("change");
     }
@@ -572,15 +575,15 @@ function initComponents(container, reset = false) {
   forms.each(function () {
     var form = $(this);
     var btn = $(".js_filter_form_add_row", form).on("click", function () {
-      var container = $(".js_filter_form_rows_container", form),
-        rows = $(".js_filter_form_row", container);
+      var container_f = $(".js_filter_form_rows_container", form),
+        rows = $(".js_filter_form_row", container_f);
       var size = rows.size();
       var obj = rows.filter(":first").clone();
       $("input, select", obj).each(function () {
         var name = "conditions[" + size + "][" + $(this).attr("data-name") + "]";
         $(this).attr("name", name).removeAttr("data-name");
       });
-      obj.removeClass("hide").appendTo(container);
+      obj.removeClass("hide").appendTo(container_f);
     });
   });
 
@@ -653,10 +656,10 @@ function initComponents(container, reset = false) {
       get_params = "";
     }
     var input = $(this);
-    
+
     var $allow_clear = true;
     var field_required = $(this).data("required");
-    
+
     if (field_required == 1) {
       $allow_clear = false;
     }
@@ -721,11 +724,15 @@ function initComponents(container, reset = false) {
 
     jqField.on("change", function () {
       var previousValue = jsMultiselect.attr("data-val").split(",");
-      jsMultiselect.select2("val", "");
+
 
       //se ho una select semplice devo saperlo perché così so come gestire il valore settato
       //var isNormalSelect = (jsMultiselect.is('select') && !jsMultiselect.attr('multiple'));
       var isNormalSelect = jsMultiselect.is("select") && !$(this).attr("multiple");
+
+      if (!isNormalSelect) {
+        jsMultiselect.select2("val", "");
+      }
 
       var field_name_to = jsMultiselect.attr("name");
       if (field_name_to.indexOf("conditions[") !== -1) {
@@ -753,6 +760,7 @@ function initComponents(container, reset = false) {
         type: "POST",
         data: data_post,
         dataType: "json",
+        async: true,
         complete: function () {
           loading(false);
         },
@@ -971,11 +979,11 @@ function initComponents(container, reset = false) {
   /**
    * Tables
    */
-  initTables();
+  initTables(container);
   // Old for retro-compatibility
-  startDataTables();
-  startAjaxTables();
-  startNewDatatableInline();
+  startDataTables(container);
+  startAjaxTables(container);
+  startNewDatatableInline(container);
 
   /**
    * Charts
@@ -986,12 +994,12 @@ function initComponents(container, reset = false) {
   /**
    * Tabs
    */
-  tabsInit();
+  tabsInit(container);
 
   /**
    * Calendars
    */
-  initCalendars();
+  initCalendars(container);
   /**
    * Maps
    */
@@ -1092,7 +1100,7 @@ function loadModal(url, data, callbackSuccess, method) {
     url: url,
     type: method ? method.toUpperCase() : "POST",
     data: data,
-    dataType: "html",
+    dataType: (modalMode == 'side') ? 'json' : "html",
     success: function (data) {
       // Salva i vecchi argomenti per riapertura
       var oldModalArgs = mArgs;
@@ -1102,12 +1110,22 @@ function loadModal(url, data, callbackSuccess, method) {
         fn: callbackSuccess,
         verb: method,
       };
-
+      var pagina = data.pagina;
+      var dati = data.dati;
 
       if (modalMode == 'side') {
 
-        $("#modal-side-content-form-view").html(data);
+        $("#modal-side-content-form-view").html(pagina);
         $("#modal-side-view").addClass("modal-side-visible");
+
+        $("#modal-side-view").data('related_entities', dati.related_entities.join(','));
+        $("#modal-side-view").data('layout-id', dati.layout_id);
+        $("#modal-side-view").data('value_id', dati.value_id);
+
+        // console.log($("#modal-side-view").data());
+        // console.log(data);
+        // alert(1);
+
         loading(false);
         reset_theme_components();
         // Close
@@ -1125,12 +1143,16 @@ function loadModal(url, data, callbackSuccess, method) {
             !$(event.target).closest(".btn-grid-action-s").length
           ) {
             // Close the modal or perform other actions
-            console.log($(event.target));
+            // console.log($(event.target));
+            // debugger;
             $("#modal-side-view").removeClass("modal-side-visible");
           }
         });
 
       } else {
+
+
+
         modalContainer.html(data);
         $(".modal", modalContainer)
           .modal()
@@ -1421,23 +1443,23 @@ $(function () {
   });
   $("body").on("keyup", ".js_money", function () {
     var val = $(this).val();
-    
+
     // Rimuovere tutti i caratteri non numerici eccetto il segno meno (-) e la virgola
     val = val.replace(/[^\d,\-]/g, "");
-    
+
     // Assicurarsi che il segno meno appaia solo una volta all'inizio
     var hasMinus = val.startsWith("-");
     val = val.replace(/\-/g, ""); // Rimuove tutti i segni meno
     if (hasMinus) {
       val = "-" + val; // Aggiunge un segno meno all'inizio se presente originariamente
     }
-    
+
     // Conversione in formato numerico, mantenendo la logica esistente
     val = val
-        .replace(/^(\d*\,)(.*)\,(.*)$/, "$1$2$3") // Gestisce correttamente i valori con più di una virgola
-        .replace(/\,(\d{2})\d+/, ",$1") // Assicura che ci siano solo due cifre decimali
-        .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Aggiunge punti come separatori delle migliaia
-    
+      .replace(/^(\d*\,)(.*)\,(.*)$/, "$1$2$3") // Gestisce correttamente i valori con più di una virgola
+      .replace(/\,(\d{2})\d+/, ",$1") // Assicura che ci siano solo due cifre decimali
+      .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Aggiunge punti come separatori delle migliaia
+
     // Gestione del caso in cui il primo carattere sia una virgola
     var first_char = val.charAt(0);
     if (first_char === ",") {

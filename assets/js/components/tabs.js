@@ -1,8 +1,8 @@
-function tabsInit() {
+function tabsInit(container) {
     $(function () {
         'use strict';
 
-        $('.js-tabs').each(function () {
+        $('.js-tabs', container).each(function () {
             // La stessa tab NON deve mai apparire in una stessa pagina più di una
             // volta
 

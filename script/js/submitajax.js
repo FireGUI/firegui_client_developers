@@ -393,16 +393,17 @@ function refreshGridsByEntity(entity_name) {
 
 }
 
-function refreshVisibleAjaxGrids(table) {
+function refreshVisibleAjaxGrids(table, $firstChild) {
     if (typeof table === 'undefined') {
         $('.js_ajax_datatable:visible').DataTable().ajax.reload();
     } else {
         table.DataTable().ajax.reload();
     }
+    $firstChild.removeClass('pulsing-background');
 
 }
 
-function refreshLayoutBox(lb_id, value_id) {
+function refreshLayoutBox(lb_id, value_id, $firstChild) {
     var data = [];
     var selector = '.layout_box[data-layout-box="' + lb_id + '"]';
     var lb = $(selector);
@@ -429,36 +430,58 @@ function refreshLayoutBox(lb_id, value_id) {
         async: true,
         success: function (html) {
             lb.html(html);
+            $firstChild.removeClass('pulsing-background');
             initComponents(lb, true);
         },
     });
 }
-
 function refreshAjaxLayoutBoxes() {
     //refreshVisibleAjaxGrids();
     //TODO: check if box is refreshable
 
-    var is_modal = $('.modal:visible').length;
+    //Per capire se il layout è in modale, verifico che la modale sia visibile e che al suo interno sia presente un layout (e non ad esempio un banale form)
+    var is_modal = $('.modal:visible').length && $('.modal:visible .modal-body').find('.js_layout').length;
     // if ($('.layout_box:visible').length > 5 && !is_modal) {
     //     location.reload();
     // } else {
     if (is_modal) {
         var container = $('.modal:visible');
+
     } else {
         var container = $('body');
     }
 
+    var processed_lb = [];
+
     $('.layout_box:visible', container).each(function () {
 
+        var $firstChild = $(this).children().first();
+
+        $firstChild.addClass('pulsing-background');
+
+        //Attivare per debuggare.... evidenzia i box mentre si stanno caricando
+
+        // setInterval(function () {
+        //     $firstChild.css('border', '5px solid red'); // Imposta il bordo rosso
+        //     setTimeout(function () {
+        //         $firstChild.css('border', '5px solid transparent'); // Imposta il bordo trasparente
+        //     }, 500); // Intervallo per il bordo rosso
+        // }, 1000); // Intervallo totale per il ciclo completo
+
         if ($('.js_ajax_datatable:visible', $(this)).length > 0) {
-            refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)));
+            refreshVisibleAjaxGrids($('.js_ajax_datatable:visible', $(this)), $firstChild);
         } else {
             var lb = $(this);
             var lb_id = $(this).data('layout-box');
-            var value_id = $(this).data('value_id');
+            if (!processed_lb.includes(lb_id)) {
+                var value_id = $(this).data('value_id');
 
-            refreshLayoutBox(lb_id, value_id);
+                processed_lb.push(lb_id);
+
+                refreshLayoutBox(lb_id, value_id, $firstChild);
+            }
         }
+
 
     });
     // }
@@ -467,7 +490,7 @@ function refreshAjaxLayoutBoxes() {
 }
 var refreshed_layouts = [];
 function refreshLayoutBoxesByEntity(entity_name) {
-
+    
     var link_href = window.location.href;
     var get_params = link_href.split('?');
     if (get_params[1]) {
@@ -476,23 +499,34 @@ function refreshLayoutBoxesByEntity(entity_name) {
         get_params = '';
     }
     $('.js_page_content').each(function () {
+        var $this = $(this); // Caching this jQuery object
+
+        var $firstChild = $(this).children().first();
+
+        $firstChild.addClass('pulsing-background');
+
+
+
 
         var related_entities_string = $(this).data('related_entities');
-        // console.log(related_entities_string);
-        // alert('1');
+        //  console.log(related_entities_string);
+        //  alert('1');
+
         if (typeof related_entities_string != 'undefined') {
             var related_entities = related_entities_string.split(',');
-            console.log(related_entities);
-            console.log(entity_name);
+            // console.log(related_entities);
+            // console.log(entity_name);
             if (related_entities.includes(entity_name)) {
                 loading(true);
                 var layout_id = $(this).data('layout-id');
-
+                //alert(layout_id);
                 if (refreshed_layouts.includes(layout_id)) {
                     //alert(2);
                     console.log('Already refreshed layout ' + layout_id);
                 } else {
-                    //alert(3);
+                    //Attivare per debuggare.... evidenzia i box mentre si stanno caricando
+                    
+
                     var value_id = $(this).data('value_id');
                     refreshed_layouts.push(layout_id);
                     $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
@@ -510,9 +544,8 @@ function refreshLayoutBoxesByEntity(entity_name) {
 
                                 $('.js_page_content[data-layout-id="' + layout_id + '"]').remove();
 
-                                $('.js_page_content').hide();
+                                //$('.js_page_content').hide();
                                 document.title = data.dati.title_prefix;
-                                console.log('TODO: clone js_page_content instead of creating div...');
 
                                 var clonedContainerHtml = '<div class="js_page_content" data-layout-id="' + layout_id + '" data-title="' + data.dati.title_prefix + '" data-related_entities="' + data.dati.related_entities.join(',') + '"></div>';
                                 // $();
@@ -526,6 +559,7 @@ function refreshLayoutBoxesByEntity(entity_name) {
 
 
                             }
+                            $firstChild.removeClass('pulsing-background');
                             refreshed_layouts = [];
                         },
                     });

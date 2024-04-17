@@ -1,6 +1,6 @@
 'use strict';
-function startDataTables() {
-    $('.js_datatable:not(.dataTable)').each(function () {
+function startDataTables(container) {
+    $('.js_datatable:not(.dataTable)', container).each(function () {
         var lengthMenu =
             typeof $(this).attr('data-lengthmenu') === 'undefined'
                 ? [

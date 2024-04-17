@@ -86,13 +86,17 @@ class Get_ajax extends MY_Controller
         } else {
             $dati['current_page'] = "layout_{$layout_id}";
             $dati['show_title'] = false;
+            $dati['related_entities'] = $this->layout->getRelatedEntities();
+            //debug($dati['related_entities']);
+            $dati['layout_id'] = $layout_id;
+            $dati['value_id'] = $value_id;
             $modal = true;
             $pagina = $this->load->view("pages/layout", array('dati' => $dati, 'value_id' => $value_id, 'modal' => $modal), true);
         }
 
         // Standard modal
         if ($this->input->get('_mode') == 'side_view') {
-            echo $pagina;
+            e_json(['pagina' => $pagina, 'dati' => $dati]);
         } else {
             $this->load->view(
                 "layout/modal_container",
@@ -168,7 +172,7 @@ class Get_ajax extends MY_Controller
             }
             $content .= $this->datab->getHookContent('post-form', $form_id, $value_id ?: null);
 
-            $this->load->view('layout/content_return', ['content' => $content]);
+            $pagina = $this->load->view('layout/content_return', ['content' => $content], true);
 
             $this->layout->setLayoutModule();
         } else {
@@ -177,8 +181,14 @@ class Get_ajax extends MY_Controller
                                 <div class="modal-content">';
             $content .= str_repeat('&nbsp;', 3) . t('You are not allowed to do this.');
             $content .= '</div></div></div>';
-            $this->load->view('layout/content_return', ['content' => $content]);
+            $pagina = $this->load->view('layout/content_return', ['content' => $content], true);
             $this->layout->setLayoutModule();
+        }
+        if ($this->input->get('_mode') != 'side_view') {
+            echo $pagina;
+        } else {
+            $dati['related_entities'] = $this->layout->getRelatedEntities();
+            e_json(['pagina' => $pagina, 'dati' => $dati]);
         }
     }
     public function get_layout_box_content($lb_id, $value_id = null)

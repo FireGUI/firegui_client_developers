@@ -393,8 +393,8 @@ function initTableAjax(grid) {
 }
 
 /** Init ajax datatables **/
-function startAjaxTables() {
-    $('.js_ajax_datatable:visible:not(.dataTable)').each(function () {
+function startAjaxTables(container) {
+    $('.js_ajax_datatable:visible:not(.dataTable)', container).each(function () {
         var gridID = $(this).attr('data-grid-id');
         var grid = $(this);
 

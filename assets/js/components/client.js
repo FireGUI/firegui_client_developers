@@ -164,7 +164,11 @@ function initComponents(container, reset = false) {
     if (initializing && !reset) {
         return;
     }
+
     initializing = true;
+    if (typeof container === 'undefined') {
+        container = $('body');
+    }
     if (reset) {
         try {
             $('select', container).each(function () {
@@ -315,9 +319,7 @@ function initComponents(container, reset = false) {
     /*
      * Form dates
      */
-    if (typeof container === 'undefined') {
-        container = $('body');
-    }
+    
 
     $('.js_form_datepicker', container).datepicker({
         todayBtn: 'linked',
@@ -549,6 +551,7 @@ function initComponents(container, reset = false) {
                 type: 'POST',
                 data: data_post,
                 dataType: 'json',
+                async: true,
                 complete: function () {
                     loading(false);
                 },
@@ -754,11 +757,11 @@ function initComponents(container, reset = false) {
     /**
      * Tables
      */
-    initTables();
+    initTables(container);
     // Old for retro-compatibility
-    startDataTables();
-    startAjaxTables();
-    startNewDatatableInline();
+    startDataTables(container);
+    startAjaxTables(container);
+    startNewDatatableInline(container);
 
     /**
      * Charts

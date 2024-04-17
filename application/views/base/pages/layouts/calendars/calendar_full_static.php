@@ -76,6 +76,7 @@ $settings = $this->db->join('languages', 'languages_id = settings_default_langua
                     eventSources: [{
                         url: <?php echo json_encode(base_url("get_ajax/get_calendar_events/{$data['calendars']['calendars_id']}")) ?>,
                         type: 'POST',
+                        async: true,
                         data: {
                             [token_name]: token_hash,
                         },

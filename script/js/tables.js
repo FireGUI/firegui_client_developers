@@ -197,8 +197,8 @@ function initTabelWithPars(grid, pars) {
 }
 
 /** Init ajax datatables **/
-function initTables() {
-    $('.js_table:visible').each(function () {
+function initTables(container) {
+    $('.js_table:visible', container).each(function () {
         var grid = $(this);
         if (grid.data('tableInitialized') != true) {
             grid.data('tableInitialized', true);

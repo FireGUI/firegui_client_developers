@@ -385,8 +385,8 @@ function initTable(grid) {
     return datatable;
 }
 
-function startNewDatatableInline() {
-    $('.js_datatable_new_inline:not(.disabled)').each(function () {
+function startNewDatatableInline(container) {
+    $('.js_datatable_new_inline:not(.disabled)', container).each(function () {
         var grid = $(this);
         if (!grid.data('inline_initializated')) {
             grid.data('inline_initializated', true);

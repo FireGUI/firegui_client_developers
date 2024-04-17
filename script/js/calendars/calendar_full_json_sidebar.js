@@ -1,7 +1,10 @@
-function initCalendars() {
+function initCalendars(container) {
+    if (typeof container === 'undefined') {
+        container = $('body');
+    }
     $(function () {
         'use strict';
-        $('.calendar_full_json_sidebar').each(function () {
+        $('.calendar_full_json_sidebar', container).each(function () {
 
             var jqCalendarView;
 
@@ -70,7 +73,9 @@ function initCalendars() {
             };
 
             var calendarEl = document.getElementById(calendarId);
-
+            if (calendarEl.fullCalendar) {
+                return;
+            }
             $('#' + calendarId).html('');
             var defaultView = (typeof localStorage.getItem("fcDefaultView_" + calendarId) !== 'undefined' && localStorage.getItem("fcDefaultView_" + calendarId) !== null) ? localStorage.getItem("fcDefaultView_" + calendarId) : calendars_default_view;
             var defaultDate = (typeof localStorage.getItem("fcDefaultDate_" + calendarId) !== 'undefined' && localStorage.getItem("fcDefaultDate_" + calendarId) !== null) ? localStorage.getItem("fcDefaultDate_" + calendarId) : moment().format('YYYY-MM-DD HH:mm');
@@ -192,6 +197,7 @@ function initCalendars() {
                             type: 'POST',
                             url: sourceUrl,
                             dataType: 'json',
+                            async: true,
                             data: {
                                 filters: values,
                                 [token_name]: token_hash,
