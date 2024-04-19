@@ -8,7 +8,7 @@ var handleSuccess = function (msg, container = null) {
     // alert(1);
     var submittedForm = $('#' + formAjaxSubmittedFormId);
     var submitBtn = $('button[type="submit"]', submittedForm);
-    
+
     switch (parseInt(msg.status)) {
         case 0:
             //Show message
@@ -58,7 +58,14 @@ var handleSuccess = function (msg, container = null) {
             break;
 
         case 7:
+            //if (typeof msg.related_entity === 'undefined' || !msg.related_entity) {
             refreshAjaxLayoutBoxes();
+            // } else {
+            //     //alert(msg.related_entity);
+            //     refreshLayoutBoxesByEntity(msg.related_entity);
+            // }
+
+
             if (container) {
                 closeContainingPopups(container);
             }
@@ -153,7 +160,6 @@ $(document).ready(function () {
     });
 
     $('body').on('click', '.js_link_ajax', function (e) {
-        
         e.preventDefault(); // Prevent follow links
         e.stopPropagation(); // Prevent propagation on parent DOM elements
         e.stopImmediatePropagation(); // Prevent other handlers to be fired
@@ -400,7 +406,6 @@ function refreshVisibleAjaxGrids(table, $firstChild) {
         table.DataTable().ajax.reload();
     }
     $firstChild.removeClass('pulsing-background');
-
 }
 
 function refreshLayoutBox(lb_id, value_id, $firstChild) {
@@ -430,11 +435,15 @@ function refreshLayoutBox(lb_id, value_id, $firstChild) {
         async: true,
         success: function (html) {
             lb.html(html);
+            if (typeof $firstChild === 'undefined') {
+                $firstChild = $('*', lb.parent()); //Se non so a chi togliere la classe, nel dubbio la tolgo a tutti gli elementi dello stesso livello
+            }
             $firstChild.removeClass('pulsing-background');
             initComponents(lb, true);
         },
     });
 }
+
 function refreshAjaxLayoutBoxes() {
     //refreshVisibleAjaxGrids();
     //TODO: check if box is refreshable
@@ -488,9 +497,14 @@ function refreshAjaxLayoutBoxes() {
 
 
 }
+
 var refreshed_layouts = [];
 function refreshLayoutBoxesByEntity(entity_name) {
-    
+    // refreshAjaxLayoutBoxes();
+    // return;
+
+
+    //alert(entity_name);
     var link_href = window.location.href;
     var get_params = link_href.split('?');
     if (get_params[1]) {
@@ -502,11 +516,6 @@ function refreshLayoutBoxesByEntity(entity_name) {
         var $this = $(this); // Caching this jQuery object
 
         var $firstChild = $(this).children().first();
-
-        
-
-
-
 
         var related_entities_string = $(this).data('related_entities');
         //  console.log(related_entities_string);
@@ -526,10 +535,16 @@ function refreshLayoutBoxesByEntity(entity_name) {
                     console.log('Already refreshed layout ' + layout_id);
                 } else {
                     //Attivare per debuggare.... evidenzia i box mentre si stanno caricando
-                    
+                    // setInterval(function () {
+                    //     $this.css('border', '10px solid red'); // Imposta il bordo rosso
+                    //     setTimeout(function () {
+                    //         $this.css('border', '10px solid transparent'); // Imposta il bordo trasparente
+                    //     }, 500); // Intervallo per il bordo rosso
+                    // }, 1000); // Intervallo totale per il ciclo completo
 
                     var value_id = $(this).data('value_id');
                     refreshed_layouts.push(layout_id);
+                    //alert(value_id);
                     $.ajax(base_url + 'main/get_layout_content/' + layout_id + '/' + value_id + get_params, {
                         type: 'GET',
                         dataType: 'json',
@@ -548,7 +563,7 @@ function refreshLayoutBoxesByEntity(entity_name) {
                                 //$('.js_page_content').hide();
                                 document.title = data.dati.title_prefix;
 
-                                var clonedContainerHtml = '<div class="js_page_content" data-layout-id="' + layout_id + '" data-title="' + data.dati.title_prefix + '" data-related_entities="' + data.dati.related_entities.join(',') + '"></div>';
+                                var clonedContainerHtml = '<div class="js_page_content" data-value_id="' + value_id + '" data-layout-id="' + layout_id + '" data-title="' + data.dati.title_prefix + '" data-related_entities="' + data.dati.related_entities.join(',') + '"></div>';
                                 // $();
                                 //clonedContainer.html(data.content);
                                 $('#js_layout_content_wrapper').append(clonedContainerHtml);
