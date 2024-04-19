@@ -170,3 +170,16 @@ $lang['Firma vettore'] = 'Unterschrift des Trägers';
 $lang['Firma destinatario'] = 'Unterschrift des Empfängers';
 $lang['Pagina'] = 'Seite';
 $lang['Foto'] = 'Foto';
+$lang['Totale iva esclusa'] = 'Gesamtpreis ohne Mehrwertsteuer';
+/* Tipologie documenti */
+$lang['DDT'] = 'Lieferschein';
+$lang['DDT Fornitore'] = 'Lieferantenlieferschein';
+$lang['Fattura'] = 'Rechnung';
+$lang['Fattura Reverse'] = 'Umgekehrte Rechnung';
+$lang['Nota di credito'] = 'Gutschrift';
+$lang['Nota di credito Reverse'] = 'Umgekehrte Gutschrift';
+$lang['Ordine cliente'] = 'Kundenbestellung';
+$lang['Ordine fornitore'] = 'Lieferantenbestellung';
+$lang['Ordine interno'] = 'Interne Bestellung';
+$lang['Preventivo'] = 'Angebot';
+$lang['Pro forma'] = 'Pro-Forma-Rechnung';

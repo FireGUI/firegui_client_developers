@@ -180,3 +180,16 @@ $lang['Firma vettore'] = 'Firma del transportista';
 $lang['Firma destinatario'] = 'Firma del destinatario';
 $lang['Pagina'] = 'Página';
 $lang['Foto'] = 'Foto';
+$lang['Totale iva esclusa'] = 'Total sin IVA';
+/* Tipologie documenti */
+$lang['DDT'] = 'Albarán';
+$lang['DDT Fornitore'] = 'Albarán de proveedor';
+$lang['Fattura'] = 'Factura';
+$lang['Fattura Reverse'] = 'Factura inversa';
+$lang['Nota di credito'] = 'Nota de crédito';
+$lang['Nota di credito Reverse'] = 'Nota de crédito inversa';
+$lang['Ordine cliente'] = 'Orden del cliente';
+$lang['Ordine fornitore'] = 'Orden del proveedor';
+$lang['Ordine interno'] = 'Orden interno';
+$lang['Preventivo'] = 'Presupuesto';
+$lang['Pro forma'] = 'Pro forma';
