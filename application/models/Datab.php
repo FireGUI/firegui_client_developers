@@ -3272,6 +3272,19 @@ class Datab extends CI_Model
         $contentType = $layoutBoxData['layouts_boxes_content_type'];
         $contentRef = $layoutBoxData['layouts_boxes_content_ref'];
 
+        $parent_layout = $this->layout->getLayout($layoutBoxData['layouts_boxes_layout']);
+
+        if ($value_id && $parent_layout['layouts_entity_id'] > 0 && $layoutEntityData == null) {
+            $entity = $this->crmentity->getEntity($parent_layout['layouts_entity_id']);
+            if (isset($entity['entity_name'])) {
+                $this->layout->addRelatedEntity($entity['entity_name'], $value_id);
+                //debug($entity);
+                $data_entity = $this->getDataEntity($entity['entity_id'], ["{$entity['entity_name']}.{$entity['entity_name']}_id" => $value_id], 1);
+
+                $layoutEntityData = array_shift($data_entity);
+            }
+        }
+
         switch ($contentType) {
             case "layout":
 

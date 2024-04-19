@@ -196,7 +196,7 @@ class Get_ajax extends MY_Controller
         $layout_box = $this->layout->getLayoutBox($lb_id); //$this->db->get_where('layouts_boxes', ['layouts_boxes_id' => $lb_id])->row_array();
         //debug($layout_box, true);
 
-        $layout['content'] = $this->datab->getBoxContent($layout_box, $value_id, []);
+        $layout['content'] = $this->datab->getBoxContent($layout_box, $value_id, null);
 
         //debug($layout, true);
 
