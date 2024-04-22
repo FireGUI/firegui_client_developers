@@ -2098,3 +2098,4 @@ $lang['Scadenze'] = 'Scadenze';
 $lang['Contabilità attiva'] = 'Contabilità attiva';
 $lang['TEst'] = 'TEst';
 $lang['Custom test'] = 'Custom test';
+$lang['FILTERS APPLIED'] = 'FILTRI APPLICATI';
