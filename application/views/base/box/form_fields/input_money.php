@@ -5,7 +5,7 @@ $this->load->view('box/form_fields/input_text', [
     'label' => $label,
     'class' => "{$class} js_money",
     'placeholder' => $placeholder,
-    'value' => r_money($value),
+    'value' => number_format($value, 2, ',', ''),
     'onclick' => $onclick,
     'attr' => $attr,
 ]);
