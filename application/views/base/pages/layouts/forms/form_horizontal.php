@@ -60,7 +60,7 @@ foreach ($form['forms_fields'] as $key => $field) {
                     </legend>
                 <?php endif; ?>
 
-                <div class="row sortableForm_DEPRECATED">
+                <div class="sortableForm_DEPRECATED">
 
                     <?php foreach ($fields as $field): ?>
 
