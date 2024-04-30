@@ -1363,4 +1363,4 @@ $lang['Ordine cliente'] = 'Customer Order';
 $lang['Ordine fornitore'] = 'Supplier Order';
 $lang['Ordine interno'] = 'Internal Order';
 $lang['Preventivo'] = 'Quotation';
-$lang['Pro forma'] = 'Pro forma Invoice';
+$lang['Pro forma'] = 'Pro forma Invoice';$lang['Your project is ready!'] = 'Your project is ready!';

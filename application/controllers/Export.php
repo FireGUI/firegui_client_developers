@@ -124,12 +124,77 @@ class Export extends MY_Controller
             $params = [];
         }
         
+        $grid = $this->datab->get_grid($grid_id);
+        
+        // debug($grid, true);
+        
+        $filtri_html = '';
+        if (!empty($grid['grids']['grids_filter_session_key'])) {
+            $filtri_applicati = $this->session->userdata(SESS_WHERE_DATA)[$grid['grids']['grids_filter_session_key']] ?? [];
+            $form_filtro = $this->db
+                ->where('forms_entity_id', $grid['grids']['grids_entity_id'])
+                ->where('forms_layout', 'filter_select')
+                ->where('forms_filter_session_key', $grid['grids']['grids_filter_session_key'])
+                ->get('forms')->row_array();
+            
+            $form_fields = $this->db
+                ->where('forms_fields_forms_id', $form_filtro['forms_id'])
+                ->get('forms_fields')->result_array();
+            
+            // assegno alla variabile form_filtro un array con mappatura forms_fields_fields_id => $form_field per avere un array associativo dei fields in base al loro id
+            $form_filtro['_fields'] = [];
+            foreach ($form_fields as $form_field) {
+                $form_filtro['_fields'][$form_field['forms_fields_fields_id']] = $form_field;
+            }
+            
+            // Costruisco uno specchietto di filtri autogenerati leggibile
+            $filtri = [];
+            
+            if (!empty($filtri_applicati)) {
+                foreach ($filtri_applicati as $field) {
+                    if ($field['value'] == '-1') {
+                        continue;
+                    }
+                    
+                    $filter_field = $this->datab->get_field($field["field_id"], true);
+                    
+                    // calcolo il campo label in base al campo forms_fields_override_label dentro $form_filtro -> _fields se valorizzata, altrimenti vado sul campo fields_draw_label.
+                    $label = $form_filtro['_fields'][$field['field_id']]['forms_fields_override_label'] ?? t($filter_field["fields_draw_label"]);
+                    
+                    // Se ha una entità/support collegata
+                    if ($filter_field['fields_ref']) {
+                        $entity_data = $this->crmentity->getEntityPreview($filter_field['fields_ref']);
+                        
+                        $filtri[] = array(
+                            "label" => $label,
+                            "value" => $entity_data[$field['value']],
+                            'raw_data_value' => $field['value'],
+                        );
+                    } else {
+                        $filtri[] = array("label" => $label, "value" => $field['value']);
+                    }
+                }
+            }
+            
+            if (!empty($filtri)) {
+                $filtri = array_map(function ($item) {
+                    if (!empty($item['value'])) {
+                        return '<div class="col-sm-4"><b>' . $item['label'] . '</b>: ' . $item['value'] . '</div>';
+                    }
+                }, $filtri);
+                
+                $filtri_html = '<div class="export_pdf_filtri row"><div class="col-sm-12"><b>'.t('FILTERS APPLIED').':</b></div><br/>' . implode('', $filtri) . '</div>';
+            }
+        }
+        
         $data = $this->datab->prepareData($grid_id, $value_id, $params);  // Prepare the data for the table
         
         if (empty($data)) {
             e('No data to export.');  // Display an error message if there is no data to export
             return false;
         }
+        
+        // debug($data, true);
         
         $header = array_unique(array_merge(...array_map('array_keys', $data)));  // Get unique headers from the data
         
@@ -140,7 +205,16 @@ class Export extends MY_Controller
         $tpl_folder = $this->db->join('settings_template', 'settings_template_id = settings_template', 'LEFT')->get('settings')->row()->settings_template_folder;  // Get the template folder
         
         $this->table->set_heading($header);  // Set the table heading
+        $footer_totals = [];
         foreach ($data as $index => $row) {
+            foreach (array_values($row) as $key => $value) {
+                if ($grid['grids_fields'][$key]['grids_fields_totalable'] && is_numeric($value)) {
+                    $footer_totals[$key] += $value;
+                } else {
+                    $footer_totals[$key] = '';
+                }
+            }
+            
             if (!empty($this->input->get('show_line_number')) && $this->input->get('show_line_number') == '1') {
                 $n_row = $index + 1;
                 
@@ -150,14 +224,28 @@ class Export extends MY_Controller
             $this->table->add_row(array_values($row));  // Add rows to the table
         }
         
-        $html_table = $this->table->generate();  // Generate the HTML table
+        if (!empty($footer_totals)){
+            if (!empty($this->input->get('show_line_number')) && $this->input->get('show_line_number') == '1') {
+                array_unshift($footer_totals, '');
+            }
+            
+            $this->table->add_row(array_values($footer_totals));
+        }
+        
+        $html_content = '';  // Initialize the HTML variable
+        
+        if (!empty($filtri_html)) {
+            $html_content .= $filtri_html . '<br/>';  // Add the filters HTML to the HTML variable
+        }
+        
+        $html_content .= $this->table->generate();  // Generate the HTML table
         
         if (file_exists(APPPATH . 'views/custom/layout/pdf_custom.php')) {
-            $html = $this->load->view('custom/layout/pdf_custom', ['html' => $html_table], true);  // Load custom layout if available
+            $html = $this->load->view('custom/layout/pdf_custom', ['html' => $html_content], true);  // Load custom layout if available
         } elseif (file_exists(APPPATH . 'views/' . $tpl_folder . '/layout/pdf_custom.php')) {
-            $html = $this->load->view($tpl_folder . '/layout/pdf_custom', ['html' => $html_table], true);  // Load template-specific layout if available
+            $html = $this->load->view($tpl_folder . '/layout/pdf_custom', ['html' => $html_content], true);  // Load template-specific layout if available
         } else {
-            $html = $this->load->view('base/layout/pdf_custom', ['html' => $html_table], true);  // Load default layout
+            $html = $this->load->view('base/layout/pdf_custom', ['html' => $html_content], true);  // Load default layout
         }
         
         if ($this->input->get('html') == '1') { // Display the generated HTML if the 'html' GET parameter is set to '1'

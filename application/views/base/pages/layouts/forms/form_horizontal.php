@@ -2,6 +2,10 @@
 $form_id = "form_{$form['forms']['forms_id']}";
 $bulk_mode = (is_array($value_id));
 
+$rowStart = '<div class="row">';
+$rowEnd = '</div>';
+$rowCol = 0;
+
 $sizeClass = '';
 if (isset($size)) {
     switch ($size) {
@@ -56,9 +60,21 @@ foreach ($form['forms_fields'] as $key => $field) {
                     </legend>
                 <?php endif; ?>
 
-                <div class="row sortableForm_DEPRECATED">
+                <div class="sortableForm_DEPRECATED">
 
                     <?php foreach ($fields as $field): ?>
+
+                        <?php
+                        // First row
+                        echo $rowCol ? '' : $rowStart;
+                        $col = $field['size'] ?: 6;
+                        $rowCol += $col;
+
+                        if ($rowCol > 12) {
+                            $rowCol = $col;
+                            echo $rowEnd, $rowStart;
+                        }
+                        ?>
 
                         <div id="<?php echo $field['id']; ?>" data-form_id="<?php echo $form['forms']['forms_id']; ?>"
                             class=" formColumn js_container_field <?php echo sprintf('col-md-%d', $field['size'] ?: 12); ?>"
@@ -92,12 +108,15 @@ foreach ($form['forms_fields'] as $key => $field) {
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
-        </div>
+                <?php echo $rowCol ? $rowEnd : ''; ?>
 
-        <?php if ($field_set_title != '__main_fields'): ?>
-            </fieldset>
-        <?php endif; ?>
-    <?php endforeach; ?>
+
+                <?php if ($field_set_title != '__main_fields'): ?>
+                </fieldset>
+            <?php endif; ?>
+
+        <?php endforeach; ?>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div <?php echo "id='msg_{$form_id}'"; ?> class="alert alert-danger hide"></div>
@@ -109,12 +128,17 @@ foreach ($form['forms_fields'] as $key => $field) {
             <div class="pull-left">
                 <?php if ($show_duplicate_button): ?>
                     <a href="<?php echo base_url("get_ajax/modal_form/{$form['forms']['forms_id']}/$value_id/true"); ?>"
-                       class="btn js_open_modal" data-toggle="tooltip" title="" style="background-color: #FF9800; border-color: #FF9800; color: #fff;" data-original-title="<?php e('Duplicate'); ?>">
+                        class="btn js_open_modal" data-toggle="tooltip" title=""
+                        style="background-color: #FF9800; border-color: #FF9800; color: #fff;"
+                        data-original-title="<?php e('Duplicate'); ?>">
                         <?php e('Duplicate'); ?>
                     </a>
                 <?php endif; ?>
-                <?php if ($show_delete_button) : ?>
-                    <a href="<?php echo base_url("db_ajax/generic_delete/{$form['forms']['entity_name']}/$value_id"); ?>" data-confirm-text="<?php e('Are you sure to delete this record?'); ?>" class="btn btn-danger js_confirm_button js_link_ajax " data-toggle="tooltip" title="" data-original-title="Elimina">
+                <?php if ($show_delete_button): ?>
+                    <a href="<?php echo base_url("db_ajax/generic_delete/{$form['forms']['entity_name']}/$value_id"); ?>"
+                        data-confirm-text="<?php e('Are you sure to delete this record?'); ?>"
+                        class="btn btn-danger js_confirm_button js_link_ajax " data-toggle="tooltip" title=""
+                        data-original-title="Elimina">
                         <?php e('Delete'); ?>
                     </a>
                 <?php endif; ?>
