@@ -800,6 +800,8 @@ class Datab extends CI_Model
         if (!$field['fields_ref']) {
             //Potrebbe essere comunque una select con dati da pescare da fields_additional_data (valori separati da virgola)
             if (!empty($field['fields_additional_data'])) {
+                //TODO: gestire anche cose del tipo: {SELECT campo1 as value, campo2 as preview FROM tabella_esterna WHErE ....}
+
                 $support_data = explode(',', $field['fields_additional_data']);
                 $field['support_data'] = array_combine($support_data, $support_data);
             }
