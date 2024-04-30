@@ -83,14 +83,16 @@ foreach ($form['forms_fields'] as $key => $field) {
                                 <?php foreach ($fields as $field): ?>
 
                                     <?php
-                                    // First row
-                                    echo $rowCol ? '' : $rowStart;
-                                    $col = $field['size'] ?: 6;
-                                    $rowCol += $col;
+                                    if ($field_set_title == '__main_fields') {
+                                        // First row
+                                        echo $rowCol ? '' : $rowStart;
+                                        $col = $field['size'] ?: 6;
+                                        $rowCol += $col;
 
-                                    if ($rowCol > 12) {
-                                        $rowCol = $col;
-                                        echo $rowEnd, $rowStart;
+                                        if ($rowCol > 12) {
+                                            $rowCol = $col;
+                                            echo $rowEnd, $rowStart;
+                                        }
                                     }
                                     ?>
 
@@ -139,7 +141,9 @@ foreach ($form['forms_fields'] as $key => $field) {
                                             </div>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
-                                    <?php echo $rowCol ? $rowEnd : ''; ?>
+                                    <?php if ($field_set_title == '__main_fields') {
+                                        echo $rowCol ? $rowEnd : '';
+                                    } ?>
                                 </div>
                                 <?php if ($field_set_title != '__main_fields'): ?>
                             </fieldset>

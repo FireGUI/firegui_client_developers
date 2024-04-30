@@ -109,12 +109,14 @@ foreach ($form['forms_fields'] as $key => $field) {
                     <?php endif; ?>
                 <?php endforeach; ?>
                 <?php echo $rowCol ? $rowEnd : ''; ?>
-        </div>
 
-        <?php if ($field_set_title != '__main_fields'): ?>
-            </fieldset>
-        <?php endif; ?>
-    <?php endforeach; ?>
+
+                <?php if ($field_set_title != '__main_fields'): ?>
+                </fieldset>
+            <?php endif; ?>
+
+        <?php endforeach; ?>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div <?php echo "id='msg_{$form_id}'"; ?> class="alert alert-danger hide"></div>

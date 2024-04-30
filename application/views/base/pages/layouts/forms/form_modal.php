@@ -78,26 +78,32 @@ foreach ($form['forms_fields'] as $key => $field) {
 
                                 <div class="form-body">
                                     <?php foreach ($fieldsets as $field_set_title => $fields): ?>
+
                                         <?php if ($field_set_title != '__main_fields'): ?>
                                             <fieldset class="js_form_fieldset">
-                                                <legend><span><?php e('Show'); ?></span><span
-                                                        style="display:none;"><?php e('Hide'); ?></span>
-                                                    <?php echo $field_set_title; ?> <i class="fa fa-arrow-right"></i></legend>
+                                                <legend>
+                                                    <span><?php e('Show'); ?></span>
+                                                    <span style="display:none;"><?php e('Hide'); ?></span>
+                                                    <?php echo $field_set_title; ?> <i class="fa fa-arrow-right"></i>
+                                                </legend>
                                             <?php endif; ?>
-                                            <div class="row sortableFormDEPRECATED">
 
+                                            <div class="row sortableFormDEPRECATED">
 
                                                 <?php foreach ($fields as $field): ?>
 
-                                                    <?php
-                                                    // First row
-                                                    echo $rowCol ? '' : $rowStart;
-                                                    $col = $field['size'] ?: 6;
-                                                    $rowCol += $col;
 
-                                                    if ($rowCol > 12) {
-                                                        $rowCol = $col;
-                                                        echo $rowEnd, $rowStart;
+                                                    <?php
+                                                    if ($field_set_title == '__main_fields') {
+                                                        // First row
+                                                        echo $rowCol ? '' : $rowStart;
+                                                        $col = $field['size'] ?: 6;
+                                                        $rowCol += $col;
+
+                                                        if ($rowCol > 12) {
+                                                            $rowCol = $col;
+                                                            echo $rowEnd, $rowStart;
+                                                        }
                                                     }
                                                     ?>
 
@@ -146,16 +152,23 @@ foreach ($form['forms_fields'] as $key => $field) {
                                                                 <?php echo $field['html']; ?>
 
                                                             </div>
+
                                                             <?php if ($bulk_mode): ?>
-                                                            </div><?php endif; ?>
+                                                            </div>
+                                                        <?php endif; ?>
+
                                                     <?php endforeach; ?>
-                                                    <?php echo $rowCol ? $rowEnd : ''; ?>
+
+                                                    <?php if ($field_set_title == '__main_fields') {
+                                                        echo $rowCol ? $rowEnd : '';
+                                                    } ?>
 
                                                 </div>
                                                 <?php if ($field_set_title != '__main_fields'): ?>
                                             </fieldset>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
+
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div <?php echo "id='msg_{$form_id}'"; ?> class="alert alert-danger hide">
