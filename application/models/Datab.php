@@ -442,7 +442,7 @@ class Datab extends CI_Model
                 break;
             case 'static_value':
                 $value = $fields['forms_fields_default_value'];
-                
+
                 break;
 
             case 'function':
@@ -709,10 +709,10 @@ class Datab extends CI_Model
 
             $operators = unserialize(OPERATORS);
             foreach ($fields as $key => $field) {
-                
+
                 $fields[$key] = $this->processFieldMapping($field, $form, $edit_id);
 
-                
+
 
             }
             unset($field);
@@ -720,7 +720,7 @@ class Datab extends CI_Model
             /*
              * Combino i form data col get per fare il render dei fields
              */
-            
+
             $formData = array_merge($formData, $this->input->get() ?: [], array_filter($formData, function ($val) {
                 return is_null($val) or $val === '';
             }));
@@ -745,7 +745,7 @@ class Datab extends CI_Model
             }
 
             foreach ($hidden as $k => $field) {
-                
+
                 $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id);
             }
 
@@ -783,7 +783,7 @@ class Datab extends CI_Model
                     'onclick' => $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '',
                     'original_field' => $field,
                 ];
-                
+
                 $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
                 if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                     $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($form['forms_entity_id']));
@@ -960,7 +960,7 @@ class Datab extends CI_Model
             }
 
             /** GRID LIMIT (Michael, 2021-12-09) */
-            if ( (!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) && !$limit) {
+            if ((!empty($grid['grids']['grids_limit']) && $grid['grids']['grids_limit'] > 0) && !$limit) {
                 $limit = $grid['grids']['grids_limit'];
             }
 
@@ -1630,7 +1630,7 @@ class Datab extends CI_Model
 
                 switch ($function['fi_events_action']) {
                     case '':
-                        eval($function['post_process_what']);
+                        eval ($function['post_process_what']);
                         break;
                     case 'curl':
                         $ch = curl_init();
@@ -1701,7 +1701,8 @@ class Datab extends CI_Model
         $link = '';
         if ($menu['menu_layout'] && $menu['menu_layout'] != '-2') {
             $controller_method = (($menu['menu_modal'] == DB_BOOL_TRUE) ? 'get_ajax/layout_modal' : 'main/layout');
-            $link = base_url("{$controller_method}/{$menu['menu_layout']}") . $menu['menu_link'];
+            $layou_id_or_identifier = (!empty($menu['layouts_identifier']) ? $menu['layouts_identifier'] : $menu['menu_layout']);
+            $link = base_url("{$controller_method}/{$layou_id_or_identifier}") . $menu['menu_link'];
         } elseif ($menu['menu_form']) {
             $link = base_url("get_ajax/modal_form/{$menu['menu_form']}") . $menu['menu_link'];
         } elseif ($menu['menu_link']) {
@@ -1779,7 +1780,7 @@ class Datab extends CI_Model
 
                 // Prendo i sottomenu che mi sono concessi...
                 $return[$parent]['submenu'] = array_filter($items, function ($menu) {
-                    return empty($menu['menu_layout']) or array_key_exists($menu['menu_layout'], $this->_accessibleLayouts);
+                    return empty ($menu['menu_layout']) or array_key_exists($menu['menu_layout'], $this->_accessibleLayouts);
                 });
 
                 foreach ($items as $item) {
@@ -1791,7 +1792,7 @@ class Datab extends CI_Model
         return array_filter($return, function ($menu) {
             // Il layout è accessibile per i permessi? (il link del menu è
             // considerato sempre accessibile se non punta ad un layout)
-            if (!empty($menu['menu_layout']) && $menu['menu_layout'] != '-2' && !array_key_exists($menu['menu_layout'], $this->_accessibleLayouts)) {
+            if (!empty ($menu['menu_layout']) && $menu['menu_layout'] != '-2' && !array_key_exists($menu['menu_layout'], $this->_accessibleLayouts)) {
                 return false;
             }
 
@@ -2184,8 +2185,8 @@ class Datab extends CI_Model
 
         // $query = $this->db->from('modules')->where('modules_installed', DB_BOOL_TRUE)->where("(modules_name = '{$name}' OR modules_identifier = '{$name}')", null, false)->get();
         // return $query->num_rows() > 0;
-        
-        return $this->module->moduleExists($name,true );
+
+        return $this->module->moduleExists($name, true);
     }
 
     public function module_access($name)
@@ -2578,7 +2579,7 @@ class Datab extends CI_Model
 
         ob_start();
         $value_id = $valueId; // per comodità e uniformità...
-        eval(' ?> ' . $plainHookContent . ' <?php ');
+        eval (' ?> ' . $plainHookContent . ' <?php ');
         return ob_get_clean();
     }
 
@@ -2889,13 +2890,13 @@ class Datab extends CI_Model
                         return "<img src='{$path}' style='width: 50px;' />";
                     }
                 case 'single_upload':
-                    case 'signature':
+                case 'signature':
                     if (!empty($value)) {
                         $item = json_decode($value, true);
-                        
+
                         $filename = is_array($item) ? $item['client_name'] : 'Download file';
                         $value = is_array($item) ? $item['path_local'] : $value;
-                        
+
                         if (file_exists(FCPATH . "uploads/$value")) {
                             $file = mime_content_type(FCPATH . "uploads/$value");
                             $doc_ext = array('doc', 'docx', 'ods', 'odt', 'html', 'htm', 'xls', 'xlsx', 'ppt', 'pptx', 'txt');
@@ -2930,7 +2931,7 @@ class Datab extends CI_Model
                                 } else {
                                     $_url = base_url_admin("thumb/50/50/1/uploads/{$item['path_local']}");
                                 }
-                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array ('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
                             } else {
                                 // if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                                 //     $_url = base_url_uploads("uploads/{$item['path_local']}");
@@ -2949,7 +2950,7 @@ class Datab extends CI_Model
                                 $_url = base_url("get_ajax/preview_pdf/" . rtrim(base64_encode("uploads/" . $item['path_local']), '='));
 
                                 //TODO: check mime type pdf, word, xls, ecc...
-                                return anchor($_url, "<img src=\"" . base_url("images/$img") . "\" style='width: 50px;'/>", array('style' => 'width:50px', 'class' => 'js_open_modal'));
+                                return anchor($_url, "<img src=\"" . base_url("images/$img") . "\" style='width: 50px;'/>", array ('style' => 'width:50px', 'class' => 'js_open_modal'));
                             }
                         }, $value);
                     } else { //Se arrivo qua i file sono scritti su un altra tabella, quindi mi arriva già l'array bello pulito con i file...
@@ -2959,7 +2960,7 @@ class Datab extends CI_Model
                             } else {
                                 $_url = base_url_admin("thumb/50/50/1/uploads/{$item}");
                             }
-                            return anchor(base_url_uploads("uploads/{$item}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
+                            return anchor(base_url_uploads("uploads/{$item}"), "<img src='" . $_url . "' style='width: 50px;' />", array ('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
                         }, $value);
                     }
 
@@ -3109,7 +3110,7 @@ class Datab extends CI_Model
     {
         extract($data);
         ob_start();
-        eval('?> ' . $evalString . '<?php ');
+        eval ('?> ' . $evalString . '<?php ');
         return ob_get_clean();
     }
 
@@ -3119,12 +3120,12 @@ class Datab extends CI_Model
     public function build_form_input(array $field, $value = null, $value_id = null)
     {
 
-        
+
         if (!$value && $field['forms_fields_default_value'] <> '') {
-            
+
             $value = $this->get_default_fields_value($field, $value_id);
 
-            
+
         }
 
         $output = '';
@@ -3235,7 +3236,7 @@ class Datab extends CI_Model
 
             if ($baseType == 'multi_upload') {
             }
-            
+
             if ($baseType == 'single_upload') {
                 $baseType = 'upload';
             }
@@ -3429,7 +3430,7 @@ class Datab extends CI_Model
             case "calendar":
                 $data = $this->get_calendar($contentRef);
                 $data['cal_layout'] = $this->db->get_where('calendars', ['calendars_id' => $contentRef])->row_array();
-                
+
                 // Rimpiazzo i placeholders sul campo "link / extra parameters"
                 if ($layoutEntityData !== null && is_array($layoutEntityData) && !empty($data['cal_layout']['calendars_link'])) {
                     $layoutEntityData['value_id'] = $value_id;
@@ -3439,11 +3440,11 @@ class Datab extends CI_Model
                             $replace_data['{' . $key . '}'] = $value;
                         }
                     }
-                    
+
                     $data['cal_layout']['calendars_link'] = str_replace(array_keys($replace_data), array_values($replace_data), $data['cal_layout']['calendars_link']);
                     $data['cal_layout']['calendars_link'] = $this->replace_superglobal_data($data['cal_layout']['calendars_link']);
                 }
-                
+
                 $cal_layout = $data['cal_layout']['calendars_layout'] ?: DEFAULT_LAYOUT_CALENDAR;
                 return $this->load->view("pages/layouts/calendars/{$cal_layout}", array('data' => $data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
 
@@ -3485,7 +3486,7 @@ class Datab extends CI_Model
                     // Contenuto definito
                     ob_start();
                     $layout_data_detail = $layoutEntityData; // Ci assicuriamo che questa variabile esista dentro all'eval
-                    eval(' ?>' . $layoutBoxData['layouts_boxes_content'] . '<?php ');
+                    eval (' ?>' . $layoutBoxData['layouts_boxes_content'] . '<?php ');
                     $return = ob_get_clean();
 
                     $return = str_replace_placeholders($return, (array) $layoutEntityData, true, false);
@@ -3778,12 +3779,13 @@ class Datab extends CI_Model
      * @param $id
      * @param $return_data
      */
-    public function clone_element($element, $id, $return_id = true) {
+    public function clone_element($element, $id, $return_id = true)
+    {
         if (!$this->auth->is_admin()) {
             return t('Unauthorized');
         }
-        
-        switch($element) {
+
+        switch ($element) {
             case 'grid':
                 return $this->clone_grid($id, $return_id);
             case 'layout':
@@ -3794,7 +3796,7 @@ class Datab extends CI_Model
                 return t('Element unknown or unmanaged');
         }
     }
-    
+
     private function clone_grid($id, $return_id = false)
     {
         if (!is_numeric($id)) {
@@ -3802,57 +3804,57 @@ class Datab extends CI_Model
         } else {
             $this->db->where('grids_id', $id);
         }
-        
+
         $grid = $this->db->get('grids')->row_array();
-        
+
         if (empty($grid)) {
             return t('Grid not found');
         }
-        
+
         $fields = $this->db->get_where('grids_fields', array('grids_fields_grids_id' => $grid['grids_id']))->result_array();
         $actions = $this->db->get_where('grids_actions', array('grids_actions_grids_id' => $grid['grids_id']))->result_array();
-        
+
         // Inserisci una nuova grid - togli l'id
         unset($grid['grids_id']);
-        
+
         $grid['grids_name'] .= " - duplicated";
         $grid['grids_default'] = DB_BOOL_FALSE;
-        
+
         unset($grid['grids_module_key']);
-        
+
         $this->db->insert('grids', $grid);
         $new_id = $this->db->insert_id();
-        
+
         if (!empty($grid['grids_module_key'])) {
             $old_key_expl = explode('-', $grid['grids_module_key']);
             $this->db->where('grids_id', $new_id)->update('grids', ['grids_module_key' => "{$old_key_expl[0]}-grid-{$new_id}"]);
         }
-        
+
         // Aggiungi tutti i fields
         foreach ($fields as $field) {
             $field['grids_fields_grids_id'] = $new_id;
-            
+
             unset($field['grids_fields_id']);
-            
+
             $this->db->insert('grids_fields', $field);
         }
-        
+
         // Aggiungi tutte le custom actions
         foreach ($actions as $action) {
             unset($action['grids_actions_id']);
-            
+
             $action['grids_actions_grids_id'] = $new_id;
-            
+
             $this->db->insert('grids_actions', $action);
         }
-        
+
         if ($return_id) {
             return $new_id;
         } else {
             return $this->get_grid($new_id);
         }
     }
-    
+
     /**
      * @param $type
      * @param $id
@@ -3864,7 +3866,7 @@ class Datab extends CI_Model
         if (!$this->auth->is_admin()) {
             return t('Unauthorized');
         }
-        
+
         try {
             //Controllo se presente, se si unlocko, se no locko
             $exists = $this->db->get_where('locked_elements', ['locked_elements_type' => $type, 'locked_elements_ref_id' => $id]);
@@ -3873,7 +3875,7 @@ class Datab extends CI_Model
             } else {
                 $this->db->insert('locked_elements', ['locked_elements_type' => $type, 'locked_elements_ref_id' => $id]);
             }
-            
+
             return true;
         } catch (Exception $e) {
             return $e->getMessage();
