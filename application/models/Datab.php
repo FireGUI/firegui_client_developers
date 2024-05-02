@@ -800,6 +800,8 @@ class Datab extends CI_Model
         if (!$field['fields_ref']) {
             //Potrebbe essere comunque una select con dati da pescare da fields_additional_data (valori separati da virgola)
             if (!empty($field['fields_additional_data'])) {
+                //TODO: gestire anche cose del tipo: {SELECT campo1 as value, campo2 as preview FROM tabella_esterna WHErE ....}
+
                 $support_data = explode(',', $field['fields_additional_data']);
                 $field['support_data'] = array_combine($support_data, $support_data);
             }
@@ -1420,6 +1422,7 @@ class Datab extends CI_Model
 
                             switch ($condition['operator']) {
                                 case 'in':
+                                case 'notin':
                                     if (!is_array($condition['value'])) {
                                         $condition['value'] = explode(',', $condition['value']);
                                     }
@@ -1450,6 +1453,7 @@ class Datab extends CI_Model
                                     break;
 
                                 case 'like':
+                                case 'notlike':
                                     if (in_array($field->fields_type, array('VARCHAR', 'TEXT'))) {
                                         $arr[] = "({$where_prefix}{$field->fields_name} $not{$operators[$condition['operator']]['sql']} '%{$condition['value']}%'{$where_suffix})";
                                     }

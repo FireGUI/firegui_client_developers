@@ -31,11 +31,11 @@
     data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>">
     <?php if (!$field['fields_source']): ?>
         <?php //if ($field['fields_required'] == FIELD_NOT_REQUIRED): ?>
-            <option></option>
+        <option></option>
         <?php //endif; ?>
         <?php if (isset($field['support_data'])): ?>
             <?php foreach ((array) $field['support_data'] as $id => $name): ?>
-                <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?><?php if ($field['forms_field_full_data'] == DB_BOOL_TRUE): ?>
+                <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?><?php if (!empty($field['forms_field_full_data']) && $field['forms_field_full_data'] == DB_BOOL_TRUE): ?>
                         data-full_data="<?php echo base64_encode(json_encode($this->apilib->view($field['fields_ref'], $id))); ?>" <?php endif; ?>>
                     <?php echo $name; ?>
                 </option>

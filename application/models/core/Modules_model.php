@@ -25,11 +25,11 @@ class Modules_model extends CI_Model
             $this->settings = "";
             $this->_license_token = null;
         }
-        
+
         $this->temp_folder = FCPATH . 'uploads/tmp/';
-        
+
         $this->_project_id = (defined('ADMIN_PROJECT') && !empty(ADMIN_PROJECT)) ? ADMIN_PROJECT : 0;
-        
+
         $this->load->model('entities');
     }
 
@@ -240,7 +240,7 @@ class Modules_model extends CI_Model
                         if ($version_compare_old || ($old_version == 0 || $key === '*')) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
                             foreach ($value as $key_type => $code) {
                                 if ($key_type == 'eval') {
-                                    eval($code);
+                                    eval ($code);
                                 } elseif ($key_type == 'include') {
                                     if (is_array($code)) {
                                         foreach ($code as $file_to_include) {
@@ -548,7 +548,7 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['layouts'] as $layout) {
 
-                
+
 
                 $c++;
                 progress($c, $total, 'layouts delete');
@@ -690,6 +690,24 @@ class Modules_model extends CI_Model
             $c = 0;
             //I fields dei form li inserisco dopo aver inserito tutti i form (per non rischiare di avere sub_form_id come chiavi esterne di form non ancora creati...
             foreach ($json['forms'] as $form) {
+
+                //Se il form è lockato non faccio niente!
+                $locked = $this->db->query(
+
+                    "SELECT
+                            locked_elements_ref_id
+                        FROM
+                            locked_elements
+                        WHERE
+                            locked_elements_ref_id = '{$forms_id_map[$form['forms_id']]}'
+                            AND locked_elements_type = 'form'
+                    
+                    "
+                );
+                if ($locked->num_rows() > 0) {
+                    continue;
+                }
+
                 foreach ($form['fields'] as $field) {
                     if (!empty($field['conditions'])) {
                         $conditions = array_merge($conditions, [$field['conditions']]);
@@ -718,7 +736,7 @@ class Modules_model extends CI_Model
                     if (empty($fields_id_map[$field['forms_fields_fields_id']])) {
                         continue;
                         debug($form);
-                        debug($field,true);
+                        debug($field, true);
                     }
 
                     $field['forms_fields_fields_id'] = $fields_id_map[$field['forms_fields_fields_id']];
@@ -1375,7 +1393,7 @@ class Modules_model extends CI_Model
             my_log('debug', "Module install: start layouts boxes creation", 'update');
             //Inserisco i layoutbox
             $layout_box_map = [];
-            
+
             $this->db->query(
                 "DELETE FROM layouts_boxes
                 WHERE
