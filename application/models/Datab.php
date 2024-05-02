@@ -1422,6 +1422,7 @@ class Datab extends CI_Model
 
                             switch ($condition['operator']) {
                                 case 'in':
+                                case 'notin':
                                     if (!is_array($condition['value'])) {
                                         $condition['value'] = explode(',', $condition['value']);
                                     }
