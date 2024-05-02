@@ -55,15 +55,18 @@ define(
     'OPERATORS',
     serialize(
         array(
-            'eq' => array('html' => '=', 'sql' => '='),
-            'lt' => array('html' => '<', 'sql' => '<'),
-            'gt' => array('html' => '>', 'sql' => '>'),
-            'le' => array('html' => '&le;', 'sql' => '<='),
-            'ge' => array('html' => '&ge;', 'sql' => '>='),
-            'in' => array('html' => 'IN', 'sql' => 'IN'),
-            'like' => array('html' => 'LIKE', 'sql' => 'ILIKE'),
+            'eq' => array('html' => '=', 'sql' => '=', 'label' => 'Equal', 'reverse' => false),
+            'neq' => array('html' => '=', 'sql' => '=', 'label' => 'Not equal', 'reverse' => true),
+            'lt' => array('html' => '<', 'sql' => '<', 'label' => 'Less than', 'reverse' => false),
+            'gt' => array('html' => '>', 'sql' => '>', 'label' => 'Greater than', 'reverse' => false),
+            'le' => array('html' => '&le;', 'sql' => '<=', 'label' => 'Less or equal', 'reverse' => false),
+            'ge' => array('html' => '&ge;', 'sql' => '>=', 'label' => 'Greater or equal', 'reverse' => false),
+            'in' => array('html' => 'IN', 'sql' => 'IN', 'label' => 'In', 'reverse' => false),
+            'notin' => array('html' => 'IN', 'sql' => 'IN', 'label' => 'Not in', 'reverse' => true),
+            'like' => array('html' => 'LIKE', 'sql' => 'LIKE', 'label' => 'Like', 'reverse' => false),
+            'notlike' => array('html' => 'LIKE', 'sql' => 'LIKE', 'label' => 'Not like', 'reverse' => true),
             //'rangein'  => array( 'html' => 'Range in',    'sql' => '<@' ),
-            'rangein' => array('html' => 'Range in', 'sql' => '&&'),
+            'rangein' => array('html' => 'Range in', 'sql' => '&&', 'label' => 'Range in'),
         )
     )
 );
