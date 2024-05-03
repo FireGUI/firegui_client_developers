@@ -77,7 +77,7 @@ foreach ($form['forms_fields'] as $key => $field) {
                                     <?php echo $field_set_title; ?> <i class="fa fa-arrow-right"></i>
                                 </legend>
                             <?php endif; ?>
-                            <div class="sortableForm">
+                            <div class="row sortableFormDEPRECATED">
 
 
                                 <?php foreach ($fields as $field): ?>
