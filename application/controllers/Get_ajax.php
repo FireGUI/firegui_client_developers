@@ -1424,7 +1424,11 @@ class Get_ajax extends MY_Controller
         }
 
         $preview = $this->datab->get_entity_preview_by_name($entity_name, implode(' AND ', $where_referer));
-        echo json_encode($preview);
+        $return_data_keep_sort = [];
+        foreach ($preview as $id => $preview_label) {
+            $return_data_keep_sort[] = ['id' => $id, 'value' => $preview_label];
+        }
+        echo json_encode($return_data_keep_sort);
     }
 
     public function langInfo()

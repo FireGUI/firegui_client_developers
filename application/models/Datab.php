@@ -1454,7 +1454,7 @@ class Datab extends CI_Model
 
                                 case 'like':
                                 case 'notlike':
-                                    if (in_array($field->fields_type, array('VARCHAR', 'TEXT'))) {
+                                if (in_array(strtoupper($field->fields_type), array('VARCHAR', 'TEXT'))) {
                                         $arr[] = "({$where_prefix}{$field->fields_name} $not{$operators[$condition['operator']]['sql']} '%{$condition['value']}%'{$where_suffix})";
                                     }
                                     break;
