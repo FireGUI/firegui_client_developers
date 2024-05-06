@@ -771,7 +771,7 @@ function initComponents(container, reset = false) {
           $.each(data, function (k, v) {
             var jqOption = $("<option></option>").val(v.id).text(v.value);
 
-            if ($.inArray(k, previousValue) > -1) {
+            if (previousValue.includes(String(v.id))) {
               previousValueFound = true;
             }
 
