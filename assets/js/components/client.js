@@ -560,7 +560,7 @@ function initComponents(container, reset = false) {
                     $('<option></option>').appendTo(jsMultiselect);
                     var previousValueFound = false;
                     $.each(data, function (k, v) {
-                        var jqOption = $('<option></option>').val(k).text(v);
+                        var jqOption = $("<option></option>").val(v.id).text(v.value);
 
                         if ($.inArray(k, previousValue) > -1) {
                             previousValueFound = true;

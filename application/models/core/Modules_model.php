@@ -331,6 +331,9 @@ class Modules_model extends CI_Model
                 //debug($entity,true);
 
                 if ($entity['entity_type'] != ENTITY_TYPE_RELATION) {
+                    if ($entity['entity_name'] == 'documenti_contabilita_articoli') {
+                        //debug($entity,true);
+                    }
                     $data = [
                         'entity_name' => $entity['entity_name'],
                         'entity_type' => $entity['entity_type'],
@@ -339,11 +342,16 @@ class Modules_model extends CI_Model
                         'entity_visible' => $entity['entity_visible'],
                         'entity_module' => $entity['entity_module'],
                         'entity_preview_base' => $entity['entity_preview_base'],
+                        'entity_action_fields' => $entity['entity_action_fields'],
+
                     ];
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);
                     if (!$entity_exists) {
                         try {
                             $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
+
+                            
+
                         } catch (RuntimeException $e) {
                             my_log('error', "Entity '{$entity['entity_name']}' creation failed! (ex: {$e->getMessage()})", 'update');
                             continue;
@@ -427,6 +435,8 @@ class Modules_model extends CI_Model
                     continue;
                 }
 
+                
+
                 my_log('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'", 'update');
                 foreach ($entity['fields'] as $field) {
 
@@ -474,8 +484,11 @@ class Modules_model extends CI_Model
                         ];
 
                         $return = array_merge($return, $this->entities->addFields($single_field_update_data, true));
-                        //debug($return);
+                        
                     }
+
+                    
+
                 }
                 my_log('debug', "Module install: end fields creation", 'update');
 
@@ -525,13 +538,36 @@ class Modules_model extends CI_Model
                     ]);
 
                     if (!$draw_exists->num_rows() >= 1) {
-
                         $this->db->insert('fields_draw', $fd);
                     } else {
                         $this->db->where('fields_draw_id', $draw_exists->row()->fields_draw_id)->update('fields_draw', $fd);
                     }
                 }
             }
+
+            //Processo i vari custom fields (posso farlo solo adesso che ho creato tutte le entità e tutti i fields)
+            $total = count($json['entities']);
+            $c = 0;
+            foreach ($json['entities'] as $old_entity_id => $entity) {
+                progress(++$c, $total, 'custom action fields');
+                $entity_action_fields = json_decode($entity['entity_action_fields'], true);
+                if ($entity_action_fields) {
+                        //Prima di creare le varie action fields, dovrei eliminare le vecchie, per non avere ad esempio due campi marcati come order by default
+                        foreach ($entity_action_fields as $action => $action_field) {
+                            $field_with_action = $this->db
+                                ->join('entity', 'entity_id = fields_entity_id')
+                                ->get_where('fields', ['fields_name' => $action_field])
+                                ->row();
+                                if (!$field_with_action) {
+                                    debug($this->db->last_query(),true);
+                                }
+                            //debug($field_with_action,true);
+                            $this->entities->processFieldCustomAction($field_with_action, $action, true);
+                        }
+
+                    }
+            }
+
 
             //Dopo aver creato tutte le entità, posso ricrearmi la mappatura corretta dei fields:
             foreach ($this->db->get('fields')->result_array() as $field) {
@@ -1007,6 +1043,11 @@ class Modules_model extends CI_Model
                     //Verifico che non esista già la grid
                     $grid_exists = $this->db->query("SELECT * FROM grids WHERE grids_module_key = '{$grid['grids_module_key']}'");
                     if ($grid_exists->num_rows() == 0) {
+
+                        if (!$grid['grids_layout']) {
+                            debug($grid,true);  
+                        }
+
                         $this->db->insert('grids', $grid);
                         $new_grid_id = $this->db->insert_id();
                         $grids_id_map[$old_grid_id] = $new_grid_id;

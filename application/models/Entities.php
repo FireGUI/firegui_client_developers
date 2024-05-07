@@ -1692,29 +1692,37 @@ $field = $this->get_field($entity_field_id);
     {
         switch ($action) {
             case 'add_foreign_key':
-                if (true == $add) {
+                if ($add) {
                     if ($this->selected_db->dbdriver != 'postgre') {
                         $notnull = '';
                         $ondelete = '';
+                        //debug($field);
                         if ($field->fields_required == FIELD_REQUIRED) {
                             $notnull = ' NOT NULL ';
                             $ondelete = ' ON DELETE CASCADE ON UPDATE CASCADE ';
                             $this->selected_db->query("DELETE FROM {$field->entity_name} WHERE {$field->fields_name} NOT IN (SELECT {$field->fields_ref}_id FROM {$field->fields_ref});");
                         } else {
-                            $this->selected_db->query("UPDATE {$field->entity_name} SET {$field->fields_name} = NULL WHERE {$field->fields_name}  NOT IN (SELECT {$field->fields_ref}_id FROM {$field->fields_ref});");
+                            $this->selected_db->query("UPDATE {$field->entity_name} SET {$field->fields_name} = NULL WHERE {$field->fields_name} NOT IN (SELECT {$field->fields_ref}_id FROM {$field->fields_ref});");
                             $ondelete = ' ON DELETE SET NULL ON UPDATE CASCADE ';
                         }
 
-                        $this->selected_db->query("ALTER TABLE {$field->entity_name} MODIFY {$field->fields_name} bigint(20) unsigned $notnull"); //Lo forzo a bigint(20) unisgned perchè così sono gli id in mysql e devono essere uguali i due campi
-                        $this->selected_db->query("ALTER TABLE {$field->entity_name} ADD CONSTRAINT {$field->fields_name}_fkey FOREIGN KEY ({$field->fields_name}) REFERENCES {$field->fields_ref} ({$field->fields_ref}_id) $ondelete;");
+                        $this->selected_db->query("ALTER TABLE {$field->entity_name} MODIFY {$field->fields_name} bigint(20) unsigned $notnull"); // Lo forzo a bigint(20) unsigned perché così sono gli id in MySQL e devono essere uguali i due campi
+
+                        // Verifica l'esistenza della foreign key
+                        $fkExists = $this->selected_db->query("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$field->entity_name}' AND CONSTRAINT_NAME = '{$field->fields_name}_fkey'")->row();
+                        if (!$fkExists) {
+                            $this->selected_db->query("ALTER TABLE {$field->entity_name} ADD CONSTRAINT {$field->fields_name}_fkey FOREIGN KEY ({$field->fields_name}) REFERENCES {$field->fields_ref} ({$field->fields_ref}_id) $ondelete;");
+                        } else {
+                            //echo "Foreign key {$field->fields_name}_fkey already exists.";
+                        }
                     } else {
-                        //die("Se sei proprio sicuro di quello che stai facendo, decommenta questa riga!");
+                        // PostgreSQL section would need similar check for FK existence
                         $this->selected_db->query("DELETE FROM {$field->entity_name} WHERE {$field->fields_name} NOT IN (SELECT {$field->fields_ref}_id FROM {$field->fields_ref});");
                         $this->selected_db->query("ALTER TABLE {$field->entity_name} ADD CONSTRAINT {$field->fields_name}_fkey FOREIGN KEY ({$field->fields_name}) REFERENCES {$field->fields_ref} ({$field->fields_ref}_id) ON DELETE CASCADE ON UPDATE CASCADE;");
                     }
                 } else {
                     if ($this->selected_db->dbdriver != 'postgre') {
-                        $this->selected_db->query("ALTER TABLE {$field->entity_name} DROP foreign key {$field->fields_name}_fkey;");
+                        $this->selected_db->query("ALTER TABLE {$field->entity_name} DROP FOREIGN KEY {$field->fields_name}_fkey;");
                     } else {
                         $this->selected_db->query("ALTER TABLE {$field->entity_name} DROP CONSTRAINT {$field->fields_name}_fkey;");
                     }
@@ -1725,6 +1733,7 @@ $field = $this->get_field($entity_field_id);
                 break;
         }
     }
+
 
     /**
      * @param int|array $field_id

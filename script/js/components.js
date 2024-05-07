@@ -576,14 +576,14 @@ function initComponents(container, reset = false) {
     var form = $(this);
     var btn = $(".js_filter_form_add_row", form).on("click", function () {
       var container_f = $(".js_filter_form_rows_container", form),
-        rows = $(".js_filter_form_row", container_f);
+        rows = $(".js_filter_form_row", container);
       var size = rows.size();
       var obj = rows.filter(":first").clone();
       $("input, select", obj).each(function () {
         var name = "conditions[" + size + "][" + $(this).attr("data-name") + "]";
         $(this).attr("name", name).removeAttr("data-name");
       });
-      obj.removeClass("hide").appendTo(container_f);
+      obj.removeClass("hide").appendTo(container);
     });
   });
 
@@ -771,7 +771,7 @@ function initComponents(container, reset = false) {
           $.each(data, function (k, v) {
             var jqOption = $("<option></option>").val(v.id).text(v.value);
 
-            if ($.inArray(k, previousValue) > -1) {
+            if (previousValue.includes(String(v.id))) {
               previousValueFound = true;
             }
 
