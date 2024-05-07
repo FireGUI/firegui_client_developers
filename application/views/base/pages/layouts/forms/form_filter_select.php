@@ -516,7 +516,9 @@ $rowCol = 0;
 
                                                         // Formatta il valore per il campo nascosto
                                                         const value = `01/${month}/${selectedYear} - ${lastDayOfMonth}/${month}/${selectedYear}`;
-                                                        hiddenInput.value = value;
+                                                        hiddenInputs.forEach(input => {
+                                                            input.value = value; // Aggiorna il valore per tutti gli input trovati
+                                                        });
                                                     });
                                                 });
                                             });
