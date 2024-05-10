@@ -112,6 +112,18 @@ function initDropzones() {
                 
                 var file_id = (dzfile_index != '-1') ? dzfile_index : file.id;
                 
+                var edit_id = $(form_selector).data('edit-id');
+                
+                if (!edit_id) {
+                    file.previewElement.remove();
+                    dzfiles[unique].splice(file_id, 1);
+                    
+                    $('[name="' + fieldname + '"]').val(JSON.stringify(dzfiles[unique]));
+                    $('[name="' + fieldname + '[]"][value="' + file.intid + '"]').remove();
+                    
+                    return true;
+                }
+                
                 $.ajax(base_url + 'db_ajax/removeFileFromMultiUpload/' + fieldname + '/' + $(form_selector).data('edit-id') + '/' + file_id, {
                     success: function () {
                         file.previewElement.remove();
