@@ -31,7 +31,7 @@
     data-dependent_on="<?php echo $field['forms_fields_dependent_on']; ?>">
     <?php if (!$field['fields_source']): ?>
         <?php //if ($field['fields_required'] == FIELD_NOT_REQUIRED): ?>
-        <option></option>
+        <option value=""> --- </option>
         <?php //endif; ?>
         <?php if (isset($field['support_data'])): ?>
             <?php foreach ((array) $field['support_data'] as $id => $name): ?>
