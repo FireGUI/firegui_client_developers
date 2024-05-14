@@ -532,7 +532,9 @@ class Main extends MY_Controller {
         // Sezione layouts
         if(defined('LOGIN_ACTIVE_FIELD') && LOGIN_ACTIVE_FIELD) {
             if(defined('LOGIN_DELETED_FIELD') && LOGIN_DELETED_FIELD) {
-                $this->db->where(LOGIN_DELETED_FIELD." <> '".DB_BOOL_TRUE."'", null, false);
+                $deleted_field = LOGIN_DELETED_FIELD;
+                
+                $this->db->where("({$deleted_field} IS NULL OR {$deleted_field} = '' OR {$deleted_field} = '".DB_BOOL_FALSE."')");
             }
             $users = $this->db->get_where(LOGIN_ENTITY, array(LOGIN_ACTIVE_FIELD => DB_BOOL_TRUE))->result_array();
         } else {
