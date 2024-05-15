@@ -615,6 +615,9 @@ class Get_ajax extends MY_Controller
                 if ($pointer < count($ref_expl)) {
                     //Layout id is the next parameter
                     $layout_id = $ref_expl[$pointer + 1];
+                    if (!is_numeric($layout_id)) {
+                        $layout_id = $this->layout->getLayoutByIdentifier($layout_id);
+                    }
                 }
                 $this->layout->addLayout($layout_id);
             }
