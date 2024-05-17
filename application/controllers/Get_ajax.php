@@ -1099,7 +1099,14 @@ class Get_ajax extends MY_Controller
                     $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format('Y-m-d\TH:i:s');
                 }
             }
-
+            
+            if (
+                ((new DateTime($ev['start']))->format("Y-m-d") == (new DateTime($ev['end']))->format("Y-m-d"))
+                && ($hours_end < $hours_start)
+            ) {
+                $ev['end'] = (new DateTime($ev['end']))->modify('+1 day')->format('Y-m-d\TH:i:s');
+            }
+            
             if (empty($ev['all_day'])) {
                 $arr_start = explode('T', $ev['start']);
                 $arr_end = explode('T', $ev['end']);
