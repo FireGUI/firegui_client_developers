@@ -37,6 +37,7 @@ class Apilib
     const ERR_POST_PROCESS = 8; // Questo errore di norma non usa il messaggio standard
     const ERR_GENERIC = 8; // Internal Server Error: Generico. Genera report email
 
+    // Const log crm types
     const LOG_LOGIN = 1; // Login action
     const LOG_LOGIN_FAIL = 2; // Logout action
     const LOG_LOGOUT = 3; // Logout action
@@ -45,6 +46,7 @@ class Apilib
     const LOG_CREATE_MANY = 6; // Apilib::createMany action
     const LOG_EDIT = 7; // Apilib::edit action
     const LOG_DELETE = 8; // Apilib::delete action
+    const LOG_UNALLOWED_LAYOUT = 9; // Unallowed access layout
 
     private $not_deferrable_pp = [
         'pre-login',
@@ -89,6 +91,7 @@ class Apilib
         self::LOG_CREATE_MANY => "New bulk record creation on entity {log_crm_extra entity}",
         self::LOG_EDIT => "Edited record ({log_crm_extra id}) on entity {log_crm_extra entity}",
         self::LOG_DELETE => "Deleted record ({log_crm_extra id}) on entity {log_crm_extra entity}",
+        self::LOG_UNALLOWED_LAYOUT => "User {log_crm_user_name} tried to access layout: {log_crm_extra layout} restricted page",
     ];
 
     private $originalPost = null;
@@ -362,7 +365,7 @@ class Apilib
         $_data = $this->extractInputData($data);
         //unset($_data[$this->security->get_csrf_token_name()]);
 
-        
+
         //rimuovo i campi password passati vuoti...
         $fields = $this->crmEntity->getFields($entity);
 
@@ -386,7 +389,7 @@ class Apilib
                 }
 
                 $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
-            } 
+            }
         }
         //debug($_data);
         if ($this->processData($entity, $_data, false)) {
@@ -1412,16 +1415,16 @@ class Apilib
                     $type = 'png'; // jpg, png, gif
                 }
                 $data_img = base64_decode($data_img);
-                
+
                 $uploadFolder = FCPATH . '/uploads/';
                 $fileName = uniqid() . '.' . $type;
                 $filePath = $uploadFolder . $fileName;
-                
+
                 if (!file_exists($uploadFolder)) {
                     mkdir($uploadFolder, 0777, true);
                 }
-                
-                $name = 'signature_' . time() . '.'.$type;
+
+                $name = 'signature_' . time() . '.' . $type;
                 if (file_put_contents($filePath, $data_img) !== false) {
                     $uploadData = [
                         'file_name' => $fileName,
@@ -1440,7 +1443,7 @@ class Apilib
                         'image_type' => null,
                         'image_size_str' => null,
                     ];
-                    
+
                     list($width, $height, $imageType, $sizeStr) = getimagesize($filePath);
                     $uploadData['image_width'] = $width;
                     $uploadData['image_height'] = $height;
@@ -1448,7 +1451,7 @@ class Apilib
                     $uploadData['image_size_str'] = $sizeStr;
                     // Chiama la funzione moveFileToUploadsFolder
                     $this->moveFileToUploadsFolder($uploadData);
-                    
+
                     $data[$field['fields_name']] = json_encode($uploadData);
                     //debug($field,true);
                 } else {
@@ -1522,18 +1525,18 @@ class Apilib
          * return false;
          */
         $result = $this->uploadAll(true);
-        
+
         if ($result === false) {
             return false;
         }
-        
+
         if (is_array($result)) {
             foreach ($result as $field_name => $arr) {
                 foreach ($fields as $field) {
                     if ($field_name == $field['fields_name']) {
                         if (in_array($field['fields_draw_html_type'], ['upload', 'upload_image'])) {
                             $result[$field_name] = $arr['path_local'];
-                        } elseif($field['fields_draw_html_type'] == 'single_upload') {
+                        } elseif ($field['fields_draw_html_type'] == 'single_upload') {
                             $result[$field_name] = json_encode($arr);
                         } else {
                             $result[$field_name] = $arr;
@@ -1541,7 +1544,7 @@ class Apilib
                     }
                 }
             }
-            
+
             $data = array_merge($data, $result);
             $originalData = array_merge($originalData, $result);
         }
@@ -1746,7 +1749,7 @@ class Apilib
         }
         if ($invalidFields) {
             if ($this->processMode !== self::MODE_CRM_FORM) {
-                
+
                 $this->error = self::ERR_VALIDATION_FAILED;
                 $this->errorMessage = t("Fields %s are not accepted in entity '$entity'", 0, [implode(', ', $invalidFields)]);
                 return false;
@@ -1806,7 +1809,7 @@ class Apilib
                 return false;
             }
             $reverse = !($field['entity_name'] == $relation->relations_table_1);
-            
+
             $dataToInsert = array(
                 'entity' => $relation->relations_name,
                 'relations_field_1' => ($reverse ? $relation->relations_field_2 : $relation->relations_field_1),
@@ -2403,7 +2406,7 @@ class Apilib
                             $this->runEvent($function, $data);
                         } else {
                             //TODO: deprecated... use onlu fi_events table
-                            eval($function['post_process_what']);
+                            eval ($function['post_process_what']);
                         }
                     } catch (Exception $ex) {
                         throw new ApiException($ex->getMessage(), self::ERR_POST_PROCESS, $ex);
@@ -2562,10 +2565,10 @@ class Apilib
                 $uploadData = $this->upload->data();
 
                 $this->moveFileToUploadsFolder($uploadData);
-                
-                
 
-//                $output[$fieldName] = $uploadData['file_name']; // 11/10/2023 - michael - ho commentato questo e messo la riga sotto per la funzionalità del nuovo campo "single_upload" che è un upload normale che però contiene tutte le informazioni dei file... è una via di mezzo tra upload e multiupload
+
+
+                //                $output[$fieldName] = $uploadData['file_name']; // 11/10/2023 - michael - ho commentato questo e messo la riga sotto per la funzionalità del nuovo campo "single_upload" che è un upload normale che però contiene tutte le informazioni dei file... è una via di mezzo tra upload e multiupload
                 $output[$fieldName] = $uploadData;
             }
 
@@ -2577,7 +2580,8 @@ class Apilib
         return $output;
     }
 
-    private function moveFileToUploadsFolder(&$uploadData) {
+    private function moveFileToUploadsFolder(&$uploadData)
+    {
         //debug($uploadData,true);
         defined('LOGIN_ENTITY') or @include __DIR__ . '/../config/enviroment.php';
         $uploadDepthLevel = defined('UPLOAD_DEPTH_LEVEL') ? (int) UPLOAD_DEPTH_LEVEL : 0;
