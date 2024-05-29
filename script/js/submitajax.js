@@ -58,6 +58,10 @@ var handleSuccess = function (msg, container = null) {
             break;
 
         case 7:
+            if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
+                closeContainingPopups(submittedForm);
+            }
+
             //if (typeof msg.related_entity === 'undefined' || !msg.related_entity) {
             refreshAjaxLayoutBoxes();
             // } else {
@@ -247,7 +251,9 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             formAjaxIsSubmitting = false;
         },
         success: function (msg) {
-
+            if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
+                closeContainingPopups(form);
+            }
             if (formEvents && ('form-ajax-success' in formEvents)) {
                 // Custom call
                 form.trigger('form-ajax-success', msg);
@@ -257,9 +263,7 @@ function formAjaxSend(form, ajaxOverrideOptions) {
             }
             //alert(1);
             // Eventually close all modals if needed
-            if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
-                closeContainingPopups(form);
-            }
+
             if (typeof msg.cache_tags !== 'undefined' && msg.cache_tags) {
 
                 for (var i in msg.cache_tags) {
@@ -372,8 +376,9 @@ function refreshCkeditors() {
         CKEDITOR.instances[id].updateElement();
     }
 }
-
+var closing = false;
 function closeContainingPopups(el) {
+    closing = true;
     // Try to close bootstrap modals
     var bsModalParent = el.parents('.modal');
     if (bsModalParent.size()) {
@@ -388,6 +393,9 @@ function closeContainingPopups(el) {
     if (fancyboxParent.size()) {
         $.fancybox.close();
     }
+    setTimeout(function () {
+        closing = false;
+    }, 1000);
 }
 
 function refreshGridsByEntity(entity_name) {
@@ -449,7 +457,7 @@ function refreshAjaxLayoutBoxes() {
     //TODO: check if box is refreshable
 
     //Per capire se il layout è in modale, verifico che la modale sia visibile e che al suo interno sia presente un layout (e non ad esempio un banale form)
-    var is_modal = $('.modal:visible').length && $('.modal:visible .modal-body').find('.js_layout').length;
+    var is_modal = $('.modal:visible').length && $('.modal:visible .modal-body').find('.js_layout').length && !closing;
     // if ($('.layout_box:visible').length > 5 && !is_modal) {
     //     location.reload();
     // } else {
@@ -464,9 +472,11 @@ function refreshAjaxLayoutBoxes() {
 
     $('.layout_box:visible', container).each(function () {
 
-        var $firstChild = $(this).children().first();
+        var $firstChild = $(this).children(':visible').first();
 
         $firstChild.addClass('pulsing-background');
+
+
 
         //Attivare per debuggare.... evidenzia i box mentre si stanno caricando
 
