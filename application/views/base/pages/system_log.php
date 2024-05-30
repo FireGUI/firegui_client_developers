@@ -30,8 +30,8 @@ if (($post = $this->input->post())) {
 }
 
 /*
-     * Filtering
-     */
+ * Filtering
+ */
 $this->db->start_cache();
 switch ($filters['user']) {
     case 1:
@@ -43,7 +43,7 @@ switch ($filters['user']) {
         break;
 
     default:
-        // By default do not filter
+    // By default do not filter
 }
 
 if ($filters['ignore_my_ip'] && filter_input(INPUT_SERVER, 'REMOTE_ADDR')) {
@@ -55,13 +55,13 @@ if ($filters['actions']) {
 }
 
 /*
-     * Join tables to logs
-     */
+ * Join tables to logs
+ */
 $this->db->stop_cache();
 
 /*
-     * Ordering + Limiting + Query execution
-     */
+ * Ordering + Limiting + Query execution
+ */
 $limit = 50;
 $page = $this->input->get('page') ?: 1;
 $this->db->offset(($page - 1) * $limit);
@@ -71,9 +71,9 @@ $count = $this->db->count_all_results('log_crm');
 $this->db->flush_cache();
 
 /*
-     * Prendo tutte le agenzie loggate
-     * da mettere nel filtro
-     */
+ * Prendo tutte le agenzie loggate
+ * da mettere nel filtro
+ */
 $agenzie = $this->db->query("SELECT * FROM users WHERE users_id IN (SELECT log_crm_user_id FROM log_crm) ORDER BY LOWER(users_first_name)")->result_array();
 
 /* Pagination */
@@ -140,8 +140,9 @@ $pprev = $page - 1;
                             <label for="utente"><?php e('User'); ?></label>
                             <select name="agenzia" id="utente" class="form-control select2me">
                                 <option></option>
-                                <?php foreach ($agenzie as $agenzia) : ?>
-                                    <option value="<?php echo $agenzia['users_id']; ?>" <?php echo ($filters['agenzia'] == $agenzia['users_id']) ? 'selected' : ''; ?>><?php echo $agenzia['users_first_name']; ?></option>
+                                <?php foreach ($agenzie as $agenzia): ?>
+                                    <option value="<?php echo $agenzia['users_id']; ?>" <?php echo ($filters['agenzia'] == $agenzia['users_id']) ? 'selected' : ''; ?>>
+                                        <?php echo $agenzia['users_first_name']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -161,14 +162,16 @@ $pprev = $page - 1;
                                 Apilib::LOG_CREATE_MANY => t('Record creation (bulk)'),
                                 Apilib::LOG_EDIT => t('Record editing'),
                                 Apilib::LOG_DELETE => t('Record deletion'),
+                                Apilib::LOG_UNALLOWED_LAYOUT => t('Unallowed access Layout'),
                             ];
                             ?>
 
                             <div class="row">
-                                <?php foreach ($tipi as $id => $name) : ?>
+                                <?php foreach ($tipi as $id => $name): ?>
                                     <div class="col-xs-3">
                                         <label class="checkbox-inline">
-                                            <input type="checkbox" id="actions" name="actions[]" value="<?php echo $id; ?>" <?php echo in_array($id, $filters['actions']) ? 'checked' : ''; ?> />
+                                            <input type="checkbox" id="actions" name="actions[]" value="<?php echo $id; ?>"
+                                                <?php echo in_array($id, $filters['actions']) ? 'checked' : ''; ?> />
                                             <?php echo $name; ?>
                                         </label>
                                     </div>
@@ -185,7 +188,8 @@ $pprev = $page - 1;
                 </div>
 
                 <div class="box-footer">
-                    <button class='btn btn-sm btn-primary'><?php e('Filter'); ?></button>&nbsp;<button name="reset" value="1" class='btn btn-sm btn-danger'><?php e('Reset'); ?></button>
+                    <button class='btn btn-sm btn-primary'><?php e('Filter'); ?></button>&nbsp;<button name="reset"
+                        value="1" class='btn btn-sm btn-danger'><?php e('Reset'); ?></button>
                 </div>
             </div>
         </form>
@@ -200,7 +204,7 @@ $pprev = $page - 1;
 
                 <nav>
                     <ul class="pagination">
-                        <?php if ($pprev) : ?>
+                        <?php if ($pprev): ?>
                             <li>
                                 <a href="?page=<?php echo $pprev ?>" aria-label="<?php e('Previous'); ?>">
                                     <span aria-hidden="true">&laquo; <?php e('Prev.'); ?></span>
@@ -208,7 +212,7 @@ $pprev = $page - 1;
                             </li>
                         <?php endif; ?>
                         &nbsp;
-                        <?php if ($pnext) : ?>
+                        <?php if ($pnext): ?>
                             <li>
                                 <a href="?page=<?php echo $pnext ?>" aria-label="<?php e('Next'); ?>">
                                     <span aria-hidden="true"><?php e('Next'); ?> &raquo;</span>
@@ -234,8 +238,8 @@ $pprev = $page - 1;
 
             <tbody>
                 <?php $curdate = null; ?>
-                <?php foreach ($logs as $log) : ?>
-                    <?php if ($curdate != ($tmp = dateFormat($log['log_crm_time']))) : ?>
+                <?php foreach ($logs as $log): ?>
+                    <?php if ($curdate != ($tmp = dateFormat($log['log_crm_time']))): ?>
                         <tr class="bg-blue">
                             <td colspan="6"><i><?php echo ($curdate = $tmp); ?></i></td>
                         </tr>
@@ -247,28 +251,28 @@ $pprev = $page - 1;
                             <small class="text-muted"><?php echo dateFormat($log['log_crm_time'], 's'); ?></small>
                         </td>
                         <td>
-                            <?php if (!$log['log_crm_user_id']) : ?>
+                            <?php if (!$log['log_crm_user_id']): ?>
                                 <em class="font-red-thunderbird">*** <?php e('User not detected'); ?> ***</em>
-                            <?php else : ?>
+                            <?php else: ?>
                                 <strong><?php echo $log['log_crm_user_name']; ?></strong>
                             <?php endif; ?>
                         </td>
                         <td><?php echo $log['log_crm_title']; ?></td>
                         <td><?php echo $log['log_crm_ip_addr']; ?></td>
                         <td><?php
-                            if ($log['log_crm_extra']) {
-                                foreach (json_decode($log['log_crm_extra'], true) as $key => $val) {
-                                    if (is_array($val)) {
-                                        $val = implode(', ', $val);
-                                    }
-                                    if ($key == 'data') {
-                                        echo "<strong>Data</strong>: check it on db...";
-                                    } else {
-                                        echo "<strong>{$key}</strong>: {$val}<br/>";
-                                    }
+                        if ($log['log_crm_extra']) {
+                            foreach (json_decode($log['log_crm_extra'], true) as $key => $val) {
+                                if (is_array($val)) {
+                                    $val = implode(', ', $val);
+                                }
+                                if ($key == 'data') {
+                                    echo "<strong>Data</strong>: check it on db...";
+                                } else {
+                                    echo "<strong>{$key}</strong>: {$val}<br/>";
                                 }
                             }
-                            ?></td>
+                        }
+                        ?></td>
                         <td><small class="text-muted"><?php echo $log['log_crm_user_agent']; ?></small></td>
                     </tr>
                 <?php endforeach; ?>
@@ -279,7 +283,7 @@ $pprev = $page - 1;
             <div class="box-tools pull-right">
                 <nav>
                     <ul class="pagination">
-                        <?php if ($pprev) : ?>
+                        <?php if ($pprev): ?>
                             <li>
                                 <a href="?page=<?php echo $pprev ?>" aria-label="<?php e('Previous'); ?>">
                                     <span aria-hidden="true">&laquo; <?php e('Prev.'); ?></span>
@@ -287,7 +291,7 @@ $pprev = $page - 1;
                             </li>
                         <?php endif; ?>
 
-                        <?php if ($pnext) : ?>
+                        <?php if ($pnext): ?>
                             <li>
                                 <a href="?page=<?php echo $pnext ?>" aria-label="<?php e('Next'); ?>">
                                     <span aria-hidden="true"><?php e('Next'); ?> &raquo;</span>
