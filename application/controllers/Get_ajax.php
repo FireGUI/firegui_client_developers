@@ -16,9 +16,9 @@ class Get_ajax extends MY_Controller
             die('Non sei loggato nel sistema');
         }
 
-        if ($this->input->is_ajax_request()) {
-            $this->output->enable_profiler(false);
-        }
+        // if ($this->input->is_ajax_request()) {
+        //     $this->output->enable_profiler(false);
+        // }
 
     }
     /**
@@ -373,7 +373,7 @@ class Get_ajax extends MY_Controller
                             array_filter(
                                 $this->crmentity->getFields($field['fields_ref']),
                                 function ($field) {
-                                    return $field['fields_preview'] == DB_BOOL_TRUE || (!empty ($field['fields_searchable']) && $field['fields_searchable'] == DB_BOOL_TRUE);
+                                    return $field['fields_preview'] == DB_BOOL_TRUE || (!empty($field['fields_searchable']) && $field['fields_searchable'] == DB_BOOL_TRUE);
                                 }
                             )
                         );
@@ -753,7 +753,7 @@ class Get_ajax extends MY_Controller
 
             $totalRecords = $this->datab->get_grid_data($grid, $valueID, null, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
             $totalDisplayRecord = $this->datab->get_grid_data($grid, $valueID, $where, null, 0, null, true, ['group_by' => $grid['grids']['grids_group_by']]);
-
+            //debug($this->load->capture_profiler_output(),true);
             $this->load->view('layout/json_return', [
                 'json' => json_encode(
                     array(
@@ -761,6 +761,7 @@ class Get_ajax extends MY_Controller
                         'iTotalDisplayRecords' => $totalDisplayRecord,
                         'sEcho' => $s_echo,
                         'aaData' => $out_array,
+                        'profiler' => ($this->input->get('_profiler')) ? $this->load->capture_profiler_output() : false
                     )
                 )
             ]);
@@ -851,7 +852,7 @@ class Get_ajax extends MY_Controller
 
         $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : null;
         $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), null, null, $order_by, 2, false, [], ['group_by' => null]);
-        
+
         $markers = array();
         if (!empty($data_entity)) {
             // Cerco un link se c'è qui per non fare una query ogni ciclo
@@ -886,7 +887,7 @@ class Get_ajax extends MY_Controller
                 //         ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
                 // }
             }
-            
+
             foreach ($data_entity as $marker) {
                 $mark = array();
                 foreach ($data['maps_fields'] as $field) {
@@ -910,28 +911,16 @@ class Get_ajax extends MY_Controller
                 if (empty($mark['title'])) {
                     $mark['title'] = '#' . $mark['id'];
                 }
-                //debug($mark);
+
                 // Elaboro le coordinate
                 if ((!empty($mark['latlng']) || !empty($mark['lat']))) {
                     if (isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
                         $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                         $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     } elseif ($latlng_field) {
-                        
-                        if (stripos($marker[$latlng_field], ',') !== false) {
-                            
-                            $latlng_expl = explode(',', $marker[$latlng_field]);
-                            $mark['lat'] = trim($latlng_expl[0]);
-                            $mark['lon'] = trim($latlng_expl[1]);
-                        } elseif (stripos($marker[$latlng_field], ';') !== false){
-                            $latlng_expl = explode(';', $marker[$latlng_field]);
-                            $mark['lat'] = trim($latlng_expl[0]);
-                            $mark['lon'] = trim($latlng_expl[1]);
-
-                        } else {
-                            continue;
-                        }
-                        
+                        $latlng_expl = explode(';', $marker[$latlng_field]);
+                        $mark['lat'] = trim($latlng_expl[0]);
+                        $mark['lon'] = trim($latlng_expl[1]);
                     }
 
                     $mark['link'] = ($link ? $link . '/' . $mark['id'] : '');
@@ -1082,17 +1071,6 @@ class Get_ajax extends MY_Controller
                 }
 
             }
-            
-            if (!array_key_exists('end', $ev)) {
-                //Assumo che sia mappato un date end
-                $ev['end'] = substr($ev['date_end'], 0, 10);
-                
-                if (array_key_exists('hours_end', $ev) && $ev['hours_end'] != '') {
-                    $ev['end'] = "{$ev['end']} {$ev['hours_end']}:00";
-                }
-                
-            }
-            
             //debug($ev);
 
             if (array_key_exists('date_start', $ev)) {
@@ -1122,14 +1100,7 @@ class Get_ajax extends MY_Controller
                     $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format('Y-m-d\TH:i:s');
                 }
             }
-            
-            if (
-                ((new DateTime($ev['start']))->format("Y-m-d") == (new DateTime($ev['end']))->format("Y-m-d"))
-                && ($hours_end < $hours_start)
-            ) {
-                $ev['end'] = (new DateTime($ev['end']))->modify('+1 day')->format('Y-m-d\TH:i:s');
-            }
-            
+
             if (empty($ev['all_day'])) {
                 $arr_start = explode('T', $ev['start']);
                 $arr_end = explode('T', $ev['end']);

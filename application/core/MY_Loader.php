@@ -21,12 +21,12 @@ class MY_Loader extends MX_Loader
         } else {
             $template = 'base';
         }
-        
+
         // Check extension
         $_ci_ext = pathinfo($_ci_view, PATHINFO_EXTENSION);
-        $view_file = ($_ci_ext === '') ? $_ci_view.'.php' : $_ci_view;
+        $view_file = ($_ci_ext === '') ? $_ci_view . '.php' : $_ci_view;
 
-        
+
 
 
 
@@ -52,18 +52,18 @@ class MY_Loader extends MX_Loader
                 $_ci_path = '';
             }
         }
-        
+
         if (empty($_ci_path)) {
-            
+
             // Check custom file
-            
-            if (file_exists(FCPATH . "application/views/custom/".$view_file)) {
-                $_ci_path = FCPATH . "application/views/custom/".$view_file;
-            } elseif (file_exists(FCPATH . "application/views/".$template."/".$view_file)) {
-                $_ci_path = FCPATH . "application/views/".$template."/".$view_file;
+
+            if (file_exists(FCPATH . "application/views/custom/" . $view_file)) {
+                $_ci_path = FCPATH . "application/views/custom/" . $view_file;
+            } elseif (file_exists(FCPATH . "application/views/" . $template . "/" . $view_file)) {
+                $_ci_path = FCPATH . "application/views/" . $template . "/" . $view_file;
             } else {
-                $_ci_path = FCPATH . "application/views/base/".$view_file;
-                 
+                $_ci_path = FCPATH . "application/views/base/" . $view_file;
+
                 if ($template != 'base') {
                     log_message('info', 'Template file not found: ' . $view_file . ' Loaded base file');
                 }
@@ -90,9 +90,9 @@ class MY_Loader extends MX_Loader
 
         if (empty($error)) {
             if ((bool) @ini_get('short_open_tag') === false && CI::$APP->config->item('rewrite_short_tags') == true) {
-                echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
+                echo eval ('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
             } else {
-                include($_ci_path);
+                include ($_ci_path);
             }
 
             log_message('info', 'File loaded: ' . $_ci_path);
@@ -110,9 +110,25 @@ class MY_Loader extends MX_Loader
             CI::$APP->output->append_output(ob_get_clean());
         }
     }
+
+    public function capture_profiler_output()
+    {
+
+        // Cattura l'output del profiler
+        $this->load->library('profiler');
+
+        $profiler_output = $this->profiler->run();
+
+
+        return $profiler_output;
+    }
+
     /** HMVC Fix and template view manager **/
     public function view($view, $vars = array(), $return = false)
     {
+        if ($this->input->is_ajax_request()) {
+            $this->output->enable_profiler(false);
+        }
         list($path, $_view) = Modules::find($view, $this->_module, 'views/');
 
         if ($path != false) {
@@ -120,7 +136,7 @@ class MY_Loader extends MX_Loader
             $view = $_view;
         }
 
-        
+
         // Fixed by stackoverflow  https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error
         // Original
         //return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
@@ -139,9 +155,9 @@ class MY_Loader extends MX_Loader
         $CI = get_instance();
 
         $CI->lang->language = array_merge($CI->lang->language, $CI->module->loadTranslations($folder, @array_values($CI->lang->is_loaded)[0]));
-        
+
         $this->_ci_view_paths = array_merge($this->_ci_view_paths, array(APPPATH . 'modules/' . $folder . '/' => true));
-        
+
         $vars = (is_object($vars)) ? get_object_vars($vars) : $vars;
         $_ci_ext = pathinfo($view, PATHINFO_EXTENSION);
         $_ci_file = ($_ci_ext === '') ? $view . '.php' : $view;
@@ -169,36 +185,39 @@ class MY_Loader extends MX_Loader
 
             //debug($view);
 
-            return $this->_ci_load(array(
-                '_ci_view' => $view,
-                '_ci_vars' => $vars,
-                '_ci_return' => $return
-            ));
+            return $this->_ci_load(
+                array(
+                    '_ci_view' => $view,
+                    '_ci_vars' => $vars,
+                    '_ci_return' => $return
+                )
+            );
         }
     }
 
-    public function database( $params = '', $return = false, $query_builder = null ) {
-        $ci =& get_instance( );
+    public function database($params = '', $return = false, $query_builder = null)
+    {
+        $ci =& get_instance();
 
-        if ( $return === false && $query_builder === null && isset( $ci->db ) && is_object( $ci->db ) && !empty( $ci->db->conn_id) ) {
+        if ($return === false && $query_builder === null && isset($ci->db) && is_object($ci->db) && !empty($ci->db->conn_id)) {
             return false;
         }
 
-        require_once( BASEPATH . 'database/DB.php' );
+        require_once (BASEPATH . 'database/DB.php');
 
-        $db =& DB( $params, $query_builder );
+        $db =& DB($params, $query_builder);
 
-        $driver = config_item( 'subclass_prefix' ) . 'DB_' . $db->dbdriver . '_driver';
+        $driver = config_item('subclass_prefix') . 'DB_' . $db->dbdriver . '_driver';
         $file = APPPATH . 'libraries/' . $driver . '.php';
 
-        if ( file_exists( $file ) === true && is_file( $file ) === true ) {
-            require_once( $file );
+        if (file_exists($file) === true && is_file($file) === true) {
+            require_once ($file);
 
-            $dbo = new $driver( get_object_vars( $db ) );
-            $db = & $dbo;
+            $dbo = new $driver(get_object_vars($db));
+            $db = &$dbo;
         }
 
-        if ( $return === true ) {
+        if ($return === true) {
             return $db;
         }
 

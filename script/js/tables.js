@@ -138,12 +138,25 @@ function initTabelWithPars(grid, pars) {
                     aoData.push({ name: token_name, value: token_hash });
                 },
                 fnServerData: function (sSource, aoData, fnCallback) {
+
+
+
                     $.ajax({
                         dataType: 'json',
                         type: 'POST',
                         url: sSource,
                         data: aoData,
-                        success: fnCallback,
+                        success: function (response) {
+                            //debugger
+                            if (response.profiler) {
+                                if (confirm('Do you want to see the profiler of grid id:' + oDataTable.data('grid-id') + '?')) {
+                                    $('#codeigniter-profiler').html($(response.profiler).contents().not('script,style'));
+                                }
+                            }
+
+                            // Chiama la funzione di callback di DataTables per processare la risposta
+                            fnCallback(response);
+                        },
                         error: function (request, error) {
                             //console.log(message);
                             if (typeof request.responseText !== 'undefined') {
