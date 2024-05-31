@@ -72,17 +72,122 @@ function raggruppa_query($queries)
 
 	// Ordina l'array in base al tempo massimo di esecuzione (ordine decrescente)
 	uasort($aggregatedData, function ($a, $b) {
-		return $b['totalQueries'] <=> $a['totalQueries'];
+		return $b['totalExecutionTime'] <=> $a['totalExecutionTime'];
 	});
 
 
 
 	return $aggregatedData;
 }
-$query_logs = $this->db->get_query_logs();
 
+function getExistingIndexes()
+{
+	$indexes = [];
+	$CI = &get_instance();
+
+	// Recupera tutte le tabelle del database
+	$tablesQuery = $CI->db->query("SHOW TABLES");
+	$tables = $tablesQuery->result_array();
+
+	// Itera attraverso tutte le tabelle
+	foreach ($tables as $table) {
+		$tableName = array_values($table)[0];
+		$query = $CI->db->query("SHOW INDEX FROM $tableName");
+		$results = $query->result_array();
+
+		foreach ($results as $row) {
+			$column = $row['Column_name'];
+			$indexes[] = "$tableName.$column";
+		}
+	}
+
+	return array_unique($indexes);
+}
+
+
+function suggestIndexes($queries)
+{
+	$CI = &get_instance();
+
+	$fields = array_key_map($CI->db->query("SELECT fields_name FROM fields")->result_array(), 'fields_name', null);
+
+	$indexSuggestions = [];
+	$existingIndexes = getExistingIndexes();
+
+	foreach ($queries as $query) {
+		// Trova tutte le colonne usate nei WHERE
+		if (preg_match_all('/\bWHERE\s+([^\s]+)\s*=/i', $query, $matches)) {
+			foreach ($matches[1] as $column) {
+				// Escludere le funzioni
+				if (preg_match('/\(|\)/', $column))
+					continue;
+				$indexSuggestions[$column][] = 'WHERE';
+			}
+		}
+
+		// Trova tutte le colonne usate nei JOIN
+		if (preg_match_all('/\bJOIN\s+[^\s]+\s+ON\s+([^\s]+)\s*=/i', $query, $matches)) {
+			foreach ($matches[1] as $column) {
+				// Escludere le funzioni
+				if (preg_match('/\(|\)/', $column))
+					continue;
+				$indexSuggestions[$column][] = 'JOIN';
+			}
+		}
+
+		// Trova tutte le colonne usate nei ORDER BY
+		if (preg_match_all('/\bORDER\s+BY\s+([^\s,]+)/i', $query, $matches)) {
+			foreach ($matches[1] as $column) {
+				// Escludere le funzioni
+				if (preg_match('/\(|\)/', $column))
+					continue;
+				$indexSuggestions[$column][] = 'ORDER BY';
+			}
+		}
+
+		// Trova tutte le colonne usate nei GROUP BY
+		if (preg_match_all('/\bGROUP\s+BY\s+([^\s,]+)/i', $query, $matches)) {
+			foreach ($matches[1] as $column) {
+				// Escludere le funzioni
+				if (preg_match('/\(|\)/', $column))
+					continue;
+				$indexSuggestions[$column][] = 'GROUP BY';
+			}
+		}
+	}
+
+	// Elimina duplicati e crea una lista di suggerimenti
+	$suggestions = [];
+	foreach ($indexSuggestions as $column => $contexts) {
+		$contexts = array_unique($contexts);
+		// Rimuovi i backtick dai nomi delle colonne
+		$cleanColumn = str_replace('`', '', $column);
+		if (is_numeric($cleanColumn) || !in_array($cleanColumn, $fields)) {
+			continue;
+		}
+		// Suggerisci solo se l'indice non esiste già
+		if (strpos($cleanColumn, '.') === false) {
+			// Non aggiungere prefisso "unknown_table"
+			$formattedColumn = $cleanColumn;
+		} else {
+			$formattedColumn = $cleanColumn;
+		}
+
+		if (!in_array($formattedColumn, $existingIndexes)) {
+			$suggestions[] = [
+				'column' => $formattedColumn,
+				'contexts' => $contexts
+			];
+		}
+	}
+
+	return $suggestions;
+}
+$query_logs = $this->db->get_query_logs();
+//debug($query_logs,true);
 $query_raggruppate = raggruppa_query($query_logs);
-//debug($query_raggruppate,true);
+
+$suggested_indexes = suggestIndexes(array_keys($query_raggruppate));
 
 
 ?>
@@ -683,6 +788,15 @@ $query_raggruppate = raggruppa_query($query_logs);
 				<?php endforeach; ?>
 				</table> -->
 					<table class="main" cellspacing="0">
+						<tr>
+							<td class="hilight">Indici mancanti e suggeriti: </td>
+							<td><?php
+							echo implode(', ', array_map(function ($s) {
+								return $s['column'];
+							}, $suggested_indexes));
+							?></td>
+							<td>(<?php echo count($suggested_indexes); ?>)</td>
+						</tr>
 						<?php foreach ($query_raggruppate as $query => $data): ?>
 
 							<tr>

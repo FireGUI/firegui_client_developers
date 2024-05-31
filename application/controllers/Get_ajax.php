@@ -851,7 +851,7 @@ class Get_ajax extends MY_Controller
 
         $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : null;
         $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), null, null, $order_by, 2, false, [], ['group_by' => null]);
-
+        
         $markers = array();
         if (!empty($data_entity)) {
             // Cerco un link se c'è qui per non fare una query ogni ciclo
@@ -886,7 +886,7 @@ class Get_ajax extends MY_Controller
                 //         ->from($data['maps']['entity_name'])->where_in($data['maps']['entity_name'] . '_id', $data_ids);
                 // }
             }
-
+            
             foreach ($data_entity as $marker) {
                 $mark = array();
                 foreach ($data['maps_fields'] as $field) {
@@ -910,16 +910,28 @@ class Get_ajax extends MY_Controller
                 if (empty($mark['title'])) {
                     $mark['title'] = '#' . $mark['id'];
                 }
-
+                //debug($mark);
                 // Elaboro le coordinate
                 if ((!empty($mark['latlng']) || !empty($mark['lat']))) {
                     if (isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
                         $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                         $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     } elseif ($latlng_field) {
-                        $latlng_expl = explode(';', $marker[$latlng_field]);
-                        $mark['lat'] = trim($latlng_expl[0]);
-                        $mark['lon'] = trim($latlng_expl[1]);
+                        
+                        if (stripos($marker[$latlng_field], ',') !== false) {
+                            
+                            $latlng_expl = explode(',', $marker[$latlng_field]);
+                            $mark['lat'] = trim($latlng_expl[0]);
+                            $mark['lon'] = trim($latlng_expl[1]);
+                        } elseif (stripos($marker[$latlng_field], ';') !== false){
+                            $latlng_expl = explode(';', $marker[$latlng_field]);
+                            $mark['lat'] = trim($latlng_expl[0]);
+                            $mark['lon'] = trim($latlng_expl[1]);
+
+                        } else {
+                            continue;
+                        }
+                        
                     }
 
                     $mark['link'] = ($link ? $link . '/' . $mark['id'] : '');
