@@ -97,7 +97,7 @@ function getExistingIndexes()
 
 		foreach ($results as $row) {
 			$column = $row['Column_name'];
-			$indexes[] = "$tableName.$column";
+			$indexes[] = "$column";
 		}
 	}
 
@@ -170,7 +170,7 @@ function suggestIndexes($queries)
 			// Non aggiungere prefisso "unknown_table"
 			$formattedColumn = $cleanColumn;
 		} else {
-			$formattedColumn = $cleanColumn;
+			$formattedColumn = explode('.', $cleanColumn)[1];
 		}
 
 		if (!in_array($formattedColumn, $existingIndexes)) {
@@ -792,7 +792,7 @@ $suggested_indexes = suggestIndexes(array_keys($query_raggruppate));
 							<td class="hilight">Indici mancanti e suggeriti: </td>
 							<td><?php
 							echo implode(', ', array_map(function ($s) {
-								return $s['column'];
+								return $s['column'] . " (<a class=\"js_link_ajax\" href=\"" . base_url('core-entities/field/create_index/' . $s['column']) . "\">add</a>)";
 							}, $suggested_indexes));
 							?></td>
 							<td>(<?php echo count($suggested_indexes); ?>)</td>

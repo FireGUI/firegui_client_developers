@@ -1808,4 +1808,27 @@ $field = $this->get_field($entity_field_id);
             return false;
         }
     }
+
+    public function createIndex($field_id, $ifNotExists = true)
+    {
+        if ($ifNotExists) {
+            $append = ' IF NOT EXISTS ';
+        } else {
+            $append = '';
+        }
+        $field = $this->selected_db->query("SELECT * FROM fields LEFT JOIN entity ON fields.fields_entity_id = entity.entity_id WHERE fields_id = '$field_id'")->row_array();
+
+        $sql = "CREATE INDEX $append {$field['fields_name']} ON {$field['entity_name']}({$field['fields_name']})";
+
+        try {
+            $this->selected_db->query($sql);
+            return true;
+        } catch (Exception $e) {
+            log_message('error', "ERROR WHILE CREATING INDEX {$field['fields_name']} ON {$field['entity_name']} -> " . $e->getMessage());
+            return false;
+        }
+
+
+
+    }
 }
