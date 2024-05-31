@@ -1082,6 +1082,17 @@ class Get_ajax extends MY_Controller
                 }
 
             }
+            
+            if (!array_key_exists('end', $ev)) {
+                //Assumo che sia mappato un date end
+                $ev['end'] = substr($ev['date_end'], 0, 10);
+                
+                if (array_key_exists('hours_end', $ev) && $ev['hours_end'] != '') {
+                    $ev['end'] = "{$ev['end']} {$ev['hours_end']}:00";
+                }
+                
+            }
+            
             //debug($ev);
 
             if (array_key_exists('date_start', $ev)) {
