@@ -74,7 +74,7 @@ class Core extends CI_Model
     {
         my_log("debug", "Core: Start UPDATE Database from Utils", 'update');
         //20231102 - MP - Removed from construct preload of utils. It's used only in this function and moreover, utils will be loaded after rewrote by the update processes (load them before can cause a older model loaded, instead of the new overwrittend files)
-        
+
         $this->load->model('utils', 'utils_base');
 
         // Load specific utils model
@@ -209,7 +209,7 @@ class Core extends CI_Model
                             if ($key == $new_version) {
                                 foreach ($value as $key_type => $code) {
                                     if ($key_type == 'eval') {
-                                        eval($code);
+                                        eval ($code);
                                     } elseif ($key_type == 'include') { // Added possibility to execute a custom code when updating client
                                         if (is_array($code)) {
                                             foreach ($code as $file_to_include) {
@@ -320,6 +320,12 @@ class Core extends CI_Model
         $this->load->model('core/modules_model', 'core_modules');
         return $this->core_modules->getModuleRepositoryData($module_identifier, $update_repository_url, $project_id, $token);
 
+    }
+
+    public function getModuleRepositoryDataFull($module_identifier, $update_repository_url = null, $project_id = null, $token = null)
+    {
+        $this->load->model('core/modules_model', 'core_modules');
+        return $this->core_modules->getModuleRepositoryDataFull($module_identifier, $update_repository_url, $project_id, $token);
     }
 
 

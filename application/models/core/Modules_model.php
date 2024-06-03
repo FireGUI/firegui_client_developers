@@ -217,6 +217,52 @@ class Modules_model extends CI_Model
         }
 
     }
+    public function getModuleRepositoryDataFull($module_identifier, $update_repository_url = null, $project_id = 0, $token = null)
+    {
+        if ($update_repository_url === null) {
+            $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
+        }
+        if (!$update_repository_url) {
+            my_log('error', 'No module repository url defined', 'update');
+            return false;
+        }
+
+        if (!$project_id || $project_id == 0) {
+            $project_id = $this->_project_id;
+        }
+
+        if (!$token) {
+            $token = $this->_license_token;
+        }
+
+        // Check module version
+        $module = $this->db->get_where('modules', ['modules_identifier' => $module_identifier])->row_array();
+
+        if (!empty($module)) {
+            $module_installed_version = $module['modules_version'];
+        } else {
+            $module_installed_version = "";
+        }
+
+        //Fare curl ad admin o openbuilder?
+        $get_module_info_url = $update_repository_url . '/public/client/get_module_info_full/' . $module_identifier . '/' . $project_id . '/' . $token . '/' . $module_installed_version;
+
+        //debug($get_module_info_url,true);
+        // Scarica il contenuto JSON dall'URL specificato
+        $json = file_get_contents($get_module_info_url);
+
+        // Decodifica il contenuto JSON in un oggetto PHP
+        $data = json_decode($json, true);
+
+        // Verifica se la decodifica è avvenuta correttamente
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $data;
+        } else {
+            // Se la decodifica non è avvenuta correttamente, mostra un errore
+            return false;
+        }
+
+    }
     public function run_migrations($identifier, $old_version, $new_version)
     {
         $migration_dir = APPPATH . "modules/$identifier/migrations";
@@ -350,7 +396,7 @@ class Modules_model extends CI_Model
                         try {
                             $new_entity_id = $this->entities->new_entity($data, false); //Il false evita la creazione di grid e form default (li inserisco dopo in base al json)
 
-                            
+
 
                         } catch (RuntimeException $e) {
                             my_log('error', "Entity '{$entity['entity_name']}' creation failed! (ex: {$e->getMessage()})", 'update');
@@ -393,11 +439,13 @@ class Modules_model extends CI_Model
                     $rel_type = $relation['relations_type'];
                     unset($relation['relations_id']);
 
-                    if ($this->db->where('relations_name', $rel_name)->get('relations')->num_rows() == 0) {
-                        $this->entities->relation($rel_name, $table1, $table2, $rel_type);
-                    } elseif (!$this->entities->entity_exists($entity['entity_name'])) { //20230407 - MP - E' capitato che fosse presente il record in relations ma la tabella non esistesse... oin questo caso forzo una nuova creazione.
+                    if (!$this->entities->entity_exists($entity['entity_name']) || !$this->db->table_exists($entity['entity_name'])) { //20230407 - MP - E' capitato che fosse presente il record in relations ma la tabella non esistesse... oin questo caso forzo una nuova creazione. | 20240516 - michael - spostato if prima del num_rows e aggiunto il table_exists.
                         $this->db->where('relations_name', $rel_name)->delete('relations');
                         $this->entities->relation($rel_name, $table1, $table2, $rel_type);
+                    } else {
+                        if ($this->db->where('relations_name', $rel_name)->get('relations')->num_rows() == 0) {
+                            $this->entities->relation($rel_name, $table1, $table2, $rel_type);
+                        }
                     }
 
                     $entity_exists = $this->entities->entity_exists($entity['entity_name']);
@@ -435,7 +483,7 @@ class Modules_model extends CI_Model
                     continue;
                 }
 
-                
+
 
                 my_log('debug', "Module install: start fields creation for entity '{$entity['entity_name']}'", 'update');
                 foreach ($entity['fields'] as $field) {
@@ -484,10 +532,10 @@ class Modules_model extends CI_Model
                         ];
 
                         $return = array_merge($return, $this->entities->addFields($single_field_update_data, true));
-                        
+
                     }
 
-                    
+
 
                 }
                 my_log('debug', "Module install: end fields creation", 'update');
@@ -552,20 +600,22 @@ class Modules_model extends CI_Model
                 progress(++$c, $total, 'custom action fields');
                 $entity_action_fields = json_decode($entity['entity_action_fields'], true);
                 if ($entity_action_fields) {
-                        //Prima di creare le varie action fields, dovrei eliminare le vecchie, per non avere ad esempio due campi marcati come order by default
-                        foreach ($entity_action_fields as $action => $action_field) {
-                            $field_with_action = $this->db
-                                ->join('entity', 'entity_id = fields_entity_id')
-                                ->get_where('fields', ['fields_name' => $action_field])
-                                ->row();
-                                if (!$field_with_action) {
-                                    debug($this->db->last_query(),true);
-                                }
-                            //debug($field_with_action,true);
+                    //Prima di creare le varie action fields, dovrei eliminare le vecchie, per non avere ad esempio due campi marcati come order by default
+                    foreach ($entity_action_fields as $action => $action_field) {
+                        $field_with_action = $this->db
+                            ->join('entity', 'entity_id = fields_entity_id')
+                            ->get_where('fields', ['fields_name' => $action_field])
+                            ->row();
+                        if (!$field_with_action) {
+                            //debug($this->db->last_query(),true);
+                        } else {
                             $this->entities->processFieldCustomAction($field_with_action, $action, true);
                         }
+                        //debug($field_with_action,true);
 
                     }
+
+                }
             }
 
 
@@ -1045,7 +1095,7 @@ class Modules_model extends CI_Model
                     if ($grid_exists->num_rows() == 0) {
 
                         if (!$grid['grids_layout']) {
-                            debug($grid,true);  
+                            debug($grid, true);
                         }
 
                         $this->db->insert('grids', $grid);
