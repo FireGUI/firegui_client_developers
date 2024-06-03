@@ -915,12 +915,19 @@ $suggested_indexes = suggestIndexes(array_keys($query_raggruppate));
 
 						<table class="main" id="view_data_table">
 							<?php foreach ($sections['view_data'] as $key => $val): ?>
+								<?php
+								// Rimuovi i tag <script> e <style> dal contenuto
+								$val = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $val);
+								$val = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $val);
+								// // Esegui l'escape del contenuto rimanente
+								// $val = htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
+								?>
 								<tr>
 									<td class="hilight">
 										<?php echo $key ?>
 									</td>
 									<td>
-										<?php echo $val ?>
+										<code><?php echo ($val); ?></code>
 									</td>
 								</tr>
 							<?php endforeach; ?>
