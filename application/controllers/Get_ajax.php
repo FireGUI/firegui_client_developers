@@ -918,9 +918,19 @@ class Get_ajax extends MY_Controller
                         $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
                         $mark['lon'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lon'];
                     } elseif ($latlng_field) {
-                        $latlng_expl = explode(';', $marker[$latlng_field]);
-                        $mark['lat'] = trim($latlng_expl[0]);
-                        $mark['lon'] = trim($latlng_expl[1]);
+                        if (stripos($marker[$latlng_field], ',') !== false) {
+                            
+                            $latlng_expl = explode(',', $marker[$latlng_field]);
+                            $mark['lat'] = trim($latlng_expl[0]);
+                            $mark['lon'] = trim($latlng_expl[1]);
+                        } elseif (stripos($marker[$latlng_field], ';') !== false){
+                            $latlng_expl = explode(';', $marker[$latlng_field]);
+                            $mark['lat'] = trim($latlng_expl[0]);
+                            $mark['lon'] = trim($latlng_expl[1]);
+                            
+                        } else {
+                            continue;
+                        }
                     }
 
                     $mark['link'] = ($link ? $link . '/' . $mark['id'] : '');
@@ -1071,6 +1081,17 @@ class Get_ajax extends MY_Controller
                 }
 
             }
+            
+            if (!array_key_exists('end', $ev)) {
+                //Assumo che sia mappato un date end
+                $ev['end'] = substr($ev['date_end'], 0, 10);
+                
+                if (array_key_exists('hours_end', $ev) && $ev['hours_end'] != '') {
+                    $ev['end'] = "{$ev['end']} {$ev['hours_end']}:00";
+                }
+                
+            }
+            
             //debug($ev);
 
             if (array_key_exists('date_start', $ev)) {
@@ -1090,6 +1111,13 @@ class Get_ajax extends MY_Controller
                     $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format("Y-m-d\T{$hours_end}:00");
                 } else {
                     $ev['end'] = (new DateTime($ev['end']))->format("Y-m-d\T{$hours_end}:00");
+                }
+                
+                if (
+                    ((new DateTime($ev['start']))->format("Y-m-d") == (new DateTime($ev['end']))->format("Y-m-d"))
+                    && ($hours_end < $hours_start)
+                ) {
+                    $ev['end'] = (new DateTime($ev['end']))->modify('+1 day')->format('Y-m-d\TH:i:s');
                 }
             } else {
                 $ev['start'] = (new DateTime($ev['start']))->format('Y-m-d\TH:i:s');
