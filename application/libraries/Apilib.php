@@ -1228,6 +1228,8 @@ class Apilib
     /**
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
+
+    
     private function processData($entity, array &$data, $editMode = false, $value_id = null)
     {
 
@@ -1295,6 +1297,7 @@ class Apilib
                         $field['fields_required'] == FIELD_SOFT_REQUIRED && array_key_exists($field['fields_name'], $originalData)
                     )
                 ) {
+                    
                     switch ($field['fields_draw_html_type']) {
                         // this because upload is made after validation rules
                         case 'upload':
@@ -1305,7 +1308,7 @@ class Apilib
                                 $rule[] = 'required';
                             }
                             break;
-
+                       
                         // password is valuated as required only if not in edit mode,
                         //because in edit it doesnt mean that i want to change it
                         case 'input_password':
@@ -1320,7 +1323,7 @@ class Apilib
                             break;
                     }
                 }
-
+                $custom_messages = [];
                 // Inserisci le altre regole di validazione
                 foreach ($field['validations'] as $validation) {
                     switch ($validation['fields_validation_type']) {
@@ -1335,9 +1338,17 @@ class Apilib
                         case 'alpha':
                         case 'alpha_numeric':
                         case 'alpha_dash':
-                            $rule[] = $validation['fields_validation_type'];
+                        case 'validate_radio':
+                        case 'validate_signature':
+                            if ($validation['fields_validation_message']) {
+                                $rule[] = $validation['fields_validation_type'];
+                                $custom_messages[$validation['fields_validation_type']] = $validation['fields_validation_message'];
+                            } else {
+                                $rule[] = $validation['fields_validation_type'];
+                            }
+                            
                             break;
-
+                        
                         //Le validazioni che hanno parametri semplici
                         case 'is_unique':
                             // Il caso unique ha una particolarità:
@@ -1367,7 +1378,7 @@ class Apilib
                                 'message' => $validation['fields_validation_message'] ?: null,
                             ];
                             break;
-
+                            
                         case 'date_after':
                             $rules_date_before[] = [
                                 'before' => $validation['fields_validation_extra'],
@@ -1379,89 +1390,79 @@ class Apilib
                 }
             }
             if (!empty($rule)) {
-                $rules[] = array('field' => $field['fields_name'], 'label' => $field['fields_draw_label'], 'rules' => implode('|', $rule));
+                //TODO: gestire regole con validation message
+                //debug($custom_messages[$field['fields_name']]);
+                $rules[] = array(
+                    'field' => $field['fields_name'],
+                    'label' => $field['fields_draw_label'],
+                    'rules' => implode('|', $rule),
+                    'errors' => $custom_messages
+                );
             }
-            //debug($data);
+            
+            //debug($rules);
             //Signature field type management
             if ($field['fields_draw_html_type'] == 'signature' && base64_encode(base64_decode($data[$field['fields_name']], true)) === $data[$field['fields_name']]) {
                 $signature_b64 = $data[$field['fields_name']];
+                if ($signature_b64) {
+                    if (preg_match('/^data:image\/(\w+);base64,/', $signature_b64, $type)) {
+                        $data_img = substr($signature_b64, strpos($signature_b64, ',') + 1);
+                        $type = strtolower($type[1]); // jpg, png, gif
+                    } else {
+                        $data_img = $signature_b64;
+                        $type = 'png'; // jpg, png, gif
+                    }
+                    $data_img = base64_decode($data_img);
 
-                //debug($signature_b64);
-                //Convert to phisical file
-                //Save to uploads folder
-                //Extract other info and add them to the json array
-                //override field data with json
-                /*
-                [file_name] => 3b0ffa3bec25a33ae83f8e7601534bf8.png
-                [file_type] => image/png
-                [file_path] => /var/www/html/firegui_client_developers/uploads/
-                [full_path] => /var/www/html/firegui_client_developers/uploads/3b0ffa3bec25a33ae83f8e7601534bf8.png
-                [raw_name] => 3b0ffa3bec25a33ae83f8e7601534bf8
-                [orig_name] => Screenshot_2023-12-13_alle_10.14.34.png
-                [client_name] => Screenshot 2023-12-13 alle 10.14.34.png
-                [file_ext] => .png
-                [file_size] => 28.66
-                [is_image] => 1
-                [image_width] => 662
-                [image_height] => 177
-                [image_type] => png
-                [image_size_str] => width="662" height="177"
-                */
-                if (preg_match('/^data:image\/(\w+);base64,/', $signature_b64, $type)) {
-                    $data_img = substr($signature_b64, strpos($signature_b64, ',') + 1);
-                    $type = strtolower($type[1]); // jpg, png, gif
-                } else {
-                    $data_img = $signature_b64;
-                    $type = 'png'; // jpg, png, gif
+                    $uploadFolder = FCPATH . '/uploads/';
+                    $fileName = uniqid() . '.' . $type;
+                    $filePath = $uploadFolder . $fileName;
+
+                    if (!file_exists($uploadFolder)) {
+                        mkdir($uploadFolder, 0777, true);
+                    }
+
+                    $name = 'signature_' . time() . '.' . $type;
+                    if (file_put_contents($filePath, $data_img) !== false) {
+                        $uploadData = [
+                            'file_name' => $fileName,
+                            'file_type' => 'image/' . $type,
+                            'file_path' => $uploadFolder,
+                            'full_path' => $filePath,
+                            'raw_name' => pathinfo($fileName, PATHINFO_FILENAME),
+                            'orig_name' => $name, // Sostituisci con il nome originale, se disponibile
+                            'client_name' => $name, // Sostituisci con il nome lato client, se disponibile
+                            'file_ext' => '.' . $type,
+                            'file_size' => filesize($filePath) / 1024, // Dimensione in KB
+                            'is_image' => 1,
+                            // Le seguenti informazioni richiedono la funzione getimagesize()
+                            'image_width' => null,
+                            'image_height' => null,
+                            'image_type' => null,
+                            'image_size_str' => null,
+                        ];
+
+                        list($width, $height, $imageType, $sizeStr) = getimagesize($filePath);
+                        $uploadData['image_width'] = $width;
+                        $uploadData['image_height'] = $height;
+                        $uploadData['image_type'] = image_type_to_extension($imageType, false);
+                        $uploadData['image_size_str'] = $sizeStr;
+                        // Chiama la funzione moveFileToUploadsFolder
+                        $this->moveFileToUploadsFolder($uploadData);
+
+                        $data[$field['fields_name']] = json_encode($uploadData);
+                        //debug($field,true);
+                    } else {
+                        $this->error = self::ERR_UPLOAD_FAILED;
+                        $this->errorMessage = t('Error while saving signature file');//$this->upload->display_errors();
+                        return false;
+                    }
                 }
-                $data_img = base64_decode($data_img);
-
-                $uploadFolder = FCPATH . '/uploads/';
-                $fileName = uniqid() . '.' . $type;
-                $filePath = $uploadFolder . $fileName;
-
-                if (!file_exists($uploadFolder)) {
-                    mkdir($uploadFolder, 0777, true);
-                }
-
-                $name = 'signature_' . time() . '.' . $type;
-                if (file_put_contents($filePath, $data_img) !== false) {
-                    $uploadData = [
-                        'file_name' => $fileName,
-                        'file_type' => 'image/' . $type,
-                        'file_path' => $uploadFolder,
-                        'full_path' => $filePath,
-                        'raw_name' => pathinfo($fileName, PATHINFO_FILENAME),
-                        'orig_name' => $name, // Sostituisci con il nome originale, se disponibile
-                        'client_name' => $name, // Sostituisci con il nome lato client, se disponibile
-                        'file_ext' => '.' . $type,
-                        'file_size' => filesize($filePath) / 1024, // Dimensione in KB
-                        'is_image' => 1,
-                        // Le seguenti informazioni richiedono la funzione getimagesize()
-                        'image_width' => null,
-                        'image_height' => null,
-                        'image_type' => null,
-                        'image_size_str' => null,
-                    ];
-
-                    list($width, $height, $imageType, $sizeStr) = getimagesize($filePath);
-                    $uploadData['image_width'] = $width;
-                    $uploadData['image_height'] = $height;
-                    $uploadData['image_type'] = image_type_to_extension($imageType, false);
-                    $uploadData['image_size_str'] = $sizeStr;
-                    // Chiama la funzione moveFileToUploadsFolder
-                    $this->moveFileToUploadsFolder($uploadData);
-
-                    $data[$field['fields_name']] = json_encode($uploadData);
-                    //debug($field,true);
-                } else {
-                    $this->error = self::ERR_UPLOAD_FAILED;
-                    $this->errorMessage = t('Error while saving signature file');//$this->upload->display_errors();
-                    return false;
-                }
+                
+                
             }
         }
-        //debug($data,true);
+        
         /**
          * Eseguo il process di pre-validation
          */
@@ -1492,7 +1493,12 @@ class Apilib
             //Fortunatamente hanno previsto la possibilità di dire al form validator che non deve valutare $_POST, ma un array "validation_data" che si può settare con set_data. Ecco il perchè di questa modifica.
 
             $this->form_validation->set_data($_POST);
-            $this->form_validation->set_rules($rules);
+            foreach ($rules as $rule) {
+                if ($rule['errors']) {
+                    //debug($rule['errors'],true);
+                }
+                $this->form_validation->set_rules($rule['field'], $rule['label'], $rule['rules'], $rule['errors']);
+            }
 
             if (!$this->form_validation->run()) {
                 // Torno solo il primo errore
@@ -1500,7 +1506,7 @@ class Apilib
                 foreach ($rules as $rule) {
                     // Non appena lo trovo break - almeno uno ci dev'essere
                     $message = $this->form_validation->error($rule['field']);
-
+                    //debug($message);
                     if ($message) {
                         $this->errorMessage = strip_tags(html_entity_decode($message));
                         break;

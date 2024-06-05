@@ -2233,3 +2233,120 @@ function libxml_display_error($error)
 
     return $return;
 }
+
+
+if (!function_exists('validate_radio')) {
+    function validate_radio($value)
+    {
+
+        //$CI=&get_instance();
+        if ($value == '1') {
+            return true;
+        } else {
+            //$CI->form_validation->set_message('validate_radio', 'E\' obbligatorio accettare tutte le condizioni per proseguire');
+            return false;
+        }
+    }
+}
+if (!function_exists('validate_signature')) {
+    /**
+     * Validate if the signature field contains a valid non-empty image.
+     *
+     * @param string $base64Image Base64 encoded image string
+     * @return bool True if the image is valid and contains at least one non-transparent pixel, false otherwise.
+     */
+    /**
+     * Validate if the signature field contains a valid non-empty image.
+     *
+     * @param string $base64Image Base64 encoded image string
+     * @return bool True if the image is valid and contains at least one non-transparent line segment, false otherwise.
+     */
+    /**
+     * Validate if the signature field contains a valid non-empty image.
+     *
+     * @param string $json_data JSON string containing image file information.
+     * @return bool True if the image is valid and contains at least one non-transparent line segment, false otherwise.
+     */
+    function validate_signature($json_data)
+    {
+        //debug($json_data, true);
+
+        // Decode the JSON data
+        $imageInfo = json_decode($json_data, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
+        // Ensure the image file exists
+        $filePath = $imageInfo['full_path'];
+        if (!file_exists($filePath)) {
+            return false;
+        }
+
+        // Minimum length of a non-transparent segment to be considered as a stroke
+        $minSegmentLength = 5;
+
+        // Create an image resource from the file
+        $image = imagecreatefromstring(file_get_contents($filePath));
+
+        if ($image === false) {
+            return false;
+        }
+
+        // Get the image dimensions
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        // Check for non-transparent segments
+        $hasStroke = false;
+
+        // Check rows for a stroke
+        for ($y = 0; $y < $height; $y++) {
+            $nonTransparentCount = 0;
+            for ($x = 0; $x < $width; $x++) {
+                $pixel = imagecolorat($image, $x, $y);
+                $colors = imagecolorsforindex($image, $pixel);
+
+                if ($colors['alpha'] < 127) {
+                    $nonTransparentCount++;
+                    if ($nonTransparentCount >= $minSegmentLength) {
+                        $hasStroke = true;
+                        break 2;
+                    }
+                } else {
+                    $nonTransparentCount = 0;
+                }
+            }
+        }
+
+        // If no stroke was found in rows, check columns
+        if (!$hasStroke) {
+            for ($x = 0; $x < $width; $x++) {
+                $nonTransparentCount = 0;
+                for ($y = 0; $y < $height; $y++) {
+                    $pixel = imagecolorat($image, $x, $y);
+                    $colors = imagecolorsforindex($image, $pixel);
+
+                    if ($colors['alpha'] < 127) {
+                        $nonTransparentCount++;
+                        if ($nonTransparentCount >= $minSegmentLength) {
+                            $hasStroke = true;
+                            break 2;
+                        }
+                    } else {
+                        $nonTransparentCount = 0;
+                    }
+                }
+            }
+        }
+
+        // Free the image resource
+        imagedestroy($image);
+
+        // Return the result
+        return $hasStroke;
+    }
+
+
+}

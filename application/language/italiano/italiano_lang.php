@@ -2111,3 +2111,7 @@ $lang['Contatto'] = 'Contatto';
 $lang['Data Inizio'] = 'Data Inizio';
 $lang['Data Fine'] = 'Data Fine';
 $lang['Giornata Intera'] = 'Giornata Intera';
+$lang['Inserisci prenotazione'] = 'Inserisci prenotazione';
+$lang['Uscita di cassa'] = 'Uscita di cassa';
+$lang['Note interne'] = 'Note interne';
+$lang['Tesseramenti'] = 'Tesseramenti';
