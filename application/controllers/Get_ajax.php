@@ -843,16 +843,45 @@ class Get_ajax extends MY_Controller
                 $sw_lng = $bounds['sw_lng'];
 
                 if ($ne_lng < 180 && $ne_lat < 90 && $sw_lng > -180 && $sw_lat > -90) {
-                    $where[] = "(SUBSTRING_INDEX({$latlng_field}, ';', 1) BETWEEN {$sw_lat} AND {$ne_lat}) AND (SUBSTRING_INDEX({$latlng_field}, ';', -1) BETWEEN {$sw_lng} AND {$ne_lng})";
+                    $where[] = "(
+                        (
+                            SUBSTRING_INDEX(
+                                TRIM(
+                                    REPLACE(
+                                        REPLACE({$latlng_field}, ',', ';'),
+                                        ' ',
+                                        ''
+                                    )
+                                ),
+                                ';', 
+                                1
+                            ) BETWEEN {$sw_lat} AND {$ne_lat}
+                        )
+                        AND 
+                        (
+                            SUBSTRING_INDEX(
+                                TRIM(
+                                    REPLACE(
+                                        REPLACE({$latlng_field}, ',', ';'),
+                                        ' ',
+                                        ''
+                                    )
+                                ),
+                                ';', 
+                                -1
+                            ) BETWEEN {$sw_lng} AND {$ne_lng}
+                        )
+                    )";
                 }
             }
+
         }
 
         //debug($where,true);
 
         $order_by = (trim($data['maps']['maps_order_by'])) ? $data['maps']['maps_order_by'] : null;
         $data_entity = $this->datab->getDataEntity($data['maps']['maps_entity_id'], implode(' AND ', array_filter($where)), null, null, $order_by, 2, false, [], ['group_by' => null]);
-
+        //debug($where,true);
         $markers = array();
         if (!empty($data_entity)) {
             // Cerco un link se c'è qui per non fare una query ogni ciclo
@@ -913,6 +942,7 @@ class Get_ajax extends MY_Controller
                 }
 
                 // Elaboro le coordinate
+                
                 if ((!empty($mark['latlng']) || !empty($mark['lat']))) {
                     if (isset($geography[$marker[$data['maps']['entity_name'] . "_id"]])) {
                         $mark['lat'] = $geography[$marker[$data['maps']['entity_name'] . "_id"]]['lat'];
@@ -921,6 +951,7 @@ class Get_ajax extends MY_Controller
                         if (stripos($marker[$latlng_field], ',') !== false) {
                             
                             $latlng_expl = explode(',', $marker[$latlng_field]);
+                            
                             $mark['lat'] = trim($latlng_expl[0]);
                             $mark['lon'] = trim($latlng_expl[1]);
                         } elseif (stripos($marker[$latlng_field], ';') !== false){
@@ -939,9 +970,10 @@ class Get_ajax extends MY_Controller
                     array_push($markers, $mark);
                 }
             }
-
+            //debug($markers);
             // eseguo eventuale post_process di tipo map rendering load marker
             $markers = $this->datab->run_post_process($data['maps']['maps_entity_id'], 'marker_load', $markers);
+            //debug($markers);
         }
 
         // header('Content-Type: application/json');
@@ -1441,15 +1473,29 @@ class Get_ajax extends MY_Controller
 
             $field_name_filter = $field_filter['fields_name'];
         } else {
-            $field_filter = $this->db->order_by('fields_ref_auto_left_join', 'DESC')->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->row_array();
-            $field_name_filter = $field_filter['fields_name'];
+            $fields_filters = $this->db->order_by('fields_ref_auto_left_join', 'DESC')->get_where('fields', array('fields_entity_id' => $entity_id, 'fields_ref' => $field_from['fields_ref']))->result_array();
+            //$field_name_filter = $field_filter['fields_name'];
         }
 
         $where_referer = [];
-        if (is_array($from_val)) {
-            $where_referer[] = "{$field_name_filter} IN ('" . implode("','", $from_val) . "')";
+        if (!empty($fields_filters)) {
+            $where_referer_multiple = [];
+            foreach ($fields_filters as $field_filter) {
+                $field_name_filter = $field_filter['fields_name'];
+                if (is_array($from_val)) {
+                    $where_referer_multiple[] = "{$field_name_filter} IN ('" . implode("','", $from_val) . "')";
+                } else {
+                    $where_referer_multiple[] = "{$field_name_filter} = '{$from_val}'";
+                }
+
+            }
+            $where_referer[] = '(' . implode(' OR ', $where_referer_multiple) . ')';
         } else {
-            $where_referer[] = "{$field_name_filter} = '{$from_val}'";
+            if (is_array($from_val)) {
+                $where_referer[] = "{$field_name_filter} IN ('" . implode("','", $from_val) . "')";
+            } else {
+                $where_referer[] = "{$field_name_filter} = '{$from_val}'";
+            }
         }
         if (!empty($field_to['fields_select_where'])) {
             $where_referer[] = $this->datab->replace_superglobal_data(trim($field_to['fields_select_where']));
