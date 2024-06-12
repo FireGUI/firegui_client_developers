@@ -34,7 +34,7 @@ class Module extends CI_Model
             }
             $result = $this->db->where('modules_identifier', $identifier)->get('modules');
 
-            if ($result->num_rows()) {
+            if ($result->num_rows() && is_dir(APPPATH . 'modules/' . $identifier)) {
                 $this->_modules_installed[$identifier] = true;
             } else {
                 $this->_modules_installed[$identifier] = false;
