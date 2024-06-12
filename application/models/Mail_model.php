@@ -101,8 +101,10 @@ class Mail_model extends CI_Model
                 }
             }
             
+            $email_headers = (!empty($email['emails_headers'])) ? unserialize($email['emails_headers']) : [];
+            
             $headers = array_merge(
-                array_filter(unserialize($email['emails_headers'])),
+                array_filter($email_headers),
                 array_filter($additional_headers)
             );
             
