@@ -574,9 +574,10 @@ function initComponents(container, reset = false) {
   var forms = $(".js_filter_form", container);
   forms.each(function () {
     var form = $(this);
-    var btn = $(".js_filter_form_add_row", form).on("click", function () {
-      var container_f = $(".js_filter_form_rows_container", form),
-        rows = $(".js_filter_form_row", container);
+    $(".js_filter_form_add_row", form).on("click", function () {
+      
+      var container = $(".js_filter_form_rows_container", form);
+      var rows = $(".js_filter_form_row", container);
       var size = rows.size();
       var obj = rows.filter(":first").clone();
       $("input, select", obj).each(function () {
