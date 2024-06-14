@@ -25,7 +25,7 @@ $error['error_filename'] = '';
 $error['error_linenumber'] = '';
 $error['error_extra_data'] = json_encode(debug_backtrace());
 
-log_message('error', "*** WARNING *** Databse error: " . $error['error_message']);
+log_message('error', "*** WARNING *** Database error: " . $error['error_message']);
 
 ?>
 <!DOCTYPE html>
