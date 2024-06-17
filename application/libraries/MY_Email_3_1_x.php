@@ -1041,7 +1041,6 @@ class MY_Email extends CI_Email
     // </code>
     public function set_debug_output($handle)
     {
-
         if (
             $handle === null
             ||
@@ -1049,13 +1048,19 @@ class MY_Email extends CI_Email
         ) {
             $handle = self::$default_properties['debug_output'];
         }
-
+        
         $this->properties['debug_output'] = $handle;
-
+        
         if ($this->mailer_engine == 'phpmailer') {
-            $this->phpmailer->Debugoutput = $handle;
+            $this->phpmailer->Debugoutput = function($str, $level) {
+                if ($level > 0) {
+                    set_log_scope('phpmailer');
+                    
+                    my_log('debug', "debug level $level; message: $str");
+                }
+            };
         }
-
+        
         return $this;
     }
 
