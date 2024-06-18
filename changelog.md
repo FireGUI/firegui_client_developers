@@ -1,13 +1,14 @@
-Changelog version 3.8.4
+Changelog version 3.8.5
  
-condition added in case of night time and single date
-Add log type unallowed layouts
-fix db default in checkbox and radio form fields
-Fix refresh layout box and close modal
-Fix number_format input money
-Fix probably undefined index 'end' in certain situations in get_calendar_events
-Bugfix get_markers when lat/lon is separated with ,
-Suggested missing indexes in profiler
-New createIndex function in entities model
-New profiler with possibility to create indexes on the fly
-Profiler active for datatable ajax
+Fix profiler html escape
+Change log modules release dates
+Added back code that was erroneously removed
+Signature and bollean ragio validation working with custom message
+Bugfix filter_multiselect_data with more than one ref
+Bugfix lat/lng with comma separator
+Added is_dir check on module_installed function
+Fix unserialize headers in mail model
+fix typo old form filters
+Block form submit while uploading files in dropzone element
+added log on file for mail sending
+Fix index suggestion estraction
