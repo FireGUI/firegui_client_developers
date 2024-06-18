@@ -11,6 +11,7 @@ function initDropzones() {
         var fieldtype = $(this).data('fieldtype');
         var preview = $(this).data('preview');
         var uploaded_text = $('.dz-helptext', $(this).parent());
+        var uploading_text = $('.dz-helptext-uploading', $(this).parent());
         
         if ($(this).data('value')) {
             var value = JSON.parse(atob($(this).data('value')));
@@ -50,7 +51,22 @@ function initDropzones() {
                 this.on("sending", function (file) {
                     uploaded_text.hide();
                     $(this.element).find('.dz-progress').show();
-                    // $('.dz-progress', ).show();
+                    
+                    uploading_text.show();
+                    
+                    $('[type="submit"]', form_selector).prop('disabled', true).addClass('disabled is_submit').attr('type', 'button');
+                })
+                
+                this.on("queuecomplete", function (file) {
+                    uploading_text.hide();
+                    
+                    $('button.disabled.is_submit', form_selector).prop('disabled', false).removeClass('disabled is_submit').attr('type', 'submit');
+                })
+                
+                this.on("canceled", function (file) {
+                    uploading_text.hide();
+                    
+                    $('button.disabled.is_submit', form_selector).prop('disabled', false).removeClass('disabled is_submit').attr('type', 'submit');
                 })
             },
             success: function (file, response) {

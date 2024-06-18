@@ -28,5 +28,6 @@ $form_id = $field['forms_fields_forms_id'];
     </div>
 
     <p class="help-block dz-helptext" style="display: none"><i class="fas fa-info fa-fw"></i><?php e('Files has been uploaded successfully. Now you can save'); ?></p>
+    <p class="help-block dz-helptext-uploading" style="display: none"><i class="fas fa-info fa-fw"></i><?php e('You cannot save because one or more files are being uploaded.<br/>Please wait for the upload to complete or press ‘Cancel upload’ to cancel it.'); ?></p>
 </div>
 <?php echo $help; ?>
