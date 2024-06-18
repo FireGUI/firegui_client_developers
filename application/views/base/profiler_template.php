@@ -113,8 +113,13 @@ function suggestIndexes($queries)
 
 	$indexSuggestions = [];
 	$existingIndexes = getExistingIndexes();
-
+	//debug($queries,true);
 	foreach ($queries as $query) {
+		if (stripos($query, 'tickets_reports_customer_id') !== false) {
+			//debug($query,true);
+
+		}
+
 		// Trova tutte le colonne usate nei WHERE
 		if (preg_match_all('/\bWHERE\s+([^\s]+)\s*=/i', $query, $matches)) {
 			foreach ($matches[1] as $column) {
@@ -126,8 +131,14 @@ function suggestIndexes($queries)
 		}
 
 		// Trova tutte le colonne usate nei JOIN
-		if (preg_match_all('/\bJOIN\s+[^\s]+\s+ON\s+([^\s]+)\s*=/i', $query, $matches)) {
+		if (preg_match_all('/\bJOIN\s+[^\s]+\s+ON\s+([^\s]+)\s*=\s*([^\s]+)/i', $query, $matches)) {
 			foreach ($matches[1] as $column) {
+				// Escludere le funzioni
+				if (preg_match('/\(|\)/', $column))
+					continue;
+				$indexSuggestions[$column][] = 'JOIN';
+			}
+			foreach ($matches[2] as $column) {
 				// Escludere le funzioni
 				if (preg_match('/\(|\)/', $column))
 					continue;
@@ -161,10 +172,18 @@ function suggestIndexes($queries)
 	foreach ($indexSuggestions as $column => $contexts) {
 		$contexts = array_unique($contexts);
 		// Rimuovi i backtick dai nomi delle colonne
+		$column_expl = explode('.', $column);
+		if (count($column_expl) == 2) {
+			$column = $column_expl[1];
+		} else {
+			$column = $column_expl[0];
+		}
 		$cleanColumn = str_replace('`', '', $column);
+
 		if (is_numeric($cleanColumn) || !in_array($cleanColumn, $fields)) {
 			continue;
 		}
+
 		// Suggerisci solo se l'indice non esiste già
 		if (strpos($cleanColumn, '.') === false) {
 			// Non aggiungere prefisso "unknown_table"
@@ -180,9 +199,59 @@ function suggestIndexes($queries)
 			];
 		}
 	}
-
+	//debug($suggestions,true);
 	return $suggestions;
 }
+
+
+// debug(suggestIndexes(['SELECT COUNT(*) AS `numrows`
+// FROM `tickets_reports`
+// LEFT JOIN `customers_shipping_address` ON `customers_shipping_address`.`customers_shipping_address_id` = `tickets_reports`.`tickets_reports_customer_address`
+// LEFT JOIN `customers` ON `customers`.`customers_id` = `tickets_reports`.`tickets_reports_customer_id`
+// LEFT JOIN `tickets_reports_maggiorazione` ON `tickets_reports_maggiorazione`.`tickets_reports_maggiorazione_id` = `tickets_reports`.`tickets_reports_maggiorazione`
+// LEFT JOIN `projects` ON `projects`.`projects_id` = `tickets_reports`.`tickets_reports_project_id`
+// LEFT JOIN `tickets_reports_stato_lavori` ON `tickets_reports_stato_lavori`.`tickets_reports_stato_lavori_id` = `tickets_reports`.`tickets_reports_stato_lavori`
+// LEFT JOIN `users` ON `users`.`users_id` = `tickets_reports`.`tickets_reports_technician`
+// LEFT JOIN `tickets` ON `tickets`.`tickets_id` = `tickets_reports`.`tickets_reports_ticket_id`
+// LEFT JOIN `tickets_reports_tipo_intervento` ON `tickets_reports_tipo_intervento`.`tickets_reports_tipo_intervento_id` = `tickets_reports`.`tickets_reports_tipo_intervento`
+// LEFT JOIN `tickets_reports_type` ON `tickets_reports_type`.`tickets_reports_type_id` = `tickets_reports`.`tickets_reports_type`
+// LEFT JOIN `countries` ON `countries`.`countries_id` = `customers_shipping_address`.`customers_shipping_address_country_id`
+// LEFT JOIN `customers_shipping_address_type` ON `customers_shipping_address_type`.`customers_shipping_address_type_id` = `customers_shipping_address`.`customers_shipping_address_type`
+// LEFT JOIN `rel_customer_codice_ateco` ON `rel_customer_codice_ateco`.`rel_customer_codice_ateco_id` = `customers`.`customers_altri_codici_ateco`
+// LEFT JOIN `rel_customers_categories` ON `rel_customers_categories`.`rel_customers_categories_id` = `customers`.`customers_categories`
+// LEFT JOIN `codici_ateco` ON `codici_ateco`.`codici_ateco_id` = `customers`.`customers_codice_ateco`
+// LEFT JOIN `documenti_contabilita_conti` ON `documenti_contabilita_conti`.`documenti_contabilita_conti_id` = `customers`.`customers_conto`
+// LEFT JOIN `documenti_contabilita_mastri` ON `documenti_contabilita_mastri`.`documenti_contabilita_mastri_id` = `customers`.`customers_contropartita_mastro`
+// LEFT JOIN `documenti_contabilita_sottoconti` ON `documenti_contabilita_sottoconti`.`documenti_contabilita_sottoconti_id` = `customers`.`customers_contropartita_sottoconto`
+// LEFT JOIN `spese_categorie` ON `spese_categorie`.`spese_categorie_id` = `customers`.`customers_expense_category`
+// LEFT JOIN `customers_sotto_tipo` ON `customers_sotto_tipo`.`customers_sotto_tipo_id` = `customers`.`customers_group`
+// LEFT JOIN `rel_customers_interests` ON `rel_customers_interests`.`rel_customers_interests_id` = `customers`.`customers_interests`
+// LEFT JOIN `iva` ON `iva`.`iva_id` = `customers`.`customers_iva_default`
+// LEFT JOIN `listini` ON `listini`.`listini_id` = `customers`.`customers_listino`
+// LEFT JOIN `documenti_contabilita_metodi_pagamento` ON `documenti_contabilita_metodi_pagamento`.`documenti_contabilita_metodi_pagamento_id` = `customers`.`customers_payment_method`
+// LEFT JOIN `price_list_labels` ON `price_list_labels`.`price_list_labels_id` = `customers`.`customers_price_list`
+// LEFT JOIN `customers_source` ON `customers_source`.`customers_source_id` = `customers`.`customers_source`
+// LEFT JOIN `customers_status` ON `customers_status`.`customers_status_id` = `customers`.`customers_status`
+// LEFT JOIN `rel_customers_tags` ON `rel_customers_tags`.`rel_customers_tags_id` = `customers`.`customers_tags`
+// LEFT JOIN `documenti_contabilita_template_pagamenti` ON `documenti_contabilita_template_pagamenti`.`documenti_contabilita_template_pagamenti_id` = `customers`.`customers_template_pagamento`
+// LEFT JOIN `customers_type` ON `customers_type`.`customers_type_id` = `customers`.`customers_type`
+// LEFT JOIN `vettori` ON `vettori`.`vettori_id` = `customers`.`customers_vettore_default`
+// LEFT JOIN `projects_category` ON `projects_category`.`projects_category_id` = `projects`.`projects_category`
+// LEFT JOIN `leads` ON `leads`.`leads_id` = `projects`.`projects_lead_id`
+// LEFT JOIN `customers_contacts` ON `customers_contacts`.`customers_contacts_id` = `projects`.`projects_referent`
+// LEFT JOIN `projects_status` ON `projects_status`.`projects_status_id` = `projects`.`projects_status`
+// LEFT JOIN `layouts` ON `layouts`.`layouts_id` = `users`.`users_default_dashboard`
+// LEFT JOIN `users_type` ON `users_type`.`users_type_id` = `users`.`users_type`
+// LEFT JOIN `tickets_categorie` ON `tickets_categorie`.`tickets_categorie_id` = `tickets`.`tickets_categoria`
+// LEFT JOIN `tickets_category` ON `tickets_category`.`tickets_category_id` = `tickets`.`tickets_category`
+// LEFT JOIN `clienti` ON `clienti`.`clienti_id` = `tickets`.`tickets_cliente`
+// LEFT JOIN `tickets_priority` ON `tickets_priority`.`tickets_priority_id` = `tickets`.`tickets_priority`
+// LEFT JOIN `tickets_stati` ON `tickets_stati`.`tickets_stati_id` = `tickets`.`tickets_stato`
+// LEFT JOIN `tickets_status` ON `tickets_status`.`tickets_status_id` = `tickets`.`tickets_status`
+// LEFT JOIN `tickets_tecnici` ON `tickets_tecnici`.`tickets_tecnici_id` = `tickets`.`tickets_tecnici`
+// LEFT JOIN `tecnici` ON `tecnici`.`tecnici_id` = `tickets`.`tickets_tecnico`
+// LEFT JOIN `tickets_type` ON `tickets_type`.`tickets_type_id` = `tickets`.`tickets_type`']), true);
+
 $query_logs = $this->db->get_query_logs();
 //debug($query_logs,true);
 $query_raggruppate = raggruppa_query($query_logs);
