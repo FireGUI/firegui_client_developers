@@ -48,7 +48,7 @@ if(defined('DEFAULT_GRID_LIMIT')) {
     </p>
 <?php else: ?>
 
-    <div class="table-scrollable-borderless">
+    <div class="table-scrollable table-scrollable-borderless">
         <?php if ($grid['grids']['grids_inline_edit']): ?>
 
             <a class="js_datatable_inline_add btn btn-success btn-xs pull-right"
