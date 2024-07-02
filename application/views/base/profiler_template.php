@@ -199,6 +199,19 @@ function suggestIndexes($queries)
 			];
 		}
 	}
+
+	// Ordina i suggerimenti in base alla priorità dei contesti
+	usort($suggestions, function ($a, $b) {
+		$priority = ['WHERE' => 1, 'ORDER BY' => 2, 'GROUP BY' => 3, 'JOIN' => 4];
+		$aPriority = min(array_map(function ($context) use ($priority) {
+			return $priority[$context];
+		}, $a['contexts']));
+		$bPriority = min(array_map(function ($context) use ($priority) {
+			return $priority[$context];
+		}, $b['contexts']));
+		return $aPriority <=> $bPriority;
+	});
+	
 	//debug($suggestions,true);
 	return $suggestions;
 }

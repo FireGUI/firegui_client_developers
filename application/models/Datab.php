@@ -2432,7 +2432,7 @@ class Datab extends CI_Model
             }
 
             if (isset($this->_forwardedLayouts[$layout_id])) {
-                $layout_id = $this->_forwardedLayouts[$layout_id];
+                $entity_id = $this->_forwardedLayouts[$layout_id];
             }
 
             // ========================================
