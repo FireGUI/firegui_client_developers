@@ -515,10 +515,7 @@ $rowCol = 0;
                                                         const lastDayOfMonth = new Date(selectedYear, month, 0).getDate();
 
                                                         // Formatta il valore per il campo nascosto
-                                                        const value = `01/${month}/${selectedYear} - ${lastDayOfMonth}/${month}/${selectedYear}`;
-                                                        hiddenInputs.forEach(input => {
-                                                            input.value = value; // Aggiorna il valore per tutti gli input trovati
-                                                        });
+                                                        hiddenInput.value = `01/${month}/${selectedYear} - ${lastDayOfMonth}/${month}/${selectedYear}`; // Aggiorna il valore per tutti gli input trovati
                                                     });
                                                 });
                                             });
