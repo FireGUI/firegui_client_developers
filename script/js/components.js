@@ -767,7 +767,7 @@ function initComponents(container, reset = false) {
         },
         success: function (data) {
           $("option", jsMultiselect).remove();
-          $("<option></option>").appendTo(jsMultiselect);
+          $("<option value='-1'> --- </option>").appendTo(jsMultiselect);
           var previousValueFound = false;
           $.each(data, function (k, v) {
             var jqOption = $("<option></option>").val(v.id).text(v.value);
