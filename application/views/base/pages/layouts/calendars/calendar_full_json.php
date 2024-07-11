@@ -73,6 +73,10 @@ if (array_key_exists('start', $calendar_map)) {
 } elseif (array_key_exists('date_start', $calendar_map)) {
     $attributes['data-start'] = $calendar_map['date_start'];
     $attributes['data-start-is-datetime'] = false;
+    
+    if (array_key_exists('hours_start', $calendar_map)) {
+        $attributes['data-hours_start'] = $calendar_map['hours_start'];
+    }
 }
 
 if (array_key_exists('end', $calendar_map)) {
@@ -81,6 +85,10 @@ if (array_key_exists('end', $calendar_map)) {
 } elseif (array_key_exists('date_end', $calendar_map)) {
     $attributes['data-end'] = $calendar_map['date_end'];
     $attributes['data-end-is-datetime'] = false;
+    
+    if (array_key_exists('hours_end', $calendar_map)) {
+        $attributes['data-hours_end'] = $calendar_map['hours_end'];
+    }
 }
 
 $attributesString = '';
@@ -101,7 +109,7 @@ foreach ($attributes as $key => $value) {
     .fc-scroller {
         height: 100% !important;
     }
-    
+
     .total-label {
         font-size: 1.2rem;
         font-weight: bold;
@@ -126,6 +134,8 @@ foreach ($attributes as $key => $value) {
             var language = $(this).data('language');
             var startField = $(this).data('start');
             var endField = $(this).data('end');
+            var hoursStartField = $(this).data('hours_start');
+            var hoursEndField = $(this).data('hours_end');
             var alldayfield = $(this).data('allday');
             var formurl = $(this).data('formurl');
             var url_parameters = $(this).data('url-parameters');
@@ -138,29 +148,35 @@ foreach ($attributes as $key => $value) {
             var isStartDateTime = $(this).data('start-is-datetime')
             var isEndDateTime = $(this).data('end-is-datetime')
             // ============================
-        
+            
             var token = JSON.parse(atob($('body').data('csrf')));
             var token_name = token.name;
             var token_hash = token.hash;
-        
+            
             var date = new Date();
             var d = date.getDate();
             var m = date.getMonth();
             var y = date.getFullYear();
-        
+            
             var updateCalendar = function (evt) {
                 if (allow_edit) {
                     var allDay = isAlldayEvent(evt.event.start, evt.event.end);
                     var fStart = moment(evt.event.start).format('DD/MM/YYYY HH:mm'); // formatted start
                     var fEnd = moment(evt.event.end).format('DD/MM/YYYY HH:mm'); // formatted end
+                    
+                    var fTimeStart = moment(evt.event.start).format('HH:mm'); // formatted time start
+                    var fTimeEnd = moment(evt.event.end).format('HH:mm'); // formatted time end
+                    
                     var data = {
                         [token_name]: token_hash,
                         [fieldid]: evt.event.id,
                         [startField]: fStart,
-                        [endField]: fEnd
+                        [endField]: fEnd,
+                        [hoursStartField]: fTimeStart,
+                        [hoursEndField]: fTimeEnd,
                         //TODO: manage all days events
                     };
-                
+                    
                     $.ajax({
                         url: updateurl,
                         type: 'POST',
@@ -179,12 +195,12 @@ foreach ($attributes as $key => $value) {
                     });
                 }
             }
-        
+            
             var calendarEl = document.getElementById(calendar_id);
-        
+            
             $('#' + calendar_id).html('');
             var defaultView = (typeof localStorage.getItem('fcDefaultView_' + calendar_id) !== 'undefined' && localStorage.getItem('fcDefaultView_' + calendar_id) !== null) ? localStorage.getItem('fcDefaultView_' + calendar_id) : calendars_default_view;
-        
+            
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 defaultView: defaultView,
@@ -216,35 +232,46 @@ foreach ($attributes as $key => $value) {
                     if (allow_create) {
                         var fStart = moment(date.start); // formatted start
                         var fEnd = moment(date.end);
-        
+                        
+                        var fTimeStart = moment(date.start).format('HH:mm'); // formatted time start
+                        var fTimeEnd = moment(date.end).format('HH:mm'); // formatted time end
+                        
                         if (date.allDay) {
                             fEnd = moment(date.start).add(1, 'hours');
                         }
-        
+                        
                         if (isStartDateTime) {
                             fStart = fStart.format('DD/MM/YYYY HH:mm');
                         } else {
                             fStart = fStart.format('DD/MM/YYYY');
                         }
-        
+                        
                         if (isEndDateTime) {
                             fEnd = fEnd.format('DD/MM/YYYY HH:mm');
                         } else {
                             fEnd = fEnd.format('DD/MM/YYYY');
                         }
-        
+                        
                         var data = {};
-        
+                        
                         data[startField] = fStart;
-        
+                        
                         if (endField) {
                             data[endField] = fEnd;
                         }
-        
+                        
                         if (alldayfield && typeof date.allDay !== 'undefined') {
                             data[alldayfield] = date.allDay;
                         }
-        
+                        
+                        if (hoursStartField) {
+                            data[hoursStartField] = fTimeStart;
+                        }
+                        
+                        if (hoursEndField) {
+                            data[hoursEndField] = fTimeEnd;
+                        }
+                        
                         loadModal(formurl + url_parameters, data, function () {
                             calendar.refetchEvents();
                         }, 'get');
@@ -265,20 +292,20 @@ foreach ($attributes as $key => $value) {
                         }
                     } else if (calendar_data.calendars_event_click === 'link' && calendar_data.calendars_link.length > 0) {
                         var link = calendar_data.calendars_link;
-                    
+                        
                         var link = link.replace('{base_url}/', base_url);
                         var link = link.replace('{value_id}', evt.event.id);
-                    
+                        
                         window.location.href = link;
                     }
-                
+                    
                     return false;
                 },
-            
+                
                 eventDrop: function (evt) {
                     updateCalendar(evt);
                 },
-            
+                
                 eventResize: function (evt, delta, revertFunc) {
                     updateCalendar(evt);
                 },
@@ -321,7 +348,7 @@ foreach ($attributes as $key => $value) {
                     }
                 },
             });
-        
+            
             calendar.render();
         });
     }

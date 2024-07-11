@@ -1109,7 +1109,7 @@ class Get_ajax extends MY_Controller
                 $ev['start'] = substr($ev['date_start'], 0, 10);
 
                 if (array_key_exists('hours_start', $ev) && $ev['hours_start'] != '') {
-                    $ev['start'] = "{$ev['start']} {$ev['hours_start']}:00";
+                    $ev['start'] = "{$ev['start']} {$ev['hours_start']}";
                 }
 
             }
@@ -1119,7 +1119,7 @@ class Get_ajax extends MY_Controller
                 $ev['end'] = substr($ev['date_end'], 0, 10);
                 
                 if (array_key_exists('hours_end', $ev) && $ev['hours_end'] != '') {
-                    $ev['end'] = "{$ev['end']} {$ev['hours_end']}:00";
+                    $ev['end'] = "{$ev['end']} {$ev['hours_end']}";
                 }
                 
             }
@@ -1128,21 +1128,33 @@ class Get_ajax extends MY_Controller
 
             if (array_key_exists('date_start', $ev)) {
                 $hours_start = '00:00';
+                $hours_start_seconds = ':00';
                 if (array_key_exists('hours_start', $ev)) {
+                    $hours_start_ex = explode(':', $ev['hours_start']);
+                    
+                    if (count($hours_start_ex) == 3) {
+                        $hours_start_seconds = "";
+                    }
                     $hours_start = $ev['hours_start'];
                 }
 
                 $hours_end = '00:00';
+                $hours_end_seconds = ':00';
                 if (array_key_exists('hours_end', $ev)) {
+                    $hours_end_ex = explode(':', $ev['hours_end']);
+                    
+                    if (count($hours_end_ex) == 3) {
+                        $hours_end_seconds = "";
+                    }
                     $hours_end = $ev['hours_end'];
                 }
 
-                $ev['start'] = (new DateTime($ev['start']))->format("Y-m-d\T{$hours_start}:00");
+                $ev['start'] = (new DateTime($ev['start']))->format("Y-m-d\T{$hours_start}{$hours_start_seconds}");
 
                 if (!array_key_exists('date_end', $ev)) {
-                    $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format("Y-m-d\T{$hours_end}:00");
+                    $ev['end'] = (new DateTime($ev['start']))->modify('+1 hour')->format("Y-m-d\T{$hours_end}{$hours_end_seconds}");
                 } else {
-                    $ev['end'] = (new DateTime($ev['end']))->format("Y-m-d\T{$hours_end}:00");
+                    $ev['end'] = (new DateTime($ev['end']))->format("Y-m-d\T{$hours_end}{$hours_end_seconds}");
                 }
                 
                 if (

@@ -16,6 +16,8 @@ function initCalendars(container) {
             var language = $(this).data("language");
             var startField = $(this).data("start");
             var endField = $(this).data("end");
+            var hoursStartField = $(this).data('hours_start');
+            var hoursEndField = $(this).data('hours_end');
             var alldayfield = $(this).data("allday");
             var formurl = $(this).data("formurl");
             var url_parameters = $(this).data("url-parameters");
@@ -44,11 +46,15 @@ function initCalendars(container) {
                     var allDay = isAlldayEvent(evt.event.start, evt.event.end);
                     var fStart = moment(evt.event.start).format("DD/MM/YYYY HH:mm"); // formatted start
                     var fEnd = moment(evt.event.end).format("DD/MM/YYYY HH:mm"); // formatted end
+                    var fTimeStart = moment(evt.event.start).format('HH:mm'); // formatted time start
+                    var fTimeEnd = moment(evt.event.end).format('HH:mm'); // formatted time end
                     var data = {
                         [token_name]: token_hash,
                         [fieldid]: evt.event.id,
                         [startField]: fStart,
                         [endField]: fEnd,
+                        [hoursStartField]: fTimeStart,
+                        [hoursEndField]: fTimeEnd,
                         //TODO: manage all days events
                     };
 
@@ -116,6 +122,9 @@ function initCalendars(container) {
                     if (allow_create) {
                         var fStart = moment(date.start); // formatted start
                         var fEnd = moment(date.end);
+                        
+                        var fTimeStart = moment(date.start).format('HH:mm'); // formatted time start
+                        var fTimeEnd = moment(date.end).format('HH:mm'); // formatted time end
 
                         if (date.allDay) {
                             fEnd = moment(date.start).add(1, "hours");
@@ -143,6 +152,14 @@ function initCalendars(container) {
 
                         if (alldayfield && typeof date.allDay !== "undefined") {
                             data[alldayfield] = date.allDay;
+                        }
+                        
+                        if (hoursStartField) {
+                            data[hoursStartField] = fTimeStart;
+                        }
+                        
+                        if (hoursEndField) {
+                            data[hoursEndField] = fTimeEnd;
                         }
 
                         loadModal(
