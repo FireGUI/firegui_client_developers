@@ -115,17 +115,17 @@ class MY_Cache_file extends CI_Driver
         $limit_in_bytes = 5 * 1024 * 1024;
 
         // Stimare la dimensione dei contenuti senza serializzarli completamente
-        $estimated_size = $this->estimateSize($contents, $limit_in_bytes);
+        //$estimated_size = $this->estimateSize($contents, $limit_in_bytes);
 
 
         // Controllare se la dimensione supera il limite
-        if ($estimated_size > $limit_in_bytes) {
-            // Restituire false o gestire l'errore in altro modo
-            // debug($contents);
-            // debug($estimated_size, true);
-            log_message('debug', "Estimated data size of $estimated_size bytes exceeds the limit of $limit_in_bytes bytes.");
-            return false;
-        }
+        // if ($estimated_size > $limit_in_bytes) {
+        //     // Restituire false o gestire l'errore in altro modo
+        //     // debug($contents);
+        //     // debug($estimated_size, true);
+        //     log_message('debug', "Estimated data size of $estimated_size bytes exceeds the limit of $limit_in_bytes bytes.");
+        //     return false;
+        // }
 
         // Serializzare i contenuti
         $serialized_contents = serialize($contents);
