@@ -580,10 +580,13 @@ class Cron extends MY_Controller
         return 'crons' . substr(sha1(__FILE__), 0, 6);
     }
 
-    public function runBackgroundProcesses($limit = 20)
+    public function runBackgroundProcesses($limit = false)
     {
-        if (!empty($this->settings['settings_background_pp']) && $this->settings['settings_background_pp'] > 0) {
+        if (!$limit && !empty($this->settings['settings_background_pp']) && $this->settings['settings_background_pp'] > 0) {
             $limit = $this->settings['settings_background_pp'];
+        }
+        if (!$limit) {
+            $limit = 20;
         }
         $_queue_pps = $this->db->where('_queue_pp_executed', DB_BOOL_FALSE)->limit($limit)->order_by('_queue_pp_date', 'ASC')->get('_queue_pp')->result_array();
         $i = 0;

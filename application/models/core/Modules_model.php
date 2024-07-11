@@ -1521,7 +1521,7 @@ class Modules_model extends CI_Model
                     case 'form':
                         if (!array_key_exists($lb['layouts_boxes_content_ref'], $forms_id_map)) {
                             //debug($lb);
-                            debug("ANOMALIA... Form non trovato!", true);
+                            debug("ANOMALIA... Form 'original id: {$lb['layouts_boxes_content_ref']}' nel layout box '{$lb['layouts_boxes_title']}' non trovato!");
                             continue 2;
                         }
                         $lb['layouts_boxes_content_ref'] = $forms_id_map[$lb['layouts_boxes_content_ref']];

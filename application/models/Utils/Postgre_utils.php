@@ -147,6 +147,8 @@ class Postgre_utils extends Utils
             'forms_identifier' => ['type' => 'VARCHAR', 'constraint' => 45],
 
             'forms_public' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
+            'forms_label' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 255],
+            'forms_label_edit' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 255],
         ]);
 
         $this->addForeignKey('forms', 'forms_entity_id', 'entity', 'entity_id');

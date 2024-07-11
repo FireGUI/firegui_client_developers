@@ -635,7 +635,7 @@ class Datab extends CI_Model
 
     public function get_form($form_id, $edit_id = null, $value_id = null)
     {
-        $cache_key = "apilib/datab.get_form.{$form_id}." . md5(serialize(func_get_args()) . serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
+        $cache_key = "database_schema/datab.get_form.{$form_id}." . md5(serialize(func_get_args()) . serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             if (!$form_id) {
                 log_message('error', "Form id '$form_id' not found");
@@ -800,10 +800,18 @@ class Datab extends CI_Model
         if (!$field['fields_ref']) {
             //Potrebbe essere comunque una select con dati da pescare da fields_additional_data (valori separati da virgola)
             if (!empty($field['fields_additional_data'])) {
-                //TODO: gestire anche cose del tipo: {SELECT campo1 as value, campo2 as preview FROM tabella_esterna WHErE ....}
+                //verifico se ho i dati separati da virgola o una query da eseguire (se è una query sarà scritto {query: select......})
+                if (strpos($field['fields_additional_data'], '{query:') !== false) {
+                    $query = str_replace(['{query:', '}'], '', $field['fields_additional_data']);
+                    $support_data = $this->db->query($query)->result_array();
+                    $field['support_data'] = array_combine(array_column($support_data, 'id'), array_column($support_data, 'value'));
+                } else {
+                    $support_data = explode(',', $field['fields_additional_data']);
+                    $field['support_data'] = array_combine($support_data, $support_data);
+                    //debug($field['support_data'], true);
+                }
 
-                $support_data = explode(',', $field['fields_additional_data']);
-                $field['support_data'] = array_combine($support_data, $support_data);
+                
             }
             return $field;
         }
@@ -1041,7 +1049,7 @@ class Datab extends CI_Model
             $this->apilib->setLanguage($clanguage, $flanguage);
 
             $dati = $data;
-            if ($this->mycache->isCacheEnabled()) {
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('apilib')) {
                 $this->mycache->save($cache_key, $dati, self::CACHE_TIME, $this->mycache->buildTagsFromEntity($grid['grids']['entity_name'], $value_id));
             }
         }
@@ -2717,8 +2725,11 @@ class Datab extends CI_Model
         // =====================================================================
         // Stampa del campo
         //
-        if ($field['fields_ref'] && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
 
+       
+
+        if (($field['fields_ref'] || $field['fields_additional_data']) && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
+            
 
             if (is_array($value)) {
                 // Ho una relazione molti a molti - non mi serve alcuna
@@ -2824,6 +2835,12 @@ class Datab extends CI_Model
 
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
+            } elseif (strpos($field['fields_additional_data'], '{query:') === 0) {
+                $query = str_replace(['{query:', '}'], '', $field['fields_additional_data']);
+                $support_data = $this->db->query($query)->result_array();
+                $support_data_remap = array_combine(array_column($support_data, 'id'), array_column($support_data, 'value'));
+                $value = $support_data_remap[$value] ?? $value;
+                return $value;
             }
         } elseif ($field['fields_preview'] == DB_BOOL_TRUE) {
 

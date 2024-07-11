@@ -104,22 +104,42 @@ class MY_Cache_file extends CI_Driver
      */
     public function save($id, $data, $ttl = 60, $tags = [])
     {
-
         $contents = array(
             'time' => time(),
             'ttl' => $ttl,
             'data' => $data,
-            //'tags'        => $tags
+            //'tags' => $tags
         );
-        //Folder exists check
+
+        // Definire un limite di dimensione in byte (ad esempio, 5 MB)
+        $limit_in_bytes = 5 * 1024 * 1024;
+
+        // Stimare la dimensione dei contenuti senza serializzarli completamente
+        $estimated_size = $this->estimateSize($contents, $limit_in_bytes);
+
+
+        // Controllare se la dimensione supera il limite
+        if ($estimated_size > $limit_in_bytes) {
+            // Restituire false o gestire l'errore in altro modo
+            // debug($contents);
+            // debug($estimated_size, true);
+            log_message('debug', "Estimated data size of $estimated_size bytes exceeds the limit of $limit_in_bytes bytes.");
+            return false;
+        }
+
+        // Serializzare i contenuti
+        $serialized_contents = serialize($contents);
+
+        // Folder exists check
         $folder = dirname($this->_cache_path . $id);
         if (!is_dir($folder)) {
             mkdir($folder, DIR_WRITE_MODE, true);
         }
-        if ($result = write_file($this->_cache_path . $id, serialize($contents))) {
+
+        if ($result = write_file($this->_cache_path . $id, $serialized_contents)) {
             @chmod($this->_cache_path . $id, 0640);
 
-            //if tags are specified, save this id for each tags, so that i can remove it easily later
+            // if tags are specified, save this id for each tags, so that i can remove it easily later
             $this->saveTagsMapping($id, $tags);
             return true;
         } else {
@@ -129,6 +149,35 @@ class MY_Cache_file extends CI_Driver
 
         return false;
     }
+
+    private function estimateSize($data, $limit_in_bytes)
+    {
+        $size = 0;
+        $queue = array($data);
+
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+
+            if (is_array($current)) {
+                foreach ($current as $key => $value) {
+                    $size += strlen(serialize($key));
+                    if ($size > $limit_in_bytes) {
+                        return $size;
+                    }
+                    $queue[] = $value;
+                }
+            } else {
+                $size += strlen(serialize($current));
+                if ($size > $limit_in_bytes) {
+                    return $size;
+                }
+            }
+        }
+
+        return $size;
+    }
+
+
 
     public function saveTagsMapping($id, $tags = [])
     {
@@ -535,6 +584,9 @@ class MY_Cache_file extends CI_Driver
     }
     public function isActive($key)
     {
+        if ($key == 'apilib') {
+            //debug(!empty($this->getCurrentConfig()[$key]['active']),true);
+        }
         return !empty($this->getCurrentConfig()[$key]['active']);
     }
     public function buildTagsFromEntity($entity, $value_id = null)

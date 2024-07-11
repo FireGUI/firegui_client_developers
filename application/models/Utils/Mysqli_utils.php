@@ -161,6 +161,8 @@ class Mysqli_utils extends Utils {
             'forms_module_key' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             //20231220 - MP - attribute to specify that form is public or private
             'forms_public' => ['type' => 'BOOLEAN', 'default' => DB_BOOL_FALSE],
+            'forms_label' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 255],
+            'forms_label_edit' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 255],
         ]);
 
         $this->addForeignKey('forms', 'forms_entity_id', 'entity', 'entity_id');
