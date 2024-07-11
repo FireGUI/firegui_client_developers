@@ -1,4 +1,4 @@
-Changelog version 3.8.7
+Changelog version 3.8.8
  
 fix append empty option in case of select with source filter
 fix hiddenInputs select buttons
