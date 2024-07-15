@@ -766,8 +766,10 @@ function initComponents(container, reset = false) {
           loading(false);
         },
         success: function (data) {
-          $("option", jsMultiselect).remove();
-          $("<option value='-1'> --- </option>").appendTo(jsMultiselect);
+          $("option", jsMultiselect).remove(); 
+          //TODO: non si può altrimenti salva -1 su chiavi esterne mancanti. Correggere prima apilib che tolga eventuali -1 da campi che puntano ad entità
+          //$("<option value='-1'> --- </option>").appendTo(jsMultiselect);
+          $("<option></option>").appendTo(jsMultiselect);
           var previousValueFound = false;
           $.each(data, function (k, v) {
             var jqOption = $("<option></option>").val(v.id).text(v.value);
