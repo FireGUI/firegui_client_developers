@@ -1,8 +1,11 @@
 <?php
 if ($value) {
     $timeChunks = explode(':', $value);
-    if (count($timeChunks) !== 2 or !is_numeric($timeChunks[0]) or !is_numeric($timeChunks[1])) {
+    
+    if (!is_numeric($timeChunks[0]) or !is_numeric($timeChunks[1])) {
         $value = null;
+    } else {
+        $value = $timeChunks[0].":".$timeChunks[1];
     }
 }
 ?>

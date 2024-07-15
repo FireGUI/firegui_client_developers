@@ -73,6 +73,10 @@ if (array_key_exists('start', $calendar_map)) {
 } elseif (array_key_exists('date_start', $calendar_map)) {
     $attributes['data-start'] = $calendar_map['date_start'];
     $attributes['data-start-is-datetime'] = false;
+    
+    if (array_key_exists('hours_start', $calendar_map)) {
+        $attributes['data-hours_start'] = $calendar_map['hours_start'];
+    }
 }
 
 if (array_key_exists('end', $calendar_map)) {
@@ -81,6 +85,10 @@ if (array_key_exists('end', $calendar_map)) {
 } elseif (array_key_exists('date_end', $calendar_map)) {
     $attributes['data-end'] = $calendar_map['date_end'];
     $attributes['data-end-is-datetime'] = false;
+    
+    if (array_key_exists('hours_end', $calendar_map)) {
+        $attributes['data-hours_end'] = $calendar_map['hours_end'];
+    }
 }
 
 $attributesString = '';
