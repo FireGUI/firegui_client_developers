@@ -203,10 +203,22 @@ class Layout extends CI_Model
                 $mpdf->AddPage();
                 $mpdf->WriteHtml($this->generate_html($conditionsPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
             }
-
-            $mpdf->Output($filename, 'I');
-
-            //TODO: return true?
+            
+            $save_as = array_get($options, 'save_as_file', false);
+            
+            if ($save_as) {
+                $physicalDir = FCPATH . "/uploads/pdf";
+                if (!is_dir($physicalDir)) {
+                    mkdir($physicalDir, 0755, true);
+                }
+                $filename = date('Ymd_His') . '_' . random_int(1, 100);
+                $filename = "{$physicalDir}/{$filename}.pdf";
+                $mpdf->Output($filename, 'F');
+                
+                return $filename;
+            } else {
+                $mpdf->Output($filename, 'I');
+            }
         } else {
             $physicalDir = FCPATH . "/uploads/pdf";
             // 2022-04-19 - Added random_int because it can happen that a generation of pdf deriving from an array,
