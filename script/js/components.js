@@ -575,7 +575,7 @@ function initComponents(container, reset = false) {
   forms.each(function () {
     var form = $(this);
     $(".js_filter_form_add_row", form).on("click", function () {
-      
+
       var container = $(".js_filter_form_rows_container", form);
       var rows = $(".js_filter_form_row", container);
       var size = rows.size();
@@ -766,7 +766,7 @@ function initComponents(container, reset = false) {
           loading(false);
         },
         success: function (data) {
-          $("option", jsMultiselect).remove(); 
+          $("option", jsMultiselect).remove();
           //TODO: non si può altrimenti salva -1 su chiavi esterne mancanti. Correggere prima apilib che tolga eventuali -1 da campi che puntano ad entità
           //$("<option value='-1'> --- </option>").appendTo(jsMultiselect);
           $("<option></option>").appendTo(jsMultiselect);
@@ -1195,8 +1195,11 @@ function loadModal(url, data, callbackSuccess, method) {
       }
       mAjaxCall = null;
     },
-    error: function () {
+    error: function (xhr, status, error) {
       mAjaxCall = null;
+      toastr.warning('Oh no! Loading failed... Try again or contact support team.', 'Attenzione!', { showMethod: 'fadeIn', timeOut: 5000, progressBar: true, positionClass: 'toast-top-center' });
+      console.log('Error loading modal: ' + url);
+      console.log('Error:', error);
     },
   });
 }
