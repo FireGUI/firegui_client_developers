@@ -113,6 +113,11 @@ class Apilib
      */
     private $pendingRelations;
 
+    private $isCacheEnabled = null;
+
+    private $loadedDataProcessors = [];
+    private $dataProcessorsLoaded = false;
+
     public function __construct()
     {
         // Prima carica la libreria di cache e dopo carica la crm entity
@@ -246,7 +251,8 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        $cache_key = "apilib/apilib.list.{$entity}";
+        $cache_key = $this->generateCacheKey('index', $entity, ['depth' => $depth]);
+
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->crmentity->get_data_full_list($entity, null, [], null, 0, null, null, false, $depth);
             if ($this->isCacheEnabled()) {
@@ -270,7 +276,8 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
-        $cache_key = "apilib/apilib.item.{$entity}.{$id}";
+        $cache_key = $this->generateCacheKey('view', $entity, ['id' => $id, 'maxDepthLevel' => $maxDepthLevel]);
+
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $out = $this->crmentity->get_data_full($entity, $id, $maxDepthLevel);
             if ($this->isCacheEnabled()) {
@@ -555,65 +562,71 @@ class Apilib
     }
     public function createMany($entity = null, $data = null)
     {
-
-        // In questo caso $data è un array di righe multiple che verranno
-        // inserite e validate singolarmente. Questo è necessario perché ho
-        // bisogno degli ultimi record inseriti e dei rispettivi id per poter
-        // eseguire regolarmente i pre e post processes.
-        // ***
-        // L'idea è quella di far partire una transazione in modo tale che se
-        // uno fallisce falliscono tutti
-
         if (!$entity) {
             $this->showError(self::ERR_INVALID_API_CALL);
         }
 
         $_data = array_filter($this->extractInputData($data));
         $groups = [];
-
-        foreach ($_data as &$_item) {
-            if (!is_array($_item)) {
-                $this->showError(self::ERR_INVALID_API_CALL);
-            }
-
-            if (!$this->processData($entity, $_item, false)) {
-                $_POST = $this->originalPost;
-                $this->showError();
-            }
-
-            // Devo verificare che i record abbiano tutti lo stesso tipo di chiavi.
-            // Devo raggruppare quindi i record in base alle chiavi che ha e dopo
-            // eseguire un insert_batch per ciascun gruppo
-            $keys = array_keys($_item);
-            sort($keys);
-            $groups[md5(serialize($keys))][] = $_item;
-        }
-
-        foreach ($groups as $items) {
-            if (!$this->db->insert_batch($entity, $items)) {
-                $this->showError(self::ERR_GENERIC);
-            }
-        }
-
-        $idfield = $entity . '_id';
-        $numChanged = count($_data);
-        $newRecords = $this->db->limit($numChanged)->order_by($idfield, 'DESC')->get($entity)->result_array();
-
         $ids = [];
-        foreach ($newRecords as $record) {
-            $ids[] = $record[$idfield];
-            $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $record));
+
+        $this->db->trans_start();
+
+        try {
+            foreach ($_data as &$_item) {
+                if (!is_array($_item)) {
+                    throw new Exception($this->errorMessages[self::ERR_INVALID_API_CALL]);
+                }
+
+                if (!$this->processData($entity, $_item, false)) {
+                    throw new Exception($this->errorMessage ?: $this->errorMessages[self::ERR_VALIDATION_FAILED]);
+                }
+
+                // Raggruppamento dei record per chiavi
+                $keys = array_keys($_item);
+                sort($keys);
+                $groups[md5(serialize($keys))][] = $_item;
+            }
+
+            foreach ($groups as $items) {
+                if (!$this->db->insert_batch($entity, $items)) {
+                    throw new Exception($this->errorMessages[self::ERR_GENERIC]);
+                }
+            }
+
+            $idfield = $entity . '_id';
+            $numChanged = count($_data);
+            $newRecords = $this->db->limit($numChanged)->order_by($idfield, 'DESC')->get($entity)->result_array();
+
+            foreach ($newRecords as $record) {
+                $ids[] = $record[$idfield];
+                $this->runDataProcessing($entity, 'insert', $this->runDataProcessing($entity, 'save', $record));
+            }
+
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                throw new Exception($this->errorMessages[self::ERR_GENERIC]);
+            }
+
+            $this->mycache->clearEntityCache($entity);
+
+            // Ripristino del post originale
+            $_POST = $this->originalPost;
+            $this->originalPost = [];
+
+            // Log dell'azione
+            $this->logSystemAction(self::LOG_CREATE_MANY, ['entity' => $entity, 'ids' => $ids]);
+
+            return $ids;
+
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            $this->error = $e->getCode() ?: self::ERR_GENERIC;
+            $this->errorMessage = $e->getMessage();
+            $_POST = $this->originalPost;
+            $this->showError();
         }
-
-        $this->mycache->clearEntityCache($entity);
-
-        // Prima di uscire voglio ripristinare il post precedentemente modificato
-        $_POST = $this->originalPost;
-        //Resetto tutto per evitare il bug che al ciclo sucessivo siano valorizzati questi array (tanto ormai è finito tutto il giro che devono fare i vari pp)
-        $this->originalPost = [];
-        // Inserisco il log
-        $this->logSystemAction(self::LOG_CREATE_MANY, ['entity' => $entity, 'ids' => $ids]);
-        return $ids;
     }
 
     /**
@@ -917,9 +930,10 @@ class Apilib
 
     public function isCacheEnabled()
     {
-        $return = !empty($this->cache_config['apilib']['active']) && $this->mycache->isCacheEnabled();
-
-        return $return;
+        if ($this->isCacheEnabled === null) {
+            $this->isCacheEnabled = !empty($this->cache_config['apilib']['active']) && $this->mycache->isCacheEnabled();
+        }
+        return $this->isCacheEnabled;
     }
 
     public function search($entity = null, $input = [], $limit = null, $offset = 0, $orderBy = null, $orderDir = 'ASC', $maxDepth = 2, $eval_cachable_fields = null, $additional_parameters = [])
@@ -937,8 +951,15 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
-        $cache_key = "apilib/apilib.search.{$entity}." . md5(serialize($input)) . ($limit ? '.' . $limit : '') . ($offset ? '.' . $offset : '') . ($orderBy ? '.' . md5(serialize($orderBy)) : '') . ($group_by ? '.' . md5(serialize($group_by)) : '') . '.' . md5(serialize($orderDir));
-
+        //$cache_key = "apilib/apilib.search.{$entity}." . md5(serialize($input)) . ($limit ? '.' . $limit : '') . ($offset ? '.' . $offset : '') . ($orderBy ? '.' . md5(serialize($orderBy)) : '') . ($group_by ? '.' . md5(serialize($group_by)) : '') . '.' . md5(serialize($orderDir));
+        $cache_key = $this->generateCacheKey('search', $entity, [
+            'input' => $input,
+            'limit' => $limit,
+            'offset' => $offset,
+            'orderBy' => $orderBy,
+            'orderDir' => $orderDir,
+            'group_by' => $additional_parameters['group_by'] ?? null
+        ]);
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
             if (isset($input['where'])) {
@@ -1054,7 +1075,10 @@ class Apilib
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
-        $cache_key = "apilib/apilib.count.{$entity}." . md5(serialize($input));
+        $cache_key = $this->generateCacheKey('count', $entity, [
+            'input' => $input,
+            'group_by' => $additional_parameters['group_by'] ?? null
+        ]);
 
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
@@ -1167,15 +1191,15 @@ class Apilib
     {
         return $data;
 
-        $data = isset($data['data']) ? $data['data'] : $data;
+        // $data = isset($data['data']) ? $data['data'] : $data;
 
-        if (is_array($data)) {
-            return array_map(function ($item) {
-                return is_array($item) ? $this->sanitizeRecord($item) : $item;
-            }, $data);
-        } else {
-            return null;
-        }
+        // if (is_array($data)) {
+        //     return array_map(function ($item) {
+        //         return is_array($item) ? $this->sanitizeRecord($item) : $item;
+        //     }, $data);
+        // } else {
+        //     return null;
+        // }
     }
 
     /**
@@ -1188,13 +1212,13 @@ class Apilib
     {
         return $item;
 
-        if (is_array($item)) {
-            return array_map(function ($value) {
-                return is_array($value) ? $this->sanitizeList($value) : $value;
-            }, $item);
-        } else {
-            return null;
-        }
+        // if (is_array($item)) {
+        //     return array_map(function ($value) {
+        //         return is_array($value) ? $this->sanitizeList($value) : $value;
+        //     }, $item);
+        // } else {
+        //     return null;
+        // }
     }
 
     /**
@@ -1229,7 +1253,7 @@ class Apilib
      * Torna un booleano che indica se i dati per l'entità sono validi
      */
 
-    
+
     private function processData($entity, array &$data, $editMode = false, $value_id = null)
     {
 
@@ -1297,7 +1321,7 @@ class Apilib
                         $field['fields_required'] == FIELD_SOFT_REQUIRED && array_key_exists($field['fields_name'], $originalData)
                     )
                 ) {
-                    
+
                     switch ($field['fields_draw_html_type']) {
                         // this because upload is made after validation rules
                         case 'upload':
@@ -1308,7 +1332,7 @@ class Apilib
                                 $rule[] = 'required';
                             }
                             break;
-                       
+
                         // password is valuated as required only if not in edit mode,
                         //because in edit it doesnt mean that i want to change it
                         case 'input_password':
@@ -1346,9 +1370,9 @@ class Apilib
                             } else {
                                 $rule[] = $validation['fields_validation_type'];
                             }
-                            
+
                             break;
-                        
+
                         //Le validazioni che hanno parametri semplici
                         case 'is_unique':
                             // Il caso unique ha una particolarità:
@@ -1378,7 +1402,7 @@ class Apilib
                                 'message' => $validation['fields_validation_message'] ?: null,
                             ];
                             break;
-                            
+
                         case 'date_after':
                             $rules_date_before[] = [
                                 'before' => $validation['fields_validation_extra'],
@@ -1399,7 +1423,7 @@ class Apilib
                     'errors' => $custom_messages
                 );
             }
-            
+
             //debug($rules);
             //Signature field type management
             if ($field['fields_draw_html_type'] == 'signature' && base64_encode(base64_decode($data[$field['fields_name']], true)) === $data[$field['fields_name']]) {
@@ -1458,11 +1482,11 @@ class Apilib
                         return false;
                     }
                 }
-                
-                
+
+
             }
         }
-        
+
         /**
          * Eseguo il process di pre-validation
          */
@@ -2794,6 +2818,28 @@ class Apilib
         //     $this->fallbackLanguage,
         // ]);
         return $this->crmEntity;
+    }
+
+    private function generateCacheKey($prefix, $entity, $params)
+    {
+        $key_parts = [$prefix, $entity];
+
+        foreach ($params as $param_name => $param_value) {
+            if ($param_value !== null) {
+                if (is_array($param_value)) {
+                    $key_parts[] = $param_name . '_' . $this->hashArray($param_value);
+                } else {
+                    $key_parts[] = $param_name . '_' . $param_value;
+                }
+            }
+        }
+
+        return 'apilib/' . implode('.', $key_parts);
+    }
+
+    private function hashArray($array)
+    {
+        return crc32(json_encode($array));
     }
 
 }

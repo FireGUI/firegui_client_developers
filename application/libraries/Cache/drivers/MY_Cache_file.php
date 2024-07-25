@@ -58,6 +58,10 @@ class MY_Cache_file extends CI_Driver
     protected $_cache_path;
     const TAGS_CACHE_FILE = 'tags_mapping.json';
     const CACHE_TIME = 3600;
+
+    private $entityTagsCache = [];
+
+
     /**
      * Initialize file-based cache
      *
@@ -104,42 +108,22 @@ class MY_Cache_file extends CI_Driver
      */
     public function save($id, $data, $ttl = 60, $tags = [])
     {
+
         $contents = array(
             'time' => time(),
             'ttl' => $ttl,
             'data' => $data,
-            //'tags' => $tags
+            //'tags'        => $tags
         );
-
-        // Definire un limite di dimensione in byte (ad esempio, 5 MB)
-        $limit_in_bytes = 5 * 1024 * 1024;
-
-        // Stimare la dimensione dei contenuti senza serializzarli completamente
-        //$estimated_size = $this->estimateSize($contents, $limit_in_bytes);
-
-
-        // Controllare se la dimensione supera il limite
-        // if ($estimated_size > $limit_in_bytes) {
-        //     // Restituire false o gestire l'errore in altro modo
-        //     // debug($contents);
-        //     // debug($estimated_size, true);
-        //     log_message('debug', "Estimated data size of $estimated_size bytes exceeds the limit of $limit_in_bytes bytes.");
-        //     return false;
-        // }
-
-        // Serializzare i contenuti
-        $serialized_contents = serialize($contents);
-
-        // Folder exists check
+        //Folder exists check
         $folder = dirname($this->_cache_path . $id);
         if (!is_dir($folder)) {
             mkdir($folder, DIR_WRITE_MODE, true);
         }
-
-        if ($result = write_file($this->_cache_path . $id, $serialized_contents)) {
+        if ($result = write_file($this->_cache_path . $id, serialize($contents))) {
             @chmod($this->_cache_path . $id, 0640);
 
-            // if tags are specified, save this id for each tags, so that i can remove it easily later
+            //if tags are specified, save this id for each tags, so that i can remove it easily later
             $this->saveTagsMapping($id, $tags);
             return true;
         } else {
@@ -149,35 +133,6 @@ class MY_Cache_file extends CI_Driver
 
         return false;
     }
-
-    private function estimateSize($data, $limit_in_bytes)
-    {
-        $size = 0;
-        $queue = array($data);
-
-        while (!empty($queue)) {
-            $current = array_shift($queue);
-
-            if (is_array($current)) {
-                foreach ($current as $key => $value) {
-                    $size += strlen(serialize($key));
-                    if ($size > $limit_in_bytes) {
-                        return $size;
-                    }
-                    $queue[] = $value;
-                }
-            } else {
-                $size += strlen(serialize($current));
-                if ($size > $limit_in_bytes) {
-                    return $size;
-                }
-            }
-        }
-
-        return $size;
-    }
-
-
 
     public function saveTagsMapping($id, $tags = [])
     {
@@ -461,45 +416,87 @@ class MY_Cache_file extends CI_Driver
 
     public function clearCache($drop_template_files = false, $key = null)
     {
-        $CI = &get_instance();
-        $CI->crmentity->reloadSchemaCache();
+        $cache_paths = [
+            'sql' => APPPATH . 'cache/sql',
+            'fullpages' => APPPATH . 'cache/fullpages',
+            'database_schema' => APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY,
+            'apilib' => APPPATH . 'cache/apilib',
+        ];
+
+        $cache_controller_file = APPPATH . 'cache/cache-controller';
+        $cache_config_file = APPPATH . 'cache/cache-config.json';
+
         if ($key) {
-            //debug($key);
             if ($key == 'raw_queries') {
                 $key = 'sql';
             }
             if ($key == 'full_page') {
                 $key = 'fullpages';
             }
-            if (is_dir(APPPATH . 'cache/' . $key)) {
-                deleteDirRecursive(APPPATH . 'cache/' . $key);
+
+            if (isset($cache_paths[$key])) {
+                $this->removeDirectory($cache_paths[$key]);
             } else {
-                if ($key == 'database_schema') {
-                    @unlink(APPPATH . 'cache/crm.schema');
-                } else {
-                    @unlink(APPPATH . 'cache/' . $key);
-                }
+                @unlink(APPPATH . 'cache/' . $key);
             }
         } else {
+            // Preserve cache controller and config
+            $cache_controller_content = @file_get_contents($cache_controller_file);
+            $cache_config_content = @file_get_contents($cache_config_file);
 
-            // Fix che riscrive il file cache-controller resettato da $this->mycache->clean() (funzione nativa di Codeigniter) in quanto se abilitata la cache (quindi scrive dei parametri sul file cache-controller) e si pulisce la cache, il file viene resettato e quindi la cache disattivata
-            $cache_controller_file = APPPATH . 'cache/cache-controller';
-            $cache_config_file = APPPATH . 'cache/cache-config.json';
+            // Clear all cache directories
+            foreach ($cache_paths as $path) {
+                $this->removeDirectory($path);
+            }
 
-            $this->clean([$cache_controller_file, $cache_config_file]);
+            // Restore cache controller and config
+            if ($cache_controller_content !== false) {
+                file_put_contents($cache_controller_file, $cache_controller_content);
+            }
+            if ($cache_config_content !== false) {
+                file_put_contents($cache_config_file, $cache_config_content);
+            }
 
-            deleteDirRecursive(APPPATH . 'cache/sql');
-            deleteDirRecursive(APPPATH . 'cache/fullpages');
-
-            @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
-
-            //Remove also css generated files from template cache
+            // Clear template files if requested
             if ($drop_template_files) {
-                foreach (@scandir(APPPATH . '../template/build/') as $file) {
-                    if ($file != '..' && $file != '.' && $file != '.gitkeep' && is_file(APPPATH . '../template/build/' . $file)) {
-                        unlink(APPPATH . '../template/build/' . $file);
-                    }
-                }
+                $this->clearTemplateFiles();
+            }
+        }
+
+        // Reload schema cache
+        $CI = &get_instance();
+        $CI->crmentity->reloadSchemaCache();
+
+        return true;
+    }
+
+    private function removeDirectory($path)
+    {
+        if (is_dir($path)) {
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($files as $fileinfo) {
+                $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+                $todo($fileinfo->getRealPath());
+            }
+
+            rmdir($path);
+        } elseif (is_file($path)) {
+            unlink($path);
+        }
+    }
+
+    private function clearTemplateFiles()
+    {
+        $template_build_path = APPPATH . '../template/build/';
+        $files = new DirectoryIterator($template_build_path);
+
+        foreach ($files as $file) {
+            if ($file->isFile() && $file->getFilename() != '.gitkeep') {
+                unlink($file->getRealPath());
             }
         }
     }
@@ -584,37 +581,43 @@ class MY_Cache_file extends CI_Driver
     }
     public function isActive($key)
     {
-        if ($key == 'apilib') {
-            //debug(!empty($this->getCurrentConfig()[$key]['active']),true);
-        }
         return !empty($this->getCurrentConfig()[$key]['active']);
     }
     public function buildTagsFromEntity($entity, $value_id = null)
     {
-        $CI = &get_instance();
-        $entity_data = $CI->crmentity->getEntity($entity);
-        if ($value_id) {
-            //$tags = ["{$entity_data['entity_name']}:{$value_id}"];
-            $tags = [$entity_data['entity_name']];
+        $cacheKey = $entity . ($value_id ? ":{$value_id}" : "");
 
-        } else {
-            $tags = [$entity_data['entity_name']];
+        if (isset($this->entityTagsCache[$cacheKey])) {
+            return $this->entityTagsCache[$cacheKey];
         }
 
-        $fields = $CI->crmentity->getFields($entity);
+        $CI = &get_instance();
+        $entity_data = $CI->crmentity->getEntity($entity);
+        $tags = [$entity_data['entity_name']];
+
+        if ($value_id) {
+            $tags[] = "{$entity_data['entity_name']}:{$value_id}";
+        }
+
+        // Fetch all fields in one query
+        $fields = $CI->crmentity->getFields($entity_data['entity_id']);
+
         foreach ($fields as $field) {
             if ($field['fields_ref_auto_right_join'] == DB_BOOL_TRUE || $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
                 $tags[] = $field['fields_ref'];
             }
         }
-        //Get all fields that references this entity (false to force left join instead of right join)
+
+        // Fetch all referencing fields in one query
         $fields_referencing = $CI->crmentity->getFieldsRefBy($entity, false);
 
         foreach ($fields_referencing as $field) {
             $tags[] = $field['entity_name'];
         }
 
-        $tags = array_filter($tags, 'strlen');
+        $tags = array_filter(array_unique($tags), 'strlen');
+
+        $this->entityTagsCache[$cacheKey] = $tags;
 
         return $tags;
     }
