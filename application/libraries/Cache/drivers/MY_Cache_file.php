@@ -57,7 +57,7 @@ class MY_Cache_file extends CI_Driver
      */
     protected $_cache_path;
     const TAGS_CACHE_FILE = 'tags_mapping.json';
-    const CACHE_TIME = 3600;
+    const CACHE_TIME = 300;
 
     private $entityTagsCache = [];
 
@@ -108,23 +108,20 @@ class MY_Cache_file extends CI_Driver
      */
     public function save($id, $data, $ttl = 60, $tags = [])
     {
-
         $contents = array(
             'time' => time(),
             'ttl' => $ttl,
             'data' => $data,
-            //'tags'        => $tags
         );
-        //Folder exists check
+
         $folder = dirname($this->_cache_path . $id);
         if (!is_dir($folder)) {
             mkdir($folder, DIR_WRITE_MODE, true);
         }
+
         if ($result = write_file($this->_cache_path . $id, serialize($contents))) {
             @chmod($this->_cache_path . $id, 0640);
-
-            //if tags are specified, save this id for each tags, so that i can remove it easily later
-            $this->saveTagsMapping($id, $tags);
+            $this->saveTagsMapping($id, $tags, time());
             return true;
         } else {
             debug($result);
@@ -134,7 +131,7 @@ class MY_Cache_file extends CI_Driver
         return false;
     }
 
-    public function saveTagsMapping($id, $tags = [])
+    public function saveTagsMapping($id, $tags = [], $timestamp)
     {
         $mapping = $this->getTagsMapping();
 
@@ -142,14 +139,10 @@ class MY_Cache_file extends CI_Driver
             $tags = [];
         }
         foreach ($tags as $tag) {
-
             if (!array_key_exists($tag, $mapping)) {
                 $mapping[$tag] = [];
             }
-            if (!in_array($id, $mapping[$tag])) {
-                //Add the id to the tag mapping
-                $mapping[$tag][] = $id;
-            }
+            $mapping[$tag][$id] = $timestamp;
         }
         $this->writeMappingFile($mapping);
     }
@@ -163,11 +156,54 @@ class MY_Cache_file extends CI_Driver
     }
     public function getTagsMapping()
     {
-        if (file_exists($this->_cache_path . self::TAGS_CACHE_FILE) && $mapping = json_decode(file_get_contents($this->_cache_path . self::TAGS_CACHE_FILE), true)) {
+        $mapping_file = $this->_cache_path . self::TAGS_CACHE_FILE;
+
+        if (file_exists($mapping_file)) {
+            $content = file_get_contents($mapping_file);
+            $mapping = json_decode($content, true);
+
+            // Verifica se il JSON decodificato è un array
+            if (!is_array($mapping)) {
+                // Se non è un array valido, restituisci un array vuoto e ricrea il file
+                $this->writeMappingFile([]);
+                return [];
+            }
+
+            // Rimuovi i file scaduti
+            $current_time = time();
+            $updated = false;
+
+            foreach ($mapping as $tag => &$files) {
+                if (!is_array($files)) {
+                    // Se $files non è un array, rimuovi questo tag
+                    unset($mapping[$tag]);
+                    $updated = true;
+                    continue;
+                }
+
+                foreach ($files as $file => $timestamp) {
+                    if (!is_numeric($timestamp) || ($current_time - $timestamp) > self::CACHE_TIME) {
+                        unset($files[$file]);
+                        @unlink($this->_cache_path . $file);
+                        $updated = true;
+                    }
+                }
+
+                if (empty($files)) {
+                    unset($mapping[$tag]);
+                    $updated = true;
+                }
+            }
+
+            // Riscrivi il file solo se ci sono stati cambiamenti
+            if ($updated) {
+                $this->writeMappingFile($mapping);
+            }
+
             return $mapping;
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     // ------------------------------------------------------------------------
@@ -200,14 +236,14 @@ class MY_Cache_file extends CI_Driver
     {
         $mapping = $this->getTagsMapping();
         if (array_key_exists($tag, $mapping)) {
-            foreach ($mapping[$tag] as $id) {
-
+            foreach ($mapping[$tag] as $id => $timestamp) {
                 $this->delete($id);
             }
             unset($mapping[$tag]);
             $this->writeMappingFile($mapping);
         }
     }
+
 
     // ------------------------------------------------------------------------
 
@@ -425,6 +461,7 @@ class MY_Cache_file extends CI_Driver
 
         $cache_controller_file = APPPATH . 'cache/cache-controller';
         $cache_config_file = APPPATH . 'cache/cache-config.json';
+        $tags_mapping_file = $this->_cache_path . self::TAGS_CACHE_FILE;
 
         if ($key) {
             if ($key == 'raw_queries') {
@@ -447,6 +484,11 @@ class MY_Cache_file extends CI_Driver
             // Clear all cache directories
             foreach ($cache_paths as $path) {
                 $this->removeDirectory($path);
+            }
+
+            // Clear tags_mapping.json file
+            if (file_exists($tags_mapping_file)) {
+                @unlink($tags_mapping_file);
             }
 
             // Restore cache controller and config

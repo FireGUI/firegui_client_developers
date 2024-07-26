@@ -130,7 +130,7 @@ class Postgre_utils extends Utils
             'forms_entity_id' => ['type' => 'INT', 'constraint' => 10, 'unsigned' => true],
             'forms_name' => ['type' => 'VARCHAR', 'constraint' => 250],
             'forms_action' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
-            'forms_submit_button_label' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
+            
             'forms_default' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
             'forms_layout' => ['type' => 'VARCHAR', 'constraint' => 250],
             'forms_one_record' => ['type' => 'BOOL', 'default' => DB_BOOL_FALSE],
