@@ -151,7 +151,7 @@ class Mysqli_utils extends Utils {
             'forms_css_extra' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'forms_display_none' => ['type' => 'BOOLEAN', 'default' => '0'],
             'forms_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
-            
+            'forms_submit_button_label' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'forms_success_status' => ['type' => 'BIGINT', 'default' => 7],
             'forms_success_message' => ['type' => 'VARCHAR', 'null' => true, 'constraint' => 255],
             'forms_success_status_edit' => ['type' => 'BIGINT', 'null' => true],
