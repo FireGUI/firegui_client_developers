@@ -200,7 +200,7 @@ foreach ($form['forms_fields'] as $key => $field) {
 
                                         <div class="pull-right">
                                             <!-- <button type="button" class="btn btn-default " data-dismiss="modal"><?php e('Cancel'); ?></button> -->
-                                             
+                                             <?php //debug($form); ?>
                                             <button type="submit" class="btn btn-primary">
                                              <?php if ($value_id): ?>
                                                     <?php if (array_key_exists('forms_label_edit',  $form['forms']) && !empty($form['forms']['forms_label'])): ?>
