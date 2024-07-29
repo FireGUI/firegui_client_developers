@@ -455,7 +455,7 @@ class MY_Cache_file extends CI_Driver
         $cache_paths = [
             'sql' => APPPATH . 'cache/sql',
             'fullpages' => APPPATH . 'cache/fullpages',
-            'database_schema' => APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY,
+            'database_schema' => APPPATH . 'cache/database_schema',
             'apilib' => APPPATH . 'cache/apilib',
         ];
 
@@ -508,7 +508,7 @@ class MY_Cache_file extends CI_Driver
         // Reload schema cache
         $CI = &get_instance();
         $CI->crmentity->reloadSchemaCache();
-
+        //die('test');
         return true;
     }
 
