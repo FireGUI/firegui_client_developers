@@ -1,3 +1,3 @@
-Changelog version 3.8.92
+Changelog version 3.9.0
  
-Restored forms_submit_button_label culumn
+Bugfix clearCache
