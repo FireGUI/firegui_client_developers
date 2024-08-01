@@ -35,8 +35,9 @@
         <?php //endif; ?>
         <?php if (isset($field['support_data'])): ?>
             <?php foreach ((array) $field['support_data'] as $id => $name): ?>
-                <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?><?php if (!empty($field['forms_field_full_data']) && $field['forms_field_full_data'] == DB_BOOL_TRUE): ?>
-                        data-full_data="<?php echo base64_encode(json_encode($this->apilib->view($field['fields_ref'], $id))); ?>" <?php endif; ?>>
+                <option value="<?php echo $id; ?>" <?php echo ($id == $value) ? 'selected' : ''; ?><?php if (!empty($field['forms_field_full_data']) && $field['forms_field_full_data'] == DB_BOOL_TRUE):
+                                ?>
+                        data-full_data="<?php echo base64_encode(json_encode($field['support_data_full'][$id])); ?>" <?php endif; ?>>
                     <?php echo $name; ?>
                 </option>
             <?php endforeach; ?>

@@ -28,14 +28,14 @@ class Db_ajax extends MY_Controller
             }
             // Altrimenti, se il form è pubblico, non fare nulla (non richiedere l'autenticazione)
         } elseif ($currentMethod == 'multi_upload_async' && $guest) {
-            $field_id = $this->uri->segment(3); 
+            $field_id = $this->uri->segment(3);
             //$field = $this->datab->get_field($field_id);
             $form = $this->db->query("SELECT * FROM forms WHERE forms_public = '1' AND forms_id IN (SELECT forms_fields_forms_id FROM forms_fields WHERE forms_fields_fields_id = '$field_id')")->row_array();
             if (!$form) {
                 // Il form non è pubblico, quindi verifica l'autenticazione
                 $this->checkAuth();
             }
-            
+
         } elseif ($guest) {
             // Per tutti gli altri metodi, verifica sempre l'autenticazione
             $this->checkAuth();
@@ -45,10 +45,10 @@ class Db_ajax extends MY_Controller
 
     private function checkAuth()
     {
-        
-            set_status_header(401); // Unauthorized
-            die('Non sei loggato nel sistema');
-        
+
+        set_status_header(401); // Unauthorized
+        die('Non sei loggato nel sistema');
+
     }
 
     public function save_form($form_id = null, $edit = false, $value_id = null)
@@ -164,7 +164,7 @@ class Db_ajax extends MY_Controller
                         }
                     }
                 } else {
-                    
+
                     $savedId = $this->apilib->create($entity, $dati, false);
                 }
             }
@@ -202,17 +202,30 @@ class Db_ajax extends MY_Controller
                     $replaceTo[] = $v;
                 }
             }
+
+            //debug($status,true);
+
             if (in_array($status, [0, 1, 2, 3, 4, 5])) {
-                echo json_encode(
-                    array(
+                if ($status == 5) {
+                    e_json([
                         'status' => $status,
                         'txt' => str_replace($replaceFrom, $replaceTo, $message),
                         'data' => $saved,
-                        'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
-                    ),
-                    JSON_INVALID_UTF8_SUBSTITUTE,
 
-                );
+                    ]);
+                } else {
+                    echo json_encode(
+                        array(
+                            'status' => $status,
+                            'txt' => str_replace($replaceFrom, $replaceTo, $message),
+                            'data' => $saved,
+                            'cache_tags' => $this->mycache->buildTagsFromEntity($entity),
+                        ),
+                        JSON_INVALID_UTF8_SUBSTITUTE,
+
+                    );
+                }
+
             } elseif (in_array($status, [6, 7])) {
                 $return_data = array(
                     'status' => $status,
@@ -559,20 +572,24 @@ class Db_ajax extends MY_Controller
             // Ciclo tutti i permessi ad entità e moduli passati e
             foreach ($permissionIds as $permissionId) {
                 foreach ($entities as $entity_id => $permission_value) {
-                    $this->db->insert('permissions_entities', array(
-                        'permissions_entities_permissions_id' => $permissionId,
-                        'permissions_entities_entity_id' => $entity_id,
-                        'permissions_entities_value' => $permission_value,
-                    )
+                    $this->db->insert(
+                        'permissions_entities',
+                        array(
+                            'permissions_entities_permissions_id' => $permissionId,
+                            'permissions_entities_entity_id' => $entity_id,
+                            'permissions_entities_value' => $permission_value,
+                        )
                     );
                 }
 
                 foreach ($modules as $mod_name => $permission_value) {
-                    $this->db->insert('permissions_modules', array(
-                        'permissions_modules_permissions_id' => $permissionId,
-                        'permissions_modules_module_name' => $mod_name,
-                        'permissions_modules_value' => $permission_value,
-                    )
+                    $this->db->insert(
+                        'permissions_modules',
+                        array(
+                            'permissions_modules_permissions_id' => $permissionId,
+                            'permissions_modules_module_name' => $mod_name,
+                            'permissions_modules_value' => $permission_value,
+                        )
                     );
                 }
             }
@@ -917,7 +934,7 @@ class Db_ajax extends MY_Controller
             $record = $this->db->get_where($table, array($table . '_id' => $id))->row_array();
             if ($record) {
                 $new_value = (empty($record[$column]) || $record[$column] === DB_BOOL_FALSE ? DB_BOOL_TRUE : DB_BOOL_FALSE);
-                
+
                 if ($use_apilib == DB_BOOL_TRUE) {
                     $this->apilib->edit($table, $id, [$column => $new_value]);
                 } else {
@@ -947,7 +964,7 @@ class Db_ajax extends MY_Controller
                 $this->db->where($entity_name . '_id', $id)->update($entity_name, [$field_name => $new_value]);
                 $this->mycache->clearCache();
             }
-            
+
             if ($this->input->is_ajax_request()) {
                 die(json_encode(['status' => 2, 'txt' => null]));
             } else {
@@ -1061,7 +1078,7 @@ class Db_ajax extends MY_Controller
                 //Change key of files to be inserted in the other entity
                 unset($_FILES[$field['fields_name']]);
                 $_FILES[$field_insert['fields_name']] = $old_file_data;
-                
+
                 $id = $this->apilib->create($file_table, [], false);
                 echo json_encode(['status' => 1, 'file' => $id]);
             }
@@ -1090,13 +1107,15 @@ class Db_ajax extends MY_Controller
                 exit;
             }
 
-            $this->load->library('upload', array(
-                'upload_path' => FCPATH . 'uploads/' . $localFolder,
-                'allowed_types' => '*',
-                'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
-                'encrypt_name' => false,
-                'file_name' => $filename,
-            )
+            $this->load->library(
+                'upload',
+                array(
+                    'upload_path' => FCPATH . 'uploads/' . $localFolder,
+                    'allowed_types' => '*',
+                    'max_size' => defined('MAX_UPLOAD_SIZE') ? MAX_UPLOAD_SIZE : 10000,
+                    'encrypt_name' => false,
+                    'file_name' => $filename,
+                )
             );
 
             $uploaded = $this->upload->do_upload($field['fields_name']);
@@ -1197,7 +1216,8 @@ class Db_ajax extends MY_Controller
         }
     }
 
-    public function run_php_code($grid_action_id, $value_id) {
+    public function run_php_code($grid_action_id, $value_id)
+    {
 
         $grid_action = $this->db->get_where('grids_actions', ['grids_actions_id' => $grid_action_id])->row_array();
         $grid = $this->db->get_where('grids', ['grids_id' => $grid_action['grids_actions_grids_id']])->row_array();
@@ -1208,8 +1228,8 @@ class Db_ajax extends MY_Controller
         $row_data = $this->apilib->view($entity_name, $value_id);
 
         $code_to_run = $grid_action['grids_actions_html'];
-        
-        
+
+
         $return = eval (' ?> ' . $code_to_run . ' <?php ');
 
         if (!empty($return['status'])) {
@@ -1218,6 +1238,6 @@ class Db_ajax extends MY_Controller
             //Di default forzo refresh
             e_json(['status' => 2]);
         }
-        
+
     }
 }

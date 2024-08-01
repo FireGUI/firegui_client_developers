@@ -795,6 +795,7 @@ class Datab extends CI_Model
     }
     public function processFieldMapping($field, $form, $value_id = null)
     {
+        //debug($field,true);
         // Il ref è il nome della tabella/entità di supporto/da joinare
         // quindi estraggo i valori da proporre
         if (!$field['fields_ref']) {
@@ -811,8 +812,10 @@ class Datab extends CI_Model
                     //debug($field['support_data'], true);
                 }
 
-                
+
             }
+
+
             return $field;
         }
 
@@ -906,9 +909,12 @@ class Datab extends CI_Model
 
         $options['depth'] = 1;
 
-
-
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $limit, $offset, $options);
+
+        if ($field['forms_field_full_data']) {
+            $support_data_full = $this->apilib->search($support_relation_table, $where, $limit, $offset);
+            $field['support_data_full'] = array_key_map_data($support_data_full, $support_relation_table . '_id');
+        }
 
         return $field;
     }
@@ -1462,7 +1468,7 @@ class Datab extends CI_Model
 
                                 case 'like':
                                 case 'notlike':
-                                if (in_array(strtoupper($field->fields_type), array('VARCHAR', 'TEXT'))) {
+                                    if (in_array(strtoupper($field->fields_type), array('VARCHAR', 'TEXT'))) {
                                         $arr[] = "({$where_prefix}{$field->fields_name} $not{$operators[$condition['operator']]['sql']} '%{$condition['value']}%'{$where_suffix})";
                                     }
                                     break;
@@ -1792,7 +1798,7 @@ class Datab extends CI_Model
 
                 // Prendo i sottomenu che mi sono concessi...
                 $return[$parent]['submenu'] = array_filter($items, function ($menu) {
-                    return empty ($menu['menu_layout']) or array_key_exists($menu['menu_layout'], $this->_accessibleLayouts);
+                    return empty($menu['menu_layout']) or array_key_exists($menu['menu_layout'], $this->_accessibleLayouts);
                 });
 
                 foreach ($items as $item) {
@@ -1804,7 +1810,7 @@ class Datab extends CI_Model
         return array_filter($return, function ($menu) {
             // Il layout è accessibile per i permessi? (il link del menu è
             // considerato sempre accessibile se non punta ad un layout)
-            if (!empty ($menu['menu_layout']) && $menu['menu_layout'] != '-2' && !array_key_exists($menu['menu_layout'], $this->_accessibleLayouts)) {
+            if (!empty($menu['menu_layout']) && $menu['menu_layout'] != '-2' && !array_key_exists($menu['menu_layout'], $this->_accessibleLayouts)) {
                 return false;
             }
 
@@ -2726,10 +2732,10 @@ class Datab extends CI_Model
         // Stampa del campo
         //
 
-       
+
 
         if (($field['fields_ref'] || $field['fields_additional_data']) && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
-            
+
 
             if (is_array($value)) {
                 // Ho una relazione molti a molti - non mi serve alcuna
@@ -2952,7 +2958,7 @@ class Datab extends CI_Model
                                 } else {
                                     $_url = base_url_admin("thumb/50/50/1/uploads/{$item['path_local']}");
                                 }
-                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array ('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
+                                return anchor(base_url_uploads("uploads/{$item['path_local']}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
                             } else {
                                 // if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
                                 //     $_url = base_url_uploads("uploads/{$item['path_local']}");
@@ -2971,7 +2977,7 @@ class Datab extends CI_Model
                                 $_url = base_url("get_ajax/preview_pdf/" . rtrim(base64_encode("uploads/" . $item['path_local']), '='));
 
                                 //TODO: check mime type pdf, word, xls, ecc...
-                                return anchor($_url, "<img src=\"" . base_url("images/$img") . "\" style='width: 50px;'/>", array ('style' => 'width:50px', 'class' => 'js_open_modal'));
+                                return anchor($_url, "<img src=\"" . base_url("images/$img") . "\" style='width: 50px;'/>", array('style' => 'width:50px', 'class' => 'js_open_modal'));
                             }
                         }, $value);
                     } else { //Se arrivo qua i file sono scritti su un altra tabella, quindi mi arriva già l'array bello pulito con i file...
@@ -2981,7 +2987,7 @@ class Datab extends CI_Model
                             } else {
                                 $_url = base_url_admin("thumb/50/50/1/uploads/{$item}");
                             }
-                            return anchor(base_url_uploads("uploads/{$item}"), "<img src='" . $_url . "' style='width: 50px;' />", array ('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
+                            return anchor(base_url_uploads("uploads/{$item}"), "<img src='" . $_url . "' style='width: 50px;' />", array('class' => 'fancybox', 'style' => 'width:50px', 'rel' => 'group'));
                         }, $value);
                     }
 
