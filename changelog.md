@@ -4,3 +4,4 @@ Bugfix status 5, show green message
 Optimized forms_fields_full_data extract
 Swagger integration for api rest V1
 Bugfix maxdepth 0 passed in api
+New button in Api Manager for Swagger documentation
