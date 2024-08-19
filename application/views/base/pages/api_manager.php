@@ -124,7 +124,11 @@
           </form>
         </div>
       </div>
+       <a href="<?php echo base_url('rest/v1/swagger'); ?>" target="_blank" class="btn btn-primary btn-block mt-3">
+        <i class="fas fa-book"></i> <?php e('Swagger Documentation'); ?>
+      </a>
     </div>
+    
   </div>
 
   <div class="row">
