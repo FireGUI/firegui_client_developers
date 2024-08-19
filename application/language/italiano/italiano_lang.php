@@ -2123,3 +2123,5 @@ $lang['Radio'] = 'Radio';
 $lang['Checkbox'] = 'Checkbox';
 $lang['Multi checkbox'] = 'Multi checkbox';
 $lang['List media'] = 'List media';
+$lang['KPI'] = 'KPI';
+$lang['Foo2'] = 'Foo2';
