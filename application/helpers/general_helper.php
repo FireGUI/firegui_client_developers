@@ -1804,7 +1804,7 @@ if (!function_exists('progress')) {
                 progress_div.setAttribute("id", "' . $selector_id . '");
                 document.write(progress_div.outerHTML);
             }
-            progress_div.innerText = "' . $prepend . $perc . ' of 100%";
+            progress_div.innerText = "' . $prepend . $perc . '% (' . $current . ' of ' . $total . ')";
         </script>
         '
             );
