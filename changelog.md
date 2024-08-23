@@ -1,7 +1,7 @@
-Changelog version 3.9.1
+Changelog version 3.4.0
  
+Progress function updated
+translation "edit this" in bulk edit modal form
 Bugfix status 5, show green message
-Optimized forms_fields_full_data extract
-Swagger integration for api rest V1
-Bugfix maxdepth 0 passed in api
-New button in Api Manager for Swagger documentation
+New swagger documentation
+Optimized cache in Apilib
