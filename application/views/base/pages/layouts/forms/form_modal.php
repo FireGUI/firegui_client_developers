@@ -111,7 +111,7 @@ foreach ($form['forms_fields'] as $key => $field) {
 
                                                         <div class="js_field_container">
                                                             <div class="col-lg-3">
-                                                                <label>Edit this:</label>
+                                                                <label><?php e("Edit this"); ?>:</label>
                                                                 <input type="checkbox" class="_form-control js_field_check"
                                                                     name="edit_fields[]" value="<?php echo $field['name']; ?>" />
                                                             </div>
