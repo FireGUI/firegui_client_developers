@@ -51,7 +51,7 @@ function initTableWithPars(grid, pars) {
             aoColumns.push(coldef);
         });
         var datatableOptions = {
-            stateSave: true,
+            stateSave: true, stateDuration: -1,
             bSort: bEnableOrder,
             aoColumns: aoColumns,
             aaSorting: [],
