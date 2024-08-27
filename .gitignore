@@ -27,6 +27,7 @@ uploads/*
 .idea
 .AppleDouble
 .DS_Store
+__MACOSX/
 .history
 .vscode
 nbproject
