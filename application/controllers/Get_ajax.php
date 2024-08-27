@@ -716,9 +716,16 @@ class Get_ajax extends MY_Controller
 
 
             $out_array = array();
+            $prev_row = [];
             foreach ($grid_data as $dato) {
                 $dato['value_id'] = $valueID;
                 $tr = array();
+                if ($prev_row) {
+                    $dato['prev_row'] = $prev_row;
+                } else {
+                    $dato['prev_row'] = false;
+                }
+                
                 if ($has_bulk) {
                     $tr[] = '<input type="checkbox" class="js_bulk_check" value="' . $dato[$grid['grids']['entity_name'] . "_id"] . '" />';
                 }
@@ -747,7 +754,8 @@ class Get_ajax extends MY_Controller
                         'grid' => $grid['grids'],
                     ), true);
                 }
-
+                unset($dato['prev_row']);
+                $prev_row = $dato;
                 $out_array[] = $tr;
             }
 

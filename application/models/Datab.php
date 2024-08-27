@@ -2620,7 +2620,7 @@ class Datab extends CI_Model
     /**
      * Build della cella
      */
-    public function build_grid_cell($field, $dato, $escape_date = true, $crop = true, $download = false)
+    public function build_grid_cell($field, &$dato, $escape_date = true, $crop = true, $download = false)
     {
         // Valuta eventuali grid fields eval e placeholder
         $type = isset($field['grids_fields_replace_type']) ? $field['grids_fields_replace_type'] : 'field';
@@ -3128,12 +3128,12 @@ class Datab extends CI_Model
         }
     }
 
-    private function buildPlaceholderGridCell($placeholderedString, $record)
+    private function buildPlaceholderGridCell($placeholderedString, &$record)
     {
         return $this->replace_superglobal_data(str_replace_placeholders($placeholderedString, $record));
     }
 
-    private function buildEvalGridCell($evalString, $data, $field)
+    private function buildEvalGridCell($evalString, &$data, $field)
     {
         extract($data);
         ob_start();
