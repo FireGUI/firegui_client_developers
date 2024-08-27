@@ -99,3 +99,10 @@ $updates['3.2.3'] = [
         '3.2.3_fields_settings_background_pp.php',
     ],
 ];
+
+$updates['4.0.2'] = [
+    'include' => [
+        '4.0.2_remove_macosx_files.php',
+    ],
+];
+
