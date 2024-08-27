@@ -3,7 +3,7 @@ var formAjaxSubmittedFormId = null;
 var formAjaxShownMessage = null;
 var formAjaxIsSubmitting = false;
 
-var handleSuccess = function (msg, container = null) {
+var handleSuccess = function (msg, container = null, extraPars = null) {
     // console.log(msg);
     // alert(1);
     var submittedForm = $('#' + formAjaxSubmittedFormId);
@@ -103,7 +103,38 @@ var handleSuccess = function (msg, container = null) {
             // Toast Error
             toast((msg.title) ? msg.title : 'Error', 'error', msg.txt, 'toastr', false, { timeOut: (msg.timeout) ? msg.timout : 5000, closeButton: false });
             break;
+        case 13:
+            // Apro popup di conferma col messaggio e solo dopo la conferma invio nuovamente il form e salvo
+            if (confirm(msg.txt)) {
+                // Verifico se `submittedForm` è definito
+                if (formAjaxSubmittedFormId) {
+                    var submittedForm = $('#' + formAjaxSubmittedFormId);
 
+                    // Ottengo l'azione corrente del form
+                    var currentAction = submittedForm.attr('action');
+
+                    // Aggiungo il parametro `confirm=1` all'URL dell'azione
+                    var newAction = currentAction.includes('?') ? `${currentAction}&confirm=1` : `${currentAction}?confirm=1`;
+
+                    // Aggiorno l'azione del form con il nuovo URL
+                    submittedForm.attr('action', newAction);
+
+                    // Invia il form nuovamente con il nuovo URL
+                    formAjaxSend(submittedForm);
+                } else if (extraPars && extraPars.is('a.js_link_ajax')) {
+                    // Se extraPars è un link, aggiungi il parametro e ritriggera il click
+                    var currentUrl = extraPars.attr('href');
+                    var newUrl = currentUrl.includes('?') ? `${currentUrl}&confirm=1` : `${currentUrl}?confirm=1`;
+                    extraPars.attr('href', newUrl);
+                    extraPars.trigger('click');
+                } else {
+                    console.log(extraPars);
+                    console.error("formAjaxSubmittedFormId is undefined and no link ajax detected.");
+                }
+            } else {
+                submitBtn.show();
+            }
+            break;
         default:
             console.log('Submitajax unknown status: ' + msg.status);
             break;
@@ -172,6 +203,8 @@ $(document).ready(function () {
         var confirm = $(this).data('confirm') ?? null;
         var container = $(this);
 
+        var clickedElement = $(this);
+
         if (confirm !== null && !window.confirm(confirm)) {
             return false;
         }
@@ -185,7 +218,7 @@ $(document).ready(function () {
                 loading(false);
             },
             success: function (msg) {
-                handleSuccess(msg, container);
+                handleSuccess(msg, container, clickedElement);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 if (typeof xhr.responseText !== 'undefined') {

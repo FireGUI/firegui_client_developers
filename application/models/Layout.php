@@ -10,6 +10,7 @@ class Layout extends CI_Model
     public $current_module_identifier = false;
     public $related_entities = [];
 
+    private $_scripts = [];
     private $_layouts_by_id = [];
     private $_layouts_by_identifier = [];
 
@@ -424,15 +425,19 @@ class Layout extends CI_Model
     public function addModuleStylesheet($module_identifier, $file)
     {
         $path = $this->moduleAssets($module_identifier, $file);
-        echo '
-<link rel="stylesheet" type="text/css" href="' . $path . '" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . $path . '" />';
     }
     public function addModuleJavascript($module_identifier, $file)
     {
         $path = $this->moduleAssets($module_identifier, $file);
         echo '<script src="' . $path . '"></script>';
     }
-
+    public function addModuleFooterJavascript($module_identifier, $file)
+    {
+        $path = $this->moduleAssets($module_identifier, $file);
+        $this->injectFooterScript($path);
+    }
+    
 
     public function templateAssets($template_folder, $file)
     {
@@ -538,6 +543,19 @@ class Layout extends CI_Model
         }
 
         echo '<script src="' . base_url($file) . '?v=' . VERSION . '"></script>';
+    }
+
+    public function injectFooterScript($script) {
+        $this->_scripts[] = $script;
+    }
+
+    public function injectFooterScripts($scripts) {
+        foreach ($scripts as $script) {
+            $this->injectFooterScript($script);
+        }
+    }
+    public function getFooterScripts() {
+        return $this->_scripts;
     }
 
     public function replaceTemplateHooks($html, $value_id)
