@@ -1386,7 +1386,7 @@ class Datab extends CI_Model
 
                         // Metto in pratica i filtri e li aggiungo all'array
                         // delle condizioni del where
-                        if (in_array($field->fields_draw_html_type, array('date', 'date_time'))) {
+                        if (in_array($field->fields_draw_html_type, array('date', 'date_time')) || (is_string($condition['value']) && strpos($condition['value'], ' - ') !== false)) {
                             if ($condition['value'] == '-2') {
                                 //Special condition: means "field empty"...
                                 $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = ''))";
