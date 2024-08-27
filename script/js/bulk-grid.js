@@ -9,8 +9,20 @@ function initBulkGrids(container) {
 
         var grid_container = $(this).closest('table.table').closest('.grid,.tab-pane');
         if ($(this).is(':checked')) {
+
+            //Show check all link
+            
+           
+
             $('input[type="checkbox"].js_bulk_check', grid_container).prop('checked', true).trigger('change');
+
+            var checkedCount = $('input[type="checkbox"].js_bulk_check:checked', grid_container).length;
+            $(this).after('<span class="js_checked_counter" style="white-space: nowrap; margin-left: 5px;">' + checkedCount + ' selected</span>');
+            //$('.js_checked_counter').after('<br /><a href="#" class="js-bulk-select-really-all">Select all records (not only this page)</a>');
+
+
         } else {
+            $('.js_checked_counter', grid_container).remove();
             $('input[type="checkbox"].js_bulk_check', grid_container).prop('checked', false).trigger('change');
         }
         //Questo ridisegna le checkbox metronic
