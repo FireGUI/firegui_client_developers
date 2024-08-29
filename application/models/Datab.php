@@ -3431,7 +3431,7 @@ class Datab extends CI_Model
                     'grid_data' => $grid_data,
                     'value_id' => $value_id,
                     'layout_data_detail' => $layoutEntityData,
-                    'layout_container' => $layout_container,
+                    'layout' => $layout_container,
                     'where' => false,
                 ), true);
 
