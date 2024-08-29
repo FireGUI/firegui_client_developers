@@ -145,8 +145,10 @@ $permission_levels = [
     $('#permissions-grid').DataTable({
         "paging": true,
         "scrollY": "500px",
-        "scrollCollapse": true,
         "scrollX": true,
+        "scrollCollapse": false,
+        "autoWidth": true,
+        "fixedHeader": true,
         "fixedColumns": {
             leftColumns: 3
         },
@@ -156,6 +158,10 @@ $permission_levels = [
                 minimumInputLength: 0
             });
         }
+    });
+
+    $(window).on('resize', function () {
+        table.columns.adjust().draw();
     });
 
     // Function to update field permissions based on entity permission
@@ -179,7 +185,9 @@ $permission_levels = [
         });
     }
 
+    //TODO: queste tendine vengono rigenerate al volo, quindi il listener deve tener conto di questa cosa
     // Event listener for entity permission changes
+
     $('select[name^="entity_permission"]').on('change', function() {
         const selectedPermission = $(this).val();
         const entityRow = $(this).closest('tr');
