@@ -130,20 +130,67 @@ $permission_levels = [
 
 <script>
     $(document).ready(function () {
-        $('#permissions-grid').DataTable({
-            "paging": true,
-            "scrollY": "500px",
-            "scrollCollapse": true,
-            "scrollX": true,
-            "fixedColumns": {
-                leftColumns: 3
+    const permissionMap = {
+        '': ['1', '2', '3', '4', '5'],  // All permissions
+        '0': [], // No permissions
+        '1': ['1'], // R (read only)
+        '2': ['2'], // RW (update only)
+        '3': ['3'], // RW (insert only)
+        '4': ['2', '3'], // RW (insert and update)
+        '5': ['1', '2', '3', '4', '5']  // RWD (all)
+    };
+
+    const permissionLevels = ['1', '2', '3', '4', '5'];
+
+    $('#permissions-grid').DataTable({
+        "paging": true,
+        "scrollY": "500px",
+        "scrollCollapse": true,
+        "scrollX": true,
+        "fixedColumns": {
+            leftColumns: 3
+        },
+        "drawCallback": function (settings) {
+            $('.js_multiselect_over').select2({
+                allowClear: true,
+                minimumInputLength: 0
+            });
+        }
+    });
+
+    // Function to update field permissions based on entity permission
+    function updateFieldPermissions(entityRow, selectedPermission) {
+        const permissionsToSelect = permissionMap[selectedPermission];
+        
+        entityRow.find('select.js_multiselect_over').each(function(index) {
+            const $select = $(this);
+            const columnIndex = index + 1; // +1 because permission levels start from 1
+            const permissionLevel = permissionLevels[index];
+            
+            if (permissionsToSelect.includes(permissionLevel)) {
+                $select.find('option').prop('selected', true);
+                $select.prop('disabled', false);
+            } else {
+                $select.find('option').prop('selected', false);
+                $select.prop('disabled', true);
             }
+            
+            $select.trigger('change');
         });
-        $('.js_multiselect_over').one('mouseenter', function() {
-        $(this).select2({
-            allowClear: true,
-            minimumInputLength: 0
-        });
+    }
+
+    // Event listener for entity permission changes
+    $('select[name^="entity_permission"]').on('change', function() {
+        const selectedPermission = $(this).val();
+        const entityRow = $(this).closest('tr');
+        updateFieldPermissions(entityRow, selectedPermission);
     });
+
+    // Initial setup
+    $('select[name^="entity_permission"]').each(function() {
+        const selectedPermission = $(this).val();
+        const entityRow = $(this).closest('tr');
+        updateFieldPermissions(entityRow, selectedPermission);
     });
+});
 </script>
