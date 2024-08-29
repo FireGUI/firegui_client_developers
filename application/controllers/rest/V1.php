@@ -532,11 +532,9 @@ class V1 extends MY_Controller
         $permission = $this->db->where(implode(" AND ", $where), null, false)->get('api_manager_permissions');
         //Se non ho impostato permessi specifici
 
-        if ($permission->num_rows() == 0) {
-            
-            
-                //Allora posso farci di tutto, perchè significa che non ho specificato nulla di particolare su questa entità...
-                return true;
+        if ($permission->num_rows() == 0 || $permission->row()->api_manager_permissions_chmod == 0) {
+                //Allora non posso fare nulla, perchè significa che non ho specificato nulla di particolare su questa entità...
+                return false;
             
         } else {
             $permission_chmod = $permission->row()->api_manager_permissions_chmod;
@@ -550,13 +548,12 @@ class V1 extends MY_Controller
                 case 'U': //Scrittura solo update
                     //Per poter fare update devo avere permessi 2 o 4
 
-                    return in_array($permission_chmod, [2, 4]);
+                    return in_array($permission_chmod, [2, 4, 5]);
                 case 'I': //Scrittura solo insert
-                    return in_array($permission_chmod, [3, 4]);
+                    return in_array($permission_chmod, [3, 4, 5]);
                 case 'D': //Delete
-                    //Torno false perchè l'unico permesso che ho per cancellare è quando non viene impostato alcun permesso sull'entità
-                    return false;
-                    break;
+                    return in_array($permission_chmod, [5]);
+                    
                 
                 default:
                     throw new ApiException("Permission '$chmod' not recognized!");

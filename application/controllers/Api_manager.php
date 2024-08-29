@@ -143,6 +143,8 @@ class Api_manager extends MY_Controller
         echo json_encode($fields);
     }
 
+    
+
     public function get_entity_permissions($token_id, $entity_name)
     {
         $entity = $this->datab->get_entity_by_name($entity_name);
