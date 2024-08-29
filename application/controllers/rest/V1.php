@@ -30,7 +30,7 @@ class V1 extends MY_Controller
 
         $method = $this->uri->segment(3);
 
-        if (!in_array($method, ['help', 'generateSwaggerDocumentation','swagger'])) {
+        if (!in_array($method, ['help', 'swagger'])) {
 
             $token_data = $this->db->get_where('api_manager_tokens', ['api_manager_tokens_token' => '' . $this->getBearerToken()]);
             if ($token_data->num_rows() == 0) {
@@ -532,15 +532,19 @@ class V1 extends MY_Controller
         $permission = $this->db->where(implode(" AND ", $where), null, false)->get('api_manager_permissions');
         //Se non ho impostato permessi specifici
 
-        if ($permission->num_rows() == 0 || !$permission->row()->api_manager_permissions_chmod) {
-            //Allora posso farci di tutto, perchè significa che non ho specificato nulla di particolare su questa entità...
-            return true;
+        if ($permission->num_rows() == 0) {
+            
+            
+                //Allora posso farci di tutto, perchè significa che non ho specificato nulla di particolare su questa entità...
+                return true;
+            
         } else {
             $permission_chmod = $permission->row()->api_manager_permissions_chmod;
-
+            
             switch ($chmod) {
                 case 'R': //Lettura
                     //Torno true quando ho un qualsiasi permesso diverso da 0, ovvero maggiore o uguale a 1
+                    //debug(($permission_chmod >= 1),true);
                     return ($permission_chmod >= 1);
                     break;
                 case 'U': //Scrittura solo update
@@ -553,6 +557,7 @@ class V1 extends MY_Controller
                     //Torno false perchè l'unico permesso che ho per cancellare è quando non viene impostato alcun permesso sull'entità
                     return false;
                     break;
+                
                 default:
                     throw new ApiException("Permission '$chmod' not recognized!");
                     break;
@@ -1105,14 +1110,259 @@ if (strlen($serial_output) > 2000) {
 
     public function generateSwaggerDocumentation()
     {
-        $swaggerJson = $this->generateSwaggerJson();
+        // Verifica del token
+        $token_data = $this->db->get_where('api_manager_tokens', ['api_manager_tokens_token' => '' . $this->getBearerToken()]);
+        if ($token_data->num_rows() == 0) {
+            $this->showError("Invalid bearer token.", 1, 401);
+            return;
+        }
 
-        // Option 1: Output JSON directly
+        $token = $token_data->row();
+        $this->token_id = $token->api_manager_tokens_id;
+
+        $tabelle = $this->crmentity->getEntities();
+
+        $swaggerJson = [
+            'openapi' => '3.0.0',
+            'info' => [
+                'title' => 'CRM API',
+                'version' => '1.0.0',
+                'description' => 'API for CRM system'
+            ],
+            'servers' => [
+                [
+                    'url' => base_url('rest/v1'),
+                    'description' => 'CRM API Server'
+                ]
+            ],
+            'security' => [
+                ['bearerAuth' => []]
+            ],
+            'paths' => [],
+            'components' => [
+                'securitySchemes' => [
+                    'bearerAuth' => [
+                        'type' => 'http',
+                        'scheme' => 'bearer',
+                        'bearerFormat' => 'JWT'
+                    ]
+                ],
+                'schemas' => []
+            ]
+        ];
+
+        foreach ($tabelle as $tabella) {
+            if ($tabella['entity_type'] != 1) {
+                continue;
+            }
+            $entityName = $tabella['entity_name'];
+
+            
+
+            // Verifica dei permessi per l'entità
+            if (!$this->checkEntityPermission($entityName, 'R')) {
+                // if ($entityName == '3cx_log_calls') {
+                //     debug($this->checkEntityPermission($entityName, 'R'), true);
+                //     continue;
+
+                // }
+                continue;
+            }
+           
+
+            $entityFields = $this->crmentity->getFields($tabella['entity_id']);
+
+            // Filtra i campi in base ai permessi
+            $allowedFields = $this->filterAllowedFields($entityName, $entityFields);
+
+            if (empty($allowedFields)) {
+                continue;
+            }
+
+            // Aggiungi i vari endpoint solo se l'entità ha i permessi necessari
+            $this->addEntityEndpoints($swaggerJson, $entityName, $allowedFields);
+
+            // Aggiungi lo schema con i campi permessi
+            $swaggerJson['components']['schemas'][$entityName] = [
+                'type' => 'object',
+                'properties' => $this->getSwaggerProperties($allowedFields)
+            ];
+        }
+
         header('Content-Type: application/json');
-        echo $swaggerJson;
+        echo json_encode($swaggerJson, JSON_PRETTY_PRINT);
+    }
 
-        // Option 2: Save to file
-        // file_put_contents('swagger.json', $swaggerJson);
+    private function filterAllowedFields($entityName, $fields)
+    {
+        $allowedFields = [];
+        foreach ($fields as $field) {
+            if ($this->checkFieldPermission($entityName, $field['fields_name'], 'R')) {
+                $allowedFields[] = $field;
+            }
+        }
+        return $allowedFields;
+    }
+
+    private function checkFieldPermission($entityName, $fieldName, $chmod)
+    {
+        $entity = $this->datab->get_entity_by_name($entityName);
+        $where = [
+            "api_manager_fields_permissions_token = '{$this->token_id}'",
+            "api_manager_fields_permissions_field = (SELECT fields_id FROM fields WHERE fields_entity_id = '{$entity['entity_id']}' AND fields_name = '{$fieldName}')"
+        ];
+
+        $permission = $this->db->where(implode(" AND ", $where), null, false)
+            ->get('api_manager_fields_permissions')
+            ->row();
+
+        if (!$permission) {
+            return true; // Se non ci sono permessi specifici, consenti l'accesso
+        }
+
+        switch ($chmod) {
+            case 'R':
+                return $permission->api_manager_fields_permissions_chmod != '0';
+            case 'W':
+                return in_array($permission->api_manager_fields_permissions_chmod, ['2', '4']);
+            default:
+                return false;
+        }
+    }
+
+    private function addEntityEndpoints(&$swaggerJson, $entityName, $allowedFields)
+    {
+        $baseEndpoints = ['index', 'create', 'view', 'edit', 'delete', 'search'];
+        $methodMap = [
+            'index' => 'R',
+            'create' => 'I',
+            'view' => 'R',
+            'edit' => 'U',
+            'delete' => 'D',
+            'search' => 'R'
+        ];
+
+        foreach ($baseEndpoints as $endpoint) {
+            if ($this->checkEntityPermission($entityName, $methodMap[$endpoint])) {
+                $method = $endpoint === 'create' || $endpoint === 'edit' || $endpoint === 'delete' ? 'post' : 'get';
+                $path = "/{$endpoint}/{$entityName}";
+                if ($endpoint === 'view' || $endpoint === 'edit' || $endpoint === 'delete') {
+                    $path .= "/{id}";
+                }
+
+                $swaggerJson['paths'][$path][$method] = $this->generateEndpointSchema($entityName, $endpoint, $allowedFields);
+            }
+        }
+    }
+
+    private function generateEndpointSchema($entityName, $endpoint, $allowedFields)
+    {
+        $schema = [
+            'summary' => ucfirst($endpoint) . " {$entityName}",
+            'security' => [['bearerAuth' => []]],
+            'responses' => [
+                '200' => [
+                    'description' => 'Successful response',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => "#/components/schemas/{$entityName}"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        if (in_array($endpoint, ['create', 'edit'])) {
+            $schema['requestBody'] = [
+                'required' => true,
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            '$ref' => "#/components/schemas/{$entityName}"
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        if (in_array($endpoint, ['view', 'edit', 'delete'])) {
+            $schema['parameters'] = [
+                [
+                    'name' => 'id',
+                    'in' => 'path',
+                    'required' => true,
+                    'schema' => ['type' => 'integer']
+                ]
+            ];
+        }
+
+        if ($endpoint === 'search') {
+            $schema['requestBody'] = [
+                'required' => true,
+                'content' => [
+                    'application/x-www-form-urlencoded' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => $this->generateSearchProperties($allowedFields)
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        return $schema;
+    }
+
+    private function generateSearchProperties($allowedFields)
+    {
+        $properties = [];
+        foreach ($allowedFields as $field) {
+            $fieldName = $field['fields_name'];
+            $properties["where[{$fieldName}]"] = [
+                'type' => 'string',
+                'description' => "Filter by {$fieldName}",
+                'default' => '',
+                'nullable' => true
+            ];
+        }
+
+        // Aggiungi proprietà comuni per la ricerca
+        $commonProperties = [
+            'limit' => [
+                'type' => 'integer',
+                'description' => 'Number of records to return',
+                'default' => '',
+                'nullable' => true
+            ],
+            'offset' => [
+                'type' => 'integer',
+                'description' => 'Number of records to skip',
+                'default' => '',
+                'nullable' => true
+            ],
+            'orderby' => [
+                'type' => 'string',
+                'description' => 'Field to order by',
+                'default' => '',
+                'nullable' => true
+            ],
+            'orderdir' => [
+                'type' => 'string',
+                'enum' => ['ASC', 'DESC'],
+                'description' => 'Order direction',
+                'default' => '',
+                'nullable' => true
+            ],
+            'maxdepth' => [
+                'type' => 'integer',
+                'description' => 'Maximum depth of related entities to return',
+                'default' => 1
+            ]
+        ];
+
+        return array_merge($properties, $commonProperties);
     }
 
     public function swagger() {
