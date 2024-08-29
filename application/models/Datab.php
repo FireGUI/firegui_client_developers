@@ -1265,7 +1265,6 @@ class Datab extends CI_Model
         if (!is_numeric($element_id)) {
             $func = "get_{$element_type}_id_by_identifier";
             $element_id = $this->$func($element_id);
-            //debug($element, true);
         }
         $element = $this->db->get_where($element_type, array($element_type . "_id" => $element_id))->row_array();
         if (!empty($element[$element_type . '_entity_id'])) {
@@ -1318,7 +1317,6 @@ class Datab extends CI_Model
                     $query_field = $this->db->join('fields_draw', 'fields_draw_fields_id = fields_id', 'left')->get_where('fields', array('fields_id' => (int) $condition['field_id']));
                     if ($query_field->num_rows() && $query_field->row()->fields_name) {
                         $field = $query_field->row();
-
                         // Se il campo è di un'entità diversa da quella del form devo fare un where in
                         // ovviamente l'entità a cui appartiene il campo deve avere almeno un campo che punta all'entità del form
                         $is_another_entity = !empty($entity) && ($entity['entity_id'] != $field->fields_entity_id);
@@ -2503,7 +2501,7 @@ class Datab extends CI_Model
                 // punto, ma per motivi di dimensione e complessità della procedura
                 // è stata spostata in un metodo a se `getBoxContent`
                 $start = microtime(true);
-                $layout['content'] = $this->getBoxContent($layout, $value_id, $layout_data_detail);
+                $layout['content'] = $this->getBoxContent($layout, $value_id, $layout_data_detail, $dati['layout_container']);
                 if ($this->output->enable_profiler) {
 
                     $this->_layout_boxes_benchmark[$layout['layouts_boxes_title']] =
@@ -3290,7 +3288,7 @@ class Datab extends CI_Model
      *
      * @return string
      */
-    public function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [])
+    public function getBoxContent($layoutBoxData, $value_id = null, $layoutEntityData = [], $layout_container = null)
     {
 
         if (is_numeric($layoutBoxData)) {
@@ -3433,6 +3431,7 @@ class Datab extends CI_Model
                     'grid_data' => $grid_data,
                     'value_id' => $value_id,
                     'layout_data_detail' => $layoutEntityData,
+                    'layout_container' => $layout_container,
                     'where' => false,
                 ), true);
 

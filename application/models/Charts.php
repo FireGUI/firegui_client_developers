@@ -21,7 +21,7 @@ class Charts extends CI_Model
         $all_data = [];
 
         // Ciclo gli elementi qualora ne abbia + di uno
-        foreach ($chart['elements'] as $element) {
+        foreach ($chart['elements'] as $key_element => $element) {
             $data = [];
 
             if (empty($element['charts_elements_mode']) or $element['charts_elements_mode'] == 1) {
@@ -47,6 +47,12 @@ class Charts extends CI_Model
                 }
 
                 $field = $this->datab->get_field($element['charts_elements_fields_id']);
+
+                if (!$field) {
+                    log_message('error', 'Field not found: ' . $element['charts_elements_fields_id'] . ' in chart ' . $chart['charts_id']);
+                    unset($chart['elements'][$key_element]);
+                    continue;
+                }
                 if ($group_by) {
                     $query_group_by = str_replace('#', ',', $group_by);
                     $gr_by = "GROUP BY " . $query_group_by;

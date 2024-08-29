@@ -470,6 +470,18 @@ function refreshLayoutBox(lb_id, value_id, $firstChild) {
     if (get_params) {
         get_params = '?' + get_params;
     }
+
+    //Appendo a get_params anche i parametri del layout_container
+    var layout_identifier = lb.data('layout_identifier');
+    var layout_id = lb.data('layout_id');
+    if (get_params) {
+        get_params += '&';
+
+    } else {
+        get_params = '?';
+    }
+    get_params += 'layout_identifier=' + layout_identifier + '&layout_id=' + layout_id;
+
     $.ajax(base_url + 'get_ajax/get_layout_box_content/' + lb_id + '/' + value_id + get_params, {
         data: data_post,
         type: 'POST',

@@ -75,10 +75,12 @@ if ($layout['layouts_boxes_collapsed'] === DB_BOOL_TRUE && $layout['layouts_boxe
             </div>
         </div>
     <?php endif; ?>
-
+    <?php //debug($layout_container,true); ?>"
     <div class="box-body layout_box <?php echo $layout['layouts_boxes_content_type'] ?> <?php echo ($layout['layouts_boxes_collapsible'] == DB_BOOL_TRUE && $layout['layouts_boxes_collapsed'] == DB_BOOL_TRUE) ? 'display-hide' : ''; ?>"
         data-layout-box="<?php echo $layout['layouts_boxes_id']; ?>" data-value_id="<?php echo $value_id; ?>"
-        data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>">
+        data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>"
+        data-layout_identifier="<?php echo $layout_container['layouts_identifier']; ?>"
+        data-layout_id="<?php echo $layout_container['layouts_id']; ?>">
         <?php echo $layout['content'] ?>
     </div>
 </div>
