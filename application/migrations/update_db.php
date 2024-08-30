@@ -104,7 +104,7 @@ $updates['4.0.5'] = [
             SELECT 
                 amt.api_manager_tokens_id,
                 e.entity_id,
-                '4' -- Permesso completo (R/W)
+                '5' -- Permesso completo (R/W)
             FROM 
                 api_manager_tokens amt
             CROSS JOIN
@@ -127,7 +127,7 @@ $updates['4.0.5'] = [
             SELECT 
                 amt.api_manager_tokens_id,
                 f.fields_id,
-                '4' -- Permesso completo (R/W)
+                '5' -- Permesso completo (R/W)
             FROM 
                 api_manager_tokens amt
             CROSS JOIN
