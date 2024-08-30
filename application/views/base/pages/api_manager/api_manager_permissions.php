@@ -174,6 +174,7 @@ $permission_levels = [
 
     // Function to update field permissions based on entity permission
     function updateFieldPermissions(entityRow, selectedPermission) {
+        
         const permissionsToSelect = permissionMap[selectedPermission];
 
         entityRow.find('select.js_multiselect_over').each(function(index) {
@@ -205,7 +206,7 @@ $permission_levels = [
                 const $row = $(row);
                 const $select = $row.find('select[name^="entity_permission"]');
                 $select.val(permissionValue).trigger('change');
-                updateFieldPermissions($row, permissionValue);
+                //updateFieldPermissions($row, permissionValue);
             });
 
             initializeMultiselect();
@@ -231,11 +232,11 @@ $permission_levels = [
         });
 
         // Initial setup for visible rows
-        $('select[name^="entity_permission"]').each(function() {
-            const selectedPermission = $(this).val();
-            const entityRow = $(this).closest('tr');
-            updateFieldPermissions(entityRow, selectedPermission);
-        });
+        // $('select[name^="entity_permission"]').each(function() {
+        //     const selectedPermission = $(this).val();
+        //     const entityRow = $(this).closest('tr');
+        //     updateFieldPermissions(entityRow, selectedPermission);
+        // });
     }
 
    $('#grant_all_permissions').on('click', function() {
@@ -252,6 +253,8 @@ $permission_levels = [
         var formData = new FormData(this);
         var table = $('#permissions-grid').DataTable();
         
+table.search('').draw();
+
         // Function to process a single page
         function processPage(pageIndex, callback) {
             table.page(pageIndex).draw('page');

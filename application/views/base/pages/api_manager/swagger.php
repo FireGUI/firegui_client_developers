@@ -81,6 +81,10 @@
                         ],
                         requestInterceptor: (request) => {
                             request.headers['Authorization'] = 'Bearer ' + apiKey;
+                            // Rimuovi il body per le richieste GET e HEAD
+                            if (request.method === 'GET' || request.method === 'HEAD') {
+                                delete request.body;
+                            }
                             return request;
                         }
                     });

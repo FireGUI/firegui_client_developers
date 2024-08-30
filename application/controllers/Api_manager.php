@@ -186,7 +186,7 @@ class Api_manager extends MY_Controller
     public function set_permissions($token_id)
     {
         $post = $this->input->post();
-//debug($post,true);
+//*debug($post['field_permission'],true);
         // Remove all existing permissions for this token
         $this->db->where('api_manager_permissions_token', $token_id)->delete('api_manager_permissions');
         $this->db->where('api_manager_fields_permissions_token', $token_id)->delete('api_manager_fields_permissions');
