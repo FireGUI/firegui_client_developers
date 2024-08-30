@@ -10420,9 +10420,12 @@
 		 */
 		"fnStateLoadCallback": function ( settings ) {
 			try {
+				console.log(settings);
+				alert(1);
 				return JSON.parse(
 					(settings.iStateDuration === -1 ? sessionStorage : localStorage).getItem(
-						'DataTables_'+settings.sInstance+'_'+location.pathname
+						//'DataTables_'+settings.sInstance+'_'+location.pathname
+						'DataTables_' + settings.sInstance + '_' + location.pathname
 					)
 				);
 			} catch (e) {}

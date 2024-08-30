@@ -50,8 +50,19 @@ function initTabelWithPars(grid, pars) {
 
             aoColumns.push(coldef);
         });
+        
+        var gridId = grid.data('grid-id');
+        var customId = 'DataTable_' + gridId;
+
         var datatableOptions = {
-            stateSave: true, stateDuration: -1,
+            stateSave: true, 
+            stateLoadCallback: function (settings) {
+                var stored = localStorage.getItem('DataTables_' + customId + '_' + location.pathname);
+                return stored ? JSON.parse(stored) : null;
+            },
+            stateSaveCallback: function (settings, data) {
+                localStorage.setItem('DataTables_' + customId + '_' + location.pathname, JSON.stringify(data));
+            },
             bSort: bEnableOrder,
             aoColumns: aoColumns,
             aaSorting: [],
@@ -125,6 +136,7 @@ function initTabelWithPars(grid, pars) {
                     });
                 }
             },
+            
         };
 
         if (pars.ajax) {

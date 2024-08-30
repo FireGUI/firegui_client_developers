@@ -303,7 +303,7 @@ function initTableAjax(grid) {
         //     }, 'fast');
         // })
         .dataTable({
-            stateSave: true, stateDuration: -1,
+            stateSave: true, 
             bSort: bEnableOrder,
             aoColumns: aoColumns,
             aaSorting: [],
