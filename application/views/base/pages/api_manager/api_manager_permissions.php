@@ -69,6 +69,10 @@ $permission_levels = [
             <form id="form_permessi" role="form" method="post"
                 action="<?php echo base_url("api_manager/set_permissions/{$token}"); ?>" class="form __formAjax">
                 <?php add_csrf(); ?>
+                <div class="mb-3">
+                    <button type="button" id="grant_all_permissions" class="btn btn-success mr-2">Grant All Permissions</button>
+                    <button type="button" id="remove_all_permissions" class="btn btn-danger">Remove All Permissions</button>
+                </div>
                 <div class="modal-body">
                     <div class="table-responsive">
                         <table id="permissions-grid" class="table table-bordered table-striped table-hover">
@@ -128,16 +132,24 @@ $permission_levels = [
     </div>
 </div>
 
+
+
 <script>
     $(document).ready(function () {
+        function initializeMultiselect() {
+        $('.js_multiselect_over').select2({
+            allowClear: true,
+            minimumInputLength: 0
+        });
+    }
     const permissionMap = {
         '': ['1', '2', '3', '4', '5'],  // All permissions
         '0': [], // No permissions
         '1': ['1'], // R (read only)
         '2': ['2'], // RW (update only)
         '3': ['3'], // RW (insert only)
-        '4': ['2', '3'], // RW (insert and update)
-        '5': ['1', '2', '3', '4', '5']  // RWD (all)
+        '4': ['4'], // RW (insert and update)
+        '5': ['5']  // RWD (all)
     };
 
     const permissionLevels = ['1', '2', '3', '4', '5'];
@@ -153,10 +165,8 @@ $permission_levels = [
             leftColumns: 3
         },
         "drawCallback": function (settings) {
-            $('.js_multiselect_over').select2({
-                allowClear: true,
-                minimumInputLength: 0
-            });
+            initializeMultiselect();
+            bindEntityPermissionEvents();
         }
     });
 
@@ -165,12 +175,11 @@ $permission_levels = [
     // Function to update field permissions based on entity permission
     function updateFieldPermissions(entityRow, selectedPermission) {
         const permissionsToSelect = permissionMap[selectedPermission];
-        
+
         entityRow.find('select.js_multiselect_over').each(function(index) {
             const $select = $(this);
-            const columnIndex = index + 1; // +1 because permission levels start from 1
             const permissionLevel = permissionLevels[index];
-            
+
             if (permissionsToSelect.includes(permissionLevel)) {
                 $select.find('option').prop('selected', true);
                 $select.prop('disabled', false);
@@ -178,25 +187,63 @@ $permission_levels = [
                 $select.find('option').prop('selected', false);
                 $select.prop('disabled', true);
             }
-            
+
             $select.trigger('change');
         });
     }
 
-    //TODO: queste tendine vengono rigenerate al volo, quindi il listener deve tener conto di questa cosa
-    // Event listener for entity permission changes
+    function updateAllPages(permissionValue) {
+        var table = $('#permissions-grid').DataTable();
+        const totalPages = table.page.info().pages;
+        const currentPage = table.page();
+        let currentProcessingPage = 0;
 
-    $('select[name^="entity_permission"]').on('change', function() {
-        const selectedPermission = $(this).val();
-        const entityRow = $(this).closest('tr');
-        updateFieldPermissions(entityRow, selectedPermission);
+        function processPage() {
+            table.page(currentProcessingPage).draw('page');
+
+            table.rows({page: 'current'}).nodes().each(function(row) {
+                const $row = $(row);
+                const $select = $row.find('select[name^="entity_permission"]');
+                $select.val(permissionValue).trigger('change');
+                updateFieldPermissions($row, permissionValue);
+            });
+
+            initializeMultiselect();
+
+            currentProcessingPage++;
+
+            if (currentProcessingPage < totalPages) {
+                setTimeout(processPage, 1);
+            } else {
+                table.page(currentPage).draw('page');
+                initializeMultiselect();
+            }
+        }
+
+        processPage();
+    }
+
+    function bindEntityPermissionEvents() {
+        $('select[name^="entity_permission"]').off('change').on('change', function() {
+            const selectedPermission = $(this).val();
+            const entityRow = $(this).closest('tr');
+            updateFieldPermissions(entityRow, selectedPermission);
+        });
+
+        // Initial setup for visible rows
+        $('select[name^="entity_permission"]').each(function() {
+            const selectedPermission = $(this).val();
+            const entityRow = $(this).closest('tr');
+            updateFieldPermissions(entityRow, selectedPermission);
+        });
+    }
+
+   $('#grant_all_permissions').on('click', function() {
+        updateAllPages('5');
     });
 
-    // Initial setup
-    $('select[name^="entity_permission"]').each(function() {
-        const selectedPermission = $(this).val();
-        const entityRow = $(this).closest('tr');
-        updateFieldPermissions(entityRow, selectedPermission);
+    $('#remove_all_permissions').on('click', function() {
+        updateAllPages('0');
     });
 
     $('#form_permessi').on('submit', function(e) {

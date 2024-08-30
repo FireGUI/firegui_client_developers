@@ -186,6 +186,10 @@ class Api_manager extends MY_Controller
     public function set_permissions($token_id)
     {
         $post = $this->input->post();
+//debug($post,true);
+        // Remove all existing permissions for this token
+        $this->db->where('api_manager_permissions_token', $token_id)->delete('api_manager_permissions');
+        $this->db->where('api_manager_fields_permissions_token', $token_id)->delete('api_manager_fields_permissions');
 
         // Process entity permissions
         foreach ($post['entity_permission'] as $entity_name => $permission) {
@@ -196,13 +200,6 @@ class Api_manager extends MY_Controller
                 continue;
             }
 
-            // Remove old permissions for this entity
-            $this->db
-                ->where('api_manager_permissions_token', $token_id)
-                ->where('api_manager_permissions_entity', $entity['entity_id'])
-                ->delete('api_manager_permissions');
-
-            // Insert new entity permission
             $data_insert = [
                 'api_manager_permissions_token' => $token_id,
                 'api_manager_permissions_entity' => $entity['entity_id'],
@@ -218,6 +215,8 @@ class Api_manager extends MY_Controller
 
         // Process field permissions
         if (isset($post['field_permission'])) {
+            $field_permissions_to_insert = [];
+
             foreach ($post['field_permission'] as $entity_name => $permissions) {
                 $entity = $this->datab->get_entity_by_name($entity_name);
 
@@ -233,20 +232,18 @@ class Api_manager extends MY_Controller
                             continue; // Skip if field not found
                         }
 
-                        // Remove old field permissions
-                        $this->db
-                            ->where('api_manager_fields_permissions_token', $token_id)
-                            ->where('api_manager_fields_permissions_field', $field['fields_id'])
-                            ->delete('api_manager_fields_permissions');
-
-                        // Insert new field permission
-                        $this->db->insert('api_manager_fields_permissions', [
+                        $field_permissions_to_insert[] = [
                             'api_manager_fields_permissions_token' => $token_id,
                             'api_manager_fields_permissions_field' => $field['fields_id'],
                             'api_manager_fields_permissions_chmod' => $permission_level,
-                        ]);
+                        ];
                     }
                 }
+            }
+
+            // Bulk insert field permissions
+            if (!empty($field_permissions_to_insert)) {
+                $this->db->insert_batch('api_manager_fields_permissions', $field_permissions_to_insert);
             }
         }
 
