@@ -1,4 +1,3 @@
-Changelog version 4.0.4
+Changelog version 4.0.5
  
-Swagger based on token
-New Api permission manager
+Bugfix migration 4.0.5 for permissions
