@@ -67,7 +67,7 @@ $permission_levels = [
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <form id="form_permessi" role="form" method="post"
-                action="<?php echo base_url("api_manager/set_permissions/{$token}"); ?>" class="form formAjax">
+                action="<?php echo base_url("api_manager/set_permissions/{$token}"); ?>" class="form __formAjax">
                 <?php add_csrf(); ?>
                 <div class="modal-body">
                     <div class="table-responsive">
@@ -160,9 +160,7 @@ $permission_levels = [
         }
     });
 
-    $(window).on('resize', function () {
-        table.columns.adjust().draw();
-    });
+    
 
     // Function to update field permissions based on entity permission
     function updateFieldPermissions(entityRow, selectedPermission) {
@@ -199,6 +197,84 @@ $permission_levels = [
         const selectedPermission = $(this).val();
         const entityRow = $(this).closest('tr');
         updateFieldPermissions(entityRow, selectedPermission);
+    });
+
+    $('#form_permessi').on('submit', function(e) {
+        e.preventDefault();
+        
+        var formData = new FormData(this);
+        var table = $('#permissions-grid').DataTable();
+        
+        // Function to process a single page
+        function processPage(pageIndex, callback) {
+            table.page(pageIndex).draw('page');
+            
+            table.rows({page: 'current'}).every(function(rowIdx) {
+                var rowData = this.data();
+                var entityName = rowData[0]; // Assuming entity name is in the first column
+                
+                // Add entity permission
+                var entityPermission = $('select[name="entity_permission[' + entityName + ']"]').val();
+                formData.append('entity_permission[' + entityName + ']', entityPermission || '');
+                
+                // Add entity where clause
+                var entityWhere = $('input[name="entity_where[' + entityName + ']"]').val();
+                formData.append('entity_where[' + entityName + ']', entityWhere || '');
+                
+                // Add field permissions
+                $('select[name^="field_permission[' + entityName + ']"]').each(function() {
+                    var fieldName = $(this).attr('name');
+                    var fieldValue = $(this).val();
+                    if (fieldValue && fieldValue.length > 0) {
+                        fieldValue.forEach(function(value) {
+                            formData.append(fieldName, value);
+                        });
+                    } else {
+                        formData.append(fieldName, '');
+                    }
+                });
+            });
+            
+            callback();
+        }
+        
+        // Process all pages
+        var totalPages = table.page.info().pages;
+        var currentPage = 0;
+        
+        function processNextPage() {
+            if (currentPage < totalPages) {
+                processPage(currentPage, function() {
+                    currentPage++;
+                    processNextPage();
+                });
+            } else {
+                // All pages processed, send the AJAX request
+                sendAjaxRequest();
+            }
+        }
+        
+        function sendAjaxRequest() {
+            $.ajax({
+                url: $('#form_permessi').attr('action'),
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    handleSuccess(response);
+                    // Handle success (e.g., close modal, show success message)
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error saving permissions:', error);
+                    // Handle error (e.g., show error message)
+                }
+            });
+        }
+        
+        // Start processing pages
+        processNextPage();
     });
 });
 </script>

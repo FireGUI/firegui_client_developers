@@ -2145,3 +2145,4 @@ $lang['SW   Settings'] = 'SW   Settings';
 $lang['Tickets reports Settings'] = 'Tickets reports Settings';
 $lang['API Documentation'] = 'API Documentation';
 $lang['Edit this'] = 'Attiva modifica';
+$lang['Swagger Documentation'] = 'Swagger Documentation';
