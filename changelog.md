@@ -1,3 +1,3 @@
 Changelog version 4.0.5
  
-Bugfix migration 4.0.5 for permissions
+Bugfix migration 4.0.5
