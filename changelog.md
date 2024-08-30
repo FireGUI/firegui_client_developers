@@ -1,3 +1,3 @@
-Changelog version 4.0.7
+Changelog version 4.0.8
  
-Bugfix datatables unique id
+Added grant all permission (read only) in api manager
