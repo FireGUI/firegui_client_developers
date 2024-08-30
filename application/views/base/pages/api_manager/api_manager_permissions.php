@@ -71,6 +71,7 @@ $permission_levels = [
                 <?php add_csrf(); ?>
                 <div class="mb-3">
                     <button type="button" id="grant_all_permissions" class="btn btn-success mr-2">Grant All Permissions</button>
+                    <button type="button" id="grant_all_permissions_only_read" class="btn btn-warning mr-2">Grant All Permissions (only read)</button>
                     <button type="button" id="remove_all_permissions" class="btn btn-danger">Remove All Permissions</button>
                 </div>
                 <div class="modal-body">
@@ -241,6 +242,10 @@ $permission_levels = [
 
    $('#grant_all_permissions').on('click', function() {
         updateAllPages('5');
+    });
+
+    $('#grant_all_permissions_only_read').on('click', function() {
+        updateAllPages('1');
     });
 
     $('#remove_all_permissions').on('click', function() {
