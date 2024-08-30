@@ -97,7 +97,7 @@ $updates['2.5.0'] = [
     "UPDATE fields SET fields_preview = '1' WHERE fields_name = 'layouts_title';"
 ];
 
-$updates['4.0.3'] = [
+$updates['4.0.5'] = [
     //Inserisco nella tabella api_manager_permissions un record per ogni entità con accesso completo (per retrocompatibilità)
     "
         INSERT INTO api_manager_permissions (api_manager_permissions_token, api_manager_permissions_entity, api_manager_permissions_chmod)
