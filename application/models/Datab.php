@@ -1001,7 +1001,7 @@ class Datab extends CI_Model
 
             $has_bulk = !empty($grid['grids_bulk_mode']);
             $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, is_array($where) ? implode(' AND ', $where) : $where, $additional_data);
-
+            
             // Verifico che non sia impostato un campo order by di default nell'entità, qualora non specificato un order by specifico della grid
 
             if (empty($order_by)) {
@@ -1421,6 +1421,7 @@ class Datab extends CI_Model
                                 }
                             }
                         } else {
+                            
                             $condition['value'] = str_replace("'", "''", $condition['value']);
                             if ($condition['value'] == '-1') {
                                 continue;
@@ -1429,6 +1430,7 @@ class Datab extends CI_Model
                             if ($condition['value'] == '-2') {
                                 //Special condition: means "field empty"...
                                 $arr[] = "$not({$where_prefix}{$field->fields_name} IS NULL OR ({$where_prefix}{$field->fields_name} = '' AND {$where_prefix}{$field->fields_name} <> 0))";
+                                //debug($arr);
                                 continue;
                             }
 
@@ -1440,25 +1442,31 @@ class Datab extends CI_Model
                                     }
                                     $values = "'" . implode("','", $condition['value']) . "'";
                                     if (in_array(-2, $condition['value'])) {
-                                        // debug($where_prefix);
-                                        // debug($field->fields_name);
-                                        // debug($operators[$condition['operator']]['sql']);
-                                        // debug($where_suffix);
+                                        
+
+                                        
+
+
 
                                         $foo_prefix = "{$where_prefix}{$field->fields_name}";
                                         $foo_prefix = str_ireplace(' IN ', ' NOT IN ', $foo_prefix);
                                         $foo_prefix = str_ireplace('WHERE', '', $foo_prefix);
 
-                                        $arr[] = "
-                                            $not (
-                                                    (
-                                                            {$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix}
-                                                            OR
-                                                            (
-                                                                {$foo_prefix}{$where_suffix}
-                                                            )
-                                                    )
-                                                )";
+                                        
+                                            $arr[] = "
+                                                $not (
+                                                        (
+                                                                {$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix}
+                                                                OR
+                                                                (
+                                                                    {$foo_prefix}{$where_suffix} IS NULL
+                                                                )
+                                                        )
+                                                    )";
+                                        
+
+                                        
+                                                
                                     } else {
                                         $arr[] = "({$where_prefix}{$field->fields_name} $not {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
                                     }
