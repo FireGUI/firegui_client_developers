@@ -604,7 +604,7 @@ class V1 extends MY_Controller
         foreach ($fields_permissions as $permission) {
             $field_permission_map[$permission['fields_name']] = $permission['api_manager_fields_permissions_chmod'];
         }
-
+        $field_permission_map[$entity['entity_name'] . '_id'] = 5;
         // Define allowed permission levels for each request type
         $allowed_permissions = [
             'search' => ['1', '2', '3', '4', '5'],
@@ -1203,7 +1203,7 @@ if (strlen($serial_output) > 2000) {
         ];
 
         foreach ($tabelle as $tabella) {
-            if ($tabella['entity_type'] != 1) {
+            if (!in_array($tabella['entity_type'], [1, 2])) {
                 continue;
             }
             $entityName = $tabella['entity_name'];
@@ -1238,6 +1238,13 @@ if (strlen($serial_output) > 2000) {
 
     private function filterAllowedFields($entityName, $fields)
     {
+        $entity = $this->datab->get_entity_by_name($entityName);
+        //Faccio pèrima una query. Se nessun permesso specifico per i campi è impostato allora ho accesso a tutto
+        $fields_permissions_exists = $this->db->query("SELECT * FROM api_manager_fields_permissions WHERE api_manager_fields_permissions_token = '{$this->token_id}' AND api_manager_fields_permissions_field IN (SELECT fields_id FROM fields WHERE fields_entity_id = '{$entity['entity_id']}')")->num_rows();
+        if ($fields_permissions_exists == 0) {
+            return $fields;
+
+        }
         $allowedFields = [];
         foreach ($fields as $field) {
             if ($this->checkFieldPermission($entityName, $field['fields_name'], 'R')) {

@@ -5,7 +5,7 @@ $token = $dati['token'];
 function generate_entity_select_options($selected = '')
 {
     $options = [
-        '' => "All permissions",
+        //'10' => "All permissions",
         '0' => "No permissions",
         '1' => "R (read only)",
         '2' => "RW (update only)",
@@ -178,20 +178,24 @@ $permission_levels = [
         
         const permissionsToSelect = permissionMap[selectedPermission];
 
-        entityRow.find('select.js_multiselect_over').each(function(index) {
-            const $select = $(this);
-            const permissionLevel = permissionLevels[index];
+        $('.js_multiselect_over').find('option').prop('selected', false);
+        $('.js_multiselect_over').trigger('change');
+        
 
-            if (permissionsToSelect.includes(permissionLevel)) {
-                $select.find('option').prop('selected', true);
-                $select.prop('disabled', false);
-            } else {
-                $select.find('option').prop('selected', false);
-                $select.prop('disabled', true);
-            }
+        // entityRow.find('select.js_multiselect_over').each(function(index) {
+        //     const $select = $(this);
+        //     const permissionLevel = permissionLevels[index];
+        //     console.log(permissionLevel);
+        //     if (permissionsToSelect.includes(permissionLevel)) {
+        //         $select.find('option').prop('selected', true);
+        //         $select.prop('disabled', false);
+        //     } else {
+        //         $select.find('option').prop('selected', false);
+        //         $select.prop('disabled', true);
+        //     }
 
-            $select.trigger('change');
-        });
+        //     $select.trigger('change');
+        // });
     }
 
     function updateAllPages(permissionValue) {

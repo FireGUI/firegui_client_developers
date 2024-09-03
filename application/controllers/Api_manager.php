@@ -193,6 +193,9 @@ class Api_manager extends MY_Controller
 
         // Process entity permissions
         foreach ($post['entity_permission'] as $entity_name => $permission) {
+
+            
+
             $entity = $this->datab->get_entity_by_name($entity_name);
 
             if (!$entity) {
@@ -203,13 +206,15 @@ class Api_manager extends MY_Controller
             $data_insert = [
                 'api_manager_permissions_token' => $token_id,
                 'api_manager_permissions_entity' => $entity['entity_id'],
-                'api_manager_permissions_chmod' => $permission,
+                'api_manager_permissions_chmod' => is_numeric($permission)?$permission:null,
             ];
 
             if (!empty($post['entity_where'][$entity_name])) {
                 $data_insert['api_manager_permissions_where'] = $post['entity_where'][$entity_name];
             }
-
+            // if ($entity_name == 'customers') {
+            //     debug($data_insert, true);
+            // }
             $this->db->insert('api_manager_permissions', $data_insert);
         }
 
