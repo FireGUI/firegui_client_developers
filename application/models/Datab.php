@@ -3743,6 +3743,8 @@ class Datab extends CI_Model
         $grid_data = $this->datab->get_grid_data($grid, $value_id, $where, null, 0, $order_by);
         $out_array = [];
         foreach ($grid_data as $dato) {
+            $dato['value_id'] = $value_id;
+            
             $tr = [];
 
             foreach ($grid['grids_fields'] as $field) {
