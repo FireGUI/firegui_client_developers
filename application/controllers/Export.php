@@ -187,7 +187,7 @@ class Export extends MY_Controller
             }
         }
         
-        $data = $this->datab->prepareData($grid_id, $value_id, $params);  // Prepare the data for the table
+        $data = $this->datab->prepareData($grid_id, $value_id, $params, false);  // Prepare the data for the table
         
         if (empty($data)) {
             e('No data to export.');  // Display an error message if there is no data to export
