@@ -751,7 +751,7 @@ function initComponents(container, reset = false) {
     // Prendo il campo da osservare
     var jqField = $('[name="' + sSourceField + '"],[name="' + sSourceField + '[]"],[data-field_name="' + sSourceField + '"]', jqForm);
 
-    jqField.on("change", function () {
+    jqField.one("change", function () {
       var previousValue = jsMultiselect.attr("data-val").split(",");
 
 
