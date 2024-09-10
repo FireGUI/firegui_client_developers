@@ -192,3 +192,7 @@ $updates['4.0.9'] = [
                 )
     "
 ];
+$updates['4.0.10'] = [
+    "DELETE FROM api_manager_permissions",
+    "DELETE FROM api_manager_fields_permissions",
+]; 
