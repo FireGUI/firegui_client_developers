@@ -1,3 +1,3 @@
-Changelog version 4.0.10
+Changelog version 4.0.11
  
-Restored old api
+Bugfix fields access in API
