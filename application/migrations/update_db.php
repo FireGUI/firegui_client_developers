@@ -195,4 +195,51 @@ $updates['4.0.9'] = [
 $updates['4.0.10'] = [
     "DELETE FROM api_manager_permissions",
     "DELETE FROM api_manager_fields_permissions",
-]; 
+];
+$updates['4.0.11'] = [
+    //Inserisco nella tabella api_manager_permissions un record per ogni entità con accesso completo (per retrocompatibilità)
+    "
+        INSERT INTO api_manager_permissions (api_manager_permissions_token, api_manager_permissions_entity, api_manager_permissions_chmod)
+            SELECT 
+                amt.api_manager_tokens_id,
+                e.entity_id,
+                '5' -- Permesso completo (R/W)
+            FROM 
+                api_manager_tokens amt
+            CROSS JOIN
+                entity e
+            WHERE 
+                e.entity_type IN (1,2)
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM api_manager_permissions amp
+                    WHERE amp.api_manager_permissions_token = amt.api_manager_tokens_id
+                    AND amp.api_manager_permissions_entity = e.entity_id
+                )
+    ",
+    "
+        INSERT INTO api_manager_fields_permissions (
+                api_manager_fields_permissions_token, 
+                api_manager_fields_permissions_field, 
+                api_manager_fields_permissions_chmod
+            )
+            SELECT 
+                amt.api_manager_tokens_id,
+                f.fields_id,
+                '5' -- Permesso completo (R/W)
+            FROM 
+                api_manager_tokens amt
+            CROSS JOIN
+                fields f
+            JOIN
+                entity e ON f.fields_entity_id = e.entity_id
+            WHERE 
+                e.entity_type IN (1,2)
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM api_manager_fields_permissions afp
+                    WHERE afp.api_manager_fields_permissions_token = amt.api_manager_tokens_id
+                    AND afp.api_manager_fields_permissions_field = f.fields_id
+                )
+    "
+];
