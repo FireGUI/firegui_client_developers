@@ -3718,7 +3718,7 @@ class Datab extends CI_Model
     /*
     Functions to prepare data for grid export
     */
-    public function prepareData($grid_id = null, $value_id = null, $params = [])
+    public function prepareData($grid_id = null, $value_id = null, $params = [], $remove_html_tags = true)
     {
         //prendo tutti i dati della grid (filtri compresi) e li metto in un array associativo, pronto per essere esportato
         $grid = $this->datab->get_grid($grid_id);
@@ -3748,8 +3748,11 @@ class Datab extends CI_Model
             $tr = [];
 
             foreach ($grid['grids_fields'] as $field) {
-                $tr[] = trim(strip_tags($this->build_grid_cell($field, $dato, false, true, true)));
-
+                if ($remove_html_tags || (is_array($remove_html_tags) && !empty($remove_html_tags))) {
+                    $tr[] = trim(strip_tags($this->build_grid_cell($field, $dato, false, true, true), $remove_html_tags));
+                } else {
+                    $tr[] = $this->build_grid_cell($field, $dato, false, true, true);
+                }
             }
 
             $out_array[] = $tr;
