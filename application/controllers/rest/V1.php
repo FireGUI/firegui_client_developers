@@ -15,6 +15,7 @@ class V1 extends MY_Controller
         'search' => 'search',
         'count' => 'search'  // Assuming 'count' is similar to 'search' in terms of permissions
     ];
+    private $_preloaded_permissions = [];
     public function __construct()
     {
 
@@ -54,6 +55,8 @@ class V1 extends MY_Controller
                     'api_manager_tokens_last_use_date' => date('Y-m-d H:m:s'),
                     'api_manager_tokens_requests' => (int) ($token->api_manager_tokens_requests) + 1,
                 ]);
+
+                $this->preloadPermissions($this->token_id);
             }
         }
 
@@ -317,7 +320,8 @@ class V1 extends MY_Controller
 
     public function search($entity = null)
     {
-
+        $start = microtime(true);
+        
         try {
             $limit = ($this->input->post('limit')) ? $this->input->post('limit') : null;
             $offset = ($this->input->post('offset')) ? $this->input->post('offset') : 0;
@@ -325,7 +329,7 @@ class V1 extends MY_Controller
 
             $orderDir = ($this->input->post('orderdir')) ? $this->input->post('orderdir') : 'ASC';
             $maxDepth = ($this->input->post('maxdepth') || $this->input->post('maxdepth') === '0') ? $this->input->post('maxdepth') : 2;
-
+            
             $postData = array_filter((array) $this->input->post('where'));
             if ($this->getEntityWhere($entity)) {
                 $where = array_filter([$this->getEntityWhere($entity)]);
@@ -338,10 +342,13 @@ class V1 extends MY_Controller
             //non uso le apilib altrimenti mi fa left join e non è detto che abbia i permessi per le altre entità... una soluzione potrebbe essere quella di ciclare tutti i permessi e rimuovere nella
             ////filterOutputFields anche le tabelle joinate, ma è un lavorone... per ora no
             //debug($maxDepth);
+            // debug(elapsed_time($start));
             $output = $this->apilib->search($entity, array_merge($where, $postData), $limit, $offset, $orderBy, $orderDir, $maxDepth);
-            // debug($output,true);
+            //debug($output,true);
+            // debug(elapsed_time($start));
+            
             $this->filterOutputFields($entity, $output);
-
+            // debug(elapsed_time($start),true);
             $this->logAction(__FUNCTION__, func_get_args(), $output);
             $this->showOutput($output);
         } catch (ApiException $e) {
@@ -532,20 +539,17 @@ class V1 extends MY_Controller
 
     private function checkEntityPermission($entity_name, $chmod)
     {
-        $entity = $this->datab->get_entity_by_name($entity_name);
-        $where = [
-            "api_manager_permissions_token = '{$this->token_id}'",
-            "api_manager_permissions_entity = '{$entity['entity_id']}'",
-        ];
-        $permission = $this->db->where(implode(" AND ", $where), null, false)->get('api_manager_permissions');
+        
+        $permission = $this->_preloaded_permissions[$entity_name] ?? null;
         //Se non ho impostato permessi specifici
 
-        if ($permission->num_rows() == 0 || $permission->row()->api_manager_permissions_chmod == 0) {
+        if ($permission == null || $permission['chmod'] == 0) {
+            
             //Allora non posso fare nulla, perchè significa che non ho specificato nulla di particolare su questa entità...
             return false;
 
         } else {
-            $permission_chmod = $permission->row()->api_manager_permissions_chmod;
+            $permission_chmod = $permission['chmod'];
 
             switch ($chmod) {
                 case 'R': //Lettura
@@ -577,57 +581,58 @@ class V1 extends MY_Controller
         $called_method = $this->router->fetch_method();
         return $this->request_type_mapping[$called_method] ?? 'search';  // Default to 'search' if method not found
     }
+    private function preloadPermissions ($token) {
+        if (!empty($this->_preloaded_permissions)) {
+            return;
 
+        }
+        $entities_permissions = $this->db
+            ->join('entity', 'entity_id = api_manager_permissions_entity', 'LEFT')    
+            ->where('api_manager_permissions_token', $token)
+            ->get('api_manager_permissions')->result_array();
+        // debug($this->db->last_query());
+        // debug($entities_permissions,true);
+        $fields_permissions = $this->db
+            ->join('fields', 'fields_id = api_manager_fields_permissions_field', 'LEFT')
+            ->join('entity', 'entity_id = fields_entity_id', 'LEFT')
+            ->where('api_manager_fields_permissions_token', $token)->get('api_manager_fields_permissions')->result_array();
+
+        foreach ($entities_permissions as $entity_permission) {
+            $this->_preloaded_permissions[$entity_permission['entity_name']]['chmod'] = $entity_permission['api_manager_permissions_chmod'];
+            $this->_preloaded_permissions[$entity_permission['entity_name']]['where'] = $entity_permission['api_manager_permissions_where'];
+            //Aggiungo sempre l'id
+            $this->_preloaded_permissions[$entity_permission['entity_name']]['fields'][$entity_permission['entity_name'] . '_id'] = 5;
+        }
+
+        foreach ($fields_permissions as $field_permission) {
+            $this->_preloaded_permissions[$field_permission['entity_name']]['fields'][$field_permission['fields_name']] = $field_permission['api_manager_fields_permissions_chmod'];
+        }
+        
+        
+    }
     private function filterOutputFields($entity_name, &$output)
-    {
+    { 
+        //debug(count($output),true);
         $request_type = $this->getCurrentRequestType();
 
         $entity = $this->datab->get_entity_by_name($entity_name);
-
-        // Get entity permissions
-        $entity_permissions = $this->db->get_where('api_manager_permissions', [
-            'api_manager_permissions_token' => $this->token_id,
-            'api_manager_permissions_entity' => $entity['entity_id'],
-        ])->row_array();
-
-        // Get fields permissions
-        $fields_permissions = $this->db
-            ->where('api_manager_fields_permissions_token', $this->token_id)
-            ->where('fields.fields_entity_id', $entity['entity_id'])
-            ->join('fields', 'api_manager_fields_permissions.api_manager_fields_permissions_field = fields.fields_id', 'LEFT')
-            ->get('api_manager_fields_permissions')
-            ->result_array();
-        //debug($fields_permissions);
-        // Create a map of field permissions for easy lookup
-        $field_permission_map = [];
-        foreach ($fields_permissions as $permission) {
-            $field_permission_map[$entity['entity_name']][$permission['fields_name']] = $permission['api_manager_fields_permissions_chmod'];
+        if (!$output) {
+            return $output;
         }
-        $field_permission_map[$entity['entity_name']][$entity['entity_name'] . '_id'] = 5;
-
-        //Oltre ai campi della tabella primaria, vado a cercarmi anche eventuali campi joinati
-        $entity_fields = $this->db->select('*')->where('fields_entity_id', $entity['entity_id'])->get('fields')->result_array();
-        foreach ($entity_fields as $field) {
-            //Se il campo ha valorizzato fields_ref, recupero anche i fields di quella tabella con relativi permessi. Devo ricordarmi di aggiungere sempre anche il campo id. I campi vanno aggiunti solo se presenti come chiave nell'output
-            if ($field['fields_ref']) {
-                $ref_entity = $this->datab->get_entity_by_name($field['fields_ref']);
-                $fields_permissions = $this->db
-                    ->where('api_manager_fields_permissions_token', $this->token_id)
-                    ->where('fields.fields_entity_id', $ref_entity['entity_id'])
-                    ->join('fields', 'api_manager_fields_permissions.api_manager_fields_permissions_field = fields.fields_id', 'LEFT')
-                    ->get('api_manager_fields_permissions')
-                    ->result_array();
-                $entity_fields = $this->db->select('*')->where('fields_entity_id', $ref_entity['entity_id'])->get('fields')->result_array();
-                foreach ($fields_permissions as $permission) {
-                    $field_permission_map[$ref_entity['entity_name']][$permission['fields_name']] = $permission['api_manager_fields_permissions_chmod'];
-
-                }
-                $field_permission_map[$ref_entity['entity_name']][$ref_entity['entity_name'] . '_id'] = 5;
-            }
+        $data_keys_to_keep = array_keys($output[0]);
+        $_fields_entities = $this->db
+            ->join('entity', 'entity_id = fields_entity_id', 'LEFT')
+            ->where_in('fields_name', $data_keys_to_keep)
+            ->get('fields')->result_array();
+        $fields_entities_map = array_key_value_map($_fields_entities, 'fields_name', 'entity_name');
+        
+        //Aggiungo comunque i campi id che non sono in fields, ma so che esistono di default
+        foreach ($this->db->get('entity')->result_array() as $entity) {
+            $fields_entities_map[$entity['entity_name'] . '_id'] = $entity['entity_name'];
         }
 
-        //debug($field_permission_map,true);
 
+        
         // Define allowed permission levels for each request type
         $allowed_permissions = [
             'search' => ['1', '2', '3', '4', '5'],
@@ -637,27 +642,35 @@ class V1 extends MY_Controller
             'delete' => ['5']
         ];
 
+        
+        
+        
         // Filter the output
-        //debug($output,true);
-        $output = array_map(function ($data) use ($field_permission_map, $allowed_permissions, $request_type, $entity_permissions) {
-            foreach ($data as $field_name => $field_value) {
-                foreach ($field_permission_map as $entity_name => $field_permissions) {
-
-                    //Per prima cosa verifico se l'entità è accessibile
-                    if ($this->checkEntityPermission($entity_name, 'R')) {
-                        if (count($field_permissions) > 1) {//Se (oltre al campo id, sono stati definiti permessi custom)
+        //debug($this->_preloaded_permissions,true);
+        
+        foreach ($data_keys_to_keep as $key => $field_name) {
+            foreach ($this->_preloaded_permissions as $_perm_entity_name => $permission_data) {
+                if (!empty($fields_entities_map[$field_name]) && $fields_entities_map[$field_name] == $_perm_entity_name) {
+                    $fields_permissions = $permission_data['fields'] ?? [];
+                
+                    //Per prima covalue: sa verifico se l'entità è accessibile
+                    if ($this->checkEntityPermission($_perm_entity_name, 'R')) {
+                        if (count($fields_permissions) > 1) {//Se (oltre al campo id, sono stati definiti permessi custom)
                             // Check if the field has specific permissions
-                            if (isset($field_permissions[$field_name])) {
-                                $field_permission = $field_permissions[$field_name];
+                            if (isset($fields_permissions[$field_name])) {
+                                $field_permission = $fields_permissions[$field_name];
                                 if (!in_array($field_permission, $allowed_permissions[$request_type])) {
-
-                                    unset($data[$field_name]);
+                                    debug($field_name,true);
+                                    unset($data_keys_to_keep[$key]);
                                 }
                             } else {
-
+                                //debug($field_permissions);
+                                //debug($field_name, true);
                                 //Se il campo è di questa entità, usetto
-                                if (stripos($field_name, $entity_name) !== false) {
-                                    unset($data[$field_name]);
+                                if (empty($fields_entities_map[$field_name]) || $fields_entities_map[$field_name] == $_perm_entity_name) {
+                                    // debug($fields_permissions);
+                                    // debug($field_name,true);
+                                    unset($data_keys_to_keep[$key]);
                                 }
 
 
@@ -668,20 +681,30 @@ class V1 extends MY_Controller
                             //Non sono impostati permessi custom, quindi tengo tutto
                         }
                     } else {
-                        //Se non ho permessi sull'entità, cancello tutto
-                        //Se il campo è di questa entità, usetto
-                        if (stripos($field_name, $entity_name) !== false) {
-                            unset($data[$field_name]);
-                        }
+                        
+                        unset($data_keys_to_keep[$key]);
+                        
                     }
-
-                    
-
+                } else {
+                    if (empty($fields_entities_map[$field_name])) {
+                        unset($data_keys_to_keep[$key]);
+                    }
                 }
                 
+
+                
+
             }
-            return $data;
+            
+        }
+        $output = array_map(function ($row) use ($data_keys_to_keep) {
+            return array_filter($row, function ($key) use ($data_keys_to_keep) {
+                return in_array($key, $data_keys_to_keep);
+            }, ARRAY_FILTER_USE_KEY);
         }, $output);
+            
+            return $output;
+        
     }
 
     /**

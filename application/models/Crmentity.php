@@ -233,7 +233,7 @@ class Crmentity extends CI_Model
                 // contenenti un HTML
                 foreach ($fieldsWysiwyg as $field) {
                     $name = $field['fields_name'];
-                    if (!empty ($_data[$name])) {
+                    if (!empty($_data[$name])) {
                         $_data[$name] = str_replace('{base_url}', $baseUrl, $_data[$name]);
                     }
                 }
@@ -250,7 +250,7 @@ class Crmentity extends CI_Model
                 //Per i campi float li formato number_format 2, altrimenti mysql fa le bizze e mostra cose tipo 123.359999999999996
                 if ($this->db->dbdriver != 'postgre') {
                     foreach ($fieldsFloat as $field) {
-                        if (!empty ($_data[$field['fields_name']]) && $_data[$field['fields_name']] !== null) {
+                        if (!empty($_data[$field['fields_name']]) && $_data[$field['fields_name']] !== null) {
                             $_data[$field['fields_name']] = number_format($_data[$field['fields_name']], 3, '.', '');
                             if (substr($_data[$field['fields_name']], -1) === '0') {
                                 $_data[$field['fields_name']] = substr($_data[$field['fields_name']], 0, -1);
@@ -293,7 +293,7 @@ class Crmentity extends CI_Model
 
                 $referingData = $this->get_data_full_list($entity['entity_id'], $refererEntity, $refererWhere, null, 0, null, false, $depth);
 
-                if (!empty ($referingData)) {
+                if (!empty($referingData)) {
                     foreach ($referingData as $record) {
                         // Se il campo è NON VISIBILE la query NON FALLISCE,
                         // ma non viene incluso nel risultato... quindi si
@@ -358,7 +358,7 @@ class Crmentity extends CI_Model
                 $relation_data_by_ids = [];
                 $related_data = [];
                 foreach ($relation_data as $relation_dato) {
-                    if (empty ($relation_data_by_ids[$relation_dato[$field]])) {
+                    if (empty($relation_data_by_ids[$relation_dato[$field]])) {
                         $relation_data_by_ids[$relation_dato[$field]] = [];
                     }
 
@@ -367,12 +367,12 @@ class Crmentity extends CI_Model
                 }
 
                 // Prendo le preview dei record relazionati
-                if (!empty ($related_data)) {
+                if (!empty($related_data)) {
                     //if entity is soft deletable, remove filter here to access deleted records in previews
                     $other_entity_table = $this->getEntity($other_table);
-                    $entityCustomActions = empty ($other_entity_table['entity_action_fields']) ? [] : json_decode($other_entity_table['entity_action_fields'], true);
+                    $entityCustomActions = empty($other_entity_table['entity_action_fields']) ? [] : json_decode($other_entity_table['entity_action_fields'], true);
                     $where_related_data = ["{$other_table}.{$other} IN (" . implode(',', $related_data) . ")"];
-                    if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty ($entityCustomActions['soft_delete_flag'])) {
+                    if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                         $where_related_data[] = "({$entityCustomActions['soft_delete_flag']} = 1 OR 1=1)";
 
                     }
@@ -380,7 +380,7 @@ class Crmentity extends CI_Model
                     $related_data_preview = $this->getEntityPreview($other_table, $where_related_data_str);
                     //debug($related_data_preview);
                     foreach ($data['data'] as $key => $dato) {
-                        if (isset ($relation_data_by_ids[$dato[$field]])) {
+                        if (isset($relation_data_by_ids[$dato[$field]])) {
                             foreach ($relation_data_by_ids[$dato[$field]] as $related_value) {
 
                                 // Se il campo non è un array per il momento non ho soluzioni migliori se non farlo diventare un array vuoto
@@ -401,7 +401,7 @@ class Crmentity extends CI_Model
             // Recupero le eventuali fake relations, cioè tutti i fields con
             // fields_ref che hanno fields_type o VARCHAR o TEXT
             $fake_relations_fields = array_filter($data['visible_fields'], function ($field) {
-                return $field['fields_ref'] && in_array($field['fields_type'], array ('VARCHAR', 'TEXT'));
+                return $field['fields_ref'] && in_array($field['fields_type'], array('VARCHAR', 'TEXT'));
             });
 
             $names = [];
@@ -423,7 +423,7 @@ class Crmentity extends CI_Model
                 }
 
                 $fullData = [];
-                if (!empty ($fake_relation_ids)) {
+                if (!empty($fake_relation_ids)) {
                     $imploded_fake_relation_ids = implode(',', $fake_relation_ids);
                     $frEntity = $this->getEntity($related);
                     //debug('test');
@@ -462,6 +462,7 @@ class Crmentity extends CI_Model
      */
     public function get_data_simple_list($entity_id = null, $where = null, array $options = [])
     {
+        $this->_visible_fields = [];
         //TODO: cache
         $key = 'apilib/' . __METHOD__ . ':' . md5(serialize(func_get_args()));
         $tags = $this->mycache->buildTagsFromEntity($entity_id);
@@ -481,16 +482,16 @@ class Crmentity extends CI_Model
             // Params extraction
             $count = array_get($options, 'count', false);
             $extra_data = array_get($options, 'extra_data', false);
+
             $depth = array_get($options, 'depth', 2);
             $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
 
-
             // =================
-            $dati = $this->getEntityFullData($entity_id);
+            $dati = $this->getEntityFullData($entity_id, $depth);
+
+
             $this->buildSelect($dati, $options);
-
-
 
 
             $this->buildWhere($where);
@@ -499,12 +500,14 @@ class Crmentity extends CI_Model
 
             // Save list of joined entity, to avoid double joins...
             $this->db->from($dati['entity']['entity_name']);
-            $joined = array ($dati['entity']['entity_name']);
+            $joined = array($dati['entity']['entity_name']);
             $to_join_later = [];
 
 
 
             $permission_entities = [$entity_id]; // Lista delle entità su cui devo applicare i limiti
+
+
 
             //Join entities
             foreach ($dati['visible_fields'] as $key => $campo) {
@@ -518,12 +521,10 @@ class Crmentity extends CI_Model
                 if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
                     if (in_array($campo['fields_ref'], $joined)) {
                         // Metto nella lista dei join later
+
                         $to_join_later[$campo['fields_name']] = $campo['fields_ref'];
                     } else {
-                        if ($campo['fields_ref'] == 'rel_impianto_immagine') {
-                            // debug($dati['entity']['entity_name']);
-                            // debug($dati['relations']);
-                        }
+
 
                         $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
                         array_push($joined, $campo['fields_ref']);
@@ -578,7 +579,9 @@ class Crmentity extends CI_Model
             // altri campi li "joino" ora. Non si tratta di un vero e proprio join,
             // in quanto devo estrarre manualmente i dati.
             // =====================================================================
+
             if ($dati['data'] && $depth > 0) {
+                $depth--;
                 foreach ($to_join_later as $main_field => $sub_entity_name) {
                     $sub_entity = $this->getEntity($sub_entity_name);
 
@@ -592,6 +595,7 @@ class Crmentity extends CI_Model
                     // sono i dati pronti ad essere uniti ai dati principali
                     // debug($main_field);
                     // debug("{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})");
+                    //debug();
                     $jData = $this->get_data_simple_list($sub_entity['entity_id'], "{$sub_entity_name}.{$sub_entity_name}_id IN ({$main_field_values})", ['depth' => $depth - 1]);
 
                     $mergeable = [];
@@ -629,96 +633,37 @@ class Crmentity extends CI_Model
      */
     private function buildSelect(array &$entityFullData, array $options = [])
     {
-        // Inizializzo i fields: se ho specificato una select allora sono a
-        // posto, altrimenti li autocalcolo in base ai fields entità
+        //debug($entityFullData['visible_fields']);
+        // Initialize fields: use specified select or auto-calculate based on entity fields
         $visible_fields = array_get($options, 'select', []);
-
-        $depth = array_get($options, 'depth', 2);
-
-        //debug($depth);
-
-        $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
-
         $entityName = $entityFullData['entity']['entity_name'];
 
         if (!$visible_fields) {
             foreach ($entityFullData['visible_fields'] as $campo) {
-                // Aggiungo il campo alla select
+
                 $visible_fields[] = sprintf('%s.%s', $campo['entity_name'], $campo['fields_name']);
-
-                // Ciclo i campi uno ad uno e se:
-                // -- sono campi semplici non faccio altro che aggiungere il nome
-                // del field alla mia select ($visible_fields)
-                // -- altrimenti se sono field ref devo estrarre a sua volta i
-                // suoi campi (valutare chiamate ricorsive). ATTENZIONE CHE IL
-                // CAMPO NON DEV'ESSERE RELAZIONE, perchè lo gestisco
-                // diversamente
-
-                $hasFieldRef = (bool) $campo['fields_ref'];
-                $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
-                $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
-
-                if ($hasFieldRef && $isJoinable) {
-                    $entity = $this->getEntity($campo['fields_ref']);
-                    if ($isRelation) {
-                        //debug($entity);
-                    } else {
-                        if ($entityName == 'subscriptions' && $entity['entity_name'] == 'currencies') {
-                            //debug($depth,true);
-                        }
-
-
-
-                        foreach ($this->getVisibleFields($entity['entity_id'], $depth - 1) as $supfield) {
-
-                            $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
-                            $entityFullData['visible_fields'][] = $supfield;
-                        }
-
-
-                    }
-                }
             }
         }
 
-        // AGGIUNGO A PRESCINDERE I CAMPI DI UNA RELATION
-        if ($entityFullData['entity']['entity_type'] == ENTITY_TYPE_RELATION) {
-            $relation = $this->getRelationByName($entityFullData['entity']['entity_name']);
-            // debug($relation, true);
-            $visible_fields[] = $relation['relations_field_1'];
-            $visible_fields[] = $relation['relations_field_2'];
-        }
-
-        // Mi assicuro che l'id sia contenuto ed eventualmente rimuovo i
-        // duplicati
-        array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
-
-
-
-
+        // Ensure the entity ID is included and remove duplicates
+        array_unshift($visible_fields, sprintf('%s.%s_id', $entityName, $entityName));
         $this->db->select(array_unique($visible_fields));
 
-
-
-        //Aggiungo eventuali eval cachable
-        $eval_fields = [];
-        foreach ($eval_cachable_fields as $eval_field) {
-            if ($eval_field['grids_fields_eval_cache_type'] == 'query_equivalent') {
-                $eval_fields[] = $eval_field['grids_fields_eval_cache_data'] . ' AS ' . url_title($eval_field['grids_fields_column_name'], '_', true);
-            }
-        }
-
-        if (!empty($eval_fields)) {
-            //Rimuovo la scritta "SELECT " davanti
+        // Add any eval cachable fields if necessary
+        $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
+        if (!empty($eval_cachable_fields)) {
+            // Remove "SELECT " from compiled select
             $select_str = $this->db->get_compiled_select();
             $select_str = str_ireplace("SELECT ", '', $select_str);
 
-            $this->db->select($select_str . ',' . implode(',', $eval_fields), false); //Sugli eval cachable, presuppongo non ci sia bisogno di escape sql.
-        }
+            $eval_fields = [];
+            foreach ($eval_cachable_fields as $eval_field) {
+                if ($eval_field['grids_fields_eval_cache_type'] == 'query_equivalent') {
+                    $eval_fields[] = $eval_field['grids_fields_eval_cache_data'] . ' AS ' . url_title($eval_field['grids_fields_column_name'], '_', true);
+                }
+            }
 
-        if ($entityFullData['entity']['entity_name'] == 'timesheet') {
-            //debug($this->db->get_compiled_select());
-            //debug($entityFullData,true);
+            $this->db->select($select_str . ',' . implode(',', $eval_fields), false); // Do not escape eval fields
         }
     }
 
@@ -749,7 +694,7 @@ class Crmentity extends CI_Model
             //array_filter does not work well. It removes also filters with value 0 or '0'. Ex.: WHERE field=0 will be removed.
             //so we used a custom function
             $func_empty = function ($value) {
-                if (empty ($value) && $value !== 0 && $value !== '0') {
+                if (empty($value) && $value !== 0 && $value !== '0') {
                     return false;
                 } else {
                     return true;
@@ -817,13 +762,14 @@ class Crmentity extends CI_Model
      * @param int|string $entity
      * @return array
      */
-    public function getEntityFullData($entity)
+    public function getEntityFullData($entity, $depth = 1)
     {
+
         return array(
             'entity' => $this->getEntity($entity),
             'relations' => array_key_map($this->getEntityRelations($entity), 'relations_name'),
             'fields_ref_by' => $this->getFieldsRefBy($entity),
-            'visible_fields' => $this->getVisibleFields($entity),
+            'visible_fields' => $this->getVisibleFields($entity, $depth),
         );
     }
 
@@ -851,31 +797,31 @@ class Crmentity extends CI_Model
 
             $previewFields = $this->getEntityPreviewFields($entityIdentifier);
 
-            //debug($previewFields);
+
 
             $entity_id = $entity['entity_id'];
 
             $select = array_key_map($previewFields, 'fields_name');
 
             //Aggiungo ordinamento qualora l'entità ne avesse configurato uno di default
-            $entityCustomActions = empty ($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
+            $entityCustomActions = empty($entity['entity_action_fields']) ? [] : json_decode($entity['entity_action_fields'], true);
 
-            if (isset ($entityCustomActions['order_by_asc'])) {
+            if (isset($entityCustomActions['order_by_asc'])) {
                 $order_by = $entityCustomActions['order_by_asc'] . ' ASC';
-            } elseif (isset ($entityCustomActions['order_by_desc'])) {
+            } elseif (isset($entityCustomActions['order_by_desc'])) {
                 $order_by = $entityCustomActions['order_by_desc'] . ' DESC';
             } else {
                 $order_by = null;
             }
 
             // Filtro per soft-delete se non viene specificato questo filtro nel where della grid
-            if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty ($entityCustomActions['soft_delete_flag'])) {
+            if (array_key_exists('soft_delete_flag', $entityCustomActions) && !empty($entityCustomActions['soft_delete_flag'])) {
                 //Se nel where c'è già un filtro specifico sul campo impostato come soft-delete, ignoro. Vuol dire che sto gestendo io il campo delete (es.: per mostrare un archivio o un history...)
 
                 // Where can be an array, so it's not correct to check online the where string conditions, but consider it different...
                 if (is_array($where)) {
                     if (!array_key_exists($entityCustomActions['soft_delete_flag'], $where)) {
-                        if (empty ($where)) {
+                        if (empty($where)) {
                             $where = ["({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)"];
                         } else {
                             $where[] = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
@@ -883,7 +829,7 @@ class Crmentity extends CI_Model
                     }
                 } else { // If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
                     if (stripos($where, $entityCustomActions['soft_delete_flag']) === false) {
-                        if (empty ($where)) {
+                        if (empty($where)) {
                             $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                         } else {
                             $where .= " AND ({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
@@ -1135,6 +1081,8 @@ class Crmentity extends CI_Model
         } else {
             $column_join = 'fields_ref_auto_left_join';
         }
+
+        $ename = $this->getEntity($entity)['entity_name'];
         if (!array_key_exists($column_join, $this->_fields_ref_by)) {
             // debug($column_join);
             // debug($this->_fields_ref_by);
@@ -1144,16 +1092,18 @@ class Crmentity extends CI_Model
                 SELECT entity_id, entity_name, fields_name, fields_type, fields_ref
                 FROM fields JOIN entity ON entity_id = fields_entity_id
                 WHERE fields_ref IS NOT NULL AND fields_ref != '' AND $column_join = '" . DB_BOOL_TRUE . "'
+                 AND entity_name = '$ename'
             ")->result_array();
 
 
             foreach ($_allFieldsRefBy as $field) {
+                //debug($field['fields_ref']);
                 $this->_fields_ref_by[$column_join][$field['fields_ref']][] = $field;
             }
             //debug($this->_fields_ref_by);
         }
 
-        $ename = $this->getEntity($entity)['entity_name'];
+
         return array_get($this->_fields_ref_by[$column_join], $ename, []);
     }
 
@@ -1164,22 +1114,34 @@ class Crmentity extends CI_Model
      */
     public function getVisibleFields($entity, $depth = 1)
     {
+        //log_message('debug', "Recupero i campi visibilit dell'entità $entity con depth $depth");
         if ($depth <= 0) {
             return [];
         }
-        if (!array_key_exists($entity, $this->_visible_fields) || $depth > 1) {
-            $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function ($item) {
+        if (is_numeric($entity)) {
+            $entity_name = $this->getEntity($entity)['entity_name'];
+        } else {
+            $entity_name = $entity;
+        }
+
+
+        if (!array_key_exists($entity_name, $this->_visible_fields) || $depth > 1) {
+            $this->_visible_fields[$entity_name] = array_filter($this->getFields($entity), function ($item) {
                 return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
             });
+            // debug(count($this->_visible_fields[$entity]));
+            // debug($depth);
 
             while ($depth > 1) {
                 $depth--;
-                foreach ($this->_visible_fields[$entity] as $field) {
+                // debug(count($this->_visible_fields[$entity]));
+                // debug($depth);
+                foreach ($this->_visible_fields[$entity_name] as $field) {
 
                     $isJoinable = $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
                     if (!empty($field['fields_ref']) && $isJoinable) {
 
-                        $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
+                        $this->_visible_fields[$entity_name] = array_merge($this->_visible_fields[$entity_name], $this->getVisibleFields($field['fields_ref'], $depth));
                     }
                 }
             }
@@ -1188,7 +1150,8 @@ class Crmentity extends CI_Model
 
             //debug(count($this->_visible_fields[$entity]));
         }
-        return $this->_visible_fields[$entity];
+        //debug(array_keys($this->_visible_fields),true);
+        return $this->_visible_fields[$entity_name];
     }
 
     /**
@@ -1222,6 +1185,7 @@ class Crmentity extends CI_Model
      */
     public function getEntityPreviewFields($entity)
     {
+        $this->_visible_fields = [];
         $e = $this->getEntity($entity);
         $eid = $e['entity_id'];
         $entity_name = $e['entity_name'];
@@ -1237,8 +1201,9 @@ class Crmentity extends CI_Model
         } else {
             //$tags = $this->mycache->buildTagsFromEntity($entity_name);
             $tags = []; //Preview fields does not depend on data changes in entity, so keep these always in cache, event if any data changes
-            return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid) {
+            return $this->getFromCache("apilib/preview-fields-{$eid}", function () use ($eid, $entity) {
                 $preview = [];
+
                 $fields = $this->getVisibleFields($eid);
 
                 foreach ($fields as $field) {
@@ -1257,6 +1222,7 @@ class Crmentity extends CI_Model
 
                     // Caso `complesso`: preview in un field ref - prendo tutti i campi
                     // preview del ref
+
                     $subfields = $this->getVisibleFields($field['fields_ref']);
                     foreach ($subfields as $subfield) {
                         if ($subfield['fields_preview'] == DB_BOOL_TRUE && !$subfield['fields_ref']) {

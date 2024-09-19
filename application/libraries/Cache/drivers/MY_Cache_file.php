@@ -124,8 +124,8 @@ class MY_Cache_file extends CI_Driver
             $this->saveTagsMapping($id, $tags, time());
             return true;
         } else {
-            debug($result);
-            debug($this->_cache_path . $id, true);
+            // debug($result);
+            // debug($this->_cache_path . $id, true);
         }
 
         return false;

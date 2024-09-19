@@ -958,7 +958,8 @@ class Apilib
             'offset' => $offset,
             'orderBy' => $orderBy,
             'orderDir' => $orderDir,
-            'group_by' => $additional_parameters['group_by'] ?? null
+            'group_by' => $additional_parameters['group_by'] ?? null,
+            'depth' => $maxDepth
         ]);
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
             $where = [];
