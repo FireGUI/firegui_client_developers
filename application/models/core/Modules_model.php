@@ -1023,7 +1023,7 @@ class Modules_model extends CI_Model
 
 
 
-                    $this->db->insert('menu', $men, null, true);
+                    $this->db->insert('menu', $menu, null, true);
                     $menuid = $this->db->insert_id();
                 }
 

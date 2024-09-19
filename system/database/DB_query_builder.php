@@ -1566,6 +1566,7 @@ abstract class CI_DB_query_builder extends CI_DB_driver
 				}
 			}
 		}
+		
 		if ($set !== NULL) {
 			$this->set($set, '', $escape);
 		}
@@ -1573,6 +1574,7 @@ abstract class CI_DB_query_builder extends CI_DB_driver
 		
 
 		if ($this->_validate_insert($table) === FALSE) {
+			//debug($set,true);
 			return FALSE;
 		}
 
