@@ -872,6 +872,9 @@ class Modules_model extends CI_Model
                     "
             );
             $c = 0;
+
+            
+
             foreach ($json['menu'] as $menu) {
                 $c++;
                 progress($c, $total, 'menu creation (step 1)');
@@ -912,8 +915,6 @@ class Modules_model extends CI_Model
                 //Vedo se esiste già un menu parent con questa label. In caso riutilizzo questo senza crearne uno nuovo...
                 //$check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_label = '{$menu['menu_label']}' AND menu_module = '$identifier'");
                 $check_menu_exists = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu['menu_module_key']}'");
-
-
 
                 if ($check_menu_exists->num_rows() > 0) {
                     $menu_esistente = $check_menu_exists->row_array();
@@ -962,10 +963,41 @@ class Modules_model extends CI_Model
                     }
                     $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
                 }
-                $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']] ?? null;
+                //Il menu parent potrebbe essere di questo modulo...
+                if (array_key_exists($menu['menu_parent'], $menus_id_map)) {
+                    $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']];    
+
+                } else {
+                    
+                    $menu['menu_parent'] = null; //Lo metto a null di default, ma poi tento comunque di recuperarlo
+                    //Se non è di questo modulo, potrei avere i dati dentro la chiave menu_parent_data. A quel punto posso recuperare tutte le sue info e verificare se il menu è comunque presente!
+                    if (!empty($menu['menu_parent_data'])) {
+                        $menu_parent_data = $menu['menu_parent_data'];
+                        
+                        if (!empty($menu_parent_data['menu_module_key'])) {
+                            $menu_parent = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu_parent_data['menu_module_key']}'");
+                            
+                            if ($menu_parent->num_rows() > 0) {
+                                $menu['menu_parent'] = $menu_parent->row()->menu_id;
+                            } else {
+                                //Forzo la creazione di questo menu (è il caso ad esempio in cui sto installando il modulo prodotti senza prima aver installato il modulo magazzino)
+                                unset($menu_parent_data['menu_id']);
+                                unset($menu_parent_data['menu_layout']);
+                                $this->db->insert('menu', $menu_parent_data);
+                                $menu['menu_parent'] = $this->db->insert_id();
+                                
+                            }
+                        }
+                    }
+                }
+                
 
                 $conditions = array_merge($conditions, [$menu['conditions']]);
                 unset($menu['conditions']);
+                if (array_key_exists('menu_parent_data', $menu)) {
+                   // unset($menu['menu_parent_data']);
+                }
+                
 
 
 
@@ -983,7 +1015,7 @@ class Modules_model extends CI_Model
                     $menu_esistente = $check_menu_exists->row_array();
 
 
-                    $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu);
+                    $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu, null, null, true);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
                 } else {
                     //TODO: check menu already exists (see code before..)
@@ -991,7 +1023,7 @@ class Modules_model extends CI_Model
 
 
 
-                    $this->db->insert('menu', $menu);
+                    $this->db->insert('menu', $men, null, true);
                     $menuid = $this->db->insert_id();
                 }
 

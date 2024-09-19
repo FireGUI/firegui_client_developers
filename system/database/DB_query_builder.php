@@ -1552,11 +1552,25 @@ abstract class CI_DB_query_builder extends CI_DB_driver
 	 * @param	bool	$escape	Whether to escape values and identifiers
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function insert($table = '', $set = NULL, $escape = NULL)
+	public function insert($table = '', $set = NULL, $escape = NULL, $check = false)
 	{
+		if ($check === true) {
+			// Ottieni le colonne della tabella
+			$columns = $this->list_fields($table);
+
+			// Controlla ogni chiave in qb_set
+			foreach ($set as $key => $value) {
+				if (!in_array($key, $columns)) {
+					// Se la chiave non esiste come colonna, rimuovila da qb_set
+					unset($set[$key]);
+				}
+			}
+		}
 		if ($set !== NULL) {
 			$this->set($set, '', $escape);
 		}
+
+		
 
 		if ($this->_validate_insert($table) === FALSE) {
 			return FALSE;
@@ -1715,14 +1729,27 @@ abstract class CI_DB_query_builder extends CI_DB_driver
 	 * @param	int	$limit
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function update($table = '', $set = NULL, $where = NULL, $limit = NULL)
+	public function update($table = '', $set = NULL, $where = NULL, $limit = NULL, $check = false)
 	{
 		// Combine any cached components with the current statements
 		$this->_merge_cache();
+		if ($check === true) {
+			// Ottieni le colonne della tabella
+			$columns = $this->list_fields($table);
 
+			// Controlla ogni chiave in qb_set
+			foreach ($set as $key => $value) {
+				if (!in_array($key, $columns)) {
+					// Se la chiave non esiste come colonna, rimuovila da qb_set
+					unset($set[$key]);
+				}
+			}
+		}
 		if ($set !== NULL) {
 			$this->set($set);
 		}
+
+		
 
 		if ($this->_validate_update($table) === FALSE) {
 			return FALSE;
