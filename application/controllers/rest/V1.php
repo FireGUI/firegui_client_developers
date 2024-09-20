@@ -57,6 +57,8 @@ class V1 extends MY_Controller
                 ]);
 
                 $this->preloadPermissions($this->token_id);
+
+                $this->processInput();
             }
         }
 
@@ -266,6 +268,7 @@ class V1 extends MY_Controller
      */
     public function create($entity = null, $output = 'json')
     {
+        
         //Se sono arrivato qua, ho già fatto i controlli che possa scrivere su questa entità
         //Devo quindi solo controllare che i dati passati siano tutti accessibili in inserimento
         try {
@@ -280,6 +283,22 @@ class V1 extends MY_Controller
         } catch (ApiException $e) {
             $this->logAction(__FUNCTION__, func_get_args());
             $this->showError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    private function processInput()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $contentType = $this->input->get_request_header('Content-Type', TRUE);
+
+            if (strpos($contentType, 'application/json') !== false) {
+                $jsonData = json_decode($this->input->raw_input_stream, true);
+
+                if ($jsonData) {
+                    // Popola $_POST con i dati JSON
+                    $_POST = array_merge($_POST, $jsonData);
+                }
+            }
         }
     }
 
@@ -1288,8 +1307,6 @@ class V1 extends MY_Controller
             }
 
             $entityFields = $this->crmentity->getFields($tabella['entity_id']);
-
-            // Filtra i campi in base ai permessi
             $allowedFields = $this->filterAllowedFields($entityName, $entityFields);
 
             if (empty($allowedFields)) {
@@ -1298,7 +1315,6 @@ class V1 extends MY_Controller
 
             // Aggiungi i vari endpoint solo se l'entità ha i permessi necessari
             $this->addEntityEndpoints($swaggerJson, $entityName, $allowedFields);
-
 
             $swaggerJson['components']['schemas'][$entityName] = [
                 'type' => 'object',
@@ -1389,29 +1405,34 @@ class V1 extends MY_Controller
             'summary' => ucfirst($endpoint) . " {$entityName}",
             'security' => [['bearerAuth' => []]],
             'responses' => [
-                    '200' => [
-                        'description' => 'Successful response',
-                        'content' => [
-                                'application/json' => [
-                                    'schema' => [
-                                        '$ref' => "#/components/schemas/{$entityName}"
-                                    ]
-                                ]
-                            ]
-                    ]
-                ]
-        ];
-
-        if (in_array($endpoint, ['create', 'edit'])) {
-            $schema['requestBody'] = [
-                'required' => true,
-                'content' => [
+                '200' => [
+                    'description' => 'Successful response',
+                    'content' => [
                         'application/json' => [
                             'schema' => [
                                 '$ref' => "#/components/schemas/{$entityName}"
                             ]
                         ]
                     ]
+                ]
+            ]
+        ];
+
+        if (in_array($endpoint, ['create', 'edit', 'search'])) {
+            $schema['requestBody'] = [
+                'required' => true,
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            '$ref' => "#/components/schemas/{$entityName}"
+                        ]
+                    ],
+                    'application/x-www-form-urlencoded' => [
+                        'schema' => [
+                            '$ref' => "#/components/schemas/{$entityName}"
+                        ]
+                    ]
+                ]
             ];
         }
 
@@ -1427,16 +1448,13 @@ class V1 extends MY_Controller
         }
 
         if ($endpoint === 'search') {
-            $schema['requestBody'] = [
-                'required' => true,
-                'content' => [
-                        'application/x-www-form-urlencoded' => [
-                            'schema' => [
-                                'type' => 'object',
-                                'properties' => $this->generateSearchProperties($allowedFields)
-                            ]
-                        ]
-                    ]
+            $schema['requestBody']['content']['application/json']['schema'] = [
+                'type' => 'object',
+                'properties' => $this->generateSearchProperties($allowedFields)
+            ];
+            $schema['requestBody']['content']['application/x-www-form-urlencoded']['schema'] = [
+                'type' => 'object',
+                'properties' => $this->generateSearchProperties($allowedFields)
             ];
         }
 

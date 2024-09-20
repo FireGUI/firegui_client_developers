@@ -415,7 +415,7 @@ class Modules_model extends CI_Model
                     } else {
                         my_log('debug', "Module install: entity '{$entity['entity_name']}' already present", 'update');
 
-                        $this->db->where('entity_id', $entity_exists['entity_id'])->update('entity', $data);
+                        $this->db->where('entity_id', $entity_exists['entity_id'])->update('entity', $data, null, null, true);
 
                         $new_entity_id = $entity_exists['entity_id'];
                     }
@@ -572,9 +572,9 @@ class Modules_model extends CI_Model
 
                     if (!$validation_exists->num_rows() >= 1) {
                         //debug($fv);
-                        $this->db->insert('fields_validation', $fv);
+                        $this->db->insert('fields_validation', $fv, null, true);
                     } else {
-                        $this->db->where('fields_validation_id', $validation_exists->row()->fields_validation_id)->update('fields_validation', $fv);
+                        $this->db->where('fields_validation_id', $validation_exists->row()->fields_validation_id)->update('fields_validation', $fv, null, null, true);
                     }
                 }
 
@@ -594,9 +594,9 @@ class Modules_model extends CI_Model
                     ]);
 
                     if (!$draw_exists->num_rows() >= 1) {
-                        $this->db->insert('fields_draw', $fd);
+                        $this->db->insert('fields_draw', $fd, null, true);
                     } else {
-                        $this->db->where('fields_draw_id', $draw_exists->row()->fields_draw_id)->update('fields_draw', $fd);
+                        $this->db->where('fields_draw_id', $draw_exists->row()->fields_draw_id)->update('fields_draw', $fd, null, null, true);
                     }
                 }
             }
@@ -766,11 +766,11 @@ class Modules_model extends CI_Model
                 //die('TODO: NON CANCELLARE MA VERIFICARE SE IL FORM ESISTE GIA\' COME LE GRID!');
                 $form_exists = $this->db->query("SELECT * FROM forms WHERE forms_module_key = '{$form['forms_module_key']}'");
                 if ($form_exists->num_rows() == 0) {
-                    $this->db->insert('forms', $form);
+                    $this->db->insert('forms', $form, null, true);
                     $new_form_id = $this->db->insert_id();
                 } else {
                     $new_form_id = $form_exists->row()->forms_id;
-                    $this->db->where('forms_id', $new_form_id)->update('forms', $form);
+                    $this->db->where('forms_id', $new_form_id)->update('forms', $form, null, null, true);
                 }
 
                 $forms_id_map[$old_form_id] = $new_form_id;
@@ -850,7 +850,7 @@ class Modules_model extends CI_Model
 
 
 
-                    $this->db->insert('forms_fields', $field);
+                    $this->db->insert('forms_fields', $field, null, true);
                     //my_log('debug', "Module install: form {$form['forms_name']} - field {$field['forms_fields_fields_id']} created", 'update');
                 }
             }
@@ -933,10 +933,10 @@ class Modules_model extends CI_Model
                         unset($menu['menu_position']);
                     }
 
-                    $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu);
+                    $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu, null, null, true);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
                 } else {
-                    $this->db->insert('menu', $menu);
+                    $this->db->insert('menu', $men, null, true);
                     $menuid = $this->db->insert_id();
                     $menus_id_map[$old_menu_id] = $menuid;
                 }
@@ -1006,7 +1006,7 @@ class Modules_model extends CI_Model
                                 //Forzo la creazione di questo menu (è il caso ad esempio in cui sto installando il modulo prodotti senza prima aver installato il modulo magazzino)
                                 unset($menu_parent_data['menu_id']);
                                 unset($menu_parent_data['menu_layout']);
-                                $this->db->insert('menu', $menu_parent_data);
+                                $this->db->insert('menu', $menu_parent_data, null, true);
                                 $menu['menu_parent'] = $this->db->insert_id();
                                 
                             }
@@ -1054,7 +1054,7 @@ class Modules_model extends CI_Model
 
                     // }
 
-                    $this->db->insert('menu', $menu, null, true);
+                    $this->db->insert('menu', $menu, null, true, null, true);
                     $menuid = $this->db->insert_id();
                 }
 
@@ -1161,7 +1161,7 @@ class Modules_model extends CI_Model
                             debug($grid, true);
                         }
 
-                        $this->db->insert('grids', $grid);
+                        $this->db->insert('grids', $grid, null, true);
                         $new_grid_id = $this->db->insert_id();
                         $grids_id_map[$old_grid_id] = $new_grid_id;
                     } else {
@@ -1179,7 +1179,7 @@ class Modules_model extends CI_Model
                             }
 
 
-                            $this->db->where('grids_id', $existing_grid['grids_id'])->update('grids', $grid);
+                            $this->db->where('grids_id', $existing_grid['grids_id'])->update('grids', $grid, null, null, true);
 
                             //Rimuovo però fields e actions, se la grid non è lockata altrimenti duplica tutto dopo...
                             if ($this->db->query("SELECT * FROM locked_elements WHERE locked_elements_type = 'grid' AND locked_elements_ref_id = '$new_grid_id'")->num_rows() == 0) {
@@ -1282,7 +1282,7 @@ class Modules_model extends CI_Model
 
 
 
-                        $this->db->insert('grids_fields', $field);
+                        $this->db->insert('grids_fields', $field, null, true);
                         $grids_fields_id_map[$old_grids_fields_id] = $this->db->insert_id();
                     }
                 }
@@ -1324,7 +1324,7 @@ class Modules_model extends CI_Model
                         $conditions = array_merge($conditions, [$action['conditions']]);
                         unset($action['conditions']);
 
-                        $this->db->insert('grids_actions', $action);
+                        $this->db->insert('grids_actions', $action, null, true);
 
                         $grids_actions_map[$old_grids_actions_id] = $this->db->insert_id();
                     }
@@ -1365,11 +1365,11 @@ class Modules_model extends CI_Model
 
                 $chart_exists = $this->db->query("SELECT * FROM charts WHERE charts_module_key = '{$chart['charts_module_key']}'");
                 if ($chart_exists->num_rows() == 0) {
-                    $this->db->insert('charts', $chart);
+                    $this->db->insert('charts', $chart, null, true);
                     $new_chart_id = $this->db->insert_id();
                 } else {
                     $new_chart_id = $chart_exists->row()->charts_id;
-                    $this->db->where('charts_id', $new_chart_id)->update('charts', $chart);
+                    $this->db->where('charts_id', $new_chart_id)->update('charts', $chart, null, null, true);
                 }
                 $charts_id_map[$old_chart_id] = $new_chart_id;
             }
@@ -1392,7 +1392,7 @@ class Modules_model extends CI_Model
                 $chart_element['charts_elements_entity_id'] = $entities_id_map[$chart_element['charts_elements_entity_id']];
                 $chart_element['charts_elements_fields_id'] = $fields_id_map[$chart_element['charts_elements_fields_id']];
                 unset($chart_element['charts_elements_id']);
-                $this->db->insert('charts_elements', $chart_element);
+                $this->db->insert('charts_elements', $chart_element, null, true);
             }
 
             //Maps insert
@@ -1425,11 +1425,11 @@ class Modules_model extends CI_Model
 
                 $map_exists = $this->db->query("SELECT * FROM maps WHERE maps_module_key = '{$map['maps_module_key']}'");
                 if ($map_exists->num_rows() == 0) {
-                    $this->db->insert('maps', $map);
+                    $this->db->insert('maps', $map, null, true);
                     $new_map_id = $this->db->insert_id();
                 } else {
                     $new_map_id = $map_exists->row()->maps_id;
-                    $this->db->where('maps_id', $new_map_id)->update('maps', $map);
+                    $this->db->where('maps_id', $new_map_id)->update('maps', $map, null, null, true);
                 }
                 $maps_id_map[$old_map_id] = $new_map_id;
             }
@@ -1448,7 +1448,7 @@ class Modules_model extends CI_Model
 
                 $map_field['maps_fields_fields_id'] = $fields_id_map[$map_field['maps_fields_fields_id']];
                 unset($map_field['maps_fields_id']);
-                $this->db->insert('maps_fields', $map_field);
+                $this->db->insert('maps_fields', $map_field, null, true);
             }
 
             $c = 0;
@@ -1504,13 +1504,13 @@ class Modules_model extends CI_Model
                 //Verifico che non esista già la calendar
                 $calendar_exists = $this->db->query("SELECT * FROM calendars WHERE calendars_module_key = '{$calendar['calendars_module_key']}'");
                 if ($calendar_exists->num_rows() == 0) {
-                    $this->db->insert('calendars', $calendar);
+                    $this->db->insert('calendars', $calendar, null, true);
                     $new_calendar_id = $this->db->insert_id();
                     $calendars_id_map[$old_calendar_id] = $new_calendar_id;
                 } else {
                     $existing_calendar = $calendar_exists->row_array();
 
-                    $this->db->where('calendars_id', $existing_calendar['calendars_id'])->update('calendars', $calendar);
+                    $this->db->where('calendars_id', $existing_calendar['calendars_id'])->update('calendars', $calendar, null, null, true);
                     $new_calendar_id = $existing_calendar['calendars_id'];
                     //Rimuovo però fields e actions, altrimenti duplica tutto dopo...
                     $this->db->where('calendars_fields_calendars_id', $new_calendar_id)->delete('calendars_fields');
@@ -1540,7 +1540,7 @@ class Modules_model extends CI_Model
                     }
 
                     $field['calendars_fields_calendars_id'] = $calendars_id_map[$field['calendars_fields_calendars_id']];
-                    $this->db->insert('calendars_fields', $field);
+                    $this->db->insert('calendars_fields', $field, null, true);
                 }
             }
 
@@ -1684,7 +1684,7 @@ class Modules_model extends CI_Model
                 $conditions = array_merge($conditions, [$lb['conditions']]);
                 unset($lb['conditions']);
 
-                $this->db->insert('layouts_boxes', $lb);
+                $this->db->insert('layouts_boxes', $lb, null, true);
                 $new_lb_id = $this->db->insert_id();
                 $layout_box_map[$old_layout_box_id] = $new_lb_id;
             }
@@ -1734,7 +1734,7 @@ class Modules_model extends CI_Model
                 $conditions = array_merge($conditions, [$lb['conditions']]);
                 unset($lb['conditions']);
 
-                $this->db->insert('layouts_boxes', $lb);
+                $this->db->insert('layouts_boxes', $lb, null, true);
                 $new_lb_id = $this->db->insert_id();
                 $layout_box_map[$old_layout_box_id] = $new_lb_id;
             }
@@ -1822,7 +1822,7 @@ class Modules_model extends CI_Model
                     unset($pp['post_process_id']);
                     $pp['post_process_entity_id'] = $entities_id_map[$pp['post_process_entity_id']];
 
-                    $this->db->insert('post_process', $pp);
+                    $this->db->insert('post_process', $pp, null, true);
                 }
                 $c = 0;
                 $total = count($json['hooks']);
@@ -1854,7 +1854,7 @@ class Modules_model extends CI_Model
                             break;
                     }
 
-                    $this->db->insert('hooks', $h);
+                    $this->db->insert('hooks', $h, null, true);
                     $c++;
                     progress($c, $total);
                 }
@@ -1873,7 +1873,7 @@ class Modules_model extends CI_Model
                     $c++;
                     progress($c, $total, 'emails');
                     unset($email['emails_id']);
-                    $this->db->insert('emails', $email);
+                    $this->db->insert('emails', $email, null, true);
                 }
             }
             my_log('debug', "Module install: end emails creation", 'update');
@@ -1927,9 +1927,9 @@ class Modules_model extends CI_Model
                 }
 
                 if ($condition_exists) {
-                    $this->db->where('conditions_id', $condition_exists['conditions_id'])->update('_conditions', $condition);
+                    $this->db->where('conditions_id', $condition_exists['conditions_id'])->update('_conditions', $condition, null, null, true);
                 } else {
-                    $this->db->insert('_conditions', $condition);
+                    $this->db->insert('_conditions', $condition, null, true);
                 }
 
             }
@@ -1962,7 +1962,7 @@ class Modules_model extends CI_Model
                             //Verifico se il record esiste già basandomi sulla pk
                             if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
 
-                                $this->db->insert($entity['entity_name'], $row);
+                                $this->db->insert($entity['entity_name'], $row, null, true);
                             }
 
                         }
@@ -1980,11 +1980,11 @@ class Modules_model extends CI_Model
                         //debug($row);
                         //Verifico se il record esiste già basandomi sulla pk
                         if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
-                            $this->db->insert($entity['entity_name'], $row);
+                            $this->db->insert($entity['entity_name'], $row, null, true);
                         } else {
                             $id = $row[$entity['entity_name'] . '_id'];
                             unset($row[$entity['entity_name'] . '_id']);
-                            $this->db->where($entity['entity_name'] . '_id', $id)->update($entity['entity_name'], $row);
+                            $this->db->where($entity['entity_name'] . '_id', $id)->update($entity['entity_name'], $row, null, null, true);
                         }
                     }
                 }
