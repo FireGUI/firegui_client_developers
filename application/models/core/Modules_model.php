@@ -36,24 +36,32 @@ class Modules_model extends CI_Model
     public function installModule($identifier, $update_repository_url = null)
     {
         $return = $this->updateModule($identifier, $update_repository_url, false);
+        
         if ($return) {
             $module = $this->getModuleRepositoryData($identifier, $update_repository_url, $this->_project_id, $this->_license_token);
-            $this->db->insert(
-                'modules',
-                array(
-                    'modules_name' => $module['modules_repository_name'],
-                    'modules_version' => $module['modules_repository_version'],
-                    'modules_identifier' => $module['modules_repository_identifier'],
-                    'modules_version_code' => $module['modules_repository_version_code'],
-                    'modules_description' => $module['modules_repository_description'],
-                    'modules_notification_message' => $module['modules_repository_notification_message'],
-                    'modules_created_by_user' => $module['modules_repository_created_by_user'],
-                    'modules_thumbnail' => $module['modules_repository_thumbnail'],
-                    'modules_version_date' => $module['modules_repository_last_update'],
-                    'modules_core' => $module['modules_repository_core'],
-                    'modules_auto_update' => DB_BOOL_TRUE,
-                )
-            );
+            
+            //Inserisco nella tabella moduli se non esiste già
+            if ($this->db->get_where('modules', ['modules_identifier' => $module['modules_repository_identifier']])->num_rows() == 0) {
+
+                $this->db->insert(
+                    'modules',
+                    array(
+                        'modules_name' => $module['modules_repository_name'],
+                        'modules_version' => $module['modules_repository_version'],
+                        'modules_identifier' => $module['modules_repository_identifier'],
+                        'modules_version_code' => $module['modules_repository_version_code'],
+                        'modules_description' => $module['modules_repository_description'],
+                        'modules_notification_message' => $module['modules_repository_notification_message'],
+                        'modules_created_by_user' => $module['modules_repository_created_by_user'],
+                        'modules_thumbnail' => $module['modules_repository_thumbnail'],
+                        'modules_version_date' => $module['modules_repository_last_update'],
+                        'modules_core' => $module['modules_repository_core'],
+                        'modules_auto_update' => DB_BOOL_TRUE,
+                    )
+                );
+
+                $this->mycache->clearCache();
+            }
         }
         return $return;
     }
@@ -962,11 +970,26 @@ class Modules_model extends CI_Model
                         debug($menu, true);
                     }
                     $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
+                    $layout_dashboardable = $this->db->get_where('layouts', ['layouts_id' => $menu['menu_layout']])->row()->layouts_dashboardable;
+                    if ($layout_dashboardable) {
+                        $menu_dashboards = $this->db->get_where('menu', ['menu_label' => 'Dashboards'])->row_array();
+                        if ($menu_dashboards) {
+                            $menu['menu_parent'] = $menu_dashboards['menu_id'];
+                            $menus_id_map[$menu_dashboards['menu_id']] = $menu_dashboards['menu_id'];
+                        } else {
+                            $this->db->insert('menu', ['menu_label' => 'Dashboards', 'menu_position' => 'sidebar']);
+                            $menu['menu_parent'] = $this->db->insert_id();
+                            $menus_id_map[$menu['menu_parent']] = $menu['menu_parent'];
+                        }
+                        
+                    }
                 }
+
+                
                 //Il menu parent potrebbe essere di questo modulo...
                 if (array_key_exists($menu['menu_parent'], $menus_id_map)) {
-                    $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']];    
-
+                    $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']];
+                    
                 } else {
                     
                     $menu['menu_parent'] = null; //Lo metto a null di default, ma poi tento comunque di recuperarlo
@@ -1013,15 +1036,23 @@ class Modules_model extends CI_Model
 
                     }
                     $menu_esistente = $check_menu_exists->row_array();
-
+                    
 
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu, null, null, true);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
+
+                    if ($menu['menu_label'] == 'Warehouse Dashboard') {
+                        //debug($this->db->where('menu_id', $menu_esistente['menu_id'])->get('menu')->row_array(), true);
+
+                    }
                 } else {
                     //TODO: check menu already exists (see code before..)
                     //debug($menu,true);
 
+                    // if ($menu['menu_label'] == 'Warehouse Dashboard') {
+                    //     debug($menu, true);
 
+                    // }
 
                     $this->db->insert('menu', $menu, null, true);
                     $menuid = $this->db->insert_id();
