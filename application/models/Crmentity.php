@@ -485,10 +485,19 @@ class Crmentity extends CI_Model
             $eval_cachable_fields = array_get($options, 'eval_cachable_fields', []);
 
 
-
+            //debug($depth);
             // =================
-            $dati = $this->getEntityFullData($entity_id);
+            $dati = $this->getEntityFullData($entity_id, $depth);
+
             $this->buildSelect($dati, $options);
+            $visible_fields_names = [];
+            foreach ($dati['visible_fields'] as $field) {
+                $visible_fields_names[] = $field['fields_name'];
+
+            }
+
+
+
 
 
 
@@ -512,7 +521,7 @@ class Crmentity extends CI_Model
                     break;
                 }
                 //$leftJoinable = (empty($campo['fields_ref_auto_left_join']) or $campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE);
-                $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
+                $leftJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $campo['_step'] < $depth && $this->entityExists($campo['fields_ref']));
 
                 // I campi che hanno un ref li join solo se non sono in realtà legati a delle relazioni Se invece sono delle relazioni faccio select dei dati
                 if ($campo['fields_ref'] && $leftJoinable && !in_array($campo['fields_ref'], $dati['relations'])) {
@@ -525,6 +534,11 @@ class Crmentity extends CI_Model
                             // debug($dati['relations']);
                         }
 
+                        if ($campo['fields_ref'] == 'cities') {
+                            // debug($depth);
+                            // debug($campo,true);   
+
+                        }
                         $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
                         array_push($joined, $campo['fields_ref']);
 
@@ -646,6 +660,8 @@ class Crmentity extends CI_Model
                 // Aggiungo il campo alla select
                 $visible_fields[] = sprintf('%s.%s', $campo['entity_name'], $campo['fields_name']);
 
+                //20240923 - MP - Commentato tutto in quanto, arrivato qui, so già che campi devo estrarre/joinare in base alla depth (li ho calcolati prima nella getVisibleFields... non aveva senso questa cosa)
+
                 // Ciclo i campi uno ad uno e se:
                 // -- sono campi semplici non faccio altro che aggiungere il nome
                 // del field alla mia select ($visible_fields)
@@ -654,30 +670,33 @@ class Crmentity extends CI_Model
                 // CAMPO NON DEV'ESSERE RELAZIONE, perchè lo gestisco
                 // diversamente
 
-                $hasFieldRef = (bool) $campo['fields_ref'];
-                $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
-                $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $this->entityExists($campo['fields_ref']));
+                // $hasFieldRef = (bool) $campo['fields_ref'];
+                // $isRelation = $hasFieldRef && in_array($campo['fields_ref'], $entityFullData['relations']);
+                // $isJoinable = ($campo['fields_ref_auto_left_join'] == DB_BOOL_TRUE && $campo['_step'] < $depth && $this->entityExists($campo['fields_ref']));
 
-                if ($hasFieldRef && $isJoinable) {
-                    $entity = $this->getEntity($campo['fields_ref']);
-                    if ($isRelation) {
-                        //debug($entity);
-                    } else {
-                        if ($entityName == 'subscriptions' && $entity['entity_name'] == 'currencies') {
-                            //debug($depth,true);
-                        }
-
-
-
-                        foreach ($this->getVisibleFields($entity['entity_id'], $depth - 1) as $supfield) {
-
-                            $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
-                            $entityFullData['visible_fields'][] = $supfield;
-                        }
+                // if ($hasFieldRef && $isJoinable) {
+                //     $entity = $this->getEntity($campo['fields_ref']);
+                //     if ($isRelation) {
+                //         //debug($entity);
+                //     } else {
+                //         if ($entityName == 'subscriptions' && $entity['entity_name'] == 'currencies') {
+                //             //debug($depth,true);
+                //         }
 
 
-                    }
-                }
+
+                //         foreach ($this->getVisibleFields($entity['entity_id'], $depth - 1) as $supfield) {
+                //             if ($supfield['fields_name'] == 'customers_city') {
+                //                 debug($campo,true);
+
+                //             }
+                //             $visible_fields[] = sprintf('%s.%s', $supfield['entity_name'], $supfield['fields_name']);
+                //             $entityFullData['visible_fields'][] = $supfield;
+                //         }
+
+
+                //     }
+                // }
             }
         }
 
@@ -694,7 +713,7 @@ class Crmentity extends CI_Model
         array_unshift($visible_fields, sprintf($entityName . '.%s_id', $entityName));
 
 
-
+        //customers_contropartita_conto_documenti_contabilita_conti_blocco
 
         $this->db->select(array_unique($visible_fields));
 
@@ -817,13 +836,13 @@ class Crmentity extends CI_Model
      * @param int|string $entity
      * @return array
      */
-    public function getEntityFullData($entity)
+    public function getEntityFullData($entity, $depth = 2)
     {
         return array(
             'entity' => $this->getEntity($entity),
             'relations' => array_key_map($this->getEntityRelations($entity), 'relations_name'),
             'fields_ref_by' => $this->getFieldsRefBy($entity),
-            'visible_fields' => $this->getVisibleFields($entity),
+            'visible_fields' => $this->getVisibleFields($entity, $depth),
         );
     }
 
@@ -1162,33 +1181,52 @@ class Crmentity extends CI_Model
      * @param type $entity
      * @return type
      */
-    public function getVisibleFields($entity, $depth = 1)
+    public function getVisibleFields($entity, $depth = 1, $step = 0, $override = true)
     {
-        if ($depth <= 0) {
-            return [];
+        if (is_numeric($entity)) {
+            $entity = $this->getEntity($entity)['entity_name'];
         }
-        if (!array_key_exists($entity, $this->_visible_fields) || $depth > 1) {
-            $this->_visible_fields[$entity] = array_filter($this->getFields($entity), function ($item) {
-                return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
-            });
+        $entity_key = "$entity:$depth";
+        $visible_fields = [];
+        if ($depth <= 0) {
+            return $visible_fields;
+        } else {
+            if (!array_key_exists($entity_key, $this->_visible_fields)) {
+                $step++;
+                $fields = $this->getFields($entity);
+                foreach ($fields as $key => $field) {
+                    $fields[$key]['_step'] = $step;
 
-            while ($depth > 1) {
-                $depth--;
-                foreach ($this->_visible_fields[$entity] as $field) {
+                }
+                $visible_fields = array_filter($fields, function ($item) {
+                    return $item['fields_draw_display_none'] !== DB_BOOL_TRUE;
+                });
+                if ($override) {
+                    $this->_visible_fields[$entity_key] = $visible_fields;
+                }
 
-                    $isJoinable = $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE;
-                    if (!empty($field['fields_ref']) && $isJoinable) {
 
-                        $this->_visible_fields[$entity] = array_merge($this->_visible_fields[$entity], $this->getVisibleFields($field['fields_ref'], $depth));
+
+                foreach ($visible_fields as $field) {
+
+                    $isJoinable = $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE && !empty($field['fields_ref']) && $this->getEntity($field['fields_ref'])['entity_type'] != ENTITY_TYPE_RELATION;
+                    if ($isJoinable) {
+                        $visible_fields = array_merge($visible_fields, $this->getVisibleFields($field['fields_ref'], $depth - 1, $step, false));
+
+
                     }
                 }
+
+            } else {
+                $visible_fields = $this->_visible_fields[$entity_key];
             }
         }
-        if ($entity == 20) {
 
-            //debug(count($this->_visible_fields[$entity]));
+        if ($override) {
+            $this->_visible_fields[$entity_key] = $visible_fields;
         }
-        return $this->_visible_fields[$entity];
+        //debug($this->_visible_fields);
+        return $visible_fields;
     }
 
     /**

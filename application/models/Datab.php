@@ -907,7 +907,7 @@ class Datab extends CI_Model
         $limit = null;
         $offset = 0;
 
-        $options['depth'] = 1;
+        $options['depth'] = 2;
 
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $limit, $offset, $options);
 
@@ -2742,7 +2742,7 @@ class Datab extends CI_Model
 
         if (($field['fields_ref'] || $field['fields_additional_data']) && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
 
-
+           
             if (is_array($value)) {
                 // Ho una relazione molti a molti - non mi serve alcuna
                 // informazione sui field ref, poiché ho già la preview stampata
@@ -3445,6 +3445,7 @@ class Datab extends CI_Model
 
             case "form":
                 $form_id = $contentRef;
+                
                 $form = $this->get_form($form_id, $value_id);
                 if ($form) {
                     // Check permissions for this form
