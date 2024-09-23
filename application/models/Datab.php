@@ -35,7 +35,12 @@ class Datab extends CI_Model
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('crmentity');
+        $crmentity_override = $this->config->item('crmentity_model');
+        if ($crmentity_override) {
+            $this->load->model($crmentity_override, 'crmentity');
+        } else {
+            $this->load->model('crmentity');
+        }
 
         $this->preloadLanguages();
         $this->prefetchMyAccessibleLayouts();

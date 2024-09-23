@@ -122,7 +122,15 @@ class Apilib
     {
         // Prima carica la libreria di cache e dopo carica la crm entity
         //TODO: extend my_cache_file driver to work also with other driver...
-        $this->load->model('crmentity');
+
+
+
+        $crmentity_override = $this->config->item('crmentity_model');
+        if ($crmentity_override) {
+            $this->load->model($crmentity_override, 'crmentity');
+        } else {
+            $this->load->model('crmentity');
+        }
         $this->crmEntity = $this->crmentity; //Backward compatibiliy
         $this->load->driver('Cache/drivers/MY_Cache_file', null, 'mycache');
 
