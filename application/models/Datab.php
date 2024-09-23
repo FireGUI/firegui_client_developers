@@ -685,7 +685,7 @@ class Datab extends CI_Model
             if ($form['forms_one_record'] == DB_BOOL_TRUE) {
                 $formData = $this->apilib->searchFirst($form['entity_name']);
             } else {
-                $formData = ($edit_id && !is_array($edit_id)) ? $this->apilib->view($form['entity_name'], $edit_id, 1) : [];
+                $formData = ($edit_id && !is_array($edit_id)) ? $this->apilib->view($form['entity_name'], $edit_id, 2) : [];
             }
 
             foreach ($fields as $key => $field) {
@@ -784,6 +784,7 @@ class Datab extends CI_Model
                     'original_field' => $field,
                 ];
 
+
                 $dati = ['forms' => $form, 'forms_hidden' => $hidden, 'forms_fields' => $shown];
                 if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
                     $this->mycache->save($cache_key, $dati, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($form['forms_entity_id']));
@@ -805,11 +806,13 @@ class Datab extends CI_Model
                 if (strpos($field['fields_additional_data'], '{query:') !== false) {
                     $query = str_replace(['{query:', '}'], '', $field['fields_additional_data']);
                     $support_data = $this->db->query($query)->result_array();
+
                     $field['support_data'] = array_combine(array_column($support_data, 'id'), array_column($support_data, 'value'));
                 } else {
                     $support_data = explode(',', $field['fields_additional_data']);
                     $field['support_data'] = array_combine($support_data, $support_data);
-                    //debug($field['support_data'], true);
+
+
                 }
 
 
@@ -908,7 +911,7 @@ class Datab extends CI_Model
         $offset = 0;
 
         $options['depth'] = 2;
-
+        //debug($support_relation_table);
         $field['support_data'] = $this->crmentity->getEntityPreview($support_relation_table, $where, $limit, $offset, $options);
 
         if ($field['forms_field_full_data']) {
@@ -1001,7 +1004,7 @@ class Datab extends CI_Model
 
             $has_bulk = !empty($grid['grids_bulk_mode']);
             $where = $this->generate_where("grids", $grid['grids']['grids_id'], $value_id, is_array($where) ? implode(' AND ', $where) : $where, $additional_data);
-            
+
             // Verifico che non sia impostato un campo order by di default nell'entità, qualora non specificato un order by specifico della grid
 
             if (empty($order_by)) {
@@ -1252,6 +1255,7 @@ class Datab extends CI_Model
             $select = $field_support_id . ($support_fields ? ',' . $support_fields : '');
 
             //TODO: don't use query, but apilib search....
+            //debug($this->db->query("SELECT {$select} FROM {$support_relation_table}")->result_array(), true);
             return $this->db->query("SELECT {$select} FROM {$support_relation_table}")->result_array();
         }
     }
@@ -1421,7 +1425,7 @@ class Datab extends CI_Model
                                 }
                             }
                         } else {
-                            
+
                             $condition['value'] = str_replace("'", "''", $condition['value']);
                             if ($condition['value'] == '-1') {
                                 continue;
@@ -1442,9 +1446,9 @@ class Datab extends CI_Model
                                     }
                                     $values = "'" . implode("','", $condition['value']) . "'";
                                     if (in_array(-2, $condition['value'])) {
-                                        
 
-                                        
+
+
 
 
 
@@ -1452,8 +1456,8 @@ class Datab extends CI_Model
                                         $foo_prefix = str_ireplace(' IN ', ' NOT IN ', $foo_prefix);
                                         $foo_prefix = str_ireplace('WHERE', '', $foo_prefix);
 
-                                        
-                                            $arr[] = "
+
+                                        $arr[] = "
                                                 $not (
                                                         (
                                                                 {$where_prefix}{$field->fields_name} {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix}
@@ -1463,10 +1467,10 @@ class Datab extends CI_Model
                                                                 )
                                                         )
                                                     )";
-                                        
 
-                                        
-                                                
+
+
+
                                     } else {
                                         $arr[] = "({$where_prefix}{$field->fields_name} $not {$operators[$condition['operator']]['sql']} ({$values}){$where_suffix})";
                                     }
@@ -2742,7 +2746,7 @@ class Datab extends CI_Model
 
         if (($field['fields_ref'] || $field['fields_additional_data']) && in_array($field['fields_type'], [DB_INTEGER_IDENTIFIER, 'INT']) && $field['fields_draw_html_type'] != 'multi_upload') {
 
-           
+
             if (is_array($value)) {
                 // Ho una relazione molti a molti - non mi serve alcuna
                 // informazione sui field ref, poiché ho già la preview stampata
@@ -3445,7 +3449,7 @@ class Datab extends CI_Model
 
             case "form":
                 $form_id = $contentRef;
-                
+
                 $form = $this->get_form($form_id, $value_id);
                 if ($form) {
                     // Check permissions for this form
@@ -3719,7 +3723,7 @@ class Datab extends CI_Model
     /*
     Functions to prepare data for grid export
     */
-    public function prepareData($grid_id = null, $value_id = null, $params = [], $remove_html_tags = true)
+    public function prepareData($grid_id = null, $value_id = null, $params = [])
     {
         //prendo tutti i dati della grid (filtri compresi) e li metto in un array associativo, pronto per essere esportato
         $grid = $this->datab->get_grid($grid_id);
@@ -3745,15 +3749,12 @@ class Datab extends CI_Model
         $out_array = [];
         foreach ($grid_data as $dato) {
             $dato['value_id'] = $value_id;
-            
+
             $tr = [];
 
             foreach ($grid['grids_fields'] as $field) {
-                if ($remove_html_tags || (is_array($remove_html_tags) && !empty($remove_html_tags))) {
-                    $tr[] = trim(strip_tags($this->build_grid_cell($field, $dato, false, true, true), $remove_html_tags));
-                } else {
-                    $tr[] = $this->build_grid_cell($field, $dato, false, true, true);
-                }
+                $tr[] = trim(strip_tags($this->build_grid_cell($field, $dato, false, true, true)));
+
             }
 
             $out_array[] = $tr;
