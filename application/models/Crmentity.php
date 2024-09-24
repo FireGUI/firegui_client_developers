@@ -44,6 +44,11 @@ class Crmentity extends CI_Model
         // }
     }
 
+    public function getCrmSchemaCacheKey()
+    {
+        return self::SCHEMA_CACHE_KEY;
+    }
+
     /**
      * Imposta le lingue usate per le traduzioni
      * @param array $languagesId

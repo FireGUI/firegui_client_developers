@@ -814,7 +814,7 @@ class Main extends MY_Controller
                 } else {
                     $this->mycache->clearCache(true);
                 }
-                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+                @unlink(APPPATH . 'cache/' . $this->crmentity->getCrmSchemaCacheKey());
                 $this->mycache->toggleCachingSystem(false);
                 fclose($fp);
 
@@ -834,7 +834,7 @@ class Main extends MY_Controller
                 } else {
                     $this->mycache->clearCache(true);
                 }
-                @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+                @unlink(APPPATH . 'cache/' . $this->crmentity->getCrmSchemaCacheKey());
                 fclose($fp);
 
                 break;

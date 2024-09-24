@@ -258,7 +258,7 @@ $rowCol = 0;
                     <?php elseif ($field['type'] == 'select_ajax'): ?>
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                     <?php //debug($field); ?>
-                        <select class="js_select_ajax_new form-control <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]"
+                        <select class="js_select_ajax_new form-control" name="conditions[<?php echo $k; ?>][value]"
                             data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>"
                             data-source-field="<?php echo $field['field_ref'] ?? ''; ?>" data-minimum-input-length="0">
                             <option value="-1" <?php if ($value && $value == -1): ?>selected<?php endif; ?>><?php e('---'); ?></option>

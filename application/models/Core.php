@@ -29,7 +29,7 @@ class Core extends CI_Model
     public function clearCache()
     {
         $this->mycache->clearCache(true);
-        @unlink(APPPATH . 'cache/' . Crmentity::SCHEMA_CACHE_KEY);
+        @unlink(APPPATH . 'cache/' . $this->crmentity->getCrmSchemaCacheKey());
 
         // Pulisco cache frontend se c'è...
         if (is_dir(APPPATH . '../core/cache/')) {
