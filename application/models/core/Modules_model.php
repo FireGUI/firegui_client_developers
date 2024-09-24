@@ -936,7 +936,7 @@ class Modules_model extends CI_Model
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu, null, null, true);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
                 } else {
-                    $this->db->insert('menu', $men, null, true);
+                    $this->db->insert('menu', $menu, null, true);
                     $menuid = $this->db->insert_id();
                     $menus_id_map[$old_menu_id] = $menuid;
                 }
