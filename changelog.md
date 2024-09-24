@@ -9,7 +9,7 @@ Bugfix menu on install module
 Native DB_query_builder modified to pre-validate data before insert or update (columns check)
 removed thumb from header user profile image
 Bugfix permissions cache
-Optimized _queue_pp counter
+Optimized queuepp counter
 New case 13 in submitAjax.js (usefull for submit confirm after validations)
 Possibility to add scripts in footer (after other scripts)
 Added parameter stateDuration: -1 to fix datatable bug
