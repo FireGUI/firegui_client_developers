@@ -400,7 +400,7 @@ class Get_ajax extends MY_Controller
                 // Voglio i filtri su ricerca apilib. Quelli dei
                 // post-process quindi prima mi prendo tutti gli id facendo un
                 // apilib search e poi chiamo getEntityPreview con WHERE id IN (...)
-                $preSearchRecords = $this->apilib->search($table, $where, $limit, null, null, null, 1);
+                $preSearchRecords = $this->apilib->search($table, $where, $limit, null, null, null, 2);
                 $result_json = array();
                 if ($preSearchRecords) {
                     $idKey = "{$table}_id";

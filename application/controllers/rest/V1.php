@@ -288,18 +288,36 @@ class V1 extends MY_Controller
 
     private function processInput()
     {
+        $input = [];
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $contentType = $this->input->get_request_header('Content-Type', TRUE);
 
             if (strpos($contentType, 'application/json') !== false) {
                 $jsonData = json_decode($this->input->raw_input_stream, true);
-
                 if ($jsonData) {
-                    // Popola $_POST con i dati JSON
-                    $_POST = array_merge($_POST, $jsonData);
+                    $input = $jsonData;
                 }
+            } else {
+                $input = $_POST;
             }
         }
+
+        // Processa l'input per gestire la chiave 'where' come array
+        $processedInput = [];
+        foreach ($input as $key => $value) {
+            if (strpos($key, 'where[') === 0) {
+                $subKey = substr($key, 6, -1); // Rimuove 'where[' e ']'
+                $processedInput['where'][$subKey] = $value;
+            } else {
+                $processedInput[$key] = $value;
+            }
+        }
+
+        // Aggiorna $_POST con l'input processato
+        $_POST = $processedInput;
+        
+        
     }
 
     /**
@@ -350,6 +368,9 @@ class V1 extends MY_Controller
             $maxDepth = ($this->input->post('maxdepth') || $this->input->post('maxdepth') === '0') ? $this->input->post('maxdepth') : 2;
             
             $postData = array_filter((array) $this->input->post('where'));
+
+            
+
             if ($this->getEntityWhere($entity)) {
                 $where = array_filter([$this->getEntityWhere($entity)]);
             } else {

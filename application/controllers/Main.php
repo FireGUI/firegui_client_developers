@@ -52,16 +52,33 @@ class Main extends MY_Controller
     public function index()
     {
         if ($layout_dashboard = $this->auth->get('default_dashboard')) {
-            $this->layout($layout_dashboard);
-            return;
-        } else {
-            // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
-            $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
-            foreach ($layouts as $layout) {
-                if ($this->datab->can_access_layout($layout['layouts_id'])) {
-                    $this->layout($layout['layouts_id']);
-                    return;
-                }
+            if ($this->datab->can_access_layout($layout_dashboard)) {
+                $this->layout($layout_dashboard);
+                return;
+            } 
+        } 
+        // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
+        $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
+        foreach ($layouts as $layout) {
+            if ($this->datab->can_access_layout($layout['layouts_id'])) {
+                $this->layout($layout['layouts_id']);
+                return;
+            }
+        }
+
+        //No layouts found. Proceed with first layout (not entity details...)
+        $menu_layouts = $this->db->order_by('menu_order')
+            ->where('layouts_id IN (SELECT menu_layout FROM menu WHERE menu_layout IS NOT NULL)', null, false)
+            ->where('menu_position', 'sidebar')
+            ->join('layouts', 'layouts_id = menu_layout', 'LEFT')
+            
+            ->get('menu')->result_array();
+        
+            foreach ($menu_layouts as $layout) {
+            if ($this->datab->can_access_layout($layout['layouts_id'])) {
+                
+                $this->layout($layout['layouts_id']);
+                return;
             }
         }
         show_error('Nessun layout Dashboard trovato.');
