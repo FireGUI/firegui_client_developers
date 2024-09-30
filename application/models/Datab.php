@@ -852,7 +852,7 @@ class Datab extends CI_Model
         // A questo punto se il campo è ajax non pesco i dati, ma demando
         // l'onere alla chiamata ajax
         $type = $field['forms_fields_override_type'] ?: $field['fields_draw_html_type'];
-        if ($type == 'select_ajax' or $field['fields_source']) {
+        if ($type != 'select' or $field['fields_source']) {
             return $field;
         }
 
