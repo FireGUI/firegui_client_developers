@@ -44,6 +44,19 @@ class Crmentity extends CI_Model
         // }
     }
 
+    public function isRelation($entity)
+    {
+        if (is_numeric($entity)) {
+            $entity_name = $this->getEntity($entity)['entity_name'];
+        } elseif (is_array($entity)) {
+            $entity_name = $entity['entity_name'];
+        } else {
+            $entity_name = $entity;
+        }
+
+        return array_key_exists($entity_name, $this->_schemaCache['relations']['by_name']);
+    }
+
     public function getCrmSchemaCacheKey()
     {
         return self::SCHEMA_CACHE_KEY;
