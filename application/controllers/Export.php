@@ -194,8 +194,6 @@ class Export extends MY_Controller
             return false;
         }
         
-        // debug($data, true);
-        
         $header = array_unique(array_merge(...array_map('array_keys', $data)));  // Get unique headers from the data
         
         if (!empty($this->input->get('show_line_number')) && $this->input->get('show_line_number') == '1') {
@@ -208,8 +206,15 @@ class Export extends MY_Controller
         $footer_totals = [];
         foreach ($data as $index => $row) {
             foreach (array_values($row) as $key => $value) {
-                if ($grid['grids_fields'][$key]['grids_fields_totalable'] && is_numeric($value)) {
-                    $footer_totals[$key] += $value;
+                if ($grid['grids_fields'][$key]['grids_fields_totalable']) {
+                    // verifico se c'è un "data-totalablevalue" se c'è un elemento come '<span data-totalablevalue="0">0</span>', prendo quel valore, altrimenti faccio strip tags del value e verifico poi che sia is_numeric
+                    $value = preg_match('/data-totalablevalue="([^"]+)"/', $value, $matches) ? $matches[1] : strip_tags($value);
+                    
+                    if (is_numeric($value)) {
+                        $footer_totals[$key] += $value;
+                    } else {
+                        $footer_totals[$key] = '';
+                    }
                 } else {
                     $footer_totals[$key] = '';
                 }
