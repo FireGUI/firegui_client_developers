@@ -1776,7 +1776,7 @@ class Datab extends CI_Model
         }
     }
 
-    public function get_menu($position = 'sidebar')
+    public function get_menu($position = 'sidebar', $value_id = null)
     {
         // Prendi tutti i menu, con i sottomenu e poi ciclandoli costruisci un array multidimensionale
         $menu = $this->db->from('menu')->join('layouts', 'layouts.layouts_id = menu.menu_layout', 'left')
@@ -1784,7 +1784,7 @@ class Datab extends CI_Model
 
         $return = $subs = [];
         foreach ($menu as $key => $item) {
-            if (!$this->conditions->accessible('menu', $item['menu_id'])) {
+            if (!$this->conditions->accessible('menu', $item['menu_id'], $value_id)) {
                 unset($menu[$key]);
                 continue;
             }
@@ -3500,7 +3500,7 @@ class Datab extends CI_Model
             case "menu_group":
             case "menu_button_stripe":
             case "menu_big_button":
-                $data = $this->get_menu($contentRef);
+                $data = $this->get_menu($contentRef, $value_id);
                 return $this->load->view("pages/layouts/menu/{$contentType}", array('data' => $data, 'value_id' => $value_id, 'layout_data_detail' => $layoutEntityData), true);
             case "view":
                 //TODO: verificare prima se esiste un custom per questo modulo nelle view native custom
