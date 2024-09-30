@@ -20,3 +20,11 @@ Added layout_id passed to get_layout_box_content to solve conditions problem
 Added prev_row data in table rows
 Bugfix for charts_elements missing field
 Bugfix layout_container notice
+Bugfix module install menu
+revert ".one(" change in components.js
+Bugfix crm_schema
+Bugfix notice $class undefined
+Fix export pdf totalables
+Depth 2 in select_ajax_search
+Fallback layout when layout is not accessible
+Bugfix Api for json data request
