@@ -1,3 +1,6 @@
-Changelog version 4.1.1
+Changelog version 4.1.2
  
-Bugfix value_id passed to get_menu function
+Bugfix support data in forms only when necessary
+Passing value_id in get_menu function
+Working filters with relations on depth 2
+Add isRelation method on crmentity model
