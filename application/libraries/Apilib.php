@@ -1077,16 +1077,18 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
+        $depth = array_get($additional_parameters, 'depth', 2);
         if (is_string($input)) {
             $input = array($input);
         }
-
+        //debug($depth);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
         $cache_key = $this->generateCacheKey('count', $entity, [
             'input' => $input,
-            'group_by' => $additional_parameters['group_by'] ?? null
+            'group_by' => $additional_parameters['group_by'] ?? null,
+            'depth' => $depth
         ]);
 
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
@@ -1126,7 +1128,7 @@ class Apilib
                 }
             }
 
-            $out = $this->crmentity->get_data_full_list($entity, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
+            $out = $this->crmentity->get_data_full_list($entity, null, $where, null, 0, null, true, $depth, [], ['group_by' => $group_by]);
             if ($this->isCacheEnabled()) {
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
             }

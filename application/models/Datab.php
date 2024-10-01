@@ -306,6 +306,7 @@ class Datab extends CI_Model
         $cache_key = "apilib/datab.getDataEntity.{$entity_id}." . md5(serialize(func_get_args()) . serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
+
             // Questo è un wrapper di apilib che va a calcolare i permessi per ogni
             // entità
             $visibleFields = $this->crmentity->getFields($entity_id);
@@ -364,8 +365,9 @@ class Datab extends CI_Model
             $entity = $this->crmentity->getEntity($entity_id);
 
             if ($count) {
-                $dati = $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by]);
+                $dati = $this->apilib->count($entity['entity_name'], $where, ['group_by' => $group_by, 'depth' => $depth]);
             } else {
+                
                 $dati = $this->apilib->search($entity['entity_name'], $where, $limit, $offset, $order_by, null, $depth, $eval_cachable_fields, ['group_by' => $group_by]);
 
 
@@ -751,6 +753,7 @@ class Datab extends CI_Model
             }
 
             foreach ($hidden as $k => $field) {
+                
                 $hidden[$k] = $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id);
             }
 
@@ -959,6 +962,7 @@ class Datab extends CI_Model
         if (!($dati = $this->mycache->get($cache_key))) {
             $group_by = array_get($additional_parameters, 'group_by', null);
             $search = array_get($additional_parameters, 'search', null);
+            $depth = array_get($additional_parameters, 'depth', null);
             $preview_fields = array_get($additional_parameters, 'preview_fields', []);
 
             //@TODO: Intervenire su questa funzione per estrarre eventuali eval cachable
@@ -1057,6 +1061,7 @@ class Datab extends CI_Model
 
                 $data = $this->getDataEntityByQuery($grid['grids']['grids_entity_id'], $grid['grids']['grids_custom_query'], $where, $limit, $offset, $order_by, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             } else {
+
                 $data = $this->getDataEntity($grid['grids']['grids_entity_id'], $where, $limit, $offset, $order_by, $depth, $count, $eval_cachable_fields, ['group_by' => $group_by]);
             }
             //debug($data,true);
