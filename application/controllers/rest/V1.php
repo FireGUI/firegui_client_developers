@@ -268,7 +268,7 @@ class V1 extends MY_Controller
      */
     public function create($entity = null, $output = 'json')
     {
-        
+
         //Se sono arrivato qua, ho già fatto i controlli che possa scrivere su questa entità
         //Devo quindi solo controllare che i dati passati siano tutti accessibili in inserimento
         try {
@@ -316,8 +316,8 @@ class V1 extends MY_Controller
 
         // Aggiorna $_POST con l'input processato
         $_POST = $processedInput;
-        
-        
+
+
     }
 
     /**
@@ -358,7 +358,7 @@ class V1 extends MY_Controller
     public function search($entity = null)
     {
         $start = microtime(true);
-        
+
         try {
             $limit = ($this->input->post('limit')) ? $this->input->post('limit') : null;
             $offset = ($this->input->post('offset')) ? $this->input->post('offset') : 0;
@@ -366,10 +366,10 @@ class V1 extends MY_Controller
 
             $orderDir = ($this->input->post('orderdir')) ? $this->input->post('orderdir') : 'ASC';
             $maxDepth = ($this->input->post('maxdepth') || $this->input->post('maxdepth') === '0') ? $this->input->post('maxdepth') : 2;
-            
+
             $postData = array_filter((array) $this->input->post('where'));
 
-            
+
 
             if ($this->getEntityWhere($entity)) {
                 $where = array_filter([$this->getEntityWhere($entity)]);
@@ -386,8 +386,11 @@ class V1 extends MY_Controller
             $output = $this->apilib->search($entity, array_merge($where, $postData), $limit, $offset, $orderBy, $orderDir, $maxDepth);
             //debug($output,true);
             // debug(elapsed_time($start));
-            
+
             $this->filterOutputFields($entity, $output);
+
+            //debug($output, true);
+
             // debug(elapsed_time($start),true);
             $this->logAction(__FUNCTION__, func_get_args(), $output);
             $this->showOutput($output);
@@ -579,12 +582,12 @@ class V1 extends MY_Controller
 
     private function checkEntityPermission($entity_name, $chmod)
     {
-        
+
         $permission = $this->_preloaded_permissions[$entity_name] ?? null;
         //Se non ho impostato permessi specifici
 
         if ($permission == null || $permission['chmod'] == 0) {
-            
+
             //Allora non posso fare nulla, perchè significa che non ho specificato nulla di particolare su questa entità...
             return false;
 
@@ -621,13 +624,14 @@ class V1 extends MY_Controller
         $called_method = $this->router->fetch_method();
         return $this->request_type_mapping[$called_method] ?? 'search';  // Default to 'search' if method not found
     }
-    private function preloadPermissions ($token) {
+    private function preloadPermissions($token)
+    {
         if (!empty($this->_preloaded_permissions)) {
             return;
 
         }
         $entities_permissions = $this->db
-            ->join('entity', 'entity_id = api_manager_permissions_entity', 'LEFT')    
+            ->join('entity', 'entity_id = api_manager_permissions_entity', 'LEFT')
             ->where('api_manager_permissions_token', $token)
             ->get('api_manager_permissions')->result_array();
         // debug($this->db->last_query());
@@ -647,11 +651,11 @@ class V1 extends MY_Controller
         foreach ($fields_permissions as $field_permission) {
             $this->_preloaded_permissions[$field_permission['entity_name']]['fields'][$field_permission['fields_name']] = $field_permission['api_manager_fields_permissions_chmod'];
         }
-        
-        
+
+
     }
     private function filterOutputFields($entity_name, &$output)
-    { 
+    {
         //debug(count($output),true);
         $request_type = $this->getCurrentRequestType();
 
@@ -660,19 +664,34 @@ class V1 extends MY_Controller
             return $output;
         }
         $data_keys_to_keep = array_keys($output[0]);
+
+        //Aggiungo alle chiavi da tenere, anche i nomi delle tabella che hanno in right join l'id di questa tabella
+        $_right_joined_tables = $this->db->query("
+            SELECT 
+                entity_name
+            FROM
+                fields
+                LEFT JOIN entity ON entity_id = fields_entity_id
+            WHERE
+                fields_ref = '{$entity['entity_name']}'
+                AND fields_ref_auto_right_join = 1
+        ")->result_array();
+        $right_joined_tables = array_column($_right_joined_tables, 'entity_name');
+        //debug($right_joined_tables,true);
+
         $_fields_entities = $this->db
             ->join('entity', 'entity_id = fields_entity_id', 'LEFT')
             ->where_in('fields_name', $data_keys_to_keep)
             ->get('fields')->result_array();
         $fields_entities_map = array_key_value_map($_fields_entities, 'fields_name', 'entity_name');
-        
+
         //Aggiungo comunque i campi id che non sono in fields, ma so che esistono di default
         foreach ($this->db->get('entity')->result_array() as $entity) {
             $fields_entities_map[$entity['entity_name'] . '_id'] = $entity['entity_name'];
         }
 
+        //debug($fields_entities_map,true);
 
-        
         // Define allowed permission levels for each request type
         $allowed_permissions = [
             'search' => ['1', '2', '3', '4', '5'],
@@ -682,17 +701,17 @@ class V1 extends MY_Controller
             'delete' => ['5']
         ];
 
-        
-        
-        
+
+
+
         // Filter the output
         //debug($this->_preloaded_permissions,true);
-        
+
         foreach ($data_keys_to_keep as $key => $field_name) {
             foreach ($this->_preloaded_permissions as $_perm_entity_name => $permission_data) {
                 if (!empty($fields_entities_map[$field_name]) && $fields_entities_map[$field_name] == $_perm_entity_name) {
                     $fields_permissions = $permission_data['fields'] ?? [];
-                
+
                     //Per prima covalue: sa verifico se l'entità è accessibile
                     if ($this->checkEntityPermission($_perm_entity_name, 'R')) {
                         if (count($fields_permissions) > 1) {//Se (oltre al campo id, sono stati definiti permessi custom)
@@ -700,7 +719,7 @@ class V1 extends MY_Controller
                             if (isset($fields_permissions[$field_name])) {
                                 $field_permission = $fields_permissions[$field_name];
                                 if (!in_array($field_permission, $allowed_permissions[$request_type])) {
-                                    debug($field_name,true);
+                                    debug($field_name, true);
                                     unset($data_keys_to_keep[$key]);
                                 }
                             } else {
@@ -721,30 +740,30 @@ class V1 extends MY_Controller
                             //Non sono impostati permessi custom, quindi tengo tutto
                         }
                     } else {
-                        
+
                         unset($data_keys_to_keep[$key]);
-                        
+
                     }
                 } else {
-                    if (empty($fields_entities_map[$field_name])) {
+                    if (empty($fields_entities_map[$field_name]) && !in_array($field_name, $right_joined_tables)) {
                         unset($data_keys_to_keep[$key]);
                     }
                 }
-                
 
-                
+
+
 
             }
-            
+
         }
         $output = array_map(function ($row) use ($data_keys_to_keep) {
             return array_filter($row, function ($key) use ($data_keys_to_keep) {
                 return in_array($key, $data_keys_to_keep);
             }, ARRAY_FILTER_USE_KEY);
         }, $output);
-            
-            return $output;
-        
+
+        return $output;
+
     }
 
     /**
@@ -971,10 +990,10 @@ class V1 extends MY_Controller
         $swaggerJson = [
             'openapi' => '3.0.0',
             'info' => [
-                    'title' => 'CRM API',
-                    'version' => '1.0.0',
-                    'description' => 'API for CRM system'
-                ],
+                'title' => 'CRM API',
+                'version' => '1.0.0',
+                'description' => 'API for CRM system'
+            ],
             'servers' => [
                 [
                     'url' => base_url('rest/v1'),
@@ -986,15 +1005,15 @@ class V1 extends MY_Controller
             ],
             'paths' => [],
             'components' => [
-                    'securitySchemes' => [
-                        'bearerAuth' => [
-                            'type' => 'http',
-                            'scheme' => 'bearer',
-                            'bearerFormat' => 'JWT'
-                        ]
-                    ],
-                    'schemas' => []
-                ]
+                'securitySchemes' => [
+                    'bearerAuth' => [
+                        'type' => 'http',
+                        'scheme' => 'bearer',
+                        'bearerFormat' => 'JWT'
+                    ]
+                ],
+                'schemas' => []
+            ]
         ];
 
         foreach ($tabelle as $tabella) {
@@ -1012,20 +1031,20 @@ class V1 extends MY_Controller
                     'summary' => "Get all {$entityName}",
                     'security' => [['bearerAuth' => []]],
                     'responses' => [
-                            '200' => [
-                                'description' => 'Successful response',
-                                'content' => [
-                                        'application/json' => [
-                                            'schema' => [
-                                                'type' => 'array',
-                                                'items' => [
-                                                        '$ref' => "#/components/schemas/{$entityName}"
-                                                    ]
-                                            ]
+                        '200' => [
+                            'description' => 'Successful response',
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            '$ref' => "#/components/schemas/{$entityName}"
                                         ]
                                     ]
+                                ]
                             ]
                         ]
+                    ]
                 ]
             ];
 
@@ -1035,25 +1054,25 @@ class V1 extends MY_Controller
                     'summary' => "Create a new {$entityName}",
                     'security' => [['bearerAuth' => []]],
                     'requestBody' => [
-                            'required' => true,
-                            'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => "#/components/schemas/{$entityName}"
-                                        ]
-                                    ]
+                        'required' => true,
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => "#/components/schemas/{$entityName}"
                                 ]
-                        ],
+                            ]
+                        ]
+                    ],
                     'responses' => [
                         '201' => [
                             'description' => 'Created successfully',
                             'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => "#/components/schemas/{$entityName}"
-                                        ]
+                                'application/json' => [
+                                    'schema' => [
+                                        '$ref' => "#/components/schemas/{$entityName}"
                                     ]
                                 ]
+                            ]
                         ]
                     ]
                 ]
@@ -1065,23 +1084,23 @@ class V1 extends MY_Controller
                     'summary' => "Get a specific {$entityName}",
                     'security' => [['bearerAuth' => []]],
                     'parameters' => [
-                            [
-                                'name' => 'id',
-                                'in' => 'path',
-                                'required' => true,
-                                'schema' => ['type' => 'integer']
-                            ]
-                        ],
+                        [
+                            'name' => 'id',
+                            'in' => 'path',
+                            'required' => true,
+                            'schema' => ['type' => 'integer']
+                        ]
+                    ],
                     'responses' => [
                         '200' => [
                             'description' => 'Successful response',
                             'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => "#/components/schemas/{$entityName}"
-                                        ]
+                                'application/json' => [
+                                    'schema' => [
+                                        '$ref' => "#/components/schemas/{$entityName}"
                                     ]
                                 ]
+                            ]
                         ]
                     ]
                 ]
@@ -1093,33 +1112,33 @@ class V1 extends MY_Controller
                     'summary' => "Update a specific {$entityName}",
                     'security' => [['bearerAuth' => []]],
                     'parameters' => [
-                            [
-                                'name' => 'id',
-                                'in' => 'path',
-                                'required' => true,
-                                'schema' => ['type' => 'integer']
-                            ]
-                        ],
+                        [
+                            'name' => 'id',
+                            'in' => 'path',
+                            'required' => true,
+                            'schema' => ['type' => 'integer']
+                        ]
+                    ],
                     'requestBody' => [
                         'required' => true,
                         'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => "#/components/schemas/{$entityName}"
+                                ]
+                            ]
+                        ]
+                    ],
+                    'responses' => [
+                        '200' => [
+                            'description' => 'Updated successfully',
+                            'content' => [
                                 'application/json' => [
                                     'schema' => [
                                         '$ref' => "#/components/schemas/{$entityName}"
                                     ]
                                 ]
                             ]
-                    ],
-                    'responses' => [
-                        '200' => [
-                            'description' => 'Updated successfully',
-                            'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => "#/components/schemas/{$entityName}"
-                                        ]
-                                    ]
-                                ]
                         ]
                     ]
                 ]
@@ -1131,13 +1150,13 @@ class V1 extends MY_Controller
                     'summary' => "Delete a specific {$entityName}",
                     'security' => [['bearerAuth' => []]],
                     'parameters' => [
-                            [
-                                'name' => 'id',
-                                'in' => 'path',
-                                'required' => true,
-                                'schema' => ['type' => 'integer']
-                            ]
-                        ],
+                        [
+                            'name' => 'id',
+                            'in' => 'path',
+                            'required' => true,
+                            'schema' => ['type' => 'integer']
+                        ]
+                    ],
                     'responses' => [
                         '204' => [
                             'description' => 'Deleted successfully'
@@ -1163,60 +1182,60 @@ class V1 extends MY_Controller
                     'summary' => "Search {$entityName} with filters",
                     'security' => [['bearerAuth' => []]],
                     'requestBody' => [
-                            'required' => true,
-                            'content' => [
-                                    'application/x-www-form-urlencoded' => [
-                                        'schema' => [
-                                            'type' => 'object',
-                                            'properties' => array_merge($whereProperties, [
-                                                        'limit' => [
-                                                            'type' => 'integer',
-                                                            'description' => 'Number of records to return',
-                                                            'default' => '',
-                                                            'nullable' => true
-                                                        ],
-                                                        'offset' => [
-                                                            'type' => 'integer',
-                                                            'description' => 'Number of records to skip',
-                                                            'default' => '',
-                                                            'nullable' => true
-                                                        ],
-                                                        'orderby' => [
-                                                            'type' => 'string',
-                                                            'description' => 'Field to order by',
-                                                            'default' => '',
-                                                            'nullable' => true
-                                                        ],
-                                                        'orderdir' => [
-                                                            'type' => 'string',
-                                                            'enum' => ['ASC', 'DESC'],
-                                                            'description' => 'Order direction',
-                                                            'default' => '',
-                                                            'nullable' => true
-                                                        ],
-                                                        'maxdepth' => [
-                                                            'type' => 'integer',
-                                                            'description' => 'Maximum depth of related entities to return',
-                                                            'default' => 1
-                                                        ]
-                                                    ]),
+                        'required' => true,
+                        'content' => [
+                            'application/x-www-form-urlencoded' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => array_merge($whereProperties, [
+                                        'limit' => [
+                                            'type' => 'integer',
+                                            'description' => 'Number of records to return',
+                                            'default' => '',
+                                            'nullable' => true
+                                        ],
+                                        'offset' => [
+                                            'type' => 'integer',
+                                            'description' => 'Number of records to skip',
+                                            'default' => '',
+                                            'nullable' => true
+                                        ],
+                                        'orderby' => [
+                                            'type' => 'string',
+                                            'description' => 'Field to order by',
+                                            'default' => '',
+                                            'nullable' => true
+                                        ],
+                                        'orderdir' => [
+                                            'type' => 'string',
+                                            'enum' => ['ASC', 'DESC'],
+                                            'description' => 'Order direction',
+                                            'default' => '',
+                                            'nullable' => true
+                                        ],
+                                        'maxdepth' => [
+                                            'type' => 'integer',
+                                            'description' => 'Maximum depth of related entities to return',
+                                            'default' => 1
                                         ]
-                                    ]
+                                    ]),
                                 ]
-                        ],
+                            ]
+                        ]
+                    ],
                     'responses' => [
                         '200' => [
                             'description' => 'Successful response',
                             'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            'type' => 'array',
-                                            'items' => [
-                                                    '$ref' => "#/components/schemas/{$entityName}"
-                                                ]
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            '$ref' => "#/components/schemas/{$entityName}"
                                         ]
                                     ]
                                 ]
+                            ]
                         ]
                     ]
                 ]
@@ -1290,10 +1309,10 @@ class V1 extends MY_Controller
         $swaggerJson = [
             'openapi' => '3.0.0',
             'info' => [
-                    'title' => 'CRM API',
-                    'version' => '1.0.0',
-                    'description' => 'API for CRM system'
-                ],
+                'title' => 'CRM API',
+                'version' => '1.0.0',
+                'description' => 'API for CRM system'
+            ],
             'servers' => [
                 [
                     'url' => base_url('rest/v1'),
@@ -1305,15 +1324,15 @@ class V1 extends MY_Controller
             ],
             'paths' => [],
             'components' => [
-                    'securitySchemes' => [
-                        'bearerAuth' => [
-                            'type' => 'http',
-                            'scheme' => 'bearer',
-                            'bearerFormat' => 'JWT'
-                        ]
-                    ],
-                    'schemas' => []
-                ]
+                'securitySchemes' => [
+                    'bearerAuth' => [
+                        'type' => 'http',
+                        'scheme' => 'bearer',
+                        'bearerFormat' => 'JWT'
+                    ]
+                ],
+                'schemas' => []
+            ]
         ];
 
         foreach ($tabelle as $tabella) {
