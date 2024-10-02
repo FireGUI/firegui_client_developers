@@ -671,9 +671,15 @@ function initComponents(container, reset = false) {
       { id: '-2', text: 'Campo vuoto' }
     ];
 
+    var selectAjaxUrl = base_url + "get_ajax/select_ajax_search" + get_params;
+    
+    if ($(this).data('custom_url')) {
+      selectAjaxUrl = $(this).data('custom_url');
+    }
+
     input.select2({
       ajax: {
-        url: base_url + "get_ajax/select_ajax_search" + get_params,
+        url: selectAjaxUrl,
         dataType: "json",
         delay: 250,
         type: "POST",
