@@ -1,6 +1,6 @@
-Changelog version 4.1.2
+Changelog version 4.1.3
  
-Bugfix support data in forms only when necessary
-Passing value_id in get_menu function
-Working filters with relations on depth 2
-Add isRelation method on crmentity model
+fix action url custom in duplicate form
+Bugfix for count records with depth > 2
+added select ajax custom url data parameter
+Bugfix right joined tables in Api V1
