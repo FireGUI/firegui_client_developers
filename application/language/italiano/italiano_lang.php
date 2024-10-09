@@ -2209,3 +2209,4 @@ $lang['Worked Hours'] = 'Worked Hours';
 $lang['Bill amount'] = 'Bill amount';
 $lang['Closed by'] = 'Closed by';
 $lang['Tags'] = 'Tags';
+$lang['An error occurred while updating your password. Try again later or contact the administration.'] = 'Si è verificato un errore durante l\'aggiornamento della password. Riprova più tardi o contatta l\'amministrazione.';
