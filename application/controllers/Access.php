@@ -205,14 +205,14 @@ class Access extends MY_Controller
         $userID = $user[LOGIN_ENTITY . '_id'];
         $hash = md5($userID . self::SALT);
         
-        $msg = implode('<br/>', [
-            t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
-            t("this email was sent to you because you requested a reset of your password on %s.", 0, [$senderName]),
-            t("If you have not requested a password reset, ignore this email, otherwise click on the link below"),
-            "<a href='" . base_url("access/reset_password/{$userID}/{$hash}") . "'>" . base_url("access/reset_password/{$userID}/{$hash}") . "</a>",
-        ]);
+        $mail_data = [
+            'user_name' => $user[LOGIN_NAME_FIELD],
+            'sender_name' => $senderName,
+            'sender_email' => $senderMail,
+            'reset_link' => base_url("access/reset_password/{$userID}/{$hash}"),
+        ];
         
-        $sent = $this->mail_model->sendMessage($email, t('Password recovery'), $msg);
+        $sent = $this->mail_model->send($email,'reset_password_request', '', $mail_data);
         
         if (!$sent) {
             die(json_encode(array('status' => 0, 'txt' => t('An error occurred sending the email. Try again later or contact the administration.'))));
@@ -248,18 +248,15 @@ class Access extends MY_Controller
         $senderName = DEFAULT_EMAIL_SENDER;
         $senderMail = DEFAULT_EMAIL_SYSTEM;
         
-        $msg = implode('<br/>', [
-            t("Hi, %s", 0, [$user[LOGIN_NAME_FIELD]]),
-            t("your password on %s has been changed", 0, [$senderName]),
-            '<br/>',
-            t("Your new password is %s ", 0, [$newPassword]),
-            '<br/>',
-            t("You can now login by clicking link below:"),
-            '<br/>',
-            "<a href='" . base_url('access/login') . "'>" . base_url('access/login') . "</a>",
-        ]);
+        $mail_data = [
+            'user_name' => $user[LOGIN_NAME_FIELD],
+            'sender_name' => $senderName,
+            'sender_email' => $senderMail,
+            'new_password' => $newPassword,
+            'login_link' => base_url('access/login'),
+        ];
         
-        $sent = $this->mail_model->sendMessage($email, t('Password changed'), $msg);
+        $sent = $this->mail_model->send($email, 'reset_password_complete', '', $mail_data);
         
         if (!$sent) {
             die(json_encode(array('status' => 0, 'txt' => t('An error occurred while updating your password. Try again later or contact the administration.'))));

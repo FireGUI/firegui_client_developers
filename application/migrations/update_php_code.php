@@ -106,3 +106,9 @@ $updates['4.0.2'] = [
     ],
 ];
 
+$updates['4.1.4'] = [
+    'include' => [
+        '4.1.4_field_user_verification_code',
+        '4.1.4_new_email_templates'
+    ]
+];

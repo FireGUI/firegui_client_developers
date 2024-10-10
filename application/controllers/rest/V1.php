@@ -111,6 +111,8 @@ class V1 extends MY_Controller
             case 'swagger':
             case 'entities':
             case 'describe':
+            case 'reset_password_request':
+            case 'reset_password_confirm':
                 break;
             case 'create':
                 $entity = @$params[0];
@@ -1554,5 +1556,97 @@ class V1 extends MY_Controller
     public function swagger()
     {
         $this->load->view('pages/api_manager/swagger');
+    }
+    
+    public function reset_password_request() {
+        $email = $this->input->post('email');
+        
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->showError(t('Invalid email'), 1, 400);
+            return;
+        }
+        
+        // cerco l'utente con apilib searchfirst e se non trovo nulla ritorno errore.
+        $user = $this->apilib->searchFirst(LOGIN_ENTITY, [LOGIN_ENTITY . '_email' => $email]);
+        
+        if (empty($user)) {
+            $this->showError(t('User not found'), 1, 404);
+            return;
+        }
+        
+        // genero un codice numerico di 6 cifre e lo salvo sulla tabella users nel campo users_verification_code
+        $resetCode = rand(100000, 999999);
+        
+        // send email with mail_model to user with the generated code
+        $sent = $this->mail_model->send($email, 'confirm_code', '', [
+            'sender_name' => DEFAULT_EMAIL_SENDER,
+            'user_name' => $user[LOGIN_NAME_FIELD],
+            'verification_code' => $resetCode
+        ]);
+        
+        if ($sent) {
+            $this->apilib->edit(LOGIN_ENTITY, $user[LOGIN_ENTITY . '_id'], [
+                LOGIN_ENTITY . '_verification_code' => $resetCode
+            ]);
+            
+            $this->showOutput(t('Verification code sent'));
+        } else {
+            $this->showError(t('Error sending email'), 1, 500);
+        }
+    }
+    
+    public function reset_password_confirm() {
+        $post = $this->input->post();
+        
+        // verifico che in $post ci siano: verification_code, email, new password, confirm new password
+        if (empty($post['email']) || empty($post['verification_code']) || empty($post['new_password']) || empty($post['confirm_new_password'])) {
+            $this->showError(t('Missing parameters'), 1, 400);
+            return;
+        }
+        
+        // verifico che il codice sia un numero di 6 cifre
+        if (!preg_match('/^\d{6}$/', $post['verification_code'])) {
+            $this->showError(t('Invalid verification code'), 1, 400);
+            return;
+        }
+        
+        // verifico che password e confirm new password siano uguali
+        if ($post['new_password'] !== $post['confirm_new_password']) {
+            $this->showError(t('Passwords do not match'), 1, 400);
+            return;
+        }
+        
+        // verifico che la mail sia formato valido
+        if (!filter_var($post['email'], FILTER_VALIDATE_EMAIL)) {
+            $this->showError(t('Invalid email'), 1, 400);
+            return;
+        }
+        
+        // cerco l'utente con la mail e il codice sull'entità users con campo users_email e users_verification_code
+        $user = $this->apilib->searchFirst(LOGIN_ENTITY, [
+            LOGIN_ENTITY . '_email' => $post['email'],
+            LOGIN_ENTITY . '_verification_code' => $post['verification_code']
+        ]);
+        
+        // verifico che l'utente non sia vuoto
+        if (empty($user)) {
+            $this->showError(t('User not found'), 1, 404);
+            return;
+        }
+        
+        // aggiorno la password all'utente sul campo _password
+        $this->apilib->edit(LOGIN_ENTITY, $user[LOGIN_ENTITY . '_id'], [
+            LOGIN_ENTITY . '_password' => $post['new_password']
+        ]);
+        
+        // invio la mail all'utente di avvenuto cambio password
+        $this->mail_model->send($post['email'], 'reset_password_complete', '', [
+            'sender_name' => DEFAULT_EMAIL_SENDER,
+            'user_name' => $user[LOGIN_NAME_FIELD],
+            'new_password' => t('choosen password'),
+            'login_link' => base_url('access/login'),
+        ]);
+        
+        $this->showOutput(t('Password updated'));
     }
 }
