@@ -563,8 +563,10 @@ function initComponents(container, reset = false) {
   });
 
   $(":input", container).each(function () {
-    if ($(':input[data-dependent_on*="' + $(this).attr("name") + '"]', $(this).closest("form")).length > 0) {
-      $(this).trigger("change");
+    if (!$(this).closest("#views-permissions-datatable").length) {
+      if ($(':input[data-dependent_on*="' + $(this).attr("name") + '"]', $(this).closest("form")).length > 0) {
+        $(this).trigger("change");
+      }
     }
   });
 

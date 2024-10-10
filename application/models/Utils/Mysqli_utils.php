@@ -620,8 +620,8 @@ class Mysqli_utils extends Utils {
             '_queue_pp_execution_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
             '_queue_pp_code' => ['type' => 'TEXT'],
             '_queue_pp_executed' => ['type' => 'BOOLEAN', 'default' => false],
-            '_queue_pp_data' => ['type' => 'TEXT'],
-            '_queue_pp_event_data' => ['type' => 'TEXT'],
+            '_queue_pp_data' => ['type' => 'LONGTEXT'],
+            '_queue_pp_event_data' => ['type' => 'LONGTEXT'],
             //New column for debugging
             '_queue_pp_event_id' => ['type' => 'BIGINT'],
             '_queue_pp_referer' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
