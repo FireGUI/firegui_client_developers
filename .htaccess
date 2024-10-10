@@ -11,9 +11,8 @@
     RewriteRule ^thumb/(.*)$ class/easythumb/easythumb.php?$1 [L]
 	RewriteRule ^module_bridge/(.*)$ modulebridge.php?/$1 [L]
     RewriteRule ^template_bridge/(.*)$ templatebridge.php?/$1 [L]
-    # Reindirizza le richieste a /public/{nome_modulo}/risorsa.ext verso application/modules/{nome_modulo}/assets/risorsa.ext
-    RewriteRule ^public/([^/]+)/(.+)$ application/modules/$1/assets/$2 [L]
-
+	RewriteRule ^public/([^/]+)/(.+)$ application/modules/$1/assets/$2 [L]
+    
 	
     #Removes access to the system folder by users.
     #Additionally this will allow you to create a System.php controller,
