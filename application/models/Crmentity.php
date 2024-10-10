@@ -106,7 +106,9 @@ class Crmentity extends CI_Model
     public function get_data_full($entity, $id, $maxDepthLevel = 2)
     {
 
-        $arr = $this->get_data_full_list($entity, null, "{$entity}.{$entity}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
+        $input = $this->apilib->runDataProcessing($entity, 'pre-search', ["{$entity}.{$entity}_id = '{$id}'"]);
+        $arr = $this->get_data_full_list($entity, null, $input, 1, 0, null, false, $maxDepthLevel);
+        
         return array_get($arr, 0, []);
     }
 
