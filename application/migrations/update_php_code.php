@@ -111,6 +111,11 @@ $updates['4.1.4'] = [
         '4.1.4_field_user_verification_code',
         '4.1.4_new_email_templates',
         '4.1.4_add_htaccess_public_rule.php',
-        '4.1.4_fix_relations_fields.php',
+    ]
+];
+
+$updates['4.1.5'] = [
+    'include' => [
+        '4.1.5_fix_relations_fields.php',
     ]
 ];
