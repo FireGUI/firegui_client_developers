@@ -1284,9 +1284,14 @@ class Apilib
 
             ->get_where('fields', ['entity_name' => $entity_data['entity_name']])
             ->result_array();
-        //Xss clean
-        $data = $this->security->xss_clean($data, $fields);
 
+
+
+
+        //Xss clean
+
+        $data = $this->security->xss_clean($data, $fields);
+        //debug($fields,true);
         $originalData = $data;
 
         if ($editMode) {
@@ -1313,11 +1318,48 @@ class Apilib
             $fields[$k]['validations'] = $this->crmEntity->getValidations($field['fields_id']);
         }
 
+        //se l'entità è una relazione aggiungo fields fittizzi (ovvero i due id delle due tabelle, in quanto questi campi esistono come colonne ma non come fields)
+        // Verifica se l'entità è una relazione
+        $is_relation = $this->db->where('relations_name', $entity_data['entity_name'])->count_all_results('relations') > 0;
+
+        if ($is_relation) {
+            // Recupera i dettagli della relazione
+            $relation = $this->db->where('relations_name', $entity_data['entity_name'])->get('relations')->row_array();
+
+            // Aggiungi campi fittizi per gli ID delle due tabelle coinvolte
+            $fields[] = [
+                'fields_name' => $relation['relations_field_1'],
+                'fields_type' => 'INT',
+                'fields_required' => FIELD_REQUIRED,
+                'fields_draw_html_type' => 'input_hidden',
+                'fields_ref' => $relation['relations_table_1'],
+                'fields_xssclean' => 1,
+                'validations' => [],
+                'fields_default' => '',
+                'fields_draw_label' => $relation['relations_field_1'],
+                'fields_multilingual' => 0
+            ];
+
+            $fields[] = [
+                'fields_name' => $relation['relations_field_2'],
+                'fields_type' => 'INT',
+                'fields_required' => FIELD_REQUIRED,
+                'fields_draw_html_type' => 'input_hidden',
+                'fields_ref' => $relation['relations_table_2'],
+                'fields_xssclean' => 1,
+                'validations' => [],
+                'fields_default' => '',
+                'fields_draw_label' => $relation['relations_field_2'],
+                'fields_multilingual' => 0
+            ];
+        }
+
         /**
          * Validation
          */
         $rules = [];
         $rules_date_before = [];
+
         foreach ($fields as $field) {
             $rule = [];
 
@@ -1424,6 +1466,7 @@ class Apilib
                     }
                 }
             }
+
             if (!empty($rule)) {
                 //TODO: gestire regole con validation message
                 //debug($custom_messages[$field['fields_name']]);
@@ -1784,6 +1827,9 @@ class Apilib
          * Ovviamente se sono in modalità form crm non mando l'errore, ma
          * rimuovo semplicemente i campi in più
          */
+
+
+
         $invalidFields = array_diff(array_keys($data), array_key_map($fields, 'fields_name'));
         if (($key = array_search($entity . '_id', $invalidFields)) !== false) {
             unset($invalidFields[$key]);
