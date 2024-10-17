@@ -119,3 +119,9 @@ $updates['4.1.5'] = [
         '4.1.5_fix_relations_fields.php',
     ]
 ];
+
+$updates['4.1.6'] = [
+    'include' => [
+        '4.1.6_bugfix_relation_fields.php',
+    ]
+];
