@@ -36,10 +36,10 @@ class Modules_model extends CI_Model
     public function installModule($identifier, $update_repository_url = null)
     {
         $return = $this->updateModule($identifier, $update_repository_url, false);
-        
+
         if ($return) {
             $module = $this->getModuleRepositoryData($identifier, $update_repository_url, $this->_project_id, $this->_license_token);
-            
+
             //Inserisco nella tabella moduli se non esiste già
             if ($this->db->get_where('modules', ['modules_identifier' => $module['modules_repository_identifier']])->num_rows() == 0) {
 
@@ -125,7 +125,7 @@ class Modules_model extends CI_Model
 
                 //Run migrations
                 $old_module = $this->db->where('modules_identifier', $module['modules_repository_identifier'])->get('modules')->row_array();
-                if ($old_module) {
+                if ($is_update && $old_module) {
                     $old_version = $old_module['modules_version'];
                 } else {
                     $old_version = '0';
@@ -288,8 +288,10 @@ class Modules_model extends CI_Model
                     foreach ($updates as $key => $value) {
 
                         $version_compare_old = version_compare($key, $old_version, '>');
-
-
+                        // debug($key);
+                        // debug($old_version);
+                        // debug($version_compare_old);
+                        // debug($value,true);
                         //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
                         if ($version_compare_old || ($old_version == 0 || $key === '*')) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
                             foreach ($value as $key_type => $code) {
@@ -881,7 +883,7 @@ class Modules_model extends CI_Model
             );
             $c = 0;
 
-            
+
 
             foreach ($json['menu'] as $menu) {
                 $c++;
@@ -981,25 +983,25 @@ class Modules_model extends CI_Model
                             $menu['menu_parent'] = $this->db->insert_id();
                             $menus_id_map[$menu['menu_parent']] = $menu['menu_parent'];
                         }
-                        
+
                     }
                 }
 
-                
+
                 //Il menu parent potrebbe essere di questo modulo...
                 if (array_key_exists($menu['menu_parent'], $menus_id_map)) {
                     $menu['menu_parent'] = $menus_id_map[$menu['menu_parent']];
-                    
+
                 } else {
-                    
+
                     $menu['menu_parent'] = null; //Lo metto a null di default, ma poi tento comunque di recuperarlo
                     //Se non è di questo modulo, potrei avere i dati dentro la chiave menu_parent_data. A quel punto posso recuperare tutte le sue info e verificare se il menu è comunque presente!
                     if (!empty($menu['menu_parent_data'])) {
                         $menu_parent_data = $menu['menu_parent_data'];
-                        
+
                         if (!empty($menu_parent_data['menu_module_key'])) {
                             $menu_parent = $this->db->query("SELECT * FROM menu WHERE menu_module_key = '{$menu_parent_data['menu_module_key']}'");
-                            
+
                             if ($menu_parent->num_rows() > 0) {
                                 $menu['menu_parent'] = $menu_parent->row()->menu_id;
                             } else {
@@ -1008,19 +1010,19 @@ class Modules_model extends CI_Model
                                 unset($menu_parent_data['menu_layout']);
                                 $this->db->insert('menu', $menu_parent_data, null, true);
                                 $menu['menu_parent'] = $this->db->insert_id();
-                                
+
                             }
                         }
                     }
                 }
-                
+
 
                 $conditions = array_merge($conditions, [$menu['conditions']]);
                 unset($menu['conditions']);
                 if (array_key_exists('menu_parent_data', $menu)) {
-                   // unset($menu['menu_parent_data']);
+                    // unset($menu['menu_parent_data']);
                 }
-                
+
 
 
 
@@ -1036,7 +1038,7 @@ class Modules_model extends CI_Model
 
                     }
                     $menu_esistente = $check_menu_exists->row_array();
-                    
+
 
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu, null, null, true);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
