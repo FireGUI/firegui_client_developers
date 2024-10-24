@@ -186,13 +186,13 @@ class MX_Loader extends CI_Loader
             return $this->libraries($library);
         }
 
-        $class = strtolower(basename($library));
+        $class = is_string($library) ? strtolower(basename($library)) : '';
 
         if (isset($this->_ci_classes[$class]) && $_alias = $this->_ci_classes[$class]) {
             return $this;
         }
 
-        ($_alias = strtolower($object_name)) or $_alias = $class;
+        ($_alias = (is_string($object_name)) ? strtolower($object_name) : '') or $_alias = $class;
 
         list($path, $_library) = Modules::find($library, $this->_module, 'libraries/');
 
@@ -245,7 +245,7 @@ class MX_Loader extends CI_Loader
         /* check module */
 
         list($path, $_model) = Modules::find(strtolower($model), $this->_module, 'models/');
-        
+
         if ($path == false) {
             if (strpos($model, '/')) {
 
@@ -448,7 +448,8 @@ class MX_Loader extends CI_Loader
     //     }
     // }
 
-    function &_ci_get_component($component) {
+    function &_ci_get_component($component)
+    {
         return CI::$APP->$component;
     }
 
@@ -505,7 +506,7 @@ class MX_Loader extends CI_Loader
         if (empty($error)) {
 
             if ((bool) @ini_get('short_open_tag') === false && CI::$APP->config->item('rewrite_short_tags') == true) {
-                echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
+                echo eval ('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
             } else {
                 include $_ci_path;
             }

@@ -2217,3 +2217,7 @@ $lang['Invalid verification code'] = 'Codice di verifica non valido';
 $lang['Password updated'] = 'Password aggiornata';
 $lang['Verification code sent'] = 'Codice di verifica inviato';
 $lang['choosen password'] = 'password scelta';
+$lang['Dashboard Customer'] = 'Dashboard Customer';
+$lang['Voip call queue'] = 'Voip call queue';
+$lang['Voip settings'] = 'Voip settings';
+$lang['Voip numbers'] = 'Voip numbers';

@@ -47,6 +47,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link		https://codeigniter.com/user_guide/libraries/language.html
  */
+
+// Fix for php 8.1
+if (!class_exists('CI_Lang', false)) {
+	require_once(BASEPATH . 'core/Lang.php');
+}
 class MY_Lang extends CI_Lang
 {
 
@@ -109,7 +114,7 @@ class MY_Lang extends CI_Lang
 		$langfile .= '.php';
 
 		if (empty($idiom) or !preg_match('/^[a-z_-]+$/i', $idiom)) {
-			$config = & get_config();
+			$config = &get_config();
 			$idiom = empty($config['language']) ? 'english' : $config['language'];
 		}
 
@@ -119,7 +124,7 @@ class MY_Lang extends CI_Lang
 
 		// Load the base file, so any others found can override it
 		$basepath = BASEPATH . 'language/' . $idiom . '/' . $langfile;
-		
+
 		if (($found = file_exists($basepath)) === TRUE) {
 			include($basepath);
 		}
@@ -143,7 +148,7 @@ class MY_Lang extends CI_Lang
 		}
 
 		$custom_path = sprintf('%slanguage/%s/%s_lang_custom.php', APPPATH, $idiom, $cleaned_langfile);
-		
+
 		if (file_exists($custom_path)) {
 			//debug($custom_path,true);
 			include $custom_path;
@@ -173,5 +178,5 @@ class MY_Lang extends CI_Lang
 		return TRUE;
 	}
 
-	
+
 }
