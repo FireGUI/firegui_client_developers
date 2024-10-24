@@ -654,7 +654,7 @@ if (!function_exists('t')) {
                 $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
             }
 
-            $val = addslashes($string);
+            $val = addslashes($string??'');
             $add = '$lang[\'' . $val . '\'] = \'' . $val . '\';' . PHP_EOL;
 
             if (file_exists($path)) {
@@ -695,13 +695,16 @@ if (!function_exists('t')) {
         // Rimpiazza parametri
         if (is_array($params) && !empty($params)) {
             foreach ($params as $v) {
-                $translation = preg_replace("/%s/", $v, $translation, 1);
+               if ($v) {
+                    $translation = preg_replace("/%s/", $v, $translation, 1);
+               }
+                
             }
         }
 
         $modifiers = [1 => 'ucfirst', 2 => 'strtoupper', 3 => 'ucwords'];
         if (isset($modifiers[$ucfirst])) {
-            call_user_func($modifiers[$ucfirst], $translation);
+            call_user_func($modifiers[$ucfirst], $translation??'');
         }
         //debug($translation);
         return $translation;

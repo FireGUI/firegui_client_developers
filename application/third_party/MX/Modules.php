@@ -2,14 +2,6 @@
 
 (defined('EXT')) or define('EXT', '.php');
 
-
-// Patch for php 8.1
-if (!class_exists('CI_Controller', false)) {
-	require_once BASEPATH . 'core/Controller.php';
-}
-
-
-
 global $CFG;
 
 /* get module locations from config settings or use the default module location and offset */
@@ -222,6 +214,7 @@ class Modules
 					}
 				} else {
 					/* load non-class files */
+					//var_dump($custom_path);
 					if ($custom_path !== null && is_dir($custom_path) && is_file($custom_path . ($file_ext))) {
 						return array($custom_path, $file);
 					} elseif (is_file($fullpath . $file_ext)) {

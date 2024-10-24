@@ -560,7 +560,7 @@ class Apilib
     /*
     Usefull to centralize saving methods in on call
     */
-    public function save($entity = null, $data, $id = null)
+    public function save($entity, $data, $id = null)
     {
         if ($id) {
             return $this->edit($entity, $id, $data);
@@ -1019,8 +1019,8 @@ class Apilib
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
                 // campo_1:campo_2 ...
                 // dir_1:dir_2 ...
-                $order_fields = explode(':', $orderBy);
-                $order_dirs = explode(':', $orderDir);
+                $order_fields = explode(':', $orderBy??'');
+                $order_dirs = explode(':', $orderDir??'');
 
                 // Elabora i due parametri affinché siano della stessa dimensione
                 foreach ($order_fields as $k => $field) {

@@ -157,6 +157,7 @@ class CI_Session {
 			$expires = empty($this->_config['cookie_lifetime']) ? 0 : time() + $this->_config['cookie_lifetime'];
 			if (is_php('7.3'))
 			{
+				//debug('foo',true);
 				setcookie(
 					$this->_config['cookie_name'],
 					session_id(),

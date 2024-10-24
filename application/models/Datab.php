@@ -787,7 +787,7 @@ class Datab extends CI_Model
                     // Computo il ref field da usare nel caso di form
                     'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id),
                     'fieldset' => $field['forms_fields_fieldset'],
-                    'required' => $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default'])),
+                    'required' => $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !($field['fields_default'] && trim($field['fields_default']))),
                     'onclick' => $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '',
                     'original_field' => $field,
                 ];
@@ -887,7 +887,7 @@ class Datab extends CI_Model
         }
 
         // Prendo la field select where
-        if (($fieldWhere = trim($field['fields_select_where']))) {
+        if (($field['fields_select_where'] && $fieldWhere = trim($field['fields_select_where']))) {
             $replaces = ['value_id' => $value_id];
             $wheres[] = $this->replace_superglobal_data(str_replace_placeholders($fieldWhere, $replaces));
         }
@@ -1123,8 +1123,8 @@ class Datab extends CI_Model
 
             //TODO: will be deprecated as soon as new actions features will become stable
             $dati['grids']['links'] = array(
-                'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
-                'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
+                'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link']??'')),
+                'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'] ?? '')),
                 'delete' => ($dati['grids']['grids_delete_link'] ? str_replace('{base_url}', base_url(), $dati['grids']['grids_delete_link']) : base_url("db_ajax/generic_delete/{$dati['grids']['entity_name']}")),
             );
 
@@ -2504,6 +2504,7 @@ class Datab extends CI_Model
 
         $cache_key = "apilib/datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET) . serialize($_POST) . serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
+            $dati = [];
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
                 return null;
             }
@@ -2786,7 +2787,7 @@ class Datab extends CI_Model
 
         if ($isEmptyString or $isRefWithoutValue) {
             // Il campo non è stampabile, quindi torno il placeholder se ce l'ho
-            $placeholder = trim($field['fields_draw_placeholder']);
+            $placeholder = trim($field['fields_draw_placeholder']??'');
             return $placeholder ?
                 sprintf('<small class="text-muted">%s</small>', $placeholder) : '';
         }

@@ -56,7 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @var	string
  *
  */
-	const CI_VERSION = '3.1.13-dev';
+	const CI_VERSION = '3.1.13';
 
 /*
  * ------------------------------------------------------
@@ -367,6 +367,7 @@ if ( ! is_php('5.4'))
 	 */
 	function &get_instance()
 	{
+	
 		return CI_Controller::get_instance();
 	}
 
