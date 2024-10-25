@@ -980,7 +980,7 @@ class Apilib
                  //Verifico se la chiave è un campo di tipo relazione. In questo caso gestisco diversamente costruendomi un where in
                 $field = $this->datab->get_field_by_name($key, true);
                 //debug($field);
-                if ($field['fields_ref'] && $field['fields_draw_html_type'] == 'multiselect') {
+                if ($field['fields_ref'] && $field['fields_draw_html_type'] == 'multiselect' && is_array($value)) {
                     //Prendo l'entità referenziata
                     $relation = $this->db->where('relations_name', $field['fields_ref'])->get('relations')->row_array();
                     if ($relation['relations_table_1'] == $entity) {
