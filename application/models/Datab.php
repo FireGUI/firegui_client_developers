@@ -44,6 +44,18 @@ class Datab extends CI_Model
 
         $this->preloadLanguages();
         $this->prefetchMyAccessibleLayouts();
+        
+        // Inizializza le variabili d'istanza del controller
+        if ($this->db->table_exists('settings_template')) {
+            $this->db->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
+        }
+        
+        if ($this->db->table_exists('currencies')) {
+            $this->db->join('currencies', 'settings.settings_default_currency = currencies.currencies_id', 'LEFT');
+            
+        }
+        
+        $this->settings = $this->db->get('settings')->row_array();
     }
 
     protected function prefetchMyAccessibleLayouts()
@@ -3161,7 +3173,14 @@ class Datab extends CI_Model
                     } else {
                         return $value;
                     }
-
+                case 'input_money':
+                    $currency = '€';
+                    
+                    if (!empty($this->settings['currencies_symbol'])) {
+                        $currency = $this->settings['currencies_symbol'];
+                    }
+                    
+                    return r_money($value, $currency . ' {number}');
                 // no break
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
