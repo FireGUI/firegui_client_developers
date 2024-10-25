@@ -1751,7 +1751,7 @@ if (!function_exists('e_money')) {
 if (!function_exists('r_money')) {
     function r_money($number, $format = '{number}', $decimals = 2)
     {
-        return str_ireplace('{number}', number_format($number, $decimals, ',', '.'), $format);
+        return str_ireplace('{number}', number_format($number??0, $decimals, ',', '.'), $format);
     }
 }
 

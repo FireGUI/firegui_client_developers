@@ -9,7 +9,7 @@ if (!empty($chart_data[0]['series'])) {
     foreach ($chart_data[0]['series'] as $name => $data) {
         $pdata = [];
         foreach ($data as $x => $y) {
-            $pdata[] = ['name' => $x, 'y' => (float)number_format($y, 2, '.', '')];
+            $pdata[] = ['name' => $x, 'y' => (float)number_format((float)$y, 2, '.', '')];
         }
 
         $series[] = ['name' => $name, 'data' => $pdata];

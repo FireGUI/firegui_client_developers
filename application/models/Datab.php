@@ -52,6 +52,7 @@ class Datab extends CI_Model
 
         $cache_key = "database_schema/datab.build_layout.accessible.{$userId}." . md5(serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
+            $dati = [];
             $dati['accessibleLayouts'] = $dati['accessibleEntityLayouts'] = $dati['forwardedLayouts'] = [];
             $accessibleLayouts = $this->db->query("
                 SELECT layouts_id, layouts_is_entity_detail, layouts_entity_id
@@ -2905,7 +2906,7 @@ class Datab extends CI_Model
 
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
-            } elseif (strpos($field['fields_additional_data'], '{query:') === 0) {
+            } elseif (strpos($field['fields_additional_data']??'', '{query:') === 0) {
                 $query = str_replace(['{query:', '}'], '', $field['fields_additional_data']);
                 $support_data = $this->db->query($query)->result_array();
                 $support_data_remap = array_combine(array_column($support_data, 'id'), array_column($support_data, 'value'));
@@ -3014,7 +3015,7 @@ class Datab extends CI_Model
                 case 'multi_upload':
                 case 'multi_upload_no_preview':
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
-                        $value = (array) json_decode($value, true);
+                        $value = (array) json_decode($value??'', true);
                         $value = array_map(function ($item) {
                             if (in_array($item['file_type'], ['image/jpeg', 'image/png'])) {
                                 if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
@@ -3073,8 +3074,8 @@ class Datab extends CI_Model
                         $style = '';
                     }
 
-                    $stripped = strip_tags($value);
-                    $value = preg_replace(array('#<script(.*?)>(.*?)</script>#is', '/<img[^>]+\>/i'), '', $value);
+                    $stripped = strip_tags($value??'');
+                    $value = preg_replace(array('#<script(.*?)>(.*?)</script>#is', '/<img[^>]+\>/i'), '', $value??'');
 
                     if (strlen($stripped) > 150 && $crop) {
                         $textContainerID = md5($value);
