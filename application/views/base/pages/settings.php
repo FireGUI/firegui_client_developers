@@ -138,7 +138,7 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                             <li><?php e('Email logs');?></li>
                             <li><a href=""><?php e('API logs');?></a></li>
                         <?php endif;?>
-                        <li><a href="<?php echo base_url('main/layout/changelog'); ?>"><?php e('Changelog');?></a></li>
+                        <li><a href="<?php echo base_url('main/changelog'); ?>"><?php e('Changelog');?></a></li>
                     </ul>
                 </div>
             </div>
@@ -200,7 +200,13 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                 </div>
                 
                 <div class="box-body">
-                    
+                    <div class="">
+                        <!-- server date time-->
+                        <span><i style="margin-right:15px" class="fas fa-clock"></i></span> Server info<br />
+                        <small><?php echo date('d-m-Y H:i'); ?>  </small>
+                        <small>PHP Version: <?php echo phpversion(); ?> </small>
+                    </div>
+                    <br />
                     <!-- Cron Check CURL -->
                     <?php if (!empty($this->settings['settings_last_cron_check'])): ?>
                         <?php if ($interval_cron_execution > 5): ?>

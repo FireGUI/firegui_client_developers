@@ -2221,3 +2221,5 @@ $lang['Dashboard Customer'] = 'Dashboard Customer';
 $lang['Voip call queue'] = 'Voip call queue';
 $lang['Voip settings'] = 'Voip settings';
 $lang['Voip numbers'] = 'Voip numbers';
+$lang['Changelog client'] = 'Changelog client';
+$lang['openbuilder changelog clients'] = 'openbuilder changelog clients';
