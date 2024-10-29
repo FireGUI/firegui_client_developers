@@ -125,3 +125,16 @@ $updates['4.1.6'] = [
         '4.1.6_bugfix_relation_fields.php',
     ]
 ];
+
+$updates['4.1.7'] = [
+    'include' => [
+        '4.1.4_new_email_templates.php',
+        '4.1.4_field_user_verification_code.php',
+    ]
+];
+
+$updates['4.1.8'] = [
+    'include' => [
+        '4.1.8_add_currencies_system_entity.php',
+    ]
+];
