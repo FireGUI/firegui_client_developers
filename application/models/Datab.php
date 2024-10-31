@@ -3179,7 +3179,7 @@ class Datab extends CI_Model
                         $currency = $this->settings['currencies_symbol'];
                     }
                     
-                    return r_money($value, $currency . ' {number}');
+                    return '<span data-totalablevalue="'.number_format($value, 2, '.', '').'">' . r_money($value, $currency . ' {number}') . '</span>';
                 // no break
                 default:
                     if ($field['fields_type'] === 'DATERANGE') {
