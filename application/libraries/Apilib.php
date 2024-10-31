@@ -977,19 +977,40 @@ class Apilib
             }
 
             foreach ($input as $key => $value) {
-                if (is_array($value) && is_string($key)) {
+                //Verifico se la chiave è un campo di tipo relazione. In questo caso gestisco diversamente costruendomi un where in
+                $field = $this->datab->get_field_by_name($key, true);
+                //debug($field);
+                if ($field && $field['fields_ref'] && $field['fields_draw_html_type'] == 'multiselect' && is_array($value)) {
+                    //Prendo l'entità referenziata
+                    $relation = $this->db->where('relations_name', $field['fields_ref'])->get('relations')->row_array();
+                    if ($relation['relations_table_1'] == $entity) {
+                        $campo = $relation['relations_field_2'];
+                        //$table_ref = $relation['relations_table_2'];
+                    } else {
+                        $campo = $relation['relations_field_1'];
+                        //$table_ref  = $relation['relations_table_1'];
+                    }
 
-                    // La chiave se è stringa indica il nome del campo,
-                    // mentre il value se è array (fattibile solo da POST o PROCESS)
-                    // fa un WHERE IN
                     $values = "'" . implode("','", $value) . "'";
-                    $where[] = "{$key} IN ({$values})";
-                } elseif (is_string($key)) {
-                    $where[$key] = $value;
+                    $where[] = "{$entity}_id IN (SELECT {$entity}_id FROM {$relation['relations_name']} WHERE $campo IN ({$values}))";
+
+
+
                 } else {
-                    // Ho una chiave numerica che potrebbe essere stata inserita
-                    // da pre-process...
-                    $where[] = $value;
+                    if (is_array($value) && is_string($key)) {
+
+                        // La chiave se è stringa indica il nome del campo,
+                        // mentre il value se è array (fattibile solo da POST o PROCESS)
+                        // fa un WHERE IN
+                        $values = "'" . implode("','", $value) . "'";
+                        $where[] = "{$key} IN ({$values})";
+                    } elseif (is_string($key)) {
+                        $where[$key] = $value;
+                    } else {
+                        // Ho una chiave numerica che potrebbe essere stata inserita
+                        // da pre-process...
+                        $where[] = $value;
+                    }
                 }
             }
 

@@ -3383,9 +3383,9 @@ class Datab extends CI_Model
         $contentType = $layoutBoxData['layouts_boxes_content_type'];
         $contentRef = $layoutBoxData['layouts_boxes_content_ref'];
 
-        $parent_layout = $this->layout->getLayout($layoutBoxData['layouts_boxes_layout']);
+        $parent_layout = !empty($layoutBoxData['layouts_boxes_layout'])?$this->layout->getLayout($layoutBoxData['layouts_boxes_layout']):false;
 
-        if ($value_id && $parent_layout['layouts_entity_id'] > 0 && $layoutEntityData == null) {
+        if ($value_id && $parent_layout && $parent_layout['layouts_entity_id'] > 0 && $layoutEntityData == null) {
             $entity = $this->crmentity->getEntity($parent_layout['layouts_entity_id']);
             if (isset($entity['entity_name'])) {
                 $this->layout->addRelatedEntity($entity['entity_name'], $value_id);
