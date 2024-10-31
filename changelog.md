@@ -1,3 +1,10 @@
+Changelog version 4.1.9
+
+2024-10-31 Patch version: 4.1.9
+
+Bugfix apilib undefined
+To be schedule migration 4.2.0
+
 Changelog version 4.1.8
 
 2024-10-31 Patch version: 4.1.8
