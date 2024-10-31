@@ -1,3 +1,10 @@
+Changelog version 4.1.8
+
+2024-10-31 Patch version: 4.1.8
+
+Relations searchable in apilib
+Bugfix undefined layouts_boxes_layout
+
 Changelog version 4.1.7
 
 2024-10-29 Patch version: 4.1.7
