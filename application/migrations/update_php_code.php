@@ -133,8 +133,8 @@ $updates['4.1.7'] = [
     ]
 ];
 
-$updates['4.1.8'] = [
+$updates['4.1.9'] = [
     'include' => [
-        '4.1.8_add_currencies_system_entity.php',
+        '4.1.9_add_currencies_system_entity.php',
     ]
 ];
