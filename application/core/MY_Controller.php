@@ -56,7 +56,7 @@ class MY_Controller extends MX_Controller
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
             $this->output->cache(240);
         }
-
+        
         // Inizializza le variabili d'istanza del controller
         if ($this->db->table_exists('settings_template')) {
             $this->db->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');

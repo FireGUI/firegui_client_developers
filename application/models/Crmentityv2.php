@@ -553,11 +553,7 @@ class Crmentityv2 extends CI_Model
                             // debug($dati['relations']);
                         }
 
-                        if ($campo['fields_ref'] == 'cities') {
-                            // debug($depth);
-                            // debug($campo,true);   
-
-                        }
+                        
                         $this->db->join($campo['fields_ref'], "{$campo['fields_ref']}.{$campo["fields_ref"]}_id = {$campo['entity_name']}.{$campo['fields_name']}", "left");
                         array_push($joined, $campo['fields_ref']);
 
@@ -803,9 +799,9 @@ class Crmentityv2 extends CI_Model
         $group_by = array_get($options, 'group_by', null);
 
         if ($group_by !== null) {
-            $this->db->_protect_identifiers = false;
-            $this->db->group_by($group_by);
-            $this->db->_protect_identifiers = true;
+            //$this->db->_protect_identifiers = false;
+            $this->db->group_by($group_by, '', false);
+            //$this->db->_protect_identifiers = true;
         }
     }
     /**
@@ -827,9 +823,9 @@ class Crmentityv2 extends CI_Model
         }
 
         if ($order_by !== null && !$count) {
-            $this->db->_protect_identifiers = false;
-            $this->db->order_by($order_by);
-            $this->db->_protect_identifiers = true;
+            //$this->db->_protect_identifiers = false;
+            $this->db->group_by($order_by, '', false);
+            //$this->db->_protect_identifiers = true;
         }
     }
 
@@ -920,7 +916,7 @@ class Crmentityv2 extends CI_Model
                         }
                     }
                 } else { // If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
-                    if (stripos($where, $entityCustomActions['soft_delete_flag']) === false) {
+                    if (stripos($where??'', $entityCustomActions['soft_delete_flag']) === false) {
                         if (empty($where)) {
                             $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                         } else {

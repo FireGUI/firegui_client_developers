@@ -81,7 +81,7 @@ class Charts extends CI_Model
                 }
             } else {
                 $where = $this->datab->generate_where("charts_elements", $element['charts_elements_id'], $value_id);
-                $query = str_replace('{value_id}', $value_id, $element['charts_elements_full_query']);
+                $query = str_replace('{value_id}', $value_id??'', $element['charts_elements_full_query']);
                 if (stripos($query, ' where ')) {
                     $query = str_ireplace('{where}', ' AND ' . $where, $query);
                 } else {

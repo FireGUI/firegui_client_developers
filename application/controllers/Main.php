@@ -55,8 +55,8 @@ class Main extends MY_Controller
             if ($this->datab->can_access_layout($layout_dashboard)) {
                 $this->layout($layout_dashboard);
                 return;
-            } 
-        } 
+            }
+        }
         // Carica la dashboard - prendi il primo layout `dashboardable` accessibile dall'utente
         $layouts = $this->db->order_by('layouts_id')->get_where('layouts', array('layouts_dashboardable' => DB_BOOL_TRUE))->result_array();
         foreach ($layouts as $layout) {
@@ -71,12 +71,12 @@ class Main extends MY_Controller
             ->where('layouts_id IN (SELECT menu_layout FROM menu WHERE menu_layout IS NOT NULL)', null, false)
             ->where('menu_position', 'sidebar')
             ->join('layouts', 'layouts_id = menu_layout', 'LEFT')
-            
+
             ->get('menu')->result_array();
-        
-            foreach ($menu_layouts as $layout) {
+
+        foreach ($menu_layouts as $layout) {
             if ($this->datab->can_access_layout($layout['layouts_id'])) {
-                
+
                 $this->layout($layout['layouts_id']);
                 return;
             }
@@ -480,6 +480,18 @@ class Main extends MY_Controller
         $pagina = $this->load->view("pages/settings", array('dati' => $dati), true);
         $this->stampa($pagina);
     }
+
+    /*
+     * General settings
+     */
+    public function changelog()
+    {
+        $dati['current_page'] = 'changelog';
+
+        $pagina = $this->load->view("pages/changelog", array(), true);
+        $this->stampa($pagina);
+    }
+
     /**
      * Translations page
      */
@@ -597,8 +609,8 @@ class Main extends MY_Controller
         // Crea un array di mappatura layout_id => ucwords(n. cognome)
         $userIds = array_key_map($users, LOGIN_ENTITY . '_id');
         $ucwordsUserNames = array_map(function ($user) {
-            $n = isset ($user[LOGIN_NAME_FIELD]) ? $user[LOGIN_NAME_FIELD] : '';
-            $s = isset ($user[LOGIN_SURNAME_FIELD]) ? $user[LOGIN_SURNAME_FIELD] : '';
+            $n = isset($user[LOGIN_NAME_FIELD]) ? $user[LOGIN_NAME_FIELD] : '';
+            $s = isset($user[LOGIN_SURNAME_FIELD]) ? $user[LOGIN_SURNAME_FIELD] : '';
             return ($n && $s) ? ucwords($n[0] . '. ' . $s) : $n . ' ' . $s;
         }, $users);
         $usersLayouts = array_combine($userIds, $ucwordsUserNames);

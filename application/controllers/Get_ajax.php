@@ -72,6 +72,9 @@ class Get_ajax extends MY_Controller
 
         if (!$this->datab->can_access_layout($layout_id, $value_id)) {
             $this->layout->setLayoutModule();
+            $user_id = $this->auth->get('id') ?? 'unknown';
+            log_message('error', ' User: ' . $user_id . ' tried to access layout: ' . $layout_id . ' restricted page. IP: ' . $this->input->ip_address());
+            $this->apilib->logSystemAction(Apilib::LOG_UNALLOWED_LAYOUT, ['layout' => $layout_id]);
             show_404();
         }
 

@@ -131,7 +131,7 @@ class MY_Cache_file extends CI_Driver
         return false;
     }
 
-    public function saveTagsMapping($id, $tags = [], $timestamp)
+    public function saveTagsMapping($id, $tags = [], $timestamp = 0)
     {
         $mapping = $this->getTagsMapping();
 
@@ -645,7 +645,7 @@ class MY_Cache_file extends CI_Driver
         $fields = $CI->crmentity->getFields($entity_data['entity_id']);
 
         foreach ($fields as $field) {
-            if ($field['fields_ref_auto_right_join'] == DB_BOOL_TRUE || $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE) {
+            if ($field['fields_ref'] && ($field['fields_ref_auto_right_join'] == DB_BOOL_TRUE || $field['fields_ref_auto_left_join'] == DB_BOOL_TRUE)) {
                 $tags[] = $field['fields_ref'];
             }
         }

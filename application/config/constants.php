@@ -12,7 +12,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | of this setting
 |
 */
-defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', true);
+defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', TRUE);
 
 // Client Version
 defined('VERSION') OR define('VERSION', '4.1.9');
@@ -29,10 +29,10 @@ defined('VERSION') OR define('VERSION', '4.1.9');
 | always be used to set the mode correctly.
 |
 */
-define('FILE_READ_MODE', 0644);
-define('FILE_WRITE_MODE', 0666);
-define('DIR_READ_MODE', 0755);
-define('DIR_WRITE_MODE', 0755);
+defined('FILE_READ_MODE') or define('FILE_READ_MODE', 0644);
+defined('FILE_WRITE_MODE') or define('FILE_WRITE_MODE', 0666);
+defined('DIR_READ_MODE') or define('DIR_READ_MODE', 0755);
+defined('DIR_WRITE_MODE') or define('DIR_WRITE_MODE', 0755);
 
 /********************************** FINE CONFIGURAZIONE ****************************************/
 

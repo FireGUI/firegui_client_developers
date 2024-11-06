@@ -64,6 +64,7 @@ class Datab extends CI_Model
 
         $cache_key = "database_schema/datab.build_layout.accessible.{$userId}." . md5(serialize($_GET) . serialize($_POST) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
+            $dati = [];
             $dati['accessibleLayouts'] = $dati['accessibleEntityLayouts'] = $dati['forwardedLayouts'] = [];
             $accessibleLayouts = $this->db->query("
                 SELECT layouts_id, layouts_is_entity_detail, layouts_entity_id
@@ -799,7 +800,7 @@ class Datab extends CI_Model
                     // Computo il ref field da usare nel caso di form
                     'html' => $this->build_form_input($field, isset($formData[$field['fields_name']]) ? $formData[$field['fields_name']] : null, $value_id),
                     'fieldset' => $field['forms_fields_fieldset'],
-                    'required' => $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !trim($field['fields_default'])),
+                    'required' => $field['forms_fields_show_required'] ? $field['forms_fields_show_required'] == DB_BOOL_TRUE : ($field['fields_required'] != FIELD_NOT_REQUIRED && !($field['fields_default'] && trim($field['fields_default']))),
                     'onclick' => $field['fields_draw_onclick'] ? sprintf('onclick="%s"', $field['fields_draw_onclick']) : '',
                     'original_field' => $field,
                 ];
@@ -899,7 +900,7 @@ class Datab extends CI_Model
         }
 
         // Prendo la field select where
-        if (($fieldWhere = trim($field['fields_select_where']))) {
+        if (($field['fields_select_where'] && $fieldWhere = trim($field['fields_select_where']))) {
             $replaces = ['value_id' => $value_id];
             $wheres[] = $this->replace_superglobal_data(str_replace_placeholders($fieldWhere, $replaces));
         }
@@ -1135,8 +1136,8 @@ class Datab extends CI_Model
 
             //TODO: will be deprecated as soon as new actions features will become stable
             $dati['grids']['links'] = array(
-                'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link'])),
-                'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'])),
+                'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link']??'')),
+                'edit' => ($dati['grids']['grids_edit_layout'] ? base_url("main/layout/{$dati['grids']['grids_edit_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_edit_link'] ?? '')),
                 'delete' => ($dati['grids']['grids_delete_link'] ? str_replace('{base_url}', base_url(), $dati['grids']['grids_delete_link']) : base_url("db_ajax/generic_delete/{$dati['grids']['entity_name']}")),
             );
 
@@ -2516,6 +2517,7 @@ class Datab extends CI_Model
 
         $cache_key = "apilib/datab.build_layout.{$layout_id}.{$value_id}." . md5(serialize($_GET) . serialize($_POST) . serialize($layout_data_detail) . serialize($this->session->all_userdata()));
         if (!($dati = $this->mycache->get($cache_key))) {
+            $dati = [];
             if (!is_numeric($layout_id) or ($value_id && !is_numeric($value_id))) {
                 return null;
             }
@@ -2798,7 +2800,7 @@ class Datab extends CI_Model
 
         if ($isEmptyString or $isRefWithoutValue) {
             // Il campo non è stampabile, quindi torno il placeholder se ce l'ho
-            $placeholder = trim($field['fields_draw_placeholder']);
+            $placeholder = trim($field['fields_draw_placeholder']??'');
             return $placeholder ?
                 sprintf('<small class="text-muted">%s</small>', $placeholder) : '';
         }
@@ -2916,7 +2918,7 @@ class Datab extends CI_Model
 
                 // C'è un link? stampo un <a></a> altrimenti stampo il testo puro e semplice
                 return $link ? anchor(rtrim($link, '/') . '/' . $value, $text) : $text;
-            } elseif (strpos($field['fields_additional_data'], '{query:') === 0) {
+            } elseif (strpos($field['fields_additional_data']??'', '{query:') === 0) {
                 $query = str_replace(['{query:', '}'], '', $field['fields_additional_data']);
                 $support_data = $this->db->query($query)->result_array();
                 $support_data_remap = array_combine(array_column($support_data, 'id'), array_column($support_data, 'value'));
@@ -3025,7 +3027,7 @@ class Datab extends CI_Model
                 case 'multi_upload':
                 case 'multi_upload_no_preview':
                     if (in_array($field['fields_type'], ['JSON', 'LONGTEXT', 'TEXT'])) {
-                        $value = (array) json_decode($value, true);
+                        $value = (array) json_decode($value??'', true);
                         $value = array_map(function ($item) {
                             if (in_array($item['file_type'], ['image/jpeg', 'image/png'])) {
                                 if ($this->config->item('cdn') && $this->config->item('cdn')['enabled']) {
@@ -3084,8 +3086,8 @@ class Datab extends CI_Model
                         $style = '';
                     }
 
-                    $stripped = strip_tags($value);
-                    $value = preg_replace(array('#<script(.*?)>(.*?)</script>#is', '/<img[^>]+\>/i'), '', $value);
+                    $stripped = strip_tags($value??'');
+                    $value = preg_replace(array('#<script(.*?)>(.*?)</script>#is', '/<img[^>]+\>/i'), '', $value??'');
 
                     if (strlen($stripped) > 150 && $crop) {
                         $textContainerID = md5($value);
@@ -3171,7 +3173,6 @@ class Datab extends CI_Model
                     } else {
                         return $value;
                     }
-                    
                 case 'input_money':
                     $currency = '€';
                     

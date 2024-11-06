@@ -560,7 +560,7 @@ class Apilib
     /*
     Usefull to centralize saving methods in on call
     */
-    public function save($entity = null, $data, $id = null)
+    public function save($entity, $data, $id = null)
     {
         if ($id) {
             return $this->edit($entity, $id, $data);
@@ -1040,8 +1040,8 @@ class Apilib
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
                 // campo_1:campo_2 ...
                 // dir_1:dir_2 ...
-                $order_fields = explode(':', $orderBy);
-                $order_dirs = explode(':', $orderDir);
+                $order_fields = explode(':', $orderBy??'');
+                $order_dirs = explode(':', $orderDir??'');
 
                 // Elabora i due parametri affinché siano della stessa dimensione
                 foreach ($order_fields as $k => $field) {
@@ -1748,7 +1748,7 @@ class Apilib
             // Inoltre rimuovo il campo anche se è null && required in modalità
             // di modifica
             $isNull = is_null($value);
-            $hasDefault = trim($field['fields_default']);
+            $hasDefault = trim($field['fields_default']??'');
             $isRequired = $field['fields_required'] === FIELD_REQUIRED;
 
             //Quersta è la vecchia condizione di Alberto. Secondo me è corretto che se non è obbligatorio e uno lo lascia vuoto, venga settato a null comunque...
@@ -2200,7 +2200,7 @@ class Apilib
 
                 }
 
-                $float = str_replace(',', '.', $value);
+                $float = str_replace(',', '.', $value??'');
                 $value = (float) filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
                 break;
 
@@ -2209,7 +2209,7 @@ class Apilib
                     // Se il valore è t/f ok, altrimenti prendi il valore
                     // booleano
                     $value = in_array($value, [DB_BOOL_TRUE, DB_BOOL_FALSE]) ? $value : ($value ? DB_BOOL_TRUE : DB_BOOL_FALSE);
-                } elseif (!trim($field['fields_default'])) {
+                } elseif (!trim($field['fields_default']??'')) {
                     // Se invece è a null e non ho nessun tipo di default,
                     // allora lo imposto come false automaticamente (vd.
                     // checkbox che se le uso in modalità booleana, il false non
