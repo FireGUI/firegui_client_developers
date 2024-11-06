@@ -1179,7 +1179,8 @@ function loadModal(url, data, callbackSuccess, method) {
             !$(event.target).closest(".fancybox-skin").length &&
             !$(event.target).closest(".fancybox-item").length &&
             !$(event.target).closest(".select2-selection__choice").length &&
-            !$(event.target).closest(".btn-grid-action-s").length
+            !$(event.target).closest(".btn-grid-action-s").length &&
+            $(event.target).attr("id") !== "widget_button" // Widget assistenza
           ) {
             // Close the modal or perform other actions
             // console.log($(event.target));
