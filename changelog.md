@@ -17,6 +17,30 @@ added migration for currencies system entity
 fix migrations
 Bugfix undefined layouts_boxes_layout
 Bugfix undefined fields_ref
+removed system_merged folder
+added system_old folder
+Bugfix MY_Cache_file
+Bug fix DB_forge with DEFAULT_STRING parameter
+
+Changelog version 4.2.0
+
+2024-11-07 Release version: 4.2.0
+
+Alpha CI3.1.13
+Excluded ticket planner widget on close modal side
+Enviroment date default italian
+Add log unallowed layout via ajax request
+fix datab grid column type input_money
+Bugfix on force module reinstall, rerun migrations '0'
+fix build_grid_cell when field is input_money type
+add changelog
+Bugfix crmentityv2 for php8.1
+Bugfix updatePatches recursive
+Possibility to search in relation fields
+added migration for currencies system entity
+fix migrations
+Bugfix undefined layouts_boxes_layout
+Bugfix undefined fields_ref
 
 Changelog version 4.1.9
 
