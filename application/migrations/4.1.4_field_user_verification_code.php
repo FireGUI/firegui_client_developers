@@ -26,5 +26,5 @@ $this->db->insert('fields_draw', [
 
 ]);
 log_message('debug', 'Alter table ' . $login_entity);
-$this->db->query("ALTER TABLE $login_entity ADD COLUMN {$login_entity}_verification_code VARCHAR(250) NULL;");
+$this->db->query("ALTER TABLE $login_entity ADD COLUMN IF NOT EXISTS {$login_entity}_verification_code VARCHAR(250) NULL;");
 log_message('debug', 'Ended migration 4.1.4...');
