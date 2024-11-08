@@ -389,6 +389,8 @@ foreach ($installed_modules as $module) {
     input.addEventListener('input', function () {
         const searchTerm = input.value.toLowerCase();
 
+        
+
         moduleBoxes.forEach(function (moduleBox) {
             if (moduleBox.getAttribute('data-title').toLowerCase().includes(searchTerm)) {
                 moduleBox.style.display = 'block';

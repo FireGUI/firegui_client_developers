@@ -16,7 +16,7 @@ class Modules_model extends CI_Model
         //$this->load->model('utils', 'utils_base');
 
         // Check because Module manager can work without modules_manager_settings! (like when che project is new)
-        $check_settings = $this->crmentity->entityExists('modules_manager_settings');
+        $check_settings = $this->db->table_exists('modules_manager_settings');
 
         if ($check_settings) {
             $this->settings = $this->apilib->searchFirst('modules_manager_settings');
@@ -644,13 +644,12 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['layouts'] as $layout) {
 
-
-
                 $c++;
                 progress($c, $total, 'layouts delete');
                 $this->db->cache_delete_all();
                 $this->db->data_cache = [];
-                if (!$layout || strtolower($layout['layouts_title']) == 'settings') {
+
+                if (empty($layout) || (!empty($layout['layouts_title']) && strtolower($layout['layouts_title'])) == 'settings') {
                     continue;
                 }
 
@@ -661,6 +660,12 @@ class Modules_model extends CI_Model
             }
             $c = 0;
             foreach ($json['layouts'] as $key => $layout) {
+
+                // Fix for invalid layout
+                if (empty($layout['layouts_title'])) {
+                    continue;
+                }
+
                 $c++;
                 progress($c, $total, 'layouts');
                 if ($layout == null) {
