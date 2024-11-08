@@ -406,9 +406,9 @@ class Apilib
                 $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
             }
         }
-        //debug($_data);
+
         if ($this->processData($entity, $_data, false)) {
-            //debug($_data, true);
+
             if (!$this->db->insert($entity, $_data)) {
                 $this->showError(self::ERR_GENERIC);
             }
@@ -1040,8 +1040,8 @@ class Apilib
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
                 // campo_1:campo_2 ...
                 // dir_1:dir_2 ...
-                $order_fields = explode(':', $orderBy??'');
-                $order_dirs = explode(':', $orderDir??'');
+                $order_fields = explode(':', $orderBy ?? '');
+                $order_dirs = explode(':', $orderDir ?? '');
 
                 // Elabora i due parametri affinché siano della stessa dimensione
                 foreach ($order_fields as $k => $field) {
@@ -1382,6 +1382,7 @@ class Apilib
         $rules_date_before = [];
 
         foreach ($fields as $field) {
+            $is_array = false;
             $rule = [];
 
             //in fase di creazione devo validarli tutti (quelli required, non quelli soft-required se non passati ovviamente)
@@ -1397,6 +1398,10 @@ class Apilib
                 ) {
 
                     switch ($field['fields_draw_html_type']) {
+                        case 'multiselect':
+
+                            $is_array = true;
+                            break;
                         // this because upload is made after validation rules
                         case 'upload':
                         case 'upload_image':
@@ -1495,7 +1500,8 @@ class Apilib
                     'field' => $field['fields_name'],
                     'label' => $field['fields_draw_label'],
                     'rules' => implode('|', $rule),
-                    'errors' => $custom_messages
+                    'errors' => $custom_messages,
+                    'is_array' => $is_array
                 );
             }
 
@@ -1605,8 +1611,9 @@ class Apilib
                 foreach ($rules as $rule) {
                     // Non appena lo trovo break - almeno uno ci dev'essere
                     $message = $this->form_validation->error($rule['field']);
-                    //debug($message);
+
                     if ($message) {
+
                         $this->errorMessage = strip_tags(html_entity_decode($message));
                         break;
                     }
@@ -1748,7 +1755,7 @@ class Apilib
             // Inoltre rimuovo il campo anche se è null && required in modalità
             // di modifica
             $isNull = is_null($value);
-            $hasDefault = trim($field['fields_default']??'');
+            $hasDefault = trim($field['fields_default'] ?? '');
             $isRequired = $field['fields_required'] === FIELD_REQUIRED;
 
             //Quersta è la vecchia condizione di Alberto. Secondo me è corretto che se non è obbligatorio e uno lo lascia vuoto, venga settato a null comunque...
@@ -2200,7 +2207,7 @@ class Apilib
 
                 }
 
-                $float = str_replace(',', '.', $value??'');
+                $float = str_replace(',', '.', $value ?? '');
                 $value = (float) filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
                 break;
 
@@ -2209,7 +2216,7 @@ class Apilib
                     // Se il valore è t/f ok, altrimenti prendi il valore
                     // booleano
                     $value = in_array($value, [DB_BOOL_TRUE, DB_BOOL_FALSE]) ? $value : ($value ? DB_BOOL_TRUE : DB_BOOL_FALSE);
-                } elseif (!trim($field['fields_default']??'')) {
+                } elseif (!trim($field['fields_default'] ?? '')) {
                     // Se invece è a null e non ho nessun tipo di default,
                     // allora lo imposto come false automaticamente (vd.
                     // checkbox che se le uso in modalità booleana, il false non
