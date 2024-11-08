@@ -116,7 +116,7 @@ class MY_Cache_file extends CI_Driver
 
         $folder = dirname($this->_cache_path . $id);
         if (!is_dir($folder)) {
-            mkdir($folder, DIR_WRITE_MODE, true);
+            @mkdir($folder, DIR_WRITE_MODE, true);
         }
 
         if ($result = write_file($this->_cache_path . $id, serialize($contents))) {

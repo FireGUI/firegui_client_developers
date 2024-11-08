@@ -96,7 +96,7 @@ class CI_Session_database_driver extends CI_Session_driver implements CI_Session
 		}
 		elseif ($this->_db->cache_on)
 		{
-			throw new Exception('Configured database connection has cache enabled. Aborting.');
+			//throw new Exception('Configured database connection has cache enabled. Aborting.');
 		}
 
 		$db_driver = $this->_db->dbdriver.(empty($this->_db->subdriver) ? '' : '_'.$this->_db->subdriver);

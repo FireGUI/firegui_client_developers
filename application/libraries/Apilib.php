@@ -977,7 +977,7 @@ class Apilib
             }
 
             foreach ($input as $key => $value) {
-                 //Verifico se la chiave è un campo di tipo relazione. In questo caso gestisco diversamente costruendomi un where in
+                //Verifico se la chiave è un campo di tipo relazione. In questo caso gestisco diversamente costruendomi un where in
                 $field = $this->datab->get_field_by_name($key, true);
                 //debug($field);
                 if ($field && $field['fields_ref'] && $field['fields_draw_html_type'] == 'multiselect' && is_array($value)) {

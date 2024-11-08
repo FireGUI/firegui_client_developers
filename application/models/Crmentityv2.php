@@ -824,7 +824,7 @@ class Crmentityv2 extends CI_Model
 
         if ($order_by !== null && !$count) {
             //$this->db->_protect_identifiers = false;
-            $this->db->group_by($order_by, '', false);
+            $this->db->order_by($order_by, '', false);
             //$this->db->_protect_identifiers = true;
         }
     }

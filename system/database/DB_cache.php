@@ -107,7 +107,7 @@ class CI_DB_Cache {
 			? rtrim(realpath($path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR
 			: rtrim($path, '/').'/';
 
-		if ( ! is_dir($path))
+		if ( ! is_dir($path) && !@mkdir($path, 0750))
 		{
 			log_message('debug', 'DB cache path error: '.$path);
 
@@ -148,8 +148,12 @@ class CI_DB_Cache {
 		{
 			return FALSE;
 		}
+		$unserialized_data = @unserialize($cachedata);
+		if ($unserialized_data === FALSE && $cachedata !== serialize(FALSE)) {
+			return FALSE;
+		}
 
-		return unserialize($cachedata);
+		return $unserialized_data;
 	}
 
 	// --------------------------------------------------------------------
@@ -166,6 +170,8 @@ class CI_DB_Cache {
 		$segment_one = ($this->CI->uri->segment(1) == FALSE) ? 'default' : $this->CI->uri->segment(1);
 		$segment_two = ($this->CI->uri->segment(2) == FALSE) ? 'index' : $this->CI->uri->segment(2);
 		$dir_path = $this->db->cachedir.$segment_one.'+'.$segment_two.'/';
+
+		
 		$filename = md5($sql);
 
 		if ( ! is_dir($dir_path) && ! @mkdir($dir_path, 0750))

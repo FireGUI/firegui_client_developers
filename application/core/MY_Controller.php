@@ -68,7 +68,8 @@ class MY_Controller extends MX_Controller
         }
         
         $this->settings = $this->db->get('settings')->row_array();
-        
+
+        //$this->settings = $this->db->get('settings')->row_array();
         $this->isAdmin = $this->auth->is_admin();
         $this->isDev = is_development();
         //$this->output->set_header('Cache-Control: max-age=31536000');
