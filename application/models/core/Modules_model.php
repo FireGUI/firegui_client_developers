@@ -755,6 +755,7 @@ class Modules_model extends CI_Model
             //                    "DELETE FROM forms WHERE forms_entity_id IN (SELECT entity_id FROM entity WHERE entity_module = '$identifier')"
             //                );
             //            }
+            $json['forms'] = $json['forms'] ?? [];
             $total = count($json['forms']);
             $c = 0;
             foreach ($json['forms'] as $form) {
@@ -1085,7 +1086,7 @@ class Modules_model extends CI_Model
 
                     )"
             );
-
+            $json['grids'] = $json['grids'] ?? [];
             $total = count($json['grids']);
 
             for ($i = 0; $i < 2; $i++) { //Lo faccio due volte in quanto solo al secondo passaggio avrò tutte le mappature e potrò quindi rimappare anche le sub_grids_id...
@@ -1356,7 +1357,7 @@ class Modules_model extends CI_Model
 
             $c = 0;
             $total = count($json['charts']);
-            $total += count($grid['actions']);
+            
 
             foreach ($json['charts'] as $chart) {
                 $c++;
@@ -1815,6 +1816,7 @@ class Modules_model extends CI_Model
                 }
             } else { //Per retrocompatibilità (vecchi modulo, mantengo la logica pp,hooks,crons...)
                 $c = 0;
+                $json['post_processes'] == $json['post_processes'] ?? [];
                 $total = count($json['post_processes']);
                 //INserisco i postprocess
                 $this->db->where('post_process_module', $identifier)->delete('post_process');
@@ -1827,6 +1829,7 @@ class Modules_model extends CI_Model
                     $this->db->insert('post_process', $pp, null, true);
                 }
                 $c = 0;
+                $json['hooks'] == $json['hooks']??[];
                 $total = count($json['hooks']);
                 //Inserisco gli hooks
                 $this->db->where('hooks_module', $identifier)->delete('hooks');
