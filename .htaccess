@@ -9,7 +9,7 @@
     #RewriteRule ^imgn/(.*)/(.*)/(.*)/(.*)/(.*)$ class/genthumb/phpThumb.php?src=/$4/$5&wp=$2&hp=$3&wl=$2&hl=$3&zc=$1 [L]
 
     RewriteRule ^thumb/(.*)$ class/easythumb/easythumb.php?$1 [L]
-	RewriteRule ^module_bridge/(.*)$ modulebridge.php?/$1 [L]
+    RewriteRule ^module_bridge/(.*)$ modulebridge.php?/$1 [L]
     RewriteRule ^template_bridge/(.*)$ templatebridge.php?/$1 [L]
 	
     #Removes access to the system folder by users.
