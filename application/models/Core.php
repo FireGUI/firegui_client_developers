@@ -96,6 +96,8 @@ class Core extends CI_Model
     public function updatePatches($repository_url = null, $channel_update = 4, $recursive_to_last = false)
     {
         echo_log('debug', "Start Updating patches...");
+
+        //TODO: perchè update client??? Non dovrebbe fare updatePatch?
         $this->updateClient($repository_url, 0, $channel_update, true);
         echo_log('debug', "Finish update patches...");
         echo_log('debug', "Check for new patches...");
@@ -106,7 +108,7 @@ class Core extends CI_Model
             $next_version = $this->checkUpdate($repository_url, $channel_update, true);
             if ($next_version !== false) {
                 echo_log('debug', "Proceed to next version " . $next_version);
-                $this->updatePatches($repository_url, $channel_update);
+                $this->updatePatches($repository_url, $channel_update, $recursive_to_last);
             }
         }
 

@@ -207,14 +207,15 @@ class Modules
 				}
 
 				if ($base == 'libraries/' or $base == 'models/') {
-					if (is_dir($custom_path) && is_file($custom_path . ucfirst($file_ext))) {
+					if ($custom_path !== null && is_dir($custom_path) && is_file($custom_path . ucfirst($file_ext))) {
 						return array($custom_path, ucfirst($file));
 					} elseif (is_file($fullpath . ucfirst($file_ext))) {
 						return array($fullpath, ucfirst($file));
 					}
 				} else {
 					/* load non-class files */
-					if (is_dir($custom_path) && is_file($custom_path . ($file_ext))) {
+					//var_dump($custom_path);
+					if ($custom_path !== null && is_dir($custom_path) && is_file($custom_path . ($file_ext))) {
 						return array($custom_path, $file);
 					} elseif (is_file($fullpath . $file_ext)) {
 						return array($fullpath, $file);

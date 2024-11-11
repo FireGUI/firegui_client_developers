@@ -406,9 +406,9 @@ class Apilib
                 $_data[$field['fields_name']] = $date->format('Y-m-d H:i:s');
             }
         }
-        //debug($_data);
+
         if ($this->processData($entity, $_data, false)) {
-            //debug($_data, true);
+
             if (!$this->db->insert($entity, $_data)) {
                 $this->showError(self::ERR_GENERIC);
             }
@@ -560,7 +560,7 @@ class Apilib
     /*
     Usefull to centralize saving methods in on call
     */
-    public function save($entity = null, $data, $id = null)
+    public function save($entity, $data, $id = null)
     {
         if ($id) {
             return $this->edit($entity, $id, $data);
@@ -977,19 +977,40 @@ class Apilib
             }
 
             foreach ($input as $key => $value) {
-                if (is_array($value) && is_string($key)) {
+                //Verifico se la chiave è un campo di tipo relazione. In questo caso gestisco diversamente costruendomi un where in
+                $field = $this->datab->get_field_by_name($key, true);
+                //debug($field);
+                if ($field && $field['fields_ref'] && $field['fields_draw_html_type'] == 'multiselect' && is_array($value)) {
+                    //Prendo l'entità referenziata
+                    $relation = $this->db->where('relations_name', $field['fields_ref'])->get('relations')->row_array();
+                    if ($relation['relations_table_1'] == $entity) {
+                        $campo = $relation['relations_field_2'];
+                        //$table_ref = $relation['relations_table_2'];
+                    } else {
+                        $campo = $relation['relations_field_1'];
+                        //$table_ref  = $relation['relations_table_1'];
+                    }
 
-                    // La chiave se è stringa indica il nome del campo,
-                    // mentre il value se è array (fattibile solo da POST o PROCESS)
-                    // fa un WHERE IN
                     $values = "'" . implode("','", $value) . "'";
-                    $where[] = "{$key} IN ({$values})";
-                } elseif (is_string($key)) {
-                    $where[$key] = $value;
+                    $where[] = "{$entity}_id IN (SELECT {$entity}_id FROM {$relation['relations_name']} WHERE $campo IN ({$values}))";
+
+
+
                 } else {
-                    // Ho una chiave numerica che potrebbe essere stata inserita
-                    // da pre-process...
-                    $where[] = $value;
+                    if (is_array($value) && is_string($key)) {
+
+                        // La chiave se è stringa indica il nome del campo,
+                        // mentre il value se è array (fattibile solo da POST o PROCESS)
+                        // fa un WHERE IN
+                        $values = "'" . implode("','", $value) . "'";
+                        $where[] = "{$key} IN ({$values})";
+                    } elseif (is_string($key)) {
+                        $where[$key] = $value;
+                    } else {
+                        // Ho una chiave numerica che potrebbe essere stata inserita
+                        // da pre-process...
+                        $where[] = $value;
+                    }
                 }
             }
 
@@ -1019,8 +1040,8 @@ class Apilib
                 // L'order by e l'order dir sono due stringhe di condizioni separate da due punti
                 // campo_1:campo_2 ...
                 // dir_1:dir_2 ...
-                $order_fields = explode(':', $orderBy);
-                $order_dirs = explode(':', $orderDir);
+                $order_fields = explode(':', $orderBy ?? '');
+                $order_dirs = explode(':', $orderDir ?? '');
 
                 // Elabora i due parametri affinché siano della stessa dimensione
                 foreach ($order_fields as $k => $field) {
@@ -1077,16 +1098,18 @@ class Apilib
             $this->showError(self::ERR_INVALID_API_CALL);
         }
         $group_by = array_get($additional_parameters, 'group_by', null);
+        $depth = array_get($additional_parameters, 'depth', 2);
         if (is_string($input)) {
             $input = array($input);
         }
-
+        //debug($depth);
         $input = $this->runDataProcessing($entity, 'pre-search', $input);
         // rimuovo la chiave entity per evitare che applichi un filtro AND `entity` = 'customers'
         unset($input['entity']);
         $cache_key = $this->generateCacheKey('count', $entity, [
             'input' => $input,
-            'group_by' => $additional_parameters['group_by'] ?? null
+            'group_by' => $additional_parameters['group_by'] ?? null,
+            'depth' => $depth
         ]);
 
         if (!$this->isCacheEnabled() || !($out = $this->mycache->get($cache_key))) {
@@ -1126,7 +1149,7 @@ class Apilib
                 }
             }
 
-            $out = $this->crmentity->get_data_full_list($entity, null, $where, null, 0, null, true, 2, [], ['group_by' => $group_by]);
+            $out = $this->crmentity->get_data_full_list($entity, null, $where, null, 0, null, true, $depth, [], ['group_by' => $group_by]);
             if ($this->isCacheEnabled()) {
                 $this->mycache->save($cache_key, $out, $this->mycache->CACHE_TIME, $this->mycache->buildTagsFromEntity($entity));
             }
@@ -1282,9 +1305,14 @@ class Apilib
 
             ->get_where('fields', ['entity_name' => $entity_data['entity_name']])
             ->result_array();
-        //Xss clean
-        $data = $this->security->xss_clean($data, $fields);
 
+
+
+
+        //Xss clean
+
+        $data = $this->security->xss_clean($data, $fields);
+        //debug($fields,true);
         $originalData = $data;
 
         if ($editMode) {
@@ -1311,12 +1339,50 @@ class Apilib
             $fields[$k]['validations'] = $this->crmEntity->getValidations($field['fields_id']);
         }
 
+        //se l'entità è una relazione aggiungo fields fittizzi (ovvero i due id delle due tabelle, in quanto questi campi esistono come colonne ma non come fields)
+        // Verifica se l'entità è una relazione
+        $is_relation = $this->db->where('relations_name', $entity_data['entity_name'])->count_all_results('relations') > 0;
+
+        if ($is_relation) {
+            // Recupera i dettagli della relazione
+            $relation = $this->db->where('relations_name', $entity_data['entity_name'])->get('relations')->row_array();
+
+            // Aggiungi campi fittizi per gli ID delle due tabelle coinvolte
+            $fields[] = [
+                'fields_name' => $relation['relations_field_1'],
+                'fields_type' => 'INT',
+                'fields_required' => FIELD_REQUIRED,
+                'fields_draw_html_type' => 'input_hidden',
+                'fields_ref' => $relation['relations_table_1'],
+                'fields_xssclean' => 1,
+                'validations' => [],
+                'fields_default' => '',
+                'fields_draw_label' => $relation['relations_field_1'],
+                'fields_multilingual' => 0
+            ];
+
+            $fields[] = [
+                'fields_name' => $relation['relations_field_2'],
+                'fields_type' => 'INT',
+                'fields_required' => FIELD_REQUIRED,
+                'fields_draw_html_type' => 'input_hidden',
+                'fields_ref' => $relation['relations_table_2'],
+                'fields_xssclean' => 1,
+                'validations' => [],
+                'fields_default' => '',
+                'fields_draw_label' => $relation['relations_field_2'],
+                'fields_multilingual' => 0
+            ];
+        }
+
         /**
          * Validation
          */
         $rules = [];
         $rules_date_before = [];
+
         foreach ($fields as $field) {
+            $is_array = false;
             $rule = [];
 
             //in fase di creazione devo validarli tutti (quelli required, non quelli soft-required se non passati ovviamente)
@@ -1332,6 +1398,10 @@ class Apilib
                 ) {
 
                     switch ($field['fields_draw_html_type']) {
+                        case 'multiselect':
+
+                            $is_array = true;
+                            break;
                         // this because upload is made after validation rules
                         case 'upload':
                         case 'upload_image':
@@ -1422,6 +1492,7 @@ class Apilib
                     }
                 }
             }
+
             if (!empty($rule)) {
                 //TODO: gestire regole con validation message
                 //debug($custom_messages[$field['fields_name']]);
@@ -1429,7 +1500,8 @@ class Apilib
                     'field' => $field['fields_name'],
                     'label' => $field['fields_draw_label'],
                     'rules' => implode('|', $rule),
-                    'errors' => $custom_messages
+                    'errors' => $custom_messages,
+                    'is_array' => $is_array
                 );
             }
 
@@ -1539,8 +1611,9 @@ class Apilib
                 foreach ($rules as $rule) {
                     // Non appena lo trovo break - almeno uno ci dev'essere
                     $message = $this->form_validation->error($rule['field']);
-                    //debug($message);
+
                     if ($message) {
+
                         $this->errorMessage = strip_tags(html_entity_decode($message));
                         break;
                     }
@@ -1682,7 +1755,7 @@ class Apilib
             // Inoltre rimuovo il campo anche se è null && required in modalità
             // di modifica
             $isNull = is_null($value);
-            $hasDefault = trim($field['fields_default']);
+            $hasDefault = trim($field['fields_default'] ?? '');
             $isRequired = $field['fields_required'] === FIELD_REQUIRED;
 
             //Quersta è la vecchia condizione di Alberto. Secondo me è corretto che se non è obbligatorio e uno lo lascia vuoto, venga settato a null comunque...
@@ -1782,6 +1855,9 @@ class Apilib
          * Ovviamente se sono in modalità form crm non mando l'errore, ma
          * rimuovo semplicemente i campi in più
          */
+
+
+
         $invalidFields = array_diff(array_keys($data), array_key_map($fields, 'fields_name'));
         if (($key = array_search($entity . '_id', $invalidFields)) !== false) {
             unset($invalidFields[$key]);
@@ -2131,7 +2207,7 @@ class Apilib
 
                 }
 
-                $float = str_replace(',', '.', $value);
+                $float = str_replace(',', '.', $value ?? '');
                 $value = (float) filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
                 break;
 
@@ -2140,7 +2216,7 @@ class Apilib
                     // Se il valore è t/f ok, altrimenti prendi il valore
                     // booleano
                     $value = in_array($value, [DB_BOOL_TRUE, DB_BOOL_FALSE]) ? $value : ($value ? DB_BOOL_TRUE : DB_BOOL_FALSE);
-                } elseif (!trim($field['fields_default'])) {
+                } elseif (!trim($field['fields_default'] ?? '')) {
                     // Se invece è a null e non ho nessun tipo di default,
                     // allora lo imposto come false automaticamente (vd.
                     // checkbox che se le uso in modalità booleana, il false non

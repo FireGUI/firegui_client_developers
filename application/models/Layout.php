@@ -397,29 +397,8 @@ class Layout extends CI_Model
 
     public function moduleAssets($module_identifier, $file)
     {
-
-        $path = base_url("module_bridge/{$module_identifier}/$file");
+        $path = base_url("public/{$module_identifier}/$file");
         return $path;
-
-        // $file_cache = "template/build/{$module_identifier}/assets/$file";
-        // $current_config = $this->mycache->getCurrentConfig();
-        // if (file_exists($file_cache) && $this->mycache->isCacheEnabled() && !empty($current_config['template_assets']['active'])) {
-        //     $path = base_url($file_cache);
-        // } else {
-        //     if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('template_assets') && !empty($current_config['template_assets']['active'])) {
-        //         $modules_path = APPPATH . 'modules';
-        //         $assets_folder = "{$modules_path}/{$module_identifier}/assets";
-        //         $asset_file = "$assets_folder/$file";
-        //         copy_file($asset_file, $file_cache);
-        //         $path = base_url($file_cache);
-
-        //     } else {
-        //         //$path = base_url("modulesbridge/loadAssetFile/{$module_identifier}?file=$file");
-        //         $path = base_url("module_bridge/{$module_identifier}/$file");
-        //     }
-        // }
-
-        // return $path;
     }
 
     public function addModuleStylesheet($module_identifier, $file)

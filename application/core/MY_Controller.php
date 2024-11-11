@@ -56,15 +56,18 @@ class MY_Controller extends MX_Controller
         if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('full_page')) {
             $this->output->cache(240);
         }
-
+        
         // Inizializza le variabili d'istanza del controller
         if ($this->db->table_exists('settings_template')) {
-            $this->db
-                ->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
-
+            $this->db->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
         }
-        $this->settings = $this->db
-            ->get('settings')->row_array();
+        
+        if ($this->db->table_exists('currencies')) {
+            $this->db->join('currencies', 'settings.settings_default_currency = currencies.currencies_id', 'LEFT');
+            
+        }
+        
+        $this->settings = $this->db->get('settings')->row_array();
 
         //$this->settings = $this->db->get('settings')->row_array();
         $this->isAdmin = $this->auth->is_admin();

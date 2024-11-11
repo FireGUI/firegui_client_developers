@@ -288,7 +288,7 @@ $rowCol = 0;
                                 }
                             }
                             if ($field_completo['fields_select_where']) {
-                                $field_completo['fields_select_where'] = str_replace('{value_id}', $value_id, $field_completo['fields_select_where']);
+                                $field_completo['fields_select_where'] = str_replace('{value_id}', $value_id??'', $field_completo['fields_select_where']);
                                 $where_replaced = $this->datab->replace_superglobal_data(trim($field_completo['fields_select_where']));
                                 $where .= " AND {$where_replaced}";
                             }

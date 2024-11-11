@@ -1,6 +1,21 @@
-<IfModule authz_core_module>
-    Require all denied
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Permetti l'accesso alle cartelle assets dei moduli
+    RewriteCond %{REQUEST_URI} ^.*/modules/([^/]+)/assets/
+    RewriteRule ^(.*)$ - [L]
+
+    # Blocca l'accesso a tutti gli altri file e cartelle
+    RewriteRule ^ - [F]
 </IfModule>
-<IfModule !authz_core_module>
-    Deny from all
+
+# In caso il modulo rewrite non sia disponibile
+<IfModule !mod_rewrite.c>
+    <FilesMatch "^$">
+        Allow from all
+    </FilesMatch>
+
+    <FilesMatch "\.(css|js|gif|jpe?g|png|svg|woff|woff2|ttf|eot)$">
+        Allow from all
+    </FilesMatch>
 </IfModule>

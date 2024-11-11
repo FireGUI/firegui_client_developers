@@ -81,6 +81,9 @@ var handleSuccess = function (msg, container = null, extraPars = null) {
             // Callback
             submitBtn.show();
             eval(msg.txt);
+            if (typeof msg.close_modals !== 'undefined' && msg.close_modals) {
+                closeContainingPopups(submittedForm);
+            }
             break;
         case 10:
             //Alert e redirect
@@ -155,34 +158,36 @@ $(document).ready(function () {
     'use strict';
 
     $('body').on('submit', '.formAjax', function (e) {
-        e.preventDefault();
-        var form = $(this);
+    e.preventDefault();
+    var form = $(this);
 
-        if (formAjaxIsSubmitting) {
-            return false;
-        }
-
-        var submitBtn = $('button[type="submit"]', form);
-
-        submitBtn.hide();
-
-        formAjaxIsSubmitting = true;
-
-        // return;
-        if (formAjaxShownMessage) {
-            formAjaxShownMessage.fadeOut(200, function () {
-                formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ display: '', opacity: '' });
-            });
-            setTimeout(function () {
-                formAjaxShownMessage = null;
-                formAjaxSend(form);
-            }, 200);
-        } else {
-            formAjaxSend(form);
-        }
-        formAjaxIsSubmitting = false;
+    if (formAjaxIsSubmitting) {
         return false;
-    });
+    }
+
+    var submitBtn = $('button[type="submit"]', form);
+
+    submitBtn.hide();
+
+    formAjaxIsSubmitting = true;
+
+    // Check if formAjaxShownMessage is not null before using it
+    if (formAjaxShownMessage) {
+        formAjaxShownMessage.fadeOut(200, function () {
+            formAjaxShownMessage.removeClass('alert-success alert-danger').addClass('hide').css({ display: '', opacity: '' });
+        });
+        setTimeout(function () {
+            formAjaxShownMessage = null;
+            formAjaxSend(form);
+        }, 200);
+    } else {
+        // If formAjaxShownMessage is null, just send the form
+        formAjaxSend(form);
+    }
+
+    formAjaxIsSubmitting = false;
+    return false;
+});
 
     $('body').on('click', '.js_confirm_button', function (e) {
         var text = $(this).data('confirm-text');

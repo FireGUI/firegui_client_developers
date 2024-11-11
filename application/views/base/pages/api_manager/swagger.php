@@ -46,6 +46,35 @@
             border-radius: 3px;
             cursor: pointer;
         }
+
+        #json-link {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+
+        #json-link:hover {
+            background-color: #1976D2;
+        }
+
+        #download-json {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 160px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -53,16 +82,20 @@
     <div id="auth-container">
         <input type="text" id="api-key" placeholder="Inserisci il tuo token API">
         <button onclick="authenticateAndLoadDocs()">Carica Documentazione</button>
-        <p id="saved-key-message" style="display: none;">Hai un token API salvato. Clicca su "Carica Documentazione" per usarlo o inserisci un nuovo token.</p>
+        <p id="saved-key-message" style="display: none;">Hai un token API salvato. Clicca su "Carica Documentazione" per
+            usarlo o inserisci un nuovo token.</p>
     </div>
     <div id="swagger-ui"></div>
     <button id="logout-button" style="display: none;" onclick="logout()">Logout</button>
+    <a id="json-link" href="#" target="_blank" onclick="openJson()">Visualizza JSON</a>
+    <a id="download-json" href="#" onclick="downloadJson()">Download JSON</a>
+
     <script src="<?php echo base_url('assets/swagger/swagger-ui-bundle.js'); ?>"></script>
     <script src="<?php echo base_url('assets/swagger/swagger-ui-standalone-preset.js'); ?>"></script>
     <script>
         let savedApiKey = localStorage.getItem('apiKey');
 
-        window.onload = function() {
+        window.onload = function () {
             if (savedApiKey) {
                 document.getElementById('saved-key-message').style.display = 'block';
             }
@@ -152,10 +185,70 @@
                     document.getElementById('swagger-ui').style.display = 'block';
                     document.getElementById('auth-container').style.display = 'none';
                     document.getElementById('logout-button').style.display = 'block';
+
+                    // Mostra il link al file JSON e il link per il download
+                    document.getElementById('json-link').style.display = 'block';
+                    document.getElementById('download-json').style.display = 'block';
                 })
                 .catch(error => {
                     console.error('Errore:', error);
                     alert('Si è verificato un errore durante il caricamento della documentazione. Verifica il tuo token API e riprova.');
+                });
+        }
+
+        function openJson() {
+            const apiKey = savedApiKey;
+            if (!apiKey) {
+                alert('Per favore, inserisci un token API valido.');
+                return;
+            }
+
+            fetch("<?php echo site_url('rest/v1/generateSwaggerDocumentation'); ?>", {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + apiKey
+                }
+            })
+                .then(response => response.json())
+                .then(jsonData => {
+                    const jsonString = JSON.stringify(jsonData, null, 2);
+                    const newWindow = window.open();
+                    newWindow.document.write('<pre>' + jsonString + '</pre>');
+                    newWindow.document.title = 'Swagger JSON';
+                })
+                .catch(error => {
+                    console.error('Errore durante l\'apertura del JSON:', error);
+                    alert('Errore durante l\'apertura del JSON.');
+                });
+        }
+
+        function downloadJson() {
+            const apiKey = savedApiKey;
+            if (!apiKey) {
+                alert('Per favore, inserisci un token API valido.');
+                return;
+            }
+
+            fetch("<?php echo site_url('rest/v1/generateSwaggerDocumentation'); ?>", {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + apiKey
+                }
+            })
+                .then(response => response.json())
+                .then(jsonData => {
+                    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'swagger-documentation.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Errore durante il download del JSON:', error);
+                    alert('Errore durante il download del JSON.');
                 });
         }
 

@@ -17,8 +17,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('CUSTOM_FAVICON', null);
 
-    define('DEFAULT_DATE_FORMAT', 'Y-m-d');
-    define('DEFAULT_DATETIME_FORMAT', 'Y-m-d H:i:s');
+    define('DEFAULT_DATE_FORMAT', 'd-m-Y');
+    define('DEFAULT_DATETIME_FORMAT', 'd-m-Y H:i:s');
 
     define('MAX_UPLOAD_SIZE', 30000);
 
@@ -26,16 +26,16 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
 
     define('ADMIN_PROJECT', 1901);
     /*
- * ============================================================
- * E-mail system
- * ============================================================
- * DEFAULT_EMAIL_SYSTEM     System email address (for debugging, error log, ecc....)
- * DEFAULT_EMAIL_SENDER     Default email sender
- * DEFAULT_EMAIL_FROM       "From" default header
- * DEFAULT_EMAIL_REPLY      "Reply To" default header
- */
+     * ============================================================
+     * E-mail system
+     * ============================================================
+     * DEFAULT_EMAIL_SYSTEM     System email address (for debugging, error log, ecc....)
+     * DEFAULT_EMAIL_SENDER     Default email sender
+     * DEFAULT_EMAIL_FROM       "From" default header
+     * DEFAULT_EMAIL_REPLY      "Reply To" default header
+     */
     define('DEFAULT_EMAIL_SYSTEM', 'no-reply@yourdomain.com');
-define('DEFAULT_EMAIL_SENDER', 'OpenBuilder');
+    define('DEFAULT_EMAIL_SENDER', 'OpenBuilder');
 
     define('DEFAULT_EMAIL_FROM', 'Example Inc. <no-reply@yourdomain.com>');
     define('DEFAULT_EMAIL_REPLY', 'Example Inc. <no-reply@yourdomain.com>');
@@ -93,8 +93,8 @@ define('DEFAULT_EMAIL_SENDER', 'OpenBuilder');
     define('PROMOTE_ADMIN', false);
 
     /* ============
- * Custom colors
- * ============ */
+     * Custom colors
+     * ============ */
     define('TOPBAR_COLOR', '#222d32');
     define('TOPBAR_HOVER', '#222d32');
     define('LOGIN_COLOR', '#b22222');
@@ -127,11 +127,11 @@ $                   Match the end of the string.
     ]);
 
     /*
- * ============================================================
- * Base URL ADMIN
- * ============================================================
- *
- */
+     * ============================================================
+     * Base URL ADMIN
+     * ============================================================
+     *
+     */
 }
 if (!function_exists('base_url_admin')) {
     function base_url_admin($uri = '')
@@ -144,11 +144,11 @@ if (!function_exists('base_url_admin')) {
     }
 
     /*
- * ============================================================
- * Base URL Template , Base URL Script, Base URL Uploads
- * ============================================================
- *
- */
+     * ============================================================
+     * Base URL Template , Base URL Script, Base URL Uploads
+     * ============================================================
+     *
+     */
     function base_url_template($uri = '')
     {
         return base_url_admin($uri);

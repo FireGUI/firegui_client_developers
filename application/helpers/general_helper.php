@@ -654,7 +654,7 @@ if (!function_exists('t')) {
                 $path = sprintf('%slanguage/%s/%s_lang.php', APPPATH, $language, $language);
             }
 
-            $val = addslashes($string);
+            $val = addslashes($string??'');
             $add = '$lang[\'' . $val . '\'] = \'' . $val . '\';' . PHP_EOL;
 
             if (file_exists($path)) {
@@ -695,13 +695,16 @@ if (!function_exists('t')) {
         // Rimpiazza parametri
         if (is_array($params) && !empty($params)) {
             foreach ($params as $v) {
-                $translation = preg_replace("/%s/", $v, $translation, 1);
+               if ($v) {
+                    $translation = preg_replace("/%s/", $v, $translation, 1);
+               }
+                
             }
         }
 
         $modifiers = [1 => 'ucfirst', 2 => 'strtoupper', 3 => 'ucwords'];
         if (isset($modifiers[$ucfirst])) {
-            call_user_func($modifiers[$ucfirst], $translation);
+            call_user_func($modifiers[$ucfirst], $translation??'');
         }
         //debug($translation);
         return $translation;
@@ -970,14 +973,26 @@ if (!function_exists('make_tiny')) {
     {
         $ch = curl_init();
         $timeout = 5;
-        curl_setopt($ch, CURLOPT_URL, 'http://tinyurl.com/api-create.php?url=' . $url);
+
+        // Set cURL options
+        curl_setopt($ch, CURLOPT_URL, 'http://tinyurl.com/api-create.php?url=' . urlencode($url));
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Execute cURL and get response
         $data = curl_exec($ch);
+
+        // Check for cURL errors or empty response
+        if (curl_errno($ch) || empty($data)) {
+            $data = $url; // Return the original URL in case of an error or empty response
+        }
+
         curl_close($ch);
+
         return $data;
     }
 }
+
 
 if (!function_exists('base64_to_jpeg')) {
     function base64_to_jpeg($base64_string, $output_file)
@@ -1654,7 +1669,7 @@ if (!function_exists('time_elapsed')) {
 function getReverseGeocoding($address)
 {
     $ch = curl_init();
-    
+
     $get = http_build_query([
         'format' => 'json',
         'addressdetails' => 1,
@@ -1662,7 +1677,7 @@ function getReverseGeocoding($address)
         'polygon_svg' => 1,
         'q' => $address,
     ]);
-    
+
     $url = "https://nominatim.openstreetmap.org/search.php?{$get}";
 
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -1736,7 +1751,7 @@ if (!function_exists('e_money')) {
 if (!function_exists('r_money')) {
     function r_money($number, $format = '{number}', $decimals = 2)
     {
-        return str_ireplace('{number}', number_format($number, $decimals, ',', '.'), $format);
+        return str_ireplace('{number}', number_format($number??0, $decimals, ',', '.'), $format);
     }
 }
 

@@ -563,8 +563,10 @@ function initComponents(container, reset = false) {
   });
 
   $(":input", container).each(function () {
-    if ($(':input[data-dependent_on*="' + $(this).attr("name") + '"]', $(this).closest("form")).length > 0) {
-      $(this).trigger("change");
+    if (!$(this).closest("#views-permissions-datatable").length) {
+      if ($(':input[data-dependent_on*="' + $(this).attr("name") + '"]', $(this).closest("form")).length > 0) {
+        $(this).trigger("change");
+      }
     }
   });
 
@@ -671,9 +673,15 @@ function initComponents(container, reset = false) {
       { id: '-2', text: 'Campo vuoto' }
     ];
 
+    var selectAjaxUrl = base_url + "get_ajax/select_ajax_search" + get_params;
+    
+    if ($(this).data('custom_url')) {
+      selectAjaxUrl = $(this).data('custom_url');
+    }
+
     input.select2({
       ajax: {
-        url: base_url + "get_ajax/select_ajax_search" + get_params,
+        url: selectAjaxUrl,
         dataType: "json",
         delay: 250,
         type: "POST",
@@ -1171,7 +1179,8 @@ function loadModal(url, data, callbackSuccess, method) {
             !$(event.target).closest(".fancybox-skin").length &&
             !$(event.target).closest(".fancybox-item").length &&
             !$(event.target).closest(".select2-selection__choice").length &&
-            !$(event.target).closest(".btn-grid-action-s").length
+            !$(event.target).closest(".btn-grid-action-s").length &&
+            $(event.target).attr("id") !== "widget_button" // Widget assistenza
           ) {
             // Close the modal or perform other actions
             // console.log($(event.target));

@@ -91,34 +91,50 @@ class MY_Session extends CI_Session
             $params['cookie_lifetime'] = (int) $params['cookie_lifetime'];
         } else {
             $params['cookie_lifetime'] = (!isset($expiration) && config_item('sess_expire_on_close'))
-            ? 0 : (int) $expiration;
+                ? 0 : (int) $expiration;
         }
 
         isset($params['cookie_name']) or $params['cookie_name'] = config_item('sess_cookie_name');
         if (empty($params['cookie_name'])) {
             $params['cookie_name'] = ini_get('session.name');
         } else {
-
             ini_set('session.name', $params['cookie_name']);
-
         }
 
         isset($params['cookie_path']) or $params['cookie_path'] = config_item('cookie_path');
         isset($params['cookie_domain']) or $params['cookie_domain'] = config_item('cookie_domain');
         isset($params['cookie_secure']) or $params['cookie_secure'] = (bool) config_item('cookie_secure');
 
-        $secure_cookie = (bool) config_item('cookie_secure');
-        $cookie_samesite = config_item('cookie_samesite');
+        isset($params['cookie_samesite']) or $params['cookie_samesite'] = config_item('sess_samesite');
+        if (!isset($params['cookie_samesite']) && is_php('7.3')) {
+            $params['cookie_samesite'] = ini_get('session.cookie_samesite');
+        }
 
-        session_set_cookie_params(
-            [
-                'samesite' => $cookie_samesite,
-                'secure' => $secure_cookie,
-                'path' => config_item('cookie_path'),
-                'domain' => config_item('cookie_domain'),
-                'httponly' => config_item('cookie_httponly'),
-            ]
-        );
+        if (isset($params['cookie_samesite'])) {
+            $params['cookie_samesite'] = ucfirst(strtolower($params['cookie_samesite']));
+            in_array($params['cookie_samesite'], array('Lax', 'Strict', 'None'), TRUE) or $params['cookie_samesite'] = 'Lax';
+        } else {
+            $params['cookie_samesite'] = 'Lax';
+        }
+
+        if (is_php('7.3')) {
+            session_set_cookie_params(array(
+                'lifetime' => $params['cookie_lifetime'],
+                'path' => $params['cookie_path'],
+                'domain' => $params['cookie_domain'],
+                'secure' => $params['cookie_secure'],
+                'httponly' => TRUE,
+                'samesite' => $params['cookie_samesite']
+            ));
+        } else {
+            session_set_cookie_params(
+                $params['cookie_lifetime'],
+                $params['cookie_path'] . '; SameSite=' . $params['cookie_samesite'],
+                $params['cookie_domain'],
+                $params['cookie_secure'],
+                TRUE // HttpOnly; Yes, this is intentional and not configurable for security reasons
+            );
+        }
 
         if (empty($expiration)) {
             $params['expiration'] = (int) ini_get('session.gc_maxlifetime');

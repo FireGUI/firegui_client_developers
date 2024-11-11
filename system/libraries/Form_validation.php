@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2018, British Columbia Institute of Technology
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,9 @@
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2018, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
  * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
@@ -44,7 +45,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Validation
  * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/user_guide/libraries/form_validation.html
+ * @link		https://codeigniter.com/userguide3/libraries/form_validation.html
  */
 class CI_Form_validation {
 
@@ -170,8 +171,7 @@ class CI_Form_validation {
 		// or a validation array has not been specified
 		if ($this->CI->input->method() !== 'post' && empty($this->validation_data))
 		{
-                    
-                    return $this;
+			return $this;
 		}
 
 		// If an array was passed via the first parameter instead of individual string
@@ -419,7 +419,7 @@ class CI_Form_validation {
 		$validation_array = empty($this->validation_data)
 			? $_POST
 			: $this->validation_data;
-                //debug($this->_config_rules);
+
 		// Does the _field_data array containing the validation rules exist?
 		// If not, we look to see if they were assigned via a config file
 		if (count($this->_field_data) === 0)
@@ -427,8 +427,7 @@ class CI_Form_validation {
 			// No validation rules?  We're done...
 			if (count($this->_config_rules) === 0)
 			{
-				//echo('test');
-                            return FALSE;
+				return FALSE;
 			}
 
 			if (empty($group))
@@ -586,7 +585,7 @@ class CI_Form_validation {
 			{
 				if ($row['is_array'] === FALSE)
 				{
-					isset($_POST[$field]) && $_POST[$field] = $row['postdata'];
+					isset($_POST[$field]) && $_POST[$field] = is_array($row['postdata']) ? NULL : $row['postdata'];
 				}
 				else
 				{
@@ -660,14 +659,12 @@ class CI_Form_validation {
 			}
 			else
 			{
-                            //MP - 20180508 - Ho tolto questa cosa. Creava un mondo di casini coi poligoni e apilib
-                            // If we get an array field, but it's not expected - then it is most likely
+				// If we get an array field, but it's not expected - then it is most likely
 				// somebody messing with the form on the client side, so we'll just consider
 				// it an empty field
-//				$postdata = is_array($this->_field_data[$row['field']]['postdata'])
-//					? NULL
-//					: $this->_field_data[$row['field']]['postdata'];
-                            $postdata = $this->_field_data[$row['field']]['postdata'];
+				$postdata = is_array($this->_field_data[$row['field']]['postdata'])
+					? NULL
+					: $this->_field_data[$row['field']]['postdata'];
 			}
 
 			// Is the rule a callback?
@@ -1060,7 +1057,7 @@ class CI_Form_validation {
 	{
 		return is_array($str)
 			? (empty($str) === FALSE)
-			: (trim($str) !== '');
+			: (trim((string) $str) !== '');
 	}
 
 	// --------------------------------------------------------------------
@@ -1212,6 +1209,13 @@ class CI_Form_validation {
 			$str = $matches[2];
 		}
 
+		// Apparently, FILTER_VALIDATE_URL doesn't reject digit-only names for some reason ...
+		// See https://github.com/bcit-ci/CodeIgniter/issues/5755
+		if (ctype_digit($str))
+		{
+			return FALSE;
+		}
+
 		// PHP 7 accepts IPv6 addresses within square brackets as hostnames,
 		// but it appears that the PR that came in with https://bugs.php.net/bug.php?id=68039
 		// was never merged into a PHP 5 branch ... https://3v4l.org/8PsSN
@@ -1238,7 +1242,11 @@ class CI_Form_validation {
 			$domain = defined('INTL_IDNA_VARIANT_UTS46')
 				? idn_to_ascii($matches[2], 0, INTL_IDNA_VARIANT_UTS46)
 				: idn_to_ascii($matches[2]);
-			$str = $matches[1].'@'.$domain;
+
+			if ($domain !== FALSE)
+			{
+				$str = $matches[1].'@'.$domain;
+			}
 		}
 
 		return (bool) filter_var($str, FILTER_VALIDATE_EMAIL);

@@ -44,6 +44,19 @@ class Crmentity extends CI_Model
         // }
     }
 
+    public function isRelation($entity)
+    {
+        if (is_numeric($entity)) {
+            $entity_name = $this->getEntity($entity)['entity_name'];
+        } elseif (is_array($entity)) {
+            $entity_name = $entity['entity_name'];
+        } else {
+            $entity_name = $entity;
+        }
+
+        return array_key_exists($entity_name, $this->_schemaCache['relations']['by_name']);
+    }
+
     public function getCrmSchemaCacheKey()
     {
         return self::SCHEMA_CACHE_KEY;
@@ -93,7 +106,9 @@ class Crmentity extends CI_Model
     public function get_data_full($entity, $id, $maxDepthLevel = 2)
     {
 
-        $arr = $this->get_data_full_list($entity, null, "{$entity}.{$entity}_id = '{$id}'", 1, 0, null, false, $maxDepthLevel);
+        $input = $this->apilib->runDataProcessing($entity, 'pre-search', ["{$entity}.{$entity}_id = '{$id}'"]);
+        $arr = $this->get_data_full_list($entity, null, $input, 1, 0, null, false, $maxDepthLevel);
+        
         return array_get($arr, 0, []);
     }
 
@@ -770,9 +785,9 @@ class Crmentity extends CI_Model
         $group_by = array_get($options, 'group_by', null);
 
         if ($group_by !== null) {
-            $this->db->_protect_identifiers = false;
-            $this->db->group_by($group_by);
-            $this->db->_protect_identifiers = true;
+            //$this->db->_protect_identifiers = false;
+            $this->db->group_by($group_by, '', false);
+            //$this->db->_protect_identifiers = true;
         }
     }
     /**
@@ -794,9 +809,9 @@ class Crmentity extends CI_Model
         }
 
         if ($order_by !== null && !$count) {
-            $this->db->_protect_identifiers = false;
-            $this->db->order_by($order_by);
-            $this->db->_protect_identifiers = true;
+            //$this->db->_protect_identifiers = false;
+            $this->db->order_by($order_by, '', false);
+            //$this->db->_protect_identifiers = true;
         }
     }
 
@@ -887,7 +902,7 @@ class Crmentity extends CI_Model
                         }
                     }
                 } else { // If where is passed as string i can use stripos to check if soft_delete field has been already passed trouhgt this function and has not to be forced
-                    if (stripos($where, $entityCustomActions['soft_delete_flag']) === false) {
+                    if (stripos($where??'', $entityCustomActions['soft_delete_flag']) === false) {
                         if (empty($where)) {
                             $where = "({$entityCustomActions['soft_delete_flag']} =  '" . DB_BOOL_FALSE . "' OR {$entityCustomActions['soft_delete_flag']} IS NULL)";
                         } else {
