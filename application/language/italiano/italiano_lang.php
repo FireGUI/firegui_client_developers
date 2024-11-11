@@ -2223,3 +2223,6 @@ $lang['Voip settings'] = 'Voip settings';
 $lang['Voip numbers'] = 'Voip numbers';
 $lang['Changelog client'] = 'Changelog client';
 $lang['openbuilder changelog clients'] = 'openbuilder changelog clients';
+$lang['Appearance settings'] = 'Appearance settings';
+$lang['Extra settings'] = 'Extra settings';
+$lang['Manage Templates'] = 'Manage Templates';

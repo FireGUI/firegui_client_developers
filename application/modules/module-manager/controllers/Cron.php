@@ -56,7 +56,8 @@ class Cron extends MY_Controller
             // Filename new dump
             $dump_filename = "backup-db-" . date("d-m-Y") . ".sql.gz";
             // Clear old backup
-            delete_older_files($tempDir, 5, 'backup-db');
+            $max_old_backup_days = defined('AUTO_UPDATE_MAX_BACKUPS_DAYS') && AUTO_UPDATE_MAX_BACKUPS_DAYS > 0 ? AUTO_UPDATE_MAX_BACKUPS_DAYS : 5;
+            delete_older_files($tempDir, $max_old_backup_days, 'backup-db');
 
 
             // // Start Dump

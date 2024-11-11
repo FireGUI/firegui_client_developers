@@ -165,22 +165,22 @@ class Main extends MX_Controller
 //     $this->load->view('layout/main', $this->template);
 // }
 
-    public function show_details($module_identifier)
-    {
-        $module = $this->db->get_where('modules', ['modules_identifier' => $module_identifier])->row_array();
-        $module['folders'] = $this->core->getModuleRepositoryDataFull($module_identifier);
+    public function show_details($module_identifier) {
+        // $module = $this->db->get_where('modules', ['modules_identifier' => $module_identifier])->row_array();
+        
+        $module = $this->core->getModuleRepositoryDataFull($module_identifier);
 
         $this->load->view(
             "layout/modal_container",
             array(
-                // 'size' => $modalSize,
-                // 'title' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_title'])),
-                // 'subtitle' => ucfirst(str_replace(array('_', '-'), ' ', $dati['layout_container']['layouts_subtitle'])),
-                'content' => $this->load->view('show_details', ['module' => $module, 'current_module_version_code' => $module['modules_version_code']], true),
+                'size' => '',
+                'title' => t('Module details') . ': <b>' . $module['modules_repository_name'] . '</b>',
+                'subtitle' => '',
+                'content' => $this->load->view('show_details', ['module' => $module], true),
                 'footer' => null,
             )
         );
 
-
+        
     }
 }
