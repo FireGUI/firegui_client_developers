@@ -17,7 +17,7 @@ class Main extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->settings = [];
+
         // Se non sono loggato allora semplicemente uccido la richiesta
         if ($this->auth->guest()) {
             set_status_header(401); // Unauthorized
@@ -31,12 +31,9 @@ class Main extends MX_Controller
             $this->settings = $this->apilib->searchFirst('modules_manager_settings');
             $this->token = $this->settings['modules_manager_settings_license_token'];
         } else {
-            
             $this->settings['modules_manager_settings_modules_repository'] = null;
             $this->token = null;
         }
-
-        //$this->settings = $this->apilib->searchFirst('modules_manager_settings');
 
         $this->load->model('core');
         //$this->load->model('module-manager/modules_model');
@@ -165,9 +162,10 @@ class Main extends MX_Controller
 //     $this->load->view('layout/main', $this->template);
 // }
 
-    public function show_details($module_identifier) {
+    public function show_details($module_identifier)
+    {
         // $module = $this->db->get_where('modules', ['modules_identifier' => $module_identifier])->row_array();
-        
+
         $module = $this->core->getModuleRepositoryDataFull($module_identifier);
 
         $this->load->view(
@@ -181,6 +179,6 @@ class Main extends MX_Controller
             )
         );
 
-        
+
     }
 }

@@ -281,7 +281,7 @@ class Fi_events extends CI_Model
 
                 $event['fi_events_ref_id'] = $data['pp']['post_process_entity_id'];
                 $event['fi_events_apilib'] = $data['pp']['post_process_apilib'];
-                $event['fi_events_api'] = $data['pp']['post_process_api'];
+                $event['fi_events_api'] = $data['pp']['post_process_api']??null;
                 $event['fi_events_crm'] = $data['pp']['post_process_crm'];
                 $event['fi_events_module'] = $data['pp']['post_process_module'];
 

@@ -351,6 +351,9 @@ class Modules_model extends CI_Model
         $uninstall = false;
         $conditions = [];
         try {
+
+            //Azzero tutti i progress...
+
             //Mi tengo in una variabile l'elenco dei nomi delle entità di questo modulo (mi serve dopo)
 
             $identifier = ($json['module_identifier']) ?: false;
@@ -379,7 +382,7 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['entities'] as $old_entity_id => $entity) {
                 $c++;
-                progress($c, $total, 'entities');
+                progress($c, $total, 'entities ('.$identifier.')');
 
                 $entity_action_fields = json_decode($entity['entity_action_fields'], true);
 
@@ -437,7 +440,7 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['entities'] as $old_entity_id => $entity) {
                 $c++;
-                progress($c, $total, 'relations');
+                progress($c, $total, 'relations ('.$identifier.')');
                 $this->db->cache_delete_all();
                 $this->db->data_cache = [];
                 if ($entity['entity_type'] == ENTITY_TYPE_RELATION && !empty($entity['relation'])) {
@@ -500,7 +503,7 @@ class Modules_model extends CI_Model
 
 
                     $c++;
-                    progress($c, $total, 'fields');
+                    progress($c, $total, 'fields ('.$identifier.')');
                     $this->db->cache_delete_all();
                     $this->db->data_cache = [];
                     $data = [
@@ -563,7 +566,7 @@ class Modules_model extends CI_Model
                 //Una volta che ho i fields creati, creo le fields_validations....
                 foreach ($entity['fields_validation'] as $fv) {
                     $fvc++;
-                    progress($fvc, $fv_count, 'fields validation');
+                    progress($fvc, $fv_count, 'fields validation ('.$identifier.')');
                     unset($fv['fields_draw_id']);
                     unset($fv['fields_validation_id']);
                     $fv['fields_validation_fields_id'] = $fields_id_map[$fv['fields_validation_fields_id']];
@@ -585,8 +588,16 @@ class Modules_model extends CI_Model
                 $fdc = 0;
                 foreach ($entity['fields_draw'] as $fd) {
                     $fdc++;
-                    progress($fdc, $fd_count, 'fields draw');
+                    progress($fdc, $fd_count, 'fields draw ('.$identifier.')');
+                    
+
+                    if (empty($fields_id_map[$fd['fields_draw_fields_id']])) {
+                        // debug($fd);
+                        // debug($fields_id_map,true);
+                    }
+
                     unset($fd['fields_draw_id']);
+
                     $fd['fields_draw_fields_id'] = $fields_id_map[$fd['fields_draw_fields_id']];
                     if (empty($fd['fields_draw_fields_id'])) {
                         //debug($fd,true);
@@ -607,7 +618,7 @@ class Modules_model extends CI_Model
             $total = count($json['entities']);
             $c = 0;
             foreach ($json['entities'] as $old_entity_id => $entity) {
-                progress(++$c, $total, 'custom action fields');
+                progress(++$c, $total, 'custom action fields ('.$identifier.')');
                 $entity_action_fields = json_decode($entity['entity_action_fields'], true);
                 if ($entity_action_fields) {
                     //Prima di creare le varie action fields, dovrei eliminare le vecchie, per non avere ad esempio due campi marcati come order by default
@@ -645,7 +656,7 @@ class Modules_model extends CI_Model
             foreach ($json['layouts'] as $layout) {
 
                 $c++;
-                progress($c, $total, 'layouts delete');
+                progress($c, $total, 'layouts delete (' . $identifier . ')');
                 $this->db->cache_delete_all();
                 $this->db->data_cache = [];
 
@@ -667,7 +678,7 @@ class Modules_model extends CI_Model
                 }
 
                 $c++;
-                progress($c, $total, 'layouts');
+                progress($c, $total, 'layouts ('.$identifier.')');
                 if ($layout == null) {
                     // debug($json['layouts']);
                     // debug($key, true);
@@ -765,7 +776,7 @@ class Modules_model extends CI_Model
             $c = 0;
             foreach ($json['forms'] as $form) {
                 $c++;
-                progress($c, $total, 'forms');
+                progress($c, $total, 'forms ('.$identifier.')');
                 //Rimuovo prima l'eventuale form già presente
                 $old_form_id = $form['forms_id'];
                 unset($form['forms_id']);
@@ -829,7 +840,7 @@ class Modules_model extends CI_Model
                     }
 
                     $c++;
-                    progress($c, $total, 'form fields');
+                    progress($c, $total, 'form fields ('.$identifier.')');
                     // replace login entity session placeholder
                     if (strpos($field['forms_fields_default_value'], '{login_entity}') !== false) {
                         $field['forms_fields_default_value'] = str_replace('{login_entity}', $login_entity['entity_name'], $field['forms_fields_default_value']);
@@ -893,7 +904,7 @@ class Modules_model extends CI_Model
 
             foreach ($json['menu'] as $menu) {
                 $c++;
-                progress($c, $total, 'menu creation (step 1)');
+                progress($c, $total, 'menu creation (step 1) (' . $identifier . ')');
 
                 if ($menu['menu_parent']) { //Skippo quelli che hanno parent, li riprocesso dopo
                     continue;
@@ -957,7 +968,7 @@ class Modules_model extends CI_Model
 
 
                 $c++;
-                progress($c, $total, 'menu creation (step 2)');
+                progress($c, $total, 'menu creation (step 2) ('.$identifier.')');
                 if (!$menu['menu_parent']) { //Skippo quelli che non hanno parent
                     continue;
                 }
@@ -1098,7 +1109,7 @@ class Modules_model extends CI_Model
                 $c = 0;
                 foreach ($json['grids'] as $grid) {
                     $c++;
-                    progress($c, $total, "grids (step " . ($i + 1) . ")");
+                    progress($c, $total, "grids (step " . ($i + 1) . ') ('.$identifier.')');
                     my_log('debug', "Module install: create grid {$grid['grids_name']}", 'update');
 
                     $orig_grid = $grid;
@@ -1227,7 +1238,7 @@ class Modules_model extends CI_Model
 
                     foreach ($grid['fields'] as $field) {
                         $c++;
-                        progress($c, $total, 'grids fields');
+                        progress($c, $total, 'grids fields (' . $identifier . ')');
                         if ($field['grids_fields_replace_type'] == 'field') {
                             if (!array_key_exists($field['grids_fields_fields_id'], $fields_id_map)) {
 
@@ -1311,7 +1322,7 @@ class Modules_model extends CI_Model
 
                     foreach ($grid['actions'] as $action) {
                         $c++;
-                        progress($c, $total, 'grids actions');
+                        progress($c, $total, 'grids actions (' . $identifier . ')');
                         $action['grids_actions_grids_id'] = $grid_id;
                         $old_grids_actions_id = $action['grids_actions_id'];
                         unset($action['grids_actions_id']);
@@ -1320,10 +1331,10 @@ class Modules_model extends CI_Model
                         if (!empty($action['grids_actions_layout'])) {
                             if (!array_key_exists($action['grids_actions_layout'], $layouts_id_map)) {
                                 // debug($grid);
-                                // debug($action, true);
+                                // debug($action);
                                 my_log('debug', 'TODO: fare in modo che in fase di export module, si porti dietro anche i layouts legati alle grid actions così da avere qui le mappature corrette', 'update');
                             }
-                            $action['grids_actions_layout'] = $layouts_id_map[$action['grids_actions_layout']];
+                            $action['grids_actions_layout'] = $layouts_id_map[$action['grids_actions_layout']]??null;
                         }
                         //Rimappo i form legati alle actions...
                         if (!empty($action['grids_actions_form'])) {
@@ -1366,7 +1377,7 @@ class Modules_model extends CI_Model
 
             foreach ($json['charts'] as $chart) {
                 $c++;
-                progress($c, $total, 'charts');
+                progress($c, $total, 'charts ('.$identifier.')');
                 //Rimuovo prima l'eventuale form già presente
                 $old_chart_id = $chart['charts_id'];
                 unset($chart['charts_id']);
@@ -1395,7 +1406,7 @@ class Modules_model extends CI_Model
 
             foreach ($json['charts_elements'] as $chart_element) {
                 $c++;
-                progress($c, $total, 'charts elements');
+                progress($c, $total, 'charts elements ('.$identifier.')');
                 $chart_element['charts_elements_charts_id'] = $charts_id_map[$chart_element['charts_elements_charts_id']];
                 $chart_element['charts_elements_entity_id'] = $entities_id_map[$chart_element['charts_elements_entity_id']];
                 $chart_element['charts_elements_fields_id'] = $fields_id_map[$chart_element['charts_elements_fields_id']];
@@ -1425,7 +1436,7 @@ class Modules_model extends CI_Model
             $maps_id_map = [];
             foreach ($json['maps'] as $map) {
                 $c++;
-                progress($c, $total, 'maps');
+                progress($c, $total, 'maps ('.$identifier.')');
                 //Rimuovo prima l'eventuale form già presente
                 $old_map_id = $map['maps_id'];
                 unset($map['maps_id']);
@@ -1451,7 +1462,7 @@ class Modules_model extends CI_Model
             $total = count($json['maps_fields']);
             foreach ($json['maps_fields'] as $map_field) {
                 $c++;
-                progress($c, $total, 'maps fields');
+                progress($c, $total, 'maps fields ('.$identifier.')');
                 $map_field['maps_fields_maps_id'] = $maps_id_map[$map_field['maps_fields_maps_id']];
 
                 $map_field['maps_fields_fields_id'] = $fields_id_map[$map_field['maps_fields_fields_id']];
@@ -1460,12 +1471,13 @@ class Modules_model extends CI_Model
             }
 
             $c = 0;
+            $json['calendars'] = $json['calendars'] ?? [];
             $total = count($json['calendars']);
 
             //Inserisco i calendar
             foreach ($json['calendars'] as $calendar) {
                 $c++;
-                progress($c, $total, 'calendars');
+                progress($c, $total, 'calendars ('.$identifier.')');
                 //debug($calendar,true);
                 $old_calendar_id = $calendar['calendars_id'];
                 unset($calendar['calendars_id']);
@@ -1535,7 +1547,7 @@ class Modules_model extends CI_Model
             foreach ($json['calendars'] as $calendar) {
                 foreach ($calendar['fields'] as $field) {
                     $c++;
-                    progress($c, $total, 'calendars fields');
+                    progress($c, $total, 'calendars fields ('.$identifier.')');
                     if (!array_key_exists($field['calendars_fields_fields_id'], $fields_id_map)) {
                         //debug($field);
                     }
@@ -1575,7 +1587,7 @@ class Modules_model extends CI_Model
             foreach ($json['layouts_boxes'] as $lb) {
 
                 $c++;
-                progress($c, $total, 'layouts boxes (step 1)');
+                progress($c, $total, 'layouts boxes (step 1) ('.$identifier.')');
 
                 $old_layout_box_id = $lb['layouts_boxes_id'];
                 unset($lb['layouts_boxes_id']);
@@ -1700,7 +1712,7 @@ class Modules_model extends CI_Model
             $total = count($json['layouts_boxes']);
             foreach ($json['layouts_boxes'] as $lb) {
                 $c++;
-                progress($c, $total, 'layouts boxes (step 2)');
+                progress($c, $total, 'layouts boxes (step 2) ('.$identifier.')');
 
                 $old_layout_box_id = $lb['layouts_boxes_id'];
                 unset($lb['layouts_boxes_id']);
@@ -1760,13 +1772,13 @@ class Modules_model extends CI_Model
                 $total = count($json['fi_events']);
                 foreach ($json['fi_events'] as $event) {
                     $c++;
-                    progress($c, $total, 'events');
+                    progress($c, $total, 'events ('.$identifier.')');
                     $data_post = json_decode($event['fi_events_json_data'], true);
                     switch ($event['fi_events_type']) {
 
                         case 'database':
                             $data_post['pp']['post_process_id'] = null;
-                            $data_post['pp']['post_process_entity_id'] = $entities_id_map[$data_post['pp']['post_process_entity_id']];
+                            $data_post['pp']['post_process_entity_id'] = $entities_id_map[$data_post['pp']['post_process_entity_id']]??null;
 
                             //Sovrascrivo il pp when (perde il pre- o post- a volte, mentre l'informazione ce l'ho ancora nel fi_events_when)
                             $data_post['pp']['post_process_when'] = $event['fi_events_when'];
@@ -1821,26 +1833,26 @@ class Modules_model extends CI_Model
                 }
             } else { //Per retrocompatibilità (vecchi modulo, mantengo la logica pp,hooks,crons...)
                 $c = 0;
-                $json['post_processes'] == $json['post_processes'] ?? [];
+                $json['post_processes'] = $json['post_processes'] ?? [];
                 $total = count($json['post_processes']);
                 //INserisco i postprocess
                 $this->db->where('post_process_module', $identifier)->delete('post_process');
                 foreach ($json['post_processes'] as $pp) {
                     $c++;
-                    progress($c, $total, 'post process');
+                    progress($c, $total, 'post process ('.$identifier.')');
                     unset($pp['post_process_id']);
                     $pp['post_process_entity_id'] = $entities_id_map[$pp['post_process_entity_id']];
 
                     $this->db->insert('post_process', $pp, null, true);
                 }
                 $c = 0;
-                $json['hooks'] == $json['hooks']??[];
+                $json['hooks'] = $json['hooks']??[];
                 $total = count($json['hooks']);
                 //Inserisco gli hooks
                 $this->db->where('hooks_module', $identifier)->delete('hooks');
                 foreach ($json['hooks'] as $h) {
                     $c++;
-                    progress($c, $total, 'hooks');
+                    progress($c, $total, 'hooks ('.$identifier.')');
                     unset($h['hooks_id']);
                     switch ($h['hooks_type']) {
                         case 'post-form':
@@ -1881,7 +1893,7 @@ class Modules_model extends CI_Model
                 //Verifico se è già presente quella mail
                 foreach ($json['emails'] as $email) {
                     $c++;
-                    progress($c, $total, 'emails');
+                    progress($c, $total, 'emails ('.$identifier.')');
                     unset($email['emails_id']);
                     $this->db->insert('emails', $email, null, true);
                 }
@@ -1903,7 +1915,7 @@ class Modules_model extends CI_Model
             $total = count($conditions);
             foreach ($conditions as $condition) {
                 $c++;
-                progress($c, $total, 'Conditions');
+                progress($c, $total, 'Conditions ('.$identifier.')');
                 if (!empty($condition['conditions_module_key'])) {
                     $condition_exists = $this->db->where('conditions_module_key', $condition['conditions_module_key'])->get('_conditions')->row_array();
                 } else {
@@ -1967,7 +1979,7 @@ class Modules_model extends CI_Model
                     if ($count_table_records == 0) {
                         foreach ($entity['raw_data_install'] as $row) {
                             $c++;
-                            progress($c, $total, 'raw data install');
+                            progress($c, $total, 'raw data install ('.$identifier.')');
                             //debug($row);
                             //Verifico se il record esiste già basandomi sulla pk
                             if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
@@ -1986,7 +1998,7 @@ class Modules_model extends CI_Model
                     }
                     foreach ($entity['raw_data_update'] as $row) {
                         $cu++;
-                        progress($cu, $totalu, 'raw data install');
+                        progress($cu, $totalu, 'raw data install ('.$identifier.')');
                         //debug($row);
                         //Verifico se il record esiste già basandomi sulla pk
                         if ($this->db->where($entity['entity_name'] . '_id', $row[$entity['entity_name'] . '_id'])->get($entity['entity_name'])->num_rows() == 0) {
