@@ -184,7 +184,7 @@ class CI_DB_Cache {
 			return FALSE;
 		}
 
-		chmod($dir_path.$filename, 0640);
+		@chmod($dir_path.$filename, 0640);
 		return TRUE;
 	}
 

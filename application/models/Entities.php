@@ -645,6 +645,7 @@ class Entities extends CI_Model
                     if ($field['fields_type'] == 'integer') {
                         $this->selected_db->query("UPDATE {$entity_name} SET {$field['fields_name']} = NULL WHERE {$field['fields_name']} = ''");
                         $this->selected_db->query("UPDATE {$entity_name} SET {$field['fields_name']} = CAST({$field['fields_name']} AS integer)");
+                        $append_using = '';
                         // } elseif ($field['fields_type'] == 'FLOAT') {
                         //     $this->selected_db->query("UPDATE {$entity_name} SET {$field['fields_name']} = CAST({$field['fields_name']} AS integer)");
                         // } elseif (in_array(strtolower($field['fields_type']), ['timestamp without time zone', 'datetime'])) {

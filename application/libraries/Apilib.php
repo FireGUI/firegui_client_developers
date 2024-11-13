@@ -138,7 +138,7 @@ class Apilib
         $this->previousDebug = $this->db->db_debug;
         //$this->crmEntity = $this->getCrmEntity();
 
-
+        $this->settings = $this->db->get('settings')->row_array();
         $this->cache_config = $this->mycache->getCurrentConfig();
 
     }
@@ -2491,8 +2491,9 @@ class Apilib
                     debug($function);
                     debug($data, true);
                 }
+                
                 log_message('debug', 'Running post process ' . $function['fi_events_title'] . ' on ' . $entity_id . ' ' . $pptype);
-                if (!is_maintenance() && in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE) {
+                if (!is_maintenance() && in_array($pptype, $this->deferrable_pp) && $function['post_process_background'] == DB_BOOL_TRUE && $this->settings['settings_background_pp'] > 0) {
                     /*
                     '_queue_pp_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],
                     '_queue_pp_execution_date' => ['type' => 'TIMESTAMP', 'default' => 'CURRENT_TIMESTAMP', 'DEFAULT_STRING' => false],

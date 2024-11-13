@@ -109,7 +109,7 @@ class Modules_model extends CI_Model
             $zip->extractTo($unzip_destination_folder);
             $zip->close();
 
-            unlink($tmp_zip_file);
+            @unlink($tmp_zip_file);
 
             if (file_exists("{$unzip_destination_folder}/json/data.json")) {
 
@@ -598,7 +598,7 @@ class Modules_model extends CI_Model
 
                     unset($fd['fields_draw_id']);
 
-                    $fd['fields_draw_fields_id'] = $fields_id_map[$fd['fields_draw_fields_id']];
+                    $fd['fields_draw_fields_id'] = $fields_id_map[$fd['fields_draw_fields_id']]??null;
                     if (empty($fd['fields_draw_fields_id'])) {
                         //debug($fd,true);
                     }
@@ -1037,7 +1037,7 @@ class Modules_model extends CI_Model
                 $conditions = array_merge($conditions, [$menu['conditions']]);
                 unset($menu['conditions']);
                 if (array_key_exists('menu_parent_data', $menu)) {
-                    // unset($menu['menu_parent_data']);
+                    unset($menu['menu_parent_data']);
                 }
 
 
@@ -1056,7 +1056,7 @@ class Modules_model extends CI_Model
                     }
                     $menu_esistente = $check_menu_exists->row_array();
 
-
+                    
                     $this->db->where('menu_id', $menu_esistente['menu_id'])->update('menu', $menu, null, null, true);
                     $menus_id_map[$old_menu_id] = $menu_esistente['menu_id'];
 
@@ -1072,7 +1072,7 @@ class Modules_model extends CI_Model
                     //     debug($menu, true);
 
                     // }
-
+                    
                     $this->db->insert('menu', $menu, null, true, null, true);
                     $menuid = $this->db->insert_id();
                 }
@@ -1174,12 +1174,10 @@ class Modules_model extends CI_Model
 
                     //Verifico che non esista già la grid
                     $grid_exists = $this->db->query("SELECT * FROM grids WHERE grids_module_key = '{$grid['grids_module_key']}'");
+                    if (!$grid['grids_layout']) {
+                        $grid['grids_layout'] = 'table';
+                    }
                     if ($grid_exists->num_rows() == 0) {
-
-                        if (!$grid['grids_layout']) {
-                            debug($grid, true);
-                        }
-
                         $this->db->insert('grids', $grid, null, true);
                         $new_grid_id = $this->db->insert_id();
                         $grids_id_map[$old_grid_id] = $new_grid_id;
@@ -1194,6 +1192,9 @@ class Modules_model extends CI_Model
                             locked_elements_type = 'grid' AND locked_elements_ref_id = '$new_grid_id'");
                         if ($check_lock->num_rows() == 0) {
                             if (!empty($grid['grids_sub_grid_id']) && $i == 1) { //Solo al secondo passaggio sono sicuro di aver mappato tutte le grid e quindi posso sovrascrivere la sub_grid eventuale...
+                                if (empty($grids_id_map[$grid['grids_sub_grid_id']])) {
+                                    debug($grid);
+                                }
                                 $grid['grids_sub_grid_id'] = $grids_id_map[$grid['grids_sub_grid_id']];
                             }
 
@@ -1317,7 +1318,10 @@ class Modules_model extends CI_Model
             foreach ($json['grids'] as $grid) {
                 $old_grid_id = $grid['grids_id'];
                 $grid_id = $grids_id_map[$old_grid_id];
-                //debug($grid,true);
+                if (!$grid_id) {
+                    //debug($grid);
+                    continue;
+                }
                 if ($this->db->query("SELECT * FROM locked_elements WHERE locked_elements_type = 'grid' AND locked_elements_ref_id = '$grid_id'")->num_rows() == 0) {
 
                     foreach ($grid['actions'] as $action) {
@@ -1342,6 +1346,10 @@ class Modules_model extends CI_Model
                         }
                         $conditions = array_merge($conditions, [$action['conditions']]);
                         unset($action['conditions']);
+
+                        if (!$action['grids_actions_grids_id']) {
+                            //debug($action,true);
+                        }
 
                         $this->db->insert('grids_actions', $action, null, true);
 
@@ -1894,6 +1902,9 @@ class Modules_model extends CI_Model
                 foreach ($json['emails'] as $email) {
                     $c++;
                     progress($c, $total, 'emails ('.$identifier.')');
+                    if (!$email['emails_headers']) {
+                        $email['emails_headers'] = '';
+                    }
                     unset($email['emails_id']);
                     $this->db->insert('emails', $email, null, true);
                 }

@@ -6,3 +6,6 @@ $this->db->query("UPDATE modules_manager_settings SET modules_manager_settings_m
 //auto update ultima patch stable
 $recursive_to_last = true;
 $last_version = $this->core->updatePatches(null, 4, $recursive_to_last);
+
+$this->load->model('core');
+$this->core->update();

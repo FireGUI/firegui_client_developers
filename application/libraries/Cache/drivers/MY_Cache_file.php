@@ -525,7 +525,7 @@ class MY_Cache_file extends CI_Driver
                 $todo($fileinfo->getRealPath());
             }
 
-            rmdir($path);
+            @rmdir($path);
         } elseif (is_file($path)) {
             unlink($path);
         }
