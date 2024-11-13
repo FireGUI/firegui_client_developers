@@ -1,3 +1,32 @@
+Changelog version 4.2.1
+
+2024-11-13 Patch version: 4.2.1
+
+Updated MY_Session (unused)
+Bugfix order by in Crmentotyv2.php
+retro-fix migration 4.1.4
+Add channel update in settings
+Fix install module without initial settings
+Bugfix module manager first install
+new auto updatre channel link
+Bugfix apilib for array data
+Fix undefined index on install module
+Bugfix settings in Main
+Bugfix undefined index new_event
+Better progress in module install
+Bugfix settings undefined in module_manager
+Module Manager Settings grid removed
+Added updatePatches to last in module_manager setup
+Fix public layout with entity details
+Restored 4.2.0 version
+Bugfix deferrable pp disabled when 0 or null in settings
+Bugfix notice in cache rmdir
+Bugfix notice $append_using undefined
+Bugfix notive unlink in modules_model
+Bugfix on install module when grid doesn't exists
+Added core->update() in module manager setup
+Bugfix in system DB_cache model
+
 Changelog version 4.2.0
 
 2024-11-07 Release version: 4.2.0
