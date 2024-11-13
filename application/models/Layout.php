@@ -180,7 +180,7 @@ class Layout extends CI_Model
 
             if (!empty($coverPage)) {
                 $mpdf->WriteHtml($this->generate_html($coverPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
-                $mpdf->AddPage();
+                // $mpdf->AddPage();
             }
 
             if (!empty($header)) {
