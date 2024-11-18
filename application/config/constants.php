@@ -103,7 +103,7 @@ define(
         'Green' => '#0be881',
         'Green light' => '#0be881',
         'Green water' => '#00d8d6',
-        'Green progress' => '#4cd1370',
+        'Green progress' => '#4cd137',
         'Green slack' => '#3aaf85',
         'Grey' => '#485460',
         'Grey light' => '#d2dae2',
