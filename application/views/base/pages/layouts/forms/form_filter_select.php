@@ -258,8 +258,8 @@ $rowCol = 0;
                     <?php elseif ($field['type'] == 'select_ajax'): ?>
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                     <?php //debug($field); ?>
-                        <select class="js_select_ajax_new form-control" name="conditions[<?php echo $k; ?>][value]"
-                            data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>"
+                        <select class="js_select_ajax_new form-control <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]"
+                            data-val="<?php echo $value; ?>" data-field="<?php echo $field['name']; ?>" data-ref="<?php echo $field['filterref']; ?>"
                             data-source-field="<?php echo $field['field_ref'] ?? ''; ?>" data-minimum-input-length="0">
                             <option value="-1" <?php if ($value && $value == -1): ?>selected<?php endif; ?>><?php e('---'); ?></option>
                             <option value="-2" <?php if ($value && $value == -2): ?>selected<?php endif; ?>><?php e('Campo vuoto'); ?></option>
@@ -378,7 +378,7 @@ $rowCol = 0;
                         <?php elseif ($field['type'] == 'select_ajax'): ?>
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                             
-                            <select class="js_select_ajax_new form-control <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="<?php echo $field['field_ref'] ?>" data-minimum-input-length="0">
+                            <select class="js_select_ajax_new form-control <?php echo $class ?>" name="conditions[<?php echo $k; ?>][value]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-field="<?php echo $field['name']; ?>" data-source-field="<?php echo $field['field_ref'] ?>" data-minimum-input-length="0">
                                 <?php if (isset($field['support_data'])) : ?>
                                     <?php foreach ((array) $field['support_data'] as $id => $name) : ?>
                                         <?php if ($id != $value) {
