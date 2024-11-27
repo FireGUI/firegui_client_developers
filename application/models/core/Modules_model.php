@@ -114,15 +114,7 @@ class Modules_model extends CI_Model
             if (file_exists("{$unzip_destination_folder}/json/data.json")) {
 
                 $content = file_get_contents("{$unzip_destination_folder}/json/data.json");
-
-                //TODO: Check if module depends on other modules
-
-                //Process json informations
-                $this->json_process($content, $identifier, $is_update);
-
-                //Copy module files on modules folder
-                $this->copy_files($identifier);
-
+                
                 //Run migrations
                 $old_module = $this->db->where('modules_identifier', $module['modules_repository_identifier'])->get('modules')->row_array();
                 if ($is_update && $old_module) {
@@ -130,7 +122,14 @@ class Modules_model extends CI_Model
                 } else {
                     $old_version = '0';
                 }
+                
+                $this->run_migrations($identifier, $old_version, $module['modules_repository_version'], true);
+                
+                //Process json informations
+                $this->json_process($content, $identifier, $is_update);
 
+                //Copy module files on modules folder
+                $this->copy_files($identifier);
 
 
                 $this->run_migrations($identifier, $old_version, $module['modules_repository_version']);
@@ -271,61 +270,107 @@ class Modules_model extends CI_Model
         }
 
     }
-    public function run_migrations($identifier, $old_version, $new_version)
+    public function run_migrations($identifier, $old_version, $new_version, $pre_setup = false)
     {
-        $migration_dir = APPPATH . "modules/$identifier/migrations";
+        if ($pre_setup) {
+            $migration_dir = "{$this->temp_folder}/$identifier/migrations";
+        } else {
+            $migration_dir = APPPATH . "modules/$identifier/migrations";
+        }
+        
+        //dump($migration_dir);
+        
         if (file_exists($migration_dir)) {
             $files = scandir($migration_dir);
-
+            
             foreach ($files as $file) {
                 if ($file == 'update_php_code.php') {
                     // Check if exist an update_db file to execute update queries
                     include "$migration_dir/$file";
-
+                    
                     // Sort array from oldest version to newest
                     uksort($updates, 'my_version_compare');
-
+                    
                     foreach ($updates as $key => $value) {
-
                         $version_compare_old = version_compare($key, $old_version, '>');
-                        // debug($key);
-                        // debug($old_version);
-                        // debug($version_compare_old);
-                        // debug($value,true);
-                        //if ($version_compare_old || ($key == 0 && $old_version == 0)) { //1 se old è < di key
-                        if ($version_compare_old || ($old_version == 0 || $key === '*')) { //Rimosso key == 0 perchè altrimenti esegue infinite volte l'update 0 (che di solito va fatto solo all'install)
-                            foreach ($value as $key_type => $code) {
-                                if ($key_type == 'eval') {
-                                    eval ($code);
-                                } elseif ($key_type == 'include') {
-                                    if (is_array($code)) {
-                                        foreach ($code as $file_to_include) {
-                                            $file_migration = "$migration_dir/$file_to_include";
-                                            if (file_exists($file_migration)) {
-
-
-                                                //debug("Eseguo migration $file_migration",true);
-
-                                                include $file_migration;
-                                            } else {
-                                                echo_log('error', "Migration file {$file_migration} missing!");
-                                            }
-                                        }
-                                    } else {
-                                        $file_migration = APPPATH . 'migrations/' . $code;
-
+                        
+                        // Eseguo le migration solo se la versione lo richiede
+                        if ($version_compare_old || ($old_version == 0 || $key === '*')) {
+                            //dump("installable");
+                            if ($pre_setup) {
+                                //dump("before");
+                                // In pre_setup eseguo solo i 'before'
+                                if (isset($value['include']['before'])) {
+                                    $files_to_include = $value['include']['before'];
+                                    //dump($files_to_include);
+                                    foreach ($files_to_include as $file_to_include) {
+                                        $file_migration = "$migration_dir/$file_to_include";
                                         if (file_exists($file_migration)) {
+                                            echo_log('debug', "Including migration file {$file_migration}");
                                             include $file_migration;
                                         } else {
                                             echo_log('error', "Migration file {$file_migration} missing!");
                                         }
                                     }
                                 }
+                            } else {
+                                //dump("after");
+                                // In modalità normale eseguo gli 'after' o le migration dirette
+                                $files_to_include = [];
+                                
+                                //dump($value);
+                                
+                                if (isset($value['include'])) {
+                                    //dump('include exists');
+                                    //dump($value['include']);
+                                    
+                                    $files_to_include = [];
+                                    
+                                    if (is_array($value['include'])) {
+                                        //dump('include is array');
+                                        
+                                        // Gestisco il before se presente
+                                        if (isset($value['include']['before'])) {
+                                            //dump('has before - skipping in after mode');
+                                            unset($value['include']['before']);
+                                        }
+                                        
+                                        // Gestisco after se presente
+                                        if (isset($value['include']['after'])) {
+                                            //dump('has after');
+                                            $files_to_include = array_merge($files_to_include, $value['include']['after']);
+                                            unset($value['include']['after']);
+                                        }
+                                        
+                                        // Aggiungo tutti gli altri file che non sono in before/after
+                                        foreach ($value['include'] as $file) {
+                                            if (is_string($file)) {
+                                                $files_to_include[] = $file;
+                                            }
+                                        }
+                                        
+                                    } else {
+                                        //dump('include is string');
+                                        // Include è una stringa (singolo file)
+                                        $files_to_include = [$value['include']];
+                                    }
+                                    
+                                    //dump('Final files to include:');
+                                    //dump($files_to_include);
+                                }
+                                
+                                //dump($files_to_include);
+                                
+                                foreach ($files_to_include as $file_to_include) {
+                                    $file_migration = "$migration_dir/$file_to_include";
+                                    if (file_exists($file_migration)) {
+                                        echo_log('debug', "Including migration file {$file_migration}");
+                                        include $file_migration;
+                                    } else {
+                                        echo_log('error', "Migration file {$file_migration} missing!");
+                                    }
+                                }
                             }
-                        } else { //0 se uguale, -1 se old > key
-                            //Vuol dire che gli ho già eseguiti, quindi skippo
-                            //echo("$key version already run.");
-                            continue;
                         }
                     }
                 }
@@ -337,6 +382,7 @@ class Modules_model extends CI_Model
             return true;
         }
     }
+    
     private function copy_files($identifier)
     {
         $source_path = "{$this->temp_folder}/$identifier/";
@@ -909,6 +955,7 @@ class Modules_model extends CI_Model
                 if ($menu['menu_parent']) { //Skippo quelli che hanno parent, li riprocesso dopo
                     continue;
                 }
+
                 $old_menu_id = $menu['menu_id'];
                 unset($menu['menu_id']);
                 if ($menu['menu_layout'] && $menu['menu_layout'] != -2) {
@@ -966,14 +1013,14 @@ class Modules_model extends CI_Model
             //Creo i menu
             foreach ($json['menu'] as $menu) {
 
-
                 $c++;
                 progress($c, $total, 'menu creation (step 2) ('.$identifier.')');
                 if (!$menu['menu_parent']) { //Skippo quelli che non hanno parent
                     continue;
                 }
+                $old_menu_id = $menu['menu_id'];
                 unset($menu['menu_id']);
-
+                
                 //Fix per link custom...
                 if (!empty($menu['menu_link'])) {
                     foreach ($layouts_id_map as $lay_id => $new_lay_id) {
@@ -990,6 +1037,7 @@ class Modules_model extends CI_Model
                     }
                     $menu['menu_layout'] = $layouts_id_map[$menu['menu_layout']];
                     $layout_dashboardable = $this->db->get_where('layouts', ['layouts_id' => $menu['menu_layout']])->row()->layouts_dashboardable;
+
                     if ($layout_dashboardable) {
                         $menu_dashboards = $this->db->get_where('menu', ['menu_label' => 'Dashboards'])->row_array();
                         if ($menu_dashboards) {
@@ -1075,6 +1123,8 @@ class Modules_model extends CI_Model
                     
                     $this->db->insert('menu', $menu, null, true, null, true);
                     $menuid = $this->db->insert_id();
+                    
+                    $menus_id_map[$old_menu_id] = $menuid;
                 }
 
             }
@@ -1382,7 +1432,7 @@ class Modules_model extends CI_Model
             $c = 0;
             $total = count($json['charts']);
             
-
+//dd($json['charts']);
             foreach ($json['charts'] as $chart) {
                 $c++;
                 progress($c, $total, 'charts ('.$identifier.')');
