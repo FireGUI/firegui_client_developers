@@ -1340,8 +1340,9 @@ class Modules_model extends CI_Model
                         }
                         $old_grids_fields_id = $field['grids_fields_id'];
 
-
-                        $conditions = array_merge($conditions, [$field['conditions']]);
+                        if (!empty($field['conditions'])) {
+                            $conditions = array_merge($conditions, [$field['conditions']]);
+                        }
                         unset($field['grids_fields_id']);
 
                         foreach ($field as $column_name => $val) {
@@ -1467,6 +1468,13 @@ class Modules_model extends CI_Model
                 progress($c, $total, 'charts elements ('.$identifier.')');
                 $chart_element['charts_elements_charts_id'] = $charts_id_map[$chart_element['charts_elements_charts_id']];
                 $chart_element['charts_elements_entity_id'] = $entities_id_map[$chart_element['charts_elements_entity_id']];
+                
+                if (empty($fields_id_map[$chart_element['charts_elements_fields_id']])) {
+                    // debug($fields_id_map);
+                    // debug($chart_element,true);
+                }
+                
+                
                 $chart_element['charts_elements_fields_id'] = $fields_id_map[$chart_element['charts_elements_fields_id']];
                 unset($chart_element['charts_elements_id']);
                 $this->db->insert('charts_elements', $chart_element, null, true);
@@ -1607,7 +1615,7 @@ class Modules_model extends CI_Model
                     $c++;
                     progress($c, $total, 'calendars fields ('.$identifier.')');
                     if (!array_key_exists($field['calendars_fields_fields_id'], $fields_id_map)) {
-                        //debug($field);
+                        //debug($field,true);
                     }
                     $field['calendars_fields_fields_id'] = $fields_id_map[$field['calendars_fields_fields_id']];
 

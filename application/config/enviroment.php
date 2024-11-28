@@ -79,7 +79,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     define('MIN_SEARCH_CHARS', 3);
     //define('STRICT_SEARCH', false);
     define('EXPLODE_SPACES', true);
-    //define('DEFAULT_GRID_LIMIT', 10);
+    //define('OVERRIDE_GRID_LIMIT', 10);
+    define('DEFAULT_GRID_LIMIT', 10);
     define('USE_INSTR_ORDERBY', false);
 
     define('API_MANAGER_PRIVATE_KEY', '*******');

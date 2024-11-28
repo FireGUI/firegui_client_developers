@@ -53,7 +53,7 @@ function initTabelWithPars(grid, pars) {
         
         var gridId = grid.data('grid-id');
         var customId = 'DataTable_' + gridId;
-
+        
         var datatableOptions = {
             stateSave: true, 
             stateLoadCallback: function (settings) {

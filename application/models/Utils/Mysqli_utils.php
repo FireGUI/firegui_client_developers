@@ -604,7 +604,7 @@ class Mysqli_utils extends Utils {
         $this->morphTable('emails', [
             'emails_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
             'emails_key' => ['type' => 'VARCHAR', 'constraint' => 150],
-            'emails_language' => ['type' => 'VARCHAR', 'constraint' => 50],
+            'emails_language' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'emails_subject' => ['type' => 'VARCHAR', 'constraint' => 150],
             'emails_template' => ['type' => 'TEXT'],
             'emails_headers' => ['type' => 'TEXT'],
