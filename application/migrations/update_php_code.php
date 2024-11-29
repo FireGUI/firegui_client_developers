@@ -138,3 +138,9 @@ $updates['4.2.0'] = [
         '4.2.0_add_currencies_system_entity.php',
     ]
 ];
+
+$updates['4.2.2'] = [
+    'include' => [
+        '4.2.2_remove_my_session_file.php',
+    ]
+];
