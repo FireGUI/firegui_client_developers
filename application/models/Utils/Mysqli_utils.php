@@ -365,7 +365,7 @@ class Mysqli_utils extends Utils {
             'maps_order_by' => ['type' => 'TEXT', 'null' => true],
             'maps_filter_session_key' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'maps_init_zoom' => ['type' => 'BIGINT', 'null' => true],
-            'maps_init_latlon' => ['type' => 'BIGINT', 'null' => true],
+            'maps_init_latlon' => ['type' => 'VARCHAR','constraint' => 255, 'null' => true],
             'maps_cluster' => ['type' => 'BOOLEAN', 'null' => true],
             'maps_sidebar' => ['type' => 'BOOLEAN', 'null' => true],
             'maps_geocoding' => ['type' => 'BOOLEAN', 'null' => true],
