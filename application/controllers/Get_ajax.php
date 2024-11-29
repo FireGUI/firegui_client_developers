@@ -259,6 +259,7 @@ class Get_ajax extends MY_Controller
         $table = $this->input->post('table');
         $id = ($this->input->post('id') ?: null);
         $referer = ($this->input->post('referer') ?: null);
+        $field = ($this->input->post('field') ?: null);
 
         if (!$table) {
             set_status_header(401); // Unauthorized
@@ -312,12 +313,20 @@ class Get_ajax extends MY_Controller
 
         $where_referer = '';
         if ($referer) {
+            //debug(array('fields_name' => $referer, 'fields_ref' => $table));
+            if (empty($field)) {
             $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
+            } else {
+                $fReferer = $this->db->get_where('fields', array('fields_name' => $field, 'fields_ref' => $table))->row();
+            }
+            //debug($fReferer);
             if (!empty($fReferer->fields_select_where)) {
                 $where_referer = $this->datab->replace_superglobal_data(trim($fReferer->fields_select_where));
             }
         }
 
+        //debug($referer);
+        //debug($where_referer, true);
         if ($entity['entity_type'] == ENTITY_TYPE_SUPPORT_TABLE) {
             if ($id !== null) {
                 $row = $this->db->get_where($table, array($table . '_id' => $id))->row_array();

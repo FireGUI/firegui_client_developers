@@ -32,10 +32,12 @@ $append_class = '';
 if ($grid['grids']['grids_design'] == 2) { //Slim
     $append_class .= ' table-condensed ';
 }
-if(defined('DEFAULT_GRID_LIMIT')) {
-    $limit = DEFAULT_GRID_LIMIT;
+if(defined('OVERRIDE_GRID_LIMIT')) {
+    $limit = OVERRIDE_GRID_LIMIT;
 } elseif ($grid['grids']['grids_pagination']) {
     $limit = $grid['grids']['grids_pagination'];
+} elseif (defined('DEFAULT_GRID_LIMIT')) {
+    $limit = DEFAULT_GRID_LIMIT;
 } else {
     $limit = 10;
 }
@@ -63,7 +65,7 @@ if(defined('DEFAULT_GRID_LIMIT')) {
             data-design="<?php echo $grid['grids']['grids_design']; ?>"
             data-datatable="<?php echo $grid['grids']['grids_datatable']; ?>"
             data-searchable="<?php echo $grid['grids']['grids_searchable']; ?>"
-            data-pagination="<?php echo $grid['grids']['grids_pagination']; ?>"
+            
             data-inline="<?php echo $grid['grids']['grids_inline_edit']; ?>"
             data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" data-get_pars="<?php echo $_SERVER['QUERY_STRING']; ?>"
             data-default-limit="<?php echo $limit; ?>"

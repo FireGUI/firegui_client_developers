@@ -8,7 +8,7 @@ $grid_id = 'grid_' . $grid['grids']['grids_id'];
 <?php else : ?>
 
 <div class="table-scrollable table-scrollable-borderless">
-    <table id="<?php echo $grid_id; ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped nowrap table-bordered table-hover js_datatable <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+    <table id="<?php echo $grid_id; ?>" default-limit="<?php echo (defined('OVERRIDE_GRID_LIMIT')) ? OVERRIDE_GRID_LIMIT : 10; ?>" class="table table-striped nowrap table-bordered table-hover js_datatable <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
                                                                                                                                                                                                                                                                     ?>>
         <thead>
             <tr>

@@ -15,7 +15,7 @@ foreach ($grid['grids_fields'] as $field) {
 <?php else : ?>
 
 <div class="table-scrollable table-scrollable-borderless">
-    <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" id="<?php echo $grid_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" default-limit="<?php echo (defined('DEFAULT_GRID_LIMIT')) ? DEFAULT_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered nowrap table-condensed table-hover js_datatable_slim <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
+    <table data-totalable="<?php echo $has_totalable ? 1 : 0; ?>" id="<?php echo $grid_id; ?>" data-csrf="<?php echo base64_encode(json_encode(get_csrf())); ?>" default-limit="<?php echo (defined('OVERRIDE_GRID_LIMIT')) ? OVERRIDE_GRID_LIMIT : 10; ?>" class="table table-striped table-bordered nowrap table-condensed table-hover js_datatable_slim <?php echo $grid['grids']['grids_append_class']; ?>" <?php // if ($grid['grids']['grids_order_by']) echo 'data-prevent-order' 
                                                                                                                                                                                                                                                                                                                                                                                                                     ?>>
         <thead>
             <tr>
