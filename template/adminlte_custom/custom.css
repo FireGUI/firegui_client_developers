@@ -1,11 +1,13 @@
 .content-wrapper {
-  background-color:#f5f5f5;
+  background-color: #f5f5f5;
 }
+
 .content {
-  position:relative;
+  position: relative;
 }
+
 .js_layout_box {
-  position:relative;
+  position: relative;
 }
 
 #search_form input[name="search"] {
@@ -16,11 +18,13 @@ table {
   vertical-align: middle;
   width: 100% !important;
 }
+
 .ui-state-highlight {
-	border: 1px dotted black;
-	margin: 1em 1em 1em 1em;
-	height: 50px;
+  border: 1px dotted black;
+  margin: 1em 1em 1em 1em;
+  height: 50px;
 }
+
 /*
 Fix z-index per i date picker, che vanno sotto le modali in safari.
 */
@@ -61,16 +65,19 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
 .blink_me {
   animation: blinker 2s linear infinite;
 }
+
 .select2-container {
-    /*z-index: 1000 !important;*/
-    z-index: 500!important;
+  /*z-index: 1000 !important;*/
+  z-index: 500 !important;
 }
+
 #js_modal_container .modal-dialog .select2-container,
 .select2-container--open {
   z-index: 9999 !important;
 }
+
 .modal-dialog {
-  margin:55px auto;
+  margin: 55px auto;
 }
 
 @keyframes blinker {
@@ -87,7 +94,7 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
 }
 
 @media (max-width: 992px) {
-  .navbar-nav > .user-menu > .dropdown-menu > .user-body a {
+  .navbar-nav>.user-menu>.dropdown-menu>.user-body a {
     background: transparent !important;
   }
 }
@@ -95,6 +102,7 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
 .box-body.layout {
   padding: 0px;
 }
+
 .box-body.layout .content {
   padding: 0px;
 }
@@ -103,11 +111,13 @@ Fix z-index per i date picker, che vanno sotto le modali in safari.
   padding-left: 0px;
   padding-bottom: 20px;
 }
+
 .box .box-body {
   padding-left: 10px;
   padding-bottom: 10px;
 }
-.sidebar-menu.tree > li.active > a > span.selected {
+
+.sidebar-menu.tree>li.active>a>span.selected {
   visibility: hidden;
 }
 
@@ -123,6 +133,7 @@ table th.sorting_desc,
 table th.sorting_asc {
   color: #3c8dbc !important;
 }
+
 table tr td {
   vertical-align: middle !important;
 }
@@ -132,18 +143,18 @@ table tr td {
 }
 
 /** BOOTSTRAP MATERIAL SWITCH TOGGLE**/
-.material-switch > input[type="checkbox"] {
+.material-switch>input[type="checkbox"] {
   display: none;
 }
 
-.material-switch > label {
+.material-switch>label {
   cursor: pointer;
   height: 0px;
   position: relative;
   width: 40px;
 }
 
-.material-switch > label::before {
+.material-switch>label::before {
   background: #d9534f;
 
   box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
@@ -156,7 +167,8 @@ table tr td {
   transition: all 0.4s ease-in-out;
   width: 40px;
 }
-.material-switch > label::after {
+
+.material-switch>label::after {
   background: #d9534f;
   border-radius: 16px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
@@ -169,11 +181,13 @@ table tr td {
   transition: all 0.3s ease-in-out;
   width: 24px;
 }
-.material-switch > input[type="checkbox"]:checked + label::before {
+
+.material-switch>input[type="checkbox"]:checked+label::before {
   background: inherit;
   opacity: 0.5;
 }
-.material-switch > input[type="checkbox"]:checked + label::after {
+
+.material-switch>input[type="checkbox"]:checked+label::after {
   background: inherit;
   left: 20px;
 }
@@ -191,10 +205,12 @@ table tr td {
   text-align: center;
   color: #fff;
 }
+
 .dz-download:hover {
   color: #fff;
   cursor: pointer;
 }
+
 .dz-remove:hover {
   cursor: pointer;
 }
@@ -206,30 +222,39 @@ table tr td {
 .firegui_notification {
   height: 450px;
 }
+
 .firegui_sidebar-form {
   border: 0px;
 }
+
 .firegui_width50 {
   width: 50px;
 }
+
 .tab-content {
   padding-top: 20px;
 }
+
 .firegui_fontsize85 {
   font-size: 85%;
 }
+
 .firegui_fontsize10 {
   font-size: 10px;
 }
+
 .firegui_margintop5 {
   margin-top: 5px;
 }
+
 .firegui_margin20_0 {
   margin: 20px 0px;
 }
+
 .firegui_widthauto {
   width: auto;
 }
+
 .container_hightcharts {
   min-width: 310px;
   height: 400px;
@@ -237,18 +262,23 @@ table tr td {
   margin: 0 auto;
   overflow: hidden;
 }
+
 .firegui_colorinput {
   min-width: 95px;
 }
+
 .firegui_radio-list {
   margin-left: 6px;
 }
+
 .firegui_verticalaligntop {
   vertical-align: top !important;
 }
+
 .dt-right {
   text-align: right;
 }
+
 a.fancybox {
   width: 50px !important;
 }
@@ -276,26 +306,28 @@ a.fancybox {
     0 1px 3px 1px rgba(60, 64, 67, 0.35);
 }
 
-.dropdown-menu > .user-header {
+.dropdown-menu>.user-header {
   background-color: #222d32 !important;
 }
 
-.dropdown-menu > .user-body:hover {
+.dropdown-menu>.user-body:hover {
   background: #26546f;
   transition: all 0.25s ease-in;
 }
 
-.navbar-nav > .user-menu > .dropdown-menu > .user-body:hover a {
+.navbar-nav>.user-menu>.dropdown-menu>.user-body:hover a {
   color: #fff !important;
   transition: color 0.25s ease-in;
 }
 
-.navbar-nav > .notifications-menu > .dropdown-toggle > i {
+.navbar-nav>.notifications-menu>.dropdown-toggle>i {
   margin-right: 5px !important;
 }
+
 .navbar-custom-menu {
   font-size: 16px;
 }
+
 body {
   background: transparent !important;
 }
@@ -328,7 +360,7 @@ body {
   margin-top: 40px;
 }
 
-.rounded > .form-group select {
+.rounded>.form-group select {
   color: #121417 !important;
   background-color: transparent !important;
   color: #fffffe !important;
@@ -341,12 +373,12 @@ body {
   color: white !important;
 }
 
-.rounded > .form-group label {
+.rounded>.form-group label {
   margin-right: 10px;
   color: #fffffe !important;
 }
 
-.rounded > * > input.form-control {
+.rounded>*>input.form-control {
   border-radius: 20px;
 }
 
@@ -356,21 +388,21 @@ body {
   max-width: 40% !important;
 }
 
-.bootstrap-select > .dropdown-toggle {
+.bootstrap-select>.dropdown-toggle {
   background-color: transparent !important;
   color: #fffffe !important;
   border-radius: 20px;
 }
 
-.bootstrap-select > .dropdown-toggle > .bs-caret > .caret {
+.bootstrap-select>.dropdown-toggle>.bs-caret>.caret {
   color: #fffffe !important;
 }
 
-.dropdown-menu > .active > a {
+.dropdown-menu>.active>a {
   background-color: #3c8dbc !important;
 }
 
-.dropdown-menu > .active > a > span {
+.dropdown-menu>.active>a>span {
   color: #fffffe !important;
 }
 
@@ -384,8 +416,7 @@ body {
   flex-direction: column;
 }
 
-.password_title {
-}
+.password_title {}
 
 .password_reset p a {
   color: #fffffe !important;
@@ -411,6 +442,7 @@ body {
   position: absolute;
   overflow: hidden;
 }
+
 div.upload-drop-zone {
   min-height: 200px !important;
   border-width: 3px !important;
@@ -432,38 +464,39 @@ div.upload-drop-zone {
 .dz-message {
   display: none !important;
 }
-.sidebar-menu > li {
+
+.sidebar-menu>li {
   border-bottom: 1px solid #222d32;
 }
 
-.skin-blue .sidebar-menu > li > a {
+.skin-blue .sidebar-menu>li>a {
   color: #fff;
 }
 
 /*hover effect on sidebar elements*/
-.skin-blue .sidebar-menu > li:hover > a,
-.skin-blue .sidebar-menu > li.active > a,
-.skin-blue .sidebar-menu > li.menu-open > a {
+.skin-blue .sidebar-menu>li:hover>a,
+.skin-blue .sidebar-menu>li.active>a,
+.skin-blue .sidebar-menu>li.menu-open>a {
   color: #fff;
   background: #26546f;
   transition: all 0.25s ease-in;
 }
 
 /*space between icon and text*/
-.skin-blue .sidebar-menu > li > a > i,
-.skin-blue .sidebar-menu > li.active > a > i,
-.skin-blue .sidebar-menu > li.menu-open > a > i {
+.skin-blue .sidebar-menu>li>a>i,
+.skin-blue .sidebar-menu>li.active>a>i,
+.skin-blue .sidebar-menu>li.menu-open>a>i {
   width: 30px;
 }
 
-.skin-blue .sidebar-menu > li:hover > a > i,
-.skin-blue .sidebar-menu > li.active > a > i,
-.skin-blue .sidebar-menu > li.menu-open > a > i {
+.skin-blue .sidebar-menu>li:hover>a>i,
+.skin-blue .sidebar-menu>li.active>a>i,
+.skin-blue .sidebar-menu>li.menu-open>a>i {
   width: 40px;
   transition: all 0.35s ease-in;
 }
 
-.skin-blue .sidebar-menu > li.header {
+.skin-blue .sidebar-menu>li.header {
   color: #fff;
   font-weight: 500;
 }
@@ -471,16 +504,17 @@ div.upload-drop-zone {
 .vco-slider {
   display: none;
 }
+
 .timeline_height {
   height: 215px;
 }
 
-.list-group-item > span {
+.list-group-item>span {
   color: #3c8dbc !important;
   word-wrap: break-word !important;
 }
 
-.list-group-item > a {
+.list-group-item>a {
   font-weight: bold !important;
 }
 
@@ -492,48 +526,60 @@ div.upload-drop-zone {
   margin-bottom: -1px !important;
   background-color: #fff !important;
 }
+
 .font-bold {
   font-weight: bold !important;
 }
+
 .scroller {
   min-height: 300px;
   max-height: 435px;
   overflow-y: auto;
 }
-.api-manager-nav > li > a {
+
+.api-manager-nav>li>a {
   padding-top: 5px;
   padding-bottom: 5px;
 }
-.list-group-item-text > p {
+
+.list-group-item-text>p {
   color: #121417 !important;
 }
-.notification > span {
+
+.notification>span {
   white-space: normal;
 }
 
-.error-page > .headline {
+.error-page>.headline {
   font-size: 50px;
 }
-.error-page > .error-content {
+
+.error-page>.error-content {
   margin-left: 160px;
 }
-.js_form_daterangepicker > button.btn {
+
+.js_form_daterangepicker>button.btn {
   top: -5px;
 }
+
 .location-search-container {
   max-width: 100%;
 }
-.location-search-container > div.input-group {
+
+.location-search-container>div.input-group {
   margin-bottom: 3px;
 }
-.location-search-container > .location-map-container {
+
+.location-search-container>.location-map-container {
   max-width: 100%;
   height: 300px;
   max-height: 400px;
 }
+
 .cursor-pointer {
   cursor: pointer;
 }
+
 .fileinput-new {
   width: 156px;
   height: 100px;
@@ -544,149 +590,194 @@ div.upload-drop-zone {
   height: auto !important;
 }
 
-.fileinput-new > img {
+.fileinput-new>img {
   max-height: 80px;
 }
+
 .fileinput-preview {
   max-width: 200px;
   max-height: 150px;
 }
-.fileinput-preview > img {
+
+.fileinput-preview>img {
   max-height: 140px;
 }
-.btn-grid-action-s > span {
+
+.btn-grid-action-s>span {
   color: white !important;
 }
+
 .custom-action {
   color: white !important;
   margin-left: 3px;
 }
+
 th.w15 {
   width: 15%;
 }
+
 .logo {
   max-width: 360px;
   max-height: 200px;
 }
+
 .firegui-box {
   margin-top: 100px;
 }
+
 .forget-form {
   display: block;
 }
+
 #js-remove-group {
   display: none !important;
 }
-.permissions-layout-label {
-  
-}
+
+.permissions-layout-label {}
+
 .fw-normal {
   font-weight: normal;
 }
+
 .js_filter_form_row {
   margin-bottom: 10px;
 }
+
 .form-vertical2col {
   border-right: 1px solid #e4e4e4;
 }
+
 .dt-subdata-btn {
   margin-top: 5px;
 }
+
 .subdata-tr {
   background-color: #ddd !important;
 }
+
 .subdata-th {
   background-color: #dcdcdc;
   color: #000;
 }
+
 .subdata-table {
   margin-bottom: 0 !important;
 }
+
 .subdata-td {
   padding: 0 !important;
   border: none !important;
 }
-.subdata-td > .collapse {
+
+.subdata-td>.collapse {
   margin-top: 25px;
   padding: 5px;
 }
-.image-row > .image-set {
+
+.image-row>.image-set {
   display: inline-block;
   margin-bottom: 6px;
 }
-.image-set > img {
+
+.image-set>img {
   height: 75px !important;
 }
-.upload-thumbnail > div.text-right {
+
+.upload-thumbnail>div.text-right {
   margin: 1px -2px 0 0;
 }
+
 .js-bulk-action {
   width: auto;
 }
+
 .js_barcode_container {
   margin-bottom: 56px;
 }
-.static-vertical-grid > hr {
+
+.static-vertical-grid>hr {
   margin-top: 0.5% !important;
   margin-bottom: 0.5% !important;
 }
+
 .big-tile-list-item {
   height: 150px !important;
 }
-.big-tile-list-item > .details > .number {
+
+.big-tile-list-item>.details>.number {
   text-align: center;
 }
-.big-tile-list-item > .details > .more {
+
+.big-tile-list-item>.details>.more {
   position: absolute;
   bottom: 0;
   width: 100%;
 }
+
 .map-customizable,
 .map-standard {
   height: 380px !important;
 }
+
 .mb-10 {
   margin-bottom: 10px !important;
 }
+
+.mb-6 {
+  margin-bottom: 6px;
+}
+
 .mt-10 {
   margin-top: 10px !important;
 }
+
 .map-container {
   height: 680px !important;
 }
+
 .map-results {
   height: 680px;
   overflow-y: auto;
 }
+
 .mt-30 {
   margin-top: 30px !important;
 }
+
 .margin-0 {
-  margin:0px;
+  margin: 0px;
 }
+
 .margin-bottom-20 {
   margin-bottom: 20px
 }
+
 .paggind-0 {
-  padding:0px;
+  padding: 0px;
 }
-.tab-pane .content { padding:0px; }
+
+.tab-pane .content {
+  padding: 0px;
+}
+
 .overflow-auto {
-  overflow:auto;
+  overflow: auto;
 }
 
 /*space and border-radius between button in menu_group*/
 .mr-10 {
   margin-right: 10px;
 }
+
 .br-4 {
-  border-radius: 4px!important;
+  border-radius: 4px !important;
 }
 
 /*Remove default background-color on hover*/
 .main-header .sidebar-toggle:hover {
-  background-color: transparent!important;
+  background-color: transparent !important;
 }
+
 /*Removed border from sidebar search*/
 .skin-blue .sidebar-form {
   border-radius: none;
@@ -695,15 +786,16 @@ th.w15 {
 }
 
 .layout_box .content {
-	min-height: auto;
+  min-height: auto;
 }
 
 table.dataTable.nowrap th,
 table.dataTable.nowrap td {
-  white-space: inherit!important;
+  white-space: inherit !important;
 }
 
-.navbar-right,.navbar-left {
+.navbar-right,
+.navbar-left {
   height: 50px;
 }
 
@@ -712,6 +804,7 @@ table.dataTable.nowrap td {
   .wrapper .main-header .logo {
     display: none;
   }
+
   .main-sidebar {
     padding-top: 50px;
   }
@@ -719,6 +812,7 @@ table.dataTable.nowrap td {
   .navbar-left {
     display: none;
   }
+
   .js_topbar_timetracker {
     display: none;
   }
@@ -726,43 +820,46 @@ table.dataTable.nowrap td {
 
 @media (min-width: 768px) {
   .sidebar-mini.sidebar-collapse .main-footer {
-    margin-left:0px !important;
-   }
+    margin-left: 0px !important;
+  }
 }
 
 .main-footer {
-  height:43px;
+  height: 43px;
   width: 100%;
-  position:fixed;
-  bottom:0;
-  z-index:1100;
+  position: fixed;
+  bottom: 0;
+  z-index: 1100;
   margin-left: 0px;
-  padding:4px;
+  padding: 4px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .main-footer .left_side {
-  width:230px;
-}
-.main-footer .center_side {
-  min-width:300px;
-}
-.main-footer .right_side {
-  
+  width: 230px;
 }
 
+.main-footer .center_side {
+  min-width: 300px;
+}
+
+.main-footer .right_side {}
+
 .main-footer .left_side button {
-  width:50px;
+  width: 50px;
   border: solid 1px #cccccc;
 }
-.btn_footer i {  
+
+.btn_footer i {
   color: #ababab;
   font-size: 20px;
 }
-.ul_multiple_key_values { 
-  margin:0px;
-  padding-left:10px;
+
+.ul_multiple_key_values {
+  margin: 0px;
+  padding-left: 10px;
   list-style-type: circle;
 }
 
@@ -776,6 +873,7 @@ table.dataTable.nowrap td {
   /* easy way to plop the elements on top of each other and have them both sized based on the tallest one's height */
   display: grid;
 }
+
 .grow-wrap::after {
   /* Note the weird space! Needed to preventy jumpy behavior */
   content: attr(data-replicated-value) " ";
@@ -786,13 +884,15 @@ table.dataTable.nowrap td {
   /* Hidden from view, clicks, and screen readers */
   visibility: hidden;
 }
-.grow-wrap > textarea {
+
+.grow-wrap>textarea {
   /* You could leave this, but after a user resizes, then it ruins the auto sizing */
   resize: none;
   /* Firefox shows scrollbar on growth, you can hide like this. */
   overflow: hidden;
 }
-.grow-wrap > textarea,
+
+.grow-wrap>textarea,
 .grow-wrap::after {
   /* Identical styling required!! */
   border: 1px solid #d2d6de;
@@ -807,142 +907,142 @@ table.dataTable.nowrap td {
 
 /* The container */
 .container-checkbox {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* Hide the browser's default checkbox */
 .container-checkbox input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* Create a custom checkbox */
 .container-checkbox .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 25px;
-    width: 25px;
-    background-color: #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
 }
 
 /* On mouse-over, add a grey background color */
-.container-checkbox:hover input ~ .checkmark {
-    background-color: #ccc;
+.container-checkbox:hover input~.checkmark {
+  background-color: #ccc;
 }
 
 /* When the checkbox is checked, add a blue background */
-.container-checkbox input:checked ~ .checkmark {
-    background-color: #2196F3;
+.container-checkbox input:checked~.checkmark {
+  background-color: #2196F3;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
 .container-checkbox .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 /* Show the checkmark when checked */
-.container-checkbox input:checked ~ .checkmark:after {
-    display: block;
+.container-checkbox input:checked~.checkmark:after {
+  display: block;
 }
 
 /* Style the checkmark/indicator */
 .container-checkbox .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 8px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
+  left: 9px;
+  top: 5px;
+  width: 8px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 
 /* The container */
 .container-radio {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* Hide the browser's default radio button */
 .container-radio input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* Create a custom radio button */
 .container-radio .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 25px;
-    width: 25px;
-    background-color: #eee;
-    border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
 }
 
 /* On mouse-over, add a grey background color */
-.container-radio:hover input ~ .checkmark {
-    background-color: #ccc;
+.container-radio:hover input~.checkmark {
+  background-color: #ccc;
 }
 
 /* When the radio button is checked, add a blue background */
-.container-radio input:checked ~ .checkmark {
-    background-color: #2196F3;
+.container-radio input:checked~.checkmark {
+  background-color: #2196F3;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .container-radio .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 /* Show the indicator (dot/circle) when checked */
-.container-radio input:checked ~ .checkmark:after {
-    display: block;
+.container-radio input:checked~.checkmark:after {
+  display: block;
 }
 
 /* Style the indicator (dot/circle) */
 .container-radio .checkmark:after {
- 	top: 9px;
-	left: 9px;
-	width: 8px;
-	height: 10px;
-	border-radius: 50%;
-	background: white;
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
 }
 
 .js_todo_row_container {
-  cursor:move;
+  cursor: move;
 }
 
 #js_page_content section.content {
   padding-bottom: 50px;
-} 
+}
 
 td div.action-list {
   white-space: nowrap;
@@ -950,33 +1050,33 @@ td div.action-list {
 }
 
 .language-switch.floating {
-    position: absolute;
-    background: #fff;
-    padding: 1px 5px;
-    border: 1px solid #cacaca;
-    border-radius: 5px;
-    top: -2px;
+  position: absolute;
+  background: #fff;
+  padding: 1px 5px;
+  border: 1px solid #cacaca;
+  border-radius: 5px;
+  top: -2px;
 }
 
 .menu_group {
   margin-bottom: 10px;
 }
 
-.connectedSortable  {
+.connectedSortable {
   min-height: unset !important;
 }
 
 .js_loading {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-    text-align: center;
-    color: #ffffff;
-    z-index: 10002;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  text-align: center;
+  color: #ffffff;
+  z-index: 10002;
 }
 
 .js_loading img {
@@ -990,25 +1090,26 @@ input:invalid {
 .mt10 {
   margin-top: 10px !important;
 }
+
 /* Overwrite adminlte rules */
 .connectedSortable {
-  min-height: 5px!important;
+  min-height: 5px !important;
 }
 
 form fieldset:hover {
   cursor: pointer;
 }
+
 form fieldset .row {
   display: none;
 }
 
-fieldset.fieldset_visible
-{
+fieldset.fieldset_visible {
   padding: 10px;
   background: #f9f9f9;
 }
-.js_form_fieldset legend
-{
+
+.js_form_fieldset legend {
   width: auto;
   border-bottom: none;
   font-size: 1.2em;
