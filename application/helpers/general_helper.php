@@ -2389,3 +2389,12 @@ if (!function_exists('is_valid_image')) {
         return true;
     }
 }
+
+if (!function_exists('get_days_in_month')) {
+    function get_days_in_month($month, $year = null) {
+        if ($year === null) {
+            $year = date('Y');
+        }
+        return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    }
+}
