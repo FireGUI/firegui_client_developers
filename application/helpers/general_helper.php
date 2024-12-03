@@ -2407,3 +2407,11 @@ if (!function_exists('get_filter_url')) {
     return build_url(base_url($url), $merged_params);
 }
 }
+if (!function_exists('get_days_in_month')) {
+    function get_days_in_month($month, $year = null) {
+        if ($year === null) {
+            $year = date('Y');
+        }
+        return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    }
+}
