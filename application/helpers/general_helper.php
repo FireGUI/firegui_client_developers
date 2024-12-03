@@ -2389,3 +2389,21 @@ if (!function_exists('is_valid_image')) {
         return true;
     }
 }
+
+if (!function_exists('get_filter_url')) {
+    function build_url($base_url, $params)
+    {
+        $query = http_build_query($params);
+        return $base_url . ($query ? '?' . $query : '');
+    }
+    function get_filter_url($url, $params, $new_params)
+{
+    // Unisce i parametri esistenti con i nuovi
+    $merged_params = array_merge($params, $new_params);
+    // Rimuove eventuali parametri vuoti
+    $merged_params = array_filter($merged_params, function ($value) {
+        return ($value !== '' && $value !== null);
+    });
+    return build_url(base_url($url), $merged_params);
+}
+}

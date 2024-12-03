@@ -424,12 +424,20 @@ class Datab extends CI_Model
 
     public function get_field_by_name($field_name, $full_data = false)
     {
-        if ($full_data) {
-            return $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_name' => $field_name])->row_array();
-        } else {
-            $slashed = addslashes($field_name);
-            return $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_name = '{$slashed}'")->row_array();
+        $cache_key = "database_schema/datab.get_field_by_name.{$field_name}.}" . ($full_data) ? 'full' : 'notfull';
+        if (!$dati = $this->mycache->get($cache_key)) {
+            if ($full_data) {
+                $dati = $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_name' => $field_name])->row_array();
+            } else {
+                $slashed = addslashes($field_name);
+                $dati = $this->db->query("SELECT * FROM fields LEFT JOIN entity ON (fields_entity_id = entity_id) WHERE fields_name = '{$slashed}'")->row_array();
+            }
+            if ($this->mycache->isCacheEnabled() && $this->mycache->isActive('database_schema')) {
+                $this->mycache->save($cache_key, $dati, self::CACHE_TIME);
+            }
         }
+
+        return $dati;
     }
 
     /**
