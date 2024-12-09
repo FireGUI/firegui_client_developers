@@ -1,3 +1,24 @@
+Changelog version 4.2.2
+
+2024-12-09 Patch version: 4.2.2
+
+Fix mpdf header
+fix input money
+fix palette invalid color
+added possibility to make "pre-setup" migrations for modules
+fix select ajax search from filters
+Bugfix conditions missing in module install
+Added override_grid_limit constant in enviroment
+Added nullable to emails_language
+Fix settings
+Fixed maps_init_latlon from bigint to varchar
+Migration to remove MY_SESSION file
+Added marign bottom to menu_groups buttons
+reverted default environment in index.php
+added helper function
+Added get_filter_url and build_url functions
+Optimized get_field_by_name function
+
 Changelog version 4.2.1
 
 2024-11-13 Patch version: 4.2.1
