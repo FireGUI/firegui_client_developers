@@ -389,7 +389,8 @@ class V1 extends MY_Controller
             //debug($output,true);
             // debug(elapsed_time($start));
 
-            $this->filterOutputFields($entity, $output);
+           //TODO: vedi sotto il perchè di questa chiocciola
+            @$this->filterOutputFields($entity, $output);
 
             //debug($output, true);
 
@@ -680,6 +681,32 @@ class V1 extends MY_Controller
         ")->result_array();
         $right_joined_tables = array_column($_right_joined_tables, 'entity_name');
         //debug($right_joined_tables,true);
+
+
+        //TODO: ho messo una chiocciola perchè ci son casi (paintball quando chiamato il search da serversdi) che torna un warning php per una preg_match nativa... il problema sembra essere legato a questo thread:
+        //https://stackoverflow.com/questions/34912377/ci-3-0-4-large-where-in-query-causes-causes-message-preg-match-compilation-f
+        /*
+        SOLUZIONE DA TESTARE:
+        // Dividi i data_keys_to_keep in chunks di 25
+        $data_keys_chunks = array_chunk($data_keys_to_keep, 25);
+
+        $this->db->join('entity', 'entity_id = fields_entity_id', 'LEFT');
+
+        // Inizia il gruppo di condizioni OR
+        $this->db->group_start();
+
+        // Per ogni chunk, aggiungi una condizione or_where_in
+        foreach ($data_keys_chunks as $chunk) {
+            $this->db->or_where_in('fields_name', $chunk);
+        }
+
+        // Chiudi il gruppo
+        $this->db->group_end();
+
+        $_fields_entities = $this->db->get('fields')->result_array();
+
+        $fields_entities_map = array_key_value_map($_fields_entities, 'fields_name', 'entity_name');
+        */
 
         $_fields_entities = $this->db
             ->join('entity', 'entity_id = fields_entity_id', 'LEFT')

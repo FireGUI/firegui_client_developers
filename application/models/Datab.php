@@ -424,7 +424,7 @@ class Datab extends CI_Model
 
     public function get_field_by_name($field_name, $full_data = false)
     {
-        $cache_key = "database_schema/datab.get_field_by_name.{$field_name}.}" . ($full_data) ? 'full' : 'notfull';
+        $cache_key = "database_schema/datab.get_field_by_name.{$field_name}.}" . (($full_data) ? 'full' : 'notfull');
         if (!$dati = $this->mycache->get($cache_key)) {
             if ($full_data) {
                 $dati = $this->db->join('entity', 'fields_entity_id = entity_id', 'LEFT')->join('fields_draw', 'fields_draw_fields_id = fields_id', 'LEFT')->get_where('fields', ['fields_name' => $field_name])->row_array();
@@ -1141,7 +1141,9 @@ class Datab extends CI_Model
                     );
                 }
             }
-
+            if (empty($dati['grids'])) {
+                return $dati;
+            }
             //TODO: will be deprecated as soon as new actions features will become stable
             $dati['grids']['links'] = array(
                 'view' => ($dati['grids']['grids_view_layout'] ? base_url("main/layout/{$dati['grids']['grids_view_layout']}") : str_replace('{base_url}', base_url(), $dati['grids']['grids_view_link']??'')),
@@ -3474,8 +3476,9 @@ class Datab extends CI_Model
             case "grid":
                 // Prendo la struttura della grid
                 $grid = $this->get_grid($contentRef);
-
-                $this->layout->addRelatedEntity($grid['grids']['entity_name']);
+                if (!empty($grid['grids'])) {
+                    $this->layout->addRelatedEntity($grid['grids']['entity_name']);
+                }
 
                 // Ci sono problemi se inizializzo una datatable senza colonne!!
                 if (empty($grid['grids_fields'])) {

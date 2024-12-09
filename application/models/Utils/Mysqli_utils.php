@@ -124,7 +124,7 @@ class Mysqli_utils extends Utils {
             'fields_draw_label' => ['type' => 'VARCHAR', 'constraint' => 250],
             'fields_draw_help_text' => ['type' => 'TEXT', 'null' => true],
             'fields_draw_onclick' => ['type' => 'TEXT', 'null' => true],
-            'fields_draw_html_type' => ['type' => 'VARCHAR', 'constraint' => 250],
+            'fields_draw_html_type' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'fields_draw_placeholder' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'fields_draw_css_extra' => ['type' => 'VARCHAR', 'constraint' => 250, 'null' => true],
             'fields_draw_display_none' => ['type' => 'BOOLEAN', 'default' => '0'],
