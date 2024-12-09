@@ -257,7 +257,7 @@ if (!empty($this->settings['settings_last_cron_cli'])) {
                     <?php if (array_key_exists('settings_auto_update_client', $this->settings)): ?>
                         <?php $this->load->model('core');?>
                         <?php $new_version = $this->core->checkUpdate(null, $this->settings['settings_auto_update_channel'],1);?>
-                        < class="">
+                        <div class="">
                             <?php if ($this->settings['settings_auto_update_client'] == DB_BOOL_TRUE): ?>
                                 <span><i style="color:#009933;margin-right:15px" class="fas fa-check-circle"></i></span> Auto update client <?php echo $this->auth->is_admin() ? '(' . anchor(base_url("db_ajax/switch_bool/settings_auto_update_client/".$this->settings['settings_id']), 'disable it') . ')' : ''; ?>
                             <?php else: ?>
