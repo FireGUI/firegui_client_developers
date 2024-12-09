@@ -1,4 +1,4 @@
-<strong?php
+<?php
 
 // Cron check last execution
 $interval_cron_execution = 10;
