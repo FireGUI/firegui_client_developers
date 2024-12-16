@@ -905,6 +905,12 @@ class Mysqli_utils extends Utils {
     private function morphTable($tableName, array $fields, $primaryKey = null, $do_remove = true) {
         $this->selected_db->cache_delete_all();
 
+        foreach ($fields as $key => $field) {
+            if (!array_key_exists('null', $field)) { //Forzo nullable a true
+                $fields[$key]['null'] = true;
+            }
+        }
+
         $exists = $this->selected_db->table_exists($tableName);
         $primary = (!$primaryKey && isset($fields[$tableName.'_id'])) ? $tableName.'_id' : $primaryKey;
 

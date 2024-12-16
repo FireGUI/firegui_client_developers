@@ -1,14 +1,16 @@
 //array store for all maps
 L.maps = {};
+L.firstLoads = {};
+
 function load_marker(map, url, clusterize) {
-    
+
     /***
      * CARICO I MARKER VIA AJAX
      */
     if (typeof map.my_markers !== 'undefined') {
         map.removeLayer(map.my_markers);
     }
-    
+
     if (typeof url === 'undefined') {
         url = map.my_url;
     }
@@ -45,9 +47,9 @@ function load_marker(map, url, clusterize) {
     } catch (e) {
         var oBound = {};
     }
-    
+
     data.push({ name: 'bounds', value: JSON.stringify(oBound) });
-    
+
     $.ajax({
         type: "POST",
         dataType: "json",
@@ -55,20 +57,15 @@ function load_marker(map, url, clusterize) {
         async: true,
         url: url,
         success: function (data) {
-            // map.on('moveend', function () {
-            //     map.off('moveend'); // Rimuovi il listener dell'evento "moveend"
-
-            // });
-
             map.removeLayer(map.my_markers);
-            
+
             // Ciclo i Marker
-            var bounds = L.latLngBounds()
-            
+            var bounds = L.latLngBounds();
+
             $.each(data, function (i, val) {
                 var html = '<b>' + val.title + '</b><br />';
                 if (typeof val.description !== "undefined") {
-                    html += val.description
+                    html += val.description;
                 }
                 html += '<br /><a href="' + val.link + '">View details</a>';
                 var icon;
@@ -83,16 +80,16 @@ function load_marker(map, url, clusterize) {
                 var color = val.color ? val.color : null;
                 if (color) {
                     var markerHtmlStyles = `
-                                background-color: ${color};
-                                width: 3rem;
-                                height: 3rem;
-                                display: block;
-                                left: -1.5rem;
-                                top: -1.5rem;
-                                position: relative;
-                                border-radius: 3rem 3rem 0;
-                                transform: rotate(45deg);
-                                border: 1px solid #FFFFFF`;
+                   background-color: ${color};
+                   width: 3rem;
+                   height: 3rem;
+                   display: block;
+                   left: -1.5rem;
+                   top: -1.5rem;
+                   position: relative;
+                   border-radius: 3rem 3rem 0;
+                   transform: rotate(45deg);
+                   border: 1px solid #FFFFFF`;
                     icon = L.divIcon({
                         className: "my-custom-pin",
                         iconAnchor: [0, 24],
@@ -111,47 +108,33 @@ function load_marker(map, url, clusterize) {
                     bounds.extend(coor);
                 }
             });
-            //console.log(markers);
-            //In questo momento, la mappa potrebbe esser stata distrutta e non più disponibile... controllo...
-            //console.log(map._container.id);
-            //alert(map._container.id);
+
             if ($('#' + map._container.id).length > 0) {
                 try {
-                    //alert(1);
-                    if (Object.keys(bounds).length !== 0) {
-                        //map.fitBounds(bounds);
-                    } else if (map.getZoom() > 2) {
-                        map.setZoom(5);
-                        }
                     map.addLayer(map.my_markers);
 
+                    // Verifica se è il primo caricamento per questa mappa
+                    if (!L.firstLoads[map._container.id] && bounds && bounds.isValid()) {
+                        map.fitBounds(bounds, {
+                            padding: [50, 50]
+                        });
+                        // Segna che questa mappa ha completato il primo caricamento
+                        L.firstLoads[map._container.id] = true;
+                    } else if (!map.my_markers.getLayers().length && map.getZoom() > 2) {
+                        map.setZoom(5);
+                    }
 
-                    //map.invalidateSize();
                 } catch (e) {
-                    
                     console.log(e);
-                    //alert(1);
-                    //setTimeout(function () { mapsInit(); }, 3000);
-                    //setTimeout(function () { load_marker(map, url, clusterize); }, 500);
                 }
-
             }
-
-            // map.on('moveend', function () {
-            //     //alert(1);
-            //     load_marker(map);
-            // });
-
         },
         error: function (data) {
-            // map.on('moveend', function () {
-                
-            //     load_marker(map);
-            // });
             console.error('Error loading markers');
         }
     });
 }
+
 var maps_initializing = false
 function mapsInit() {
     if (maps_initializing) {
@@ -159,6 +142,9 @@ function mapsInit() {
     }
     maps_initializing = true;
     $(() => {
+        //Reset firstLoads quando si reinizializzano le mappe
+        L.firstLoads = {};
+
         //Destroy all maps
         for (var i in L.maps) {
             //console.log(L.maps[i]);
@@ -173,9 +159,9 @@ function mapsInit() {
             'use strict';
 
             $('.js_map:visible').each(function () {
-                
+
                 var url = $(this).data('ajaxurl');
-                
+
                 var get_parameters = $(this).data('get_parameters');
                 var clusterize = $(this).data('clusters');
 
@@ -197,16 +183,10 @@ function mapsInit() {
                     maxZoom: 16
                 }).setView(initlatlon, $(this).data('initzoom'));
 
-                // console.log(map);
-                // alert(1);
-
                 map.my_get_parameters = get_parameters;
                 map.my_url = url;
                 map.my_clusterize = clusterize;
                 L.maps[$(this).attr('id')] = map;
-
-
-
 
                 var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
@@ -221,22 +201,16 @@ function mapsInit() {
                 //Set default
                 osm.addTo(map); //  set as 
 
-
-                
                 load_marker(map, url + '?' + get_parameters, clusterize);
-                
+
                 map.on('zoomend', function () {
-                    
                     load_marker(map);
                 });
                 map.on('dragend', function () {
-                    
                     load_marker(map);
                 });
-                
-               
-
             });
+
             $(window).on('resize', function () {
                 for (var i in L.maps) {
                     if ($('#' + L.maps[i]._container.id).length > 0) {
@@ -247,5 +221,4 @@ function mapsInit() {
             maps_initializing = false;
         });
     });
-
 }
