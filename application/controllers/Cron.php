@@ -167,6 +167,8 @@ class Cron extends MY_Controller
         //
         // ============= Start MAIL_QUEUE =============
         $model = $this->config->item('crm_name') . '_mail_model';
+
+        $log_lifetime = (defined('LOG_LIFETIME')) ? LOG_LIFETIME : 180;
         if (file_exists(APPPATH . "models/$model.php")) {
             try {
                 $this->load->model($model, 'my_model');
@@ -187,8 +189,8 @@ class Cron extends MY_Controller
         //Execute only on time a day
         if (date('H') == 11) {
             if ($this->db->dbdriver != 'postgre') {
-                $this->db->where("log_api_date < now() - interval 180 day", null, false)->delete('log_api');
-                $this->db->where("log_crm_time < now() - interval 180 day", null, false)->delete('log_crm');
+                $this->db->where("log_api_date < now() - interval $log_lifetime day", null, false)->delete('log_api');
+                $this->db->where("log_crm_time < now() - interval $log_lifetime day", null, false)->delete('log_crm');
                 $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 7 DAY", null, false)->delete('ci_sessions');
 
                 $this->db->where("requested_url like '/cron/%'", null, false)->delete('ci_sessions');
@@ -342,6 +344,9 @@ class Cron extends MY_Controller
         //
         // ============= Start MAIL_QUEUE =============
         $model = $this->config->item('crm_name') . '_mail_model';
+
+        $log_lifetime = (defined('LOG_LIFETIME'))? LOG_LIFETIME :180;
+
         if (file_exists(APPPATH . "models/$model.php")) {
             try {
                 $this->load->model($model, 'my_model');
@@ -362,8 +367,8 @@ class Cron extends MY_Controller
         //Execute only on time a day
         if (date('H') == 11) {
             if ($this->db->dbdriver != 'postgre') {
-                $this->db->where("log_api_date < now() - interval 280 day", null, false)->delete('log_api');
-                $this->db->where("log_crm_time < now() - interval 280 day", null, false)->delete('log_crm');
+                $this->db->where("log_api_date < now() - interval $log_lifetime day", null, false)->delete('log_api');
+                $this->db->where("log_crm_time < now() - interval $log_lifetime day", null, false)->delete('log_crm');
                 $this->db->where("DATE_FORMAT(FROM_UNIXTIME(timestamp), '%Y-%m-%d') < CURDATE() - INTERVAL 7 DAY", null, false)->delete('ci_sessions');
             } else {
                 $this->db

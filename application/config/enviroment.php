@@ -83,6 +83,8 @@ if (!defined('THEME_CSS_PATH')) { //Avoid double include
     define('DEFAULT_GRID_LIMIT', 10);
     define('USE_INSTR_ORDERBY', false);
 
+    define('LOG_LIFETIME', 180); //Days
+
     define('API_MANAGER_PRIVATE_KEY', '*******');
     define('API_MANAGER_CRM_PASSPARTOUT', '*******');
     //define('LOGIN_SALT', '********');
