@@ -786,69 +786,89 @@ abstract class CI_DB_query_builder extends CI_DB_driver {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Internal WHERE IN
-	 *
-	 * @used-by	where_in()
-	 * @used-by	or_where_in()
-	 * @used-by	where_not_in()
-	 * @used-by	or_where_not_in()
-	 *
-	 * @param	string	$key	The field to search
-	 * @param	array	$values	The values searched on
-	 * @param	bool	$not	If the statement would be IN or NOT IN
-	 * @param	string	$type
-	 * @param	bool	$escape
-	 * @return	CI_DB_query_builder
-	 */
-	protected function _where_in($key = NULL, $values = NULL, $not = FALSE, $type = 'AND ', $escape = NULL)
-	{
-		if ($key === NULL OR $values === NULL)
-		{
-			return $this;
-		}
+    /**
+     * Internal WHERE IN
+     *
+     * @used-by where_in()
+     * @used-by or_where_in()
+     * @used-by where_not_in()
+     * @used-by or_where_not_in()
+     *
+     * @param   string $key    The field to search
+     * @param   array  $values The values searched on
+     * @param   bool   $not    If the statement would be IN or NOT IN
+     * @param   string $type
+     * @param   bool   $escape
+     * @return  CI_DB_query_builder
+     */
+    protected function _where_in($key = NULL, $values = NULL, $not = FALSE, $type = 'AND ', $escape = NULL)
+    {
+        if ($key === NULL OR $values === NULL)
+        {
+            return $this;
+        }
 
-		if ( ! is_array($values))
-		{
-			$values = array($values);
-		}
+        if (!is_array($values))
+        {
+            $values = array($values);
+        }
 
-		is_bool($escape) OR $escape = $this->_protect_identifiers;
+        // Implementa il chunking automatico se l'array è troppo grande
+        if (count($values) > 500) // soglia configurabile
+        {
+            $chunks = array_chunk($values, 500);
+            $this->group_start();
+            foreach ($chunks as $i => $chunk)
+            {
+                if ($i > 0)
+                {
+                    $this->_where_in($key, $chunk, $not, 'OR ', $escape);
+                }
+                else
+                {
+                    $this->_where_in($key, $chunk, $not, $type, $escape);
+                }
+            }
+            $this->group_end();
+            return $this;
+        }
 
-		$not = ($not) ? ' NOT' : '';
+        is_bool($escape) OR $escape = $this->_protect_identifiers;
 
-		if ($escape === TRUE)
-		{
-			$where_in = array();
-			foreach ($values as $value)
-			{
-				$where_in[] = $this->escape($value);
-			}
-		}
-		else
-		{
-			$where_in = array_values($values);
-		}
+        $not = ($not) ? ' NOT' : '';
 
-		$prefix = (count($this->qb_where) === 0 && count($this->qb_cache_where) === 0)
-			? $this->_group_get_type('')
-			: $this->_group_get_type($type);
+        if ($escape === TRUE)
+        {
+            $where_in = array();
+            foreach ($values as $value)
+            {
+                $where_in[] = $this->escape($value);
+            }
+        }
+        else
+        {
+            $where_in = array_values($values);
+        }
 
-		$where_in = array(
-			'condition' => $prefix.$key.$not.' IN('.implode(', ', $where_in).')',
-			'value' => NULL,
-			'escape' => $escape
-		);
+        $prefix = (count($this->qb_where) === 0 && count($this->qb_cache_where) === 0)
+            ? $this->_group_get_type('')
+            : $this->_group_get_type($type);
 
-		$this->qb_where[] = $where_in;
-		if ($this->qb_caching === TRUE)
-		{
-			$this->qb_cache_where[] = $where_in;
-			$this->qb_cache_exists[] = 'where';
-		}
+        $where_in = array(
+            'condition' => $prefix.$key.$not.' IN('.implode(', ', $where_in).')',
+            'value' => NULL,
+            'escape' => $escape
+        );
 
-		return $this;
-	}
+        $this->qb_where[] = $where_in;
+        if ($this->qb_caching === TRUE)
+        {
+            $this->qb_cache_where[] = $where_in;
+            $this->qb_cache_exists[] = 'where';
+        }
+
+        return $this;
+    }
 
 	// --------------------------------------------------------------------
 
