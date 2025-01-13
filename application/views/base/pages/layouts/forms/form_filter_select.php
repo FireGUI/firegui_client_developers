@@ -251,7 +251,7 @@ $rowCol = 0;
                                     ?>
                                     <option value="-2" <?php echo ('-2' == $value) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
                                     <?php foreach ($support_data as $id => $name): ?>
-                                        <option value="<?php echo $id; ?>" <?php echo (in_array($id, explode(',', $value))) ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                                        <option value="<?php echo htmlspecialchars($id); ?>" <?php echo (!empty($value) && in_array($id, explode(',', (string) $value))) ? 'selected' : ''; ?>><?php echo htmlspecialchars($name); ?></option>
                                     <?php endforeach;?>
                                 
                                 </select>

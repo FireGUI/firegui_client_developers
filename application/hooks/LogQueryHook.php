@@ -1,29 +1,43 @@
 <?php
 class LogQueryHook
 {
-
-    function log_queries()
+    public function log_queries()
     {
         $CI = &get_instance();
+
+        $save_queries = $CI->db->save_queries;
+
+        if (!$save_queries) {
+            return;
+        }
+
         $times = $CI->db->query_times;
-        $dbs    = array();
-        $output = NULL;
         $queries = $CI->db->queries;
 
-        $CI->load->helper('general_helper');
+        $CI->load->helper('file');
+
+
+
+        // Nome del file basato su data e ora
+        $logFile = APPPATH . "/logs/queries_" . $CI->db->database . "_" . date('Y-m-d_H') . ".log";
+
+        $output = "";
 
         if (count($queries) > 0) {
             foreach ($queries as $key => $query) {
-                if (strstr($query, "SELECT ") === FALSE) {
-                    $output .= str_replace("\n", ' ', $query) . ";\n";
-                }
+                // Salva solo query non di tipo SELECT
+                //if (strstr($query, "SELECT ") === FALSE) {
+                $executionTime = isset($times[$key]) ? round(doubleval($times[$key]), 3) : 0;
+                $output .= "[" . date('H:i:s') . "] " . str_replace("\n", ' ', $query) . " (Execution time: {$executionTime}s);\n";
+                //}
             }
-            $took = round(doubleval($times[$key]), 3);
         }
 
-        $CI->load->helper('file');
-        if (!write_file(APPPATH  . "/logs/queries.log." . $CI->db->database . ".txt", $output, 'a+')) {
-            log_message('debug', 'Unable to write query the file');
+        // Scrivi nel file
+        if (!empty($output)) {
+            if (!write_file($logFile, $output, 'a+')) {
+                log_message('error', 'Unable to write to the query log file');
+            }
         }
     }
 }

@@ -136,7 +136,7 @@ class Mail_model extends CI_Model
      * @param array $additional_headers
      * @return bool
      */
-    public function sendFromData($to = '', $template, array $data = [], array $additional_headers = [], array $attachments = [])
+    public function sendFromData($to = '', $template = [], array $data = [], array $additional_headers = [], array $attachments = [])
     {
         
         if (empty($template['subject']) || empty($template['template'])) {

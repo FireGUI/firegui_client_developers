@@ -26,7 +26,12 @@ $hook['post_controller'] = [
     'filepath' => 'hooks',
     'params' => array()
 ];
-
+$hook['post_system'] = [
+    'class' => 'LogQueryHook',
+    'function' => 'log_queries',
+    'filename' => 'LogQueryHook.php',
+    'filepath' => 'hooks',
+];
 if (file_exists(APPPATH . 'config/hooks_custom.php')) {
     include_once APPPATH . 'config/hooks_custom.php';
 }
