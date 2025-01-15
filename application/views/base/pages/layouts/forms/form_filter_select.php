@@ -367,10 +367,10 @@ $rowCol = 0;
                         <input type="hidden" class="js-filter-operator" name="conditions[<?php echo $k; ?>][operator]" value="in" />
                             
                             <select multiple class="form-control select2me field_<?php echo $field['id']; ?>" name="conditions[<?php echo $k; ?>][value][]" data-val="<?php echo $value; ?>" data-ref="<?php echo $field['filterref']; ?>" data-source-field="<?php echo $field['fields_source'] ?>" data-minimum-input-length="0">
-                                <option value="-2" <?php echo (in_array(-2, explode(',', $value))) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
+                                <option value="-2" <?php echo (in_array(-2, explode(',', $value??''))) ? 'selected' : ''; ?>><?php e('Field empty');?></option>
                                 <?php foreach ($this->db->query("SELECT DISTINCT {$field['name']} as valore FROM {$field['entity_name']} $soft_delete_flag ORDER BY {$field['name']}")->result_array() as $row): ?>
                                     <?php if ($row['valore']): ?>
-                                        <option value="<?php echo $row['valore']; ?>" <?php echo (in_array($row['valore'], explode(',', $value))) ? 'selected' : ''; ?>><?php echo $row['valore']; ?></option>
+                                        <option value="<?php echo $row['valore']; ?>" <?php echo (in_array($row['valore'], explode(',', $value??''))) ? 'selected' : ''; ?>><?php echo $row['valore']; ?></option>
                                     <?php endif;?>
                                 <?php endforeach;?>
                             
