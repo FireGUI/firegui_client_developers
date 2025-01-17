@@ -62,7 +62,7 @@ class MY_Controller extends MX_Controller
             $this->db->join('settings_template', 'settings.settings_template = settings_template.settings_template_id', 'LEFT');
         }
         
-        if ($this->db->table_exists('currencies')) {
+        if ($this->db->table_exists('currencies') && $this->db->field_exists('settings_default_currency', 'settings')) {
             $this->db->join('currencies', 'settings.settings_default_currency = currencies.currencies_id', 'LEFT');
             
         }

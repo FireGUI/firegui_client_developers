@@ -56,37 +56,40 @@ class MY_Security extends CI_Security
     {
         $fields = [];
         if ($_fields !== FALSE) {
-         
+
             foreach ($_fields as $field) {
                 $fields[$field['fields_name']] = $field;
             }
         }
-        
+
 
         // Is the string an array?
         if (is_array($str)) {
             foreach ($str as $key => &$value) {
-                
+
                 if (empty($fields[$key]) || $fields[$key]['fields_xssclean'] == DB_BOOL_TRUE) {
-                    $str[$key] = $this->xss_clean($value,$_fields,$is_image);
+                    $str[$key] = $this->xss_clean($value, $_fields, $is_image);
                 }
-                
+
             }
             return $str;
         }
 
         // Remove Invisible Characters
+        if ($str === null) {
+            $str = '';
+        }
         $str = remove_invisible_characters($str);
 
         /*
-		 * URL Decode
-		 *
-		 * Just in case stuff like this is submitted:
-		 *
-		 * <a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>
-		 *
-		 * Note: Use rawurldecode() so it does not remove plus signs
-		 */
+         * URL Decode
+         *
+         * Just in case stuff like this is submitted:
+         *
+         * <a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>
+         *
+         * Note: Use rawurldecode() so it does not remove plus signs
+         */
         if (stripos($str, '%') !== false) {
             do {
                 $oldstr = $str;
@@ -99,12 +102,12 @@ class MY_Security extends CI_Security
         }
 
         /*
-		 * Convert character entities to ASCII
-		 *
-		 * This permits our tests below to work reliably.
-		 * We only convert entities that are within tags since
-		 * these are the ones that will pose security problems.
-		 */
+         * Convert character entities to ASCII
+         *
+         * This permits our tests below to work reliably.
+         * We only convert entities that are within tags since
+         * these are the ones that will pose security problems.
+         */
         $str = preg_replace_callback("/[^a-z0-9>]+[a-z0-9]+=([\'\"]).*?\\1/si", array($this, '_convert_attribute'), $str);
         $str = preg_replace_callback('/<\w+.*/si', array($this, '_decode_entity'), $str);
 
@@ -112,13 +115,13 @@ class MY_Security extends CI_Security
         $str = remove_invisible_characters($str);
 
         /*
-		 * Convert all tabs to spaces
-		 *
-		 * This prevents strings like this: ja	vascript
-		 * NOTE: we deal with spaces between characters later.
-		 * NOTE: preg_replace was found to be amazingly slow here on
-		 * large blocks of data, so we use str_replace.
-		 */
+         * Convert all tabs to spaces
+         *
+         * This prevents strings like this: ja	vascript
+         * NOTE: we deal with spaces between characters later.
+         * NOTE: preg_replace was found to be amazingly slow here on
+         * large blocks of data, so we use str_replace.
+         */
         $str = str_replace("\t", ' ', $str);
 
         // Capture converted string for later comparison
@@ -128,14 +131,14 @@ class MY_Security extends CI_Security
         $str = $this->_do_never_allowed($str);
 
         /*
-		 * Makes PHP tags safe
-		 *
-		 * Note: XML tags are inadvertently replaced too:
-		 *
-		 * <?xml
-		 *
-		 * But it doesn't seem to pose a problem.
-		 */
+         * Makes PHP tags safe
+         *
+         * Note: XML tags are inadvertently replaced too:
+         *
+         * <?xml
+         *
+         * But it doesn't seem to pose a problem.
+         */
         if ($is_image === TRUE) {
             // Images have a tendency to have the PHP short opening and
             // closing tags every so often so we skip those and only
@@ -146,15 +149,29 @@ class MY_Security extends CI_Security
         }
 
         /*
-		 * Compact any exploded words
-		 *
-		 * This corrects words like:  j a v a s c r i p t
-		 * These words are compacted back to their correct state.
-		 */
+         * Compact any exploded words
+         *
+         * This corrects words like:  j a v a s c r i p t
+         * These words are compacted back to their correct state.
+         */
         $words = array(
-            'javascript', 'expression', 'vbscript', 'jscript', 'wscript',
-            'vbs', 'script', 'base64', 'applet', 'alert', 'document',
-            'write', 'cookie', 'window', 'confirm', 'prompt', 'eval'
+            'javascript',
+            'expression',
+            'vbscript',
+            'jscript',
+            'wscript',
+            'vbs',
+            'script',
+            'base64',
+            'applet',
+            'alert',
+            'document',
+            'write',
+            'cookie',
+            'window',
+            'confirm',
+            'prompt',
+            'eval'
         );
 
         foreach ($words as $word) {
@@ -166,17 +183,17 @@ class MY_Security extends CI_Security
         }
 
         /*
-		 * Remove disallowed Javascript in links or img tags
-		 * We used to do some version comparisons and use of stripos(),
-		 * but it is dog slow compared to these simplified non-capturing
-		 * preg_match(), especially if the pattern exists in the string
-		 *
-		 * Note: It was reported that not only space characters, but all in
-		 * the following pattern can be parsed as separators between a tag name
-		 * and its attributes: [\d\s"\'`;,\/\=\(\x00\x0B\x09\x0C]
-		 * ... however, remove_invisible_characters() above already strips the
-		 * hex-encoded ones, so we'll skip them below.
-		 */
+         * Remove disallowed Javascript in links or img tags
+         * We used to do some version comparisons and use of stripos(),
+         * but it is dog slow compared to these simplified non-capturing
+         * preg_match(), especially if the pattern exists in the string
+         *
+         * Note: It was reported that not only space characters, but all in
+         * the following pattern can be parsed as separators between a tag name
+         * and its attributes: [\d\s"\'`;,\/\=\(\x00\x0B\x09\x0C]
+         * ... however, remove_invisible_characters() above already strips the
+         * hex-encoded ones, so we'll skip them below.
+         */
         do {
             $original = $str;
 
@@ -195,14 +212,14 @@ class MY_Security extends CI_Security
         unset($original);
 
         /*
-		 * Sanitize naughty HTML elements
-		 *
-		 * If a tag containing any of the words in the list
-		 * below is found, the tag gets converted to entities.
-		 *
-		 * So this: <blink>
-		 * Becomes: &lt;blink&gt;
-		 */
+         * Sanitize naughty HTML elements
+         *
+         * If a tag containing any of the words in the list
+         * below is found, the tag gets converted to entities.
+         *
+         * So this: <blink>
+         * Becomes: &lt;blink&gt;
+         */
         $pattern = '#'
             . '<((?<slash>/*\s*)((?<tagName>[a-z0-9]+)(?=[^a-z0-9]|$)|.+)' // tag start and name, followed by a non-tag character
             . '[^\s\042\047a-z0-9>/=]*' // a valid attribute character immediately after the tag would count as a separator
@@ -226,17 +243,17 @@ class MY_Security extends CI_Security
         unset($old_str);
 
         /*
-		 * Sanitize naughty scripting elements
-		 *
-		 * Similar to above, only instead of looking for
-		 * tags it looks for PHP and JavaScript commands
-		 * that are disallowed. Rather than removing the
-		 * code, it simply converts the parenthesis to entities
-		 * rendering the code un-executable.
-		 *
-		 * For example:	eval('some code')
-		 * Becomes:	eval&#40;'some code'&#41;
-		 */
+         * Sanitize naughty scripting elements
+         *
+         * Similar to above, only instead of looking for
+         * tags it looks for PHP and JavaScript commands
+         * that are disallowed. Rather than removing the
+         * code, it simply converts the parenthesis to entities
+         * rendering the code un-executable.
+         *
+         * For example:	eval('some code')
+         * Becomes:	eval&#40;'some code'&#41;
+         */
         $str = preg_replace(
             '#(alert|prompt|confirm|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si',
             '\\1\\2&#40;\\3&#41;',
@@ -257,14 +274,14 @@ class MY_Security extends CI_Security
         $str = $this->_do_never_allowed($str);
 
         /*
-		 * Images are Handled in a Special Way
-		 * - Essentially, we want to know that after all of the character
-		 * conversion is done whether any unwanted, likely XSS, code was found.
-		 * If not, we return TRUE, as the image is clean.
-		 * However, if the string post-conversion does not matched the
-		 * string post-removal of XSS, then it fails, as there was unwanted XSS
-		 * code found and removed/changed during processing.
-		 */
+         * Images are Handled in a Special Way
+         * - Essentially, we want to know that after all of the character
+         * conversion is done whether any unwanted, likely XSS, code was found.
+         * If not, we return TRUE, as the image is clean.
+         * However, if the string post-conversion does not matched the
+         * string post-removal of XSS, then it fails, as there was unwanted XSS
+         * code found and removed/changed during processing.
+         */
         if ($is_image === TRUE) {
             return ($str === $converted_string);
         }

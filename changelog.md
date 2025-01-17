@@ -1,3 +1,23 @@
+Changelog version 4.2.4
+
+2025-01-09 Patch version: 4.2.4
+
+LOG_LIFETIME constant in enviroment
+fix ci3 native _where_in method to avoid warning "preg_match(): Compilation failed: regular expression is too large at offset 56668"
+Added settings_default_currency field check exist
+
+Changelog version 4.2.3
+
+2024-12-19 Patch version: 4.2.3
+
+Bugfix filterOutputFields in Api V1
+Bugfix cache_key in get_field_by_name
+Check grid empty
+Added nullable fields in mysql_utils
+Bugfix typo settings.php
+Changed log_threshold from 2 to 1
+Maps markers bounds managed
+
 Changelog version 4.2.2
 
 2024-12-09 Patch version: 4.2.2

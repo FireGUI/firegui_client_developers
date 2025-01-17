@@ -52,16 +52,33 @@ class Core extends CI_Model
             $repository_url = OPENBUILDER_ADMIN_BASEURL;
         }
 
-        if ($updatePatches == true) {
-            $checkPatch = file_get_contents($repository_url . "public/client/getLastPatch/" . VERSION . "/$update_channel");
-            $last_version = json_decode($checkPatch, true)['clients_releases_version'];
-        } else {
-            $last_version = file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/0/$update_channel");
-        }
+        try {
+            if ($updatePatches == true) {
+                $checkPatch = @file_get_contents($repository_url . "public/client/getLastPatch/" . VERSION . "/$update_channel");
+                if ($checkPatch === false) {
+                    return false;
+                }
+                $patchData = json_decode($checkPatch, true);
+                $last_version = isset($patchData['clients_releases_version']) ? $patchData['clients_releases_version'] : false;
+            } else {
+                $last_version = @file_get_contents($repository_url . "public/client/getLastClientVersionNumber/" . VERSION . "/0/$update_channel");
+            }
 
-        if (version_compare($last_version, VERSION, '>')) {
-            return $last_version;
-        } else {
+            // Check if last_version was successfully retrieved and is not empty
+            if ($last_version === false || empty($last_version)) {
+                return false;
+            }
+
+            // Make sure we have valid version strings before comparison
+            if (is_string($last_version) && is_string(VERSION)) {
+                if (version_compare($last_version, VERSION, '>')) {
+                    return $last_version;
+                }
+            }
+
+            return false;
+        } catch (Exception $e) {
+            // Log error if needed
             return false;
         }
     }
