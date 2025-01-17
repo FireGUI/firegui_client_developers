@@ -40,6 +40,139 @@ class Layout extends CI_Model
     }
 
     /**
+     * Grants access permissions to one or more layouts for a specific user.
+     * The function removes restrictions from the unallowed_layouts table.
+     * 
+     * @param int $user_id User ID
+     * @param mixed $layout_ids_or_keys Single value or array of layout_id (int) or layout_identifier (string)
+     * @return bool TRUE if the operation is completed successfully, FALSE if there are errors or if the user doesn't exist
+     * 
+     * @example
+     * // Single layout using ID
+     * $this->giveUserPermission(1, 5);
+     * 
+     * // Single layout using identifier
+     * $this->giveUserPermission(1, 'dashboard');
+     * 
+     * // Array of layouts (mixed ID and identifiers)
+     * $this->giveUserPermission(1, ['dashboard', 5, 'users']);
+     */
+    public function giveUserPermission($user_id, $layout_ids_or_keys)
+    {
+        // Validate user existence
+        $user_exists = $this->db->where('users_id', $user_id)
+            ->get('users')
+            ->num_rows() > 0;
+
+        if (!$user_exists) {
+            return FALSE;
+        }
+
+        // Convert single value to array for uniform handling
+        if (!is_array($layout_ids_or_keys)) {
+            $layout_ids_or_keys = [$layout_ids_or_keys];
+        }
+
+        // Convert all keys to IDs
+        $layout_ids = [];
+        foreach ($layout_ids_or_keys as $item) {
+            $layout_id = is_numeric($item) ? $item : $this->getLayoutByIdentifier($item);
+            if ($layout_id) {
+                $layout_ids[] = $layout_id;
+            }
+        }
+
+        // If no valid layouts found, return false
+        if (empty($layout_ids)) {
+            return FALSE;
+        }
+
+        // Remove all restrictions for the given layouts
+        return $this->db->where('unallowed_layouts_user', $user_id)
+            ->where_in('unallowed_layouts_layout', $layout_ids)
+            ->delete('unallowed_layouts');
+    }
+
+    /**
+     * Removes access permissions to one or more layouts for a specific user.
+     * The function adds restrictions to the unallowed_layouts table.
+     * If some restrictions already exist, only missing ones are added.
+     * 
+     * @param int $user_id User ID
+     * @param mixed $layout_ids_or_keys Single value or array of layout_id (int) or layout_identifier (string)
+     * @return bool TRUE if the operation is completed successfully or if all restrictions already existed, 
+     *              FALSE if there are errors or if the user doesn't exist
+     * 
+     * @example
+     * // Single layout using ID
+     * $this->removeUserPermission(1, 5);
+     * 
+     * // Single layout using identifier
+     * $this->removeUserPermission(1, 'dashboard');
+     * 
+     * // Array of layouts (mixed ID and identifiers)
+     * $this->removeUserPermission(1, ['dashboard', 5, 'users']);
+     */
+
+    public function removeUserPermission($user_id, $layout_ids_or_keys)
+    {
+        // Validate user existence
+        $user_exists = $this->db->where('users_id', $user_id)
+            ->get('users')
+            ->num_rows() > 0;
+
+        if (!$user_exists) {
+            return FALSE;
+        }
+
+        // Convert single value to array for uniform handling
+        if (!is_array($layout_ids_or_keys)) {
+            $layout_ids_or_keys = [$layout_ids_or_keys];
+        }
+
+        // Convert all keys to IDs
+        $layout_ids = [];
+        foreach ($layout_ids_or_keys as $item) {
+            $layout_id = is_numeric($item) ? $item : $this->getLayoutByIdentifier($item);
+            if ($layout_id) {
+                $layout_ids[] = $layout_id;
+            }
+        }
+
+        // If no valid layouts found, return false
+        if (empty($layout_ids)) {
+            return FALSE;
+        }
+
+        // Get existing restrictions
+        $existing_restrictions = $this->db->where('unallowed_layouts_user', $user_id)
+            ->where_in('unallowed_layouts_layout', $layout_ids)
+            ->get('unallowed_layouts')
+            ->result_array();
+
+        // Create array of existing layout ids
+        $existing_layout_ids = array_column($existing_restrictions, 'unallowed_layouts_layout');
+
+        // Filter out layouts that already have restrictions
+        $layouts_to_restrict = array_diff($layout_ids, $existing_layout_ids);
+
+        // If there are new restrictions to add
+        if (!empty($layouts_to_restrict)) {
+            $batch_data = [];
+            foreach ($layouts_to_restrict as $layout_id) {
+                $batch_data[] = [
+                    'unallowed_layouts_user' => $user_id,
+                    'unallowed_layouts_layout' => $layout_id
+                ];
+            }
+
+            return $this->db->insert_batch('unallowed_layouts', $batch_data);
+        }
+
+        return TRUE; // All restrictions already existed
+    }
+
+    /**
      * @return int|null
      */
     public function getCurrentLayout()
@@ -105,7 +238,7 @@ class Layout extends CI_Model
         if ($content_html === true) {
             ob_start();
             extract($extra_data);
-            eval('?' . '>' . $view);
+            eval ('?' . '>' . $view);
 
             $content = ob_get_clean();
         } else {
@@ -204,9 +337,9 @@ class Layout extends CI_Model
                 $mpdf->AddPage();
                 $mpdf->WriteHtml($this->generate_html($conditionsPage, $relative_path, $extra_data, $module, true), \Mpdf\HTMLParserMode::DEFAULT_MODE);
             }
-            
+
             $save_as = array_get($options, 'save_as_file', false);
-            
+
             if ($save_as) {
                 $physicalDir = FCPATH . "/uploads/pdf";
                 if (!is_dir($physicalDir)) {
@@ -215,7 +348,7 @@ class Layout extends CI_Model
                 $filename = date('Ymd_His') . '_' . random_int(1, 100);
                 $filename = "{$physicalDir}/{$filename}.pdf";
                 $mpdf->Output($filename, 'F');
-                
+
                 return $filename;
             } else {
                 $mpdf->Output($filename, 'I');
@@ -416,7 +549,7 @@ class Layout extends CI_Model
         $path = $this->moduleAssets($module_identifier, $file);
         $this->injectFooterScript($path);
     }
-    
+
 
     public function templateAssets($template_folder, $file)
     {
@@ -524,16 +657,19 @@ class Layout extends CI_Model
         echo '<script src="' . base_url($file) . '?v=' . VERSION . '"></script>';
     }
 
-    public function injectFooterScript($script) {
+    public function injectFooterScript($script)
+    {
         $this->_scripts[] = $script;
     }
 
-    public function injectFooterScripts($scripts) {
+    public function injectFooterScripts($scripts)
+    {
         foreach ($scripts as $script) {
             $this->injectFooterScript($script);
         }
     }
-    public function getFooterScripts() {
+    public function getFooterScripts()
+    {
         return $this->_scripts;
     }
 
