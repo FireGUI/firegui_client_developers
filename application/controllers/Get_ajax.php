@@ -141,7 +141,8 @@ class Get_ajax extends MY_Controller
         if (empty($value_id) && !(empty($post_ids))) {
             $value_id = $this->input->post('ids');
         }
-        if ($form_entity_module = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON (forms_entity_id = entity_id) WHERE forms_id = '{$form_id}'")->row()->entity_module) {
+        $form_entity = $this->db->query("SELECT * FROM forms LEFT JOIN entity ON (forms_entity_id = entity_id) WHERE forms_id = '{$form_id}'")->row();
+        if ($form_entity && $form_entity_module = $form_entity->entity_module) {
             $this->lang->language = array_merge($this->lang->language, $this->module->loadTranslations($form_entity_module, array_values($this->lang->is_loaded)[0]));
             $this->layout->setLayoutModule($form_entity_module);
         }
@@ -315,7 +316,7 @@ class Get_ajax extends MY_Controller
         if ($referer) {
             //debug(array('fields_name' => $referer, 'fields_ref' => $table));
             if (empty($field)) {
-            $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
+                $fReferer = $this->db->get_where('fields', array('fields_name' => $referer, 'fields_ref' => $table))->row();
             } else {
                 $fReferer = $this->db->get_where('fields', array('fields_name' => $field, 'fields_ref' => $table))->row();
             }

@@ -69,7 +69,7 @@ class Main extends MX_Controller
      */
     public function install_module($identifier)
     {
-        echo_log('info', "Start Install module '$identifier' without backup...");
+       
 
         $repository_module = $this->core->installModule($identifier);
 

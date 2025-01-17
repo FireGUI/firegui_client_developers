@@ -33,13 +33,15 @@
             $hasSubmenu = count($menu['submenu']) > 0;
             $isLinkOrContainer = ($link or $hasSubmenu);
             $isCurrent = in_array($current_page, $menu['pages_names']);
+
+            $isModulePage = $menu['menu_module'] && $menu['menu_module'] == $dati['layout_container']['layouts_module'];
             $label = ucfirst(str_replace(array('_', '-'), ' ', $menu['menu_label']));
             $classes = [sprintf('menu-%s', $menu['menu_id']), $menu['menu_css_class']];
             if ($first) {
                 $classes[] = 'start';
             }
 
-            if ($isCurrent) {
+            if ($isCurrent || $isModulePage) {
                 $classes[] = 'active';
             }
             if ($hasSubmenu && !$link) {

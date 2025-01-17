@@ -320,6 +320,9 @@ class Core extends CI_Model
     }
     public function installModule($identifier, $update_repository_url = null)
     {
+        echo '<strong>';
+        echo_log('info', "Start Install module '$identifier' without backup...");
+        echo '</strong>';
         if ($update_repository_url === null) {
             $update_repository_url = defined('OPENBUILDER_ADMIN_BASEURL') ? OPENBUILDER_ADMIN_BASEURL : null;
         }

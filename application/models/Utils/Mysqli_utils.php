@@ -484,7 +484,7 @@ class Mysqli_utils extends Utils {
             'post_process_id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
             'post_process_entity_id' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
             'post_process_when' => ['type' => 'VARCHAR', 'constraint' => 300],
-            'post_process_what' => ['type' => 'TEXT', 'null' => true],
+            'post_process_what' => ['type' => 'MEDIUMTEXT', 'null' => true],
             'post_process_apilib' => ['type' => 'BOOLEAN', 'default' => '1'],
             'post_process_api' => ['type' => 'BOOLEAN', 'default' => '1'],
             'post_process_crm' => ['type' => 'BOOLEAN', 'default' => '1'],
